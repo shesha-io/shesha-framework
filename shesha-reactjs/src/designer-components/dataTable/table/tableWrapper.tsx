@@ -5,7 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding } from './utils';
+import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding, flattenConfiguredColumns, getDataColumnAccessor } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -31,10 +31,12 @@ import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { StandaloneTable } from './standaloneTable';
 import { isPropertiesArray } from '@/interfaces/metadata';
-import { toCamelCase } from '@/utils/string';
+import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 
-export const TableWrapper: FC<ITableComponentProps> = (props) => {
-  const { id, items: configuredColumns, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
+type TableWrapperProps = ITableComponentProps & { columnsMismatch?: boolean };
+
+export const TableWrapper: FC<TableWrapperProps> = (props) => {
+  const { id, items: configuredColumns, useMultiselect, selectionMode, tableStyle, containerStyle, columnsMismatch } = props;
 
   const { formMode } = useForm();
   const { data: formData } = useFormData();
@@ -45,6 +47,42 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
   const componentIdRef = useRef(id);
+  const normalizedConfiguredColumns = useMemo(
+    () => flattenConfiguredColumns(configuredColumns as ColumnsItemProps[]),
+    [configuredColumns],
+  );
+  const metadataProperties = useMemo(
+    () => (isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
+    [metadata.metadata],
+  );
+  const metadataPropertyNameSet = useMemo(
+    () => new Set(collectMetadataPropertyPaths(metadataProperties)),
+    [metadataProperties],
+  );
+  const visibilityFilter = useMemo(
+    () => filterVisibility({ data: formData, globalState }),
+    [formData, globalState],
+  );
+  const permissibleColumns = useMemo(
+    () => (isDesignMode
+      ? normalizedConfiguredColumns
+      : normalizedConfiguredColumns
+        .filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
+        .filter(visibilityFilter)),
+    [normalizedConfiguredColumns, isDesignMode, anyOfPermissionsGranted, visibilityFilter],
+  );
+  const hasNonDataColumns = useMemo(
+    () => permissibleColumns.some((col) => col.columnType && col.columnType !== 'data'),
+    [permissibleColumns],
+  );
+  const qualifyingColumns = useMemo(
+    () => permissibleColumns.filter((permissibleColumn) => {
+      if (permissibleColumn.columnType !== 'data') return false;
+      const candidate = getDataColumnAccessor(permissibleColumn);
+      return candidate && metadataPropertyNameSet.has(candidate);
+    }),
+    [permissibleColumns, metadataPropertyNameSet],
+  );
 
   useEffect(() => {
     if (componentIdRef.current !== id) {
@@ -213,41 +251,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   requireColumns(); // our component requires columns loading. it's safe to call on each render
 
   useDeepCompareEffect(() => {
-    // Normalize inputs: ensure configuredColumns is always an array
-    const normalizedConfiguredColumns = Array.isArray(configuredColumns) ? configuredColumns : [];
-
-    // register columns
-    const permissibleColumns = isDesignMode
-      ? normalizedConfiguredColumns
-      : normalizedConfiguredColumns
-        .filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-        .filter(filterVisibility({ data: formData, globalState }));
-
-    // Normalize metadata properties using type guard helper
-    const metadataProperties = isPropertiesArray(metadata.metadata?.properties)
-      ? metadata.metadata.properties
-      : [];
-
-    // We need to check if the columns at least one exists in the store as well... otherwise the registration is going to fail
-    const qualifyingColumns = metadataProperties.filter((propertyMetadata) => {
-      const exists = permissibleColumns
-        .map((permissibleColumn) => toCamelCase(permissibleColumn.accessor))
-        .includes(toCamelCase(propertyMetadata.path));
-      return exists;
-    });
-
-    // Check if there are any non-data columns (actions, crud-operations, etc.)
-    const hasNonDataColumns = permissibleColumns.some((col) =>
-      col.columnType && col.columnType !== 'data',
-    );
-
     // Register columns if:
     // 1. At least one column matches metadata properties, OR
     // 2. There are no configured columns (empty state), OR
     // 3. There are non-data columns that don't need to match metadata
     if (qualifyingColumns.length > 0 || normalizedConfiguredColumns.length === 0 || hasNonDataColumns)
       registerConfigurableColumns(id, permissibleColumns);
-  }, [configuredColumns, isDesignMode, metadata, formData, globalState, anyOfPermissionsGranted, filterVisibility, toCamelCase]);
+  }, [qualifyingColumns.length, normalizedConfiguredColumns.length, hasNonDataColumns, id, permissibleColumns, registerConfigurableColumns]);
 
   // Auto-configure columns when DataTable is dropped into a DataContext
   useEffect(() => {
@@ -339,6 +349,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
             onMultiRowSelect={setMultiSelectedRow}
             selectedRowIndex={selectedRow?.index}
+            columnsMismatch={columnsMismatch}
             useMultiselect={useMultiselect}
             selectionMode={selectionMode}
             freezeHeaders={props.freezeHeaders}
