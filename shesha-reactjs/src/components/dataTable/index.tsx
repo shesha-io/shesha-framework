@@ -219,8 +219,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const {
     tableData,
     isFetchingTableData,
-    hasFetchTableDataError,
-    fetchTableDataError,
     totalPages,
     columns,
     configurableColumns,

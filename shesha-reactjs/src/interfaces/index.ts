@@ -22,6 +22,7 @@ export { type IFlagsSetters } from './flagsSetters';
 export { type IPasswordValidation } from './passwordValidation';
 export { type IAnyObject } from './anyObject';
 export { type IToolbarItem } from './toolbar';
+export { DesignerToolbarSettings } from './toolbarSettings';
 export { type IShaDataTableProps } from '../components/dataTable/interfaces';
 export { type IValuable } from './valuable';
 export { type IChangeable } from './changeable';
