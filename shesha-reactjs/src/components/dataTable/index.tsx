@@ -111,7 +111,7 @@ const getErrorMessages = (error: unknown): { error: string }[] => {
   // Check for AxiosError with response data
   if (axios.isAxiosError(error) && error.response?.data) {
     const responseData = error.response.data;
-    if ('error' in responseData && responseData.error) {
+    if (isErrorWithProp(responseData)) {
       errorInfo = responseData.error;
     }
   } else if (isErrorWithProp(error)) {
