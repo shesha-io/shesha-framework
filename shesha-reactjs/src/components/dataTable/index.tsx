@@ -496,7 +496,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   // Check if there's a crud operations column - if so, disable row selection
   const hasCrudOperationsColumn = useMemo(() => {
-    return columns.some(column => column.columnType === 'crud-operations' && column.show);
+    return columns.some((column) => column.columnType === 'crud-operations' && column.show);
   }, [columns]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
