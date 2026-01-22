@@ -36,7 +36,7 @@ export const getSelectedKeys = (path: string, menuItems: ISidebarMenuItem[]): st
         if (navType === 'form') {
           // For form navigation, build the dynamic path from formId
           const formId = item.actionConfiguration?.actionArguments?.formId;
-          if (formId && typeof formId === 'object') {
+          if (formId && typeof formId === 'object' && !Array.isArray(formId)) {
             itemUrl = getDynamicPath(formId);
           }
         } else if (navType === 'url') {
