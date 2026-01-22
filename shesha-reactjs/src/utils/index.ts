@@ -12,7 +12,9 @@ const isReferenceListIdentifier = (value: unknown): value is IReferenceListIdent
   value !== null &&
   !Array.isArray(value) &&
   'module' in value &&
-  'name' in value;
+  (typeof (value as Record<string, unknown>).module === 'string' || (value as Record<string, unknown>).module === null) &&
+  'name' in value &&
+  typeof (value as Record<string, unknown>).name === 'string';
 
 export const getDynamicPath = (formId: IReferenceListIdentifier): string =>
   `/dynamic/${formId?.module}/${formId?.name}`;
