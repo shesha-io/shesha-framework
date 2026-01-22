@@ -12,6 +12,7 @@ export interface IModelValidation {
   componentType?: string;
   hasErrors: boolean;
   errors?: IModelError[];
+  validationType?: ISheshaErrorTypes;
 }
 
 export interface ISheshaErrorCause {

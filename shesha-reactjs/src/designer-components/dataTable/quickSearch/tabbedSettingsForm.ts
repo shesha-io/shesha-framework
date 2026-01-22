@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
+import { SettingsFormMarkupFactory } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const commonTabId = nanoid();
   const searchableTabsId = nanoid();
   const appearanceId = nanoid();
@@ -11,7 +11,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const dimensionsStylePnlId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -25,7 +25,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
@@ -35,7 +35,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     type: 'switch',
                     propertyName: 'hidden',
                     label: 'Hide',
-                    defaultValue: false,
                     parentId: 'root',
                     jsSetting: true,
                   },
@@ -45,7 +44,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     propertyName: 'block',
                     parentId: 'root',
                     label: 'Block',
-                    defaultValue: false,
                     jsSetting: true,
                   },
                 ],
@@ -57,7 +55,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -70,9 +68,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
@@ -83,7 +81,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: dimensionsStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
@@ -97,7 +95,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                  defaultValue: '360px',
                                 },
                                 {
                                   type: 'textField',
@@ -107,7 +104,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   hideLabel: true,
                                   propertyName: "dimensions.minWidth",
                                   icon: "minWidthIcon",
-                                  defaultValue: '0px',
                                 },
                                 {
                                   type: 'textField',
@@ -117,7 +113,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
-                                  defaultValue: '100%',
                                 },
                               ],
                             })
@@ -135,7 +130,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'security',
             title: 'Security',
             id: securityId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

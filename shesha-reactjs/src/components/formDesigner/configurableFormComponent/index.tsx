@@ -21,7 +21,7 @@ import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
 import { Tooltip } from 'antd';
 import { ShaForm, useIsDrawingForm } from '@/providers/form';
-import { useFormDesignerState, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
@@ -48,14 +48,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
   const { activeDevice } = useCanvas();
 
   const component = getToolboxComponent(componentModel?.type);
   const typeInfo = getComponentTypeInfo(component);
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...componentModel, ...componentModel?.[activeDevice] });
-  const { top, left, bottom, right } = formSettings?.formItemMargin || {};
-  const desktopConfig = componentModel?.[activeDevice] || {...componentModel};
+  const desktopConfig = componentModel?.[activeDevice] || { ...componentModel };
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
@@ -94,16 +92,16 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   // Extract margins from component styling, with fallback to form defaults
   const margins = useMemo(() => ({
-    marginTop: stylingBoxAsCSS?.marginTop ?? top ?? 0,
-    marginBottom: stylingBoxAsCSS?.marginBottom ?? bottom ?? 0,
-    marginLeft: stylingBoxAsCSS?.marginLeft ?? left ?? 0,
-    marginRight: stylingBoxAsCSS?.marginRight ?? right ?? 0,
-  }), [stylingBoxAsCSS?.marginTop, stylingBoxAsCSS?.marginBottom, stylingBoxAsCSS?.marginLeft, stylingBoxAsCSS?.marginRight, top, bottom, left, right]);
+    marginTop: stylingBoxAsCSS?.marginTop ?? 0,
+    marginBottom: stylingBoxAsCSS?.marginBottom ?? 0,
+    marginLeft: stylingBoxAsCSS?.marginLeft ?? 0,
+    marginRight: stylingBoxAsCSS?.marginRight ?? 0,
+  }), [stylingBoxAsCSS?.marginTop, stylingBoxAsCSS?.marginBottom, stylingBoxAsCSS?.marginLeft, stylingBoxAsCSS?.marginRight]);
 
   // Get component dimensions (handles special cases like DataTable context)
   const componentDimensions = useMemo(() =>
     getComponentDimensions(typeInfo, dimensionsStyles),
-    [typeInfo, dimensionsStyles]
+  [typeInfo, dimensionsStyles],
   );
 
   // Create the model for rendering - components receive 100% dimensions
@@ -123,7 +121,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() =>
     createRootContainerStyle(componentDimensions, margins, component.isInput),
-    [componentDimensions, margins, component.isInput]
+  [componentDimensions, margins, component.isInput],
   );
 
   return (
@@ -190,7 +188,9 @@ const ConfigurableFormComponentDesignerMemo = memo(ConfigurableFormComponentDesi
 
 export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = (props) => {
   const allData = useAvailableConstantsData({ topContextId: DataContextTopLevels.All });
-  const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
+  const { settingsPanelRef } = useFormDesigner();
+  const selectedComponentId = useFormDesignerSelectedComponentId();
+  const readOnly = useFormDesignerReadOnly();
   const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
   const componentEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode;
 

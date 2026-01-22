@@ -20,17 +20,17 @@ namespace Shesha.Metadata
         IAsyncEventHandler<EntityChangingEventData<ConfigurationItem>>
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityTypesConfigurationStore;
         private readonly IMetadataProvider _metadataProvider;
 
         public EntityModelProvider(
             ICacheManager cacheManager,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityTypesConfigurationStore,
             IRepository<EntityConfig, Guid> entityConfigRepository,
             IMetadataProvider metadataProvider
         ) : base("EntityModelProviderCache", cacheManager)
         {
-            _entityConfigurationStore = entityConfigurationStore;
+            _entityTypesConfigurationStore = entityTypesConfigurationStore;
             _entityConfigRepository = entityConfigRepository;
             _metadataProvider = metadataProvider;
         }
@@ -47,35 +47,39 @@ namespace Shesha.Metadata
 
         protected async override Task<List<EntityModelDto>> FetchModelsAsync()
         {
+            // Get all Entity configurations from DB (include exposed Entities)
             var entityConfigs = await _entityConfigRepository.GetAll().ToListAsync();
             var dtos = (await entityConfigs
-                .SelectAsync(async t =>
+                .SelectAsync(async entityConfig =>
                 {
-                    var config = _entityConfigurationStore.GetOrNull(t.FullClassName);
+                    var config = _entityTypesConfigurationStore.GetOrNull(entityConfig.FullClassName);
 
-                    if (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/)
+                    if (config == null || config.EntityType.FullName != entityConfig.FullClassName /*skip aliases*/)
                         return null;
 
-                    var metadata = await _metadataProvider.GetAsync(config.EntityType);
+                    var metadata = await _metadataProvider.GetAsync(config.EntityType, entityConfig);
                     // update module for dynamic entities
                     if (metadata.Module == null)
                     {
-                        metadata.Module = t.Module?.Name;
-                        metadata.ModuleAccessor = t.Module?.Accessor;
+                        metadata.Module = entityConfig.Module?.Name;
+                        metadata.ModuleAccessor = entityConfig.Module?.Accessor;
                     }
                     return new EntityModelDto
                     {
-                        Suppress = t.Suppress,
-                        ClassName = t.FullClassName,
-                        Name = t.ClassName,
+                        Id = entityConfig.Id.ToString(),
+                        Suppress = entityConfig.Suppress,
+                        FullClassName = entityConfig.FullClassName,
+                        Name = entityConfig.Name,
                         Type = config.EntityType,
-                        Description = t.Description ?? (config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
-                        Alias = string.IsNullOrWhiteSpace(t.TypeShortAlias) ? config.SafeTypeShortAlias : t.TypeShortAlias,
-                        Accessor = t.Accessor,
-                        ModuleAccessor = t.Module?.Accessor,
+                        Description = entityConfig.Description ?? (config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
+                        Alias = string.IsNullOrWhiteSpace(entityConfig.TypeShortAlias) ? config.SafeTypeShortAlias : entityConfig.TypeShortAlias,
+                        Accessor = entityConfig.Accessor,
+                        Module = entityConfig.Module?.Name,
+                        ModuleAccessor = entityConfig.Module?.Accessor,
                         Md5 = metadata.Md5,
                         ModificationTime = metadata.ChangeTime,
                         Metadata = metadata,
+                        IsExposed = entityConfig.IsExposed,
                     };
                 }))
                 .WhereNotNull()

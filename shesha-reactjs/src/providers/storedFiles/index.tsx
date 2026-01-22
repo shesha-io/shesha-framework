@@ -23,6 +23,9 @@ import {
   initializeFileListAction,
   onFileAddedAction,
   onFileDeletedAction,
+  replaceFileErrorAction,
+  replaceFileRequestAction,
+  replaceFileSuccessAction,
   updateAllFilesDownloadedByCurrentUser,
   updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
@@ -32,6 +35,7 @@ import {
 import {
   IDownloadFilePayload,
   IDownloadZipPayload,
+  IReplaceFilePayload,
   IStoredFile,
   IStoredFilesActionsContext,
   IStoredFilesStateContext,
@@ -42,16 +46,19 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import { extractAjaxResponse, isAjaxSuccessResponse, isAxiosResponse } from '@/interfaces/ajaxResponse';
+import { addFile, normalizeFileName, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdentifier } from '../metadataDispatcher/entities/utils';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
 
 export interface IStoredFilesProviderProps {
   name?: string;
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIdentifier;
   ownerName?: string;
   filesCategory?: string;
   propertyName?: string;
@@ -59,17 +66,31 @@ export interface IStoredFilesProviderProps {
 
   // used for requered field validation
   value?: IStoredFile[];
-  onChange?: (fileList: IStoredFile[]) => void;
-  onDownload?: (fileList: IStoredFile[]) => void;
+  onChange?: (fileList: IStoredFile[], isUserAction?: boolean) => void;
+  onDownload?: (fileList: IStoredFile[], isUserAction?: boolean) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
   return { ...data, uid: data.id };
 };
 
-const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) => fileReducer(file));
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => {
+  if (!data) return data;
+
+  // Map files and deduplicate by ID, keeping the last occurrence (most recent version)
+  const fileMap = new Map<string, IStoredFile>();
+  data.forEach((file) => {
+    const processedFile = fileReducer(file);
+    if (processedFile.id) {
+      fileMap.set(processedFile.id, processedFile);
+    }
+  });
+
+  return Array.from(fileMap.values());
+};
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
+const replaceFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/UploadNewVersion', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
@@ -111,7 +132,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     path: filesListEndpoint.url,
     queryParams: {
       ownerId,
-      ownerType,
+      ownerType: getEntityTypeIdentifierQueryParams(ownerType),
       ownerName,
       filesCategory,
       propertyName,
@@ -119,7 +140,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     lazy: true,
   });
 
-  const { mutate: uploadFileHttp } = useMutate();
+  const { mutate: uploadFileHttp } = useMutate<FormData, IAjaxResponse<IStoredFile>>();
+  const { mutate: replaceFileHttp } = useMutate<FormData, IAjaxResponse<IStoredFile>>();
+
 
   // Initialize fileList from value prop when component mounts or value changes
   useEffect(() => {
@@ -129,20 +152,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }, [value]);
 
   useEffect(() => {
-    if ((ownerId || '') !== '' && (ownerType || '') !== '') {
-      fetchFileListHttp()
-        .then((resp) => {
-          if (isAjaxSuccessResponse(resp)) {
-            const fileList = filesReducer((resp?.result ?? []) as IStoredFile[]);
-            dispatch(fetchFileListSuccessAction(fileList));
-            onChange?.(fileList);
-          } else {
-            dispatch(fetchFileListErrorAction());
-          }
-        })
-        .catch(() => {
-          dispatch(fetchFileListErrorAction());
-        });
+    if (ownerId && ownerType) {
+      fetchFileListHttp();
     }
   }, [ownerId, ownerType, ownerName, filesCategory, propertyName]);
 
@@ -166,14 +177,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
       dispatch(onFileAddedAction(patient));
       const next = [...(fileListRef.current ?? []).filter((f) => f.id !== patient?.id), fileReducer(patient)];
-      onChange?.(next);
+      onChange?.(next, false); // Not a user action - external SignalR event
     });
 
     connection?.on('OnFileDeleted', (eventData: IStoredFile | string) => {
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
-      onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || []);
+      onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || [], false); // Not a user action - external SignalR event
     });
     return () => {
       connection?.off('OnFileAdded');
@@ -188,7 +199,13 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     const { file } = payload;
 
     formData.append('ownerId', payload.ownerId || ownerId);
-    formData.append('ownerType', payload.ownerType || ownerType);
+    const entityType = payload.ownerType || ownerType;
+    if (isEntityTypeIdentifier(entityType)) {
+      formData.append('ownerType.name', entityType.name);
+      formData.append('ownerType.module', entityType.module);
+    } else {
+      formData.append('ownerType.entityType', entityType);
+    }
     formData.append('ownerName', payload.ownerName || ownerName);
     formData.append('file', file);
     if (filesCategory)
@@ -215,18 +232,33 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     uploadFileHttp(uploadFileEndpoint, formData)
       .then((response) => {
-        const responseFile = response.result as IStoredFile;
+        const responseFile = extractAjaxResponse(response);
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-        onChange?.(addFile(responseFile, fileListRef.current));
+        const updatedFileList = addFile(responseFile, fileListRef.current);
+        onChange?.(updatedFileList, true); // User action - file upload
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
             ownerName: payload.ownerName || ownerName,
           });
       })
-      .catch((e) => {
-        message.error(`File upload failed. Probably file size is too big`);
+      .catch((e: unknown) => {
+        let errorMessage = 'Please check your configuration and try again';
+
+        if (isAxiosResponse(e)) {
+          const details = e.data?.error?.details;
+          const msg = e.data?.error?.message;
+          if (typeof details === 'string') {
+            errorMessage = details.slice(0, 200);
+          } else if (typeof msg === 'string') {
+            errorMessage = msg.slice(0, 200);
+          }
+        } else if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string') {
+          errorMessage = e.message;
+        }
+
+        message.error(`File upload failed. ${errorMessage}`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
       });
@@ -261,7 +293,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then(() => {
         deleteFileSuccess(resolvedId);
         const updateList = removeFile(list, resolvedId);
-        onChange?.(updateList);
+        onChange?.(updateList, true); // User action - file delete
         if (typeof removeDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, resolvedId);
         }
@@ -273,6 +305,53 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   //#endregion
 
+  //#region replace file
+  const replaceFile = (payload: IReplaceFilePayload): void => {
+    const { file, fileId } = payload;
+
+    // Validate that fileId is a persisted stored-file identifier
+    if (!fileId || !isValidGuid(fileId)) {
+      const errorMsg = 'Cannot replace file: file must be persisted before replacement. Please wait for upload to complete.';
+      message.error(errorMsg);
+      console.warn('replaceFile: Invalid or missing fileId', { fileId, file: file.name });
+      // Dispatch error action to update UI state if needed
+      if (fileId) {
+        dispatch(replaceFileErrorAction(fileId));
+      }
+      return;
+    }
+
+    // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
+    const normalizedFile = normalizeFileName(file);
+
+    const formData = new FormData();
+    formData.append('file', normalizedFile);
+    formData.append('id', fileId);
+
+    dispatch(replaceFileRequestAction(fileId));
+
+    replaceFileHttp(replaceFileEndpoint, formData)
+      .then((response) => {
+        const responseFile = extractAjaxResponse(response);
+        responseFile.uid = responseFile.id;
+        dispatch(replaceFileSuccessAction({ originalFileId: fileId, newFile: { ...responseFile } }));
+
+        // Update the fileList by replacing the old file with the new one
+        const currentList = fileListRef.current ?? [];
+        const updatedList = currentList.map((f) =>
+          f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f,
+        );
+        onChange?.(updatedList, true); // User action - file replace
+        message.success(`File "${normalizedFile.name}" replaced successfully`);
+      })
+      .catch((e) => {
+        message.error(`File replacement failed. ${e.message || 'Please try again.'}`);
+        console.error(e);
+        dispatch(replaceFileErrorAction(fileId));
+      });
+  };
+  //#endregion
+
   const downloadZipFile = (payload: IDownloadZipPayload = null): void => {
     dispatch(downloadZipRequestAction());
     const query = !!payload
@@ -280,7 +359,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       : !!ownerId
         ? {
           ownerId: ownerId,
-          ownerType: ownerType,
+          ownerType: getEntityTypeIdentifierQueryParams(ownerType),
           filesCategory: filesCategory,
           ownerName: ownerName,
         }
@@ -288,7 +367,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           filesId: fileListRef.current?.map((x) => x.id).filter((x) => !!x),
         };
     axios({
-      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query)}`,
+      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query, { allowDots: true })}`,
       method: 'GET',
       responseType: 'blob',
       headers,
@@ -298,7 +377,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
         const updatedList = updateAllFilesDownloaded(fileListRef.current ?? []);
-        onDownload?.(updatedList);
+        onDownload?.(updatedList, true); // User action - zip download
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -319,7 +398,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
         const nextList = updateDownloadedAFile(fileListRef.current ?? [], payload.fileId);
-        onDownload?.(nextList);
+        onDownload?.(nextList, true); // User action - file download
       })
       .catch((e) => {
         console.error(e);
@@ -358,6 +437,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           value={{
             ...getFlagSetters(dispatch),
             uploadFile,
+            replaceFile,
             deleteFile,
             downloadZipFile,
             downloadFile, /* NEW_ACTION_GOES_HERE */
@@ -402,3 +482,4 @@ export default StoredFilesProvider;
 const useStoredFiles = useStoredFilesStore;
 
 export { StoredFilesProvider, useStoredFiles, useStoredFilesActions, useStoredFilesState, useStoredFilesStore };
+export type { IStoredFile };

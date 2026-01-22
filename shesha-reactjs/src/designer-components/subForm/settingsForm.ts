@@ -1,10 +1,8 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ISubFormComponentProps } from '.';
-import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -13,10 +11,8 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
 
-  const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
-
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -30,7 +26,7 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: "propertyName",
@@ -64,7 +60,6 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                     parentId: commonTabId,
                     label: "Edit Mode",
                     jsSetting: true,
-                    defaultValue: 'inherited',
                   },
                   {
                     type: 'switch',
@@ -82,7 +77,7 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
             key: 'data',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               // Form Selection Mode - from Main Settings section in map
               .addSettingsInput({
                 id: nanoid(),
@@ -91,7 +86,6 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                 parentId: commonTabId,
                 label: "Form Selection Mode",
                 tooltip: "Determines how form data is selected and processed",
-                defaultValue: 'name',
                 dropdownOptions: [
                   { label: "Name", value: "name" },
                   { label: "Dynamic", value: "dynamic" },
@@ -107,7 +101,6 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                     propertyName: "formType",
                     label: "Form Type",
                     jsSetting: true,
-                    dropdownOptions: formTypes.map((value) => ({ label: value, value })),
                   },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
@@ -133,7 +126,6 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                 parentId: dataTabId,
                 label: "Data Source",
                 tooltip: "The list data to be used can be the data that comes with the form of can be fetched from the API",
-                defaultValue: 'form',
                 dropdownOptions: [
                   { label: "Form", value: "form" },
                   { label: "API", value: "api" },
@@ -148,7 +140,6 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                     type: "dropdown",
                     propertyName: "apiMode",
                     label: "API Mode",
-                    defaultValue: "entityType",
                     tooltip: "The API mode to use to fetch data",
                     dropdownOptions: [
                       { label: "Entity name", value: "entityName" },
@@ -165,11 +156,9 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                 inputs: [
                   {
                     id: nanoid(),
-                    type: "autocomplete",
+                    type: "entityTypeAutocomplete",
                     propertyName: "entityType",
                     label: "Entity Type",
-                    dataSourceType: "url",
-                    dataSourceUrl: "/api/services/app/Metadata/TypeAutocomplete",
                     jsSetting: true,
                   },
                 ],
@@ -351,7 +340,7 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
             key: 'events',
             title: 'Events',
             id: eventsTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: "codeEditor",
@@ -441,7 +430,7 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -454,9 +443,9 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                },
+                } as any,
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'style',
@@ -468,7 +457,7 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: commonTabId,
@@ -482,7 +471,6 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                                 jsSetting: true,
                                 min: 0,
                                 max: 24,
-                                defaultValue: 16,
                                 step: 1,
                               },
                               {
@@ -494,7 +482,6 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                                 jsSetting: true,
                                 min: 0,
                                 max: 24,
-                                defaultValue: 8,
                                 step: 1,
                               },
                             ],
@@ -513,7 +500,7 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
             key: 'security',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               // Permissions - from Security section in map
               .addSettingsInput({
                 id: nanoid(),

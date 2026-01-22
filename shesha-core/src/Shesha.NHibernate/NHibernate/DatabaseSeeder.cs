@@ -6,6 +6,8 @@ using Abp.Runtime.Caching;
 using Microsoft.Extensions.Configuration;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
+using Shesha.Configuration.Runtime;
+using Shesha.ConfigurationItems;
 using Shesha.FluentMigrator;
 using Shesha.Locks;
 using Shesha.Reflection;
@@ -146,6 +148,8 @@ namespace Shesha.NHibernate
 
         public async Task BootstrapDatabaseAsync()
         {
+            await _ioc.Resolve<IEntityTypeConfigurationStore>().InitializeHardcodedAsync();
+
             var skipBootstrappers = _configuration.GetValue<bool>(SkipBootstrappersSetting);
 
             if (skipBootstrappers)
@@ -207,17 +211,21 @@ namespace Shesha.NHibernate
 
                     var allSkipped = true;
 
-                    foreach (var bootstrapperType in bootstrapperTypes)
+                    var cfRuntime = _ioc.Resolve<IConfigurationFrameworkRuntime>();
+                    using (cfRuntime.DisableConfigurationTracking()) 
                     {
-                        if (_ioc.IsRegistered(bootstrapperType) && _ioc.Resolve(bootstrapperType) is IBootstrapper bootstrapper)
+                        foreach (var bootstrapperType in bootstrapperTypes)
                         {
-                            _logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
+                            if (_ioc.IsRegistered(bootstrapperType) && _ioc.Resolve(bootstrapperType) is IBootstrapper bootstrapper)
+                            {
+                                _logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
 
-                            allSkipped = !(await bootstrapper.ProcessAsync(false)) && allSkipped;
+                                allSkipped = !(await bootstrapper.ProcessAsync(false)) && allSkipped;
 
-                            _logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
+                                _logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
+                            }
                         }
-                    }
+                    }                        
 
                     if (appStartup.AllAssembliesStayUnchanged && allSkipped)
                         _logger.Warn($"Bootstrappers skipped. Previous startup was full, successful and all assemblies stay unchanged");

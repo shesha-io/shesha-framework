@@ -60,7 +60,15 @@ namespace Shesha.ConfigurationItems
         Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module);
 
         /// <summary>
-        /// Resolved configuration item by pair: module and name. Note that 
+        /// Get actual inheritance of configuration item by pair: module and name
+        /// </summary>
+        /// <param name="module">Module name</param>
+        /// <param name="name">Item name</param>
+        /// <returns></returns>
+        Task<ConfigurationItemInheritance> GetActualInheritanceOrNullAsync(string module, string name);
+
+        /// <summary>
+        /// Resolved configuration item by pair: module and name. Note that
         /// </summary>
         /// <param name="module">Module name</param>
         /// <param name="name">Item name</param>
@@ -100,11 +108,18 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Dump current state of the configuration item to a revision
         /// </summary>
-        Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item);
+        Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item, Action<ConfigurationItemRevision>? revisionCustomizer = null);
 
         /// <summary>
         /// Restore configuration item state from a revision
         /// </summary>
         Task RestoreRevisionAsync(ConfigurationItemRevision revision);
+
+        /// <summary>
+        /// Get backward compatible module name when module is not provided
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Task<string> GetBackwardCompatibleModuleNameAsync(string name);
     }
 }

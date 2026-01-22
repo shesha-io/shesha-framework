@@ -1,4 +1,5 @@
 ﻿using Shesha.Application.Services.Dto;
+using Shesha.DynamicEntities.Dtos;
 using System.Collections.Generic;
 
 namespace Shesha.Excel
@@ -8,7 +9,7 @@ namespace Shesha.Excel
     /// </summary>
     public class ExportToExcelInput: PropsFilteredPagedAndSortedResultRequestDto
     {
-        public string EntityType { get; set; }
+        public EntityTypeIdInput EntityTypeId { get; set; }
         public List<ExcelColumn> Columns { get; set; } = new List<ExcelColumn>();
     }
 

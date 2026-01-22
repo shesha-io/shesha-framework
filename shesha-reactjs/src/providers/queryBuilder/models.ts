@@ -5,6 +5,9 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 
 export interface CustomFieldSettings {
   typeShortAlias?: string;
+
+  entityTypeName?: string;
+  entityTypeModule?: string;
   referenceListName?: string;
   referenceListModule?: string;
   allowInherited?: boolean;

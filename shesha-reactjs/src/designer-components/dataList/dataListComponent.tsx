@@ -27,12 +27,32 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
+    // Check if form is configured
+    const hasFormConfigured =
+      (model.formSelectionMode === "name" && model.formId) ||
+      (model.formSelectionMode === "view" && model.formType) ||
+      (model.formSelectionMode === "expression" && model.formIdExpression);
+
     return dataSource
       ? <DataListControl {...model} dataSourceInstance={dataSource} />
-      : <NotConfiguredWarning />;
+      : (
+        <NotConfiguredWarning
+          message={hasFormConfigured
+            ? "This Data List has no data source configured. Data Lists require to be placed inside a Data Context (like a Data Table or Entity Picker) to fetch data."
+            : "This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items."}
+          isWarning={true}
+        />
+      );
   },
   migrator: (m) => m
-    .add<IDataListComponentProps>(0, (prev) => ({ ...prev, formSelectionMode: 'name', selectionMode: 'none', items: [] }))
+    .add<IDataListComponentProps>(0, (prev) => ({
+      ...prev,
+      formSelectionMode: 'name',
+      selectionMode: 'single',
+      items: [],
+      // Set default form to the starter template
+      // formId: { name: 'data-list-dummy-default', module: 'Shesha' }
+    }))
     .add<IDataListComponentProps>(1, (prev) => ({ ...prev, orientation: 'vertical', listItemWidth: 1 }))
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDataListComponentProps>(3, (prev) => migrateVisibility(prev))
@@ -46,6 +66,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
         dblClickActionConfiguration: prev['actionConfiguration'],
+        showEditIcons: true,
 
       };
     })
@@ -62,7 +83,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         desktop: { ...prev.desktop,
           gap: prev.cardSpacing,
           dimensions: {
-            ...prev.desktop.dimensions,
+            ...prev.desktop?.dimensions,
             minWidth: prev.cardMinWidth,
             maxWidth: prev.cardMaxWidth,
             width: prev.customWidth,
@@ -93,7 +114,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       };
     })
     .add<IDataListComponentProps>(11, (prev) => ({ ...prev, showEditIcons: true })),
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
 };
 
 export default DataListComponent;

@@ -3,7 +3,7 @@ import { FormProvider, ShaForm } from '@/providers/form';
 import { FormIdentifier } from '@/providers/form/models';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
-import { FormDesignerProvider, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { FormDesignerProvider, useFormDesignerMarkup, useFormDesignerSettings } from '@/providers/formDesigner';
 import { FormPersisterProvider, useFormPersisterState } from '@/providers/formPersisterProvider';
 import {
   Form,
@@ -19,8 +19,8 @@ export interface IFormProviderWrapperProps {
 }
 
 const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
-  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
+  const formSettings = useFormDesignerSettings();
+  const formFlatMarkup = useFormDesignerMarkup();
 
   const [shaForm] = useShaForm({
     form: undefined,
@@ -69,12 +69,12 @@ const FormPersisterStateConsumer: FC<PropsWithChildren> = ({ children }) => {
     return (<Skeleton loading active />);
 
   if (formStore.loaded) {
-    const { flatStructure, settings } = formStore.formProps;
+    const { flatStructure, settings, readOnly } = formStore.formProps;
     return (
       <FormDesignerProvider
         flatMarkup={flatStructure}
         formSettings={settings}
-        readOnly={false}
+        readOnly={readOnly}
       >
         <FormProviderWrapperInner form={form}>
           {children}

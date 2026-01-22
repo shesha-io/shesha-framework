@@ -1,9 +1,11 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Button, Checkbox, Collapse, Divider, Popover, Typography } from 'antd';
+import { PlusOutlined, WarningOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
 import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -24,9 +26,12 @@ import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
+import { ConfigurationLoadingError } from '@/providers/configurationItemsLoader/errors';
 
 interface EntityForm {
-  entityType: string;
+  entityType: string | IEntityTypeIdentifier;
   isFetchingFormId?: boolean;
   formId: FormIdentifier;
   formType?: string;
@@ -84,7 +89,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   onSelectionChange,
   ...props
 }) => {
-  const { styles } = useStyles();
+  const { styles, theme } = useStyles();
 
   let skipCache = false;
 
@@ -219,7 +224,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (!isFetchingTableData && records?.length && props.onFetchDataSuccess) props.onFetchDataSuccess();
   }, [isFetchingTableData]);
 
-  const { getEntityFormId, getForm } = useConfigurationItemsLoader();
+  const { getEntityFormIdAsync, getFormAsync } = useConfigurationItemsLoader();
 
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
@@ -238,45 +243,118 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
 
   const isReady = (forms: EntityForm[]): void => {
-    if (!(!forms || forms.length === 0 || forms.find((x) => !x.formConfiguration))) {
+    // Check if all forms have finished loading (either successfully or with an error)
+    // A form is considered "loaded" when formConfiguration is not undefined
+    // (it can be null if there was an error, or a valid object if successful)
+    const allFormsProcessed = forms.every((x) => x.formConfiguration !== undefined);
+
+    if (allFormsProcessed) {
       updateRows();
       updateContent();
     }
   };
 
-  const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
-    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
+  const isValidFormId = (formId: FormIdentifier): boolean => {
+    if (!formId) return false;
+
+    // If it's a string, it should not be empty
+    if (typeof formId === 'string') {
+      const isValid = formId.trim().length > 0;
+      if (!isValid) {
+        console.warn('Invalid formId: empty string');
+      }
+      return isValid;
+    }
+
+    // If it's an object (FormFullName), it should have both name and module
+    if (typeof formId === 'object') {
+      const hasName = formId.name && typeof formId.name === 'string' && formId.name.trim().length > 0;
+      const hasModule = formId.module && typeof formId.module === 'string' && formId.module.trim().length > 0;
+      const isValid = hasName && hasModule;
+
+      if (!isValid) {
+        console.warn('Invalid formId object:', {
+          name: formId.name,
+          module: formId.module,
+          hasName,
+          hasModule,
+        });
+      }
+
+      return isValid;
+    }
+
+    return false;
+  };
+
+  const getEntityForm = (entityType: string | IEntityTypeIdentifier, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
+    let entityForm = entityForms.current.find((x) => x.formType === fType && isEntityTypeIdEqual(x.entityType, entityType));
     if (!entityForm) {
       entityForm = {
-        entityType: className,
+        entityType: typeof entityType === 'string' ? entityType : { ...entityType },
         formId: fId,
-        formConfiguration: null,
+        formConfiguration: undefined, // undefined means "not yet loaded", null means "failed to load"
         formType: fType,
       };
       entityForms.current.push(entityForm);
       if (!entityFormInfo?.current)
         entityFormInfo.current = entityForm;
     } else
-      return !!entityForm.formConfiguration;
+      return entityForm.formConfiguration !== undefined; // Return true if already processed (either loaded or failed)
 
-    if (!!entityForm.formId) {
-      getForm({ formId: entityForm.formId, skipCache })
+    if (!!entityForm.formId && isValidFormId(entityForm.formId)) {
+      getFormAsync({ formId: entityForm.formId, skipCache })
         .then((response) => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
+        })
+        .catch((error) => {
+          if (error instanceof ConfigurationLoadingError) {
+            console.error('Configuration loading error:', error.message, error.details);
+          } else {
+            console.error('Failed to load form configuration:', error);
+          }
+          // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+          entityForm.formConfiguration = null;
+          isReady(entityForms.current);
         });
+    } else if (!!entityForm.formId && !isValidFormId(entityForm.formId)) {
+      // FormId exists but is invalid - don't attempt to fetch
+      console.warn('Invalid formId provided to DataList:', entityForm.formId);
+      entityForm.formConfiguration = null;
+      isReady(entityForms.current);
     } else {
-      const f = loadedFormId.current[`${entityForm.entityType}_${fType}`] ??
-        getEntityFormId(entityForm.entityType, fType);
+      const entityTypeKey = getEntityTypeName(entityForm.entityType) ?? '';
+      const cacheKey = `${entityTypeKey}_${fType ?? ''}`;
+      const f = loadedFormId.current[cacheKey] ?? getEntityFormIdAsync(entityForm.entityType, fType);
 
       f.then((e) =>
-        getForm({ formId: e, skipCache })
+        getFormAsync({ formId: e, skipCache })
           .then((response) => {
             entityForm.formId = e;
             entityForm.formConfiguration = response;
             isReady(entityForms.current);
+          })
+          .catch((error) => {
+            if (error instanceof ConfigurationLoadingError) {
+              console.error('Configuration loading error:', error.message, error.details);
+            } else {
+              console.error('Failed to load form configuration:', error);
+            }
+            // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+            entityForm.formConfiguration = null;
+            isReady(entityForms.current);
           }),
-      );
+      ).catch((error) => {
+        if (error instanceof ConfigurationLoadingError) {
+          console.error('Configuration loading error (form ID):', error.message, error.details);
+        } else {
+          console.error('Failed to get form ID:', error);
+        }
+        // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+        entityForm.formConfiguration = null;
+        isReady(entityForms.current);
+      });
 
       loadedFormId.current[`${entityForm.entityType}_${fType}`] = f;
     };
@@ -287,33 +365,35 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     let isReady = true;
 
     let fId = createFormId;
-    let className = '$createFormName$';
+    let formEntityType: string | IEntityTypeIdentifier = '$createFormName$';
     let fType = null;
     if (formSelectionMode === 'view') {
       fId = null;
-      className = entityType ?? '$createFormName$';
+      formEntityType = entityType ?? '$createFormName$';
       fType = !!createFormType ? createFormType : null;
     }
     if (!!fId || !!fType)
-      isReady = getEntityForm(className, fId, fType, createFormInfo) && isReady;
+      isReady = getEntityForm(formEntityType, fId, fType, createFormInfo) && isReady;
 
     records.forEach((item) => {
       let fId = null;
-      let className = null;
+      let formEntityType = null;
       let fType = null;
       if (formSelectionMode === 'name') {
-        className = '$formName$';
+        formEntityType = '$formName$';
         fId = formId;
       }
       if (formSelectionMode === 'view') {
         fType = !!formType ? formType : null;
-        className = entityType ?? item?._className;
+        formEntityType = entityType ?? item?._className;
       }
       if (formSelectionMode === 'expression') {
         fId = getFormIdFromExpression(item);
+        // Use the form ID itself as the entity type to ensure unique caching per form
+        formEntityType = fId ? ConfigurableItemIdentifierToString(fId) : '$expressionForm$';
       }
       if (!!fId || !!fType)
-        isReady = getEntityForm(className, fId, fType, entityFormInfo) && isReady;
+        isReady = getEntityForm(formEntityType, fId, fType, entityFormInfo) && isReady;
     });
 
     // we don't need to wait form requests if all form is ready
@@ -324,20 +404,119 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: any, index: number): JSX.Element => {
-    let className = null;
+    let formEntityType = null;
     let fType = null;
     if (formSelectionMode === 'name') {
-      className = '$formName$';
+      formEntityType = '$formName$';
     }
     if (formSelectionMode === 'view') {
-      className = entityType ?? item?._className;
+      formEntityType = entityType ?? item?._className;
       fType = formType;
     }
+    if (formSelectionMode === 'expression') {
+      const expressionFormId = getFormIdFromExpression(item);
+      formEntityType = expressionFormId ? ConfigurableItemIdentifierToString(expressionFormId) : '$expressionForm$';
+    }
 
-    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
+    let entityForm = entityForms.current.find((x) => isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup)
-      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
+    if (!entityForm?.formConfiguration?.markup) {
+      const isDesignMode = allData.form?.formMode === 'designer';
+
+      // In runtime mode, don't render anything if form is not configured
+      if (!isDesignMode) {
+        return null;
+      }
+
+      // In designer mode, show the clean placeholder (matching NotConfiguredWarning style)
+      const popoverContent = (
+        <div style={{ maxWidth: '280px' }}>
+          <div style={{ fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>
+            Hint:
+          </div>
+          <div style={{ fontSize: '12px', lineHeight: '1.5' }}>
+            This Data List has no form configuration loaded. Make sure the form exists and is properly configured.
+          </div>
+        </div>
+      );
+
+      return (
+        <div style={{ position: 'relative' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px 16px',
+              backgroundColor: theme.colorBgContainer,
+              borderTop: `1px solid ${theme.colorBorder}`,
+              borderBottom: `1px solid ${theme.colorBorder}`,
+            }}
+          >
+            {/* Icon placeholder */}
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: theme.colorFillSecondary,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                fontSize: '18px',
+                color: theme.colorTextQuaternary,
+              }}
+            >
+              <span role="img" aria-label="User placeholder">👤</span>
+            </div>
+            {/* Text content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: theme.colorTextSecondary,
+                  marginBottom: '4px',
+                }}
+              >
+                Heading
+              </div>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: theme.colorTextTertiary,
+                }}
+              >
+                Subtext
+              </div>
+            </div>
+          </div>
+
+          {/* Warning icon with popover - positioned at top right, below delete button */}
+          <Popover content={popoverContent} title={null} trigger={['hover', 'focus']} placement="left" styles={{ body: { backgroundColor: '#D9DCDC' } }}>
+            <WarningOutlined
+              role="button"
+              tabIndex={0}
+              aria-label="Data list configuration warning"
+              style={{
+                position: 'absolute',
+                top: '44px',
+                right: '0px',
+                color: theme.colorWarning,
+                fontSize: '20px',
+                zIndex: 9999,
+                cursor: 'help',
+                backgroundColor: '#fff',
+                borderRadius: '50%',
+                padding: '4px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              }}
+            />
+          </Popover>
+        </div>
+      );
+    }
 
     const dblClick = (): boolean => {
       if (props.dblClickActionConfiguration) {
@@ -497,7 +676,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return (
       <div key={`row-${index}`}>
         <ConditionalWrap
-          condition={selectionMode !== 'none'}
+          condition={selectionMode === 'multiple'}
           wrap={(children) => (
             <Checkbox
               className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}
@@ -516,6 +695,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               { selected },
             )}
             onClick={() => {
+              // For single and multiple selection modes, trigger selection when clicking on row
+              if (selectionMode === 'single' || selectionMode === 'multiple') {
+                onSelectRowLocal(index, item);
+              }
               // Trigger onListItemClick event
               if (onListItemClick) {
                 onListItemClick(index, item);
@@ -647,6 +830,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             Select All
           </Checkbox>
           <Divider />
+        </Show>
+        <Show when={canAddInline}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={onCreateClick}
+            style={{ marginLeft: '2px' }}
+          >
+            Add New Item
+          </Button>
         </Show>
       </div>
       <FormInfo visible={formInfoBlockVisible} formProps={{ ...(persistedFormProps as IPersistedFormProps) }}>

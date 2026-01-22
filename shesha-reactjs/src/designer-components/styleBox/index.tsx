@@ -4,17 +4,16 @@ import {
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { StrikethroughOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import Box from './components/box';
-import { IStyleBoxComponentProps } from './interfaces';
+import { IStyleBoxComponentProps, StyleBoxDefinition } from './interfaces';
 import { getSettings } from './settings';
 
-const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
+const StyleBox: StyleBoxDefinition = {
   type: 'styleBox',
   name: 'Style Box',
   icon: <StrikethroughOutlined />,
@@ -37,8 +36,8 @@ const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
       label: 'Style Box',
     };
   },
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IStyleBoxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

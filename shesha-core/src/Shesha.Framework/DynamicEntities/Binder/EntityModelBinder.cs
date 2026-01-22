@@ -44,7 +44,7 @@ namespace Shesha.DynamicEntities.Binder
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
         private readonly IShaTypeFinder _typeFinder;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IObjectValidatorManager _objectValidatorManager;
         private readonly IModelConfigurationManager _modelConfigurationManager;
 
@@ -55,9 +55,9 @@ namespace Shesha.DynamicEntities.Binder
             IHardcodeMetadataProvider metadataProvider,
             IIocManager iocManager,
             IShaTypeFinder typeFinder,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IObjectValidatorManager propertyValidatorManager,
-            ModelConfigurationManager modelConfigurationManager
+            IModelConfigurationManager modelConfigurationManager
             )
         {
             _dynamicRepository = dynamicRepository;
@@ -116,9 +116,8 @@ namespace Shesha.DynamicEntities.Binder
             if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
-            var config = await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(entityType.Namespace.NotNull(), entityType.Name);
-
             context.LocalValidationResult = new List<ValidationResult>();
+            context.ModelConfiguration ??= await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace.NotNull(), entityType.Name, true);
 
             var formFieldsInternal = GetFormFields(jobject, formFields);
             formFieldsInternal = formFieldsInternal.Select(x => x.ToCamelCase()).ToList();
@@ -187,12 +186,12 @@ namespace Shesha.DynamicEntities.Binder
                         if (property.IsReadOnly())
                             continue;
 
-                        var propConfig = config?.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
+                        var propConfig = context.ModelConfiguration?.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
 
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
 
-                        var propType = _metadataProvider.GetDataType(property);
+                        var propType = _metadataProvider.GetDataType(property, entityType);
 
                         var dbValue = property.GetValue(entity);
                         var isReadOnly = property.GetCustomAttribute<ReadonlyPropertyAttribute>() != null
@@ -227,7 +226,7 @@ namespace Shesha.DynamicEntities.Binder
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object? parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (result && dbValue?.ToString() != parsedValue?.ToString())
+                                    if (dbValue?.ToString() != parsedValue?.ToString() && result)
                                         if (await ValidateAsync(entity, jFullName, parsedValue, context))
                                             property.SetValue(entity, parsedValue);
                                     break;
@@ -245,7 +244,7 @@ namespace Shesha.DynamicEntities.Binder
                                         ? jproperty.Value["itemValue"]?.ToString()
                                         : jproperty.Value.ToString();
                                     result = Parser.TryParseToValueType(refListValue, property.PropertyType, out parsedRefListValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (result && dbValue?.ToString() != parsedRefListValue?.ToString())
+                                    if (dbValue?.ToString() != parsedRefListValue?.ToString() && result)
                                         if (await ValidateAsync(entity, jFullName, parsedRefListValue, context))
                                             property.SetValue(entity, parsedRefListValue);
                                     break;
@@ -382,8 +381,14 @@ namespace Shesha.DynamicEntities.Binder
                                                 }
                                                 else
                                                 {
-                                                    var newObject = JsonConvert.DeserializeObject(jproperty.Value.ToString(), property.PropertyType);
-                                                    property.SetValue(entity, newObject);
+                                                    // Deserialize as List of objects to validate each items in the array (without deserialization transformation)
+                                                    var newListValidation = JsonConvert.DeserializeObject(jproperty.Value.ToString(), typeof(List<object>));
+                                                    if (await ValidateAsync(entity, jFullName, newListValidation, context))
+                                                    {
+                                                        // Deserialize as List of specific type to set the property value
+                                                        var newList = JsonConvert.DeserializeObject(jproperty.Value.ToString(), property.PropertyType);
+                                                        property.SetValue(entity, newList);
+                                                    }
                                                 }
                                             }
                                             break;
@@ -673,7 +678,7 @@ namespace Shesha.DynamicEntities.Binder
             var props = entityType.GetProperties();
             var result = false;
 
-            var config = await _modelConfigurationManager.GetCachedModelConfigurationAsync(entityType.Namespace.NotNull(), entityType.Name);
+            var config = await _modelConfigurationManager.GetCachedModelConfigurationAsync(null, entityType.Namespace.NotNull(), entityType.Name, true);
             foreach (var prop in props)
             {
                 var propConfig = config.Properties.FirstOrDefault(x => x.Name == prop.Name);
@@ -697,7 +702,7 @@ namespace Shesha.DynamicEntities.Binder
             var typeShortAlias = entity.GetType().GetCustomAttribute<EntityAttribute>()?.TypeShortAlias;
             var entityType = entity.GetType().StripCastleProxyType();
             var entityTypeName = entityType.FullName;
-            var references = _entityPropertyRepository.GetAll().Where(x => x.EntityType == typeShortAlias || x.EntityType == entityTypeName);
+            var references = _entityPropertyRepository.GetAll().Where(x => x.EntityFullClassName == typeShortAlias || x.EntityFullClassName == entityTypeName);
             if (!await references.AnyAsync())
                 return false;
 

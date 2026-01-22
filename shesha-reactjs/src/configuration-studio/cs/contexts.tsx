@@ -1,30 +1,33 @@
 import { createNamedContext } from "@/utils/react";
-import { ConfigurationStudio, IConfigurationStudio } from "./configurationStudio";
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from "react";
+import { ConfigurationStudio } from "./configurationStudio";
+import { IConfigurationStudio } from "./interfaces";
+import React, { FC, PropsWithChildren, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useHttpClient, useShaRouting } from "@/providers";
 import { asyncStorage } from "../storage";
 import { useModalApi } from "./modalApi";
 import { useNotificationApi } from "./notificationApi";
 import { isDefined } from "../../utils/nullables";
 import { useSearchParams } from "next/navigation";
+import { useConfigurationStudioEnvironment } from "../cs-environment/contexts";
 
-const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
-  const csRef = React.useRef<IConfigurationStudio>();
+export const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+const useConfigurationStudioSingletone = (): [IConfigurationStudio] => {
   const [, forceUpdate] = React.useState({});
+  const csEnvironment = useConfigurationStudioEnvironment();
   const httpClient = useHttpClient();
   const modalApi = useModalApi();
   const notificationApi = useNotificationApi();
   const shaRouter = useShaRouting();
 
   const toolbarRef = useRef<HTMLDivElement>(null!);
-  if (!csRef.current) {
-    // Create a new FormStore if not provided
-    const forceReRender = (): void => {
-      forceUpdate({});
-    };
 
+  const [configurationStudio] = React.useState<IConfigurationStudio>(() => {
+    // Create a new FormStore if not provided
     const instance = new ConfigurationStudio({
-      forceRootUpdate: forceReRender,
+      forceRootUpdate: () => forceUpdate({}),
+      csEnvironment,
       httpClient,
       storage: asyncStorage,
       modalApi: modalApi,
@@ -33,19 +36,25 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
       shaRouter: shaRouter,
       logEnabled: false,
     });
-    csRef.current = instance;
 
     instance.init();
-  }
+    return instance;
+  });
 
   const query = useSearchParams();
   const docId = query.get('docId');
   useEffect(() => {
-    if (csRef.current && docId)
-      csRef.current.openDocumentByIdAsync(docId);
-  }, [docId]);
+    if (docId)
+      configurationStudio.openDocumentByIdAsync(docId);
+  }, [configurationStudio, docId]);
 
-  return [csRef.current];
+  useEffect(() => {
+    return shaRouter.registerNavigationValidator((url) => {
+      return Promise.resolve(configurationStudio.confirmNavigation(url));
+    });
+  }, [configurationStudio, shaRouter]);
+
+  return [configurationStudio];
 };
 
 export const ConfigurationStudioContext = createNamedContext<IConfigurationStudio | undefined>(undefined, "ConfigurationStudioContext");

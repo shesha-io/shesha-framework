@@ -32,8 +32,7 @@ import { EmptyState } from '..';
 import { ErrorDetails } from '@/utils/configurationFramework/actions';
 import axios from 'axios';
 import { isAxiosResponse } from '@/interfaces/ajaxResponse';
-import { getBorderStyle } from '@/designer-components/_settings/utils/index';
-import { useCanvasState } from '@/providers/canvas';
+import { useCanvasStateOrUndefined } from '@/providers/canvas';
 
 interface IReactTableState {
   allRows: any[];
@@ -44,6 +43,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   columns = [],
   data = [],
   useMultiSelect = false,
+  selectionMode,
   loading = false,
   defaultSorting = [],
   defaultCanSort = false,
@@ -61,6 +61,10 @@ export const ReactTable: FC<IReactTableProps> = ({
   onSelectedIdsChanged,
   onMultiRowSelect,
   onSort,
+  onRowClickAction,
+  onRowHoverAction,
+  onRowSelectAction: _onRowSelectAction,
+  onSelectionChangeAction: _onSelectionChangeAction,
   scrollBodyHorizontally = false,
   height = 250,
   allowReordering = false,
@@ -95,39 +99,120 @@ export const ReactTable: FC<IReactTableProps> = ({
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
+  backgroundColor,
   border,
+  headerFontFamily,
+  headerFontSize,
+  headerFontWeight,
+  headerBackgroundColor,
+  headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
+  textAlign,
+  rowHeight,
+  rowPadding,
+  rowBorder,
+  rowBorderStyle,
+  boxShadow,
+  sortableIndicatorColor,
+  striped,
+  cellTextColor,
+  cellBackgroundColor,
+  cellBorderColor,
+  cellBorders,
+  cellPadding,
+  headerBorder,
+  cellBorder,
+  headerShadow,
+  rowShadow,
+  rowDividers,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
     allColumns: columns,
   });
+  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const multiSelect = mode === 'multiple';
+
   const { notification } = App.useApp();
 
   const [activeCell, setActiveCell] = useState();
   const [allowExpandedView, setAllowExpandedView] = useState<Boolean>(false);
   const [isCellContentOverflowing, setIsCellContentOverflowing] = useState<Boolean>(false);
   const { styles } = useStyles();
+
+  // Compute effective alignment values with backward compatibility
+  const effectiveHeaderTextAlign = headerTextAlign ?? textAlign;
+  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign;
+
   const { styles: mainStyles } = useMainStyles({
     rowBackgroundColor,
     rowAlternateBackgroundColor,
     rowHoverBackgroundColor,
     rowSelectedBackgroundColor,
     border,
+    backgroundColor,
+    headerFontFamily,
+    headerFontSize,
+    headerFontWeight,
+    headerBackgroundColor,
+    headerTextColor,
+    headerTextAlign: effectiveHeaderTextAlign,
+    bodyTextAlign: effectiveBodyTextAlign,
+    rowHeight,
+    rowPadding,
+    rowBorder,
+    rowBorderStyle,
+    boxShadow,
+    sortableIndicatorColor,
+    striped,
+    cellTextColor,
+    cellBackgroundColor,
+    cellBorderColor,
+    cellBorders,
+    cellPadding,
+    headerBorder,
+    cellBorder,
+    headerShadow,
+    rowShadow,
+    rowDividers,
   });
 
   const { setDragState } = useDataTableStore();
 
   const shaForm = useShaFormInstanceOrUndefined();
-  const canvasState = useCanvasState(false);
+  const canvasState = useCanvasStateOrUndefined();
 
   const { allColumns, allRows } = componentState;
 
+  // Event dispatcher for configurable actions
+  const { executeAction } = useConfigurableActionDispatcher();
+  const allData = useAvailableConstantsData();
+
+  const dispatchRowEvent = (
+    actionConfig: IConfigurableActionConfiguration | undefined,
+    rowData: any,
+    rowIndex: number,
+    overrideSelectedRow?: { index: number; row: any; id: any },
+  ): void => {
+    if (!actionConfig) return;
+
+    // Create context with the clicked row data
+    // If overrideSelectedRow is provided, use it as selectedRow in the context
+    const context = overrideSelectedRow
+      ? { ...allData, row: rowData, rowIndex, selectedRow: overrideSelectedRow }
+      : { ...allData, row: rowData, rowIndex };
+
+    executeAction({
+      actionConfiguration: actionConfig,
+      argumentsEvaluationContext: context,
+    });
+  };
+
   const defaultColumn = React.useMemo(
     () => ({
-      // When using the useFlexLayout:
-      minWidth: 30, // minWidth is only used as a limit for resizing
-      width: 150, // width is used for both the flex-basis and flex-grow
-      // maxWidth: 200, // maxWidth is only used as a limit for resizing
+      minWidth: 30,
+      width: 150,
     }),
     [],
   );
@@ -146,13 +231,29 @@ export const ReactTable: FC<IReactTableProps> = ({
       }
 
       onMultiRowSelect(selectedRows);
+
+      if (Array.isArray(rows)) {
+        rows.forEach((row) => {
+          const rowIndex = allRows.findIndex((r) => r === row.original);
+          if (isSelected) {
+            dispatchRowEvent(_onRowSelectAction, row.original, rowIndex);
+          }
+          dispatchRowEvent(_onSelectionChangeAction, row.original, rowIndex);
+        });
+      } else {
+        const rowIndex = allRows.findIndex((r) => r === rows.original);
+        if (isSelected) {
+          dispatchRowEvent(_onRowSelectAction, rows.original, rowIndex);
+        }
+        dispatchRowEvent(_onSelectionChangeAction, rows.original, rowIndex);
+      }
     }
   };
 
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
 
-    if (useMultiSelect) {
+    if (multiSelect) {
       localColumns.unshift({
         id: 'selection',
         // isVisible: true,
@@ -161,17 +262,15 @@ export const ReactTable: FC<IReactTableProps> = ({
         width: 37,
         maxWidth: 37,
         disableSortBy: true,
-        // The header can use the table's getToggleAllRowsSelectedProps method
-        // to render a checkbox
+
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-          <span className={styles.shaSpanCenterVertically}>
+          <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
             <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
-        // The cell can use the individual row's getToggleRowSelectedProps method
-        // to the render a checkbox
+
         Cell: ({ row }) => (
-          <span className={styles.shaSpanCenterVertically}>
+          <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
               onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
@@ -184,7 +283,6 @@ export const ReactTable: FC<IReactTableProps> = ({
     if (allowReordering) {
       localColumns.unshift({
         accessor: nanoid(),
-        // id: accessor, // This needs to be fixed
         Header: '',
         width: 35,
         minWidth: 35,
@@ -203,7 +301,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       return 0;
     });
-  }, [allColumns, allowReordering, useMultiSelect]);
+  }, [allColumns, allowReordering, multiSelect]);
 
   const getColumnAccessor = (cid): string => {
     const column = columns.find((c) => c.id === cid);
@@ -238,6 +336,8 @@ export const ReactTable: FC<IReactTableProps> = ({
     state,
     rows,
     columns: tableColumns,
+    toggleRowSelected,
+    toggleAllRowsSelected,
   } = useTable(
     {
       columns: preparedColumns,
@@ -265,7 +365,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     useRowSelect,
     // useBlockLayout,
     ({ useInstanceBeforeDimensions }) => {
-      if (useMultiSelect) {
+      if (multiSelect) {
         useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
           if (Array.isArray(localHeaderGroups)) {
             // fix the parent group of the selection button to not be resizable
@@ -282,6 +382,15 @@ export const ReactTable: FC<IReactTableProps> = ({
   const { pageIndex, pageSize, selectedRowIds, sortBy } = state;
 
   const previousSortBy = usePrevious(sortBy);
+  const previousMode = usePrevious(mode);
+
+  // Clear all row selections when selection mode changes
+  useEffect(() => {
+    // Only clear if mode actually changed
+    if (previousMode !== undefined && previousMode !== mode && toggleAllRowsSelected) {
+      toggleAllRowsSelected(false);
+    }
+  }, [mode, previousMode, toggleAllRowsSelected]);
 
   useEffect(() => {
     if (onSort && !_.isEqual(_.sortBy(previousSortBy), _.sortBy(sortBy))) {
@@ -290,7 +399,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [sortBy]);
 
   useEffect(() => {
-    if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
+    if (multiSelect && selectedRowIds && typeof onSelectedIdsChanged === 'function') {
       const arrays: string[] = allRows
         ?.map(({ id }, index) => {
           if (selectedRowIds[index]) {
@@ -303,7 +412,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       onSelectedIdsChanged(arrays);
     }
-  }, [selectedRowIds]);
+  }, [selectedRowIds, multiSelect]);
 
   const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
     if (!onRowsReordered) {
@@ -370,9 +479,38 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
-  const handleSelectRow = (row: Row<object>): void => {
+  const handleSelectRow = (rowIndex: number) => (row: Row<any>): void => {
+    if (mode === 'none') return;
     if (!omitClick && !(canEditInline || canDeleteInline)) {
-      onSelectRow(row?.index, row?.original);
+      // In multiple selection mode, toggle the checkbox selection
+      if (mode === 'multiple' && row.id) {
+        const isCurrentlySelected = row.isSelected;
+        const willBeSelected = !isCurrentlySelected;
+
+        toggleRowSelected(row.id, willBeSelected);
+
+        // Sync with store - same format as checkbox behavior
+        if (onMultiRowSelect) {
+          const selectedRow = {
+            ...getPlainValue(row),
+            isSelected: willBeSelected,
+          };
+          onMultiRowSelect(selectedRow);
+        }
+
+        // Dispatch row select action when transitioning to selected state
+        if (willBeSelected) {
+          dispatchRowEvent(_onRowSelectAction, row.original, rowIndex);
+        }
+
+        // Dispatch selection change action on any selection change
+        dispatchRowEvent(_onSelectionChangeAction, row.original, rowIndex);
+      }
+
+      // Call the onSelectRow callback
+      if (onSelectRow) {
+        onSelectRow(rowIndex, row?.original);
+      }
     }
   };
 
@@ -382,12 +520,10 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [state?.columnResizing]);
 
-  const { executeAction } = useConfigurableActionDispatcher();
-  const allData = useAvailableConstantsData();
   const performOnRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick)
       return () => {
-        /* nop*/
+        /* noop */
       };
 
     return (data) => {
@@ -545,10 +681,17 @@ export const ReactTable: FC<IReactTableProps> = ({
       <Row
         key={id ?? rowIndex}
         prepareRow={prepareRow}
-        onClick={handleSelectRow}
+        onClick={handleSelectRow(rowIndex)}
         onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
-        onRowClick={onRowClick ? () => onRowClick(rowIndex, row.original) : undefined}
-        onRowHover={onRowHover ? () => onRowHover(rowIndex, row.original) : undefined}
+        onRowClick={() => {
+          if (onRowClick) onRowClick(rowIndex, row.original);
+          const currentSelectedRow = { index: rowIndex, row: row.original, id: row.original?.id };
+          dispatchRowEvent(onRowClickAction, row.original, rowIndex, currentSelectedRow);
+        }}
+        onRowHover={() => {
+          if (onRowHover) onRowHover(rowIndex, row.original);
+          dispatchRowEvent(onRowHoverAction, row.original, rowIndex);
+        }}
         row={row}
         showExpandedView={showExpandedView}
         index={rowIndex}
@@ -562,6 +705,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        striped={striped}
         onMouseOver={(activeCell, isContentOverflowing) => {
           setActiveCell(activeCell);
           setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText);
@@ -585,7 +729,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   };
 
   const fixedHeadersStyle: React.CSSProperties = freezeHeaders
-    ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
+    ? { position: 'sticky', top: 0, zIndex: 15, background: headerBackgroundColor || 'white', opacity: 1 }
     : null;
 
   return (
@@ -616,8 +760,6 @@ export const ReactTable: FC<IReactTableProps> = ({
                     let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
                     if (anchored?.isFixed && index > 0) {
-                      // use first row cell values to calculate the left shift
-
                       if (anchored?.direction === 'right') {
                         const totalColumns = headerGroup?.headers?.length;
                         rightColumn.shift = (
@@ -654,8 +796,6 @@ export const ReactTable: FC<IReactTableProps> = ({
 
                     const { key, ...headerProps } = { ...column.getHeaderProps(column.getSortByToggleProps()) };
 
-                    delete headerProps.style.position;
-
                     const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
 
                     const hasShadow = numOfFixed === index && anchored?.isFixed;
@@ -672,10 +812,16 @@ export const ReactTable: FC<IReactTableProps> = ({
                         })}
                         style={{
                           ...headerProps?.style,
-                          [direction]: shiftedBy,
+                          ...(anchored?.isFixed && {
+                            position: 'sticky',
+                            [direction]: shiftedBy,
+                          }),
                           backgroundColor: 'white',
                           borderBottom: '1px solid #f0f0f0',
                           fontWeight: '600',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: effectiveHeaderTextAlign === 'center' ? 'center' : effectiveHeaderTextAlign === 'right' ? 'flex-end' : 'flex-start',
                         }}
                       >
                         {column.render('Header')}
@@ -707,7 +853,6 @@ export const ReactTable: FC<IReactTableProps> = ({
               height: scrollBodyHorizontally ? height || 250 : 'unset',
               overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
               overflowX: 'unset',
-              ...(rows?.length <= 3 && data?.length <= 3 ? {} : getBorderStyle(border, {})),
             }}
             {...getTableBodyProps()}
           >
@@ -737,7 +882,6 @@ export const ReactTable: FC<IReactTableProps> = ({
                   handle=".row-handle"
                   scroll={true}
                   bubbleScroll={true}
-                  style={rows?.length <= 3 && data?.length <= 3 ? {} : getBorderStyle(border, {})}
                   className={styles.shaSortable}
                 >
                   {children}

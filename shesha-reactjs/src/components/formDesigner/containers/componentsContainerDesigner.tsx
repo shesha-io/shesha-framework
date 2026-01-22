@@ -7,7 +7,7 @@ import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { ShaForm } from '@/providers/form';
-import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerReadOnly } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
@@ -23,14 +23,16 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     wrapperStyle,
     style: incomingStyle,
     noDefaultStyling,
+    emptyInsertThreshold = 20,
+    showHintWhenEmpty = true,
   } = props;
 
   const { styles } = useStyles();
   const parent = useParent();
 
-  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
-  const hasDragged = useFormDesignerStateSelector((x) => x.hasDragged);
-  const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesignerActions();
+  const readOnly = useFormDesignerReadOnly();
+  const formDesigner = useFormDesigner();
+  const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesigner();
 
   const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
@@ -41,7 +43,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
   }, [childIds]);
 
   const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
-    if (!hasDragged) return;
+    if (!formDesigner.hasDragged) return;
 
     if (!isNaN(itemsLimit) && itemsLimit && newState?.length === Math.round(itemsLimit) + 1) {
       return;
@@ -120,7 +122,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       )}
     >
       <>
-        {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
@@ -129,6 +131,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
           setList={onSetList}
           fallbackOnBody={true}
           swapThreshold={0.5}
+          invertSwap={true}
           group={{
             name: 'shared',
           }}
@@ -136,7 +139,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
           draggable={`.${styles.shaComponent}`}
           animation={75}
           ghostClass={styles.shaComponentGhost}
-          emptyInsertThreshold={20}
+          emptyInsertThreshold={emptyInsertThreshold}
           handle={`.${styles.componentDragHandle}`}
           scroll={true}
           bubbleScroll={true}

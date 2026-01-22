@@ -1,8 +1,8 @@
 import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -11,7 +11,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -25,7 +25,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: 'propertyName',
@@ -54,7 +54,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     id: nanoid(),
                     propertyName: 'editMode',
                     label: 'Edit Mode',
-                    defaultValue: 'inherited',
                     jsSetting: true,
                   },
                   {
@@ -73,7 +72,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'data',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
@@ -101,7 +100,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -114,9 +113,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                },
+                } as any,
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       parentId: styleRouterId,
@@ -136,7 +135,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -160,7 +159,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'security',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

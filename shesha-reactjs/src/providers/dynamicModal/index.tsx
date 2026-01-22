@@ -6,9 +6,9 @@ import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/ut
 import { createModalAction, openAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
-  showConfirmationArgumentsForm,
+  getShowConfirmationArgumentsForm,
 } from './configurable-actions/show-confirmation-arguments';
-import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm, showDialogArgumentsForm } from './configurable-actions/dialog-arguments';
+import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm } from './configurable-actions/dialog-arguments';
 import {
   DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   DynamicModalActionsContext,
@@ -23,6 +23,7 @@ import DynamicModalReducer from './reducer';
 import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
 import { DynamicModalRenderer } from './renderer';
+import { showDialogArgumentsFormFactory } from './configurable-actions/show-dialog-arguments';
 
 const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(DynamicModalReducer, {
@@ -36,6 +37,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
       name: 'Show Confirmation Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 7,
       hasArguments: true,
       executer: (actionArgs, _context) => {
         return new Promise((resolve, reject) => {
@@ -57,7 +59,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
           });
         });
       },
-      argumentsFormMarkup: showConfirmationArgumentsForm,
+      argumentsFormMarkup: getShowConfirmationArgumentsForm,
     },
     actionDependencies,
   );
@@ -75,6 +77,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
       name: 'Show Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 3,
       hasArguments: true,
       executer: (actionArgs, context) => {
         const modalId = nanoid();
@@ -122,7 +125,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
           });
         });
       },
-      argumentsFormMarkup: showDialogArgumentsForm,
+      argumentsFormMarkup: showDialogArgumentsFormFactory,
       evaluateArguments: (argumentsConfiguration, evaluationData) => {
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
@@ -159,6 +162,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
       name: 'Close Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 4,
       hasArguments: true,
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {

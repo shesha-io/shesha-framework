@@ -5,13 +5,13 @@ import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/s
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { Button, Input, Modal } from 'antd';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
-import { IDataContextComponentProps } from '.';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { PropertiesEditor } from '@/components/modelConfigurator/propertiesEditor';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
+import { IDataContextComponentProps } from './interfaces';
 
 type IDataContextSettingsState = IDataContextComponentProps;
 
@@ -26,16 +26,19 @@ const convertPropertyMetadataToModelItem = (property: IPropertyMetadata): IModel
     properties: isPropertiesArray(properties)
       ? properties.map((item) => convertPropertyMetadataToModelItem(item))
       : undefined,
+    entityType: !property.entityType ? undefined : { module: property.entityModule, name: property.entityType },
   } satisfies IModelItem;
 };
 
 const convertModelItemToPropertyMetadata = (item: IModelItem): IPropertyMetadata => {
-  const { name, properties, itemsType, ...commonProps } = item;
+  const { name, properties, itemsType, entityType, ...commonProps } = item;
   return {
     ...commonProps,
     path: name,
     properties: properties?.map((item) => convertModelItemToPropertyMetadata(item)),
     itemsType: itemsType ? convertModelItemToPropertyMetadata(itemsType) : undefined,
+    entityType: entityType?.name,
+    entityModule: entityType?.module,
   };
 };
 

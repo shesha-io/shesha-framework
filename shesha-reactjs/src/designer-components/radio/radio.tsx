@@ -2,39 +2,29 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import RadioGroup from './radioGroup';
 import React from 'react';
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { evaluateValue, executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IRadioProps } from './utils';
-import { IToolboxComponent } from '@/interfaces';
 import {
   migrateCustomFunctions,
   migratePropertyName,
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IConfigurableFormComponent } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { IEnhancedRadioProps, RadioComponentDefinition } from './interfaces';
 
-interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent { }
-
-interface IRadioComopnentCalulatedValues {
-  eventHandlers: IEventHandlers;
-  dataSourceUrl?: string;
-  defaultValue?: any;
-}
-
-const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValues> = {
+const RadioComponent: RadioComponentDefinition = {
   type: 'radio',
   name: 'Radio',
   icon: <CheckCircleOutlined />,
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
   calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
     dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
@@ -67,8 +57,8 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
     );
   },
 
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IEnhancedRadioProps>(0, (prev) => ({
@@ -109,4 +99,4 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
   },
 };
 
-export default Radio;
+export default RadioComponent;

@@ -113,7 +113,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     return tabsModel;
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   migrator: (m) => m
     .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
     .add<ISizableColumnComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))

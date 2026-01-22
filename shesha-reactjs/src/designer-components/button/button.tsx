@@ -28,7 +28,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const { style, ...restProps } = model;
 
     const finalStyle = {
-      ...shaForm.formMode === 'designer' ? { width: '100%', height: '100%'}:  model.allStyles.dimensionsStyles,
+      ...shaForm.formMode === 'designer' ? { width: '100%', height: '100%' } : model.allStyles.dimensionsStyles,
       ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.borderStyles),
       ...model.allStyles.fontStyles,
       ...(['dashed', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.backgroundStyles),
@@ -48,8 +48,8 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       />
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
     const buttonModel: IButtonComponentProps = {
       ...model,

@@ -61,6 +61,7 @@ export const DataContextManagerActionsContext = createNamedContext<IDataContextM
 
 export interface IDataContextManagerProps {
   id: string;
+  name?: string;
 }
 
 export const useDataContextManagerUpdate = (): object => {
@@ -230,7 +231,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     const dataContexts: IDataContextDescriptor[] = [];
     for (let key in contexts.current)
-      if (Object.hasOwn(contexts.current, key) && contexts.current[key].type !== 'settings')
+      if (Object.hasOwn(contexts.current, key) && contexts.current[key]?.type !== 'settings')
         dataContexts.push(contexts.current[key] as IDataContextDescriptor);
 
     if (!topId)
@@ -261,12 +262,12 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
   };
 
   const isRoot = (): boolean => {
-    return id === SHESHA_ROOT_DATA_CONTEXT_MANAGER;
+    return id === SHESHA_ROOT_DATA_CONTEXT_MANAGER || !isDefined(parent);
   };
 
   const getRoot = (): IDataContextManagerFullInstance | undefined => {
     return isDefined(parent)
-      ? parent.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER
+      ? parent.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER || !isDefined(parent.parent)
         ? parent
         : parent.getRoot()
       : undefined;
@@ -289,10 +290,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
   };
 
   const getPageContext = (): IDataContextDescriptor | undefined => {
-    if (isRoot())
-      return getNearestDataContext('all', 'page');
-    else
-      return getRoot()?.getNearestDataContext('all', 'page');
+    return getNearestDataContext('all', 'page');
   };
 
   const getDataContext = (contextId: string): IDataContextDescriptor | undefined => {

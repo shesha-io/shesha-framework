@@ -1,16 +1,21 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Reflection;
 using Castle.Core.Logging;
+using Microsoft.AspNetCore.Components.Forms;
+using Newtonsoft.Json;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using Shesha.Extensions;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
@@ -20,6 +25,7 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Module = Shesha.Domain.Module;
@@ -32,7 +38,7 @@ namespace Shesha.DynamicEntities
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModuleManager _moduleManager;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IAssemblyFinder _assembleFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
 
@@ -41,7 +47,7 @@ namespace Shesha.DynamicEntities
 
         public EntityConfigsBootstrapper(
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IAssemblyFinder assembleFinder,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IHardcodeMetadataProvider metadataProvider,
@@ -82,7 +88,7 @@ namespace Shesha.DynamicEntities
             {
                 using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
-                    
+
                     // ToDo: AS - need to optimize for use only latest revisions
 
                     _dbAllConfigs = await _entityConfigRepository.GetAllListAsync();
@@ -91,9 +97,9 @@ namespace Shesha.DynamicEntities
                     // If need to update inheritance then process all assemblies
                     var forceUpdate = ForceUpdate || _dbAllConfigs.Where(x => !x.IsDeleted && x.Source == MetadataSourceType.ApplicationCode).All(x => x.InheritedFrom == null)
                         // If need to update column names for hardcoded properties
-                        || _dbAllProperties.Where(x => 
-                                !x.IsDeleted 
-                                && x.EntityConfig.EntityConfigType == EntityConfigTypes.Class 
+                        || _dbAllProperties.Where(x =>
+                                !x.IsDeleted
+                                && x.EntityConfig.EntityConfigType == EntityConfigTypes.Class
                                 && x.Source == MetadataSourceType.ApplicationCode
                             ).All(x => x.ColumnName == null)
                     ;
@@ -137,7 +143,8 @@ namespace Shesha.DynamicEntities
                         && string.Equals(c.Config.EntityType.Namespace, ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
                         && c.ModuleName == ec.Module?.Name
                     );
-                    return new { 
+                    return new
+                    {
                         db = ec,
                         dbProperties = _dbAllProperties.Where(x => x.EntityConfig == ec && !x.IsDeleted).ToList(),
                         code,
@@ -188,12 +195,21 @@ namespace Shesha.DynamicEntities
                 config.db.Accessor = config.code.Config.Accessor;
                 config.db.TypeShortAlias = config.code.Config.SafeTypeShortAlias;
 
-                var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.code.Config.EntityType.BaseType?.FullName);
+                var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.code.Config.EntityType.BaseType?.FullName && !x.IsExposed);
                 config.db.InheritedFrom = inheritedFrom;
 
-                config.db.TableName = config.code.Config.TableName;
+                var parts = config.code.Config.TableName?.Split(".");
+
+                config.db.SchemaName = parts?.Length == 2 ? parts[0] : null;
+                config.db.TableName = parts?.Length == 1 
+                    ? config.code.Config.TableName
+                    : parts?.Length == 2
+                        ? parts[1]
+                        // use full table name for unknown format
+                        : config.code.Config.TableName;
                 config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
                 config.db.IsCodeBased = true;
+                config.db.SurfaceStatus = RefListSurfaceStatus.Visible;
 
                 // restore entity if deleted
                 config.db.IsDeleted = false;
@@ -218,8 +234,7 @@ namespace Shesha.DynamicEntities
 
                 await _entityConfigRepository.UpdateAsync(config.db);
 
-                if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5)
-                if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5 
+                if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5
                     || (config.db.EntityConfigType == EntityConfigTypes.Class && config.dbProperties.Any(x => x.ColumnName == null))
                     || ForceUpdate)
                     await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
@@ -251,7 +266,7 @@ namespace Shesha.DynamicEntities
                 var className = config.Config.EntityType.Name;
                 var @namespace = config.Config.EntityType.Namespace;
 
-                var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.Config.EntityType.BaseType?.FullName)
+                var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.Config.EntityType.BaseType?.FullName && !x.IsExposed)
                     ?? addedEntityConfigs.FirstOrDefault(x => x.FullClassName == config.Config.EntityType.BaseType?.FullName);
 
                 var assemblyName = config.Config.EntityType.Assembly.FullName ?? "";
@@ -277,6 +292,7 @@ namespace Shesha.DynamicEntities
                     EntityConfigType = MappingHelper.IsJsonEntity(config.Config.EntityType)
                         ? EntityConfigTypes.Interface
                         : EntityConfigTypes.Class,
+                    SurfaceStatus = RefListSurfaceStatus.Visible,
                 };
 
                 ec.Accessor = config.Config.Accessor;
@@ -291,7 +307,7 @@ namespace Shesha.DynamicEntities
 
                 // ToDo: AS - Get Description and Suppress
                 //ec.Description = null;
-                
+
                 // ToDo: AS - review --------------
                 ec.Suppress = false;
                 ec.Normalize();
@@ -304,12 +320,44 @@ namespace Shesha.DynamicEntities
             }
         }
 
+        private void CopyPropertyData(EntityProperty src, EntityProperty dst)
+        {
+            dst.Label = src.Label;
+            dst.Description = src.Description;
+
+            dst.Name = src.Name;
+            dst.Audited = src.Audited;
+            dst.CascadeCreate = src.CascadeCreate;
+            dst.CascadeUpdate = src.CascadeUpdate;
+            dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
+            dst.DataFormat = src.DataFormat;
+            dst.DataType = src.DataType;
+            dst.EntityFullClassName = src.EntityFullClassName;
+            dst.EntityType = src.EntityType;
+            dst.EntityModule = src.EntityModule;
+
+            dst.Max = src.Max;
+            dst.MaxLength = src.MaxLength;
+            dst.Min = src.Min;
+            dst.MinLength = src.MinLength;
+
+            dst.ReadOnly = src.ReadOnly;
+            dst.ReferenceListModule = src.ReferenceListModule;
+            dst.ReferenceListName = src.ReferenceListName;
+            dst.RegExp = src.RegExp;
+            dst.Required = src.Required;
+            dst.Suppress = src.Suppress;
+            dst.ValidationMessage = src.ValidationMessage;
+            dst.IsFrameworkRelated = src.IsFrameworkRelated;
+
+        }
+
         private async Task<EntityProperty> OverrideChildAsync(EntityProperty property, EntityProperty parentProperty)
         {
-            var prop = parentProperty.Properties.FirstOrDefault(x => x.Name == property.Name);
+            var prop = parentProperty.Properties.FirstOrDefault(x => !x.IsDeleted && x.Name == property.Name);
             if (prop == null)
             {
-                var sortOrder = parentProperty.Properties.Max(x => x.SortOrder);
+                var sortOrder = parentProperty.Properties.Where(x => !x.IsDeleted).Max(x => x.SortOrder);
 
                 prop = new EntityProperty()
                 {
@@ -317,47 +365,37 @@ namespace Shesha.DynamicEntities
                     Source = MetadataSourceType.UserDefined,
                     SortOrder = sortOrder++,
                     ParentProperty = parentProperty,
-                    Label = property.Label,
-                    Description = property.Description,
                     InheritedFrom = property,
                     CreatedInDb = true,
-
-                    Name = property.Name,
-                    Audited = property.Audited,
-                    CascadeCreate = property.CascadeCreate,
-                    CascadeUpdate = property.CascadeUpdate,
-                    CascadeDeleteUnreferenced = property.CascadeDeleteUnreferenced,
-                    DataFormat = property.DataFormat,
-                    DataType = property.DataType,
-                    EntityType = property.EntityType,
-
-                    // ToDo: AS - how to inherite array items type
-                    ItemsType = property.ItemsType,
-
-                    Max = property.Max,
-                    MaxLength = property.MaxLength,
-                    Min = property.Min,
-                    MinLength = property.MinLength,
-
-                    ReadOnly = property.ReadOnly,
-                    ReferenceListModule = property.ReferenceListModule,
-                    ReferenceListName = property.ReferenceListName,
-                    RegExp = property.RegExp,
-                    Required = property.Required,
-                    Suppress = property.Suppress,
-                    ValidationMessage = property.ValidationMessage,
-                    IsFrameworkRelated = property.IsFrameworkRelated,
+                    InitStatus = EntityInitFlags.None,
                 };
+
+                CopyPropertyData(property, prop);
             }
             else
             {
-                // ToDo: AS - think how to update inherited nested properties
+                // ToDo: AS - think about how to update inherited nested properties
+                // and whether it is necessary to do so
+                // (changing the structure of a JSON object may make it impossible to read old data)
             }
 
             await _entityPropertyRepository.InsertOrUpdateAsync(prop);
 
             if (property.Properties != null)
-                prop.Properties = (await property.Properties.SelectAsync(async x => await OverrideChildAsync(x, prop))).ToList();
+            {
+                prop.Properties = (await property.Properties.SelectAsync(async x =>
+                {
+                    var p = await OverrideChildAsync(x, prop);
+                    if (x == property.ItemsType)
+                        prop.ItemsType = p;
+                    return p;
+                })).ToList();
+            }
+
+            if (property.ItemsType != null && prop.ItemsType == null)
+            {
+                prop.ItemsType = await OverrideChildAsync(property.ItemsType, prop);
+            }
 
             return prop;
         }
@@ -365,16 +403,21 @@ namespace Shesha.DynamicEntities
 
         private async Task OverridePropertyAsync(EntityProperty property)
         {
-            var propertyEntityConfig = property.EntityConfig; // ToDo: AS - remove after implementation .FirstOrDefault(x => x.Id == property.EntityConfigRevision.ConfigurationItem.Id).NotNull();
-            // Override properties only for dynamic entities
-            var inherited = _dbAllConfigs.Where(x => x.InheritedFrom == property.EntityConfig && x.Source == MetadataSourceType.UserDefined).ToList();
+            var propertyEntityConfig = property.EntityConfig;
+
+            // Override properties only for dynamic entities or Exposed entity
+            var inherited = _dbAllConfigs.Where(x =>
+                !x.IsDeleted
+                && (x.InheritedFrom == propertyEntityConfig && x.Source == MetadataSourceType.UserDefined
+                    || x.ExposedFrom == propertyEntityConfig)
+                ).ToList();
 
             foreach (var config in inherited)
             {
-                var prop = _dbAllProperties.FirstOrDefault(x => x.EntityConfig == config && x.Name == property.Name && x.ParentProperty == null);
+                var prop = _dbAllProperties.FirstOrDefault(x => !x.IsDeleted && x.EntityConfig == config && x.Name == property.Name && x.ParentProperty == null);
                 if (prop == null)
                 {
-                    var sortOrder = _dbAllProperties.Where(x => x.EntityConfig == config).Max(x => x.SortOrder);
+                    var sortOrder = _dbAllProperties.Where(x => !x.IsDeleted && x.EntityConfig == config).Max(x => x.SortOrder);
 
                     prop = new EntityProperty()
                     {
@@ -382,38 +425,14 @@ namespace Shesha.DynamicEntities
                         Source = MetadataSourceType.UserDefined,
                         SortOrder = sortOrder++,
                         ParentProperty = null,
-                        Label = property.Label,
-                        Description = property.Description,
                         InheritedFrom = property,
-                        CreatedInDb = true,
+                        CreatedInDb = property.CreatedInDb,
                         ColumnName = property.ColumnName,
-
-                        Name = property.Name,
-                        Audited = property.Audited,
-                        CascadeCreate = property.CascadeCreate,
-                        CascadeUpdate = property.CascadeUpdate,
-                        CascadeDeleteUnreferenced = property.CascadeDeleteUnreferenced,
-                        DataFormat = property.DataFormat,
-                        DataType = property.DataType,
-                        EntityType = property.EntityType,
-
-                        // ToDo: AS - how to inherite array items type
-                        ItemsType = property.ItemsType,
-
-                        Max = property.Max,
-                        MaxLength = property.MaxLength,
-                        Min = property.Min,
-                        MinLength = property.MinLength,
-
-                        ReadOnly = property.ReadOnly,
-                        ReferenceListModule = property.ReferenceListModule,
-                        ReferenceListName = property.ReferenceListName,
-                        RegExp = property.RegExp,
-                        Required = property.Required,
-                        Suppress = property.Suppress,
-                        ValidationMessage = property.ValidationMessage,
-                        IsFrameworkRelated = property.IsFrameworkRelated,
+                        InitStatus = EntityInitFlags.None,
                     };
+
+                    CopyPropertyData(property, prop);
+
                     await _entityPropertyRepository.InsertAsync(prop);
                 }
                 else
@@ -425,20 +444,33 @@ namespace Shesha.DynamicEntities
                     }
                 }
 
+                if (property.Properties != null)
+                {
+                    prop.Properties = (await property.Properties.SelectAsync(async x =>
+                    {
+                        var p = await OverrideChildAsync(x, prop);
+                        if (x == property.ItemsType)
+                            prop.ItemsType = p;
+                        return p;
+                    })).ToList();
+                }
+
+                if (property.ItemsType != null && prop.ItemsType == null)
+                {
+                    prop.ItemsType = await OverrideChildAsync(property.ItemsType, prop);
+                }
+
                 await OverridePropertyAsync(prop);
 
-                // ToDo: AS - review inheriting nested properties.
-                if (property.Properties != null)
-                    prop.Properties = (await property.Properties.SelectAsync(async x => await OverrideChildAsync(x, prop))).ToList();
             }
         }
 
 
         private async Task UpdatePropertiesAsync(
-            Type entityType, 
-            EntityConfig entityConfig, 
-            List<PropertyMetadataDto> codeProperties, 
-            List<EntityProperty> dbProperties, 
+            Type entityType,
+            EntityConfig entityConfig,
+            List<PropertyMetadataDto> codeProperties,
+            List<EntityProperty> dbProperties,
             EntityProperty? parentProp = null
         )
         {
@@ -456,7 +488,11 @@ namespace Shesha.DynamicEntities
                         .FirstOrDefault();
 
                     var inheritedFrom = parentProp == null && entityConfig.InheritedFrom != null
-                        ? _dbAllProperties.Where(p => p.EntityConfig == entityConfig.InheritedFrom && p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase))
+                        ? _dbAllProperties.Where(p => 
+                                p.EntityConfig == entityConfig.InheritedFrom 
+                                && p.ParentProperty == null
+                                && p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase)
+                            )
                             .OrderBy(p => !p.IsDeleted ? 0 : 1)
                             .ThenByDescending(p => p.CreationTime)
                             .FirstOrDefault()
@@ -513,7 +549,8 @@ namespace Shesha.DynamicEntities
                     }
 
                     // Check inheritace and override if needed
-                    await OverridePropertyAsync(dbp);
+                    if (parentProp == null)
+                        await OverridePropertyAsync(dbp);
                 }
 
                 var deletedProperties = dbProperties
@@ -541,10 +578,10 @@ namespace Shesha.DynamicEntities
                 // todo: handle inactive flag
                 var dbProperties = _dbAllProperties.Where(p => p.EntityConfig == entityConfig).ToList();
 
-                var duplicates = codeProperties.GroupBy(p => p.Path.ToCamelCase(), (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
+                /*var duplicates = codeProperties.GroupBy(p => p.Path.ToCamelCase(), (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
                 if (duplicates.Any())
                 {
-                }
+                }*/
 
                 await UpdatePropertiesAsync(entityType, entityConfig, codeProperties, dbProperties);
 
@@ -563,14 +600,17 @@ namespace Shesha.DynamicEntities
         {
             if (dbp.DataType == DataTypes.Array && cp.ItemsType != null)
             {
-                var itemsTypeProp = dbp.ItemsType ?? new EntityProperty() { 
+                var itemsTypeProp = dbp.ItemsType ?? new EntityProperty()
+                {
                     EntityConfig = dbp.EntityConfig,
                 };
 
+                itemsTypeProp.InheritedFrom = dbp.InheritedFrom?.ItemsType;
+
                 itemsTypeProp.EntityConfig = dbp.EntityConfig;
                 // keep label and description???
-                cp.ItemsType.Label = itemsTypeProp.Label;
-                cp.ItemsType.Description = itemsTypeProp.Description;
+                itemsTypeProp.Label = cp.ItemsType.Label;
+                itemsTypeProp.Description = cp.ItemsType.Description;
 
                 MapProperty(cp.ItemsType, itemsTypeProp);
 
@@ -641,9 +681,14 @@ namespace Shesha.DynamicEntities
                 dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
             }
 
+            dst.ListConfiguration = dst.ListConfiguration ?? new EntityPropertyListConfiguration();
+            dst.ListConfiguration.ForeignProperty = src.ListConfiguration?.ForeignProperty;
+
             dst.Name = src.Path;
             dst.DataType = src.DataType;
+            dst.EntityFullClassName = src.EntityFullClassName;
             dst.EntityType = src.EntityType;
+            dst.EntityModule = src.EntityModule;
             dst.ReferenceListName = src.ReferenceListName;
             dst.ReferenceListModule = src.ReferenceListModule;
             dst.IsFrameworkRelated = src.IsFrameworkRelated;

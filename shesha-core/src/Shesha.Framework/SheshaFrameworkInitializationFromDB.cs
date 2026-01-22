@@ -3,6 +3,7 @@ using Shesha.Attributes;
 using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
+using Shesha.DynamicEntities.DbGenerator;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -19,7 +20,7 @@ namespace Shesha
         public async Task ProcessAsync()
         {
             _ioc.Resolve<ShaPermissionManager>().Initialize();
-            await _ioc.Resolve<IEntityConfigurationStore>().InitializeDynamicAsync();
+            await _ioc.Resolve<IEntityTypeConfigurationStore>().InitializeDynamicAsync();
 
             // ToDo: AS - refresh WebApi
         }

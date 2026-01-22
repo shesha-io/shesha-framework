@@ -1,18 +1,10 @@
-import {
-  DesignerToolbarSettings,
-} from '@/interfaces/toolbarSettings';
-import {
-  FormLayout,
-} from 'antd/lib/form/Form';
-import {
-  nanoid,
-} from '@/utils/uuid';
-import { filterDynamicComponents } from '@/designer-components/propertiesTabs/utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
+import { nanoid } from '@/utils/uuid';
+import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf }) => {
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSettingsInputRow({
         id: nanoid(),
         parentId: 'root',
@@ -121,7 +113,7 @@ export const getSettings = (): FormMarkupWithSettings => {
         collapsible: 'header',
         content: {
           id: nanoid(),
-          components: [...new DesignerToolbarSettings()
+          components: [...fbf()
             .addSettingsInputRow({
               id: nanoid(),
               parentId: 'root',
@@ -134,7 +126,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                   id: nanoid(),
                   propertyName: 'footerButtons',
                   label: 'Action Buttons',
-                  defaultValue: 'default',
                   dropdownOptions: [
                     {
                       label: "Default",
@@ -156,7 +147,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                   id: nanoid(),
                   propertyName: 'showCloseIcon',
                   label: 'Show Close Icon',
-                  defaultValue: true,
                   jsSetting: true,
                 },
                 {
@@ -188,5 +178,3 @@ export const getSettings = (): FormMarkupWithSettings => {
     },
   };
 };
-
-export const showDialogComponents = filterDynamicComponents(getSettings().components, '');

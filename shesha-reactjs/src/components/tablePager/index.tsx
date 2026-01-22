@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, ReactElement } from 'react';
+import React, { CSSProperties, FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
 import { useDataTable } from '@/providers';
@@ -8,9 +8,7 @@ import { IFontValue } from '@/designer-components/_settings/utils/font/interface
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { Popover, Pagination } from 'antd';
-import { useTheme } from '@/providers/theme';
+import { Pagination } from 'antd';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 
 export interface ITablePagerProps {
@@ -24,52 +22,29 @@ export interface ITablePagerProps {
 }
 
 type EmptyPagerProps = {
-  message: ReactElement;
-  style: CSSProperties;
+  style?: CSSProperties;
 };
-const EmptyPager: FC<EmptyPagerProps> = ({ message, style }) => {
+
+const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {
   const { styles } = useStyles();
-  const { theme } = useTheme();
   return (
-    <>
-      <style>
-        {styles.quickSearchPopoverArrowStyles}
-      </style>
-      <div className={styles.tablePagerContainer} style={style}>
-        <div style={{ opacity: 0.5 }}>
-          <Pagination
-            size="small"
-            disabled
-            current={1}
-            onChange={() => {
-              // noop
-            }}
-            total={100}
-            pageSize={10}
-            showSizeChanger
-            showQuickJumper={false}
-            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-          />
-        </div>
-        <Popover
-          placement="right"
-          title="Hint:"
-          rootClassName={styles.tablePagerHintPopover}
-          classNames={{
-            body: styles.tablePagerHintPopover,
+    <div className={styles.tablePagerContainer} style={style}>
+      <div className={styles.disabledComponentWrapper}>
+        <Pagination
+          size="small"
+          disabled
+          current={1}
+          onChange={() => {
+            // noop
           }}
-          content={(
-            <p>{message}
-              <br />
-              <br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-            </p>
-          )}
-        >
-          <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
-        </Popover>
+          total={100}
+          pageSize={10}
+          showSizeChanger
+          showQuickJumper={false}
+          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
+        />
       </div>
-    </>
+    </div>
   );
 };
 
@@ -82,7 +57,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
 
   // Fallback UI when not in a Data Context
   if (!dataTableContext) {
-    return (<EmptyPager message={<>The Table Pager component must be<br />placed inside of a Data Context<br />component to be fully functional.</>} style={style} />);
+    return (<EmptyPager style={style} />);
   }
 
   const {
@@ -97,7 +72,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
 
   // Fallback UI when in Data Context but no configured DataTable/DataList
   if (totalRows === undefined || totalRows === null) {
-    return (<EmptyPager message={<>The Table Pager is within a Data Context<br />but no sibling Data Table or Data List<br />component has been configured with<br />columns or items.</>} style={style} />);
+    return (<EmptyPager style={style} />);
   }
 
   return dataFetchingMode === 'paging' ? (

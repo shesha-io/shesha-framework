@@ -4,6 +4,7 @@ import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
 import { FormFullName, IDictionary, IPropertySetting } from '@/interfaces';
 import { CSSProperties, ReactNode } from 'react';
+import { IGenericGetAllPayload, IHasEntityTypeIdPayload } from '@/interfaces/gql';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
@@ -85,7 +86,8 @@ export interface ITableDataColumn extends ITableColumn, ITableDataFetchColumn, I
 
   referenceListName?: string;
   referenceListModule?: string;
-  entityReferenceTypeShortAlias?: string;
+  entityTypeName?: string;
+  entityTypeModule?: string;
   allowInherited?: boolean;
 }
 
@@ -153,22 +155,13 @@ export interface IGetDataFromUrlPayload {
   readonly quickSearch?: string;
 }
 
-export interface IGetDataFromBackendPayload {
-  readonly entityType: string;
-  readonly maxResultCount: number;
-  readonly skipCount: number;
-  readonly properties: string;
-  readonly sorting?: string;
-  readonly filter?: string;
-  readonly quickSearch?: string;
-}
-
 export interface IExcelColumn {
   readonly propertyName: string;
   readonly label: string;
 }
 
-export interface IExportExcelPayload extends IGetDataFromBackendPayload {
+export interface IExportExcelPayload extends Omit<IGenericGetAllPayload, 'entityType' | 'fullClassName' | 'module' | 'name'> {
+  entityTypeId: IHasEntityTypeIdPayload;
   columns: IExcelColumn[];
 }
 
@@ -260,7 +253,8 @@ export interface DataTableColumnDto {
   dataFormat?: string | null;
   referenceListName?: string | null;
   referenceListModule?: string | null;
-  entityReferenceTypeShortAlias?: string | null;
+  entityTypeName?: string | null;
+  entityTypeModule?: string | null;
   allowInherited?: boolean;
   isFilterable?: boolean;
   isSortable?: boolean;

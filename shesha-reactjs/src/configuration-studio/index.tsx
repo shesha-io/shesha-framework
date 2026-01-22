@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter, Layout } from 'antd';
-import { WorkArea } from '@/configuration-studio/components/workArea';
+import { WorkArea } from '@/configuration-studio/components/work-area';
 import { NewButton } from '@/configuration-studio/components/new-button';
 import { ConfigurationItemMenu } from '@/configuration-studio/components/item-menu';
 import { ConfigurationStudioProvider } from '@/configuration-studio/cs/contexts';
@@ -15,6 +15,7 @@ import { ItemToolbarHolder } from './components/item-toolbar-holder';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
+import { InitializationErrorsModal } from './components/initializationErrorsModal';
 
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
@@ -48,7 +49,7 @@ const ConfigurationStudio: FC = () => {
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
           <Splitter onResizeEnd={(sizes) => {
-            canvas?.setConfigTreePanelSize(sizes[0] || 0);
+            canvas.setConfigTreePanelSize(sizes[0] || 0);
           }}
           >
             <Splitter.Panel
@@ -68,6 +69,7 @@ const ConfigurationStudio: FC = () => {
           </Splitter>
         </Layout.Content>
       </Layout>
+      <InitializationErrorsModal />
     </ConfigurationStudioProvider>
   );
 };

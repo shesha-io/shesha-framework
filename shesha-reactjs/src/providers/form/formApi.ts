@@ -8,9 +8,10 @@ import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
 import { AxiosResponse } from "axios";
 import { FieldValueSetter } from "@/utils/dotnotation";
+import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 
 export interface IFormSettings {
-  modelType?: string;
+  modelType?: string | IEntityTypeIdentifier;
 
   postUrl?: string;
   putUrl?: string;
@@ -70,6 +71,7 @@ export interface IFormApi<Values extends object = object> {
 
   /** antd form instance */
   formInstance?: FormInstance<Values>;
+  shaForm?: IShaFormInstance<Values>;
   /** Configurable form settings */
   formSettings: PublicFormSettings;
   /** Form mode */
@@ -133,6 +135,10 @@ class PublicFormApiWrapper implements IFormApi {
   get formInstance(): FormInstance<any> {
     // antd form
     return this.#form?.form;
+  }
+
+  get shaForm(): IShaFormInstance {
+    return this.#form?.shaForm;
   }
 
   get formSettings(): PublicFormSettings {

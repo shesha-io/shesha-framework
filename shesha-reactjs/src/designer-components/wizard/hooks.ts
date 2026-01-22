@@ -1,7 +1,7 @@
 import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
+import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useEffect, useMemo, useState } from 'react';
@@ -30,7 +30,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const formMode = useForm(false).formMode;
 
-  const { executeBooleanExpression, executeAction } = useFormExpression();
+  const { executeBooleanExpression, executeActionViaPayload } = useFormExpression();
 
   const {
     componentName: actionOwnerName,
@@ -76,7 +76,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     for (const comp in flat.allComponents)
       if (Object.hasOwn(flat.allComponents, comp)) {
         const component = flat.allComponents[comp];
-        if (component.propertyName && !component.context)
+        if (isConfigurableFormComponent(component) && component.propertyName && !component.context)
           properties.push(component.propertyName.split("."));
       }
     return properties;
@@ -108,7 +108,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
 
     if (!!actionConfiguration?.actionName) {
-      executeAction({
+      executeActionViaPayload({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext,
       });
@@ -154,7 +154,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         () => {
           const afterAction = afterAccessor(currentStep);
           if (!!afterAction?.actionName)
-            executeAction({
+            executeActionViaPayload({
               actionConfiguration: afterAction,
               argumentsEvaluationContext,
             });
@@ -167,7 +167,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       return;
     }
 
-    executeAction({
+    executeActionViaPayload({
       actionConfiguration: beforeAction,
       argumentsEvaluationContext,
       success: successFunc,

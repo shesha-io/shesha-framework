@@ -15,6 +15,7 @@ import { IModelMetadata, IPropertyMetadata } from './metadata';
 import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -38,7 +39,7 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   onSave: (values: TModel) => void;
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
-  toolboxComponent: IToolboxComponent;
+  toolboxComponent: IToolboxComponentBase;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
@@ -46,6 +47,11 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
+
+export type SettingsFormMarkupFactoryArgs = {
+  fbf: FormBuilderFactory;
+};
+export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
 export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   model: TModel;
@@ -65,10 +71,18 @@ export interface IEditorAdapter {
   propertiesFilter: PropertyInclusionPredicate;
 }
 
-export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
-  /**
-   * Type of the component. Must be unique in the project.
-   */
+export type ToolboxComponentAsTemplate = {
+  isTemplate: true;
+  build: (allComponents: IToolboxComponents) => IConfigurableFormComponent[];
+} | {
+  isTemplate?: false;
+  build?: never;
+};
+
+export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = {
+/**
+ * Type of the component. Must be unique in the project.
+ */
   type: string;
   /**
    * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
@@ -129,11 +143,11 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Returns nested component containers. Is used in the complex components like tabs, panels etc.
    */
-  getContainers?: (model: TModel) => IFormComponentContainer[];
+  getContainers?: ((model: TModel) => IFormComponentContainer[]) | undefined;
   /**
    * Name of the child component containers. Note: may be changed in the future releases
    */
-  customContainerNames?: string[];
+  customContainerNames?: string[] | undefined;
   /**
    * Settings form factory. Renders the component settings form
    */
@@ -141,19 +155,16 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */
-  settingsFormMarkup?: FormMarkup;
+  settingsFormMarkup?: FormMarkup | SettingsFormMarkupFactory;
   /**
    * Settings validator
    */
-  validateSettings?: (model: TModel) => Promise<any>;
+  validateSettings?: ((model: TModel) => Promise<any>) | undefined;
 
   /**
    * Return true to indicate that the data type is supported by the component
    */
   dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string }) => boolean;
-
-  isTemplate?: boolean;
-  build?: (allComponents: IToolboxComponents) => IConfigurableFormComponent[];
 
   /**
    * Settings migrations. Returns last version of settings
@@ -176,7 +187,14 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   actualModelPropertyFilter?: (name: string, value: any) => boolean;
 
   editorAdapter?: IEditorAdapter;
-}
+} & ToolboxComponentAsTemplate;
+
+export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =
+  Omit<IToolboxComponent<TModel, TCalculatedModel>, 'type'> & {
+    type: TType;
+  } & ToolboxComponentAsTemplate;
+
+export type IToolboxComponentBase = IToolboxComponent;
 
 export interface SettingsMigrationContext {
   formSettings?: IFormSettings;
@@ -189,17 +207,17 @@ export interface SettingsMigrationContext {
  * Settings migrator
  */
 export type SettingsMigrator<TSettings> = (
-  migrator: Migrator<IConfigurableFormComponent, TSettings, SettingsMigrationContext>
+  migrator: Migrator<IConfigurableFormComponent, TSettings, SettingsMigrationContext>,
 ) => MigratorFluent<TSettings, TSettings, SettingsMigrationContext>;
 
 export interface IToolboxComponentGroup {
   name: string;
   visible?: boolean;
-  components?: IToolboxComponent<any>[];
+  components: IToolboxComponentBase[];
 }
 
 export interface IToolboxComponents {
-  [key: string]: IToolboxComponent;
+  [key: string]: IToolboxComponentBase;
 }
 
 export { type IConfigurableFormComponent as IConfigurableFormComponent, type IFormComponentContainer };
@@ -226,3 +244,22 @@ export interface IComponentsContainerBaseProps {
 }
 
 export type YesNoInherit = 'yes' | 'no' | 'inherit';
+
+type ModelType = {
+  name: string;
+};
+type BaseType<TModel extends ModelType = ModelType> = {
+  method: (mode: TModel) => string;
+};
+
+type CustomModel = ModelType & {
+
+};
+type CustomType = BaseType<CustomModel>;
+
+const customItem: CustomType = {
+  method: function (_mode: CustomModel): string {
+    throw new Error("Function not implemented.");
+  },
+};
+export const items: BaseType[] = [customItem];

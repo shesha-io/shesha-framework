@@ -1,9 +1,16 @@
 import { MetadataDto } from "@/apis/metadata";
-import { IEntityMetadata } from "@/interfaces";
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { FormIdentifier, IEntityMetadata, IReferenceListIdentifier } from "@/interfaces";
+import { IConfigurationLoader } from "@/providers/configurationItemsLoader/configurationLoader";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 
 export type SyncStatus = 'uptodate' | 'unknown' | 'outofdate';
+
+export enum ConfigurationType {
+  ReferenceList = 'reference-list',
+  Form = 'form',
+  Entity = 'entity',
+}
 
 export interface EntitySyncRequest {
   accessor: string;
@@ -23,7 +30,7 @@ export interface SyncAllRequest {
 export type EntityOutOfDateResponse = {
   accessor: string;
   status: Extract<SyncStatus, 'outofdate'>;
-  metadata: MetadataDto; // IEntityMetadata;
+  metadata: MetadataDto;
 };
 
 export const isEntityOutOfDateResponse = (response: EntitySyncResponse): response is EntityOutOfDateResponse => {
@@ -41,8 +48,22 @@ export interface ModuleSyncResponse {
   entities: EntitySyncResponse[];
 }
 
+export interface LookupItemSyncResponse {
+  module: string;
+  match: string;
+}
+
+export interface LookupSyncResponse {
+  id?: string;
+  aliases?: string[];
+  module?: string;
+  name?: string;
+  items: LookupItemSyncResponse[];
+}
+
 export interface SyncAllResponse {
   modules: ModuleSyncResponse[];
+  lookups: LookupSyncResponse[];
 }
 
 export interface ICacheProvider {
@@ -54,11 +75,13 @@ export interface ICache {
   setItem<T>(key: string, value: T, callback?: (err: unknown, value: T) => void): Promise<T>;
   iterate<T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U, callback?: (err: unknown, result: U) => void): Promise<U>;
   removeItem(key: string, callback?: (err: unknown) => void): Promise<void>;
+  clear(callback?: (err?: unknown) => void): Promise<void>;
 }
 
 export interface IEntityTypesMap {
-  resolve: (className: string) => IEntityTypeIndentifier | undefined;
-  register: (className: string, accessor: IEntityTypeIndentifier) => void;
+  resolve: (className: string) => IEntityTypeIdentifier | undefined;
+  identifierExists: (model: IEntityTypeIdentifier) => boolean;
+  register: (className: string, accessor: IEntityTypeIdentifier) => void;
   clear: () => void;
 }
 
@@ -66,11 +89,22 @@ export interface ISyncEntitiesContext {
   cacheProvider: ICacheProvider;
   httpClient: HttpClientApi;
   typesMap: IEntityTypesMap;
+  configurationItemsLoader: IConfigurationLoader;
 }
 
 export interface IEntityMetadataFetcher {
   syncAll: () => Promise<void>;
-  getByTypeId: (typeId: IEntityTypeIndentifier) => Promise<IEntityMetadata>;
+  getByTypeId: (typeId: IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
   getByClassName: (className: string) => Promise<IEntityMetadata | null>;
-  isEntity: (className: string) => Promise<boolean>;
+  isEntity: (modelType: string | IEntityTypeIdentifier) => Promise<boolean>;
+}
+
+export interface IGetFormPayload {
+  formId: FormIdentifier;
+  skipCache: boolean;
+}
+
+export interface IGetRefListPayload {
+  refListId: IReferenceListIdentifier;
+  skipCache: boolean;
 }

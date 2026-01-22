@@ -13,6 +13,11 @@ export const ArrayFormats = {
   multivalueReferenceList: 'multivalue-reference-list',
 };
 
+export const EntityFormats = {
+  entity: 'entity',
+  genericEntity: 'generic-entity',
+};
+
 export const ObjectFormats = {
   object: 'object',
   interface: 'interface',
@@ -36,6 +41,11 @@ export const NumberFormats = {
   int32: 'int32',
   int64: 'int64',
   decimal: 'decimal',
+};
+
+export const AdvancedFormats = {
+  notes: 'notes',
+  fileList: 'attachmentsEditor',
 };
 
 export const DataTypes = {
@@ -135,5 +145,5 @@ export const DataTypes = {
         }
     }
     return [];
-  }`,
+  };`,
 };

@@ -7,12 +7,13 @@ import {
   SortMode,
 } from '@/providers/dataTable/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { YesNoInherit } from '@/interfaces';
+import { ComponentDefinition, YesNoInherit } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface ITableContextComponentProps extends Omit<IConfigurableFormComponent, 'description'> {
   sourceType?: 'Form' | 'Entity' | 'Url';
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   endpoint?: string;
   customReorderEndpoint?: string;
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
@@ -44,3 +45,15 @@ export interface IAfterRowReorderArguments {
   allData: any[];
   response?: any;
 }
+
+/**
+ * Legacy DataTable Context component definition (datatableContext)
+ * @deprecated Use TableContextComponentDefinition instead. This is kept only for migration of existing forms.
+ */
+export type TableContextComponentLegacyDefinition = ComponentDefinition<"datatableContext", ITableContextComponentProps>;
+
+/**
+ * Data Context component definition (dataContext)
+ * This is the new clean implementation of the data context component.
+ */
+export type TableContextComponentDefinition = ComponentDefinition<'dataContext', ITableContextComponentProps>;

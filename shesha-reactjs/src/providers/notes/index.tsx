@@ -33,6 +33,12 @@ import {
   NotesStateContext,
 } from './contexts';
 import { notesReducer } from './reducer';
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '../metadataDispatcher/entities/utils';
+
+const extractErrorDetails = (error: unknown): unknown => {
+  // TODO: review and remove this function. The logic seems wrong but kept as is for now
+  return error && typeof (error) === 'object' && 'data' in error ? error.data : undefined;
+};
 
 const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   children,
@@ -77,7 +83,12 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     data,
     error: fetchNotesResError,
   } = useNoteGetList({
-    queryParams: { ownerId, ownerType, category, allCategories: shouldShowAllCategories },
+    queryParams: {
+      ownerId,
+      ownerType: getEntityTypeIdentifierQueryParams(ownerType),
+      category,
+      allCategories: shouldShowAllCategories,
+    },
     lazy: true,
   });
 
@@ -91,12 +102,12 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   };
 
   const fetchNotesError = (): void => {
-    dispatch(fetchNotesErrorAction(fetchNotesResError?.data));
+    dispatch(fetchNotesErrorAction(extractErrorDetails(fetchNotesResError)));
   };
 
   // Refetch notes when the main parameters change
   useEffect(() => {
-    if (ownerId && ownerType) {
+    if (ownerId && !isEntityTypeIdEmpty(ownerType)) {
       fetchNotesRequest();
     }
   }, [ownerId, ownerType, category, allCategories]);
@@ -128,20 +139,20 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   const { mutate: saveNotesHttp, error: saveNotesResError } = useNoteCreate();
 
   const postNotesError = (): void => {
-    dispatch(postNotesErrorAction(saveNotesResError?.data));
+    dispatch(postNotesErrorAction(extractErrorDetails(saveNotesResError)));
   };
 
   const postNotesRequest = (newNotes: ICreateNotePayload): void => {
     if (newNotes) {
       dispatch(postNotesRequestAction(newNotes));
 
-      const payload = newNotes;
+      const payload = { ...newNotes };
 
       if (!newNotes.ownerId) {
         payload.ownerId = ownerId;
       }
 
-      if (!newNotes.ownerType) {
+      if (isEntityTypeIdEmpty(newNotes.ownerType)) {
         payload.ownerType = ownerType;
       }
 
@@ -175,7 +186,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
       .then(() => {
         dispatch(deleteNotesSuccessAction(commentIdToBeDeleted));
       })
-      .catch(() => dispatch(deleteNotesErrorAction(deleteNotesResError?.data)));
+      .catch(() => dispatch(deleteNotesErrorAction(extractErrorDetails(deleteNotesResError))));
   };
   //#endregion
 
@@ -189,20 +200,20 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   const { mutate: updateNotesHttp, error: updateNotesResError } = useNoteUpdate();
 
   const updateNotesError = (): void => {
-    dispatch(updateNotesErrorAction(updateNotesResError?.data));
+    dispatch(updateNotesErrorAction(extractErrorDetails(updateNotesResError)));
   };
 
   const updateNotesRequest = (newNotes: ICreateNotePayload): void => {
     if (newNotes) {
       dispatch(updateNotesRequestAction(newNotes));
 
-      const payload = newNotes;
+      const payload = { ...newNotes };
 
       if (!newNotes.ownerId) {
         payload.ownerId = ownerId;
       }
 
-      if (!newNotes.ownerType) {
+      if (isEntityTypeIdEmpty(newNotes.ownerType)) {
         payload.ownerType = ownerType;
       }
 

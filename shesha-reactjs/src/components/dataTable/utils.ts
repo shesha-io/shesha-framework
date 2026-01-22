@@ -73,7 +73,6 @@ export const getAnchoredCellStyleAccessor = (
   const fixedStyled: React.CSSProperties = {
     [direction]: anchored?.direction && shiftedBy,
     backgroundColor: isFixed ? background : 'unset',
-    color: isFixed ? 'black' : 'unset',
     boxShadow: hasShadow ? (anchored?.direction === 'left' ? '5px 0 3px -2px #ccc' : '-5px 0 3px -2px #ccc') : 'unset',
   };
 

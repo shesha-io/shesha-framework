@@ -5,25 +5,18 @@ import { DataContextSelector } from '@/designer-components/dataContextSelector';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IConfigurableFormComponent, MetadataProvider } from '@/providers';
-import { IToolboxComponent } from '@/interfaces';
+import { MetadataProvider } from '@/providers';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesignerSettings } from '@/providers/formDesigner';
 import SettingsControl from '../_settings/settingsControl';
 import { getValueFromPropertySettings } from '../_settings/utils';
+import { useStyles } from '../_settings/styles/styles';
 import { ConfigurableFormItem } from '@/components';
-import { useStyles } from './styles';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocompleteComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
-
-export interface IContextPropertyAutocompleteComponentProps extends IConfigurableFormComponent {
-  dropdownStyle?: string;
-  mode?: 'single' | 'multiple';
-  modelType?: string;
-  autoFillProps?: boolean;
-  styledLabel?: boolean;
-}
 
 
 export interface IContextPropertyAutocompleteProps extends Omit<IContextPropertyAutocompleteComponentProps, 'style' | 'dropdownStyle' | 'type'> {
@@ -32,7 +25,7 @@ export interface IContextPropertyAutocompleteProps extends Omit<IContextProperty
   contextName: string;
   style?: CSSProperties;
   dropdownStyle?: CSSProperties;
-  defaultModelType: string;
+  defaultModelType: string | IEntityTypeIdentifier;
   onValuesChange?: (changedValues: any) => void;
 }
 
@@ -86,7 +79,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   const dataType: MetadataType = !context || mode === 'formData' ? 'entity' : 'context';
 
   return (
-    <div className={styles.wrapper}>
+    <>
       <ConfigurableFormItem model={{ ...model as any, label: componentlabel, componentName: 'componentName', propertyName: 'componentName', hidden: mode === 'formData' }}>
         {(value, onChange) => {
           return (
@@ -162,29 +155,19 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           }}
         </ConfigurableFormItem>
       </MetadataProvider>
-      <Button type="link" onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'} className={styles.bindingOptionBtn}>
+      <Button type="link" onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'}>
         hide binding option (bind to form data)
       </Button>
-      <Button type="link" onClick={setContextMode} hidden={model.readOnly || mode === 'context'} className={styles.bindingOptionBtn}>
+      <Button type="link" onClick={setContextMode} hidden={model.readOnly || mode === 'context'}>
         show binding option
       </Button>
-    </div>
+    </>
   );
 };
 
-interface IContextPropertyAutocompleteCalculatedModel {
-  componentName: string;
-  propertyName: string;
-  contextName: string;
-  style: CSSProperties;
-  dropdownStyle: CSSProperties;
-  modelType: string;
-  setFieldsValue: (values: any) => void;
-}
-
 const emptyObj = {};
 
-const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAutocompleteComponentProps, IContextPropertyAutocompleteCalculatedModel> = {
+const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponentDefinition = {
   type: 'contextPropertyAutocomplete',
   name: 'Context Property Autocomplete',
   icon: <FileSearchOutlined />,
@@ -203,7 +186,8 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
     };
   },
   Factory: ({ model, calculatedModel }) => {
-    const designerModelType = useFormDesignerStateSelector((x) => x.formSettings?.modelType);
+    const formSettings = useFormDesignerSettings();
+    const designerModelType = formSettings?.modelType;
     const validate = useMemo(() => ({ ...model.validate, required: false }), [model.validate]);
     const onValuesChange = useCallback((values) => calculatedModel.setFieldsValue(values), [calculatedModel.setFieldsValue]);
 

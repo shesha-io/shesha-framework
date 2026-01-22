@@ -5,7 +5,7 @@ import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } f
 import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
 import { IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";
 import { wrapDisplayName } from "@/utils/react";
-import { IModelMetadata, isObjectMetadata } from "@/interfaces/metadata";
+import { IModelMetadata, isJsonEntityMetadata } from "@/interfaces/metadata";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 
 export interface IWithInMemoryRepositoryArgs {
@@ -97,12 +97,12 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
           dataFormat: null,
           referenceListName: null,
           referenceListModule: null,
-          entityReferenceTypeShortAlias: null,
+          entityTypeName: null,
           allowInherited: false, // TODO: add to metadata
           isFilterable: true, // TODO: add to metadata
           isSortable: true, // TODO: add to metadata
         };
-        if (isObjectMetadata(metadata)) {
+        if (isJsonEntityMetadata(metadata)) {
           const propertyMeta = await metadataDispatcher.getPropertyFromMetadata({ metadata, propertyPath: col.propertyName });
           if (propertyMeta) {
             convertedDataCol.dataType = propertyMeta.dataType;

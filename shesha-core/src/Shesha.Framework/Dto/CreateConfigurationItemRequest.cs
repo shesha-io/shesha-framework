@@ -1,6 +1,5 @@
 ﻿using Shesha.Dto.Interfaces;
 using System;
-using System.Collections.Generic;
 
 namespace Shesha.Dto
 {
@@ -19,6 +18,14 @@ namespace Shesha.Dto
 
         public Guid? PrevItemId { get; set; }
 
-        
+        /// <summary>
+        /// User-friendly label
+        /// </summary>
+        public string? Label { get; set; }
+
+        /// <summary>
+        /// Description
+        /// </summary>
+        public string? Description { get; set; }
     }
 }

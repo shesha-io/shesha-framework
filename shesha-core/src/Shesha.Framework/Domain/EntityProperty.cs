@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,7 +20,11 @@ namespace Shesha.Domain
     [Table("entity_properties", Schema = "frwk")]
     public class EntityProperty: FullAuditedEntity<Guid>
     {
+        public virtual EntityInitFlags InitStatus { get; set; }
+        public virtual string? InitMessage { get; set; }
+
         public virtual bool CreatedInDb { get; set; }
+
 
         /// <summary>
         /// Entity Config Revision
@@ -69,8 +74,20 @@ namespace Shesha.Domain
         /// <summary>
         /// Entity type. Applicable for entity references
         /// </summary>
+        [MaxLength(1000)]
+        public virtual string? EntityFullClassName { get; set; }
+
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
         [MaxLength(300)]
         public virtual string? EntityType { get; set; }
+
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
+        [MaxLength(300)]
+        public virtual string? EntityModule { get; set; }
 
         /// <summary>
         /// Reference list name
@@ -201,7 +218,7 @@ namespace Shesha.Domain
 
         public override string ToString()
         {
-            return $"{Name} {DataType} ({DataFormat} {EntityType})";
+            return $"{Name} {DataType} ({DataFormat} {EntityFullClassName})";
         }
     }
 }

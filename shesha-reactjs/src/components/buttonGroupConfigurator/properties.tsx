@@ -1,6 +1,5 @@
 import React, { FC, useMemo } from 'react';
 import { Empty } from 'antd';
-import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { ConfigurableForm } from '@/components/configurableForm';
@@ -8,6 +7,7 @@ import { ButtonGroupItemProps } from '@/providers';
 import { sheshaStyles } from '@/styles';
 import { getGroupSettings } from './itemGroupSettings';
 import { getItemSettings } from './itemSettings';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 export interface IButtonGroupPropertiesProps {
   item?: ButtonGroupItemProps;
@@ -24,17 +24,18 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
     300,
   );
 
+  const fbf = useFormBuilderFactory();
+
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const editor = useMemo(() => {
     const emptyEditor = null;
     if (!item) return emptyEditor;
 
-    const markup =
-      item.itemType === 'item'
-        ? (getItemSettings() as FormMarkup)
-        : item.itemType === 'group'
-          ? (getGroupSettings() as FormMarkup)
-          : [];
+    const markup = item.itemType === 'item'
+      ? getItemSettings({ fbf })
+      : item.itemType === 'group'
+        ? getGroupSettings({ fbf })
+        : [];
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
         <ConfigurableForm

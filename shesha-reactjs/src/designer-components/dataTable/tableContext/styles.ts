@@ -6,17 +6,21 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        min-height: 60px;
-        border: 2px dashed ${token.colorPrimary}40;
+        min-height: 120px;
         border-radius: 8px;
-        background-color: ${token.colorPrimaryBg}20;
+        border: 2px dashed ${token.colorPrimary}40;
+        background-color: ${token.colorPrimaryBg}10;
         margin: 4px 0;
         transition: all 0.2s ease;
-        padding-top: 8px;
+        padding: 16px;
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
 
         &:hover {
+            background-color: ${token.colorPrimaryBg}20;
             border-color: ${token.colorPrimary}60;
-            background-color: ${token.colorPrimaryBg}30;
         }
 
         .data-context-label {
@@ -41,7 +45,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         align-items: center;
         justify-content: center;
         min-height: 60px;
-        border: 2px dashed ${token.colorWarning}40;
         border-radius: 8px;
         background-color: ${token.colorWarningBg}20;
         margin: 4px 0;
@@ -66,14 +69,16 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         display: flex;
         flex-direction: column;
         min-height: 40px;
-        border: 1px solid ${token.colorPrimary}60;
         border-radius: 6px;
         background-color: ${token.colorPrimaryBg}10;
         margin: 4px 0;
         transition: all 0.2s ease;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
 
         &:hover {
-            border-color: ${token.colorPrimary}80;
             background-color: ${token.colorPrimaryBg}15;
         }
 
@@ -104,10 +109,15 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   const dataContextComponentsContainer = cx("sha-data-context-components-container", css`
         border: 2px dotted ${token.colorPrimary}30;
         border-radius: 4px;
-        margin: 8px;
-        min-height: 60px;
+        min-height: 100px !important;
         padding: 8px;
+        box-sizing: border-box; /* Include padding and border in width calculation */
         transition: all 0.2s ease;
+        width: 100% !important;
+        max-width: 100%;
+        overflow: hidden;
+        margin: 0;
+        flex: 1;
 
         &:hover {
             border-color: ${token.colorPrimary}50;
@@ -128,6 +138,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             display: flex;
             align-items: center;
             justify-content: center;
+            height: 100px;
         }
 
         .sha-drop-hint {
@@ -138,43 +149,49 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   const quickSearchHintPopover = cx("sha-quick-search-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
+
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
     `);
 
   const tableViewSelectorHintPopover = cx("sha-table-view-selector-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
+
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
     `);
 
   const tablePagerHintPopover = cx("sha-table-pager-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
-    `);
 
-  const quickSearchPopoverArrowStyles = `
-    .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-    .ant-popover.sha-table-view-selector-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-table-view-selector-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-    .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-  `;
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
+    `);
 
   const quickSearchContainer = cx("sha-quick-search-container", css`
         display: flex;
         align-items: center;
-        gap: 8px;
+        min-height: 48px;
+        margin: 0;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
     `);
 
   const tablePagerContainer = cx("sha-table-pager-container", css`
         display: flex;
         align-items: center;
-        gap: 8px;
+        min-height: 48px;
+        margin: 0;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
     `);
 
   const tablePagerMockup = cx("sha-table-pager-mockup", css`
@@ -195,6 +212,103 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
+  const hintContainer = cx("sha-hint-container", css`
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `);
+
+  const disabledComponentWrapper = cx("sha-disabled-component-wrapper", css`
+        opacity: 0.5;
+    `);
+
+  const filterButtonMockup = cx("sha-filter-button-mockup", css`
+        padding: 8px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 4px;
+        min-height: 32px;
+        color: #8c8c8c;
+        background-color: #fafafa;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    `);
+
+  const viewSelectorMockup = cx("sha-view-selector-mockup", css`
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        background-color: #fafafa;
+        color: #8c8c8c;
+        font-size: 14px;
+        font-weight: 600;
+    `);
+
+  const datatableHintPopover = cx("sha-datatable-hint-popover", css`
+        background-color: #D9DCDC !important;
+        border-radius: 8px !important;
+
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: #D9DCDC !important;
+        }
+    `);
+
+  const emptyStateContainer = cx("sha-empty-state-container", css`
+        position: relative;
+        width: 100%;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `);
+
+  const emptyStateOverlay = cx("sha-empty-state-overlay", css`
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 1;
+        gap: 12px;
+    `);
+
+  const emptyStateIcon = cx("sha-empty-state-icon", css`
+        font-size: 48px;
+        margin-bottom: 0;
+    `);
+
+  const emptyStateContent = cx("sha-empty-state-content", css`
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    `);
+
+  const emptyStateTitle = cx("sha-empty-state-title", css`
+        font-size: 14px;
+        font-weight: 600;
+    `);
+
+  const emptyStateSubtitle = cx("sha-empty-state-subtitle", css`
+        font-size: 12px;
+        color: ${token.colorTextSecondary};
+    `);
+
+  const emptyStateComponentsContainer = cx("sha-empty-state-components-container", css`
+        position: relative;
+        width: 100%;
+        min-height: 120px;
+        z-index: 2;
+    `);
+
   return {
     dataContextDesignerEmpty,
     dataContextRuntimeEmpty,
@@ -205,9 +319,20 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     quickSearchHintPopover,
     tableViewSelectorHintPopover,
     tablePagerHintPopover,
-    quickSearchPopoverArrowStyles,
     quickSearchContainer,
     tablePagerContainer,
     tablePagerMockup,
+    hintContainer,
+    disabledComponentWrapper,
+    filterButtonMockup,
+    viewSelectorMockup,
+    datatableHintPopover,
+    emptyStateContainer,
+    emptyStateOverlay,
+    emptyStateIcon,
+    emptyStateContent,
+    emptyStateTitle,
+    emptyStateSubtitle,
+    emptyStateComponentsContainer,
   };
 });

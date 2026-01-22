@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Shesha.Domain;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -16,6 +17,10 @@ namespace Shesha.DynamicEntities.Dtos
     public class ModelPropertyDto : EntityDto<string>
     {
         public string? ColumnName { get; set; }
+
+        public EntityInitFlags? InitStatus { get; set; }
+        public string? InitMessage { get; set; }
+
         public bool CreatedInDb { get; set; }
         public Guid? InheritedFromId { get; set; }
 
@@ -37,7 +42,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Data type
         /// </summary>
-        public string DataType { get; set; }
+        public string? DataType { get; set; }
 
         /// <summary>
         /// Data format
@@ -47,27 +52,17 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
-        public string? EntityType { get; set; }
+        public EntityTypeIdentifier? EntityType { get; set; }
 
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
-        public string? BaseEntityType { get; set; }
-
-        /// <summary>
-        /// Module the entity belongs to. Aplicable for entity references
-        /// </summary>
-        public string? EntityModule { get; set; }
+        public EntityTypeIdentifier? BaseEntityType { get; set; }
 
         /// <summary>
         /// Type accessor
         /// </summary>
-        public string? TypeAccessor { get; set; }
-
-        /// <summary>
-        /// Module accessor
-        /// </summary>
-        public string? ModuleAccessor { get; set; }
+        public EntityTypeIdentifier? Accessor { get; set; }
 
         /// <summary>
         /// Reference list name
@@ -94,7 +89,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Child properties, applicable for complex data types (e.g. object, array)
         /// </summary>
-        public List<ModelPropertyDto>? Properties { get; set; } = new List<ModelPropertyDto>();
+        public List<ModelPropertyDto> Properties { get; set; } = new List<ModelPropertyDto>();
 
         /// <summary>
         /// If true, indicates that current property is a framework-related (e.g. <see cref="ISoftDelete.IsDeleted"/>, <see cref="IHasModificationTime.LastModificationTime"/>)

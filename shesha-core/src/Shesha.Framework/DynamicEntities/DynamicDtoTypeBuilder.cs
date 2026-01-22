@@ -27,7 +27,7 @@ namespace Shesha.DynamicEntities
     public class DynamicDtoTypeBuilder : IEventHandler<EntityChangedEventData<EntityProperty>>, IDynamicDtoTypeBuilder, ITransientDependency
     {
         private readonly IEntityConfigCache _entityConfigCache;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
 
         /// <summary>
         /// Cache of proxy classes
@@ -42,7 +42,7 @@ namespace Shesha.DynamicEntities
 
         public DynamicDtoTypeBuilder(
             IEntityConfigCache entityConfigCache,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IFullProxyCacheHolder fullProxyCacheHolder,
             IDynamicTypeCacheHolder _dynamicTypeCacheHolder
         )
@@ -146,16 +146,16 @@ namespace Shesha.DynamicEntities
                             case NumberFormats.Int64:
                                 return typeof(Int64?);
                             case NumberFormats.Float:
-                                return typeof(float?);
+                                return typeof(double?);
                             case NumberFormats.Double:
-                                return typeof(decimal?);
+                                return typeof(double?);
                             default:
                                 return typeof(decimal?);
                         }
                     }
 
                 case DataTypes.EntityReference:
-                    if (propertyDto.EntityType.IsNullOrWhiteSpace())
+                    if (propertyDto.EntityFullClassName.IsNullOrWhiteSpace())
                         return typeof(GenericEntityReference);
                     else
                         return GetEntityReferenceType(propertyDto, context);
@@ -189,10 +189,10 @@ namespace Shesha.DynamicEntities
             if (propertyDto.DataType != DataTypes.EntityReference)
                 throw new NotSupportedException($"DataType {propertyDto.DataType} is not supported. Expected {DataTypes.EntityReference}");
 
-            if (string.IsNullOrWhiteSpace(propertyDto.EntityType))
+            if (string.IsNullOrWhiteSpace(propertyDto.EntityFullClassName))
                 return null;
 
-            var entityConfig = _entityConfigurationStore.Get(propertyDto.EntityType);
+            var entityConfig = _entityConfigurationStore.Get(propertyDto.EntityFullClassName);
             if (entityConfig == null || entityConfig.IdType == null)
                 return null;
 

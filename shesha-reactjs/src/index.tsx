@@ -31,3 +31,10 @@ export { useConstantsEvaluator } from './designer-components/codeEditor/hooks/us
 export { useResultTypeEvaluator } from './designer-components/codeEditor/hooks/useResultType';
 
 export { default as ConfigurationStudio } from './configuration-studio';
+export { useFormViaFactory, useFormBuilderFactory } from './form-factory/hooks';
+export { type FormBuilder, type FormBuilderFactory } from './form-factory/interfaces';
+
+export { type DocumentDefinition, type IDocumentInstance } from './configuration-studio/models';
+export { DocumentInstance } from './configuration-studio/cs/documentInstance';
+export { DocumentDefinitionRegistration } from './configuration-studio/document-definitions/documentDefinitionRegistration';
+export { useConfigurationStudio } from './configuration-studio/cs/contexts';

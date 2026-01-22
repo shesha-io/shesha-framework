@@ -66,13 +66,16 @@ namespace Shesha.ConfigurationItems
 
         public IDisposable DisableConfigurationTracking()
         {
-            if (_uowManager.Current != null)
+            // Note: if configuration tracking was enabled, we have to save changes before and after scope to ensure that we affect only entities modified in the current scope
+            var forceSaveRequired = State.IsConfigurationTrackingEnabled;
+
+            if (forceSaveRequired && _uowManager.Current != null)
                 _uowManager.Current.SaveChanges();
 
             var scope = BeginScope(a => a.IsConfigurationTrackingEnabled = false);
 
             return new DisposeAction(() => {
-                if (_uowManager.Current != null)
+                if (forceSaveRequired && _uowManager.Current != null)
                     _uowManager.Current.SaveChanges();
                 scope.Dispose();
             });

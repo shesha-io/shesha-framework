@@ -1,5 +1,6 @@
 import React, { FC, useState, CSSProperties } from 'react';
 import { Button, FormInstance } from 'antd';
+import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { ShaIcon, IconType } from '@/components';
 import classNames from 'classnames';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
@@ -7,11 +8,14 @@ import { useConfigurableActionDispatcher } from '@/providers/configurableActions
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { DataContextTopLevels, isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import { useStyles } from './style';
+import { getGhostStyleOverrides } from '@/utils/style';
+
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
   form: FormInstance<any>;
-  dynamicItem?: any;
+  dynamicItem?: IFullAuditedEntity;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
@@ -69,22 +73,35 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
   const isSameUrl = navigationUrl === window.location.href;
 
+  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
+  const isGhostType = props.buttonType === 'ghost';
+  const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
+
+  // Ghost buttons: only foreground color, no background/border/shadow
+  const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+
   return (
     <Button
       href={navigationUrl}
       title={props.tooltip}
       block={props.block}
+      disabled={buttonDisabled}
+      aria-disabled={buttonDisabled}
+      tabIndex={buttonDisabled ? -1 : undefined}
       loading={buttonLoading}
       onClick={onButtonClick}
-      type={props.buttonType}
+      type={actualButtonType}
+      ghost={isGhostType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       iconPosition={props.iconPosition}
-      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton, buttonDisabled && styles.disabled)}
+      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
       size={props?.size}
       style={{
         ...props?.style,
-        ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }),
+        ...(isSameUrl && !isGhostType && { background: theme.application.primaryColor, color: theme.text.default }),
+        ...ghostOverrides,
+        ...(buttonDisabled && { pointerEvents: "none" }),
       }}
     >
       {props.label}

@@ -1,42 +1,40 @@
 import ConfigurationItemsExport, { IExportInterface } from "@/components/configurationFramework/itemsExport";
 import { ConfigurationItemsImport, IImportInterface } from "@/components/configurationFramework/itemsImport";
-import { IAjaxResponse, IErrorInfo } from "@/interfaces";
+import { IAjaxResponse } from "@/interfaces";
 import { FormFullName, HttpClientApi } from "@/providers";
 import { IShaRouter } from "@/providers/shaRouting/contexts";
 import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-export";
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 import { buildUrl } from "@/utils/url";
+import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
 import React, { MutableRefObject, ReactNode } from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
 import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, getRevisionJsonAsync, MoveNodePayload, moveTreeNodeAsync, restoreItemRevisionAsync } from "../apis";
-import { getUnknownDocumentDefinition } from "../document-definitions/configurable-editor/genericDefinition";
+import { confirmSaveDocumentAsync } from "../components/save-confirmation";
 import {
   CIDocument,
+  CloseDocumentResponse,
   ConfigItemTreeNode,
   DocumentBase,
-  DocumentDefinition, DocumentDefinitions,
   FolderTreeNode,
   ForceRenderFunc,
   IDocumentInstance,
+  isCIDocument,
   isConfigItemTreeNode,
   isFolderTreeNode, isModuleTreeNode, isSpecialTreeNode, ItemTypeDefinition,
+  SaveDocumentResponse,
   SpecialTreeNode,
   StoredDocumentInfo,
-  TreeNode, TreeNodeType,
+  TreeNode,
+  TreeNodeType,
 } from "../models";
 import { IAsyncStorage } from "../storage";
 import { flatNode2TreeNode, getIcon } from "../tree-utils";
+import { CreateFolderArgs, CreateItemArgs, CsSubscriptionType, ExportPackageArgs, ExposeArgs, GetRevisionJsonAsyncArgs, IConfigurationStudio, ImportPackageArgs, ProcessingState, RenameRevisionArgs, RestoreRevisionArgs } from "./interfaces";
 import { IModalApi } from "./modalApi";
 import { INotificationApi } from "./notificationApi";
 import { createManualRef } from "./utils";
-import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
-
-export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
-export interface ProcessingState {
-  status: LoadingStatus;
-  hint?: string | undefined;
-  error?: IErrorInfo | unknown;
-}
+import { IConfigurationStudioEnvironment } from "../cs-environment/interfaces";
 
 export const SPECIAL_NODES: { HOME: SpecialTreeNode; SETTINGS: SpecialTreeNode } = {
   HOME: {
@@ -90,121 +88,12 @@ interface CreateItemResponse {
 };
 
 export type CsSubscription = (cs: IConfigurationStudio) => void;
-export type CsSubscriptionType = 'tree' | 'tabs' | 'doc' | 'tree-dnd';
-
-export type CreateFolderArgs = {
-  moduleId: string;
-  folderId?: string | undefined;
-};
-export type CreateItemArgs = {
-  moduleId: string;
-  folderId?: string | undefined;
-  prevItemId?: string | undefined;
-  itemType: string;
-};
-
-export type ExposeArgs = {
-  moduleId: string;
-  folderId: string | undefined;
-};
-export type ImportPackageArgs = {
-  moduleId: string;
-  folderId: string | undefined;
-};
-export type ExportPackageArgs = {
-  moduleId: string;
-  folderId: string | undefined;
-};
-
-export type RenameRevisionArgs = {
-  id: string;
-  versionName: string | null;
-};
-
-export type GetRevisionJsonAsyncArgs = {
-  id: string;
-};
-
-export type RestoreRevisionArgs = {
-  itemId: string;
-  revisionId: string;
-  revisionFriendlyName: string;
-};
-
-export interface IConfigurationStudio {
-  readonly treeNodes: TreeNode[];
-  readonly treeLoadingState: ProcessingState;
-  readonly quickSearch: string | undefined;
-  readonly treeExpandedKeys: React.Key[];
-  readonly treeSelectedKeys: React.Key[];
-  readonly treeSelectedNode: TreeNode | undefined;
-  readonly treeSelectedItemNode: ConfigItemTreeNode | undefined;
-  readonly isTreeDragging: boolean;
-  readonly renderedDocs: Map<string, ReactNode>;
-
-  setIsTreeDragging: (isDragging: boolean) => void;
-
-  readonly itemTypes: ItemTypeDefinition[];
-  toolbarRef: MutableRefObject<HTMLDivElement>;
-  setDocumentToolbarRerenderer: (itemId: string, forceRender: ForceRenderFunc) => void;
-
-  onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
-  setQuickSearch: (value: string) => void;
-
-  loadTreeAndDocsAsync: () => Promise<void>;
-  moveTreeNodeAsync: (payload: MoveNodePayload) => Promise<void>;
-  getTreeNodeById: (itemId: string) => TreeNode | undefined;
-  subscribe(type: CsSubscriptionType, callback: () => void): () => void;
-
-  //#region selection and tabs
-  selectTreeNode: (node?: TreeNode) => void;
-  clickTreeNode: (node: TreeNode) => void;
-
-  docs: IDocumentInstance[];
-  activeDocId: string | undefined;
-  activeDocument: IDocumentInstance | undefined;
-
-  navigateToDocumentAsync: (docId: string) => Promise<void>;
-  activateDocumentById: (docId: string | undefined) => void;
-  openDocumentByIdAsync: (docId: string) => Promise<void>;
-  closeDocumentAsync: (docId: string) => Promise<void>;
-  reloadDocumentAsync: (docId: string) => Promise<void>;
-  closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => Promise<void>;
-  //#endregion
-
-  //#region crud operations
-  deleteFolderAsync: (node: FolderTreeNode) => Promise<void>;
-  renameFolderAsync: (node: FolderTreeNode) => Promise<void>;
-  createFolderAsync: (args: CreateFolderArgs) => Promise<void>;
-
-  createItemAsync: (args: CreateItemArgs) => Promise<void>;
-  deleteItemAsync: (node: ConfigItemTreeNode) => Promise<void>;
-  renameItemAsync: (node: ConfigItemTreeNode) => Promise<void>;
-  duplicateItemAsync: (node: ConfigItemTreeNode) => Promise<void>;
-
-  showRevisionHistoryAsync: (node: ConfigItemTreeNode) => Promise<void>;
-  hideRevisionHistoryAsync: (docId: string) => Promise<void>;
-
-  exposeExistingAsync: (args: ExposeArgs) => Promise<void>;
-  importPackageAsync: (args: ImportPackageArgs) => Promise<void>;
-  exportPackageAsync: (args: ExportPackageArgs) => Promise<void>;
-
-  renameItemRevisionAsync: (args: RenameRevisionArgs) => Promise<boolean>;
-  restoreRevisionAsync: (args: RestoreRevisionArgs) => Promise<boolean>;
-
-  downloadRevisionJsonAsync: (args: GetRevisionJsonAsyncArgs) => Promise<void>;
-  //#endregion
-
-  //#region document definitions
-  registerDocumentDefinition: (definition: DocumentDefinition) => void;
-  unregisterDocumentDefinition: (definition: DocumentDefinition) => void;
-  //#endregion
-}
 
 export type ForceUpdateTrigger = () => void;
 
 interface ConfigurationStudioArguments {
   forceRootUpdate: ForceUpdateTrigger;
+  csEnvironment: IConfigurationStudioEnvironment;
   httpClient: HttpClientApi;
   storage: IAsyncStorage;
   modalApi: IModalApi;
@@ -216,6 +105,8 @@ interface ConfigurationStudioArguments {
 
 export class ConfigurationStudio implements IConfigurationStudio {
   forceRootUpdate: ForceUpdateTrigger;
+
+  private csEnvironment: IConfigurationStudioEnvironment;
 
   private httpClient: HttpClientApi;
 
@@ -262,8 +153,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   private _quickSearch?: string;
 
-  private _documentDefinitions: DocumentDefinitions;
-
   private _itemTypes: ItemTypeDefinition[] = [];
 
   private _itemTypesMap: Map<string, ItemTypeDefinition> = new Map<string, ItemTypeDefinition>();
@@ -295,6 +184,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   constructor(args: ConfigurationStudioArguments) {
     this.renderedDocs = new Map<string, ReactNode>();
     this.forceRootUpdate = args.forceRootUpdate;
+    this.csEnvironment = args.csEnvironment;
     this.httpClient = args.httpClient;
     this.modalApi = args.modalApi;
     this.notificationApi = args.notificationApi;
@@ -303,11 +193,36 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.log = args.logEnabled ? console.log : () => {};
     this.treeLoadingState = { status: 'waiting' };
     this.subscriptions = new Map<CsSubscriptionType, Set<CsSubscription>>();
-    this._documentDefinitions = new Map<string, DocumentDefinition>();
     this.toolbarRef = args.toolbarRef;
     this.shaRouter = args.shaRouter;
     this.rootPath = this.shaRouter.router.path;
   }
+
+  get hasUnsavedChanges(): boolean {
+    return this.docs.some((doc) => doc.isDataModified);
+  };
+
+  confirmNavigation = (newUrl: string): boolean => {
+    const csRoute = this.shaRouter.router.path;
+    const leaveCs = !newUrl.startsWith(csRoute);
+
+    const confirmationRequired = this.hasUnsavedChanges && leaveCs;
+    return !confirmationRequired || window.confirm("You have unsaved changes that will be lost.");
+  };
+
+  reorderDocumentsAsync = async (fromIndex: number, toIndex: number): Promise<void> => {
+    const doc = this.docs[fromIndex];
+    if (!doc)
+      throw new Error("Could not find document to move");
+
+    const newDocs = [...this.docs];
+    newDocs.splice(fromIndex, 1);
+    newDocs.splice(toIndex, 0, doc);
+    this.docs = newDocs;
+    this.notifySubscribers(["tabs"]);
+
+    await this.saveOpenedDocsAsync();
+  };
 
   renameItemRevisionAsync = async (args: RenameRevisionArgs): Promise<boolean> => {
     const response = await this.modalApi.showModalFormAsync<IAjaxResponse<void>>({
@@ -322,7 +237,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   restoreRevisionAsync = async (args: RestoreRevisionArgs): Promise<boolean> => {
-    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` }))
+    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` }))
       return false;
     await restoreItemRevisionAsync(this.httpClient, { itemId: args.itemId, revisionId: args.revisionId });
     return true;
@@ -330,14 +245,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   downloadRevisionJsonAsync = async (args: GetRevisionJsonAsyncArgs): Promise<void> => {
     await getRevisionJsonAsync(this.httpClient, { id: args.id });
-  };
-
-  registerDocumentDefinition = (definition: DocumentDefinition): void => {
-    this._documentDefinitions.set(definition.documentType, definition);
-  };
-
-  unregisterDocumentDefinition = (definition: DocumentDefinition): void => {
-    this._documentDefinitions.delete(definition.documentType);
   };
 
   get quickSearch(): string | undefined {
@@ -513,11 +420,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
     const mappedDocs = docs.map<IDocumentInstance | undefined>((d) => {
       const node = this.getTreeNodeById(d.itemId);
       if (isConfigItemTreeNode(node)) {
-        const definition = this.getDocumentDefinition(node.itemType);
+        const definition = this.csEnvironment.getDocumentDefinition(node.itemType);
         if (!definition)
           return undefined;
 
         return definition.documentInstanceFactory({
+          // cs: this,
           itemId: d.itemId,
           label: node.name,
           moduleId: node.moduleId,
@@ -527,7 +435,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       }
 
       if (isSpecialTreeNode(node)) {
-        const definition = this.getDocumentDefinition(node.id);
+        const definition = this.csEnvironment.getDocumentDefinition(node.id);
         if (!definition)
           return undefined;
 
@@ -566,7 +474,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   private createNewCiTabAsync = async (node: ConfigItemTreeNode): Promise<CIDocument> => {
     this.log(`create CI tab for item '${node.name}'`);
 
-    const definition = this.getDocumentDefinition(node.itemType);
+    const definition = this.csEnvironment.getDocumentDefinition(node.itemType);
     if (!definition)
       throw new Error(`Unsupported item type: '${node.itemType}'`);
 
@@ -589,7 +497,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   private createNewSpecialTabAsync = async (node: SpecialTreeNode): Promise<CIDocument> => {
     this.log(`create special tab for item '${node.name}'`);
 
-    const definition = this.getDocumentDefinition(node.id);
+    const definition = this.csEnvironment.getDocumentDefinition(node.id);
     if (!definition)
       throw new Error(`Unknown special document: '${node.id}'`);
 
@@ -658,12 +566,20 @@ export class ConfigurationStudio implements IConfigurationStudio {
     return this.docs.some((t) => t.itemId === docId);
   };
 
-  closeDocumentAsync = async (docId: string): Promise<void> => {
+  closeDocumentAsync = async (docId: string, confirmUnsavedChanges: boolean, activateNextTab: boolean): Promise<CloseDocumentResponse> => {
     if (!this.isDocOpened(docId))
-      return;
+      return 'closed';
 
-    // TODO: check for unsaved changes, ask user to confirm
-    // TODO: unload document
+    if (confirmUnsavedChanges) {
+      const doc = this.findDocumentById(docId);
+      if (isDefined(doc) && isCIDocument(doc) && doc.isDataModified) {
+        await this.navigateToDocumentAsync(doc.itemId);
+        const result = await this.confirmSaveDocumentAsync(doc.itemId);
+        if (result === 'cancel')
+          return 'cancelled';
+      }
+    }
+
     const index = this.docs.findIndex((t) => t.itemId === docId);
     const isActive = this.activeDocId === docId;
 
@@ -673,7 +589,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.notifySubscribers(['tabs', 'doc']);
 
     // if the document was active - activate next if available
-    if (isActive) {
+    if (activateNextTab && isActive) {
       const indexToSwitch = this.docs.length - 1 >= index
         ? index
         : index - 1;
@@ -687,19 +603,33 @@ export class ConfigurationStudio implements IConfigurationStudio {
         await this.clearDocumentSelectionAsync();
       }
     }
+    return 'closed';
   };
 
-  closeMultipleDocumentsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean): Promise<void> => {
-    // TODO: check for unsaved changes, ask user to confirm
-    const docsToClose = this.docs.filter(predicate);
+  closeMultipleDocumentsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean, confirmUnsavedChanges: boolean): Promise<void> => {
+    const activeDoc = this.activeDocument;
+    // build list of reversed docs with active one on top of it
+    const allDocs = activeDoc
+      ? [...this.docs.filter((t) => t !== activeDoc), activeDoc]
+      : [...this.docs];
+    allDocs.reverse();
+
+    const docsToClose = allDocs.filter(predicate);
+
+    const last = docsToClose.at(-1);
     for (const doc of docsToClose) {
-      await this.closeDocumentAsync(doc.itemId);
+      const closeResponse = await this.closeDocumentAsync(doc.itemId, confirmUnsavedChanges, doc === last);
+      if (closeResponse === 'cancelled')
+        return;
     }
   };
 
-  getDocumentDefinition = (itemType: string): DocumentDefinition | undefined => {
-    const definition = this._documentDefinitions.get(itemType);
-    return definition ?? getUnknownDocumentDefinition(itemType);
+  confirmSaveDocumentAsync = async (docId: string): Promise<SaveDocumentResponse | undefined> => {
+    const doc = this.findDoc(docId);
+    if (doc && doc.isDataModified) {
+      return await confirmSaveDocumentAsync(doc, this.modalApi);
+    }
+    return undefined;
   };
 
   //#endregion
@@ -776,7 +706,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
           it.itemType,
           false,
         ),
-        editor: this._documentDefinitions.get(it.itemType),
+        editor: this.csEnvironment.getDocumentDefinition(it.itemType),
       };
       this._itemTypes.push(definition);
       this._itemTypesMap.set(it.itemType, definition);
@@ -860,7 +790,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
-    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
+    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
       return;
 
     try {
@@ -940,7 +870,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   deleteItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
     const definition = this.getItemTypeDefinition(node.itemType);
-    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
+    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
       return;
 
     const docId = node.id;
@@ -948,7 +878,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
 
       if (this.isDocOpened(docId))
-        this.closeDocumentAsync(docId);
+        await this.closeDocumentAsync(docId, false, true);
 
       await this.loadTreeAsync();
     } catch (error) {
@@ -1007,6 +937,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
         console.error(`Item creation API didn't return expected id of a new item. Item type = '${node.itemType}'`);
     } catch (error) {
       this.showError(`Failed to duplicate ${definition.friendlyName} '${node.name}'`, error);
+    }
+  };
+
+  setDocumentModified = (docId: string, isModified: boolean): void => {
+    const doc = this.getDocumenById(docId);
+    if (doc && doc.isDataModified !== isModified) {
+      doc.isDataModified = isModified;
+      this.notifySubscribers(['doc', 'tabs']);
     }
   };
 

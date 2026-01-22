@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
@@ -83,12 +84,15 @@ namespace Shesha.ConfigurationStudio
              */
             var itemsToExpose = await ItemRepo.GetListInBatchesAsync(request.ItemIds);
 
-            foreach (var item in itemsToExpose) 
+            using (CfRuntime.DisableConfigurationTracking()) 
             {
-                var manager = CiHelper.GetManager(item);
-                var newItem = await manager.ExposeAsync(item, module);
-                newItem.Folder = folder;
-                await ItemRepo.UpdateAsync(newItem);
+                foreach (var item in itemsToExpose)
+                {
+                    var manager = CiHelper.GetManager(item);
+                    var newItem = await manager.ExposeAsync(item, module);
+                    newItem.Folder = folder;
+                    await ItemRepo.UpdateAsync(newItem);
+                }
             }
         }
 
@@ -100,9 +104,15 @@ namespace Shesha.ConfigurationStudio
 
             var item = await manager.ResolveItemAsync(request.Module, request.Name);
 
-            var dto = await manager.MapToDtoAsync(item);
-
-            return dto;
+            if (item == null)
+                throw new EntityNotFoundException($"Requested configuration not found ({request.ItemType} - {request.Module}: {request.Name})");
+            if (await manager.CurrentUserHasAccessToAsync(item.Module?.Name ?? string.Empty, item.Name))
+            {
+                var dto = await manager.MapToDtoAsync(item);
+                return dto;
+            } 
+            else
+                throw new AbpAuthorizationException($"You are not authorized for this {request.ItemType} {request.Module}: {request.Name}");
         }
 
         public Task<List<IConfigurationItemTypeDto>> GetAvailableItemTypesAsync() 
@@ -128,6 +138,8 @@ namespace Shesha.ConfigurationStudio
                 Module = module,
                 Folder = folder,
                 Name = request.Name,
+                Label = request.Label,
+                Description = request.Description,
             });
 
             var dto = await manager.MapToDtoAsync(item);
@@ -283,6 +295,24 @@ namespace Shesha.ConfigurationStudio
             var fileName = $"{revision.ConfigurationItem.FullName} (revision {revision.VersionNo})".RemovePathIllegalCharacters() + ".json";
 
             return new ShaFileContentResult(bytes, "application/json") { FileDownloadName = fileName };
+        }
+
+        [HttpGet]
+        public Task<GetModulesResponse> GetModulesAsync() 
+        {
+            var modules = ModuleManager.GetModuleInfos();
+            var response = new GetModulesResponse
+            {
+                Modules = modules.Select(m => new GetModulesResponse.ModuleInfo
+                {
+                    Name = m.Name,
+                    Description = m.Description,
+                    Alias = m.Alias,
+                    IsEditable = m.IsEditable,
+                }).ToList()
+            };
+
+            return Task.FromResult(response);
         }
     }
 }

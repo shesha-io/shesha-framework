@@ -1,4 +1,3 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
@@ -6,9 +5,9 @@ import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } fr
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const prefix = 'getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tabPosition) === ';
 
   const hideConditions = {
@@ -25,7 +24,7 @@ export const getSettings = (): FormMarkupWithSettings => {
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -39,9 +38,8 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: '1',
             title: 'Common',
             id: commonTabId,
-            type: '',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'textField',
@@ -70,7 +68,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                       type: 'dropdown',
                       propertyName: 'tabType',
                       label: 'Tab Type',
-                      defaultValue: 'card',
                       dropdownOptions: [
                         { value: 'line', label: 'Line' },
                         { value: 'card', label: 'Card' },
@@ -93,7 +90,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       parentId: 'root',
                       buttonTextReadOnly: 'View Tab Panes',
                       buttonText: 'Configure Tab Panes',
-                      listItemSettingsMarkup: getItemSettings(),
+                      listItemSettingsMarkup: getItemSettings(fbf),
                       onAddNewItem: onAddNewItem,
                       hidden: false,
                       modalSettings: {
@@ -122,9 +119,8 @@ export const getSettings = (): FormMarkupWithSettings => {
           {
             key: '2',
             title: 'Appearance',
-            type: '',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -137,15 +133,14 @@ export const getSettings = (): FormMarkupWithSettings => {
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                },
+                } as any,
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       inputType: 'dropdown',
                       propertyName: 'tabPosition',
                       tooltip: "This will set the position for all buttons",
-                      defaultValue: 'top',
                       label: 'Position',
                       dropdownOptions: [
                         { value: 'top', label: 'Top' },
@@ -166,7 +161,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: 'fontStylePnl',
@@ -231,7 +226,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: 'dimensionsStylePnl',
@@ -314,16 +309,16 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addContainer({
                             id: nanoid(),
                             parentId: 'borderStylePnl',
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: 'borderStylePnl',
-                            components: getCornerInputs("", true, hideConditions) as any,
+                            components: getCornerInputs(fbf, "", true, hideConditions),
                           })
                           .toJson(),
                         ],
@@ -341,7 +336,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: 'tab-line-color-pnl',
@@ -365,7 +360,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: "backgroundStylePnl",
@@ -476,7 +471,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -495,7 +489,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: 'shadowStylePnl',
@@ -564,7 +558,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -585,7 +579,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -608,7 +602,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addCollapsiblePanel({
                             id: nanoid(),
                             propertyName: 'tabCardFontStyle',
@@ -619,7 +613,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: 'cardfontStylePnl',
@@ -632,7 +626,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                       label: 'Family',
                                       propertyName: 'card.font.type',
                                       hideLabel: true,
-                                      defaultValue: 'Arial',
                                       dropdownOptions: fontTypes,
                                     },
                                     {
@@ -641,7 +634,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                       label: 'Size',
                                       propertyName: 'card.font.size',
                                       hideLabel: true,
-                                      defaultValue: 14,
                                       width: 50,
                                     },
                                     {
@@ -650,7 +642,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                       label: 'Weight',
                                       propertyName: 'card.font.weight',
                                       hideLabel: true,
-                                      defaultValue: 400,
                                       tooltip: "Controls text thickness (light, normal, bold, etc.)",
                                       dropdownOptions: fontWeightsOptions,
                                       width: 100,
@@ -687,7 +678,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: 'card-width-dimensions-style-pnl',
@@ -768,7 +759,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             content: {
                               id: nanoid(),
                               components: [
-                                ...new DesignerToolbarSettings()
+                                ...fbf()
                                   .addSettingsInput({
                                     id: nanoid(),
                                     parentId: "backgroundStylePnl",
@@ -776,7 +767,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     jsSetting: false,
                                     propertyName: "card.background.type",
                                     inputType: "radio",
-                                    defaultValue: "color",
                                     tooltip: "Select a type of background",
                                     buttonGroupOptions: backgroundTypeOptions,
                                   })
@@ -787,7 +777,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                       type: 'colorPicker',
                                       id: nanoid(),
                                       label: "Color",
-                                      defaultValue: 'rgba(0,0,0,0.02)',
                                       propertyName: "card.background.color",
                                       hideLabel: true,
                                       jsSetting: false,
@@ -856,7 +845,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                         type: 'customDropdown',
                                         id: nanoid(),
                                         label: "Size",
-                                        defaultValue: 'cover',
                                         hideLabel: true,
                                         propertyName: "card.background.size",
                                         dropdownOptions: sizeOptions,
@@ -866,7 +854,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                         id: nanoid(),
                                         label: "Position",
                                         hideLabel: true,
-                                        defaultValue: 'center',
                                         propertyName: "card.background.position",
                                         dropdownOptions: positionOptions,
                                       },
@@ -901,7 +888,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addSettingsInput({
                                   id: nanoid(),
                                   inputType: 'codeEditor',
@@ -925,8 +912,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: '3',
             title: 'Security',
             id: securityTabId,
-            type: '',
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

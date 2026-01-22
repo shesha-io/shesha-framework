@@ -1,15 +1,15 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
   const securityTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -24,7 +24,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -49,7 +49,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       parentId: commonTabId,
                       label: 'Disable Refresh Data',
                       tooltip:
-                        "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
+                        "Return 'true' if dataContext is not ready to refresh data (filter data is not ready, etc...)",
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
@@ -79,13 +79,13 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContainer({
                   id: nanoid(),
                   parentId: dataTabId,
                   labelAlign: 'left',
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'sourceType',
@@ -113,19 +113,14 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         inputs: [
                           {
                             id: nanoid(),
-                            type: 'autocomplete',
+                            type: 'entityTypeAutocomplete',
                             propertyName: 'entityType',
                             label: 'Entity Type',
                             description: 'The entity type you want to use.',
                             labelAlign: 'right',
                             parentId: dataTabId,
                             hidden: false,
-                            dataSourceType: 'url',
-                            validate: {},
-                            dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                            settingsValidationErrors: [],
                             jsSetting: true,
-                            useRawValues: true,
                             width: '100%',
                           },
                         ],
@@ -156,13 +151,10 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 _value: false,
                               } as any,
                             },
-                            dataSourceType: 'url',
-                            dataSourceUrl: '/api/services/app/Api/Endpoints',
                             settingsValidationErrors: [],
-                            useRawValues: true,
                             jsSetting: true,
-                            width: '100%',
                             placeholder: '',
+                            width: '100%',
                           },
                         ],
                       })
@@ -243,7 +235,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 value: `200`,
                               },
                             ],
-                            mode: ['single'],
                             parentId: dataTabId,
                             validate: { required: true },
                             jsSetting: true,
@@ -253,7 +244,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code:
@@ -278,8 +268,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               _value: false,
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                            width: '100%',
                             jsSetting: false,
+                            width: '100%',
                           },
                         ],
                       })
@@ -322,7 +312,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code:
@@ -355,7 +344,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -377,7 +365,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Sort Order',
                             labelAlign: 'right',
                             type: 'dropdown',
-                            inputType: 'dropdown',
                             allowClear: true,
                             validate: {
                               required: {
@@ -494,7 +481,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: dataTabId,
                             type: 'dropdown',
                             label: 'Allow Reordering',
-                            inputType: 'dropdown',
                             allowClear: true,
                             dropdownOptions: [
                               {
@@ -519,7 +505,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
@@ -534,12 +519,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: dataTabId,
                             type: 'endpointsAutocomplete',
                             description: 'The endpoint to use to reorder data (if not provided, the default endpoint will be used).',
-                            dataSourceType: 'url',
-                            dataSourceUrl: '/api/services/app/Api/Endpoints',
                             settingsValidationErrors: [],
-                            useRawValues: true,
                             jsSetting: true,
-                            width: '100%',
                             placeholder: '',
                           },
                         ],
@@ -557,7 +538,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             id: nanoid(),
                             propertyName: 'onBeforeRowReorder',
                             label: 'On Before Row Reorder',
-                            hideLabel: true,
+                            hideLabel: false,
                             parentId: dataTabId,
                             type: 'configurableActionConfigurator',
                             description: 'Action to execute before row reorder. Can be used for validation and cancellation.',
@@ -579,7 +560,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'onAfterRowReorder',
                             label: 'On After Row Reorder',
                             parentId: dataTabId,
-                            hideLabel: true,
+                            hideLabel: false,
                             type: 'configurableActionConfigurator',
                             description: 'Action to execute after row reorder. Receives the API response data.',
                             placeholder: '',
@@ -597,7 +578,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

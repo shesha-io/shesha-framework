@@ -3,7 +3,6 @@ import { isValidGuid } from '@/components/formDesigner/components/utils';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IToolboxComponent } from '@/interfaces';
 import { IFormComponentContainer, StyleBoxValue, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
@@ -17,7 +16,7 @@ import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { IColumnProps, IColumnsComponentProps, IColumnsInputProps } from './interfaces';
+import { ColumnsComponentDefinition, IColumnProps, IColumnsComponentProps, IColumnsInputProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { nanoid } from '@/utils/uuid';
@@ -39,7 +38,7 @@ const validateColumns = (columns: IColumnProps[]): IColumnProps[] => {
   return columns;
 };
 
-const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
+const ColumnsComponent: ColumnsComponentDefinition = {
   type: 'columns',
   isInput: false,
   name: 'Columns',
@@ -198,7 +197,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<IColumnsComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   customContainerNames: ['columns'],
   getContainers: (model) => {
     return model.columns.map<IFormComponentContainer>((t) => ({ id: t.id }));

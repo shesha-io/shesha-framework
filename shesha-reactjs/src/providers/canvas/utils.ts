@@ -72,12 +72,15 @@ export const DEFAULT_OPTIONS = {
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
   designerWidth: defaultDesignerWidth,
+  zoomStep: 1,
+  modalMargins: 32,
 };
 
 const SIDEBAR_WIDTH = {
   COLLAPSED: 60,
   EXPANDED: 250,
   MINIMAL: 32,
+  MODAL_MARGINS: 20,
 } as const;
 
 const valueToPercent = (value: number): number => value / 100;
@@ -97,17 +100,16 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   }
 
   const guttersAndScrollersSize = 14;
-  const windowWidth = window.screen.availWidth;
+  const windowWidth = window.innerWidth;
 
   // Determine the offset based on view type
   let offset: number;
   if (viewType === 'configStudio') {
-    // Use configTreePanelSize for config studio
     offset = configTreePanelSize;
   } else if (viewType === 'page') {
-    // Use sidebar width for regular pages
-    // When collapsed: 32px, when expanded: 250px
     offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
+  } else if (viewType === 'modal') {
+    offset = DEFAULT_OPTIONS.modalMargins;
   } else {
     offset = SIDEBAR_WIDTH.MINIMAL;
   }
@@ -126,7 +128,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   }
 
   const optimalZoom = (availableWidth / canvasWidth) * 100;
-  return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.round(optimalZoom)));
+  return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.floor(optimalZoom)));
 }
 
 export const usePinchZoom = (
@@ -175,7 +177,7 @@ export const usePinchZoom = (
     if (isAutoWidth || !e.ctrlKey) return;
 
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -5 : 5;
+    const delta = e.deltaY > 0 ? -DEFAULT_OPTIONS.zoomStep : DEFAULT_OPTIONS.zoomStep;
     const newZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + delta));
     onZoomChange(newZoom);
   }, [onZoomChange, currentZoom, minZoom, maxZoom, isAutoWidth]);

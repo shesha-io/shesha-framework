@@ -6,7 +6,8 @@ import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { DataTableFullInstance } from '@/providers/dataTable/contexts';
 import { CellStyleFunc, IAnchoredDirection, IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
-import { IFormApi } from '@/providers/form/formApi';
+
+export type TableSelectionMode = 'none' | 'single' | 'multiple';
 
 export interface ITableActionColumns {
   icon?: ReactNode;
@@ -79,6 +80,7 @@ export interface IShaDataTableInlineEditableProps {
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
   useMultiselect?: boolean;
+  selectionMode?: TableSelectionMode;
   freezeHeaders?: boolean;
   disableCustomFilters?: boolean;
   /**
@@ -120,10 +122,7 @@ export interface ITableCustomTypesRender<D extends object, V = any> {
   render: (cellProps: CellProps<D, V>, router: any) => JSX.Element;
 }
 
-export type OnSaveHandler = (data: object, formApi: IFormApi, globalState: object) => Promise<object>;
+export type OnSaveHandler = (data: object) => Promise<object>;
 export type OnSaveSuccessHandler = (
   data: object,
-  formApi: IFormApi,
-  globalState: object,
-  setGlobalState: Function
 ) => void;

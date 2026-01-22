@@ -1,10 +1,10 @@
 export interface IHasVersion {
-  version?: number | 'latest';
+  version?: number | 'latest' | undefined | undefined;
 }
 
 export type Migration<TPrev = IHasVersion, TNext = IHasVersion, TContext = any> = (
   prev: TPrev,
-  context: TContext
+  context: TContext,
 ) => TNext;
 export interface MigrationRegistration<TPrev = IHasVersion, TNext = IHasVersion> {
   version: number;
@@ -28,7 +28,7 @@ interface IMigrationRegistrationsOwner<TDst = IHasVersion, TContext = any> {
 }
 
 export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext = any> {
-  readonly migrator: IMigrationRegistrationsOwner<TDst>;
+  readonly migrator: IMigrationRegistrationsOwner<TDst, TContext>;
 
   constructor(owner: IMigrationRegistrationsOwner<TDst>) {
     this.migrator = owner;
@@ -40,6 +40,11 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
     const fluent = new MigratorFluent<TNext, TDst, TContext>(this.migrator);
     return fluent;
   };
+
+  get lastVersion(): number | undefined {
+    const maxVersion = Math.max(...this.migrator.migrations.map((item) => item.version), -1);
+    return maxVersion === -1 ? undefined : maxVersion;
+  }
 }
 
 export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = unknown>

@@ -1,6 +1,6 @@
 import { IReferenceList, IReferenceListItem } from "@/interfaces/referenceList";
 import { PromisedValue } from "@/utils/promises";
-import { IFormDto } from "../form/models";
+import { FormIdentifier, IFormDto } from "../form/models";
 
 export interface IFormsDictionary {
   [key: string]: Promise<IFormDto> | undefined;
@@ -26,7 +26,6 @@ export interface IConfigurationItemDto<TConfigDto extends ConfigurationDto = Con
 export type FormConfigurationDto = ConfigurationDto & {
   markup: string;
   modelType: string | null;
-  suppress: boolean;
   access: number | null;
   permissions: string[];
 };
@@ -34,4 +33,27 @@ export type FormConfigurationDto = ConfigurationDto & {
 
 export type ReferenceListDto = ConfigurationDto & {
   items: IReferenceListItem[];
+};
+
+export interface IGetComponentPayload {
+  name: string;
+  isApplicationSpecific: boolean;
+  skipCache: boolean;
+}
+export interface IUpdateComponentPayload {
+  name: string;
+  module?: string;
+  isApplicationSpecific: boolean;
+  settings: object;
+}
+
+export interface IClearFormCachePayload {
+  formId: FormIdentifier;
+}
+
+export interface IGetConfigurationPayload {
+  module: string;
+  name: string;
+  itemType: string;
+  skipCache: boolean;
 };

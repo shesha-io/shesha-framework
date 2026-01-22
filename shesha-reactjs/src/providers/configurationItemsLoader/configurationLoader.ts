@@ -1,15 +1,20 @@
+import { FormIdFullNameDtoAjaxResponse } from "@/apis/entityConfig";
+import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents } from "@/interfaces";
+import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { HttpClientApi, HttpResponse } from "@/publicJsApis/httpClient";
-import { ConfigurationDto, IConfigurationItemDto } from "./models";
-import { URLS } from ".";
-import { buildUrl } from "@/utils/url";
-import { ICacheProvider } from "../metadataDispatcher/entities/models";
-import { IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import axios from "axios";
-import { getConfigurationNotFoundMessage } from "./utils";
-import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, isConfigurableItemFullName, isConfigurableItemRawId } from "@/interfaces";
-import { ConfigurationLoadingError } from "./errors";
 import { PromisedValue, StatefulPromise } from "@/utils/promises";
+import { buildUrl } from "@/utils/url";
+import axios from "axios";
+import { URLS } from ".";
+import { IComponentSettings } from "../appConfigurator/models";
+import { migrateFormSettings } from "../form/migration/formSettingsMigrations";
+import { ConfigurationType, ICacheProvider, IGetFormPayload, IGetRefListPayload } from "../metadataDispatcher/entities/models";
+import { getEntityTypeIdentifierQueryParams } from "../metadataDispatcher/entities/utils";
+import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
+import { ConfigurationLoadingError } from "./errors";
+import { ConfigurationDto, FormConfigurationDto, IClearFormCachePayload, IConfigurationItemDto, IGetComponentPayload, IUpdateComponentPayload, ReferenceListDto } from "./models";
+import { convertFormConfigurationDto2FormDto, getConfigurationNotFoundMessage } from "./utils";
 
 export interface GetConfigurationArgs {
   type: string;
@@ -30,13 +35,22 @@ type FetchConfigurationPayload = Omit<GetConfigurationArgs, 'skipCache'> & {
 };
 
 export interface IConfigurationLoader {
+  getCachedConfigAsync<TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined>;
   getCurrentConfigAsync<TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto>;
   clearCacheAsync: (type: string, id: ConfigurableItemIdentifier) => Promise<void>;
+
+  getFormAsync: (payload: IGetFormPayload) => Promise<IFormDto>;
+  getRefListAsync: (payload: IGetRefListPayload) => PromisedValue<ReferenceListDto>;
+  getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string) => Promise<FormFullName>;
+  clearFormCache: (payload: IClearFormCachePayload) => void;
+  getComponentAsync: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
+  updateComponentAsync: (payload: IUpdateComponentPayload) => Promise<void>;
 };
 
 export interface ConfigurationLoaderConstructorArgs {
   httpClient: HttpClientApi;
   cacheProvider: ICacheProvider;
+  designerComponents: IToolboxComponents;
 };
 
 export interface IConfigurationRequests {
@@ -68,19 +82,79 @@ type ConfigurationRawIdLookup = {
   name: string;
 };
 
+type ModuleInfo = {
+  name: string;
+  description: string | null;
+  alias: string | null;
+  isEditable: boolean;
+};
+type GetModulesResponse = {
+  modules: ModuleInfo[];
+};
+
 const LOOKUP_SUFFIX = '_lookup';
 
 export class ConfigurationLoader implements IConfigurationLoader {
   #httpClient: HttpClientApi;
 
+  #designerComponents: IToolboxComponents;
+
   #cacheProvider: ICacheProvider;
 
   #requests: Map<string, IConfigurationRequests> = new Map<string, IConfigurationRequests>();
 
+  #modules: Map<string, ModuleInfo> | undefined;
+
   constructor(args: ConfigurationLoaderConstructorArgs) {
     this.#httpClient = args.httpClient;
     this.#cacheProvider = args.cacheProvider;
+    this.#designerComponents = args.designerComponents;
   }
+
+  getComponentAsync = (_payload: IGetComponentPayload): PromisedValue<IComponentSettings> => {
+    throw new Error('Not implemented');
+  };
+
+  updateComponentAsync = (_payload: IUpdateComponentPayload): Promise<void> => {
+    throw new Error('Not implemented');
+  };
+
+  clearFormCache = (payload: IClearFormCachePayload): void => {
+    this.clearCacheAsync(ConfigurationType.Form, payload.formId);
+  };
+
+  getEntityFormIdAsync = async (entityType: string | IEntityTypeIdentifier, formType: string): Promise<FormFullName> => {
+    const url = buildUrl(URLS.GET_ENTITY_CONFIG_FORM, { ...getEntityTypeIdentifierQueryParams(entityType), typeName: formType });
+
+    const response = await this.#httpClient.get<FormIdFullNameDtoAjaxResponse>(url);
+    const dto = extractAjaxResponse(response.data);
+    return { name: dto.name, module: dto.module };
+  };
+
+  getModulesAsync = async (): Promise<Map<string, ModuleInfo>> => {
+    if (!isDefined(this.#modules)) {
+      const response = await this.#httpClient.get<IAjaxResponse<GetModulesResponse>>(URLS.GET_MODULES);
+      const modulesResponse = extractAjaxResponse(response.data);
+      this.#modules = new Map(modulesResponse.modules.map((m) => [m.name, m]));
+    }
+    return this.#modules;
+  };
+
+  isModuleEditableAsync = async (moduleName: string): Promise<boolean> => {
+    const modules = await this.getModulesAsync();
+    return modules.get(moduleName)?.isEditable ?? false;
+  };
+
+  getFormAsync = async (payload: IGetFormPayload): Promise<IFormDto> => {
+    const form = await this.getCurrentConfigAsync<FormConfigurationDto>({ type: ConfigurationType.Form, id: payload.formId, skipCache: payload.skipCache });
+    const isEditable = await this.isModuleEditableAsync(form.module);
+    const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(form, !isEditable), this.#designerComponents);
+    return dto;
+  };
+
+  getRefListAsync = (payload: IGetRefListPayload): PromisedValue<ReferenceListDto> => {
+    return this.getCurrentConfigAsync<ReferenceListDto>({ type: ConfigurationType.ReferenceList, id: payload.refListId, skipCache: payload.skipCache });
+  };
 
   clearCacheAsync = (type: string, id: ConfigurableItemIdentifier): Promise<void> => {
     const requests = this.getExistingRequests(type);
@@ -211,7 +285,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     await cache.removeItem(id);
   };
 
-  getCachedConfigAsync = async (args: GetConfigurationArgs): Promise<IConfigurationItemDto | undefined> => {
+  getCachedConfigAsync = async <TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined> => {
     const { type, id, topLevelModule } = args;
 
     const cache = this.#cacheProvider.getCache(type);
@@ -222,15 +296,14 @@ export class ConfigurationLoader implements IConfigurationLoader {
       const resolvedModule = lookupModule ?? module;
 
       const key = this.getCacheKeyByFullName(resolvedModule, name);
-      const config = await cache.getItem<IConfigurationItemDto>(key);
-      return config ?? undefined;
+      return (await cache.getItem<IConfigurationItemDto<TConfigDto>>(key)) as IConfigurationItemDto<TConfigDto> | undefined;
     }
 
     if (isConfigurableItemRawId(id)) {
       const lookup = await this.getConfigRawIdLookupAsync(type, id);
       if (!lookup)
         return undefined;
-      return await this.getCachedConfigAsync({ ...args, id: lookup });
+      return await this.getCachedConfigAsync<TConfigDto>({ ...args, id: lookup });
     }
 
     throw new Error('Unknown configuration item identifier');
@@ -293,6 +366,8 @@ export class ConfigurationLoader implements IConfigurationLoader {
               return cachedConfiguration;
             } else
               throw new Error('Unknown cache error', { cause: e });
+          case 400:
+            throw new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, id), e.status, { cause: e });
           case 404:
             throw new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, id), e.status, { cause: e });
           case 401:
@@ -353,7 +428,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     }
 
     const wrappedPromise = new StatefulPromise<TConfigDto>((resolve, reject) => {
-      this.getCachedConfigAsync(args)
+      this.getCachedConfigAsync<TConfigDto>(args)
         .then((cachedConfig) => {
           this.fetchConfigFromBackendAsync({ type, id, cachedConfiguration: cachedConfig })
             .then((response) => {

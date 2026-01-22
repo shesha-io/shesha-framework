@@ -138,9 +138,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     menuItemColor: "#000",
     hoverItemColor: "#000",
   }),
-  settingsFormMarkup: (model) => getSettings(model),
-  validateSettings: (model) =>
-    validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IMenuListProps>(0, (prev) => ({ ...prev, overflow: 'dropdown' }))
     .add<IMenuListProps>(1, (prev) => {

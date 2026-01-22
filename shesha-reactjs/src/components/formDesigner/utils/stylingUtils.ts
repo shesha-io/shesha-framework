@@ -21,7 +21,7 @@ export interface StyleConfig {
 export const createRootContainerStyle = (
   dimensions: CSSProperties,
   margins: StyleConfig,
-  isInput: boolean
+  isInput: boolean,
 ): CSSProperties => {
   const defaultMargins = {
     vertical: isInput ? '5px' : '0px',

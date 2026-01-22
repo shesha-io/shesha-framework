@@ -89,7 +89,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         }
       }
     }
-  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, zoom, setCanvasZoom, viewType, isSidebarCollapsed]);
+  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
@@ -166,6 +166,16 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         </div>
         {renderSidebar('right')}
       </SizableColumns>
+      {/* Dedicated popup container for canvas components - applies zoom transformation */}
+      {isDesigner && canZoom && (
+        <div
+          id="canvas-popup-container"
+          className={styles.canvasPopupContainer}
+          style={{
+            zoom: `${zoom}%`,
+          }}
+        />
+      )}
     </div>
   );
 };

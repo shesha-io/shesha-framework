@@ -1,6 +1,12 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
@@ -20,39 +26,47 @@ namespace Shesha.DynamicEntities;
 
 public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, EntityConfigDto, Guid>, IEntityConfigAppService
 {
-    private readonly IEntityConfigurationStore _entityConfigurationStore;
-    private readonly IEntityConfigManager _entityConfigManager;
+    private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
+    private readonly IModelConfigurationManager _modelConfigManager;
     private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
-    private readonly IRepository<EntityProperty, Guid> _propertyRepository;    
+    private readonly IRepository<ConfigurationItemInheritance, string> _configItemInheritanceRepository;
+    private readonly IRepository<EntityProperty, Guid> _propertyRepository;
     private readonly IModuleManager _moduleManager;
 
     public EntityConfigAppService(
         IRepository<EntityConfig, Guid> repository,
-        IEntityConfigurationStore entityConfigurationStore,
-        IEntityConfigManager entityConfigManager,
+        IEntityTypeConfigurationStore entityConfigurationStore,
+        IModelConfigurationManager modelConfigManager,
         IRepository<ConfigurationItem, Guid> configItemRepository,
+        IRepository<ConfigurationItemInheritance, string> configItemInheritanceRepository,
         IRepository<EntityProperty, Guid> propertyRepository,
         IModuleManager moduleManager
         ) : base(repository)
     {
         _entityConfigurationStore = entityConfigurationStore;
-        _entityConfigManager = entityConfigManager;
+        _modelConfigManager = modelConfigManager;
         _configItemRepository = configItemRepository;
+        _configItemInheritanceRepository = configItemInheritanceRepository;
         _propertyRepository = propertyRepository;
         _moduleManager = moduleManager;
     }
 
-    public async Task<FormIdentifier?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
+    [AllowAnonymous]
+    public async Task<FormIdentifier?> GetEntityConfigFormAsync(EntityTypeIdInput entityTypeId, string typeName)
     {
-        var entityConfig = await Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName).FirstOrDefaultAsync();
+        // ToDo: AS - merge EntityTypeIdInput with EntityTypeIdentifier
+        var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(new EntityTypeIdentifier(entityTypeId.Module, entityTypeId.Name ?? "", entityTypeId.EntityType));
+
         if (entityConfig == null)
             return null;
 
+        var model = (await _modelConfigManager.GetCachedModelConfigurationOrNullAsync(entityConfig, true)).NotNull();
+
         typeName = typeName.Replace(" ", "").ToLower();
 
-        var configFormId = entityConfig.ViewConfigurations.FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId;
+        var configFormId = model.ViewConfigurations.FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId;
 
-        return configFormId ?? new FormIdentifier(entityConfig.Module?.Name, $"{entityConfigName}-{typeName}");
+        return configFormId ?? new FormIdentifier(entityConfig.Module?.Name, $"{entityTypeId.Name}-{typeName}");
     }
 
     // Used to avoid performance issues
@@ -68,7 +82,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         query = ApplySorting(query, input);
         query = ApplyPaging(query, input);
 
-        var entities = await _entityConfigManager.GetMainDataListAsync(query);
+        var entities = await _modelConfigManager.GetMainDataListAsync(query);
 
         return new PagedResultDto<EntityConfigDto>(totalCount, entities);
     }
@@ -77,7 +91,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     public async Task<List<AutocompleteItemDto>> EntityConfigAutocompleteAsync(bool? implemented, string? term, string? selectedValue)
     {
         var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
-        var models = await _entityConfigManager.GetMainDataListAsync(implemented: implemented);
+        var models = await _modelConfigManager.GetMainDataListAsync(implemented: implemented);
 
         var entities = isPreselection
             ? models.Where(e => e.Id == selectedValue.NotNull().ToGuid()).ToList()
@@ -117,35 +131,39 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     [HttpGet]
     public async Task<List<EntityConfigurationDto>> GetClientApiConfigurationsAsync()
     {
-        var entities = await _entityConfigManager.GetMainDataListAsync();
+        var entities = await _modelConfigManager.GetMainDataListAsync();
         var result = new List<EntityConfigurationDto>();
 
-        foreach (var entity in entities) 
+        foreach (var entity in entities)
         {
+            // Check if the entity is definitely exists as class
             var entityConfig = _entityConfigurationStore.GetOrNull(entity.FullClassName);
             if (entityConfig == null)
                 continue;
 
+            // Skip JsonEntities because the can't use api
             if (entityConfig.EntityType.IsJsonEntityType())
                 continue;
 
-            var moduleInfo = entityConfig.EntityType.GetConfigurableModuleInfo();
-            if (moduleInfo == null)
+            var module = entity.Module.IsNullOrEmpty() ? null : await _moduleManager.GetModuleOrNullAsync(entity.Module.NotNull());
+            if (module == null)
                 continue;
 
             var dto = new EntityConfigurationDto
             {
-                Name = entity.FullClassName,
+                FullClassName = entity.FullClassName,
+                Name = entity.Name,
                 Description = entity.Description,
                 Accessor = entityConfig.EntityType.GetTypeAccessor(),
-                Module = new EntityApiItemBase {
-                    Name = moduleInfo.Name,
-                    Description = moduleInfo.Description,
-                    Accessor = moduleInfo.GetModuleAccessor(),
+                Module = new EntityApiItemBase
+                {
+                    Name = module.Name,
+                    Description = module.Description,
+                    Accessor = module.Accessor ?? module.Name,
                 }
             };
             result.Add(dto);
-        }        
+        }
 
         return result;
     }
@@ -157,68 +175,132 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
         var entityModelProvider = IocManager.Resolve<IEntityModelProvider>();
         var models = await entityModelProvider.GetModelsAsync();
-        var groupped = models.GroupBy(e => e.ModuleAccessor, (moduleAccessor, entities) => {
-            return new {
-                Module = moduleAccessor,
+        var groupped = models.GroupBy(e => e.Module, (module, entities) =>
+        {
+            return new
+            {
+                Module = module,
                 Entities = entities,
             };
         }).ToList();
+        
+        var lookups = new List<LookupSyncResponse>();
 
-        var response = new SyncAllResponse();
+        var lookupData = (await _configItemInheritanceRepository.GetAll()
+            .Where(x => x.ItemType == "entity" && x.ModuleId != x.ExposedInModuleId)
+            .Select(x => new { x.ItemId, x.Name, x.ModuleName, x.ExposedInModuleName, x.ModuleLevel })
+            .ToListAsync())
+            .Select(x => new
+            {
+                x.ItemId,
+                x.Name,
+                x.ModuleName,
+                x.ExposedInModuleName,
+                x.ModuleLevel,
+                models.FirstOrDefault(m => m.Id == x.ItemId.ToString())?.FullClassName,
+            })
+            .ToList();
+
+        foreach (var model in models)
+        {
+            var aliases = (new [] { model.Alias ?? "", model.Accessor ?? "" }).Where(x => x != "" && x != model.Name).ToArray();
+            var modelLookup = lookupData.Where(x => x.FullClassName == model.FullClassName).ToList();
+            if (modelLookup.Any())
+            {
+                var items = modelLookup
+                    .Select(x => new LookupItemSyncResponse
+                    {
+                        Module = x.ExposedInModuleName == modelLookup.OrderBy(x => x.ModuleLevel).First().ExposedInModuleName
+                            ? "_default"
+                            : x.ExposedInModuleName,
+                        Match = x.ExposedInModuleName,
+                    }).ToList();
+                lookups.Add(new LookupSyncResponse()
+                {
+                    Id = model.FullClassName,
+                    Aliases = aliases,
+                    Module = model.Module,
+                    Name = model.Name,
+                    Items = items,
+                });
+            }
+            else
+            {
+                lookups.Add(new LookupSyncResponse()
+                {
+                    Id = model.FullClassName,
+                    Aliases = aliases,
+                    Module = model.Module,
+                    Name = model.Name,
+                    Items = new List<LookupItemSyncResponse>(),
+                });
+            }
+        }
+
+        var response = new SyncAllResponse()
+        {
+            Lookups = lookups,
+        };
 
         foreach (var module in input.Modules)
         {
             var backendModule = groupped.FirstOrDefault(g => g.Module == module.Accessor);
-            
+
             var responseModule = new ModuleSyncResponse() { Accessor = module.Accessor };
             response.Modules.Add(responseModule);
 
-            if (backendModule != null) 
+            if (backendModule != null)
             {
-                foreach (var entity in module.Entities) 
+                foreach (var requestEntity in module.Entities)
                 {
-                    var backendEntity = backendModule.Entities.FirstOrDefault(e => e.Accessor == entity.Accessor);
+                    var backendEntity = backendModule.Entities.FirstOrDefault(e => e.Name == requestEntity.Accessor && e.Module == module.Accessor);
                     if (backendEntity != null)
                     {
-                        if (backendEntity.Md5 == entity.Md5 && backendEntity.ModificationTime == entity.ModificationTime)
+                        if (backendEntity.Md5 == requestEntity.Md5 && backendEntity.ModificationTime == requestEntity.ModificationTime)
                         {
-                            /*responseModule.Entities.Add(new BaseEntitySyncResponse
-                            {
-                                Accessor = entity.Accessor,
-                                Status = SyncStatus.UpToDate,
-                            });*/
+                            //responseModule.Entities.Add(new BaseEntitySyncResponse
+                            //{
+                            //    Accessor = entity.Accessor,
+                            //    Status = SyncStatus.UpToDate,
+                            //});
                         }
-                        else {
+                        else
+                        {
                             responseModule.Entities.Add(new OutOfDateEntitySyncResponse
                             {
-                                Accessor = entity.Accessor,
+                                Accessor = requestEntity.Accessor,
                                 Status = SyncStatus.OutOfDate,
                                 Metadata = backendEntity.Metadata,
                             });
                         }
-                    } else {
-                        responseModule.Entities.Add(new BaseEntitySyncResponse { 
-                            Accessor = entity.Accessor,
+                    }
+                    else
+                    {
+                        responseModule.Entities.Add(new BaseEntitySyncResponse
+                        {
+                            Accessor = requestEntity.Accessor,
                             Status = SyncStatus.Unknown,
                         });
                     }
                 }
-                var missingEntities = backendModule.Entities.Where(be => !module.Entities.Any(ce => ce.Accessor == be.Accessor)).ToList();
-                foreach (var entity in missingEntities) {
+                var missingEntities = backendModule.Entities.Where(be => be.Module == module.Accessor && !module.Entities.Any(ce => ce.Accessor == be.Name)).ToList();
+                foreach (var entity in missingEntities)
+                {
                     responseModule.Entities.Add(new OutOfDateEntitySyncResponse
                     {
-                        Accessor = entity.Accessor,
+                        Accessor = entity.Name,
                         Status = SyncStatus.OutOfDate,
                         Metadata = entity.Metadata,
                     });
                 }
-            } else
+            }
+            else
                 responseModule.Status = SyncStatus.Unknown;
         }
 
         // add new modules (which are missing on client)
         var modulesToAdd = groupped.Where(g => !response.Modules.Any(m => m.Accessor == g.Module)).ToList();
-        if (modulesToAdd.Any()) 
+        if (modulesToAdd.Any())
         {
             var moduleInfos = _moduleManager.GetModuleInfos();
 
@@ -228,22 +310,24 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                 response.Modules.Add(responseModule);
 
                 var moduleInfo = !string.IsNullOrWhiteSpace(module.Module)
-                    ? moduleInfos.First(m => m.GetModuleAccessor() == module.Module)
+                    //? moduleInfos.First(m => m.GetModuleAccessor() == module.Module) // ToDo: AS - remove after implementation
+                    ? moduleInfos.First(m => m.Name == module.Module)
                     : null;
 
                 foreach (var entity in module.Entities)
                 {
-                    var entityType = await metadataService.GetContainerTypeOrNullAsync(moduleInfo?.Name, entity.ClassName);
-                    if (entityType != null) 
+                    var entityType = await metadataService.GetContainerTypeOrNullAsync(moduleInfo?.Name, entity.FullClassName);
+                    if (entityType != null)
                     {
                         responseModule.Entities.Add(new OutOfDateEntitySyncResponse
                         {
-                            Accessor = entity.Accessor,
+                            Accessor = entity.Name,
                             Status = SyncStatus.OutOfDate,
-                            Metadata = await metadataService.GetAsync(entityType),
+                            Metadata = entity.Metadata
                         });
-                    } else 
-                    { 
+                    }
+                    else
+                    {
                         // TODO: decide how to handle missing entities. Synchronization shouldn't break on missing entities.
                     }
                 }

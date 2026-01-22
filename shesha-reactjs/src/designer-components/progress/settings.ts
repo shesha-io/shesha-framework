@@ -1,9 +1,8 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -11,7 +10,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const securityTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -26,7 +25,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -45,7 +44,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
-                  defaultValue: false,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -80,7 +78,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'progressType',
                       label: 'Type',
                       tooltip: 'To specify the type of progress bar',
-                      defaultValue: 'line',
                       dropdownOptions: [
                         { label: 'Line', value: 'line' },
                         { label: 'Circle', value: 'circle' },
@@ -114,7 +111,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'showInfo',
                       label: 'Show Info',
                       tooltip: 'Whether to display the progress info',
-                      defaultValue: true,
                       jsSetting: true,
                     },
                     {
@@ -134,7 +130,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -147,9 +143,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _mode: "code",
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'progressStyle',
@@ -161,7 +157,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -199,7 +195,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       { label: 'Butt', value: 'butt' },
                                       { label: 'Square', value: 'square' },
                                     ],
-                                    defaultValue: 'round',
                                     jsSetting: true,
                                   },
                                   {
@@ -208,7 +203,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     propertyName: 'strokeWidth',
                                     label: 'Stroke Width',
                                     tooltip: 'The width of the progress bar, unit: percentage of the canvas width',
-                                    defaultValue: 6,
                                     jsSetting: true,
                                   },
                                 ],
@@ -239,7 +233,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'steps',
@@ -330,7 +324,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addStyleBox({
                               id: nanoid(),
                               label: 'Margin Padding',
@@ -351,7 +345,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -373,7 +367,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'security',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

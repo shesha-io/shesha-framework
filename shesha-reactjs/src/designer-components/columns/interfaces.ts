@@ -1,3 +1,4 @@
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 
 export interface IColumnProps {
@@ -28,3 +29,5 @@ export interface IColumnsComponentProps extends IConfigurableFormComponent, ICol
   style?: string;
   customVisibility?: string;
 }
+
+export type ColumnsComponentDefinition = ComponentDefinition<"columns", IColumnsComponentProps>;

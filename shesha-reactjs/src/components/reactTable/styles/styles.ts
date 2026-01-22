@@ -1,5 +1,8 @@
 import { createStyles, SerializedStyles } from 'antd-style';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
+import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
+import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 
 const tableClassNames = {
   shaTable: 'sha-table',
@@ -42,12 +45,62 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
+  border,
+  backgroundColor,
+  headerFontFamily,
+  headerFontSize,
+  headerFontWeight,
+  headerBackgroundColor,
+  headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
+  rowHeight,
+  rowPadding,
+  rowBorder,
+  rowBorderStyle,
+  boxShadow,
+  sortableIndicatorColor,
+  striped: _striped,
+  cellTextColor,
+  cellBackgroundColor,
+  cellBorderColor,
+  cellBorders,
+  headerBorder,
+  cellBorder,
+  headerShadow,
+  rowShadow,
+  rowDividers,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
   border?: IBorderValue;
+  backgroundColor?: string;
+  headerFontFamily?: string;
+  headerFontSize?: string;
+  headerFontWeight?: string;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+  headerTextAlign?: string;
+  bodyTextAlign?: string;
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+  rowBorderStyle?: IBorderValue;
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
+  striped?: boolean;
+  cellTextColor?: string;
+  cellBackgroundColor?: string;
+  cellBorderColor?: string;
+  cellBorders?: boolean;
+  cellPadding?: string;
+  headerBorder?: IBorderValue;
+  cellBorder?: IBorderValue;
+  headerShadow?: IShadowValue;
+  rowShadow?: IShadowValue;
+  rowDividers?: boolean;
 }) => {
   const {
     shaTable,
@@ -78,12 +131,28 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaSpanCenterVertically,
   } = tableClassNames;
 
+  const borderStyles = getBorderStyle(border || {}, {});
+  const headerBorderStyles = getBorderStyle(headerBorder || {}, {});
+  const cellBorderStyles = getBorderStyle(cellBorder || {}, {});
+  const headerShadowStyles = getShadowStyle(headerShadow);
+  const rowShadowStyles = getShadowStyle(rowShadow);
+
+  const effectivePadding = rowPadding;
+
+  const hasBorderRadius = border?.radius && (
+    (border.radius.all && parseFloat(String(border.radius.all)) !== 0) ||
+    (border.radius.topLeft && parseFloat(String(border.radius.topLeft)) !== 0) ||
+    (border.radius.topRight && parseFloat(String(border.radius.topRight)) !== 0) ||
+    (border.radius.bottomLeft && parseFloat(String(border.radius.bottomLeft)) !== 0) ||
+    (border.radius.bottomRight && parseFloat(String(border.radius.bottomRight)) !== 0)
+  );
+
   // var(--ant-primary-3)
-  const hoverableRow = `
+  const hoverableRow = rowHoverBackgroundColor !== undefined ? `
         &:not(.${trSelected}) {
             background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
         }
-    `;
+    ` : '';
 
   const groupBorder = '1px solid lightgray';
   const nestedPaddings = (indexStart: number, index: number): SerializedStyles | null => {
@@ -115,7 +184,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
-      overflow: auto;
+      overflow: ${boxShadow ? 'visible' : 'auto'};
+      ${boxShadow ? `
+        /* Apply box shadow to container */
+        box-shadow: ${boxShadow};
+        /* Add margin to create space for shadow without affecting table width */
+        margin: 8px;
+        /* Remove margin from parent to compensate */
+        position: relative;
+      ` : ''}
 
       .${shaSpanCenterVertically} {
         display: flex;
@@ -131,6 +208,25 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
+        background-color: ${backgroundColor};
+
+        /* Apply border styles to the inner table */
+        ${Object.entries(borderStyles).map(([key, value]) => {
+          // Convert camelCase CSS properties to kebab-case
+          const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+          return `${cssKey}: ${value};`;
+        }).join('\n')}
+
+        /* When border-radius is present, clip content but not shadows */
+        /* Only apply to tables without fixed columns since overflow affects position:sticky */
+        &:not(:has(.${fixedColumn})) {
+          ${hasBorderRadius ? `
+            border-radius: inherit;
+            > .${thead}, > .${tbody} {
+              overflow: hidden;
+            }
+          ` : ''}
+        }
 
         .${thead} {
           /* These styles are required for a scrollable body to align with the header properly */
@@ -139,6 +235,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${tbody} {
           overflow-x: hidden;
+          ${backgroundColor ? `background-color: ${backgroundColor};` : ''}
 
           > .${shaSortable}:not(.${shaDragging}) {
             .${tr}.${trBody}:hover {
@@ -157,7 +254,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             align-items: center;
           }
 
-          //
           .${prefixCls}-collapse {
             border: none;
 
@@ -189,13 +285,86 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
-          height: 100%; 
+          ${rowHeight ? `height: ${rowHeight};` : 'height: 100%;'}
+          ${(() => {
+            // Prefer rowBorderStyle over rowBorder for full border control
+            if (rowBorderStyle) {
+              const borderStyles = getBorderStyle(rowBorderStyle, {});
+              return Object.entries(borderStyles)
+                .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
+                .join(' ');
+            }
+            // Fallback to simple border string
+            return rowBorder ? `border: ${rowBorder};` : '';
+          })()}
+
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
+            ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
+            ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
+            ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
+            ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
+            ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
+            ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+
+            /* Apply text alignment to header cells */
+            .${th} {
+              ${headerTextAlign ? `text-align: ${headerTextAlign} !important;` : ''}
+            }
+
+            /* Apply header background to relative columns within headers */
+            .${relativeColumn} {
+              ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
+            }
           }
 
           &.${trBody} {
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
+            ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
+
+            /* Apply text alignment to body cells */
+            .${td} {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply alignment to body cell content divs */
+            .${td} > div {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            }
+
+            /* Apply alignment to nested body cell content */
+            .${td} > div > div {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            }
+
+            /* Apply text alignment to text elements inside body table cells */
+            .${td} span,
+            .${td} p,
+            .${td} div:not(.sha-action-button):not(.sha-link) {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply alignment to crud cells within body rows only */
+            .${shaCrudCell} {
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            }
+          }
+
+          .${td} {
+            vertical-align: middle;
+            ${cellTextColor ? `color: ${cellTextColor};` : ''}
+            ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
+            ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
+            ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+          }
+
+          .${th} {
+            vertical-align: middle;
+            ${headerTextAlign ? `text-align: ${headerTextAlign};` : ''}
           }
 
           .${shaCrudCell} {
@@ -213,9 +382,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: auto;
 
               .${iconPrefixCls} {
-                font-size: 14px;
-                width: 14px;
-                min-width: 14px;
+                font-size: 16px;
+                width: 16px;
+                min-width: 16px;
               }
             }
             .sha-action-button {
@@ -223,6 +392,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               width: auto;
               justify-content: center;
               align-items: center;
+
+              .${iconPrefixCls} {
+                font-size: 16px;
+                width: 16px;
+                min-width: 16px;
+              }
             }
           }
 
@@ -272,12 +447,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               .ant-form-item-control-input-content, a, button {
                   color: inherit;
               }
-            
+
               .sha-stored-files-renderer, .ant-upload-list {
                   color: white;
               }
 
             }
+          }
+
+          /* Ensure selected row styling always takes priority over striped rows */
+          &.${trOdd}.${trSelected} {
+            background: ${rowSelectedBackgroundColor || token.colorPrimary} !important;
+            color: white;
           }
 
           .${prefixCls}-form-item {
@@ -343,15 +524,20 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           margin-right: 5px;
         }
         .${th} {
+          ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : ''}
+          ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
+          ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
+          ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
+          ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
+
           &.${sortedAsc} {
-            border-top: 3px solid ${token.colorPrimary};
+            border-top: 3px solid ${sortableIndicatorColor || token.colorPrimary};
             padding-top: 5px;
           }
           &.${sortedDesc} {
-            border-bottom: 3px solid ${token.colorPrimary};
+            border-bottom: 3px solid ${sortableIndicatorColor || token.colorPrimary};
           }
           &.${fixedColumn} {
-            display: inline-block;
             position: sticky;
             z-index: 999;
             opacity: 1;
@@ -360,7 +546,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: -100;
-
           }
 
           &.${boxShadowLeft} {
@@ -377,12 +562,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
 
+        /* Single source of truth for cell padding - applies to both headers and data cells */
         .${th}, .${td} {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
-          padding: 0.5rem;
+          /* Use effectivePadding from props (rowStylingBox or cellPadding) or default to 0.5rem */
+          ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
 
           /* In this example we use an absolutely position resizer, so this is required. */
@@ -409,7 +596,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             z-index: 10;
           }
           &.${fixedColumn} {
-            display: inline-block;
             position: sticky;
             z-index: 10;
             opacity: 1;

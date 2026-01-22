@@ -2,6 +2,7 @@
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
+using Shesha.DynamicEntities.Enums;
 using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,9 @@ namespace Shesha.DynamicEntities.Dtos
     {
         public bool CreatedInDb { get; set; }
 
+        public EntityInitFlags? InitStatus { get; set; }
+        public string? InitMessage { get; set; }
+
         public string? DiscriminatorValue { get; set; }
         
         public string? SchemaName { get; set; }
@@ -26,8 +30,10 @@ namespace Shesha.DynamicEntities.Dtos
         public string? InheritedFromClassName { get; set; }
         public string? InheritedFromNamespace { get; set; }
 
+        public bool IsExposed { get; set; }
+
         public string ClassName { get; set; }
-        public string Namespace { get; set; }
+        public string? Namespace { get; set; }
 
         public bool GenerateAppService { get; set; }
 

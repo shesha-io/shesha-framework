@@ -1,6 +1,7 @@
+import { addPx } from '@/utils/style';
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { height }) => {
   const shaModelConfiguratorForm = 'sha-model-configurator-form';
   const shaModelConfiguratorToolbar = 'sha-model-configurator-toolbar';
   const shaModelConfiguratorToolbarLeft = 'sha-model-configurator-toolbar-left';
@@ -19,7 +20,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       overflow: hidden;
 
       .${shaModelConfiguratorForm} {
-        height: calc(100vh - 180px);
+        height: calc(100vh - ${addPx(height) ?? '280px'});
         .ant-spin-nested-loading, .ant-spin-container, .ant-form:first-child {
           height: 100%;
           .sha-components-container.vertical, .sha-components-container-inner {
@@ -31,7 +32,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
                 overflow: auto;
               }
               .shaPropertiesEditorForm.ant-form-item {
-                height: 100%;
+                height: calc(100% - 24px);
                 .ant-form-item-row:first-child, .ant-col:first-child, .ant-form-item-control-input-content:first-child {
                   height: 100%;
                   .sidebar-container, .sidebar-container-body, .sidebar-container-main-area {

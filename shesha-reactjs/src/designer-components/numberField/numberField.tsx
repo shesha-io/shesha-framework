@@ -2,11 +2,10 @@ import { NumberOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useMetadata } from '@/providers';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { INumberFieldComponentProps } from './interfaces';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { INumberFieldComponentProps, NumberFieldComponentDefinition } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
@@ -23,12 +22,7 @@ import { ShaIcon } from '@/components';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
-interface INumberFieldComponentCalulatedValues {
-  defaultValue?: string;
-  eventHandlers?: any;
-}
-
-const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumberFieldComponentCalulatedValues> = {
+const NumberFieldComponent: NumberFieldComponentDefinition = {
   type: 'numberField',
   isInput: true,
   isOutput: true,
@@ -38,9 +32,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   calculateModel: (model, allData) => {
     return {
-      defaultValue: model?.defaultValue
-        ? evaluateString(model?.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
-        : undefined,
       eventHandlers: { ...getEventHandlers(model, allData), ...customOnChangeValueEventHandler(model, allData) },
     };
   },
@@ -101,7 +92,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
             : (
               <InputNumber
                 type="number"
-                value={value ?? model?.defaultValue}
+                value={value}
                 {...inputProps}
                 style={{ ...model.allStyles.fullStyle, width: '100%', height: "100%" }}
                 className={styles.numberField}
@@ -112,7 +103,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   initModel: (model) => ({
     ...model,
   }),
@@ -133,7 +124,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,

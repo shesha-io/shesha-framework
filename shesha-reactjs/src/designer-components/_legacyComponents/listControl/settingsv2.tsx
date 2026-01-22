@@ -2,7 +2,6 @@ import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import React, { FC, useState } from 'react';
 import { QueryBuilderRenderer } from '@/designer-components/queryBuilder/queryBuilderRenderer';
 import { QueryBuilderWithModelType } from '@/designer-components/queryBuilder/queryBuilderWithModelType';
-import { Autocomplete } from '@/components/autocomplete';
 import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '@/components/sectionSeparator';
@@ -10,6 +9,7 @@ import Show from '@/components/show';
 import { ButtonGroupConfigurator } from '@/components/buttonGroupConfigurator';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { IListItemsProps } from './models';
+import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 const Option = Select.Option;
 
@@ -178,9 +178,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
 
       <Show when={state?.apiSource === 'entity'}>
         <FormItem name="entityType" label="Entity type">
-          <Autocomplete.Raw
-            dataSourceType="url"
-            dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+          <EntityTypeAutocomplete
             readOnly={readOnly}
           />
         </FormItem>

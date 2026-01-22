@@ -1,11 +1,11 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -20,7 +20,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const propertyNameId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -35,7 +35,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: propertyNameId,
                   propertyName: 'propertyName',
@@ -59,7 +59,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       label: 'Hide',
                       type: 'switch',
                       jsSetting: true,
-                      width: '50%',
                     },
                     {
                       id: nanoid(),
@@ -69,7 +68,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       description: 'If the pie chart is a doughnut chart, switch to true.',
                       tooltip: 'If the pie chart is a doughnut chart, switch to true.',
                       parentId: commonTabId,
-                      defaultValue: false,
                       hidden: {
                         _code: 'return getSettingValue(data?.chartType) !== `pie`',
                         _mode: 'code',
@@ -85,7 +83,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       description: 'If the bar chart is a stacked chart, switch to true.',
                       tooltip: 'If the bar chart is a stacked chart, switch to true.',
                       parentId: commonTabId,
-                      defaultValue: false,
                       hidden: {
                         _code:
                           'return getSettingValue(data?.chartType) !== `bar` || getSettingValue(data?.simpleOrPivot) !== `pivot` || getSettingValue(data?.dataMode) === `url`',
@@ -108,7 +105,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   content: {
                     id: nanoid(),
                     components: [
-                      ...new DesignerToolbarSettings()
+                      ...fbf()
                         .addSettingsInputRow({
                           id: nanoid(),
                           parentId: commonTabId,
@@ -128,7 +125,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 { label: 'Entity type', value: 'entityType' },
                               ],
                               validate: { required: true },
-                              defaultValue: 'entityType',
                               jsSetting: true,
                             },
                             {
@@ -143,7 +139,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 { label: 'Pivot', value: 'pivot' },
                               ],
                               validate: { required: true },
-                              defaultValue: 'simple',
                               hidden: {
                                 _code: 'return getSettingValue(data?.dataMode) === `url`',
                                 _mode: 'code',
@@ -165,7 +160,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             _value: false,
                           } as any,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'url',
@@ -182,12 +177,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     _value: false,
                                   } as any,
                                 },
-                                dataSourceType: 'url',
-                                dataSourceUrl: '/api/services/app/Api/Endpoints',
                                 settingsValidationErrors: [],
-                                useRawValues: true,
                                 jsSetting: true,
-                                width: '100%',
                                 placeholder: '',
                                 allowClear: true,
                               })
@@ -206,24 +197,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                                   'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
                                   'Id initial value is already initialised with {{entityReference.id}} but you can override it',
-                                exposedVariables: [
-                                  { name: 'data', description: 'This form data', type: 'object' },
-                                  { name: 'form', description: 'Form instance', type: 'object' },
-                                  {
-                                    name: 'formMode',
-                                    description: 'Current form mode',
-                                    type: "'designer' | 'edit' | 'readonly'",
-                                  },
-                                  { name: 'globalState', description: 'Global state', type: 'object' },
-                                  {
-                                    name: 'entityReference.id',
-                                    description: 'Id of entity reference entity',
-                                    type: 'object',
-                                  },
-                                  { name: 'entityReference.entity', description: 'Entity', type: 'object' },
-                                  { name: 'moment', description: 'moment', type: '' },
-                                  { name: 'http', description: 'axiosHttp', type: '' },
-                                ].map((item) => JSON.stringify(item)),
                               },
                               )
                               .toJson(),
@@ -241,27 +214,21 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             _value: false,
                           } as any,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
                                 inputs: [
                                   {
                                     id: nanoid(),
-                                    type: 'autocomplete',
+                                    type: 'entityTypeAutocomplete',
                                     propertyName: 'entityType',
                                     label: 'Entity Type',
                                     description: 'The entity type you want to use.',
                                     labelAlign: 'right',
                                     parentId: dataSettingsId,
                                     hidden: false,
-                                    dataSourceType: 'url',
-                                    validate: {},
-                                    dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                                    settingsValidationErrors: [],
                                     jsSetting: true,
-                                    useRawValues: true,
-                                    width: '50%',
                                   },
                                   {
                                     id: nanoid(),
@@ -282,7 +249,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
-                                inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.dataMode) === `url`',
                                   _mode: 'code',
@@ -306,7 +272,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
-                                    width: '100%',
                                     jsSetting: true,
                                   },
                                 ],
@@ -314,7 +279,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
-                                inline: true,
                                 hidden: {
                                   _code: 'return !getSettingValue(data?.axisProperty)',
                                   _mode: 'code',
@@ -329,10 +293,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     description: 'If the x-axis is a time series, switch to true.',
                                     tooltip: 'If the x-axis is a time series i.e. the Axis Property is a DateTime / ISO string data property, switch to true.',
                                     parentId: dataSettingsId,
-                                    defaultValue: false,
                                     validate: { required: true },
                                     jsSetting: true,
-                                    width: '50%',
                                   },
                                   {
                                     id: nanoid(),
@@ -349,21 +311,18 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       { label: 'Day-Month-Year', value: 'day-month-year' },
                                       { label: 'Month-Year', value: 'month-year' },
                                     ],
-                                    defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
                                       _code: 'return !!!getSettingValue(data?.isAxisTimeSeries)',
                                       _mode: 'code',
                                       _value: true,
                                     } as any,
-                                    width: '50%',
                                   },
                                 ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
-                                inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.dataMode) === `url`',
                                   _mode: 'code',
@@ -387,7 +346,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
-                                    width: '100%',
                                     jsSetting: true,
                                   },
                                 ],
@@ -395,7 +353,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
-                                inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
                                   _mode: 'code',
@@ -420,7 +377,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
-                                    width: '100%',
                                     jsSetting: true,
                                   },
                                 ],
@@ -428,7 +384,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
-                                inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                                   _mode: 'code',
@@ -443,8 +398,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     description: 'If the grouping property is a time series, switch to true.',
                                     tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                                     parentId: dataSettingsId,
-                                    defaultValue: false,
-                                    width: '50%',
                                     jsSetting: true,
                                   },
                                   {
@@ -463,35 +416,14 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       { label: 'Month-Year', value: 'month-year' },
                                     ],
                                     validate: { required: true },
-                                    defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
                                       _code: 'return !!!getSettingValue(data?.isGroupingTimeSeries)',
                                       _mode: 'code',
                                       _value: true,
                                     } as any,
-                                    width: '50%',
                                   },
                                 ],
-                              })
-
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'aggregationMethod',
-                                parentId: dataSettingsId,
-                                label: 'Aggregation Method',
-                                inputType: 'dropdown',
-                                allowClear: true,
-                                dropdownOptions: [
-                                  { label: 'Sum', value: 'sum' },
-                                  { label: 'Count', value: 'count' },
-                                  { label: 'Average', value: 'average' },
-                                  { label: 'Min', value: 'min' },
-                                  { label: 'Max', value: 'max' },
-                                ],
-                                validate: { required: true },
-                                defaultValue: 'count',
-                                jsSetting: true,
                               })
                               .toJson(),
                           ],
@@ -512,7 +444,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   content: {
                     id: nanoid(),
                     components: [
-                      ...new DesignerToolbarSettings()
+                      ...fbf()
                         .addSettingsInputRow({
                           id: nanoid(),
                           parentId: commonTabId,
@@ -524,9 +456,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               label: 'Show Title',
                               description: 'Show the title of the chart',
                               parentId: commonTabId,
-                              defaultValue: true,
                               jsSetting: true,
-                              width: '50%',
                             },
                             {
                               id: nanoid(),
@@ -563,9 +493,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               description:
                                 'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
                               parentId: commonTabId,
-                              defaultValue: false,
                               jsSetting: true,
-                              width: '50%',
                             },
                             {
                               id: nanoid(),
@@ -586,7 +514,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 { label: 'Right', value: 'right' },
                               ],
                               validate: { required: true },
-                              defaultValue: 'top',
                               jsSetting: true,
                             },
                           ],
@@ -606,7 +533,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               propertyName: 'showXAxisScale',
                               label: 'Show X Axis',
                               parentId: commonTabId,
-                              defaultValue: true,
                               jsSetting: true,
                             },
                             {
@@ -615,7 +541,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               propertyName: 'showXAxisTitle',
                               label: 'Show X Axis Title',
                               parentId: commonTabId,
-                              defaultValue: true,
                               hidden: {
                                 _code: 'return getSettingValue(data?.showXAxisScale) !== true',
                                 _mode: 'code',
@@ -661,7 +586,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               propertyName: 'showYAxisScale',
                               label: 'Show Y Axis',
                               parentId: commonTabId,
-                              defaultValue: true,
                               jsSetting: true,
                             },
                             {
@@ -670,7 +594,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               propertyName: 'showYAxisTitle',
                               label: 'Show Y Axis Title',
                               parentId: commonTabId,
-                              defaultValue: true,
                               hidden: {
                                 _code: 'return getSettingValue(data?.showYAxisScale) !== true',
                                 _mode: 'code',
@@ -713,7 +636,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: dataTabId,
@@ -732,7 +655,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         { label: 'Entity type', value: 'entityType' },
                       ],
                       validate: { required: true },
-                      defaultValue: 'entityType',
                       hidden: false,
                       jsSetting: true,
                       width: '50%',
@@ -746,7 +668,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       description: 'The timeout for the request (in milliseconds) to the data source. 10000 is the default timeout.',
                       tooltip: 'The timeout for the request (in milliseconds) to the data source. 10000 is the default timeout.',
                       validate: { required: false },
-                      defaultValue: 10000,
                       min: 0,
                       jsSetting: true,
                     },
@@ -764,7 +685,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _value: false,
                   } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'url',
@@ -780,12 +701,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             _value: false,
                           } as any,
                         },
-                        dataSourceType: 'url',
-                        dataSourceUrl: '/api/services/app/Api/Endpoints',
                         settingsValidationErrors: [],
-                        useRawValues: true,
                         jsSetting: true,
-                        width: '100%',
                         placeholder: '',
                         allowClear: true,
                       })
@@ -803,24 +720,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                           'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
                           'Id initial value is already initialised with {{entityReference.id}} but you can override it',
-                        exposedVariables: [
-                          { name: 'data', description: 'This form data', type: 'object' },
-                          { name: 'form', description: 'Form instance', type: 'object' },
-                          {
-                            name: 'formMode',
-                            description: 'Current form mode',
-                            type: "'designer' | 'edit' | 'readonly'",
-                          },
-                          { name: 'globalState', description: 'Global state', type: 'object' },
-                          {
-                            name: 'entityReference.id',
-                            description: 'Id of entity reference entity',
-                            type: 'object',
-                          },
-                          { name: 'entityReference.entity', description: 'Entity', type: 'object' },
-                          { name: 'moment', description: 'moment', type: '' },
-                          { name: 'http', description: 'axiosHttp', type: '' },
-                        ].map((item) => JSON.stringify(item)),
                         jsSetting: true,
                       },
                       )
@@ -839,160 +738,10 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _value: false,
                   } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'autocomplete',
-                            propertyName: 'entityType',
-                            label: 'Entity Type',
-                            description: 'The entity type you want to use.',
-                            labelAlign: 'right',
-                            parentId: dataTabId,
-                            hidden: false,
-                            dataSourceType: 'url',
-                            validate: {},
-                            dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                            settingsValidationErrors: [],
-                            jsSetting: true,
-                            useRawValues: true,
-                            width: '50%',
-                          },
-                          {
-                            id: nanoid(),
-                            type: 'numberField',
-                            propertyName: 'maxResultCount',
-                            label: 'Data Size Limit',
-                            description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." +
-                              "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
-                            tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." +
-                              "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
-                            parentId: dataTabId,
-                            validate: { required: false },
-                            min: -1,
-                            jsSetting: true,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inline: true,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.dataMode) === `url`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'axisProperty',
-                            label: 'Axis Property',
-                            labelAlign: 'right',
-                            parentId: dataTabId,
-                            type: 'propertyAutocomplete',
-                            isDynamic: false,
-                            description: 'The property to be used on the x-axis.',
-                            validate: { required: true },
-                            modelType: {
-                              _code: 'return getSettingValue(data?.entityType);',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                            autoFillProps: false,
-                            settingsValidationErrors: [],
-                            width: '100%',
-                            jsSetting: true,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return !getSettingValue(data?.axisProperty)',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'isAxisTimeSeries',
-                            label: 'Is Axis Property Time Series?',
-                            description: 'If the x-axis is a time series, switch to true.',
-                            tooltip: 'If the x-axis is a time series i.e. the Axis Property is a DateTime / ISO string data property, switch to true.',
-                            parentId: dataTabId,
-                            defaultValue: false,
-                            validate: { required: false },
-                            width: '50%',
-                            jsSetting: true,
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'timeSeriesFormat',
-                            parentId: dataTabId,
-                            label: 'Axis Property Time Series Format',
-                            type: 'dropdown',
-                            allowClear: true,
-                            dropdownOptions: [
-                              { label: 'Day', value: 'day' },
-                              { label: 'Month', value: 'month' },
-                              { label: 'Year', value: 'year' },
-                              { label: 'Day-Month', value: 'day-month' },
-                              { label: 'Day-Month-Year', value: 'day-month-year' },
-                              { label: 'Month-Year', value: 'month-year' },
-                            ],
-                            validate: { required: true },
-                            defaultValue: 'month-year',
-                            jsSetting: true,
-                            hidden: {
-                              _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inline: true,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.dataMode) === `url`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'valueProperty',
-                            label: 'Value Property',
-                            labelAlign: 'right',
-                            parentId: dataTabId,
-                            type: 'propertyAutocomplete',
-                            isDynamic: false,
-                            description: 'The property to be used on the x-axis.',
-                            validate: { required: true },
-                            modelType: {
-                              _code: 'return getSettingValue(data?.entityType);',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                            autoFillProps: false,
-                            settingsValidationErrors: [],
-                            width: '100%',
-                            jsSetting: true,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
                           _mode: 'code',
@@ -1017,7 +766,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -1025,7 +773,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                           _mode: 'code',
@@ -1040,8 +787,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             description: 'If the grouping property is a time series, switch to true.',
                             tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                             parentId: dataTabId,
-                            defaultValue: false,
-                            width: '50%',
                             jsSetting: true,
                           },
                           {
@@ -1060,7 +805,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               { label: 'Month-Year', value: 'month-year' },
                             ],
                             validate: { required: true },
-                            defaultValue: 'month-year',
                             width: '50%',
                             jsSetting: true,
                             hidden: {
@@ -1074,7 +818,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
                           _mode: 'code',
@@ -1099,7 +842,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -1107,7 +849,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         inputs: [
                           {
                             id: nanoid(),
@@ -1146,13 +887,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           { label: 'Max', value: 'max' },
                         ],
                         validate: { required: true },
-                        defaultValue: 'count',
                         jsSetting: true,
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url` || !getSettingValue(data?.entityType)',
                           _mode: 'code',
@@ -1176,8 +915,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               _value: false,
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                            width: '100%',
-                            jsSetting: true,
+                            jsSetting: false,
                           },
                         ],
                       })
@@ -1192,7 +930,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'pnlTitleFont',
@@ -1203,7 +941,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: appearanceTabId,
@@ -1217,7 +955,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'titleFont.family',
                             hideLabel: true,
                             dropdownOptions: fontTypes,
-                            defaultValue: 'Segoe UI',
                           },
                           {
                             type: 'numberField',
@@ -1226,7 +963,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'titleFont.size',
                             hideLabel: true,
                             width: 50,
-                            defaultValue: 16,
                             min: 8,
                             max: 32,
                           },
@@ -1239,7 +975,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            defaultValue: '400',
                           },
                           {
                             type: 'colorPicker',
@@ -1247,7 +982,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Color',
                             hideLabel: true,
                             propertyName: 'titleFont.color',
-                            defaultValue: '#000000',
                           },
                         ],
                       })
@@ -1265,7 +999,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: appearanceTabId,
@@ -1279,7 +1013,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'axisLabelFont.family',
                             hideLabel: true,
                             dropdownOptions: fontTypes,
-                            defaultValue: 'Segoe UI',
                           },
                           {
                             type: 'numberField',
@@ -1288,7 +1021,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'axisLabelFont.size',
                             hideLabel: true,
                             width: 50,
-                            defaultValue: 12,
                             min: 8,
                             max: 24,
                           },
@@ -1301,7 +1033,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            defaultValue: '400',
                           },
                           {
                             type: 'colorPicker',
@@ -1309,7 +1040,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Color',
                             hideLabel: true,
                             propertyName: 'axisLabelFont.color',
-                            defaultValue: '#000000',
                           },
                         ],
                       })
@@ -1337,7 +1067,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   } as any,
                   content: {
                     id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: appearanceTabId,
@@ -1351,7 +1081,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'legendFont.family',
                             hideLabel: true,
                             dropdownOptions: fontTypes,
-                            defaultValue: 'Segoe UI',
                           },
                           {
                             type: 'numberField',
@@ -1360,7 +1089,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'legendFont.size',
                             hideLabel: true,
                             width: 50,
-                            defaultValue: 12,
                             min: 8,
                             max: 24,
                           },
@@ -1373,7 +1101,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            defaultValue: '400',
                           },
                           {
                             type: 'colorPicker',
@@ -1381,7 +1108,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Color',
                             hideLabel: true,
                             propertyName: 'legendFont.color',
-                            defaultValue: '#000000',
                           },
                         ],
                       })
@@ -1399,7 +1125,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: appearanceTabId,
@@ -1413,7 +1139,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'tickFont.family',
                             hideLabel: true,
                             dropdownOptions: fontTypes,
-                            defaultValue: 'Segoe UI',
                           },
                           {
                             type: 'numberField',
@@ -1422,7 +1147,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'tickFont.size',
                             hideLabel: true,
                             width: 50,
-                            defaultValue: 12,
                             min: 8,
                             max: 24,
                           },
@@ -1435,7 +1159,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            defaultValue: '400',
                           },
                           {
                             type: 'colorPicker',
@@ -1443,7 +1166,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Color',
                             hideLabel: true,
                             propertyName: 'tickFont.color',
-                            defaultValue: '#000000',
                           },
                         ],
                       })
@@ -1468,9 +1190,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: dimensionsStyleCollapsiblePanelId,
                         propertyName: 'pnlDimensions',
@@ -1481,7 +1203,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: dimensionsStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
@@ -1566,16 +1288,16 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getBorderInputs() as any,
+                              components: getBorderInputs(fbf),
                             })
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getCornerInputs() as any,
+                              components: getCornerInputs(fbf),
                             })
                             .toJson(),
                           ],
@@ -1593,7 +1315,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -1672,7 +1394,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
-                                inline: true,
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
@@ -1704,7 +1425,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Repeat',
                                   hideLabel: true,
                                   propertyName: 'background.repeat',
-                                  inputType: 'radio',
                                   buttonGroupOptions: repeatOptions,
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -1724,7 +1444,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -1736,7 +1456,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Offset X',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: "offsetHorizontalIcon",
                                   propertyName: 'shadow.offsetX',
                                 },
@@ -1746,7 +1465,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Offset Y',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'offsetVerticalIcon',
                                   propertyName: 'shadow.offsetY',
                                 },
@@ -1756,7 +1474,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Blur',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'blurIcon',
                                   propertyName: 'shadow.blurRadius',
                                 },
@@ -1766,7 +1483,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Spread',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'spreadIcon',
                                   propertyName: 'shadow.spreadRadius',
                                 },
@@ -1792,7 +1508,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addStyleBox({
                               id: nanoid(),
                               label: 'Margin Padding',
@@ -1813,7 +1529,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -1844,7 +1560,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       parentId: appearanceTabId,
                       type: 'numberField',
                       label: 'Stroke Thickness',
-                      defaultValue: 0.0,
                       description:
                         'The thickness of the stroke for the elements (bars, lines, etc.) in the chart. Default is 0.0',
                       step: 0.1,
@@ -1855,7 +1570,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'strokeColor',
                       parentId: appearanceTabId,
                       label: 'Stroke Color',
-                      allowClear: true,
                       type: 'colorPicker',
                       jsSetting: true,
                       tooltip: 'The color of the stroke / border for the elements (bars, lines, etc.) in the chart. Default is #000000',
@@ -1872,7 +1586,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'tension',
                       parentId: appearanceTabId,
                       label: 'Tension',
-                      defaultValue: 0,
                       min: 0,
                       hidden: {
                         _code: 'return getSettingValue(data?.chartType) !== `line`',
@@ -1891,7 +1604,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

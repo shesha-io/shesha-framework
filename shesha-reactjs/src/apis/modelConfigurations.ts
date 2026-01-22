@@ -1,4 +1,6 @@
+import { IReferenceListIdentifier } from '@/interfaces';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import * as RestfulShesha from '@/utils/fetchers';
 
 export type RefListPermissionedAccess = 1 | 2 | 3 | 4 | 5;
@@ -33,20 +35,22 @@ export interface PermissionedObjectDto {
   } | null;
 }
 
+export interface IHasDefaultEditor {
+  defaultEditor?: string | null;
+}
+
+export interface IHasFilter {
+  filter: object;
+}
+
 export interface INumberFormatting {
   showThousandsSeparator?: boolean;
   customFormat?: string | null;
 }
 
-export interface IIntegerFormatting extends INumberFormatting {
-}
-
 export interface IDecimalFormatting extends INumberFormatting {
   numDecimalPlaces?: number | null;
   showAsPercentage?: boolean;
-}
-
-export interface IFloatFormatting extends INumberFormatting {
 }
 
 export interface IEntityPropertyListDbMapping
@@ -59,6 +63,15 @@ export interface IEntityPropertyListDbMapping
 
 export type EntityPropertyListMappingType = "many-to-many" | "many-to-one";
 
+export enum EntityInitFlags {
+  None = 0,
+  DbActionRequired = 1,
+  InitializationRequired = 2,
+
+  DbActionFailed = 32,
+  InitializationFailed = 64,
+}
+
 export interface IEntityPropertyListConfiguration{
   mappingType?: EntityPropertyListMappingType;
   foreignProperty?: string | null;
@@ -70,11 +83,12 @@ export interface IEntityPropertyListConfiguration{
  */
 export interface ModelPropertyDto {
 
+  initStatus?: EntityInitFlags;
+  initMessage?: string;
+
   columnName?: string | null;
   createdInDb?: boolean;
   inheritedFromId?: string | null;
-
-  listConfiguration?: IEntityPropertyListConfiguration;
 
   id?: string | null;
   /**
@@ -100,15 +114,15 @@ export interface ModelPropertyDto {
   /**
    * Entity type. Aplicable for entity references
    */
-  entityType?: string | null;
+  entityType?: IEntityTypeIdentifier | null;
   /**
-   * Reference list name
+   * Reference list
    */
-  referenceListName?: string | null;
+
+  referenceListId?: IReferenceListIdentifier | null;
   /**
-   * Reference list module
+   * Metadata Source Type
    */
-  referenceListModule?: string | null;
   source?: MetadataSourceType;
   /**
    * Default sort order
@@ -196,7 +210,19 @@ export interface ModelPropertyDto {
    */
   cascadeDeleteUnreferencedHardcoded?: boolean;
 
-  formatting?: INumberFormatting | IIntegerFormatting | IDecimalFormatting | IFloatFormatting;
+  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
+
+  listConfiguration?: IEntityPropertyListConfiguration;
+
+  itemsType?: ModelPropertyDto | null;
+
+  isItemsType?: boolean;
+
+  /** Used only for Model Configurator */
+  genericEntityReference?: boolean;
+
+  /** Used only for Model Configurator */
+  allowEdit?: boolean;
 }
 
 /**
@@ -247,6 +273,9 @@ export interface ModelConfigurationDto {
   permissionUpdate?: PermissionedObjectDto;
   permissionDelete?: PermissionedObjectDto;
   viewConfigurations?: EntityViewConfigurationDto[] | null;
+
+  initStatus?: EntityInitFlags;
+  initMessage?: string;
 }
 
 interface EmptyQueryParams {

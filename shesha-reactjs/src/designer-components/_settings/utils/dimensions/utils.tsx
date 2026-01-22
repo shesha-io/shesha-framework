@@ -11,7 +11,7 @@ const getDimension = (main: string | number, canvasWidth?): string | number => {
   return !hasNumber(main) ? main : `calc(${addPx(width)})`;
 };
 
-export const getDimensionsStyle = (dimensions: IDimensionsValue, canvasWidth?: string): CSSProperties => {
+export const getDimensionsStyle = (dimensions: IDimensionsValue | undefined, canvasWidth?: string): CSSProperties => {
   return {
     width: dimensions?.width
       ? getDimension(dimensions.width, canvasWidth)

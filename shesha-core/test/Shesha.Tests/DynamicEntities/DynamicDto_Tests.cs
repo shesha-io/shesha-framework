@@ -39,7 +39,7 @@ namespace Shesha.Tests.DynamicEntities
                     return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = LocalIocManager.Resolve<IEntityTypeConfigurationStore>();
             var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
             var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
 
@@ -74,7 +74,7 @@ namespace Shesha.Tests.DynamicEntities
                     return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = LocalIocManager.Resolve<IEntityTypeConfigurationStore>();
             var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
             var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
 
@@ -129,7 +129,7 @@ namespace Shesha.Tests.DynamicEntities
                     return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = LocalIocManager.Resolve<IEntityTypeConfigurationStore>();
             var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
             var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
 

@@ -1,4 +1,5 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { ComponentDefinition } from '@/interfaces';
+import { FormMode, IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IAlertComponentProps extends IConfigurableFormComponent {
   text: string;
@@ -10,3 +11,11 @@ export interface IAlertComponentProps extends IConfigurableFormComponent {
   banner?: boolean;
   marquee?: boolean;
 }
+
+interface IAlertComponentCalulatedValues {
+  evaluatedMessage: string;
+  evaluatedDescription: string;
+  formMode: FormMode;
+}
+
+export type AlertComponentDefinition = ComponentDefinition<"alert", IAlertComponentProps, IAlertComponentCalulatedValues>;

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { SaveMenu } from './saveMenu';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
 import { useSheshaApplication } from '@/providers';
 import { DebugButton } from './debugButton';
 import { UndoRedoButtons } from './undoRedoButtons';
@@ -9,10 +9,11 @@ import { FormSettingsButton } from './formSettingsButton';
 import { useStyles } from '../styles/styles';
 import { CanvasConfig } from './canvasConfig';
 import { CustomActions } from './customActions';
+import { FormName } from './formName';
 
 export const FormDesignerToolbar: FC = () => {
-  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
+  const readOnly = useFormDesignerReadOnly();
+  const formSettings = useFormDesignerSettings();
   const { styles } = useStyles();
 
   const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -24,9 +25,7 @@ export const FormDesignerToolbar: FC = () => {
       {isGranted && (
         <>
           <div className={styles.shaDesignerToolbarLeft}>
-            {!readOnly && (
-              <SaveMenu />
-            )}
+            {readOnly ? <FormName /> : <SaveMenu />}
           </div>
           <div className={styles.shaDesignerToolbarCenter}>
             <CanvasConfig />

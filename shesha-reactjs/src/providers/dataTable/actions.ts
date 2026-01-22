@@ -17,6 +17,8 @@ import {
   GroupingItem,
   FilterExpression,
 } from './interfaces';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IModelValidation } from '@/utils/errors';
 
 export enum DataTableActionEnums {
   FetchColumnsSuccess = 'FETCH_COLUMNS_SUCCESS',
@@ -69,6 +71,7 @@ export enum DataTableActionEnums {
   FetchGroupingColumnsSuccess = 'FETCH_GROUPING_COLUMNS_SUCCESS',
   SetSortingSettings = 'SET_SORTING_SETTINGS',
   SetStandardSorting = 'SET_STANDARD_SORTING',
+  SetContextValidation = 'SET_CONTEXT_VALIDATION',
 }
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
@@ -86,7 +89,7 @@ export const setMultiSelectedRowAction = createAction<Array<Row> | Row, Array<Ro
   (p) => p,
 );
 
-export const setModelTypeAction = createAction<string, string>(
+export const setModelTypeAction = createAction<string | IEntityTypeIdentifier, string | IEntityTypeIdentifier>(
   DataTableActionEnums.SetModelType,
   (p) => p,
 );
@@ -267,3 +270,8 @@ export const setStandardSortingAction = createAction<
   IColumnSorting[],
   IColumnSorting[]
 >(DataTableActionEnums.SetStandardSorting, (p) => p);
+
+export const setContextValidationAction = createAction<
+  IModelValidation | undefined,
+  IModelValidation | undefined
+>(DataTableActionEnums.SetContextValidation, (p) => p);

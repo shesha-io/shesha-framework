@@ -1,13 +1,13 @@
-import { FormRawMarkup } from '@/index';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 
-export const getItemSettings = (): FormRawMarkup => {
+export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormComponent[] => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const securityTabId = nanoid();
 
-  return new DesignerToolbarSettings()
+  return fbf()
     .addSearchableTabs({
       id: searchableTabsId,
       propertyName: 'settingsTabs',
@@ -15,16 +15,14 @@ export const getItemSettings = (): FormRawMarkup => {
       label: 'Settings',
       hideLabel: true,
       labelAlign: 'right',
-      ghost: true,
       size: 'small',
       tabs: [
         {
           key: '1',
           title: 'Common',
           id: commonTabId,
-          type: '',
           components: [
-            ...new DesignerToolbarSettings()
+            ...fbf()
               .addSettingsInputRow({
                 id: nanoid(),
                 inputs: [
@@ -144,7 +142,6 @@ export const getItemSettings = (): FormRawMarkup => {
                     label: "Select Mode",
                     allowClear: false,
                     jsSetting: true,
-                    defaultValue: "editable",
                     dropdownOptions: [
                       {
                         label: "Selectable",
@@ -184,8 +181,7 @@ export const getItemSettings = (): FormRawMarkup => {
           key: '2',
           title: 'Security',
           id: securityTabId,
-          type: '',
-          components: [...new DesignerToolbarSettings()
+          components: [...fbf()
             .addSettingsInput({
               id: nanoid(),
               inputType: 'permissions',

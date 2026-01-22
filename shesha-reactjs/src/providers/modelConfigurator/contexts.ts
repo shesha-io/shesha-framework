@@ -8,11 +8,22 @@ export interface IUpdateItemSettingsPayload {
   settings: IModelItem;
 }
 
+export interface IPropertyErrors {
+  propertyName: string;
+  errors: string[];
+}
+
 export interface IModelConfiguratorStateContext {
   id?: string;
+  initialConfiguration?: ModelConfigurationDto;
   modelConfiguration?: ModelConfigurationDto;
   form?: FormInstance;
   isCreateNew?: boolean;
+  isModified: boolean;
+  isLoading: boolean;
+  isSaving: boolean;
+  errors?: (IPropertyErrors | string)[];
+  showErrors?: boolean;
 }
 
 export interface IModelConfiguratorActionsContext {
@@ -25,11 +36,17 @@ export interface IModelConfiguratorActionsContext {
   delete: () => Promise<void>;
   submit: () => void;
   getModelSettings: () => ModelConfigurationDto;
+  setModified: (isModified?: boolean) => void;
+  validateModel: (model: ModelConfigurationDto) => IPropertyErrors[];
 
   /* NEW_ACTION_ACTION_DECLARATIOS_GOES_HERE */
 }
 
-export const MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE: IModelConfiguratorStateContext = {};
+export const MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE: IModelConfiguratorStateContext = {
+  isModified: false,
+  isLoading: false,
+  isSaving: false,
+};
 
 export const ModelConfiguratorStateContext = createNamedContext<IModelConfiguratorStateContext>(
   MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,

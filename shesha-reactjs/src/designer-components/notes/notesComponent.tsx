@@ -19,10 +19,12 @@ import { getFormApi } from '@/providers/form/formApi';
 import { App } from 'antd';
 import moment from 'moment';
 import { INote } from '@/providers/notes/contexts';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { AdvancedFormats } from '@/interfaces/dataTypes';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIdentifier;
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;
@@ -42,7 +44,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   isInput: false,
   name: 'Notes',
   icon: <FormOutlined />,
-  dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === 'notes',
+  dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === AdvancedFormats.notes,
   Factory: ({ model }) => {
     const httpClient = useHttpClient();
     const form = useForm();
@@ -130,8 +132,14 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     };
     return customModel;
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  linkToModelMetadata: (model, metadata) => ({ ...model, ownerId: '{data.id}', ownerType: metadata.containerType, category: metadata.path }),
+  settingsFormMarkup: getSettings,
+  linkToModelMetadata: (model, metadata) => ({
+    ...model,
+    ownerId: '{data.id}',
+    ownerType: metadata.entityType && { module: metadata.entityModule, name: metadata.entityType },
+    category: metadata.path,
+  }),
+  getFieldsToFetch: () => [],
   migrator: (m) =>
     m
       .add<INotesProps>(

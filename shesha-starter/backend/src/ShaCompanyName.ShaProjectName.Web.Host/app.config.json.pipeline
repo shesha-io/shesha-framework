@@ -15,7 +15,7 @@
   "Authentication": {
     "JwtBearer": {
       "IsEnabled": "true",
-      "SecurityKey": "TLU1F5ZCVSY5DXA6LJQVKSQTGPAXV814",
+      "SecurityKey": "#{securityKey}#",
       "Issuer": "Shesha",
       "Audience": "Shesha"
     }

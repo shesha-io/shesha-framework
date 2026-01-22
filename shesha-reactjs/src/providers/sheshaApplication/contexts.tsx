@@ -4,6 +4,7 @@ import { createNamedContext } from '@/utils/react';
 
 export interface ISheshaRoutes {
   formsDesigner: string;
+  configurationStudio: string;
 }
 
 export interface IHttpHeadersDictionary {
@@ -23,6 +24,7 @@ export interface ISheshaApplicationStateContext {
 
 export const DEFAULT_SHESHA_ROUTES: ISheshaRoutes = {
   formsDesigner: '/shesha/forms-designer',
+  configurationStudio: '/configuration-studio',
 };
 
 export const SHESHA_APPLICATION_CONTEXT_INITIAL_STATE: ISheshaApplicationStateContext = {

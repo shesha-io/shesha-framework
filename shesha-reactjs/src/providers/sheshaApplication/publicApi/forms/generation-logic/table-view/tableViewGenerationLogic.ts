@@ -1,13 +1,12 @@
 import { castToExtensionType, findContainersWithPlaceholder, getDataTypePriority, getColumnWidthByDataType, humanizeModelType } from "../viewGenerationUtils";
 import { FormMetadataHelper } from "../formMetadataHelper";
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { DesignerToolbarSettings, IEntityMetadata } from "@/interfaces";
+import { IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
-import { ISpecification } from "@/interfaces/metadata";
-import { ITableViewProps } from "@/providers/dataTable/filters/models";
 import { toCamelCase } from "@/utils/string";
 import { TableViewExtensionJson } from "../../models/TableViewExtensionJson";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
+import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 
 /**
  * Implements generation logic for table views.
@@ -60,42 +59,17 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       throw new Error("No table filter container found in the markup.");
     }
 
-    const builder = new DesignerToolbarSettings({});
-
-    // First filter: static title filter
-    const filters: ITableViewProps[] = [
-      {
-        id: nanoid(),
-        name: title,
-        sortOrder: 1,
-        defaultSelected: true,
-      },
-    ];
-
-    // Add filters from IEntityMetadata specifications
-    if (entity.specifications?.length) {
-      entity.specifications.forEach((spec: ISpecification, index: number) => {
-        filters.push({
-          id: nanoid(),
-          name: spec.friendlyName,
-          sortOrder: index + 2,
-          expression: {
-            and: [
-              {
-                is_satisfied: {
-                  var: spec.name,
-                },
-              },
-            ],
-          },
-        });
-      });
-    }
+    const builder = this.getFormBuilder();
 
     builder.addTableViewSelector({
       id: nanoid(),
       hidden: false,
-      filters,
+      filters: [{
+        id: nanoid(),
+        name: title,
+        sortOrder: 1,
+        defaultSelected: true,
+      }],
     });
 
     if (titleContainer[0].components && Array.isArray(titleContainer[0].components)) {
@@ -132,14 +106,14 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     });
 
     // Implementation for adding columns to the markup
-    const builder = new DesignerToolbarSettings({});
+    const builder = this.getFormBuilder();
 
-    const dataTableName = `datatable ${nanoid()}`;
+    const dataTableName = `datatable1`;
     builder.addDatatable({
       id: nanoid(),
       propertyName: dataTableName,
       componentName: dataTableName,
-      items: sortedProperties.map((prop, idx) => {
+      items: sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
         // Get column width based on data type
         const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
 
@@ -155,12 +129,15 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           minWidth: width.min,
           maxWidth: width.max,
           allowSorting: true,
+          displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+          editComponent: { type: standardCellComponentTypes.notEditable },
+          createComponent: { type: standardCellComponentTypes.notEditable },
         };
       }),
     });
 
     if (tableContainer[0].components && Array.isArray(tableContainer[0].components)) {
-      tableContainer[0].components.push(...builder.toJson());
+      tableContainer[0].components = builder.toJson();
     }
   }
 }

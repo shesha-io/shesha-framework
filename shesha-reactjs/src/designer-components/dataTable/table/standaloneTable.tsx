@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { ITableComponentProps } from './models';
 import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+
 // Ignore any configured items to ensure clean state when dragged outside
 const columns = [
   { header: 'Heading 1', accessor: 'col1' },
@@ -50,26 +51,15 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   };
 
   return (
-    <div style={{
-      padding: '16px',
-      borderRadius: '6px',
-      backgroundColor: '#fafafa',
-    }}
-    >
-      <div style={{
-        marginBottom: '12px',
-        fontSize: '12px',
-        color: '#8c8c8c',
-        textAlign: 'center',
-        padding: '4px 8px',
-        backgroundColor: '#fff',
-        border: '1px solid #e8e8e8',
-        borderRadius: '4px',
+    <div
+      className="sha-standalone-table-wrapper"
+      style={{
+        padding: '16px',
+        borderRadius: '6px',
+        backgroundColor: '#fafafa',
+        position: 'relative',
       }}
-      >
-        ⚠️ Data Table must be placed inside a Data Context
-      </div>
-
+    >
       <table style={tableStyle}>
         <thead>
           <tr>

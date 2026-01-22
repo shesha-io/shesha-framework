@@ -7,7 +7,7 @@ interface IArgumentEvaluationResult {
 type JsonLogicContainerProcessingCallback = (
   operator: string,
   args: object[],
-  argIndex: number
+  argIndex: number,
 ) => IArgumentEvaluationResult;
 
 const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonLogicContainerProcessingCallback): object => {

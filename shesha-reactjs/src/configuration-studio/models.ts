@@ -3,6 +3,8 @@ import { DataNode } from "antd/lib/tree";
 import { PropsWithChildren, ReactNode } from "react";
 import { isDefined } from "../utils/nullables";
 import { ModalFooterButtons } from "@/providers/dynamicModal/models";
+import { MenuItemType } from "./menu-utils";
+import { IConfigurationStudio } from "./cs/interfaces";
 
 export type ForceRenderFunc = () => void;
 
@@ -168,13 +170,15 @@ export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEdi
 export type ProviderRendererProps<TDoc extends IDocumentInstance = IDocumentInstance> = PropsWithChildren<ItemEditorProps<TDoc>>;
 export type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;
 
-export type DocumentDataLoader = () => Promise<void>;
+export type DocumentLoader = () => Promise<void>;
+export type DocumentSaver = () => Promise<void>;
 
 export interface IDocumentInstance extends CIDocument {
-  // state
   toolbarForceRender?: ForceRenderFunc;
+  setLoader: (loader: DocumentLoader | undefined) => void;
   reloadDocumentAsync: () => Promise<void>;
-  setLoader: (loader: DocumentDataLoader | undefined) => void;
+  setSaver: (saver: DocumentSaver | undefined) => void;
+  saveAsync: () => Promise<void>;
 };
 
 export type DocumentInstanceFactoryArgs = {
@@ -185,6 +189,7 @@ export type DocumentInstanceFactoryArgs = {
   flags?: DocumentFlags;
 };
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
+export type ContextMenuBuilder = (menuItems: MenuItemType[], configurationStudio: IConfigurationStudio) => MenuItemType[];
 
 export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
   documentType: string;
@@ -192,7 +197,11 @@ export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstanc
   Provider?: ProviderRenderer<TDoc> | undefined;
   Toolbar?: ItemEditorRenderer<TDoc> | undefined;
   documentInstanceFactory: DocumentInstanceFactory;
+  contextMenuBuilder?: ContextMenuBuilder;
   createModalFooterButtons?: ModalFooterButtons;
 };
 
 export type DocumentDefinitions = Map<string, DocumentDefinition>;
+
+export type SaveDocumentResponse = 'save' | 'dont-save' | 'cancel';
+export type CloseDocumentResponse = 'closed' | 'cancelled';

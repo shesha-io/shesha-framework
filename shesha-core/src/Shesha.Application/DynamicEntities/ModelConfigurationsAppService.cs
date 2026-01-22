@@ -6,7 +6,6 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Elmah;
-using Shesha.Reflection;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace Shesha.DynamicEntities
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IModelConfigurationManager _modelConfigurationManager;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly ISwaggerProvider _swaggerProvider;
         //private readonly SwaggerDocumentDictionary? _swaggerDocs;
 
@@ -29,8 +28,7 @@ namespace Shesha.DynamicEntities
             IRepository<EntityConfig, Guid> entityConfigRepository,
             IModelConfigurationManager modelConfigurationProvider,
             ISwaggerProvider swaggerProvider,
-            //SwaggerDocumentDictionary? swaggerDocs,
-            IEntityConfigurationStore entityConfigurationStore)
+            IEntityTypeConfigurationStore entityConfigurationStore)
         {
             _entityConfigRepository = entityConfigRepository;
             _modelConfigurationManager = modelConfigurationProvider;
@@ -40,9 +38,9 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpGet, Route("")]
-        public async Task<ModelConfigurationDto> GetByNameAsync(string className, string @namespace)
+        public async Task<ModelConfigurationDto> GetByNameAsync(string className, string? @namespace, string? module = null, bool useExposed = true)
         {
-            var dto = await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(@namespace, className);
+            var dto = await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(module, @namespace, className, useExposed);
             if (dto == null)
             {
                 var exception = new EntityNotFoundException("Model configuration not found");
@@ -64,7 +62,8 @@ namespace Shesha.DynamicEntities
                 throw exception;
             }
 
-            return await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(modelConfig.Namespace.NotNull(), modelConfig.ClassName);
+            return await _modelConfigurationManager.GetModelConfigurationOrNullAsync(modelConfig);
+            //return await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(modelConfig.Namespace.NotNull(), modelConfig.ClassName);
         }
 
         [HttpPost, Route("")]
@@ -84,7 +83,7 @@ namespace Shesha.DynamicEntities
         }
 
         //[HttpGet, Route("RefreshControllers")]
-        public async Task RefreshControllersAsync()
+        private async Task RefreshControllersAsync()
         {
             await Task.CompletedTask;
 

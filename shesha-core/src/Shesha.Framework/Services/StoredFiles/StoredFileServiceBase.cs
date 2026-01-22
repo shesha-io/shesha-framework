@@ -27,16 +27,21 @@ namespace Shesha.Services.StoredFiles
         /// Version repository
         /// </summary>
         protected readonly IRepository<StoredFileVersion, Guid> VersionRepository;
+        /// <summary>
+        /// Repository for tracking file version downloads
+        /// </summary>
+        protected readonly IRepository<StoredFileVersionDownload, Guid> StoredFileVersionDownloadRepository;
 
         /// <summary>
         /// Entity configuration store
         /// </summary>
-        public IEntityConfigurationStore EntityConfigurationStore { get; set; }
+        public IEntityTypeConfigurationStore EntityConfigurationStore { get; set; }
 
-        protected StoredFileServiceBase(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService)
+        protected StoredFileServiceBase(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService)
         {
             FileRepository = fileService;
             VersionRepository = versionService;
+            StoredFileVersionDownloadRepository = storedFileVersionDownloadService; 
         }
 
         #region  GetAttachmentsAsync
@@ -209,7 +214,7 @@ namespace Shesha.Services.StoredFiles
         private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>>? filterPredicate = null)
         {
             IQueryable<StoredFile>? query = null;
-            var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
+            var ecs = StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
             var stringId = id?.ToString().NotNullOrWhiteSpace();
             if (config != null)
@@ -238,7 +243,7 @@ namespace Shesha.Services.StoredFiles
         {
             IQueryable<StoredFileVersion> query = VersionRepository.GetAll().Where(e => e.IsLast);
 
-            var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
+            var ecs = StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
             var stringId = id?.ToString().NotNullOrWhiteSpace();
 
@@ -246,7 +251,7 @@ namespace Shesha.Services.StoredFiles
             {
                 var className = config.EntityType.FullName;
 
-                query = VersionRepository.GetAll().Where(e => e.File.Owner != null && e.File.Owner.Id == stringId);
+                query = query.Where(e => e.File.Owner != null && e.File.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
                     ? query.Where(e => e.File.Owner != null && (e.File.Owner._className == className || e.File.Owner._className == config.TypeShortAlias))
                     : query.Where(e => e.File.Owner != null && e.File.Owner._className == className);
@@ -256,7 +261,7 @@ namespace Shesha.Services.StoredFiles
             }
             else
             {
-                query = VersionRepository.GetAll().Where(e => e.File.Owner != null && e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
+                query = query.Where(e => e.File.Owner != null && e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
@@ -264,11 +269,16 @@ namespace Shesha.Services.StoredFiles
             return query;
         }
 
-        public Task MarkDownloadedAsync(StoredFileVersion fileVersion)
+        public async Task MarkDownloadedAsync(StoredFileVersion fileVersion)
         {
-            // todo: implement
+            if (fileVersion == null)
+                throw new ArgumentNullException(nameof(fileVersion));
 
-            return Task.CompletedTask;            
+            var download = new StoredFileVersionDownload()
+            {
+                FileVersion = fileVersion
+            };
+            await StoredFileVersionDownloadRepository.InsertAsync(download);
         }
 
         /// <summary>

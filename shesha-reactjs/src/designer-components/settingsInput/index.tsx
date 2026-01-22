@@ -1,18 +1,17 @@
 import React from 'react';
 
-import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
 import { SettingOutlined } from "@ant-design/icons";
 import { SettingInput } from './settingsInput';
-import { ISettingsInputProps } from './interfaces';
+import { SettingsInputDefinition } from './interfaces';
 
-const SettingsInput: IToolboxComponent<ISettingsInputProps & IConfigurableFormComponent> = {
+const SettingsInput: SettingsInputDefinition = {
   type: 'settingsInput',
   isInput: true,
   isOutput: true,
   name: 'SettingsInput',
   icon: <SettingOutlined />,
   Factory: ({ model }) => {
-    const { label, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, tooltip: description, readOnly } = model;
+    const { label, propertyName: property, tooltip: description, readOnly } = model;
 
 
     return (
@@ -21,16 +20,12 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps & IConfigurableFormCo
           <SettingInput
             size="small"
             label={label}
-            dropdownOptions={dropdownOptions}
-            buttonGroupOptions={buttonGroupOptions}
-            hasUnits={hasUnits}
             propertyName={property}
             tooltip={description}
             readOnly={readOnly}
             jsSetting={model.jsSetting}
             layout={model.layout}
             {...model}
-            type={model.inputType}
           />
         )
 

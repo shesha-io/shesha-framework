@@ -75,7 +75,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     ...model,

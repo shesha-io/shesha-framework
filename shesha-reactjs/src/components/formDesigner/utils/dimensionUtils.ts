@@ -19,15 +19,15 @@ export const getComponentDimensions = (
   const { shouldSkip } = typeInfo;
 
   const width = shouldSkip
-    ? '100%'
+    ? 'auto'
     : dimensionsStyles?.width || 'auto';
 
   const height = shouldSkip
-    ? '100%'
+    ? 'auto'
     : dimensionsStyles?.height || 'auto';
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number => {
-    if (shouldSkip) return '100%';
+    if (shouldSkip) return 'auto';
     return dimensionsStyles?.[dimensionType];
   };
 

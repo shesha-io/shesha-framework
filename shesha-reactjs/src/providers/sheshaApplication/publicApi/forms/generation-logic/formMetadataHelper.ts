@@ -1,9 +1,12 @@
-import { DataTypes, DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/interfaces";
+import { DataTypes, EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
+import { IEntityTypeIdentifier } from "../../entities/models";
+import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
+import { FormBuilder } from "@/form-factory/interfaces";
 
 /**
  * Helper class for fetching entity metadata and generating form fields based on that metadata.
@@ -12,7 +15,7 @@ import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 export class FormMetadataHelper {
   private _metadataDispatcher: IMetadataDispatcher;
 
-  private _modelType: string | null = null;
+  private _modelType: string | IEntityTypeIdentifier | null = null;
 
   /**
    * Creates an instance of FormMetadataHelper.
@@ -28,8 +31,8 @@ export class FormMetadataHelper {
    * @returns A promise that resolves to the entity metadata object.
    * @throws Error if the model type is empty or if the request fails.
    */
-  public async fetchEntityMetadataAsync(modelType: string): Promise<IEntityMetadata> {
-    if (!modelType?.trim()) {
+  public async fetchEntityMetadataAsync(modelType: string | IEntityTypeIdentifier): Promise<IEntityMetadata> {
+    if (isEntityTypeIdEmpty(modelType)) {
       throw new Error('Model type is required and cannot be empty');
     }
 
@@ -58,7 +61,7 @@ export class FormMetadataHelper {
    * @returns A promise that resolves to an object containing entity metadata and non-framework properties.
    * @throws Error if the model type is empty or if the request fails.
    */
-  public async fetchEntityMetadataWithPropertiesAsync(modelType: string): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
+  public async fetchEntityMetadataWithPropertiesAsync(modelType: string | IEntityTypeIdentifier): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
     const entity = await this.fetchEntityMetadataAsync(modelType);
     const nonFrameworkProperties = await this.extractNonFrameworkProperties(entity);
 
@@ -80,6 +83,7 @@ export class FormMetadataHelper {
       dataType: prop.dataType || "",
       dataFormat: prop.dataFormat || "",
       entityType: prop.entityType || "",
+      entityModule: prop.entityModule || "",
       required: !!prop.required,
       readonly: !!prop.readonly,
       minLength: prop.minLength || null,
@@ -150,14 +154,17 @@ export class FormMetadataHelper {
    * @param isReadOnly Whether the field should be read-only (default: false).
    * @throws Error if required metadata is missing for certain property types.
    */
-  public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings, isReadOnly: boolean = false): void {
+  public getConfigFields(property: PropertyMetadataDto, builder: FormBuilder, isReadOnly: boolean = false): void {
     const commonProps = {
       id: nanoid(),
       propertyName: toCamelCase(property.path || ""),
       label: property.label,
       editMode: isReadOnly ? 'readOnly' as EditMode : 'inherited' as EditMode,
       hideLabel: isReadOnly,
-      hidden: false,
+      hidden: !property.isVisible,
+      validate: {
+        required: property.required,
+      },
       hideBorder: isReadOnly,
       componentName: toCamelCase(property.path || ""),
     };
@@ -165,19 +172,14 @@ export class FormMetadataHelper {
     switch (property.dataType) {
       case DataTypes.string:
         if (property.dataFormat === 'multiline') {
-          builder.addTextArea({
-            ...commonProps,
-          });
-          break;
+          builder.addTextArea(commonProps, property);
         } else {
-          builder.addTextField({
-            ...commonProps,
-          });
+          builder.addTextField(commonProps, property);
         }
         break;
 
       case DataTypes.number:
-        builder.addNumberField(commonProps);
+        builder.addNumberField(commonProps, property);
         break;
 
       case DataTypes.entityReference:
@@ -186,9 +188,11 @@ export class FormMetadataHelper {
         }
         builder.addAutocomplete({
           ...commonProps,
-          entityType: property.entityType,
+          entityType: property.entityType
+            ? { name: property.entityType, module: property.entityModule } as IEntityTypeIdentifier
+            : null,
           dataSourceType: 'entitiesList',
-        });
+        }, property);
         break;
 
       case DataTypes.referenceListItem:
@@ -212,31 +216,30 @@ export class FormMetadataHelper {
             module: property.referenceListModule,
             name: property.referenceListName,
           },
-        });
+        }, property);
         break;
 
       case DataTypes.boolean:
-        builder.addCheckbox(commonProps);
+        builder.addCheckbox(commonProps, property);
         break;
 
       case DataTypes.date:
       case DataTypes.dateTime:
-        builder.addDateField(commonProps);
+        builder.addDateField(commonProps, property);
         break;
 
       case DataTypes.time:
-        builder.addTimePicker(commonProps);
+        builder.addTimePicker(commonProps, property);
         break;
 
       case DataTypes.file:
         builder.addFileUpload({
           ...commonProps,
-          font: {
-            size: 14,
-          },
+          font: { size: 14 },
           ownerId: '{data.id}',
           ownerType: this._modelType || '',
-        });
+          useSync: false,
+        }, property);
         break;
       default:
         break;

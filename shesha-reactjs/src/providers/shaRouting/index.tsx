@@ -7,7 +7,7 @@ import React, {
 import { FormIdentifier } from '@/interfaces';
 import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IKeyValue } from '@/interfaces/keyValue';
-import { navigateArgumentsForm } from './actions/navigate-arguments';
+import { getNavigateArgumentsForm } from './actions/navigate-arguments';
 import { IShaRouter, ShaRouterContext } from './contexts';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { ShaRouter } from './router';
@@ -43,20 +43,22 @@ export interface IScriptActionArguments {
 interface ShaRoutingProviderProps {
   router: IRouter;
   getFormUrlFunc?: (formId: FormIdentifier, isLoggedIn: boolean) => string;
+  urlOverrideFunc?: (url: string) => string;
   getIsLoggedIn: () => boolean;
 }
 
-const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn }) => {
+const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn, urlOverrideFunc }) => {
   const [shaRouter] = useState<ShaRouter>(() => {
-    return new ShaRouter({ router, getFormUrlFunc, getIsLoggedIn });
+    return new ShaRouter({ router, getFormUrlFunc, getIsLoggedIn, urlOverrideFunc });
   });
-  shaRouter.updateRouter({ router, getFormUrlFunc, getIsLoggedIn });
+  shaRouter.updateRouter({ router, getFormUrlFunc, getIsLoggedIn, urlOverrideFunc });
 
   useConfigurableAction<INavigateActoinArguments>(
     {
       name: NAVIGATE_ACTION_NAME,
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 2,
       hasArguments: true,
       executer: (request) => {
         if (request.navigationType !== 'form' && request.navigationType !== 'url')
@@ -67,7 +69,8 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
           ? shaRouter.goingToRoute(url)
           : Promise.reject('Common:Navigate: url is empty');
       },
-      argumentsFormMarkup: navigateArgumentsForm,
+      argumentsFormMarkup: getNavigateArgumentsForm,
+      migrator: (m) => m.add<INavigateActoinArguments>(0, (prev: INavigateActoinArguments) => ({ ...prev, navigationType: prev.navigationType ?? 'form' })),
     },
   );
 

@@ -48,6 +48,7 @@ export const DefaultDataDisplayCell = <D extends object = object, V = number>(pr
     case 'array': {
       switch (columnConfig.dataFormat) {
         case 'reference-list-item':
+        case 'multivalue-reference-list':
           return <MultivalueReferenceListCell<D, V> {...cellProps} />;
         case 'entity':
           return <MultiEntityCell<D, V> {...cellProps} />;
@@ -62,21 +63,22 @@ export const DefaultDataDisplayCell = <D extends object = object, V = number>(pr
   }
 };
 
-const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
-  const { columnConfig, propertyMeta, customComponent } = props;
+const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
+  const { columnConfig, propertyMeta, customComponent, defaultRow, defaultValue } = props;
   const { styles, cx } = useStyles();
 
   const toolboxComponents = useFormDesignerComponents();
 
   const component = toolboxComponents[customComponent.type];
-  const injectables = getInjectables(props);
+
+  const injectables = useMemo(() => getInjectables(props), [defaultRow, defaultValue]);
 
   const model = useMemo(() => upgradeComponent(
     customComponent.settings,
     component,
     DEFAULT_FORM_SETTINGS,
     { allComponents: { component: customComponent.settings }, componentRelations: {} },
-  ), [customComponent.settings]);
+  ), [customComponent.settings, component]);
 
   const actualModel = useActualContextData(
     model, props.readOnly ? true : undefined,
@@ -108,7 +110,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     }
 
     return editorModel;
-  }, [actualModel, columnConfig, propertyMeta, injectables]);
+  }, [actualModel, columnConfig, propertyMeta, injectables, customComponent.type, props.readOnly]);
 
   if (!component) {
     return <div>Component not found</div>;
@@ -124,7 +126,9 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
       </FormItemProvider>
     </CustomErrorBoundary>
   );
-};
+});
+
+ComponentWrapper.displayName = 'ComponentWrapper';
 
 export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>): JSX.Element => {
   const { columnConfig, propertyMeta } = props;

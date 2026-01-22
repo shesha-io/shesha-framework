@@ -9,6 +9,7 @@ import { nanoid } from "@/utils/uuid";
 import { GenerationLogicFactory } from "./generation-logic/factory";
 import { FormMetadataHelper } from "./generation-logic/formMetadataHelper";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
 
 export interface IFormsApi {
   /**
@@ -38,14 +39,13 @@ export class FormsApi implements IFormsApi {
 
   readonly _entityMetadataHelper: FormMetadataHelper;
 
-  constructor(httpClient: HttpClientApi, metadataDispatcher: IMetadataDispatcher) {
+  constructor(httpClient: HttpClientApi, metadataDispatcher: IMetadataDispatcher, fbf: FormBuilderFactory) {
     this._formsManager = new FormsManager(httpClient);
     this._httpClient = httpClient;
-    this._generationLogicFactory = new GenerationLogicFactory();
+    this._generationLogicFactory = new GenerationLogicFactory(fbf);
 
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
-
 
   prepareTemplateAsync = (templateId: string, replacements: object): Promise<string> => {
     if (!templateId)

@@ -4,15 +4,16 @@ export interface UpToDateForm {
   id?: string;
   module?: string;
   name?: string;
-  label?: string;
-  description?: string;
+  label?: string | undefined;
+  description?: string | undefined;
   flatStructure: IFlatComponentsStructure;
   settings: IFormSettings;
 
   /** Form asscess mode */
-  access?: number;
+  access?: number | undefined;
   /** Form permissions for Required premission mode */
-  permissions?: string[];
+  permissions?: string[] | undefined;
+  readOnly: boolean;
 }
 
 export const FORM_LOADING_STATES = ['ready', 'loading', 'error'] as const;

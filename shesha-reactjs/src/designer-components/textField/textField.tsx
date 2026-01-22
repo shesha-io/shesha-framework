@@ -3,12 +3,11 @@ import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useMemo } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ITextFieldComponentProps } from './interfaces';
+import { ITextFieldComponentProps, TextFieldComponentDefinition } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
@@ -19,11 +18,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
-interface ITextFieldComponentCalulatedValues {
-  eventHandlers?: IEventHandlers;
-}
-
-const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextFieldComponentCalulatedValues> = {
+const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
   isInput: true,
   isOutput: true,
@@ -32,7 +27,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
   icon: <CodeOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string &&
-    (dataFormat === StringFormats.singleline ||
+    (!dataFormat ||
+      dataFormat === StringFormats.singleline ||
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
@@ -45,6 +41,16 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+
+    const regExpObj = useMemo(() => {
+      if (!model.regExp) return null;
+      try {
+        return new RegExp(model.regExp, 'g');
+      } catch (error) {
+        console.warn('Invalid regExp pattern:', model.regExp, error);
+        return null;
+      }
+    }, [model.regExp]);
 
     if (model.hidden) return null;
 
@@ -69,8 +75,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]): void => {
-            customEvents.onChange({ value: args[0].currentTarget.value }, args[0]);
-            if (typeof onChange === 'function') onChange(...args);
+            const inputValue: string | undefined = args[0]?.currentTarget?.value?.toString();
+            const newValue = regExpObj ? inputValue?.replace(regExpObj, '') : inputValue;
+            const changedValue = customEvents.onChange({ value: newValue }, args[0]);
+            if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : newValue);
           };
 
           return inputProps.readOnly
@@ -80,8 +88,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => ({ ...model, textType: 'text' }),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))

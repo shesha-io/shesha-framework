@@ -1,5 +1,3 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { INumberFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
@@ -10,9 +8,9 @@ import {
   sizeOptions,
 } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const validationTabId = nanoid();
@@ -22,7 +20,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -37,7 +35,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -89,7 +87,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                       label: 'Edit Mode',
                       size: 'small',
                       jsSetting: true,
-                      defaultValue: 'inherited',
                     },
                     {
                       type: 'switch',
@@ -148,7 +145,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                   label: 'High Precision',
                   tooltip: 'To support high precision decimals support',
                   version: 2,
-                  defaultValue: false,
                 })
 
                 .addSettingsInputRow({
@@ -166,7 +162,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                       propertyName: 'stepNumeric',
                       parentId: nanoid(),
                       label: 'Step',
-                      defaultValue: 1,
                       validate: {},
                       settingsValidationErrors: [],
                     },
@@ -188,7 +183,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                       propertyName: 'stepString',
                       parentId: nanoid(),
                       label: 'Step',
-                      defaultValue: 0.1,
                       validate: {},
                       settingsValidationErrors: [],
                     },
@@ -203,7 +197,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
             title: 'Validation',
             id: validationTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'validate.required',
@@ -244,7 +238,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'codeEditor',
@@ -280,7 +274,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -293,9 +287,9 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         parentId: styleRouterId,
@@ -316,7 +310,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'fontStylePnl',
@@ -382,7 +376,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'dimensionsStylePnl',
@@ -466,16 +460,16 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addContainer({
                                 id: nanoid(),
                                 parentId: 'borderStylePnl',
-                                components: getBorderInputs() as any,
+                                components: getBorderInputs(fbf),
                               })
                               .addContainer({
                                 id: nanoid(),
                                 parentId: 'borderStylePnl',
-                                components: getCornerInputs() as any,
+                                components: getCornerInputs(fbf),
                               })
                               .toJson(),
                           ],
@@ -492,7 +486,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 parentId: 'backgroundStylePnl',
@@ -643,7 +637,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],
@@ -669,7 +662,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'shadowStylePnl',
@@ -738,7 +731,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addStyleBox({
                                 id: nanoid(),
                                 label: 'Margin Padding',
@@ -760,7 +753,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 inputType: 'codeEditor',
@@ -785,7 +778,7 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

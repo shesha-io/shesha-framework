@@ -9,7 +9,6 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
-import { importX, createNodeResolver } from 'eslint-plugin-import-x'
 import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
@@ -38,7 +37,12 @@ const strictFolders = isLightBuild
         "src/providers/dataContextManager",
         "src/providers/dataContextProvider",
         //"src/providers/sheshaApplication",
-        //"src/providers/form/utils",
+        "src/hooks",
+        "src/designer-components/_settings/utils/background",
+
+        "src/providers/form/utils",
+        "src/providers/formDesigner",
+        "src/form-factory",
     ];
 
 const stylisticOverrides = {
@@ -171,8 +175,8 @@ const typescriptOverrides = {
 };
 
 const baseTsConfig = {
-    ...importX.flatConfigs.recommended,
-    ...importX.flatConfigs.typescript,
+    // ...importX.flatConfigs.recommended,
+    // ...importX.flatConfigs.typescript,
     files: [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -188,7 +192,7 @@ const baseTsConfig = {
         "react-hooks": hooksPlugin,
         "@typescript-eslint": typescriptEslint,
         "@stylistic": stylistic,
-        "import-x": importX,
+        //"import-x": importX,
     },
 
     languageOptions: {
@@ -245,22 +249,22 @@ const baseTsConfig = {
             linkAttribute: "to",
         }],
 
-        'import-x/resolver-next': [
-            createTypeScriptImportResolver(
-                {
-                    alwaysTryTypes: true,
-                    project: [
-                        'tsconfig.json',
-                    ],
-                    tsconfigRootDir: __dirname,
-                }
-            ),
-            createNodeResolver(
-                {
-                    extensions: ['.ts', '.tsx'],
-                }
-            ),
-        ],
+        // 'import-x/resolver-next': [
+        //     createTypeScriptImportResolver(
+        //         {
+        //             alwaysTryTypes: true,
+        //             project: [
+        //                 'tsconfig.json',
+        //             ],
+        //             tsconfigRootDir: __dirname,
+        //         }
+        //     ),
+        //     createNodeResolver(
+        //         {
+        //             extensions: ['.ts', '.tsx'],
+        //         }
+        //     ),
+        // ],
     },
 
     rules: {
@@ -274,8 +278,8 @@ const baseTsConfig = {
         "memory-monitor/track-memory": "off",
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
-        ...importX.flatConfigs.recommended.rules,
-        ...importX.flatConfigs.typescript.rules,
+        // ...importX.flatConfigs.recommended.rules,
+        // ...importX.flatConfigs.typescript.rules,
 
         "react/prop-types": ["off"],
         "require-await": "error",
@@ -370,10 +374,10 @@ const baseTsConfig = {
         "spaced-comment": ["off", "always", {
             markers: ["/"],
         }],
-        "import-x/no-cycle": ["error", { maxDepth: Infinity }],
-        "import-x/no-duplicates": "error",
-        "import-x/no-self-import": "error",
-        "import-x/no-unresolved": "error",
+        // "import-x/no-cycle": ["error", { maxDepth: Infinity }],
+        // "import-x/no-duplicates": "error",
+        // "import-x/no-self-import": "error",
+        // "import-x/no-unresolved": "error",
     }
 };
 
@@ -432,11 +436,11 @@ export default [
             ecmaVersion: 'latest',
         },
         plugins: {
-            'import-x': importX,
+            // 'import-x': importX,
         },
         rules: {
-            ...importX.flatConfigs.recommended.rules,
-            "import-x/no-cycle": ["error", { maxDepth: Infinity }],
+            //...importX.flatConfigs.recommended.rules,
+            // "import-x/no-cycle": ["error", { maxDepth: Infinity }],
             "no-console": "error",
             '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
         }

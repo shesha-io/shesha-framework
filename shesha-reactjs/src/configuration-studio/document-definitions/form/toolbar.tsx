@@ -1,4 +1,3 @@
-import { CustomActions } from '@/components/formDesigner/toolbar/customActions';
 import { FormSettingsButton } from '@/components/formDesigner/toolbar/formSettingsButton';
 import { PreviewButton } from '@/components/formDesigner/toolbar/previewButton';
 import { SaveButton } from '@/components/formDesigner/toolbar/saveButton';
@@ -16,8 +15,7 @@ export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly = false }) => {
       <FormSettingsButton buttonText="" size="small" />
       {!readOnly && (<UndoRedoButtons size="small" />)}
       <PreviewButton size="small" />
-      <SaveButton size="small" type="primary" />
-      <CustomActions />
+      {!readOnly && (<SaveButton size="small" type="primary" />)}
     </Space>
   );
 };

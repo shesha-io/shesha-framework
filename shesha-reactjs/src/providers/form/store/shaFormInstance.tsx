@@ -16,7 +16,7 @@ import {
   SubmitHandler,
 } from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
-import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
+import { DataTypes, FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
 import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
 import { IFormManagerActionsContext } from "@/providers/formManager/contexts";
 import { useFormManager } from "@/providers/formManager";
@@ -31,7 +31,7 @@ import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
-import { DataContextTopLevels, isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
+import { DataContextTopLevels, isConfigurableFormComponent, isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
@@ -98,10 +98,12 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     for (const componentId in this.#form.flatStructure.allComponents) {
       if (Object.hasOwn(this.#form.flatStructure.allComponents, componentId)) {
         const component = this.#form.flatStructure.allComponents[componentId];
-        const addComponent: IPropertiesWithScripts = {};
-        proceed(addComponent, component, '');
-        if (!isEmpty(addComponent)) {
-          components[component.componentName] = addComponent;
+        if (isConfigurableFormComponent(component)) {
+          const addComponent: IPropertiesWithScripts = {};
+          proceed(addComponent, component, '');
+          if (!isEmpty(addComponent)) {
+            components[component.componentName] = addComponent;
+          }
         }
       }
     };
@@ -147,6 +149,10 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     return this.#form.antdForm;
   };
 
+  get shaForm(): IShaFormInstance<Values> {
+    return this.#form;
+  }
+
   get formSettings(): IFormSettings {
     return this.#form.settings;
   };
@@ -177,7 +183,8 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
 };
 
 export type ShaFormSubscription<Values extends object = object> = (cs: IShaFormInstance<Values>) => void;
-export type ShaFormSubscriptionType = 'data' | 'data-loading' | 'data-submit';
+export type ShaFormSubscriptionType = 'data-modified';
+
 
 class ShaFormInstance<Values extends object = object> implements IShaFormInstance<Values> {
   private forceRootUpdate: ForceUpdateTrigger;
@@ -278,25 +285,31 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.events = {};
     this.formData = {};
     this.isDataModified = false;
-    this.subscriptions = new Map<ShaFormSubscriptionType, ShaFormSubscription<Values>>();
+    this.subscriptions = new Map<ShaFormSubscriptionType, Set<ShaFormSubscription<Values>>>();
   }
 
   //#region subscriptions
 
-  private subscriptions: Map<ShaFormSubscriptionType, ShaFormSubscription<Values>>;
+  private subscriptions: Map<ShaFormSubscriptionType, Set<ShaFormSubscription<Values>>>;
 
   subscribe(type: ShaFormSubscriptionType, callback: () => void): () => void {
-    this.subscriptions.set(type, callback);
-    return () => this.unsubscribe(type);
+    const current = this.subscriptions.get(type) ?? new Set<ShaFormSubscription<Values>>();
+    current.add(callback);
+    this.subscriptions.set(type, current);
+    return () => this.unsubscribe(type, callback);
   }
 
-  private unsubscribe(type: ShaFormSubscriptionType): void {
-    this.subscriptions.delete(type);
+  private unsubscribe(type: ShaFormSubscriptionType, callback: () => void): void {
+    const current = this.subscriptions.get(type);
+    if (!current)
+      return;
+    current.delete(callback);
+    this.subscriptions.set(type, current);
   }
 
   notifySubscribers(type: ShaFormSubscriptionType): void {
-    const callback = this.subscriptions.get(type);
-    callback?.(this);
+    const callbacks = this.subscriptions.get(type);
+    callbacks?.forEach((callback) => callback(this));
   }
 
   //#endregion
@@ -327,6 +340,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     }
 
     this.isDataModified = value;
+    this.notifySubscribers('data-modified');
   };
 
   #setInternalFormData = (values: any): void => {
@@ -408,12 +422,12 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   setLogEnabled = (enabled: boolean): void => {
     this.logEnabled = enabled;
+    // eslint-disable-next-line no-console
+    this.log = this.logEnabled ? console.log : this.log;
   };
 
-  log = (...args: unknown[]): void => {
-    if (this.logEnabled)
-    // eslint-disable-next-line no-console
-      console.log(...args);
+  log = (..._args: unknown[]): void => {
+    // noop
   };
 
   setInitialValues = (values: Values): void => {
@@ -465,7 +479,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.events.onValuesUpdate = makeCaller<IDataArguments<Values>, void>(settings.onValuesUpdate);
 
     this.modelMetadata = settings.modelType
-      ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: 'entity' })
+      ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: DataTypes.entityReference })
       : undefined;
   };
 
@@ -738,7 +752,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
         this.dataSubmitState = { status: 'ready', hint: null };
         this.#setIsDataModified(false);
-        this.notifySubscribers('data-loading');
         this.forceRootUpdate();
 
         return result;

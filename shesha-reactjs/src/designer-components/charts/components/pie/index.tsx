@@ -107,14 +107,19 @@ const PieChart = ({ data }: IPieChartProps): JSX.Element => {
             if (data.labels.length && data.datasets.length) {
               return data.labels.map((label, i) => {
                 const dataset = data.datasets[0];
+                // backgroundColor can be an array or a single value
+                const bgColor = Array.isArray(dataset.backgroundColor)
+                  ? dataset.backgroundColor[i]
+                  : dataset.backgroundColor;
                 return {
                   text: String(label), // Ensure label is a string
-                  fillStyle: dataset.backgroundColor[i] || dataset.borderColor,
-                  strokeStyle: dataset.borderColor,
-                  lineWidth: dataset.borderWidth,
+                  fillStyle: bgColor || dataset.borderColor || '#000000',
+                  strokeStyle: dataset.borderColor || '#000000',
+                  lineWidth: dataset.borderWidth || 1,
                   pointStyle: 'circle',
                   hidden: false,
                   index: i,
+                  fontColor: legendFont?.color || '#000000',
                 };
               });
             }

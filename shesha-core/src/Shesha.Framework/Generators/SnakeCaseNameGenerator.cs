@@ -56,7 +56,7 @@ namespace Shesha.Generators
                 switch (MaxLengthAction)
                 {
                     case GeneratorMaxLengthActionEnum.ThrowError:
-                        throw new ArgumentOutOfRangeException($"Lenght of '{res}' is more then {maxLenght}");
+                        throw new ArgumentOutOfRangeException($"Lenght of '{res}' is more than {maxLenght}");
                     case GeneratorMaxLengthActionEnum.TrimRight:
                         return res.Substring(0, maxLenght);
                     case GeneratorMaxLengthActionEnum.TrimParts:

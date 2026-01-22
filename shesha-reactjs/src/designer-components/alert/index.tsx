@@ -1,12 +1,10 @@
 import React, { ReactNode } from 'react';
-import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { FormMode } from '@/providers';
 import { getSettings } from './settingsForm';
 import ShaIcon from '@/components/shaIcon';
-import { IAlertComponentProps } from './interfaces';
+import { AlertComponentDefinition, IAlertComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -32,13 +30,7 @@ const defaultTextForPreview = {
   },
 };
 
-interface IAlertComponentCalulatedValues {
-  evaluatedMessage: string;
-  evaluatedDescription: string;
-  formMode: FormMode;
-}
-
-const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCalulatedValues> = {
+const AlertComponent: AlertComponentDefinition = {
   type: 'alert',
   isInput: false,
   name: 'Alert',
@@ -129,8 +121,8 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
     .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAlertComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IAlertComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default AlertComponent;

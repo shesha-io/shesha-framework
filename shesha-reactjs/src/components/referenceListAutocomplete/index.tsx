@@ -27,12 +27,20 @@ interface IOption {
 const baseItemFilter = [
 ];
 
-const baseListFilter = {
+const moduleNotEmpty = {
   "!=": [
     {
       var: "module",
     },
     null,
+  ],
+};
+const notExposedFilter = {
+  "!=": [
+    {
+      var: "isExposed",
+    },
+    true,
   ],
 };
 
@@ -46,7 +54,7 @@ const getFilter = (term: string): string => {
     }
     : undefined;
 
-  const allFilters = [baseListFilter, termFilter].filter((f) => Boolean(f));
+  const allFilters = [moduleNotEmpty, notExposedFilter, termFilter].filter((f) => Boolean(f));
   const filter = allFilters.length === 0
     ? undefined
     : allFilters.length === 1

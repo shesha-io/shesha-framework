@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { BugOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerIsDebug } from '@/providers/formDesigner';
 
 export const DebugButton: FC = () => {
-  const isDebug = useFormDesignerStateSelector((x) => x.isDebug);
-  const { setDebugMode } = useFormDesignerActions();
+  const isDebug = useFormDesignerIsDebug();
+  const { setDebugMode } = useFormDesigner();
 
   return (
     <Button

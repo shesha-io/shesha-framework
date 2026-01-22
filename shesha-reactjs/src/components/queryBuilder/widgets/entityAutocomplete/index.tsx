@@ -19,7 +19,7 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
     return (
       <Autocomplete
         dataSourceType="entitiesList"
-        entityType={customSettings.typeShortAlias}
+        entityType={customSettings.typeShortAlias ?? { module: customSettings.entityTypeModule ?? '', name: customSettings.entityTypeName ?? '' }}
         displayPropName="_displayName"
         keyPropName="id"
         mode="single"

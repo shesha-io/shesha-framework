@@ -5,22 +5,26 @@ import { ObservableProxy } from '..';
 import { TouchableArrayProperty, TouchableProperty } from '@/providers/form/touchableProperty';
 import { ShaArrayAccessProxy, ShaObjectAccessProxy } from '@/providers/dataContextProvider/contexts/shaDataAccessProxy';
 
+const safeFunctionToString = (fn: unknown): string | null => typeof fn !== 'function'
+  ? null
+  : fn.toString();
+
 /**
  * Custom version of isEqual to handle function comparison
  */
-function isEqual(x: any, y: any): boolean {
+function isEqual(x: unknown, y: unknown): boolean {
   return isEqualWith(x, y, (a, b) => {
     // Deal with the function comparison case
     if (typeof a === 'function' && typeof b === 'function') {
-      return a.toString() === b.toString();
+      return safeFunctionToString(a) === safeFunctionToString(b);
     }
     // Fallback on the method
     return undefined;
   });
 }
 
-export function useDeepCompareMemoize(value: Readonly<any>): any {
-  const ref = useRef<any>();
+export function useDeepCompareMemoize<T = unknown>(value?: Readonly<T>): T {
+  const ref = useRef<T>();
 
   const unproxiedValue = Array.isArray(value)
     ? value.map((item) =>
@@ -34,12 +38,12 @@ export function useDeepCompareMemoize(value: Readonly<any>): any {
         : item instanceof ObservableProxy
           ? { ...item }
           : item,
-    )
+    ) as T
     : value;
 
   if (!isEqual(unproxiedValue, ref.current)) {
     ref.current = unproxiedValue;
   }
 
-  return ref.current;
+  return ref.current as T;
 }

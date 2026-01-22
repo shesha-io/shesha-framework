@@ -19,7 +19,6 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
-  defaultValue?: number;
   allowClear?: boolean;
   allowHalf?: boolean;
   icon?: string;
@@ -73,8 +72,8 @@ const RateComponent: IToolboxComponent<IRateProps> = {
       )
     ;
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))

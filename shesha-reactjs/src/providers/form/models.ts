@@ -2,10 +2,9 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import React, { CSSProperties, ReactNode } from 'react';
-import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
+import { IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
-import { nanoid } from '@/utils/uuid';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
@@ -14,6 +13,7 @@ import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensio
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 import { isDefined } from '@/utils/nullables';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -24,22 +24,13 @@ export interface ISubmitActionArguments {
   validateFields?: boolean;
 }
 
-export const SubmitActionArgumentsMarkup = new DesignerToolbarSettings()
-  .addCheckbox({ id: nanoid(), propertyName: 'validateFields', parentId: 'root', label: 'Validate fields', defaultValue: false })
-  .toJson();
-
 export type FormMode = 'designer' | 'edit' | 'readonly';
 
 export type LabelAlign = 'left' | 'right';
 
 export type PropertySettingMode = 'value' | 'code';
-/*
-export enum PropertySettingMode {
-  Value = 'value',
-  Code = 'code'
-}
-*/
-export interface IPropertySetting<Value = any> {
+
+export interface IPropertySetting<Value = unknown> {
   _mode?: PropertySettingMode;
   _value?: Value;
   _code?: string;
@@ -52,7 +43,7 @@ export interface IFormComponentContainer {
   /** Unique Id of the component */
   id: string;
   /** Id of the parent component */
-  parentId?: string;
+  parentId?: string | undefined;
 }
 
 export interface IComponentValidationRules {
@@ -144,7 +135,7 @@ export interface IComponentLabelProps {
 
 export interface IComponentRuntimeProps {
   /**/
-  settingsValidationErrors?: IAsyncValidationError[];
+  settingsValidationErrors?: IAsyncValidationError[] | undefined;
 
   /** Custom onBlur handler */
   onBlurCustom?: string;
@@ -157,6 +148,9 @@ export interface IComponentRuntimeProps {
 
   /** Custom onFocus handler */
   onFocusCustom?: string;
+
+  /** Custom onSelect handler */
+  onSelectCustom?: string;
 }
 
 export interface IComponentBindingProps {
@@ -175,7 +169,7 @@ export interface IComponentBindingProps {
 
 export interface IComponentVisibilityProps {
   /** Hidden field is still a part of the form but not visible on it */
-  hidden?: boolean;
+  hidden?: boolean | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */
@@ -237,9 +231,6 @@ export interface IConfigurableFormComponent
   /** @deprecated Use disabled in js mode instead */
   customEnabled?: string;
 
-  /** Default value of the field */
-  defaultValue?: any;
-
   /** Control size */
   size?: SizeType;
 
@@ -297,12 +288,18 @@ export interface IComponentsContainer {
   components: IConfigurableFormComponent[];
 }
 
+export type IRawComponentsContainer = IFormComponentContainer & {
+  components: IConfigurableFormComponent[];
+};
+export const isRawComponentsContainer = (obj: unknown): obj is IRawComponentsContainer =>
+  isDefined(obj) && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
+
 export interface IComponentsDictionary {
-  [index: string]: IConfigurableFormComponent;
+  [index: string]: IConfigurableFormComponent | IRawComponentsContainer;
 }
 
 export interface IComponentRelations {
-  [index: string]: string[];
+  [index: string]: string[] | undefined;
 }
 
 export interface IFlatComponentsStructure {
@@ -318,7 +315,7 @@ export interface IFormItemMargin {
 }
 
 export interface IFormSettingsCommon {
-  modelType?: string;
+  modelType?: IEntityTypeIdentifier | string;
   layout: FormLayout;
   colon: boolean;
   labelCol: ColProps;
@@ -392,10 +389,7 @@ export interface FormMarkupWithSettings {
   components: IConfigurableFormComponent[];
 }
 export type FormRawMarkup = IConfigurableFormComponent[];
-export type FormMarkup =
-  | FormRawMarkup |
-  FormMarkupWithSettings | ((data: any) => FormRawMarkup |
-    FormMarkupWithSettings);
+export type FormMarkup = FormRawMarkup | FormMarkupWithSettings;
 
 export type FormFullName = ConfigurableItemFullName;
 export type FormUid = ConfigurableItemUid;
@@ -451,16 +445,16 @@ export interface IFormSections {
  * Form DTO
  */
 export interface FormDto {
-  id?: string;
+  id: string;
   /**
    * Form name
    */
-  name?: string;
+  name: string;
 
   /**
    * Module
    */
-  module?: string;
+  module: string;
   /**
    * Form label
    */
@@ -481,11 +475,14 @@ export interface FormDto {
    * Type
    */
   type?: string | null;
+  access: number | null;
+  permissions: string[] | null;
 }
 
 export interface IFormDto extends Omit<FormDto, 'markup'> {
   markup: FormRawMarkup | null;
   settings: IFormSettings | null;
+  readOnly: boolean;
 }
 
 export interface IFormValidationRulesOptions {

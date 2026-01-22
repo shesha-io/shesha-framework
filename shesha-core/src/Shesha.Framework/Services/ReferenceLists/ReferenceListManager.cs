@@ -5,10 +5,8 @@ using Shesha.Domain;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Services.ReferenceLists.Dto;
-using Shesha.Validations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,40 +22,6 @@ namespace Shesha.Services.ReferenceLists
         {
             _listItemsRepository = listItemsRepository;
             _refListHelper = refListHelper;
-        }
-
-        public async Task <ReferenceList> CreateAsync(CreateReferenceListDto input)
-        {
-            var module = input.ModuleId.HasValue
-                ? await ModuleRepository.GetAsync(input.ModuleId.Value)
-                : null;
-
-            var validationResults = new List<ValidationResult>();
-
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
-                validationResults.Add(new ValidationResult(
-                    module != null
-                        ? $"Reference List with name `{input.Name}` already exists in module `{module.Name}`"
-                        : $"Reference List with name `{input.Name}` already exists"
-                    )
-                );
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var refList = new ReferenceList();
-
-            refList.Name = input.Name;
-            refList.Module = module;
-            refList.Description = input.Description;
-            refList.Label = input.Label;
-
-            refList.Origin = refList;
-
-            refList.Normalize();
-
-            await Repository.InsertAsync(refList);
-
-            return refList;
         }
 
         private async Task CopyItemsAsync(ReferenceList source, ReferenceList destination)
@@ -115,11 +79,18 @@ namespace Shesha.Services.ReferenceLists
                 Name = refList.Name,
                 Label = refList.Label,
                 Description = refList.Description,
+                Suppress = refList.Suppress,
             };
 
             dto.Items = await _refListHelper.GetItemsAsync(refList.Id);
 
             return dto;
+        }
+
+        public override async Task<string> GetBackwardCompatibleModuleNameAsync(string name)
+        {
+            var list = await _refListHelper.GetReferenceListAsync(new ReferenceListIdentifier(null, name));
+            return list?.Module?.Name ?? string.Empty;
         }
     }
 }

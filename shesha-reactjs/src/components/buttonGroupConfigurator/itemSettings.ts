@@ -2,12 +2,11 @@ import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } fr
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '@/designer-components/_settings/utils/font/utils';
 import { buttonTypes } from '@/designer-components/button/util';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/index';
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 
-export const getItemSettings = (): FormMarkupWithSettings => {
+export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -24,7 +23,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
   const entityOrUrl = 'getSettingValue(data?.itemSubType) == "separator" || getSettingValue(data?.itemSubType) === "dynamic" && (getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url")';
 
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -38,7 +37,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
             key: '1',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: "dropdown",
@@ -75,7 +74,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                   _value: false,
                 },
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: commonButtonSettingsContainerId,
@@ -225,7 +224,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
               _value: false,
             },
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   inputs: [
@@ -283,7 +282,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: fontStylePnlId,
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: fontStylePnlId,
@@ -353,7 +352,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: dimensionsStylePnlId,
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dimensionsStylePnlId,
@@ -437,16 +436,16 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: borderStylePnlId,
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addContainer({
                         id: nanoid(),
                         parentId: borderStylePnlId,
-                        components: getBorderInputs("", false) as any,
+                        components: getBorderInputs(fbf, "", false),
                       })
                       .addContainer({
                         id: nanoid(),
                         parentId: borderStylePnlId,
-                        components: getCornerInputs("", false) as any,
+                        components: getCornerInputs(fbf, "", false),
                       })
                       .toJson(),
                     ],
@@ -464,7 +463,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                   content: {
                     id: backgroundStylePnlId,
                     components: [
-                      ...new DesignerToolbarSettings()
+                      ...fbf()
                         .addSettingsInput({
                           id: nanoid(),
                           parentId: backgroundStylePnlId,
@@ -472,7 +471,6 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                           jsSetting: false,
                           propertyName: "background.type",
                           inputType: "radio",
-                          defaultValue: "color",
                           tooltip: "Select a type of background",
                           buttonGroupOptions: backgroundTypeOptions,
                         })
@@ -576,7 +574,6 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                             label: 'Repeat',
                             hideLabel: true,
                             propertyName: 'background.repeat',
-                            inputType: 'radio',
                             buttonGroupOptions: repeatOptions,
                           }],
                           hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -596,7 +593,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: shadowStylePnlId,
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: shadowStylePnlId,
@@ -608,7 +605,6 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                             label: 'Offset X',
                             hideLabel: true,
                             width: 80,
-                            inputType: 'numberField',
                             icon: "offsetHorizontalIcon",
                             propertyName: 'shadow.offsetX',
                           },
@@ -618,7 +614,6 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                             label: 'Offset Y',
                             hideLabel: true,
                             width: 80,
-                            inputType: 'numberField',
                             icon: 'offsetVerticalIcon',
                             propertyName: 'shadow.offsetY',
                           },
@@ -628,7 +623,6 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                             label: 'Blur',
                             hideLabel: true,
                             width: 80,
-                            inputType: 'numberField',
                             icon: 'blurIcon',
                             propertyName: 'shadow.blurRadius',
                           },
@@ -638,7 +632,6 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                             label: 'Spread',
                             hideLabel: true,
                             width: 80,
-                            inputType: 'numberField',
                             icon: 'spreadIcon',
                             propertyName: 'shadow.spreadRadius',
                           },
@@ -666,7 +659,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: stylePnlId,
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addStyleBox({
                         id: nanoid(),
                         label: 'Margin Padding',
@@ -692,7 +685,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
                   collapsible: 'header',
                   content: {
                     id: customStylePnlId,
-                    components: [...new DesignerToolbarSettings()
+                    components: [...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         inputType: 'codeEditor',
@@ -717,7 +710,7 @@ export const getItemSettings = (): FormMarkupWithSettings => {
               _mode: 'code',
               _value: false,
             } as any,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

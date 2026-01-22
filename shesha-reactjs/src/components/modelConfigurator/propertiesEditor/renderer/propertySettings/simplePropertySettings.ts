@@ -1,7 +1,7 @@
-import { DesignerToolbarSettings } from "@/index";
+import { FormBuilder, FormBuilderFactory } from "@/form-factory/interfaces";
 import { nanoid } from "@/utils/uuid";
 
-export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array', propName: string = ''): DesignerToolbarSettings => {
+export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: string, type: 'full' | 'array', propName: string = ''): FormBuilder => {
   const codePropName = propName.replaceAll('.', '?.');
 
   const stringFormatId = nanoid();
@@ -21,7 +21,7 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
     { value: 'array', label: 'List' },
     { value: 'file', label: 'File' },
     { value: 'advanced', label: 'Advanced' },
-    { value: 'geometry', label: 'Geometry' },
+    // { value: 'geometry', label: 'Geometry' },
   ];
 
   const typesArrayList = [
@@ -31,13 +31,13 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
     { value: 'date', label: 'Date' },
     { value: 'time', label: 'Time' },
     { value: 'boolean', label: 'Boolean' },
-    { value: 'geometry', label: 'Geometry' },
+    // { value: 'geometry', label: 'Geometry' },
   ];
 
-  return new DesignerToolbarSettings()
+  return fbf()
     .addSettingsInput({ parentId: dataTabId, inputType: 'dropdown', propertyName: `${propName}dataType`, label: 'Data Type', validate: { required: true },
-      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
-      mode: 'single', dropdownOptions: type === 'full' ? typesFullList : typesArrayList,
+      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
+      dropdownOptions: type === 'full' ? typesFullList : typesArrayList,
       allowClear: true, tooltip: 'Select the data type for this property.',
       onChangeSetting: (_value, _data, setFormData) => {
         const newData = { formatting: { defaultEditor: null } };
@@ -62,8 +62,8 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
   // String format
 
     .addContainer({ id: stringFormatId, parentId: dataTabId, hidden: { _code: `return data?.${codePropName}dataType !== \'string\';`, _mode: 'code', _value: false },
-      components: [...new DesignerToolbarSettings()
-        .addSettingsInput({ parentId: stringFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'String Format', mode: 'single',
+      components: [...fbf()
+        .addSettingsInput({ parentId: stringFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'String Format',
           dropdownOptions: [
             { label: 'Single line', value: 'singleline' },
             { label: 'Multiline', value: 'multiline' },
@@ -88,9 +88,10 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
   // Number format
 
     .addContainer({ id: numberFormatId, parentId: dataTabId, hidden: { _code: `return data?.${codePropName}dataType !== \'number\';`, _mode: 'code', _value: false },
-      components: [...new DesignerToolbarSettings()
-        .addSettingsInput({ parentId: numberFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'Number format', mode: 'single',
-          editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+      components: [...fbf()
+        .addSettingsInput({ parentId: numberFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'Number Format',
+          validate: { required: true },
+          editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
           dropdownOptions: [
             { label: 'Integer', value: 'int64' },
             { label: 'Float', value: 'float' },
@@ -99,7 +100,7 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
         })
         .addSettingsInputRow({ parentId: numberFormatId, inputs: [
           { type: 'numberField', propertyName: `${propName}formatting.numDecimalPlaces`, label: 'Num decimal places',
-            editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+            editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
           },
           { type: 'switch', propertyName: `${propName}formatting.showAsPercentage`, label: 'Show as percentage' },
         ],
@@ -122,8 +123,8 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
   // Reference list format
 
     .addContainer({ id: refListFormatId, parentId: dataTabId, hidden: { _code: `return data?.${codePropName}dataType !== \'reference-list-item\';`, _mode: 'code', _value: false },
-      components: [...new DesignerToolbarSettings()
-        .addSettingsInput({ parentId: refListFormatId, inputType: 'referenceListAutocomplete', propertyName: `${propName}referenceListId`, label: 'Reference List' })
+      components: [...fbf()
+        .addSettingsInput({ parentId: refListFormatId, inputType: 'referenceListAutocomplete', propertyName: `${propName}referenceListId`, label: 'Reference List', validate: { required: true } })
         .toJson(),
       ],
     })

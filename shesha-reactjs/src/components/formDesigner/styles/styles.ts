@@ -1,5 +1,6 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
 import { createStyles, sheshaStyles } from '@/styles';
+import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
 const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
@@ -43,6 +44,8 @@ const designerClassNames = {
   formTitle: "form-title",
   formNameParent: "form-name-parent",
   toolbarWrapper: "form-toolbar-wrapper",
+  unregisteredComponentContainer: "unregistered-component-container",
+  unregisteredComponentMessage: "unregistered-component-message",
 };
 const useStylesResponse = {
   styles: designerClassNames,
@@ -52,6 +55,8 @@ export const useStyles = (): typeof useStylesResponse => {
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+  const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
+
   const {
     shaHelpIcon,
     shaDragging,
@@ -90,7 +95,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     formName,
     formTitle,
     formNameParent,
-    // mainArea,
+    unregisteredComponentContainer,
+    unregisteredComponentMessage,
   } = useStyles().styles;
 
   const quickEditModal = cx("sha-designer-modal", css`
@@ -103,42 +109,27 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             overflow-y: hidden;
             height: calc(100vh - 40px);
             scrollbar-width: none;
+            
+            .${prefixCls}-modal-close {
+                margin-top: 4px;
+            }
+
             .${prefixCls}-modal-header {
                 padding: 8px 12px;
                 margin: 0;
                 border-bottom: ${sheshaStyles.border};
+            }
+            .${shaDesignerToolbar} {
+                .${shaDesignerToolbarRight} {
+                    margin-right: 20px;
+                }
             }
         }
     `);
 
   const formDesignerClassName = "sha-form-designer";
   const designerPage = "sha-designer-page";
-  /*
-    const flexColumns = `
-        display: flex;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        align-items: stretch;
-        align-content: flex-start;
-    `;
-    const flexFitHorizontal = 'flex-grow: 1;';
-    const designerPage = cx("sha-designer-page", css`
-        ${flexColumns}
 
-        .${formDesignerClassName} {
-            ${flexFitHorizontal}
-            ${flexColumns}
-
-            .${mainArea} {
-                ${flexFitHorizontal}
-                .sidebar-container {
-                    height: 100%;
-                }
-            }
-        }
-   `);
-    */
   const formDesigner = cx(formDesignerClassName, css`
         .${shaHelpIcon} {
             cursor: help;
@@ -171,6 +162,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             overflow-y: auto; 
             overflow-x: hidden; 
             margin-bottom: 1rem;
+            ${sheshaStyles.thinScrollbars}
         }
         .${shaDesignerToolbar} {
             background: white;
@@ -203,7 +195,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                margin-top: -10px;
+                margin-right: 32px;
             }
 
             .${shaDesignerToolbarLeft} {
@@ -249,7 +241,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${shaDesignerToolbox} {
-            height: 85vh;
             margin-bottom: 3rem;
             .${shaDatasourceTree} {
                 .${prefixCls}-tree-switcher-noop {
@@ -369,10 +360,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
         }
-        
+
         .${designerWorkArea}{
             background-color: white;
-            height: 100%;
+            height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             .${shaComponentsContainer} {
                 border-radius: 2px;
 
@@ -382,50 +373,23 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     color: darkgray;
                     padding: 10px;
                     height: 55px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .${shaComponent} {
-                    min-height: 30px;
-                }
-
-                /* Improve dropzone visibility during drag operations */
-                &.sha-components-container-inner {
-                    min-height: 20px;
-                    transition: background-color 0.2s ease, border 0.2s ease;
-
-                    &:empty {
-                        min-height: 40px;
-                        border: 2px dashed transparent;
-                        border-radius: 4px;
-                    }
-                }
-            }
-
-            /* Enhanced visual feedback when dragging */
-            &.${shaDragging} {
-                .${shaComponentsContainer} {
-                    &.sha-components-container-inner:empty {
-                        border-color: ${token.colorPrimary}40;
-                        background-color: ${token.colorPrimaryBg}20;
-                    }
-
-                    &.sha-components-container-inner:hover {
-                        border-color: ${token.colorPrimary};
-                        background-color: ${token.colorPrimaryBg}40;
-                    }
+                    min-height: 48px;
                 }
             }
 
             > div {
              height: 100%;
-             .sha-drop-hint {
-                display: none;
-             }
                 > div:not(.sha-drop-hint) {
                     min-height: 100vh;
                     height: 100%;
                 }
-                    
+
                 > .sha-components-container-inner:not(:has(.sha-component)) {
                     background: url("${getFormDesignerBackgroundSvg()}");
                     background-size: 25vw;
@@ -433,46 +397,99 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     background-position: 50% 50%;
                 }
             }
+
+            /* Hide drop hint in main canvas when background SVG is showing */
+            > div > .${shaDropHint} {
+                display: none;
+            }
         }
 
         .${shaComponentGhost} {
             border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
-            opacity: 0.7;        
+            opacity: 0.7;    
+            min-height: 48px;
         }
         .${shaToolboxPanelComponents}{
             margin: -1rem -0.8rem;
         }
+        .${unregisteredComponentContainer} {
+            min-height: 40px;
+            position: relative;
+            padding: 8px;
+            border: 1px dashed #ccc;
+
+            .${unregisteredComponentMessage} {
+                color: #999;
+                font-size: 12px;
+            }
+        }
         .${shaComponent} {
             position: relative;
-        
+            min-height: 50px; // Ensure enough space for delete button and error icon
+
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
             }
-        
+
             &.selected {
               border: ${token.colorPrimary} 1px solid;
               border-radius: 4px;
               background-color: ${token.colorPrimaryBg}80;
             }
-        
+
             &.${hasConfigErrors} {
               border: ${token.colorErrorBg} 1px solid;
               border-radius: 4px;
-        
+
               .${shaComponentIndicator} {
                 display: none;
               }
-        
-              .${shaComponentValidationIcon} {
-                display: inline-flex;
-                align-items: center;
-                color: ${token.colorErrorBg};
-                font-size: 12px !important;
-                left: 15px;
-                height: 100%;
-                position: absolute;
-                z-index: 1000;
+            }
+
+            // DataContext and DataTable components need more height in error state
+            &[data-sha-c-type="dataContext"],
+            &[data-sha-c-type="datatable"],
+            &[data-sha-c-type="dataList"],
+            &[data-sha-c-type="tableViewSelector"],
+            &[data-sha-c-type="childTable"],
+            &[data-sha-c-type="datatable.filter"],
+            &[data-sha-c-type="datatable.quickSearch"],
+            &[data-sha-c-type="datatable.pager"] {
+              .sha-error-icon-container {
+                min-height: 48px;
+              }
+            }
+
+            // Error icon positioning: snap to corner when not hovering
+            .sha-error-icon-top-right {
+              top: 4px !important;
+              transition: top 0.2s ease;
+            }
+
+            // When hovering the component, move error icon down to make room for delete button
+            &:hover .sha-error-icon-top-right {
+              top: 28px !important;
+            }
+
+            .${shaComponentValidationIcon} {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              position: absolute;
+              right: 6px;
+              top: 28px;
+              z-index: 1000;
+              width: 24px;
+              height: 24px;
+              background-color: ${token.colorBgContainer};
+              border-radius: 50%;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              transition: all 0.2s ease;
+
+              &:hover {
+                transform: scale(1.1);
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
               }
             }
         

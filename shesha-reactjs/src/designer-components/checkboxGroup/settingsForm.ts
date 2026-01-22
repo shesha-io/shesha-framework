@@ -1,9 +1,8 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -16,7 +15,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const stylePanelId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -31,7 +30,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -73,7 +72,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       id: nanoid(),
                       propertyName: 'editMode',
                       label: 'Edit Mode',
-                      defaultValue: 'inherited',
                       size: 'small',
                       jsSetting: true,
                     },
@@ -95,7 +93,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'dropdown',
@@ -213,7 +211,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Validation',
             id: validationTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'validate.required',
@@ -232,7 +230,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'codeEditor',
@@ -268,7 +266,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -281,9 +279,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         parentId: styleRouterId,
@@ -301,7 +299,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         size: 'small',
                         jsSetting: true,
                         parentId: styleRouterId,
-                        defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
                             label: 'Horizontal',
@@ -324,7 +321,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 inputType: 'codeEditor',
@@ -350,7 +347,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

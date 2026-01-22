@@ -3,6 +3,7 @@ import { IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/mode
 import { Key, ReactNode } from "react";
 import { GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 /**
  * Converts array of strings into IDataColumnsProps array
@@ -26,11 +27,11 @@ export function getColumns(fields: string[]): IDataColumnsProps[] {
 
 export type AutocompleteDataSourceType = 'entitiesList' | 'url';
 
-export type QueryParamFunc = (searchText: string, selected: any[]) => object;
-export type FilterSelectedFunc = (value: any) => object;
-export type KayValueFunc = (value: any, args: any) => string;
-export type DisplayValueFunc = (value: any, args: any) => string;
-export type OutcomeValueFunc = (value: any, args: any) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
+export type QueryParamFunc = (searchText: string, selected: unknown[]) => object;
+export type FilterSelectedFunc = (value: unknown) => object;
+export type KayValueFunc = (value: unknown, args: object) => unknown;
+export type DisplayValueFunc = (value: unknown, args: object) => string;
+export type OutcomeValueFunc = (value: unknown, args: object) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | unknown;
 
 export interface ISelectOption<TValue = any> {
   // TODO: make generic
@@ -56,7 +57,7 @@ export interface IAutocompleteBaseProps {
   value?: any;
 
   /** Type of entity */
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   /** Data source type */
   dataSourceType: AutocompleteDataSourceType;
   /** Data source URL (required for dataSourceType === 'url', alternative for dataSourceType === 'entitiesList') */

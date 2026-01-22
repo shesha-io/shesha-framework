@@ -2,10 +2,9 @@ import { FileAddOutlined } from '@ant-design/icons';
 import React from 'react';
 import { FileUpload } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { DataTypes, IFormItem, IToolboxComponent } from '@/interfaces';
-import { IStyleType, StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { DataTypes } from '@/interfaces';
+import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { useForm } from '@/providers/form';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
   evaluateValueAsString,
   validateConfigurableComponentSettings,
@@ -18,27 +17,12 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { containerDefaultStyles, defaultStyles } from './utils';
-import { listType } from '../attachmentsEditor/attachmentsEditor';
+import { defaultStyles } from './utils';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { migratePrevStyles } from '../_common-migrations';
 
-export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
-  ownerId: string;
-  ownerType: string;
-  allowUpload?: boolean;
-  allowReplace?: boolean;
-  allowDelete?: boolean;
-  useSync?: boolean;
-  allowedFileTypes?: string[];
-  isDragger?: boolean;
-  listType?: listType;
-  thumbnail?: IStyleType;
-  borderRadius?: number;
-  hideFileName?: boolean;
-}
-
-const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
+const FileUploadComponent: FileUploadComponentDefinition = {
   type: 'fileUpload',
   name: 'File',
   icon: <FileAddOutlined />,
@@ -74,9 +58,9 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               fileId={model.value?.Id ?? model.value}
               baseUrl={backendUrl}
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-              ownerType={Boolean(model.ownerType)
+              ownerType={!isEntityTypeIdEmpty(model.ownerType)
                 ? model.ownerType
-                : Boolean(formSettings?.modelType)
+                : !isEntityTypeIdEmpty(formSettings?.modelType)
                   ? formSettings?.modelType
                   : ''}
               propertyName={model.propertyName}
@@ -126,7 +110,10 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
           owner: prev['owner'],
         } as IFileUploadProps;
       })
-      .add<IFileUploadProps>(1, (prev, context) => ({ ...prev, useSync: !Boolean(context.formSettings?.modelType) }))
+      .add<IFileUploadProps>(1, (prev, context) => ({
+        ...prev,
+        useSync: prev.useSync === undefined ? isEntityTypeIdEmpty(context.formSettings?.modelType) : prev.useSync,
+      }))
       .add<IFileUploadProps>(2, (prev) => {
         const pn = prev['name'] ?? prev.propertyName;
         const model = migratePropertyName(migrateCustomFunctions(prev));
@@ -136,39 +123,15 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
       .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
       .add<IFileUploadProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IFileUploadProps>(6, (prev) => {
-        return {
-          ...prev,
-          ...defaultStyles(),
-          desktop: { ...defaultStyles() },
-          mobile: { ...defaultStyles() },
-          tablet: { ...defaultStyles() },
-        };
-      })
-      .add<IFileUploadProps>(7, (prev) => {
-        const migrateStyleLevel = (prevStyles: any): any => {
-          if (!prevStyles) return prevStyles;
-
-          const thumbnailStyles = migratePrevStyles(prevStyles.thumbnail, containerDefaultStyles());
-          const rootStyles = { ...prevStyles };
-          delete rootStyles.container;
-
-          return {
-            ...thumbnailStyles,
-            font: prevStyles.font,
-            thumbnail: rootStyles,
-          };
-        };
-
-        return {
-          ...prev,
-          desktop: migrateStyleLevel(prev.desktop),
-          mobile: migrateStyleLevel(prev.mobile),
-          tablet: migrateStyleLevel(prev.tablet),
-        };
-      }),
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+      .add<IFileUploadProps>(6, (prev) => ({
+        ...prev,
+        ...defaultStyles(),
+        desktop: { ...defaultStyles() },
+        mobile: { ...defaultStyles() },
+        tablet: { ...defaultStyles() },
+      })),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default FileUploadComponent;

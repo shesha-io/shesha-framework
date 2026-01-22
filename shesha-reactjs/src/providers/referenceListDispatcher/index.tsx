@@ -18,7 +18,7 @@ const ReferenceListDispatcherProvider: FC<PropsWithChildren> = ({
 
 
   const getReferenceList = (payload: IGetReferenceListPayload): PromisedValue<IReferenceList> => {
-    return loader.getRefList({
+    return loader.getRefListAsync({
       refListId: payload.refListId,
       skipCache: false,
     });

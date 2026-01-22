@@ -1,10 +1,8 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ISwitchComponentProps } from './interfaces';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -15,7 +13,7 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
   const customStylePnlId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -30,7 +28,7 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -71,7 +69,6 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -92,7 +89,7 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'codeEditor',
@@ -110,7 +107,7 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -123,9 +120,9 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         parentId: styleRouterId,
@@ -145,7 +142,7 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
                         collapsible: 'header',
                         content: {
                           id: dimensionsStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
@@ -156,7 +153,6 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
                                   id: nanoid(),
                                   label: "Size",
                                   propertyName: "size",
-                                  defaultValue: 'default',
                                   dropdownOptions: [
                                     { value: 'small', label: 'Small' },
                                     { value: 'default', label: 'Default' },
@@ -178,7 +174,7 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
                         collapsible: 'header',
                         content: {
                           id: customStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -201,7 +197,7 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

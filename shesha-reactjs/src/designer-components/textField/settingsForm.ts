@@ -1,13 +1,11 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { ITextFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const validationTabId = nanoid();
@@ -17,7 +15,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -31,7 +29,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
             key: '1',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: 'propertyName',
@@ -172,7 +170,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
             key: '2',
             title: 'Validation',
             id: validationTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 propertyName: 'validate.required',
@@ -212,6 +210,20 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                   {
                     type: 'textField',
                     id: nanoid(),
+                    propertyName: 'regExp',
+                    label: 'Regular expression',
+                    size: 'small',
+                    jsSetting: true,
+                  },
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: validationTabId,
+                inputs: [
+                  {
+                    type: 'textField',
+                    id: nanoid(),
                     propertyName: 'validate.message',
                     label: 'Message',
                     size: 'small',
@@ -234,7 +246,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
             key: '3',
             title: 'Events',
             id: eventsTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
@@ -243,6 +255,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                 labelAlign: 'right',
                 tooltip: 'Enter custom eventhandler on changing of event.',
                 parentId: eventsTabId,
+                availableConstantsExpression: "return metadataBuilder.object(\"constants\").addAllStandard().addString(\"value\", \"Component current value\", undefined).build();",
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -269,7 +282,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
             key: '4',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -282,9 +295,9 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                },
+                } as any,
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       parentId: styleRouterId,
@@ -304,7 +317,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -369,7 +382,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -453,17 +466,17 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
 
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -480,7 +493,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -592,7 +605,6 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -611,7 +623,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -679,7 +691,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -700,7 +712,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -720,7 +732,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
             key: '5',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

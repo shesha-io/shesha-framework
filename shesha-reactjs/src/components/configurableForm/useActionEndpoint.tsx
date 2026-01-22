@@ -5,10 +5,11 @@ import { IFormSettings } from '@/providers/form/models';
 import { useMetadataDispatcher } from '@/providers';
 import { useDeepCompareEffect } from 'react-use';
 import { useState } from 'react';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface GetDefaultActionUrlPayload {
   actionName: string;
-  modelType: string;
+  modelType: string | IEntityTypeIdentifier;
 }
 export interface GetFormActionUrlPayload {
   actionName: string;

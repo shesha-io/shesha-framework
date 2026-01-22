@@ -1,5 +1,5 @@
 import { Modal, Spin } from 'antd';
-import { ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
+import { ISettingsFormInstance, IToolboxComponentBase } from '@/interfaces';
 import React, { ReactNode, useRef } from 'react';
 import { useMedia } from 'react-use';
 import { IConfigurableFormComponent } from '@/providers/form/models';
@@ -10,7 +10,7 @@ export interface IProps<T extends IConfigurableFormComponent> {
   isVisible: boolean;
   onSave: (model: T) => Promise<void>;
   onCancel: () => void;
-  formComponent: IToolboxComponent;
+  formComponent: IToolboxComponentBase;
   readOnly: boolean;
   propertyFilter?: (name: string) => boolean;
 }

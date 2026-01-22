@@ -19,7 +19,7 @@ namespace Shesha.DynamicEntities.Distribution
     /// inheritedDoc
     public class EntityConfigImport : ConfigurationItemImportBase<EntityConfig, DistributedEntityConfig>, IEntityConfigImport, ITransientDependency
     {
-        public string ItemType => EntityConfig.ItemTypeName;
+        public override string ItemType => EntityConfig.ItemTypeName;
 
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -66,7 +66,9 @@ namespace Shesha.DynamicEntities.Distribution
                 dbItem.Description = src.Description;
                 dbItem.DataType = src.DataType;
                 dbItem.DataFormat = src.DataFormat;
+                dbItem.EntityFullClassName = src.EntityFullClassName;
                 dbItem.EntityType = src.EntityType;
+                dbItem.EntityModule = src.EntityModule;
                 dbItem.ReferenceListName = src.ReferenceListName;
                 dbItem.ReferenceListModule = src.ReferenceListModule;
                 dbItem.IsFrameworkRelated = src.IsFrameworkRelated;

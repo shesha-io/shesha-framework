@@ -1,4 +1,3 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
@@ -8,11 +7,11 @@ import {
   repeatOptions,
   sizeOptions,
 } from '../_settings/utils/background/utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: 'W_m7doMyCpCYwAYDfRh6I',
         propertyName: 'settingsTabs',
@@ -27,7 +26,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: 's4gmBg31azZC0UjZjpfTm',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: 'placeholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -67,30 +66,26 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   content: {
                     id: 'placement-content-s4gmBg31azZC0UjZjpfTm',
                     components: [
-                      ...new DesignerToolbarSettings()
+                      ...fbf()
                         .addSettingsInputRow({
                           id: '12d700d6-ed4d-49d5-9cfd-fe8f00d6-ed4d-49d5-9cfd-fe8f00w0f3b6',
                           parentId: 'placement-content-s4gmBg31azZC0UjZjpfTm',
                           inputs: [
                             {
                               id: '12d700d6-ed4d-49d5-9cfd-fe8f00w0f3b6',
-                              inputType: 'switch',
                               type: 'switch',
                               propertyName: 'showHeader',
                               label: 'Show Header',
                               size: 'small',
                               jsSetting: true,
-                              defaultValue: false,
                             },
                             {
                               id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                              inputType: 'switch',
                               type: 'switch',
                               propertyName: 'showFooter',
                               label: 'Show Action Buttons',
                               size: 'small',
                               jsSetting: true,
-                              defaultValue: false,
                             },
                           ],
                         })
@@ -104,7 +99,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             _value: false,
                           } as any,
                           parentId: 'placement-content-s4gmBg31azZC0UjZjpfTm',
-                          components: new DesignerToolbarSettings()
+                          components: fbf()
                             .addCollapsiblePanel({
                               id: nanoid(),
                               propertyName: 'okButtonCollapsiblePanel',
@@ -112,7 +107,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                               content: {
                                 id: nanoid(),
-                                components: new DesignerToolbarSettings()
+                                components: fbf()
                                   .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onOkAction',
@@ -121,6 +116,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   })
                                   .addSettingsInput({
                                     id: nanoid(),
+                                    inputType: 'textField',
                                     propertyName: 'okText',
                                     parentId: nanoid(),
                                     label: 'Ok Text',
@@ -144,7 +140,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                               content: {
                                 id: nanoid(),
-                                components: new DesignerToolbarSettings()
+                                components: fbf()
                                   .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onCancelAction',
@@ -153,6 +149,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   })
                                   .addSettingsInput({
                                     id: nanoid(),
+                                    inputType: 'textField',
                                     propertyName: 'cancelText',
                                     label: 'Cancel Text',
                                     description: 'The text that will be displayed on the Cancel button',
@@ -183,7 +180,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: 'styleRouter',
                   propertyName: 'propertyRouter1',
@@ -196,16 +193,15 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: 'predefinedOrientation',
                         propertyName: 'placement',
                         label: 'Slide Direction',
                         inputType: 'dropdown',
                         hidden: false,
-                        defaultValue: 'right',
                         dropdownOptions: [
                           { label: 'Top', value: 'top' },
                           { label: 'Right', value: 'right' },
@@ -225,7 +221,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'dimensionsStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'dimensionsStyleRowWidth',
                                 parentId: 'dimensionsStylePnl',
@@ -309,7 +305,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'backgroundStylePnl-main',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: 'backgroundStyleRow-selectType-main',
                                 parentId: 'backgroundStylePnl-main',
@@ -466,7 +462,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],
@@ -492,7 +487,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'borderStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: `borderStyleRow-main`,
                                 parentId: 'borderStylePnl',
@@ -517,12 +512,12 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addContainer({
                                 id: 'borderStyleRow-container',
                                 parentId: 'borderStylePnl',
-                                components: getBorderInputs() as any,
+                                components: getBorderInputs(fbf),
                               })
                               .addContainer({
                                 id: 'borderRadiusStyleRow-container',
                                 parentId: 'borderStylePnl',
-                                components: getCornerInputs() as any,
+                                components: getCornerInputs(fbf),
                               })
                               .toJson(),
                           ],
@@ -539,7 +534,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'shadowStylePnl-main',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'shadowStyleRow-main',
                                 parentId: 'shadowStylePnl-main',
@@ -604,7 +599,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'stylePnl-M5-911',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addStyleBox({
                                 id: 'styleBoxPnl',
                                 label: 'Margin Padding',
@@ -626,7 +621,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'stylePnl-custom-main',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: 'custom-css-main',
                                 inputType: 'codeEditor',
@@ -658,7 +653,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'stylePnl-header-main',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addCollapsiblePanel({
                                 id: 'headerbackgroundStyleCollapsiblePanel',
                                 propertyName: 'pnlBackgroundStyle',
@@ -670,7 +665,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 content: {
                                   id: 'backgroundStylePnl-header',
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: 'backgroundStyleRow-selectType-header',
                                         parentId: 'backgroundStylePnl-header',
@@ -853,7 +848,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'headerStyles.background.repeat',
-                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
@@ -879,7 +873,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 content: {
                                   id: 'shadowStylePnl-header',
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: 'shadowStyleRow-header',
                                         parentId: 'shadowStylePnl-header',
@@ -965,7 +959,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'stylePnl-footer-main',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addCollapsiblePanel({
                                 id: 'footerBackgroundStyleCollapsiblePanel',
                                 propertyName: 'pnlBackgroundStyle',
@@ -977,7 +971,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 content: {
                                   id: 'backgroundStylePnl-footer',
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: 'backgroundStyleRow-selectType-footer',
                                         parentId: 'backgroundStylePnl-footer',
@@ -1160,7 +1154,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'footerStyles.background.repeat',
-                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
@@ -1186,7 +1179,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 content: {
                                   id: 'footershadowStylePnl',
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: 'footershadowStyleRow',
                                         parentId: 'footershadowStylePnl',

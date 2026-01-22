@@ -1,4 +1,5 @@
-﻿using Shesha.Domain;
+﻿using Shesha.Configuration.Runtime;
+using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata.Dtos;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace Shesha.DynamicEntities
     /// <summary>
     /// Model Configuration Manager. Provides an access to the configurable models and properties
     /// </summary>
-    public interface IModelConfigurationManager
+    public interface IModelConfigurationManager: IEntityConfigManager
     {
         /// <summary>
         /// Get model configuration
@@ -19,12 +20,17 @@ namespace Shesha.DynamicEntities
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(EntityConfig modelConfig, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(string? moduleName, string? @namespace, string entityTypeName, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
+
+        /// <summary>
+        /// Get model configuration
+        /// </summary>
+        Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string? moduleName, string? @namespace, string entityTypeName, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Create model configuration

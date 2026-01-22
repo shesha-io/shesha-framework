@@ -56,7 +56,7 @@ export interface IArgumentEvaluationResult {
 export type JsonLogicContainerProcessingCallback = (
   operator: string,
   args: object[],
-  argIndex: number
+  argIndex: number,
 ) => IArgumentEvaluationResult;
 
 export interface OnEvaluatedArguments extends IEvaluateComplexStringResult {

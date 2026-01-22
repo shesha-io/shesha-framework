@@ -1,9 +1,11 @@
-import { DesignerToolbarSettings, FormRawMarkup } from '@/interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontWeightsOptions, fontTypes } from '../_settings/utils/font/utils';
-export const getItemSettings = (): FormRawMarkup => {
+import { FormBuilderFactory } from '@/form-factory/interfaces';
+
+export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormComponent[] => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -25,7 +27,7 @@ export const getItemSettings = (): FormRawMarkup => {
   const beforeRenderContentId = nanoid();
   const otherSettingsContentId = nanoid();
 
-  return new DesignerToolbarSettings()
+  return fbf()
     .addSearchableTabs({
       id: searchableTabsId,
       propertyName: 'settingsTabs',
@@ -39,7 +41,7 @@ export const getItemSettings = (): FormRawMarkup => {
           key: '1',
           title: 'Common',
           id: commonTabId,
-          components: [...new DesignerToolbarSettings()
+          components: [...fbf()
             .addSettingsInputRow({
               id: nanoid(),
               parentId: commonTabId,
@@ -136,7 +138,6 @@ export const getItemSettings = (): FormRawMarkup => {
                   label: 'Allow Cancel',
                   labelAlign: 'right',
                   hidden: false,
-                  defaultValue: false,
                   validate: {},
                   jsSetting: true,
                 }],
@@ -149,7 +150,6 @@ export const getItemSettings = (): FormRawMarkup => {
               labelAlign: 'right',
               parentId: commonTabId,
               hidden: false,
-              defaultValue: false,
               validate: {},
               jsSetting: true,
             })
@@ -163,7 +163,7 @@ export const getItemSettings = (): FormRawMarkup => {
               collapsible: 'header',
               content: {
                 id: nextButtonContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -196,7 +196,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         propertyName: 'beforeNextActionConfiguration',
                         label: 'Before Next Action',
                         hidden: false,
-                        hideLabel: true,
                         validate: {},
                         jsSetting: false,
                         settingsValidationErrors: [],
@@ -205,7 +204,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'afterNextActionConfiguration',
-                        hideLabel: true,
                         label: 'After Next Action',
                         hidden: false,
                         customVisibility: '',
@@ -227,7 +225,7 @@ export const getItemSettings = (): FormRawMarkup => {
               collapsible: 'header',
               content: {
                 id: backButtonContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInput({
                     id: nanoid(),
                     inputType: 'switch',
@@ -236,7 +234,6 @@ export const getItemSettings = (): FormRawMarkup => {
                     labelAlign: 'right',
                     parentId: backButtonContentId,
                     jsSetting: true,
-                    defaultValue: true,
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -269,7 +266,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         propertyName: 'beforeBackActionConfiguration',
                         label: 'Before Back Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                       },
                       {
@@ -278,7 +274,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         propertyName: 'afterBackActionConfiguration',
                         label: 'After Back Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                         customVisibility: '',
                       },
@@ -297,7 +292,7 @@ export const getItemSettings = (): FormRawMarkup => {
               collapsible: 'header',
               content: {
                 id: doneButtonContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInput({
                     id: nanoid(),
                     inputType: 'switch',
@@ -306,7 +301,6 @@ export const getItemSettings = (): FormRawMarkup => {
                     labelAlign: 'right',
                     parentId: doneButtonContentId,
                     jsSetting: true,
-                    defaultValue: true,
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -341,7 +335,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         propertyName: 'beforeDoneActionConfiguration',
                         label: 'Before Done Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                       },
                       {
@@ -350,7 +343,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         propertyName: 'afterDoneActionConfiguration',
                         label: 'After Done Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                         customVisibility: '',
                       },
@@ -369,7 +361,7 @@ export const getItemSettings = (): FormRawMarkup => {
               collapsible: 'header',
               content: {
                 id: cancelButtonContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -403,7 +395,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         propertyName: 'beforeCancelActionConfiguration',
                         label: 'Before Cancel Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                       },
                       {
@@ -412,7 +403,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         propertyName: 'afterCancelActionConfiguration',
                         label: 'After Cancel Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                         customVisibility: '',
                       },
@@ -431,12 +421,11 @@ export const getItemSettings = (): FormRawMarkup => {
               collapsible: 'header',
               content: {
                 id: beforeRenderContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addConfigurableActionConfigurator({
                     id: nanoid(),
                     propertyName: 'onBeforeRenderActionConfiguration',
                     label: 'Action Configuration',
-                    hideLabel: true,
                     hidden: false,
                     parentId: beforeRenderContentId,
                   })
@@ -453,7 +442,7 @@ export const getItemSettings = (): FormRawMarkup => {
               collapsible: 'header',
               content: {
                 id: otherSettingsContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -494,7 +483,7 @@ export const getItemSettings = (): FormRawMarkup => {
           title: 'Appearance',
           id: appearanceTabId,
           components: [
-            ...new DesignerToolbarSettings()
+            ...fbf()
               .addCollapsiblePanel({
                 id: nanoid(),
                 propertyName: 'pnlFontStyle',
@@ -505,7 +494,7 @@ export const getItemSettings = (): FormRawMarkup => {
                 collapsible: 'header',
                 content: {
                   id: fontStylePnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: fontStylePnlId,
@@ -565,16 +554,16 @@ export const getItemSettings = (): FormRawMarkup => {
                 collapsible: 'header',
                 content: {
                   id: borderStylePnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addContainer({
                       id: nanoid(),
                       parentId: borderStylePnlId,
-                      components: getBorderInputs("", false) as any,
+                      components: getBorderInputs(fbf, "", false),
                     })
                     .addContainer({
                       id: nanoid(),
                       parentId: borderStylePnlId,
-                      components: getCornerInputs("", false) as any,
+                      components: getCornerInputs(fbf, "", false),
                     })
                     .toJson(),
                   ],
@@ -592,7 +581,7 @@ export const getItemSettings = (): FormRawMarkup => {
                 content: {
                   id: backgroundStylePnlId,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         parentId: backgroundStylePnlId,
@@ -600,7 +589,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         jsSetting: false,
                         propertyName: "background.type",
                         inputType: "radio",
-                        defaultValue: "color",
                         tooltip: "Select a type of background",
                         buttonGroupOptions: backgroundTypeOptions,
                       })
@@ -706,7 +694,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           label: 'Repeat',
                           hideLabel: true,
                           propertyName: 'background.repeat',
-                          inputType: 'radio',
                           buttonGroupOptions: repeatOptions,
                         }],
                         hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -726,7 +713,7 @@ export const getItemSettings = (): FormRawMarkup => {
                 collapsible: 'header',
                 content: {
                   id: shadowStylePnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: shadowStylePnlId,
@@ -739,7 +726,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: "offsetHorizontalIcon",
                           propertyName: 'shadow.offsetX',
                         },
@@ -750,7 +736,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'offsetVerticalIcon',
                           propertyName: 'shadow.offsetY',
                         },
@@ -761,7 +746,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'blurIcon',
                           propertyName: 'shadow.blurRadius',
                         },
@@ -772,7 +756,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'spreadIcon',
                           propertyName: 'shadow.spreadRadius',
                         },
@@ -798,7 +781,7 @@ export const getItemSettings = (): FormRawMarkup => {
                 collapsible: 'header',
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addStyleBox({
                       id: nanoid(),
                       label: 'Margin Padding',
@@ -819,7 +802,7 @@ export const getItemSettings = (): FormRawMarkup => {
                 collapsible: 'header',
                 content: {
                   id: customStylePnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: customStylePnlId,
@@ -851,7 +834,7 @@ export const getItemSettings = (): FormRawMarkup => {
           key: '3',
           title: 'Security',
           id: securityTabId,
-          components: [...new DesignerToolbarSettings()
+          components: [...fbf()
             .addSettingsInput({
               id: nanoid(),
               propertyName: 'permissions',

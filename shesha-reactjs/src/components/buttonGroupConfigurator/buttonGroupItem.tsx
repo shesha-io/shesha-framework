@@ -11,6 +11,7 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { initialValues } from './utils';
 import { useActualContextData } from '@/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getGhostStyleOverrides } from '@/utils/style';
 
 const { Text } = Typography;
 
@@ -71,20 +72,25 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
     justifyContent: buttonStyles.fontStyles.textAlign,
   };
 
+  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
+  const isGhost = buttonType === 'ghost';
+
   return (
     <>
       {item.itemSubType === 'button' && (
         <Flex>
           <Button
             title={tooltip}
-            type={buttonType}
+            type={isGhost ? 'default' : buttonType}
+            ghost={isGhost}
+            disabled={readOnly}
             danger={danger}
             icon={icon ? <ShaIcon iconName={icon as IconType} /> : undefined}
             iconPosition={iconPosition}
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
             block={block}
-            style={{ ...newStyles, ...(readOnly && { cursor: 'not-allowed' }) }}
+            style={{ ...newStyles, ...(isGhost ? getGhostStyleOverrides() : {}) }}
           >
             {label}
           </Button>

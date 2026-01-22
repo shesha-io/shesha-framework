@@ -7,6 +7,7 @@ import { camelcaseDotNotation } from '@/utils/string';
 import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
 import { useMetadata } from '@/providers/metadata';
 import DynamicContainer from './dynamicContainer';
+import { isConfigurableFormComponent } from '@/index';
 
 export type DynamicViewProps = IConfigurableFormComponent;
 
@@ -20,7 +21,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
   const staticComponents = useMemo<IConfigurableFormComponent[]>(() => {
     const result: IConfigurableFormComponent[] = [];
     for (const componentId in allComponents) {
-      if (allComponents.hasOwnProperty(componentId)) {
+      if (allComponents.hasOwnProperty(componentId) && isConfigurableFormComponent(allComponents[componentId])) {
         result.push(allComponents[componentId]);
       }
     }

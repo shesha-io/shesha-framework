@@ -1,5 +1,5 @@
 import { useGet } from '@/hooks';
-import { useMetadataDispatcher } from '@/index';
+import { DataTypes, useMetadataDispatcher } from '@/index';
 import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
@@ -12,6 +12,7 @@ import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
 import { EntityData, IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const chartInnerStyle = {
   width: '100%',
@@ -47,7 +48,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     ...state
   } = useChartDataStateContext();
 
-  const { refetch } = useGet({ path: '', lazy: true });
+  const { refetch } = useGet<IAbpWrappedGetEntityListResponse>({ path: '', lazy: true });
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
@@ -141,9 +142,9 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
       }
 
       // Get metadata first to identify reference list properties
-      const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
+      const metaData = await getMetadata({ modelType: entityType, dataType: DataTypes.entityReference });
 
-      const faultyPropertiesInner = validateEntityProperties(metaData?.properties as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
+      const faultyPropertiesInner = validateEntityProperties((metaData?.properties ?? []) as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
 
       // Instead of blocking the chart, just warn about invalid properties
       if (faultyPropertiesInner.length > 0) {
@@ -290,7 +291,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
   useEffect(() => {
     // Only fetch data if all required properties are properly configured
-    const hasRequiredProperties = entityType && valueProperty && axisProperty && entityType.trim() !== '' && valueProperty.trim() !== '' && axisProperty.trim() !== '';
+    const hasRequiredProperties = entityType && valueProperty && axisProperty && !isEntityTypeIdEmpty(entityType) && valueProperty.trim() !== '' && axisProperty.trim() !== '';
 
     if (!hasRequiredProperties) {
       // If missing required properties, just set loaded state without fetching
@@ -312,11 +313,11 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
   useEffect(() => {
     // Only fetch metadata if entityType is properly configured
-    if (!entityType || entityType.trim() === '') {
+    if (isEntityTypeIdEmpty(entityType)) {
       return;
     }
 
-    getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
+    getMetadata({ modelType: entityType, dataType: DataTypes.entityReference }).then((metaData) => {
       if (metaData) {
         if (!axisPropertyLabel || axisPropertyLabel?.trim().length === 0) {
           setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
@@ -362,7 +363,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   }, [faultyProperties]);
 
   const missingPropertiesAlert = useMemo(() => {
-    if (entityType && chartType && valueProperty && axisProperty) return null;
+    if (!isEntityTypeIdEmpty(entityType) && chartType && valueProperty && axisProperty) return null;
 
     return (
       <Alert
@@ -447,7 +448,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     return errorAlert;
   }
 
-  if (!entityType || !chartType || !valueProperty || !axisProperty) {
+  if (isEntityTypeIdEmpty(entityType) || !chartType || !valueProperty || !axisProperty) {
     return missingPropertiesAlert;
   }
 

@@ -2,6 +2,7 @@ import { useChartDataStateContext } from '@/providers';
 import { useEffect, useState, useMemo } from 'react';
 import { IChartData } from '../model';
 import { aggregateValues, getPredictableColor, getPredictableColorPolarArea, getPropertyValue, stringifyValues } from '../utils';
+import { isEntityTypeIdentifier } from '@/providers/metadataDispatcher/entities/utils';
 
 export const useIsSmallScreen = (): boolean => {
   const [isSmallScreen, setIsSmallScreen] = useState(
@@ -45,15 +46,21 @@ export const useGeneratedTitle = (): string => {
     simpleOrPivot,
   } = useChartDataStateContext();
 
-  const entityTypeArray = dataMode === 'entityType' && entityType ? entityType?.split('.') : [];
-  const entityClassName = dataMode === 'entityType' ? entityTypeArray[entityTypeArray?.length - 1] : '';
-  return dataMode === 'entityType'
-    ? title?.trim().length > 0
-      ? title
-      : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${groupingProperty && simpleOrPivot === 'pivot' ? `, grouped by ${groupingProperty}` : ''}`
-    : title?.trim().length > 0
-      ? title
-      : ``;
+  const entityTypeArray = dataMode === 'entityType' && typeof entityType === 'string' ? entityType?.split('.') : [];
+
+  const entityClassName = dataMode === 'entityType'
+    ? typeof entityType === 'string'
+      ? entityTypeArray[entityTypeArray?.length - 1]
+      : isEntityTypeIdentifier(entityType)
+        ? entityType.name
+        : ''
+    : '';
+
+  return title?.trim().length > 0
+    ? title
+    : dataMode === 'entityType'
+      ? `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${groupingProperty && simpleOrPivot === 'pivot' ? `, grouped by ${groupingProperty}` : ''}`
+      : '';
 };
 
 /**

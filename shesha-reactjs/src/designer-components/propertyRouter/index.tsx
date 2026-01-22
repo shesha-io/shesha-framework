@@ -1,18 +1,13 @@
+import { ComponentsContainer } from '@/components';
+import { FormItemProvider, IConfigurableFormComponent } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import ParentProvider from '@/providers/parentProvider/index';
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IPropertyRouterComponent, PropertyRouterComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
-import { FormItemProvider, IConfigurableFormComponent } from '@/providers';
-import { ComponentsContainer } from '@/components';
-import ParentProvider from '@/providers/parentProvider/index';
 
-export interface IPropertyRouterComponent extends IConfigurableFormComponent {
-  propertyRouteName?: string;
-  components?: IConfigurableFormComponent[];
-}
-
-const PropertyRouterComponent: IToolboxComponent<IPropertyRouterComponent> = {
+const PropertyRouterComponent: PropertyRouterComponentDefinition = {
   type: 'propertyRouter',
   isInput: false,
   name: 'Property router',
@@ -28,8 +23,8 @@ const PropertyRouterComponent: IToolboxComponent<IPropertyRouterComponent> = {
         </ParentProvider>
       );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export const isPropertyRouterComponent = (component: IConfigurableFormComponent): component is IPropertyRouterComponent => component.type === PropertyRouterComponent.type;

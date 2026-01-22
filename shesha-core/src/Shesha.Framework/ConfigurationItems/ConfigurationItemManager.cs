@@ -43,6 +43,7 @@ namespace Shesha.ConfigurationItems
         public IModuleHierarchyProvider HierarchyProvider { get; set; }
         public IRepository<ConfigurationItemInheritance, string> InheritanceRepository { get; set; }
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
+        public IConfigurationFrameworkRuntime CfRuntime { get; set; }
 
         public ConfigurationItemManager()
         {
@@ -140,34 +141,33 @@ namespace Shesha.ConfigurationItems
         /// inheritedDoc
         public virtual async Task<TItem> ExposeAsync(TItem item, Module module)
         {
-            var srcRevision = item.LatestRevision;
+            ArgumentNullException.ThrowIfNull(item.Module);
 
-            var exposedConfig = new TItem
+            using (CfRuntime.DisableConfigurationTracking())
             {
-                Name = item.Name,
-                Module = module,
-                ExposedFrom = item,
-                ExposedFromRevision = srcRevision,
-                SurfaceStatus = Domain.Enums.RefListSurfaceStatus.Overridden,
-            };
-            await CopyItemPropertiesAsync(item, exposedConfig);
-            await Repository.InsertAsync(exposedConfig);
+                var srcRevision = item.LatestRevision;
 
-            /*
-            var exposedRevision = exposedConfig.MakeNewRevision();
+                var exposedConfig = new TItem
+                {
+                    Name = item.Name,
+                    Module = module,
+                	Label = item.Label,
+                	Description = item.Description,
+                    ExposedFrom = item,
+                    ExposedFromRevision = srcRevision,
+                    SurfaceStatus = RefListSurfaceStatus.Overridden,
+                };
+                await CopyItemPropertiesAsync(item, exposedConfig);
+                await Repository.InsertAsync(exposedConfig);
 
-            if (srcRevision != null)
-                await CopyRevisionPropertiesBaseAsync(srcRevision, exposedRevision);
-            exposedRevision.VersionNo = 1;
-            exposedRevision.VersionName = null;
+                await SaveToRevisionAsync(exposedConfig, revision => { 
+                    revision.Comments = $"Exposed from {item.Module.Name}";
+                });
 
-            await RevisionRepository.InsertAsync(exposedRevision);
-            await Repository.UpdateAsync(exposedConfig);
-            */
+                await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            return exposedConfig;
+                return exposedConfig;
+            }            
         }
 
         public async Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item)
@@ -188,11 +188,16 @@ namespace Shesha.ConfigurationItems
             return await ExposeAsync((TItem)item, module);
         }
 
-        public async Task<ConfigurationItem> ResolveItemAsync(string module, string name)
+        public async Task<ConfigurationItemInheritance> GetActualInheritanceOrNullAsync(string module, string name)
         {
-            var actualItem = await InheritanceRepository.GetAll().Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
+            return await InheritanceRepository.GetAll().Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
                 .OrderBy(e => e.ModuleLevel)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<ConfigurationItem> ResolveItemAsync(string module, string name)
+        {
+            var actualItem = await GetActualInheritanceOrNullAsync(module, name);
 
             if (actualItem == null)
                 throw new ConfigurationItemNotFoundException(Discriminator, module, name, null);
@@ -200,7 +205,7 @@ namespace Shesha.ConfigurationItems
             return await GetAsync(actualItem.ItemId);
         }
 
-        public virtual async Task<TItem> CreateItemAsync(CreateItemInput input) 
+        public virtual async Task<TItem> CreateItemAsync(CreateItemInput input, object? additionalData = null) 
         {
             var validationResults = new ValidationResults();
             var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
@@ -219,6 +224,8 @@ namespace Shesha.ConfigurationItems
             item.Label = input.Label;
             item.Normalize();
 
+            await BeforeCreateAsync(item, additionalData);
+
             await Repository.InsertAsync(item);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -227,48 +234,12 @@ namespace Shesha.ConfigurationItems
         }
 
         /// <summary>
-        /// Creates a configuration item with additional data that can be used during creation process.
-        /// This allows derived classes to pass additional data to HandleAdditionalPropertiesAsync without using temporary fields.
-        /// </summary>
-        /// <param name="input">Basic configuration item properties</param>
-        /// <param name="additionalData">Additional data required by derived classes</param>
-        /// <returns>Created configuration item</returns>
-        public virtual async Task<TItem> CreateItemAsync(CreateItemInput input, object additionalData) 
-        {
-            var validationResults = new ValidationResults();
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
-                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var item = new TItem
-            {
-                Name = input.Name,
-                Module = input.Module,
-                Folder = input.Folder,
-            };
-            item.Origin = item;
-            item.Description = input.Description;
-            item.Label = input.Label;
-            item.Normalize();
-
-            // Allow derived classes to handle additional properties with the additional data
-            await HandleAdditionalPropertiesAsync(item, additionalData);
-
-            await Repository.InsertAsync(item);
-            
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            return item;
-        }
-        
-        /// <summary>
-        /// Override this method in derived classes to handle additional properties from CreateItemInput with additional data
+        /// Prepare newly created item
         /// </summary>
         /// <param name="item">The newly created item</param>
         /// <param name="additionalData">Additional data required for specialized item creation</param>
         /// <returns></returns>
-        protected virtual Task HandleAdditionalPropertiesAsync(TItem item, object additionalData)
+        protected virtual Task BeforeCreateAsync(TItem item, object? additionalData)
         {
             // By default, call the simpler overload
             return Task.CompletedTask;
@@ -334,7 +305,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Dump current state of the configuration item to a revision
         /// </summary>
-        public async Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item)
+        public async Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item, Action<ConfigurationItemRevision>? revisionCustomizer = null)
         {
             var exporter = IocResolver.GetItemExporter(ItemType);
             if (exporter == null)
@@ -354,6 +325,8 @@ namespace Shesha.ConfigurationItems
 
             revision.ConfigurationJson = json;
             revision.ConfigHash = configHash;
+
+            revisionCustomizer?.Invoke(revision);
 
             if (isNewRevision)
                 await RevisionRepository.InsertAsync(revision);
@@ -390,6 +363,11 @@ namespace Shesha.ConfigurationItems
             var distributedItem = await importer.ReadFromJsonAsync(revision.ConfigurationJson);
 
             await importer.ImportItemAsync(distributedItem, new PackageImportContext());
+        }
+
+        public virtual Task<string> GetBackwardCompatibleModuleNameAsync(string name)
+        {
+            return Task.FromResult(string.Empty);
         }
     }
 }

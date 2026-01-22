@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain;
+using System.Collections.Generic;
 
 namespace Shesha.Notifications
 {
@@ -13,8 +14,8 @@ namespace Shesha.Notifications
             dst.AllowAttachments = src.AllowAttachments;
             dst.Disable = src.Disable;
             dst.CanOptOut = src.CanOptOut;
-            dst.Category = src.Category;
-            dst.OverrideChannels = src.OverrideChannels;
+            dst.Category = src.Category ?? string.Empty;
+            dst.OverrideChannels = src.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>();
             
             return dst;
         }

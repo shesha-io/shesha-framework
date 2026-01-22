@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { FormIdentifier, useSheshaApplication } from '..';
+import { FormIdentifier, useShaRouting, useSheshaApplication } from '..';
 import { IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import { getToolboxComponents } from './defaults/toolboxComponents';
 import { useFormPersisterIfAvailable } from '../formPersisterProvider';
@@ -56,7 +56,7 @@ export const useFormDesignerComponentGetter = (): FormDesignerComponentGetter =>
 
 const getDesignerUrl = (designerUrl: string, fId: FormIdentifier): string | null => {
   return typeof fId === 'string'
-    ? `${designerUrl}?id=${fId}`
+    ? `${designerUrl}?docId=${fId}`
     : Boolean(fId?.name)
       ? `${designerUrl}?module=${fId.module}&name=${fId.name}`
       : null;
@@ -64,5 +64,7 @@ const getDesignerUrl = (designerUrl: string, fId: FormIdentifier): string | null
 
 export const useFormDesignerUrl = (formId: FormIdentifier): string => {
   const app = useSheshaApplication();
-  return getDesignerUrl(app.routes.formsDesigner, formId);
+  const router = useShaRouting();
+  const url = getDesignerUrl(app.routes.configurationStudio, formId);
+  return router.prepareUrl(url);
 };
