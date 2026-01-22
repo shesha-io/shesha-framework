@@ -215,7 +215,7 @@ export const useFormComponentStyles = <TModel>(
 
   const stylingBoxParsed = useMemo(() => jsonSafeParse<StyleBoxValue>(stylingBox || '{}') ?? {}, [stylingBox]);
 
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth), [dimensions, stylingBoxParsed, designerWidth]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth), [dimensions, designerWidth]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);

@@ -444,7 +444,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             { label: 'Horizontal', value: 'horizontal' },
                             { label: 'Grid', value: 'grid' },
                           ],
-                          defaultValue: 'horizontal',
                           jsSetting: true,
                           hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
                         },
