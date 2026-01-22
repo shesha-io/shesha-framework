@@ -81,6 +81,25 @@ const isAxiosError = (error: unknown): error is AxiosError<IAjaxErrorResponse> =
 };
 
 /**
+ * Type guard to check if an object has an error property of type IErrorInfo
+ */
+const isErrorWithProp = (obj: unknown): obj is { error: IErrorInfo } => {
+  if (obj === null || typeof obj !== 'object') return false;
+
+  if (!('error' in obj)) return false;
+
+  const typedObj = obj as { error: unknown };
+  const errorProp = typedObj.error;
+
+  // Check if error property is a valid IErrorInfo object
+  return (
+    errorProp !== null &&
+    typeof errorProp === 'object' &&
+    ('message' in errorProp || 'details' in errorProp || 'validationErrors' in errorProp)
+  );
+};
+
+/**
  * Helper function to extract error messages from API response
  * Extracts individual validation errors from ABP error format
  */
@@ -96,9 +115,8 @@ const getErrorMessages = (error: unknown): { error: string }[] => {
     if ('error' in responseData && responseData.error) {
       errorInfo = responseData.error;
     }
-  } else if (typeof error === 'object' && error !== null && 'error' in error) {
-    const errorWithProp = error as { error: IErrorInfo };
-    errorInfo = errorWithProp.error;
+  } else if (isErrorWithProp(error)) {
+    errorInfo = error.error;
   } else if (error instanceof Error) {
     errorInfo = { message: error.message };
   }
