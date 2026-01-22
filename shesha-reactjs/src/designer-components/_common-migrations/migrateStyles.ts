@@ -92,6 +92,14 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
       blurRadius: defaults?.shadow?.blurRadius || 0,
       spreadRadius: defaults?.shadow?.spreadRadius || 0,
     },
+    menuItemShadow: {
+      offsetX: defaults?.menuItemShadow?.offsetX || 0,
+      offsetY: defaults?.menuItemShadow?.offsetY || 0,
+      color: defaults?.menuItemShadow?.color || '#000',
+      blurRadius: defaults?.menuItemShadow?.blurRadius || 0,
+      spreadRadius: defaults?.menuItemShadow?.spreadRadius || 0,
+    },
+    overflow: defaults?.overflow || prev?.overflow,
     ...(defaults?.display && { display: defaults?.display || 'block' }),
     stylingBox: prev?.stylingBox || defaults?.stylingBox || '{}',
   };

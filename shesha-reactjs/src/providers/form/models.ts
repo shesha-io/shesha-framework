@@ -72,7 +72,7 @@ export interface IStyleType {
   primaryBgColor?: ColorValueType;
   secondaryBgColor?: ColorValueType;
   secondaryTextColor?: ColorValueType;
-  overflow?: boolean;
+  overflow?: boolean | "dropdown" | "menu" | "scroll";
   hideScrollBar?: boolean;
 }
 

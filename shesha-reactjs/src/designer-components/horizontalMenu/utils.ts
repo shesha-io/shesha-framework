@@ -30,6 +30,7 @@ export const defaultStyles = (): IStyleType => {
       blurRadius: 0,
       spreadRadius: 0,
     },
+    overflow: 'dropdown',
     dimensions: { width: '500px', height: '55px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
   };
 };
