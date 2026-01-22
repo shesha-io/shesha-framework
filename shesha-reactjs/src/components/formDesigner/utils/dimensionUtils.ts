@@ -16,18 +16,18 @@ export const getComponentDimensions = (
   typeInfo: ComponentTypeInfo,
   dimensionsStyles: CSSProperties,
 ): CSSProperties => {
-  const { isDataTableContext } = typeInfo;
+  const { shouldSkip } = typeInfo;
 
-  const width = isDataTableContext
+  const width = shouldSkip
     ? '100%'
     : dimensionsStyles?.width || 'auto';
 
-  const height = isDataTableContext
+  const height = shouldSkip
     ? '100%'
     : dimensionsStyles?.height || 'auto';
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number => {
-    if (isDataTableContext) return '100%';
+    if (shouldSkip) return '100%';
     return dimensionsStyles?.[dimensionType];
   };
 

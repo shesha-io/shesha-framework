@@ -55,7 +55,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const typeInfo = getComponentTypeInfo(component);
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...componentModel, ...componentModel?.[activeDevice] });
   const { top, left, bottom, right } = formSettings?.formItemMargin || {};
-  const desktopConfig = componentModel?.[activeDevice] || {};
+  const desktopConfig = componentModel?.[activeDevice] || {...componentModel};
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
@@ -114,13 +114,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
     return {
       ...componentModel,
-      dimensions: deviceDimensions,
+      dimensions: typeInfo.shouldSkip ? dimensionsStyles : deviceDimensions,
       stylingBox: stylingBoxWithoutMargins,
-      [activeDevice]: {
-        ...desktopConfig,
-        dimensions: deviceDimensions,
-        stylingBox: stylingBoxWithoutMargins,
-      },
       flexBasis: getDeviceFlexBasis(dimensionsStyles),
     };
   }, [componentModel, desktopConfig, activeDevice, dimensionsStyles]);
