@@ -207,6 +207,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isStub,
       downloadZip,
       fontStyles: model?.allStyles?.fontStyles,
+      listType,
+      hasFiles: fileList.length > 0,
     },
   });
 
@@ -300,7 +302,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     setPreviewOpen(true);
   };
 
-  const iconRender = (file: UploadFile): React.ReactNode => {
+  const iconRender = (file: UploadFile): React.ReactElement => {
     const { type, uid } = file;
 
     if (isImageType(type)) {
@@ -343,60 +345,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
-  const props: DraggerProps = {
-    name: '',
-    accept: allowedFileTypes?.join(','),
-    multiple,
-    fileList,
-    disabled,
-    onChange(info: UploadChangeParam) {
-      const { status } = info.file;
-      if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    customRequest(options: any) {
-      // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
-      // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
-      const lastDotIndex = options?.file?.name.lastIndexOf(".");
-      const fileName = lastDotIndex === -1 ? options?.file?.name : options?.file?.name.substring(0, lastDotIndex) + options?.file?.name.substring(lastDotIndex).toLowerCase();
+  const itemRenderFunction = (originNode: React.ReactElement, file: UploadFile): React.ReactElement => {
+    const isDownloaded = (file as IStoredFile).userHasDownloaded === true;
+    const fileId = (file as IStoredFile).id || file.uid;
+    const persistedFileId = (file as IStoredFile).id; // Only persisted files have .id
 
-      const normalizedFile = new File([options.file], fileName, { type: options.file.type });
-
-      uploadFile({ file: normalizedFile, ownerId, ownerType });
-    },
-    beforeUpload(file: RcFile) {
-      const { type, size, name } = file;
-
-      if (!isFileTypeAllowed(name, allowedFileTypes)) {
-        message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
-        return false;
-      }
-
-      const isValidFileType =
-        validFileTypes.length === 0 ? true : validFileTypes.map(({ type: fileType }) => fileType).includes(type);
-
-      if (!isValidFileType) {
-        const validTypes = validFileTypes.map(({ name }) => name).join(',');
-        message.error(`You can only upload files of type: (${validTypes})`);
-      }
-
-      const isAcceptableFileSize = maxFileLength === 0 ? true : size / 1024 / 1024 <= maxFileLength;
-
-      if (!isAcceptableFileSize) {
-        message.error(`Image must smaller than ${maxFileLength}MB!`);
-      }
-      return isValidFileType && isAcceptableFileSize;
-    },
-    iconRender,
-    itemRender: (originNode, file) => {
-      const isDownloaded = (file as IStoredFile).userHasDownloaded === true;
-      const fileId = (file as IStoredFile).id || file.uid;
-      const persistedFileId = (file as IStoredFile).id; // Only persisted files have .id
-
-      const actions = (
+    const actions = (
+      <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
         <Space size={5}>
           {allowReplace && !disabled && persistedFileId && isValidGuid(persistedFileId) && (
             <Button
@@ -467,57 +422,34 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             </div>
           )}
         </Space>
-      );
+      </div>
+    );
 
-      const handleItemClick = (e: React.MouseEvent): void => {
-        // Don't trigger preview if clicking on buttons, links, or action elements
-        const target = e.target as HTMLElement;
-        const isActionElement = target.closest('button') ||
-          target.closest('.ant-btn') ||
-          target.closest('.ant-popover') ||
-          target.closest('[role="button"]');
-
-        if (isActionElement) {
-          return;
-        }
-
-        // If it's an image, trigger preview instead of download
-        if (isImageType(file.type)) {
-          e.preventDefault();
-          e.stopPropagation();
-          handlePreview(file);
-        } else {
-          downloadFile({ fileId: file.uid, fileName: file.name });
-        };
+    const handleItemClick = (e: React.MouseEvent): void => {
+      // If it's an image, trigger preview instead of download
+      if (isImageType(file.type)) {
+        e.preventDefault();
+        e.stopPropagation();
+        handlePreview(file);
+      } else {
+        downloadFile({ fileId: file.uid, fileName: file.name });
       };
+    };
 
-      // For text listType, we need to wrap only the file name in Popover
-      // For thumbnail and other types, wrap the entire content
-      const renderContent = (): React.ReactNode => {
-        if (listType === 'text') {
-          return (
-            <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
-              <div className={styles.fileName}>
-                <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
-                  <Space direction="horizontal" size="small">
-                    <span>{iconRender(file)}</span>
-                    <span>{file.name}</span>
-                  </Space>
-                </Popover>
-              </div>
-              {isDownloaded && styleDownloadedFiles && (
-                <div className={styles.downloadedIcon}>
-                  <ShaIcon iconName={downloadedIcon} />
-                </div>
-              )}
+    // For text listType, we need to wrap only the file name in Popover
+    // For thumbnail and other types, wrap the entire content
+    const renderContent = (): React.ReactNode => {
+      if (listType === 'text' || isDragger) {
+        return (
+          <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
+            <div className={styles.fileName}>
+              <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
+                <Space direction="horizontal" size="small">
+                  <span>{iconRender(file)}</span>
+                  <span>{file.name}</span>
+                </Space>
+              </Popover>
             </div>
-          );
-        }
-
-        // For thumbnail and other types, wrap entire content
-        const content = (
-          <div className={isDownloaded && styleDownloadedFiles ? styles.downloadedFile : ''} onClick={handleItemClick}>
-            {originNode}
             {isDownloaded && styleDownloadedFiles && (
               <div className={styles.downloadedIcon}>
                 <ShaIcon iconName={downloadedIcon} />
@@ -525,32 +457,95 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             )}
           </div>
         );
+      }
 
-        return (
-          <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
-            {content}
-          </Popover>
-        );
-      };
-
-      return (
-        <div>
-          {renderContent()}
-          {listType === 'thumbnail' && (
-            <div className={isDownloaded ? styles.downloadedFile : ''}>
-              <div className={styles.fileName}>{file.name}</div>
+      // For thumbnail and other types, wrap entire content
+      const content = (
+        <div className={isDownloaded && styleDownloadedFiles ? styles.downloadedFile : ''} onClick={handleItemClick}>
+          {originNode}
+          {isDownloaded && styleDownloadedFiles && (
+            <div className={styles.downloadedIcon}>
+              <ShaIcon iconName={downloadedIcon} />
             </div>
-          )}
-          {hasExtraContent && extraFormId && (
-            <ExtraContent
-              file={file}
-              formId={extraFormId}
-            />
           )}
         </div>
       );
+
+      return (
+        <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
+          {content}
+        </Popover>
+      );
+    };
+
+    return (
+      <div>
+        {renderContent()}
+        {listType === 'thumbnail' && (
+          <div className={isDownloaded ? styles.downloadedFile : ''}>
+            <div className={styles.fileName}>{file.name}</div>
+          </div>
+        )}
+        {hasExtraContent && extraFormId && (
+          <ExtraContent
+            file={file}
+            formId={extraFormId}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const props: DraggerProps = {
+    name: '',
+    accept: allowedFileTypes?.join(','),
+    multiple,
+    fileList,
+    disabled,
+    onChange(info: UploadChangeParam) {
+      const { status } = info.file;
+      if (status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
     },
-    showUploadList: {
+    customRequest(options: any) {
+      // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
+      // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
+      const lastDotIndex = options?.file?.name.lastIndexOf(".");
+      const fileName = lastDotIndex === -1 ? options?.file?.name : options?.file?.name.substring(0, lastDotIndex) + options?.file?.name.substring(lastDotIndex).toLowerCase();
+
+      const normalizedFile = new File([options.file], fileName, { type: options.file.type });
+
+      uploadFile({ file: normalizedFile, ownerId, ownerType });
+    },
+    beforeUpload(file: RcFile) {
+      const { type, size, name } = file;
+
+      if (!isFileTypeAllowed(name, allowedFileTypes)) {
+        message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+        return false;
+      }
+
+      const isValidFileType =
+        validFileTypes.length === 0 ? true : validFileTypes.map(({ type: fileType }) => fileType).includes(type);
+
+      if (!isValidFileType) {
+        const validTypes = validFileTypes.map(({ name }) => name).join(',');
+        message.error(`You can only upload files of type: (${validTypes})`);
+      }
+
+      const isAcceptableFileSize = maxFileLength === 0 ? true : size / 1024 / 1024 <= maxFileLength;
+
+      if (!isAcceptableFileSize) {
+        message.error(`Image must smaller than ${maxFileLength}MB!`);
+      }
+      return isValidFileType && isAcceptableFileSize;
+    },
+    iconRender,
+    itemRender: itemRenderFunction,
+    showUploadList: isDragger && !disabled ? false : {
       showRemoveIcon: false,
       showPreviewIcon: false,
       showDownloadIcon: false,
@@ -560,99 +555,120 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const renderUploadContent = (): React.ReactNode => {
     return (
       !disabled && (
-        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps} className={classNames(styles.uploadButton, uploadBtnProps?.className)}>
-          {listType === 'text' && '(press to upload)'}
+        <Button
+          type="link"
+          icon={<UploadOutlined />}
+          disabled={disabled}
+          {...uploadBtnProps}
+          onClick={isDragger ? undefined : () => hiddenUploadInputRef.current.click()}
+          className={classNames(styles.uploadButton, uploadBtnProps?.className)}
+        >
+          {isDragger ? "Click or drag file to upload" : listType === 'text' && '(press to upload)'}
         </Button>
       )
     );
   };
 
   return (
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
-      : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
-        : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
-    >
-      {isStub
-        ? (isDragger
-          ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
-          : (
-            <>
-              <Button
-                type="link"
-                icon={<PictureOutlined />}
-                disabled={disabled}
-                {...uploadBtnProps}
-                className={classNames(styles.uploadButton, uploadBtnProps?.className)}
-                style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model?.allStyles?.fontStyles }}
-              >
-                {listType === 'text' && '(press to upload)'}
-              </Button>
-              <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
-                {listType !== 'text' && !rest.hideFileName && (
-                  <div className={styles.fileName}>
-                    file name
+    fileList.length === 0 && disabled ? null
+      : (
+        <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
+          : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
+            : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+        >
+          {isStub
+            ? (isDragger
+              ? <Dragger style={{ padding: 0 }} disabled><DraggerStub styles={styles} /></Dragger>
+              : (
+                <>
+                  <Button
+                    type="link"
+                    icon={<PictureOutlined />}
+                    disabled={disabled}
+                    {...uploadBtnProps}
+                    className={classNames(styles.uploadButton, uploadBtnProps?.className)}
+                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle, border: 'unset' } : { ...model?.allStyles?.fontStyles }}
+                  >
+                    {listType === 'text' && '(press to upload)'}
+                  </Button>
+                  <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
+                    {listType !== 'text' && !rest.hideFileName && (
+                      <div className={styles.fileName}>
+                        file name
+                      </div>
+                    )}
+                    {hasExtraContent && extraFormId && (
+                      <ExtraContent
+                        file={placeholderFile}
+                        formId={extraFormId}
+                      />
+                    )}
                   </div>
-                )}
-                {hasExtraContent && extraFormId && (
-                  <ExtraContent
-                    file={placeholderFile}
-                    formId={extraFormId}
-                  />
-                )}
-              </div>
 
-            </>
-          )
-        )
-        : (props.disabled && fileList.length === 0
-          ? null
-          : props.disabled
-            ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-            : isDragger
-              ? (
-                <Dragger {...props}>
-                  <DraggerStub styles={styles} />
-                </Dragger>
+                </>
               )
-              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
-      {previewImage && (
-        <Image
-          wrapperClassName={styles.hiddenElement}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(null),
-          }}
-          src={previewImage.url}
-        />
-      )}
+            )
+            : (props.disabled && fileList.length === 0
+              ? null
+              : props.disabled && !isDragger
+                ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+                : isDragger
+                  ? (
+                    <Dragger {...props} openFileDialogOnClick={true}>
+                      {fileList.length === 0 ? (
+                        <DraggerStub styles={styles} />
+                      ) : !disabled ? (
+                        <div>
+                          {fileList.map((file) => (
+                            <div key={file.uid}>
+                              {itemRenderFunction(<></>, file)}
+                            </div>
+                          ))}
+                          {renderUploadContent()}
+                        </div>
+                      ) : null}
+                    </Dragger>
+                  )
+                  : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
+          {previewImage && (
+            <Image
+              wrapperClassName={styles.hiddenElement}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(null),
+              }}
+              src={previewImage.url}
+            />
+          )}
 
-      {fetchFilesError && (
-        <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
-      )}
+          {fetchFilesError && (
+            <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
+          )}
 
-      {downloadZipFileError && (
-        <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
-      )}
+          {downloadZipFileError && (
+            <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
+          )}
 
-      {downloadZip && hasFiles && !!downloadZipFile && (
-        <div className={styles.storedFilesRendererBtnContainer}>
-          <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
-            {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
-          </Button>
+          {downloadZip && hasFiles && !!downloadZipFile && (
+            <div className={styles.storedFilesRendererBtnContainer}>
+              <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
+                {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
+              </Button>
+            </div>
+          )}
+
+          {/* Hidden file input for replace functionality */}
+          <input
+            type="file"
+            ref={hiddenUploadInputRef}
+            className={styles.hiddenElement}
+            accept={allowedFileTypes?.join(',')}
+            onChange={handleReplaceFileChange}
+          />
+
         </div>
-      )}
-
-      {/* Hidden file input for replace functionality */}
-      <input
-        type="file"
-        ref={hiddenUploadInputRef}
-        className={styles.hiddenElement}
-        accept={allowedFileTypes?.join(',')}
-        onChange={handleReplaceFileChange}
-      />
-
-    </div>
+      )
   );
 };
 

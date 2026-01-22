@@ -38,10 +38,11 @@ const DropdownComponent: DropdownComponentDefinition = {
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
-    const finalStyle = model.enableStyleOnReadonly && model.readOnly
-      ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
-      : { ...model.allStyles.fullStyle, width: '100%', height: '100%', overflow: 'hidden',
-      };
+    const finalStyle = model.readOnly
+      ? model.enableStyleOnReadonly
+        ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
+        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles, ...model.allStyles.backgroundStyles, overflow: 'auto' }
+      : { ...model.allStyles.fullStyle, overflow: 'auto' };
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
