@@ -219,7 +219,23 @@ const TableComponent: TableComponentDefinition = {
         return prev;
       })
       .add<ITableComponentProps>(25, migrateV24toV25)
-      .add<ITableComponentProps>(26, migrateV25toV26),
+      .add<ITableComponentProps>(26, migrateV25toV26)
+      .add<ITableComponentProps>(27, (prev) => ({
+        ...prev,
+        hoverHighlight: true,
+        mobile: {
+          ...prev.mobile,
+          hoverHighlight: true,
+        },
+        tablet: {
+          ...prev.tablet,
+          hoverHighlight: true,
+        },
+        desktop: {
+          ...prev.desktop,
+          hoverHighlight: true,
+        },
+      })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

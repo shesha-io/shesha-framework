@@ -376,7 +376,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               .${iconPrefixCls} {
                 font-size: ${bodyFontSize || '16px'};
                 width: ${bodyFontSize || '16px'};
+                height: ${bodyFontSize || '16px'};
                 min-width: ${bodyFontSize || '16px'};
+                min-height: ${bodyFontSize || '16px'};
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
               }
             }
             .sha-action-button {
@@ -388,7 +393,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               .${iconPrefixCls} {
                 font-size: ${bodyFontSize || '16px'};
                 width: ${bodyFontSize || '16px'};
+                height: ${bodyFontSize || '16px'};
                 min-width: ${bodyFontSize || '16px'};
+                min-height: ${bodyFontSize || '16px'};
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
               }
             }
           }
