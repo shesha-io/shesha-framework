@@ -495,10 +495,7 @@ export const upgradeComponents = (
 
       const componentDefinition = toolboxComponents[component.type];
       if (componentDefinition) {
-        const upgraded = upgradeComponent(component, componentDefinition, formSettings, flatStructure, isNew);
-        allComponents[key] = upgraded.type === 'datatableContext'
-          ? { ...upgraded, type: 'dataContext' }
-          : upgraded;
+        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure, isNew);
       }
     }
   }
