@@ -1,20 +1,13 @@
 import { IModelValidation } from "@/utils/errors";
 import { IErrorInfo, IValidationErrorInfo } from "@/interfaces/errorInfo";
 import { isAjaxErrorResponse, isAxiosResponse, IAjaxErrorResponse } from "@/interfaces/ajaxResponse";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 
 /**
  * Type guard to check if an error is an AxiosError with response data
  */
 const isAxiosErrorWithResponse = (error: unknown): error is AxiosError<IAjaxErrorResponse> => {
-  return (
-    error !== null &&
-    typeof error === 'object' &&
-    'isAxiosError' in error &&
-    error.isAxiosError === true &&
-    'response' in error &&
-    error.response !== undefined
-  );
+  return axios.isAxiosError(error) && error.response !== undefined;
 };
 
 export const validationError = (componentName: string): IModelValidation => ({

@@ -14,8 +14,7 @@ import {
   useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
-import { AxiosError } from 'axios';
-import { IAjaxErrorResponse } from '@/interfaces/ajaxResponse';
+import axios from 'axios';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
 import { removeUndefinedProperties } from '@/utils/array';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
@@ -69,18 +68,6 @@ const noColumnsErrorInfo: IErrorInfo = {
 };
 
 /**
- * Type guard to check if an error is an AxiosError
- */
-const isAxiosError = (error: unknown): error is AxiosError<IAjaxErrorResponse> => {
-  return (
-    error !== null &&
-    typeof error === 'object' &&
-    'isAxiosError' in error &&
-    error.isAxiosError === true
-  );
-};
-
-/**
  * Type guard to check if an object has an error property of type IErrorInfo
  */
 const isErrorWithProp = (obj: unknown): obj is { error: IErrorInfo } => {
@@ -100,6 +87,18 @@ const isErrorWithProp = (obj: unknown): obj is { error: IErrorInfo } => {
 };
 
 /**
+ * Type guard to check if an object has a message property of type string
+ */
+const isErrorWithStringMessage = (obj: unknown): obj is { message: string } => {
+  return (
+    obj !== null &&
+    typeof obj === 'object' &&
+    'message' in obj &&
+    typeof (obj as { message: unknown }).message === 'string'
+  );
+};
+
+/**
  * Helper function to extract error messages from API response
  * Extracts individual validation errors from ABP error format
  */
@@ -110,7 +109,7 @@ const getErrorMessages = (error: unknown): { error: string }[] => {
   let errorInfo: IErrorInfo | undefined;
 
   // Check for AxiosError with response data
-  if (isAxiosError(error) && error.response?.data) {
+  if (axios.isAxiosError(error) && error.response?.data) {
     const responseData = error.response.data;
     if ('error' in responseData && responseData.error) {
       errorInfo = responseData.error;
@@ -146,10 +145,9 @@ const getErrorMessages = (error: unknown): { error: string }[] => {
   }
 
   // Last resort - try to extract message from error object
-  if (typeof error === 'object' && error !== null && 'message' in error) {
-    const errorWithMessage = error as { message: string };
-    if (errorWithMessage.message && !errorWithMessage.message.includes('status code')) {
-      return [{ error: errorWithMessage.message }];
+  if (isErrorWithStringMessage(error)) {
+    if (error.message && !error.message.includes('status code')) {
+      return [{ error: error.message }];
     }
   }
 
