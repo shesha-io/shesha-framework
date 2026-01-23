@@ -55,7 +55,7 @@ const TableComponent: TableComponentDefinition = {
     return {
       items: [],
       rowDimensions: {
-        height: '40px',
+        height: 'auto',
         minHeight: 'auto',
         maxHeight: 'auto',
       },
@@ -235,7 +235,37 @@ const TableComponent: TableComponentDefinition = {
           ...prev.desktop,
           hoverHighlight: true,
         },
-      })),
+      }))
+      .add<ITableComponentProps>(28, (prev) => {
+        // Update row height from '40px' to 'auto'
+        const updateRowHeight = (dimensions?: { height?: string; minHeight?: string; maxHeight?: string }) => {
+          if (dimensions?.height === '40px') {
+            return { ...dimensions, height: 'auto' };
+          }
+          return dimensions;
+        };
+
+        return {
+          ...prev,
+          rowHeight: prev.rowHeight === '40px' ? 'auto' : prev.rowHeight,
+          rowDimensions: updateRowHeight(prev.rowDimensions),
+          mobile: {
+            ...prev.mobile,
+            rowHeight: prev.mobile?.rowHeight === '40px' ? 'auto' : prev.mobile?.rowHeight,
+            rowDimensions: updateRowHeight(prev.mobile?.rowDimensions),
+          },
+          tablet: {
+            ...prev.tablet,
+            rowHeight: prev.tablet?.rowHeight === '40px' ? 'auto' : prev.tablet?.rowHeight,
+            rowDimensions: updateRowHeight(prev.tablet?.rowDimensions),
+          },
+          desktop: {
+            ...prev.desktop,
+            rowHeight: prev.desktop?.rowHeight === '40px' ? 'auto' : prev.desktop?.rowHeight,
+            rowDimensions: updateRowHeight(prev.desktop?.rowDimensions),
+          },
+        };
+      }),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

@@ -1197,47 +1197,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Custom Styles',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              inputs: [
-                                {
-                                  id: nanoid(),
-                                  type: 'codeEditor',
-                                  propertyName: 'containerStyle',
-                                  label: 'Container Style',
-                                  tooltip: 'Custom CSS styles for the table container/wrapper',
-                                  description: 'The style that will be applied to the table container/wrapper',
-                                },
-                              ],
-                            })
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              inputs: [
-                                {
-                                  id: nanoid(),
-                                  type: 'codeEditor',
-                                  propertyName: 'tableStyle',
-                                  label: 'Table Style',
-                                  tooltip: 'Custom CSS styles for the table element',
-                                  description: 'The style that will be applied to the table',
-                                },
-                              ],
-                            })
-                            .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
                         propertyName: 'cellStyling',
                         label: 'Cell Styling',
                         labelAlign: 'right',
@@ -1275,6 +1234,47 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               inputType: 'switch',
                               tooltip: 'Show horizontal dividing lines between rows',
                               jsSetting: true,
+                            })
+                            .toJson(),
+                          ],
+                        },
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'customStyle',
+                        label: 'Custom Styles',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  type: 'codeEditor',
+                                  propertyName: 'containerStyle',
+                                  label: 'Container Style',
+                                  tooltip: 'Custom CSS styles for the table container/wrapper',
+                                  description: 'The style that will be applied to the table container/wrapper',
+                                },
+                              ],
+                            })
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  type: 'codeEditor',
+                                  propertyName: 'tableStyle',
+                                  label: 'Table Style',
+                                  tooltip: 'Custom CSS styles for the table element',
+                                  description: 'The style that will be applied to the table',
+                                },
+                              ],
                             })
                             .toJson(),
                           ],

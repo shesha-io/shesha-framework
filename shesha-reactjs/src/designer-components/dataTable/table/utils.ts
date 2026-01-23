@@ -72,7 +72,7 @@ export const getTableDefaults = (): {
   headerFontFamily: string;
 } => {
   return {
-    rowHeight: '40px',
+    rowHeight: 'auto',
     rowPadding: '8px 12px',
     rowBorder: 'none',
 

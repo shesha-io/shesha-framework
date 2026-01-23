@@ -630,6 +630,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           /* Use effectivePadding from props (rowStylingBox or cellPadding) or default to 0.5rem */
           ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
+          ${!rowHeight || rowHeight === 'auto' ? 'height: 40px;' : ''}
 
           /* In this example we use an absolutely position resizer, so this is required. */
           position: relative;
