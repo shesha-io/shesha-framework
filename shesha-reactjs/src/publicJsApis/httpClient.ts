@@ -29,8 +29,6 @@ export interface HttpRequestConfig {
   /** Timeout in milliseconds */
   timeout?: number;
   responseType?: ResponseType;
-  /** AbortSignal for request cancellation */
-  signal?: AbortSignal;
 }
 
 /**

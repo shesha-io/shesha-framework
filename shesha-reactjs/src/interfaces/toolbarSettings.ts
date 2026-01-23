@@ -6,7 +6,7 @@ export interface ToolbarSettingsBase {
   id?: string;
   hidden?: unknown;
   isDynamic?: boolean;
-  version?: 'latest' | number;
+  version?: unknown | number;
   parentId?: string;
   [key: string]: unknown;
 }
@@ -119,20 +119,14 @@ export interface EndpointsAutocompleteToolbarSettings extends ToolbarSettingsBas
   type: 'endpointsAutocomplete';
 }
 
-/**
- * @default 2
- */
 export interface FormAutocompleteToolbarSettings extends ToolbarSettingsBase {
   type: 'formAutocomplete';
-  version: number;
+  version: 2 | number;
 }
 
-/**
- * @default 2
- */
 export interface ReferenceListAutocompleteToolbarSettings extends ToolbarSettingsBase {
   type: 'referenceListAutocomplete';
-  version: number;
+  version: 2 | number;
 }
 
 export interface CheckboxToolbarSettings extends ToolbarSettingsBase {
@@ -470,7 +464,7 @@ export class DesignerToolbarSettings<T = unknown> {
       ...obj,
       id: obj.id ?? nanoid(),
       type,
-      hidden: obj?.hidden,
+      hidden: obj?.hidden as unknown,
       version: typeof obj?.version === 'number' ? obj?.version : 'latest',
     } as ToolbarSettingsProp);
 

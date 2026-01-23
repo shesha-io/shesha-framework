@@ -68,23 +68,10 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     [dataColumns, metadataPropertyNameSet],
   );
   const columnsMismatch = useMemo(
-    () => {
-      // Skip validation if data is currently being fetched
-      if (store?.isFetchingTableData) return false;
-
-      // Skip validation if metadata hasn't loaded yet
-      if (metadataPropertyNameSet.size === 0) return false;
-
-      // Skip validation if we haven't completed the first fetch yet
-      // totalPages is -1 initially and gets set to >= 0 after the first successful fetch
-      // This prevents validation errors during initial load between metadata load and first data fetch
-      if (store?.totalPages === -1) return false;
-
-      return dataColumns.length > 0 &&
-        metadataPropertyNameSet.size > 0 &&
-        invalidDataColumns.length > 0;
-    },
-    [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns.length, store?.isFetchingTableData, store?.totalPages],
+    () => dataColumns.length > 0 &&
+      metadataPropertyNameSet.size > 0 &&
+      invalidDataColumns.length > 0,
+    [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns.length],
   );
 
   // CRITICAL: Register validation errors - FormComponent will display them
