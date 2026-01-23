@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { getSettings } from './tableSettings';
 import { ColumnsItemProps, IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps, TableComponentDefinition } from './models';
@@ -67,13 +67,6 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     }),
     [dataColumns, metadataPropertyNameSet],
   );
-  const columnsMismatchDetails = useMemo(() => {
-    if (dataColumns.length === 0 || metadataPropertyNameSet.size === 0) return null;
-    const invalidAccessors = invalidDataColumns
-      .map((column) => getDataColumnAccessor(column))
-      .filter(Boolean);
-    return invalidAccessors.length > 0 ? invalidAccessors : null;
-  }, [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns]);
   const columnsMismatch = useMemo(
     () => dataColumns.length > 0 &&
       metadataPropertyNameSet.size > 0 &&

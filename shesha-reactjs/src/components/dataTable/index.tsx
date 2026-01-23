@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo, useRef } from 'react';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { IErrorInfo } from '@/interfaces/errorInfo';
@@ -361,67 +361,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const entityMetadata = useMetadata(false);
   const metadata = entityMetadata?.metadata;
-  const metadataPropertyNameSet = useMemo(() => {
-    if (!metadata || !isPropertiesArray(metadata.properties)) {
-      return new Set<string>();
-    }
-
-    const names = new Set<string>();
-    const normalize = (value?: string | null): string => (value ? camelcaseDotNotation(value) : '');
-
-    const walk = (property: any, prefix: string = ''): void => {
-      if (!property) return;
-
-      const segment = normalize(property.path);
-      if (!segment) return;
-
-      const fullPath = prefix && !segment.startsWith(`${prefix}.`)
-        ? `${prefix}.${segment}`
-        : segment;
-
-      names.add(fullPath);
-
-      const columnName = normalize(property.columnName);
-      if (columnName) {
-        names.add(columnName);
-        if (prefix && !columnName.startsWith(`${prefix}.`)) {
-          names.add(`${prefix}.${columnName}`);
-        }
-      }
-
-      if (isPropertiesArray(property.properties)) {
-        property.properties.forEach((child: any) => walk(child, fullPath));
-      }
-    };
-
-    metadata.properties.forEach((property: any) => walk(property));
-    return names;
-  }, [metadata]);
-  const columnsMismatchDetails = useMemo(() => {
-    if (!columnsMismatch) return null;
-    const dataColumns = (configurableColumns ?? []).filter((column) => column?.columnType === 'data');
-    if (dataColumns.length === 0 || metadataPropertyNameSet.size === 0) return null;
-
-    const invalidColumns = dataColumns
-      .map((column) => (column as any)?.propertyName ?? column?.accessor ?? column?.id ?? '')
-      .map((candidate) => (candidate ? camelcaseDotNotation(candidate) : ''))
-      .filter((candidate) => {
-        if (!candidate) return true; // Empty candidates are invalid
-
-        // Check if the full path exists
-        if (metadataPropertyNameSet.has(candidate)) return false; // Valid - filter out
-
-        // For nested properties (e.g., "module.name"), check if the root property exists
-        if (candidate.includes('.')) {
-          const firstSegment = candidate.split('.')[0];
-          if (metadataPropertyNameSet.has(firstSegment)) return false; // Valid - filter out
-        }
-
-        return true; // Invalid - keep in the list
-      });
-
-    return invalidColumns.length > 0 ? invalidColumns : null;
-  }, [columnsMismatch, configurableColumns, metadataPropertyNameSet]);
 
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
