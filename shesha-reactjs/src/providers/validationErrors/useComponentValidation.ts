@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { IModelValidation } from '@/utils/errors';
-import { useValidationErrorsActions } from './index';
+import { useValidationErrorsActionsOrDefault } from './index';
 
 /**
  * Hook for components to register validation errors with the parent FormComponent
@@ -46,7 +46,7 @@ export const useComponentValidation = (
   deps: unknown[],
 ): IModelValidation | undefined => {
   // Get the validation actions from the provider
-  const { registerValidation, unregisterValidation } = useValidationErrorsActions();
+  const { registerValidation, unregisterValidation } = useValidationErrorsActionsOrDefault();
 
   const validationResult = useMemo((): IModelValidation | undefined => {
     const partialResult = validationFn();

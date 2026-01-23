@@ -14,6 +14,7 @@ using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
 using Shesha.JsonEntities.Proxy;
@@ -112,7 +113,7 @@ namespace Shesha.DynamicEntities.Binder
             var entityType = entity.GetType().StripCastleProxyType();
 
             var properties = entityType.GetProperties().ToList();
-            var entityIdValue = entity.GetType().GetProperty("Id")?.GetValue(entity)?.ToString();
+            var entityIdValue = properties.FirstOrDefault(x => x.Name == "Id")?.GetValue(entity)?.ToString();
             if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
@@ -182,6 +183,8 @@ namespace Shesha.DynamicEntities.Binder
                     }
                     if (property != null)
                     {
+                        properties.Remove(property);
+
                         // skip Read only properties
                         if (property.IsReadOnly())
                             continue;
@@ -339,7 +342,6 @@ namespace Shesha.DynamicEntities.Binder
                                                             if (paramType.IsEntityType())
                                                             {
                                                                 await PerformEntityReferenceAsync(entity, property, propConfig, item, "", null /*dbValue*/, childFormFields, context, value => newItem = value);
-                                                                r = r & true;
                                                             }
                                                             else
                                                             {
@@ -447,6 +449,16 @@ namespace Shesha.DynamicEntities.Binder
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid. {ex.Message}"));
                 }
+            }
+
+            foreach (var skippedProperty in properties)
+            {
+                var name = skippedProperty.Name.ToCamelCase();
+                if (_metadataProvider.IsFrameworkRelatedProperty(skippedProperty) || name == "id")
+                    continue;
+                var fullName = string.IsNullOrWhiteSpace(propertyName) ? name : $"{propertyName}.{name}";
+                var value = skippedProperty.GetValue(entity, null);
+                await _objectValidatorManager.ValidatePropertyAsync(entity, fullName, value, context.LocalValidationResult);
             }
 
             context.ValidationResult.AddRange(context.LocalValidationResult);
@@ -654,7 +666,7 @@ namespace Shesha.DynamicEntities.Binder
                 : null;
 
             if (_className != null)
-                objectType = _typeFinder.Find(t => t.FullName == _className).First();
+                objectType = _typeFinder.Find(t => t.FullName == _className).FirstOrDefault() ?? throw new MetadataOfTypeNotFoundException(_className);
 
             // use properties binding to validate properties
             var unproxiedType = JsonEntityProxy.GetUnproxiedType(objectType);
