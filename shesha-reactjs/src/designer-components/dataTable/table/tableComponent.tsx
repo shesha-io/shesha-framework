@@ -70,7 +70,8 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   const columnsMismatch = useMemo(
     () => dataColumns.length > 0 &&
       metadataPropertyNameSet.size > 0 &&
-      invalidDataColumns.length > 0,
+      invalidDataColumns.length > 0 &&
+      invalidDataColumns.length === dataColumns.length, // Only error when ALL columns are invalid
     [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns.length],
   );
 
