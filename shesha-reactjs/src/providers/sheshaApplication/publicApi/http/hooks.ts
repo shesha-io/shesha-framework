@@ -21,6 +21,7 @@ export class AxiosHttpClient implements HttpClientApi {
       headers,
       timeout,
       responseType: config.responseType,
+      signal: config.signal,
     };
   };
 

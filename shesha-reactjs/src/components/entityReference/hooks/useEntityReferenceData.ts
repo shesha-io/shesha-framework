@@ -80,7 +80,7 @@ export const useEntityReferenceData = (
     dispatch({ type: 'SET_ERROR', payload: { key: 'formId', value: null } });
 
     try {
-      const formid = await getEntityFormIdAsync(props.entityType, props.formType);
+      const formid = await getEntityFormIdAsync(props.entityType, props.formType, formIdController.current.signal);
 
       // Check if request was cancelled
       if (formIdController.current?.signal.aborted) {
@@ -133,7 +133,7 @@ export const useEntityReferenceData = (
     dispatch({ type: 'SET_ERROR', payload: { key: 'metadata', value: null } });
 
     try {
-      const res = await getMetadata({ modelType: props.entityType, dataType: null });
+      const res = await getMetadata({ modelType: props.entityType, dataType: null, signal: metadataController.current.signal });
 
       // Check if request was cancelled
       if (metadataController.current?.signal.aborted) {

@@ -92,6 +92,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
   getMetadata = async (payload: IGetMetadataPayload): Promise<IModelMetadata | null> => {
     const { modelType, dataType } = payload;
+    const signal = payload.signal;
     const container = isEntityTypeIdentifier(modelType) ? `${modelType.module}:${modelType.name}` : modelType;
     const loadedModel = this.#models[container]; // TODO: split list by types
     if (loadedModel) return loadedModel;
@@ -128,7 +129,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
           getEntityTypeIdentifierQueryParams(modelType) as MetadataGetQueryParams,
           { allowDots: true },
         )}`;
-        return this.#httpClient.get<MetadataDtoAjaxResponse>(url).then((rawResponse) => {
+        return this.#httpClient.get<MetadataDtoAjaxResponse>(url, signal ? { signal } : undefined).then((rawResponse) => {
           const response = rawResponse.data;
           if (isAjaxErrorResponse(response))
             throw new Error(`Failed to fetch metadata for model type: '${modelType}'`, { cause: response.error });
