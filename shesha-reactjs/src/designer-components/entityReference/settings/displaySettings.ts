@@ -1,8 +1,9 @@
 import { DesignerToolbarSettings } from '@/index';
+import { ToolbarSettingsProp } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { IEntityReferenceControlProps } from '../entityReference';
 
-export const getDisplaySettings = (data: IEntityReferenceControlProps, parentId: string): any[] => {
+export const getDisplaySettings = (data: IEntityReferenceControlProps, parentId: string): ToolbarSettingsProp[] => {
   return new DesignerToolbarSettings(data)
     .addDropdown({
       id: nanoid(),
@@ -21,7 +22,7 @@ export const getDisplaySettings = (data: IEntityReferenceControlProps, parentId:
         _code: 'return getSettingValue(data?.readOnly);',
         _mode: 'code',
         _value: false,
-      } as any,
+      },
     })
     .addIconPicker({
       id: nanoid(),
@@ -33,12 +34,12 @@ export const getDisplaySettings = (data: IEntityReferenceControlProps, parentId:
         _code: 'return getSettingValue(data?.readOnly);',
         _mode: 'code',
         _value: false,
-      } as any,
+      },
       hidden: {
         _code: 'return getSettingValue(data?.displayType) !== "icon";',
         _mode: 'code',
         _value: false,
-      } as any,
+      },
     })
     .addTextField({
       id: nanoid(),
@@ -50,12 +51,12 @@ export const getDisplaySettings = (data: IEntityReferenceControlProps, parentId:
         _code: 'return getSettingValue(data?.readOnly);',
         _mode: 'code',
         _value: false,
-      } as any,
+      },
       hidden: {
         _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
         _mode: 'code',
         _value: false,
-      } as any,
+      },
     })
     .addPropertyAutocomplete({
       id: nanoid(),
@@ -67,17 +68,17 @@ export const getDisplaySettings = (data: IEntityReferenceControlProps, parentId:
         _code: 'return getSettingValue(data?.readOnly);',
         _mode: 'code',
         _value: false,
-      } as any,
+      },
       hidden: {
         _code: 'return getSettingValue(data?.displayType) !== "displayProperty";',
         _mode: 'code',
         _value: false,
-      } as any,
+      },
       modelType: {
         _code: 'return getSettingValue(data?.entityType);',
         _mode: 'code',
         _value: false,
-      } as any,
+      },
       autoFillProps: false,
     })
     .toJson();

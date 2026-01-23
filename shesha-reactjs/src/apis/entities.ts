@@ -25,11 +25,12 @@ export type entitiesGetProps = Omit<
   RestfulShesha.GetProps<IDynamicDataResult, unknown, EntitiesGetQueryParams, void>,
   'queryParams'
 >;
-export const entitiesGet = (queryParams: EntitiesGetQueryParams, props: entitiesGetProps) =>
+export const entitiesGet = (queryParams: EntitiesGetQueryParams, props: entitiesGetProps, signal?: RequestInit['signal']) =>
   RestfulShesha.get<IDynamicDataResult, unknown, EntitiesGetQueryParams, void>(
     `/api/services/app/Entities/Get`,
     queryParams,
-    props
+    props,
+    signal
   );
 
 export interface EntitiesGetAllQueryParams {

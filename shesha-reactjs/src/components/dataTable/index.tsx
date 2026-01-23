@@ -3,7 +3,6 @@ import { ModalProps } from 'antd/lib/modal';
 import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
-import { IErrorInfo } from '@/interfaces/errorInfo';
 import {
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
@@ -58,13 +57,6 @@ import { StandaloneTable } from '@/designer-components/dataTable/table/standalon
 export interface IIndexTableOptions {
   omitClick?: boolean;
 }
-
-// Error info for ValidationErrors component when no columns are configured
-const noColumnsErrorInfo: IErrorInfo = {
-  message: 'Column Mismatches',
-  details: 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.',
-};
-
 
 export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   tableRef?: MutableRefObject<Partial<DataTableFullInstance> | null>;
@@ -960,8 +952,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineDisplayComponents,
     minHeight: props.minHeight,
     maxHeight: props.maxHeight,
-    noDataText: columnsMismatch ? noColumnsErrorInfo.message : noDataText,
-    noDataSecondaryText: columnsMismatch ? noColumnsErrorInfo.details : noDataSecondaryText,
+    noDataText: noDataText,
+    noDataSecondaryText: noDataSecondaryText,
     noDataIcon,
     allowReordering: allowReordering && reorderingAvailable,
     onRowsReordered: handleRowsReordered,

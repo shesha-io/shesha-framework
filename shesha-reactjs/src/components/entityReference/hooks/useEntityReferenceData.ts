@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { entitiesGet } from '@/apis/entities';
 import { isPropertiesArray } from '@/interfaces/metadata';
-import { useConfigurationItemsLoader, useMetadataDispatcher, useSheshaApplication } from '@/providers';
+import { useConfigurationItemsLoader, useMetadataDispatcher, useSheshaApplication, FormIdentifier } from '@/providers';
 import { get } from '@/utils/fetchers';
 import { entityReferenceReducer, initialState, EntityReferenceState } from '../state/reducer';
 
 interface UseEntityReferenceDataProps {
   entityType?: string;
   entityId?: string;
-  value?: any;
+  value?: unknown;
   displayProperty: string;
   placeholder?: string;
   getEntityUrl?: string;
   formSelectionMode: 'name' | 'dynamic';
-  formIdentifier?: any;
+  formIdentifier?: FormIdentifier | null;
   formType?: string;
   entityReferenceType?: string;
 }
@@ -63,6 +63,10 @@ export const useEntityReferenceData = (
       !props.formType ||
       !props.entityReferenceType
     ) {
+      if (formIdController.current) {
+        formIdController.current.abort();
+        formIdController.current = null;
+      }
       return;
     }
 
@@ -87,12 +91,18 @@ export const useEntityReferenceData = (
         type: 'SET_FORM_IDENTIFIER',
         payload: { name: formid.name, module: formid.module },
       });
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name !== 'AbortError') {
         console.error('Error fetching form ID:', error);
         dispatch({
           type: 'SET_ERROR',
           payload: { key: 'formId', value: error.message || 'Failed to fetch form ID' },
+        });
+      } else if (!(error instanceof Error)) {
+        console.error('Error fetching form ID:', error);
+        dispatch({
+          type: 'SET_ERROR',
+          payload: { key: 'formId', value: String(error) || 'Failed to fetch form ID' },
         });
       }
     } finally {
@@ -106,6 +116,10 @@ export const useEntityReferenceData = (
   // Fetch metadata based on entity type
   const fetchMetadata = useCallback(async (): Promise<void> => {
     if (!props.entityType) {
+      if (metadataController.current) {
+        metadataController.current.abort();
+        metadataController.current = null;
+      }
       return;
     }
 
@@ -130,12 +144,18 @@ export const useEntityReferenceData = (
         type: 'SET_PROPERTIES',
         payload: isPropertiesArray(res?.properties) ? res.properties : [],
       });
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name !== 'AbortError') {
         console.error('Error fetching metadata:', error);
         dispatch({
           type: 'SET_ERROR',
           payload: { key: 'metadata', value: error.message || 'Failed to fetch metadata' },
+        });
+      } else if (!(error instanceof Error)) {
+        console.error('Error fetching metadata:', error);
+        dispatch({
+          type: 'SET_ERROR',
+          payload: { key: 'metadata', value: String(error) || 'Failed to fetch metadata' },
         });
       }
     } finally {
@@ -150,19 +170,27 @@ export const useEntityReferenceData = (
   const fetchEntityData = useCallback(async (): Promise<void> => {
     if (!props.entityId || !props.entityType) {
       // Set display text from existing value or placeholder
-      const displayValue = props.value?.[props.displayProperty] ||
-        props.value?._displayName ||
-        props.placeholder || '';
+      const displayValue = props.value && typeof props.value === 'object' && props.value !== null
+        ? (props.value as any)?.[props.displayProperty] || (props.value as any)?._displayName || props.placeholder || ''
+        : props.placeholder || '';
       dispatch({ type: 'SET_DISPLAY_TEXT', payload: displayValue });
       dispatch({ type: 'SET_INITIALIZED', payload: true });
+      if (entityDataController.current) {
+        entityDataController.current.abort();
+        entityDataController.current = null;
+      }
       return;
     }
 
     // If we already have a complete value object, use it
-    if (props.value && typeof props.value === 'object' && props.value[props.displayProperty]) {
-      const displayValue = props.value[props.displayProperty] || props.value._displayName || '';
+    if (props.value && typeof props.value === 'object' && props.value !== null && (props.value as any)[props.displayProperty]) {
+      const displayValue = (props.value as any)[props.displayProperty] || (props.value as any)._displayName || '';
       dispatch({ type: 'SET_DISPLAY_TEXT', payload: displayValue });
       dispatch({ type: 'SET_INITIALIZED', payload: true });
+      if (entityDataController.current) {
+        entityDataController.current.abort();
+        entityDataController.current = null;
+      }
       return;
     }
 
@@ -185,14 +213,14 @@ export const useEntityReferenceData = (
         ? get(props.getEntityUrl, queryParams, {
           base: backendUrl,
           headers: httpHeaders,
-        })
+        }, entityDataController.current.signal)
         : entitiesGet({
           ...queryParams,
           entityType: props.entityType,
         }, {
           base: backendUrl,
           headers: httpHeaders,
-        });
+        }, entityDataController.current.signal);
 
       const resp = await fetchPromise;
 
@@ -209,12 +237,19 @@ export const useEntityReferenceData = (
 
       dispatch({ type: 'SET_DISPLAY_TEXT', payload: displayValue });
       dispatch({ type: 'SET_INITIALIZED', payload: true });
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name !== 'AbortError') {
         console.error('Error fetching entity data:', error);
         dispatch({
           type: 'SET_ERROR',
           payload: { key: 'entityData', value: error.message || 'Failed to fetch entity data' },
+        });
+        dispatch({ type: 'SET_INITIALIZED', payload: true });
+      } else if (!(error instanceof Error)) {
+        console.error('Error fetching entity data:', error);
+        dispatch({
+          type: 'SET_ERROR',
+          payload: { key: 'entityData', value: String(error) || 'Failed to fetch entity data' },
         });
         dispatch({ type: 'SET_INITIALIZED', payload: true });
       }
@@ -225,6 +260,12 @@ export const useEntityReferenceData = (
       entityDataController.current = null;
     }
   }, [props.entityId, props.entityType, props.value, props.displayProperty, props.placeholder, props.getEntityUrl, backendUrl, httpHeaders]);
+
+  // Reset state when key props change - runs BEFORE fetch effects
+  useEffect(() => {
+    cleanup();
+    dispatch({ type: 'RESET_STATE' });
+  }, [props.entityType, props.entityId, cleanup]);
 
   // Effect to set initial form identifier
   useEffect(() => {
@@ -254,11 +295,6 @@ export const useEntityReferenceData = (
   useEffect(() => {
     return cleanup;
   }, [cleanup]);
-
-  // Reset state when key props change
-  useEffect(() => {
-    dispatch({ type: 'RESET_STATE' });
-  }, [props.entityType, props.entityId]);
 
   const isLoading = state.loading.formId || state.loading.metadata || state.loading.entityData;
   const hasErrors = Boolean(state.error.formId || state.error.metadata || state.error.entityData);

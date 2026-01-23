@@ -1,14 +1,253 @@
 /* eslint-disable @stylistic/lines-between-class-members, @typescript-eslint/explicit-function-return-type, @typescript-eslint/explicit-module-boundary-types */
 import { nanoid } from '@/utils/uuid';
 
-type ToolbarSettingsProp = {
+// Base type for all toolbar settings with common fields
+export interface ToolbarSettingsBase {
   id?: string;
   hidden?: unknown;
   isDynamic?: boolean;
-  version?: unknown;
-  header?: { id?: string; components?: unknown[] };
+  version?: unknown | number;
+  parentId?: string;
   [key: string]: unknown;
-};
+}
+
+// Header structure for collapsible components
+export interface ToolbarSettingsHeader {
+  id?: string;
+  components?: ToolbarSettingsProp[];
+}
+
+// Discriminated union variants for specific toolbar setting types
+export interface AlertToolbarSettings extends ToolbarSettingsBase {
+  type: 'alert';
+}
+
+export interface ButtonsToolbarSettings extends ToolbarSettingsBase {
+  type: 'buttons';
+}
+
+export interface CollapsiblePanelToolbarSettings extends ToolbarSettingsBase {
+  type: 'collapsiblePanel';
+  header?: ToolbarSettingsHeader;
+}
+
+export interface DatatableContextToolbarSettings extends ToolbarSettingsBase {
+  type: 'datatableContext';
+}
+
+export interface QuickSearchToolbarSettings extends ToolbarSettingsBase {
+  type: 'datatable.quickSearch';
+}
+
+export interface TablePagerToolbarSettings extends ToolbarSettingsBase {
+  type: 'datatable.pager';
+}
+
+export interface TableViewSelectorToolbarSettings extends ToolbarSettingsBase {
+  type: 'tableViewSelector';
+}
+
+export interface DatatableToolbarSettings extends ToolbarSettingsBase {
+  type: 'datatable';
+}
+
+export interface TextToolbarSettings extends ToolbarSettingsBase {
+  type: 'text';
+}
+
+export interface SearchableTabsToolbarSettings extends ToolbarSettingsBase {
+  type: 'searchableTabs';
+}
+
+export interface TabsToolbarSettings extends ToolbarSettingsBase {
+  type: 'tabs';
+}
+
+export interface ColumnsToolbarSettings extends ToolbarSettingsBase {
+  type: 'columns';
+}
+
+export interface KeyInformationBarToolbarSettings extends ToolbarSettingsBase {
+  type: 'KeyInformationBar';
+}
+
+export interface DropdownToolbarSettings extends ToolbarSettingsBase {
+  type: 'dropdown';
+}
+
+export interface ColumnsEditorToolbarSettings extends ToolbarSettingsBase {
+  type: 'columnsEditorComponent';
+}
+
+export interface SectionSeparatorToolbarSettings extends ToolbarSettingsBase {
+  type: 'sectionSeparator';
+}
+
+export interface TextFieldToolbarSettings extends ToolbarSettingsBase {
+  type: 'textField';
+}
+
+export interface ContextPropertyAutocompleteToolbarSettings extends ToolbarSettingsBase {
+  type: 'contextPropertyAutocomplete';
+}
+
+export interface PropertyAutocompleteToolbarSettings extends ToolbarSettingsBase {
+  type: 'propertyAutocomplete';
+}
+
+export interface ColorPickerToolbarSettings extends ToolbarSettingsBase {
+  type: 'colorPicker';
+}
+
+export interface ImagePickerToolbarSettings extends ToolbarSettingsBase {
+  type: 'imagePicker';
+}
+
+export interface TextAreaToolbarSettings extends ToolbarSettingsBase {
+  type: 'textArea';
+}
+
+export interface IconPickerToolbarSettings extends ToolbarSettingsBase {
+  type: 'iconPicker';
+}
+
+export interface AutocompleteToolbarSettings extends ToolbarSettingsBase {
+  type: 'autocomplete';
+}
+
+export interface EndpointsAutocompleteToolbarSettings extends ToolbarSettingsBase {
+  type: 'endpointsAutocomplete';
+}
+
+export interface FormAutocompleteToolbarSettings extends ToolbarSettingsBase {
+  type: 'formAutocomplete';
+  version: 2 | number;
+}
+
+export interface ReferenceListAutocompleteToolbarSettings extends ToolbarSettingsBase {
+  type: 'referenceListAutocomplete';
+  version: 2 | number;
+}
+
+export interface CheckboxToolbarSettings extends ToolbarSettingsBase {
+  type: 'checkbox';
+}
+
+export interface SwitchToolbarSettings extends ToolbarSettingsBase {
+  type: 'switch';
+}
+
+export interface CodeEditorToolbarSettings extends ToolbarSettingsBase {
+  type: 'codeEditor';
+}
+
+export interface ContainerToolbarSettings extends ToolbarSettingsBase {
+  type: 'container';
+}
+
+export interface NumberFieldToolbarSettings extends ToolbarSettingsBase {
+  type: 'numberField';
+}
+
+export interface LabelValueEditorToolbarSettings extends ToolbarSettingsBase {
+  type: 'labelValueEditor';
+}
+
+export interface QueryBuilderToolbarSettings extends ToolbarSettingsBase {
+  type: 'queryBuilder';
+}
+
+export interface RadioToolbarSettings extends ToolbarSettingsBase {
+  type: 'radio';
+}
+
+export interface ConfigurableActionConfiguratorToolbarSettings extends ToolbarSettingsBase {
+  type: 'configurableActionConfigurator';
+}
+
+export interface EditableTagGroupToolbarSettings extends ToolbarSettingsBase {
+  type: 'editableTagGroup';
+}
+
+export interface PermissionAutocompleteToolbarSettings extends ToolbarSettingsBase {
+  type: 'permissionAutocomplete';
+}
+
+export interface EditModeSelectorToolbarSettings extends ToolbarSettingsBase {
+  type: 'editModeSelector';
+}
+
+export interface StyleBoxToolbarSettings extends ToolbarSettingsBase {
+  type: 'styleBox';
+}
+
+export interface LabelConfiguratorToolbarSettings extends ToolbarSettingsBase {
+  type: 'labelConfigurator';
+}
+
+export interface SliderToolbarSettings extends ToolbarSettingsBase {
+  type: 'slider';
+}
+
+export interface SettingsInputToolbarSettings extends ToolbarSettingsBase {
+  type: 'settingsInput';
+}
+
+export interface SettingsInputRowToolbarSettings extends ToolbarSettingsBase {
+  type: 'settingsInputRow';
+}
+
+export interface PropertyRouterToolbarSettings extends ToolbarSettingsBase {
+  type: 'propertyRouter';
+}
+
+// Main discriminated union type
+export type ToolbarSettingsProp =
+  AlertToolbarSettings |
+  ButtonsToolbarSettings |
+  CollapsiblePanelToolbarSettings |
+  DatatableContextToolbarSettings |
+  QuickSearchToolbarSettings |
+  TablePagerToolbarSettings |
+  TableViewSelectorToolbarSettings |
+  DatatableToolbarSettings |
+  TextToolbarSettings |
+  SearchableTabsToolbarSettings |
+  TabsToolbarSettings |
+  ColumnsToolbarSettings |
+  KeyInformationBarToolbarSettings |
+  DropdownToolbarSettings |
+  ColumnsEditorToolbarSettings |
+  SectionSeparatorToolbarSettings |
+  TextFieldToolbarSettings |
+  ContextPropertyAutocompleteToolbarSettings |
+  PropertyAutocompleteToolbarSettings |
+  ColorPickerToolbarSettings |
+  ImagePickerToolbarSettings |
+  TextAreaToolbarSettings |
+  IconPickerToolbarSettings |
+  AutocompleteToolbarSettings |
+  EndpointsAutocompleteToolbarSettings |
+  FormAutocompleteToolbarSettings |
+  ReferenceListAutocompleteToolbarSettings |
+  CheckboxToolbarSettings |
+  SwitchToolbarSettings |
+  CodeEditorToolbarSettings |
+  ContainerToolbarSettings |
+  NumberFieldToolbarSettings |
+  LabelValueEditorToolbarSettings |
+  QueryBuilderToolbarSettings |
+  RadioToolbarSettings |
+  ConfigurableActionConfiguratorToolbarSettings |
+  EditableTagGroupToolbarSettings |
+  PermissionAutocompleteToolbarSettings |
+  EditModeSelectorToolbarSettings |
+  StyleBoxToolbarSettings |
+  LabelConfiguratorToolbarSettings |
+  SliderToolbarSettings |
+  SettingsInputToolbarSettings |
+  SettingsInputRowToolbarSettings |
+  PropertyRouterToolbarSettings;
 
 export class DesignerToolbarSettings<T = unknown> {
   protected readonly form: ToolbarSettingsProp[];
@@ -21,15 +260,15 @@ export class DesignerToolbarSettings<T = unknown> {
     this.form = [];
   }
 
-  public addAlert(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addAlert(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'alert');
   }
 
-  public addButtons(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addButtons(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'buttons');
   }
 
-  public addCollapsiblePanel(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addCollapsiblePanel(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     const obj = typeof props !== 'function' ? props : props(this.data as T);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
     if (!obj.header) {
@@ -41,184 +280,184 @@ export class DesignerToolbarSettings<T = unknown> {
     return this.addProperty(obj, 'collapsiblePanel');
   }
 
-  public addDatatableContext(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addDatatableContext(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'datatableContext');
   }
 
-  public addQuickSearch(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addQuickSearch(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'datatable.quickSearch');
   }
 
-  public addTablePager(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addTablePager(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'datatable.pager');
   }
 
-  public addTableViewSelector(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addTableViewSelector(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'tableViewSelector');
   }
 
-  public addDatatable(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addDatatable(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'datatable');
   }
 
-  public addText(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addText(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'text');
   }
 
-  public addSearchableTabs(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addSearchableTabs(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'searchableTabs');
   }
 
-  public addTabs(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addTabs(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'tabs');
   }
 
-  public addColumns(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addColumns(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'columns');
   }
 
-  public addKeyInformationBar(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addKeyInformationBar(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'KeyInformationBar');
   }
 
-  public addDropdown(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addDropdown(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'dropdown');
   }
 
-  public addColumnsEditor(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addColumnsEditor(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'columnsEditorComponent');
   }
 
-  public addSectionSeparator(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addSectionSeparator(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'sectionSeparator');
   }
 
-  public addTextField(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addTextField(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'textField');
   }
 
-  public addContextPropertyAutocomplete(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addContextPropertyAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'contextPropertyAutocomplete');
   }
 
-  public addPropertyAutocomplete(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addPropertyAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'propertyAutocomplete');
   }
 
-  public addColorPicker(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addColorPicker(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'colorPicker');
   }
 
-  public addImagePicker(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addImagePicker(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'imagePicker');
   }
 
-  public addTextArea(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addTextArea(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'textArea');
   }
 
-  public addIconPicker(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addIconPicker(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'iconPicker');
   }
 
-  public addAutocomplete(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'autocomplete');
   }
 
-  public addEndpointsAutocomplete(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addEndpointsAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'endpointsAutocomplete');
   }
 
-  public addFormAutocomplete(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addFormAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     const model = typeof props !== 'function' ? props : props(this.data as T);
     return this.addProperty({ ...model, version: 2 }, 'formAutocomplete');
   }
 
-  public addRefListAutocomplete(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addRefListAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     const model = typeof props !== 'function' ? props : props(this.data as T);
     return this.addProperty({ ...model, version: 2 }, 'referenceListAutocomplete');
   }
 
-  public addCheckbox(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addCheckbox(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'checkbox');
   }
 
-  public addSwitch(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addSwitch(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'switch');
   }
 
-  public addCodeEditor(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addCodeEditor(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'codeEditor');
   }
 
-  public addContainer(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addContainer(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     const obj = typeof props !== 'function' ? props : props(this.data as T);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
     return this.addProperty(obj, 'container');
   }
 
-  public addNumberField(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addNumberField(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'numberField');
   }
 
-  public addLabelValueEditor(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addLabelValueEditor(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'labelValueEditor');
   }
 
-  public addQueryBuilder(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addQueryBuilder(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'queryBuilder');
   }
 
-  public addRadio(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addRadio(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'radio');
   }
 
-  public addConfigurableActionConfigurator(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addConfigurableActionConfigurator(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'configurableActionConfigurator');
   }
 
-  public addEditableTagGroupProps(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addEditableTagGroupProps(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'editableTagGroup');
   }
 
-  public addPermissionAutocomplete(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addPermissionAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'permissionAutocomplete');
   }
 
-  public addEditMode(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addEditMode(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'editModeSelector');
   }
 
-  public addStyleBox(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addStyleBox(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'styleBox');
   }
 
-  public addLabelConfigurator(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addLabelConfigurator(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'labelConfigurator');
   }
 
-  public addSlider(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addSlider(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'slider');
   }
 
-  public addSettingsInput(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addSettingsInput(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'settingsInput');
   }
 
-  public addSettingsInputRow(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addSettingsInputRow(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     const obj = typeof props !== 'function' ? props : props(this.data as T);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
     obj.id = obj.id ?? nanoid();
     return this.addProperty(obj, 'settingsInputRow');
   }
 
-  public addPropertyRouter(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp)) {
+  public addPropertyRouter(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     const obj = typeof props !== 'function' ? props : props(this.data as T);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
     return this.addProperty(obj, 'propertyRouter');
   }
 
-  private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
+  private addProperty(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>), type: string) {
     const obj = typeof props !== 'function' ? props : props(this.data as T);
 
     this.form.push({
@@ -227,7 +466,7 @@ export class DesignerToolbarSettings<T = unknown> {
       type,
       hidden: obj?.hidden as unknown,
       version: typeof obj?.version === 'number' ? obj?.version : 'latest',
-    });
+    } as ToolbarSettingsProp);
 
     return this;
   }
