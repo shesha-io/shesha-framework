@@ -1,10 +1,3 @@
-import { FormIdFullNameDtoAjaxResponse } from "@/apis/entityConfig";
-import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents } from "@/interfaces";
-import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
-import { HttpClientApi, HttpResponse } from "@/publicJsApis/httpClient";
-import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import { PromisedValue, StatefulPromise } from "@/utils/promises";
-import { buildUrl } from "@/utils/url";
 import axios from "axios";
 import { URLS } from ".";
 import { IComponentSettings } from "../appConfigurator/models";
@@ -15,6 +8,13 @@ import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/m
 import { ConfigurationLoadingError } from "./errors";
 import { ConfigurationDto, FormConfigurationDto, IClearFormCachePayload, IConfigurationItemDto, IGetComponentPayload, IUpdateComponentPayload, ReferenceListDto } from "./models";
 import { convertFormConfigurationDto2FormDto, getConfigurationNotFoundMessage } from "./utils";
+import { FormIdFullNameDtoAjaxResponse } from "@/apis/entityConfig";
+import { IFormDto, FormFullName, IToolboxComponents } from "@/index";
+import { ConfigurableItemIdentifier, extractAjaxResponse, IAjaxResponse, ConfigurableItemFullName, isConfigurableItemFullName, isConfigurableItemRawId, ConfigurableItemUid, isAjaxSuccessResponse } from "@/interfaces";
+import { HttpClientApi, HttpResponse } from "@/publicJsApis/httpClient";
+import { buildUrl } from "@/utils";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { PromisedValue, StatefulPromise } from "@/utils/promises";
 
 export interface GetConfigurationArgs {
   type: string;
@@ -41,7 +41,7 @@ export interface IConfigurationLoader {
 
   getFormAsync: (payload: IGetFormPayload) => Promise<IFormDto>;
   getRefListAsync: (payload: IGetRefListPayload) => PromisedValue<ReferenceListDto>;
-  getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string) => Promise<FormFullName>;
+  getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string, signal?: AbortSignal) => Promise<FormFullName>;
   clearFormCache: (payload: IClearFormCachePayload) => void;
   getComponentAsync: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
   updateComponentAsync: (payload: IUpdateComponentPayload) => Promise<void>;
@@ -123,10 +123,10 @@ export class ConfigurationLoader implements IConfigurationLoader {
     this.clearCacheAsync(ConfigurationType.Form, payload.formId);
   };
 
-  getEntityFormIdAsync = async (entityType: string | IEntityTypeIdentifier, formType: string): Promise<FormFullName> => {
+  getEntityFormIdAsync = async (entityType: string | IEntityTypeIdentifier, formType: string, signal?: AbortSignal): Promise<FormFullName> => {
     const url = buildUrl(URLS.GET_ENTITY_CONFIG_FORM, { ...getEntityTypeIdentifierQueryParams(entityType), typeName: formType });
 
-    const response = await this.#httpClient.get<FormIdFullNameDtoAjaxResponse>(url);
+    const response = await this.#httpClient.get<FormIdFullNameDtoAjaxResponse>(url, signal ? { signal } : undefined);
     const dto = extractAjaxResponse(response.data);
     return { name: dto.name, module: dto.module };
   };

@@ -5,6 +5,13 @@ import { useConfigurationItemsLoader, useMetadataDispatcher, useSheshaApplicatio
 import { get } from '@/utils/fetchers';
 import { entityReferenceReducer, initialState, EntityReferenceState } from '../state/reducer';
 
+/**
+ * Type guard to check if a value is a record with string keys
+ */
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
 interface UseEntityReferenceDataProps {
   entityType?: string;
   entityId?: string;
@@ -80,7 +87,7 @@ export const useEntityReferenceData = (
     dispatch({ type: 'SET_ERROR', payload: { key: 'formId', value: null } });
 
     try {
-      const formid = await getEntityFormIdAsync(props.entityType, props.formType);
+      const formid = await getEntityFormIdAsync(props.entityType, props.formType, formIdController.current.signal);
 
       // Check if request was cancelled
       if (formIdController.current?.signal.aborted) {
@@ -133,7 +140,7 @@ export const useEntityReferenceData = (
     dispatch({ type: 'SET_ERROR', payload: { key: 'metadata', value: null } });
 
     try {
-      const res = await getMetadata({ modelType: props.entityType, dataType: null });
+      const res = await getMetadata({ modelType: props.entityType, dataType: null, signal: metadataController.current.signal });
 
       // Check if request was cancelled
       if (metadataController.current?.signal.aborted) {
@@ -170,9 +177,13 @@ export const useEntityReferenceData = (
   const fetchEntityData = useCallback(async (): Promise<void> => {
     if (!props.entityId || !props.entityType) {
       // Set display text from existing value or placeholder
-      const displayValue = props.value && typeof props.value === 'object' && props.value !== null
-        ? (props.value as any)?.[props.displayProperty] || (props.value as any)?._displayName || props.placeholder || ''
-        : props.placeholder || '';
+      let displayValue = props.placeholder || '';
+      if (isRecord(props.value)) {
+        displayValue = (props.value[props.displayProperty] as string | undefined) ||
+          (props.value._displayName as string | undefined) ||
+          props.placeholder ||
+          '';
+      }
       dispatch({ type: 'SET_DISPLAY_TEXT', payload: displayValue });
       dispatch({ type: 'SET_INITIALIZED', payload: true });
       if (entityDataController.current) {
@@ -183,8 +194,10 @@ export const useEntityReferenceData = (
     }
 
     // If we already have a complete value object, use it
-    if (props.value && typeof props.value === 'object' && props.value !== null && (props.value as any)[props.displayProperty]) {
-      const displayValue = (props.value as any)[props.displayProperty] || (props.value as any)._displayName || '';
+    if (isRecord(props.value) && props.value[props.displayProperty]) {
+      const displayValue = (props.value[props.displayProperty] as string | undefined) ||
+        (props.value._displayName as string | undefined) ||
+        '';
       dispatch({ type: 'SET_DISPLAY_TEXT', payload: displayValue });
       dispatch({ type: 'SET_INITIALIZED', payload: true });
       if (entityDataController.current) {
