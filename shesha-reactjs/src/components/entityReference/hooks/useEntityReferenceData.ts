@@ -229,11 +229,18 @@ export const useEntityReferenceData = (
         return;
       }
 
-      const result = resp.result;
-      const displayValue = result[props.displayProperty] ||
-        result._displayName ||
-        props.placeholder ||
-        'No Display Name';
+      // Type guard: Ensure resp.result is a valid object before accessing properties
+      let displayValue: string;
+      if (resp && typeof resp.result === 'object' && resp.result !== null && !Array.isArray(resp.result)) {
+        const result = resp.result;
+        displayValue = result[props.displayProperty] ||
+          result._displayName ||
+          props.placeholder ||
+          'No Display Name';
+      } else {
+        // Fallback when result is not a valid object
+        displayValue = props.placeholder || 'No Display Name';
+      }
 
       dispatch({ type: 'SET_DISPLAY_TEXT', payload: displayValue });
       dispatch({ type: 'SET_INITIALIZED', payload: true });

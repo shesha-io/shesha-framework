@@ -260,6 +260,40 @@ export class DesignerToolbarSettings<T = unknown> {
     this.form = [];
   }
 
+  /**
+   * Helper to resolve props and ensure safe cloning
+   * @param props - Either static props or a function that receives model data
+   * @returns Shallow-cloned resolved props
+   */
+  private resolveToolbarProps(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)): Omit<ToolbarSettingsBase, 'type'> {
+    let resolved: Omit<ToolbarSettingsBase, 'type'>;
+
+    if (typeof props === 'function') {
+      // Assert this.data is defined before calling function
+      if (this.data === undefined) {
+        throw new Error('Cannot resolve function-based props: model data is undefined');
+      }
+      resolved = props(this.data);
+    } else {
+      resolved = props;
+    }
+
+    // Ensure resolved is an object before spreading
+    if (typeof resolved !== 'object' || resolved === null) {
+      throw new Error('Resolved props must be a valid object');
+    }
+
+    // Shallow-clone to avoid mutating caller objects
+    const cloned = { ...resolved } as Omit<ToolbarSettingsBase, 'type'>;
+
+    // Clone nested objects that might be mutated
+    if (cloned.header && typeof cloned.header === 'object') {
+      cloned.header = { ...cloned.header };
+    }
+
+    return cloned;
+  }
+
   public addAlert(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
     return this.addProperty(props, 'alert');
   }
@@ -269,7 +303,7 @@ export class DesignerToolbarSettings<T = unknown> {
   }
 
   public addCollapsiblePanel(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
-    const obj = typeof props !== 'function' ? props : props(this.data as T);
+    const obj = this.resolveToolbarProps(props);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
     if (!obj.header) {
       obj.header = {
@@ -369,12 +403,12 @@ export class DesignerToolbarSettings<T = unknown> {
   }
 
   public addFormAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
-    const model = typeof props !== 'function' ? props : props(this.data as T);
+    const model = this.resolveToolbarProps(props);
     return this.addProperty({ ...model, version: 2 }, 'formAutocomplete');
   }
 
   public addRefListAutocomplete(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
-    const model = typeof props !== 'function' ? props : props(this.data as T);
+    const model = this.resolveToolbarProps(props);
     return this.addProperty({ ...model, version: 2 }, 'referenceListAutocomplete');
   }
 
@@ -391,7 +425,7 @@ export class DesignerToolbarSettings<T = unknown> {
   }
 
   public addContainer(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
-    const obj = typeof props !== 'function' ? props : props(this.data as T);
+    const obj = this.resolveToolbarProps(props);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
     return this.addProperty(obj, 'container');
   }
@@ -445,20 +479,26 @@ export class DesignerToolbarSettings<T = unknown> {
   }
 
   public addSettingsInputRow(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
-    const obj = typeof props !== 'function' ? props : props(this.data as T);
+    const obj = this.resolveToolbarProps(props);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
     obj.id = obj.id ?? nanoid();
     return this.addProperty(obj, 'settingsInputRow');
   }
 
   public addPropertyRouter(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>)) {
-    const obj = typeof props !== 'function' ? props : props(this.data as T);
+    const obj = this.resolveToolbarProps(props);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
     return this.addProperty(obj, 'propertyRouter');
   }
 
-  private addProperty(props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>), type: string) {
-    const obj = typeof props !== 'function' ? props : props(this.data as T);
+  private addProperty<K extends ToolbarSettingsProp['type']>(
+    props: Omit<ToolbarSettingsBase, 'type'> | ((data: T) => Omit<ToolbarSettingsBase, 'type'>),
+    type: K,
+  ) {
+    const obj = this.resolveToolbarProps(props);
+
+    // Use Extract to narrow to the matching union member for better type safety
+    type MatchingProp = Extract<ToolbarSettingsProp, { type: K }>;
 
     this.form.push({
       ...obj,
@@ -466,7 +506,7 @@ export class DesignerToolbarSettings<T = unknown> {
       type,
       hidden: obj?.hidden as unknown,
       version: typeof obj?.version === 'number' ? obj?.version : 'latest',
-    } as ToolbarSettingsProp);
+    } as MatchingProp);
 
     return this;
   }

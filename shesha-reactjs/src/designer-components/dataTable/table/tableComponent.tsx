@@ -38,8 +38,8 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     [model.items],
   );
   const metadataProperties = useMemo(
-    () => (isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
-    [metadata.metadata],
+    () => (metadata && isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
+    [metadata, metadata?.metadata],
   );
   const metadataPropertyNameSet = useMemo(
     () => new Set(collectMetadataPropertyPaths(metadataProperties)),
