@@ -112,7 +112,7 @@ namespace Shesha.DynamicEntities.Binder
             var entityType = entity.GetType().StripCastleProxyType();
 
             var properties = entityType.GetProperties().ToList();
-            var entityIdValue = entity.GetType().GetProperty("Id")?.GetValue(entity)?.ToString();
+            var entityIdValue = properties.FirstOrDefault(x => x.Name == "Id")?.GetValue(entity)?.ToString();
             if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
@@ -182,6 +182,8 @@ namespace Shesha.DynamicEntities.Binder
                     }
                     if (property != null)
                     {
+                        properties.Remove(property);
+
                         // skip Read only properties
                         if (property.IsReadOnly())
                             continue;
@@ -431,6 +433,16 @@ namespace Shesha.DynamicEntities.Binder
                             {
                                 context.LocalValidationResult.Add(new ValidationResult($"Value '{jproperty.Value.ToJsonString()}' of '{jproperty.Path}' is not valid."));
                             }
+                        }
+
+                        foreach (var skippedProperty in properties)
+                        {
+                            var name = skippedProperty.Name.ToCamelCase();
+                            if (_metadataProvider.IsFrameworkRelatedProperty(property) || name == "id")
+                                continue;
+                            var fullName = string.IsNullOrWhiteSpace(propertyName) ? name : $"{propertyName}.{name}";
+                            var value = skippedProperty.GetValue(entity, null);
+                            await _objectValidatorManager.ValidatePropertyAsync(entity, fullName, value, context.LocalValidationResult);
                         }
                     }
                     else
