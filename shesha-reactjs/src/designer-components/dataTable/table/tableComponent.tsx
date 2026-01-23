@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { getSettings } from './tableSettings';
 import { ColumnsItemProps, IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps, TableComponentDefinition } from './models';
@@ -52,10 +52,28 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   const invalidDataColumns = useMemo(
     () => dataColumns.filter((column) => {
       const candidate = getDataColumnAccessor(column);
-      return !candidate || !metadataPropertyNameSet.has(candidate);
+      if (!candidate) return true; // Empty candidates are invalid
+
+      // Check if the full path exists
+      if (metadataPropertyNameSet.has(candidate)) return false; // Valid - filter out
+
+      // For nested properties (e.g., "module.name"), check if the root property exists
+      if (candidate.includes('.')) {
+        const firstSegment = candidate.split('.')[0];
+        if (metadataPropertyNameSet.has(firstSegment)) return false; // Valid - filter out
+      }
+
+      return true; // Invalid - keep in the list
     }),
     [dataColumns, metadataPropertyNameSet],
   );
+  const columnsMismatchDetails = useMemo(() => {
+    if (dataColumns.length === 0 || metadataPropertyNameSet.size === 0) return null;
+    const invalidAccessors = invalidDataColumns
+      .map((column) => getDataColumnAccessor(column))
+      .filter(Boolean);
+    return invalidAccessors.length > 0 ? invalidAccessors : null;
+  }, [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns]);
   const columnsMismatch = useMemo(
     () => dataColumns.length > 0 &&
       metadataPropertyNameSet.size > 0 &&
