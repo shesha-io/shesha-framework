@@ -34,7 +34,7 @@ export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
   selectedComponentId?: string;
   readOnly?: boolean;
-  settingsPanelRef?: MutableRefObject<any>;
+  settingsPanelRef?: MutableRefObject<HTMLElement>;
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
@@ -52,8 +52,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   const component = getToolboxComponent(componentModel?.type);
   const typeInfo = getComponentTypeInfo(component);
-  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...componentModel, ...componentModel?.[activeDevice] });
-  const desktopConfig = componentModel?.[activeDevice] || { ...componentModel };
+  const fullComponentModel = { ...componentModel, ...componentModel?.[activeDevice] };
+  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...fullComponentModel });
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
@@ -70,17 +70,14 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     if (!renderRequired)
       return null;
 
-    const createPortalInner = true
-      ? createPortal
-      : (a) => a;
-    const result = createPortalInner((
+    const result = createPortal((
       <div
         onClick={(e) => e.stopPropagation()}
         onMouseOver={(e) => e.stopPropagation()}
         onMouseOut={(e) => e.stopPropagation()}
       >
         <ComponentProperties
-          componentModel={componentModel}
+          componentModel={fullComponentModel}
           readOnly={readOnly}
           toolboxComponent={getToolboxComponent(componentModel.type)}
         />
@@ -108,15 +105,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // and no margins (since wrapper handles margins as padding)
   const renderComponentModel = useMemo(() => {
     const deviceDimensions = getDeviceDimensions();
-    const stylingBoxWithoutMargins = removeMarginsFromStylingBox(componentModel.stylingBox);
+    const stylingBoxWithoutMargins = removeMarginsFromStylingBox(fullComponentModel.stylingBox);
 
     return {
-      ...componentModel,
+      ...fullComponentModel,
       dimensions: typeInfo.shouldSkip ? dimensionsStyles : deviceDimensions,
       stylingBox: stylingBoxWithoutMargins,
       flexBasis: getDeviceFlexBasis(dimensionsStyles),
     };
-  }, [componentModel, desktopConfig, activeDevice, dimensionsStyles]);
+  }, [fullComponentModel, activeDevice, dimensionsStyles]);
 
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() =>

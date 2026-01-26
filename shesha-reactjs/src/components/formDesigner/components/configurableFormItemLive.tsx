@@ -33,6 +33,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const settings = shaForm.settings;
 
   const isInDesigner = shaForm.formMode === 'designer';
+  const shouldSkip = componentsToSkip.includes(model.type);
+
   const defaultMargins = settings?.formItemMargin || { top: '5px', bottom: '5px', left: '3px', right: '3px' };
   const { top, left, right, bottom } = defaultMargins;
   const {
@@ -48,12 +50,37 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     maxHeight,
   } = model?.allStyles?.fullStyle || {};
 
+  const formItemStyle = useMemo(() => {
+    const calculatedWidth = shouldSkip
+      ? 'auto'
+      : isInDesigner
+        ? getCalculatedDimension('100%', marginRight, marginLeft)
+        : getCalculatedDimension(width, marginLeft, marginRight);
+
+    const calculatedHeight = shouldSkip
+      ? 'auto'
+      : isInDesigner
+        ? '100%'
+        : height;
+
+    return {
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      width: calculatedWidth,
+      height: calculatedHeight,
+      minHeight,
+      minWidth,
+      maxHeight,
+      maxWidth,
+    };
+  }, [shouldSkip, isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth]);
+
   const { hideLabel, hidden } = model;
   const hasLabel = !hideLabel && !!model.label;
   const { styles } = useStyles({ layout: settings.layout, hasLabel });
   if (hidden) return null;
-
-  const shouldSkip = componentsToSkip.includes(model.type);
 
   const propName = namePrefix && !model.initialContext
     ? namePrefix + '.' + model.propertyName
@@ -72,12 +99,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
-    style: { marginBottom, marginRight, marginLeft, marginTop,
-      width: shouldSkip ? 'auto' : isInDesigner ? getCalculatedDimension('100%', marginRight, marginLeft)
-        : getCalculatedDimension(width, marginLeft, marginRight),
-      height: shouldSkip ? 'auto' : isInDesigner
-        ? '100%'
-        : height, minHeight, minWidth, maxHeight: maxHeight, maxWidth },
+    style: formItemStyle,
   };
 
   if (typeof children === 'function') {

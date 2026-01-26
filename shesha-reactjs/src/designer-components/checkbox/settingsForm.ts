@@ -589,7 +589,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addCollapsiblePanel({
                               id: nanoid(),
                               propertyName: 'pnlDimensions',
@@ -601,7 +601,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               content: {
                                 id: nanoid(),
                                 components: [
-                                  ...new DesignerToolbarSettings()
+                                  ...fbf()
                                     .addSettingsInputRow({
                                       id: nanoid(),
                                       parentId: styleRouterId,
