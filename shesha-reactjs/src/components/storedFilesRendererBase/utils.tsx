@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, Popover, Skeleton } from 'antd';
+import { Button, Popover, Skeleton, Typography, UploadFile } from 'antd';
 import { HistoryOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
 import { ConfigurableForm, DateDisplay } from '@/components';
@@ -168,4 +168,34 @@ export const ExtraContent: FC<IExtraContentProps> = ({ file, formId }) => {
   }
 
   return <ConfigurableForm formId={formId} mode="readonly" initialValues={file} />;
+};
+
+
+const { Text } = Typography;
+
+// Helper function to format file size
+const formatFileSize = (bytes?: number): string => {
+  if (bytes === null) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+};
+
+// Helper component to render file name with ellipsis and title
+export const FileNameDisplay: FC<{ file: UploadFile; className?: string }> = ({ file, className }) => {
+  const sizeStr = formatFileSize(file.size);
+  const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
+
+  return (
+    <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
+      <Text
+        ellipsis
+        title={title}
+        style={{ display: 'block' }}
+      >
+        {file.name}
+      </Text>
+    </div>
+  );
 };

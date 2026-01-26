@@ -29,7 +29,7 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile } from './utils';
+import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile, FileNameDisplay } from './utils';
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import ShaIcon, { IconType } from '@/components/shaIcon';
@@ -442,14 +442,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       if (listType === 'text' || isDragger) {
         return (
           <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
-            <div className={styles.fileName}>
-              <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
-                <Space direction="horizontal" size="small">
-                  <span>{iconRender(file)}</span>
-                  <span>{file.name}</span>
-                </Space>
-              </Popover>
-            </div>
+            <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
+              <div className={styles.fileName}>
+                {iconRender(file)}
+                <FileNameDisplay file={file} className={styles.fileName} />
+              </div>
+            </Popover>
             {isDownloaded && styleDownloadedFiles && (
               <div className={styles.downloadedIcon}>
                 <ShaIcon iconName={downloadedIcon} />
@@ -483,7 +481,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         {renderContent()}
         {listType === 'thumbnail' && (
           <div className={isDownloaded ? styles.downloadedFile : ''}>
-            <div className={styles.fileName}>{file.name}</div>
+            <FileNameDisplay file={file} className={styles.fileName} />
           </div>
         )}
         {hasExtraContent && extraFormId && (
@@ -560,7 +558,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           icon={<UploadOutlined />}
           disabled={disabled}
           {...uploadBtnProps}
-          onClick={isDragger ? undefined : () => hiddenUploadInputRef.current.click()}
           className={classNames(styles.uploadButton, uploadBtnProps?.className)}
         >
           {isDragger ? "Click or drag file to upload" : listType === 'text' && '(press to upload)'}
@@ -604,7 +601,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                       />
                     )}
                   </div>
-
                 </>
               )
             )
