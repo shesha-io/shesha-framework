@@ -26,7 +26,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     minWidth: containerMinWidth, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
     paddingLeft, paddingRight, paddingBottom, ...restContainerStyles } = containerStyles;
 
-  const { gap, layout, isDragger, hasFiles } = model;
+  const { gap, layout, hasFiles } = model;
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
@@ -279,9 +279,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     .${prefixCls}-upload-select {
       ${rest}
       border: unset;
-      ${(layout && !isDragger) && `width: ${thumbnailWidth} !important;`};
-      ${(layout && !isDragger) && `height: ${thumbnailHeight} !important;`};
-
+      ${`width: ${layout ? thumbnailWidth : '100%'} !important;`};
+      ${`height: ${layout ? thumbnailHeight: '100%'} !important;`};
       align-items: center;
 
       &.${prefixCls}-upload-btn {
@@ -297,7 +296,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
         .ant-upload-select {
           align-content: center;
-          width: ${thumbnailWidth} !important;
         }
       }
     }
@@ -315,8 +313,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
   
     .ant-btn {
-      color: ${token.colorPrimary} !important;
-      padding: 0;
       * {
         font-size: ${fontSize ?? '14px'} !important;
         font-weight: ${fontWeight ?? '400'} !important;
