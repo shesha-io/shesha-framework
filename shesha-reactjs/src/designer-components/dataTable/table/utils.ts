@@ -1,5 +1,5 @@
 import { nanoid } from '@/utils/uuid';
-import { ColumnsItemProps, IConfigurableColumnsProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { ColumnsItemProps, IConfigurableColumnsProps, IDataColumnsProps, isDataColumn } from '@/providers/datatableColumnsConfigurator/models';
 import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/form/utils';
 import { IConfigurableFormComponent, IStyleType } from "@/index";
 import { IModelMetadata, IPropertyMetadata, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
@@ -43,7 +43,9 @@ export const flattenConfiguredColumns = (items?: ColumnsItemProps[]): IConfigura
 };
 
 export const getDataColumnAccessor = (column: IConfigurableColumnsProps): string => {
-  const candidate = (column as IDataColumnsProps).propertyName || column.accessor || column.id || '';
+  const candidate = isDataColumn(column)
+    ? column.propertyName
+    : column.accessor || column.id || '';
   return camelcaseDotNotation(candidate);
 };
 

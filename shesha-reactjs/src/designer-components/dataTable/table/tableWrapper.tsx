@@ -52,8 +52,8 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     [configuredColumns],
   );
   const metadataProperties = useMemo(
-    () => (isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
-    [metadata.metadata],
+    () => (metadata && isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
+    [metadata, metadata?.metadata],
   );
   const metadataPropertyNameSet = useMemo(
     () => new Set(collectMetadataPropertyPaths(metadataProperties)),
@@ -270,6 +270,9 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
     const autoConfigureColumns = async (): Promise<void> => {
       try {
+        // Guard against metadata becoming undefined after initial check
+        if (!metadata?.metadata) return;
+
         const defaultColumns = await calculateDefaultColumns(metadata.metadata);
         if (defaultColumns.length > 0) {
           formDesigner.updateComponent({
@@ -287,7 +290,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     };
 
     autoConfigureColumns();
-  }, [isDesignMode, formDesigner, metadata.metadata, configuredColumns, id, props]);
+  }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id, props]);
 
   const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
