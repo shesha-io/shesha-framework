@@ -8,7 +8,11 @@ import { widthRelativeToCanvas } from "@/providers/canvas/utils";
 const getDimension = (main: string | number, canvasWidth?): string | number => {
   const width = canvasWidth ? widthRelativeToCanvas(main, canvasWidth) : main;
 
-  return !hasNumber(main) ? main : `calc(${addPx(width)})`;
+  return !hasNumber(main) ? main : addPx(width);
+};
+
+export const getCalculatedDimension = (main: string | number, firstMargin?: string | number, secondMargin?: string | number): string => {
+  return `calc(${main} - ${firstMargin} - ${secondMargin})`;
 };
 
 export const getDimensionsStyle = (dimensions: IDimensionsValue | undefined, canvasWidth?: string): CSSProperties => {

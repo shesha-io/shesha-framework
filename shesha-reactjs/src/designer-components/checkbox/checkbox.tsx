@@ -17,7 +17,6 @@ import { getSettings } from './settingsForm';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useStyles } from './styles';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
 
@@ -37,13 +36,12 @@ const CheckboxComponent: CheckboxComponentDefinition = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-    const boxDimensions = useFormComponentStyles({ ...model.box }).dimensionsStyles;
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
-    const { styles } = useStyles({ style: { ...finalStyle, ...boxDimensions } });
+    const { styles } = useStyles({ style: finalStyle });
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked">
@@ -77,13 +75,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles())))
-      .add<ICheckboxComponentProps>(6, (prev) => (
-        { ...prev,
-          desktop: { ...prev.desktop, dimensions: {}, checkbox: boxDefaultStyles(prev.desktop || prev) },
-          mobile: { ...prev.mobile, dimensions: {}, checkbox: boxDefaultStyles(prev.mobile || prev) },
-          tablet: { ...prev.tablet, dimensions: {}, checkbox: boxDefaultStyles(prev.tablet || prev) },
-        })),
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles()))),
 };
 
 export default CheckboxComponent;

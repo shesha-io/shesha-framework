@@ -7,6 +7,7 @@ import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useStyles } from './styles';
+import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
 
 const componentsToSkip = ['attachmentsEditor', 'checkbox'];
 
@@ -32,13 +33,13 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const settings = shaForm.settings;
 
   const isInDesigner = shaForm.formMode === 'designer';
-  const defaultMargins = settings?.formItemMargin || {};
+  const defaultMargins = settings?.formItemMargin || { top: '5px', bottom: '5px', left: '3px', right: '3px' };
   const { top, left, right, bottom } = defaultMargins;
   const {
-    marginTop = top ?? "5px",
-    marginBottom = bottom ?? "5px",
-    marginRight = right ?? "3px",
-    marginLeft = left ?? "3px",
+    marginTop = isInDesigner ? 0 : top,
+    marginBottom = isInDesigner ? 0 : bottom,
+    marginRight = isInDesigner ? 0 : right,
+    marginLeft = isInDesigner ? 0 : left,
     width,
     height,
     minWidth,
@@ -72,8 +73,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     style: { marginBottom, marginRight, marginLeft, marginTop,
-      width: shouldSkip ? 'auto' : isInDesigner ? `calc(100% - ${marginLeft} - ${marginRight})` : width,
-      height: shouldSkip ? 'auto' : isInDesigner ? `calc(100% - ${marginBottom} - ${marginTop})`
+      width: shouldSkip ? 'auto' : isInDesigner ? getCalculatedDimension('100%', marginRight, marginLeft)
+        : getCalculatedDimension(width, marginLeft, marginRight),
+      height: shouldSkip ? 'auto' : isInDesigner
+        ? '100%'
         : height, minHeight, minWidth, maxHeight: maxHeight, maxWidth },
   };
 

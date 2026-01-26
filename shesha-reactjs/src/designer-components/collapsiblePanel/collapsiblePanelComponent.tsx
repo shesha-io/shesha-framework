@@ -25,7 +25,6 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const { data } = useFormData();
-
     const {
       label,
       expandIconPosition,

@@ -28,7 +28,7 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel }: UseSty
                     height: 100%;
                     width: 100%;
                     > div {
-                     vertical-align: middle;
+                     height: 100%;
                     }
                 }
             }

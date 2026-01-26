@@ -39,7 +39,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const dateFormat = props?.dateFormat || getDataProperty(properties, name, 'dataFormat') || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
   const { styles } = useStyles({ fullStyles: additionalStyles });
-  const finalStyles: CSSProperties = { ...additionalStyles, width: '100%' };
+  const finalStyles: CSSProperties = { ...additionalStyles, width: '100%', height: '100%' };
 
   const { formData } = useForm();
 

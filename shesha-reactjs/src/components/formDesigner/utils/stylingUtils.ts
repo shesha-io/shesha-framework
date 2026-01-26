@@ -29,18 +29,18 @@ export const createRootContainerStyle = (
   };
 
   // Convert margins to padding
-  const paddingTop = addPx(margins?.marginTop ?? defaultMargins.vertical);
-  const paddingBottom = addPx(margins?.marginBottom ?? defaultMargins.vertical);
-  const paddingLeft = addPx(margins?.marginLeft ?? defaultMargins.horizontal);
-  const paddingRight = addPx(margins?.marginRight ?? defaultMargins.horizontal);
+  const paddingTop = addPx(margins?.marginTop || defaultMargins.vertical);
+  const paddingBottom = addPx(margins?.marginBottom || defaultMargins.vertical);
+  const paddingLeft = addPx(margins?.marginLeft || defaultMargins.horizontal);
+  const paddingRight = addPx(margins?.marginRight || defaultMargins.horizontal);
 
   // Calculate wrapper dimensions including padding
   const width = dimensions.width && hasNumber(dimensions.width)
-    ? `calc(${dimensions.width} + ${paddingLeft} + ${paddingRight})`
+    ? `calc(${dimensions.width} - ${paddingLeft} - ${paddingRight})`
     : dimensions.width;
-
+  // add 4px to the height to cater for border width in designer
   const height = dimensions.height && hasNumber(dimensions.height)
-    ? `calc(${dimensions.height} + ${paddingTop} + ${paddingBottom})`
+    ? `calc(${dimensions.height} + ${paddingTop} + ${paddingBottom} + 8px)`
     : dimensions.height;
 
   const minHeight = dimensions.minHeight && hasNumber(dimensions.minHeight)
