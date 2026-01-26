@@ -37,6 +37,22 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
             white-space: nowrap;
         }
 
+        /* Allow wrapping for tag containers */
+        > [data-tag-wrapper="true"] {
+            white-space: normal;
+            overflow: visible;
+            width: 100%;
+            max-width: 100%;
+            flex-wrap: wrap;
+
+            /* Override the parent's nowrap/hidden for tags within wrapper */
+            .${prefixCls}-tag {
+                white-space: normal;
+                overflow: visible;
+                height: auto;
+            }
+        }
+
         /* Handle Space component for multiple items */
         .${prefixCls}-space {
             width: 100%;
@@ -44,7 +60,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
             overflow: hidden;
         }
 
-        /* Handle tags and other components */
+        /* Handle tags and other components outside tag wrapper */
         .${prefixCls}-tag {
             max-width: 100%;
             overflow: hidden;
@@ -53,13 +69,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
   `);
 
   const inputField = css`
-    padding: 0px 8px;
+    padding: 4px 11px;
     margin: 0;
-    margin-right: 8px;
-    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
-    // white-space: nowrap;
   `;
 
   const wrapper = css`

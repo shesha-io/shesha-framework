@@ -19,6 +19,7 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeNullUndefined } from '@/providers/utils';
 import { defaultStyles } from './utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
@@ -110,7 +111,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   migrator: (m) => m
     .add<ICardComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ICardComponentProps>(2, (prev) => removeComponents(prev))
-    .add<ICardComponentProps>(3, (prev) => ({ ...prev, desktop: { ...defaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
+    .add<ICardComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 
 };
 

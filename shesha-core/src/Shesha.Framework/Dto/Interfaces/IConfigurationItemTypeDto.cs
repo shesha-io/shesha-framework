@@ -15,5 +15,7 @@ namespace Shesha.Dto.Interfaces
 
         FormIdentifier? CreateFormId { get; }
         FormIdentifier? RenameFormId { get; }
+        string? ParentType { get; }
+        string Discriminator { get; }
     }
 }

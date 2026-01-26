@@ -30,9 +30,11 @@ import { useStyles } from './styles';
 import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { StandaloneTable } from './standaloneTable';
+import { isPropertiesArray } from '@/interfaces/metadata';
+import { toCamelCase } from '@/utils/string';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
-  const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
+  const { id, items: configuredColumns, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
 
   const { formMode } = useForm();
   const { data: formData } = useFormData();
@@ -59,11 +61,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
   const effectiveRowHeight = useMemo(() => {
     const converted = convertRowDimensionsToHeight(props?.rowDimensions);
-    if (isDesignMode) {
-      console.warn('Row Height - rowDimensions:', props?.rowDimensions, 'converted:', converted, 'fallback:', props?.rowHeight);
-    }
     return converted || props?.rowHeight;
-  }, [props?.rowDimensions, props?.rowHeight, isDesignMode]);
+  }, [props?.rowDimensions, props?.rowHeight]);
 
   const effectiveRowPadding = useMemo(() => {
     // Try new individual padding fields first
@@ -77,25 +76,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     // Fall back to deprecated rowStylingBox for backward compatibility
     const convertedFromBox = convertRowStylingBoxToPadding(props?.rowStylingBox);
 
-    if (isDesignMode) {
-      console.warn('Row Padding - individual fields:', {
-        top: props?.rowPaddingTop,
-        right: props?.rowPaddingRight,
-        bottom: props?.rowPaddingBottom,
-        left: props?.rowPaddingLeft,
-      }, 'converted:', convertedFromFields, 'fallback rowStylingBox:', props?.rowStylingBox, 'converted:', convertedFromBox, 'final fallback:', props?.rowPadding);
-    }
-
     return convertedFromFields || convertedFromBox || props?.rowPadding;
-  }, [props?.rowPaddingTop, props?.rowPaddingRight, props?.rowPaddingBottom, props?.rowPaddingLeft, props?.rowStylingBox, props?.rowPadding, isDesignMode]);
+  }, [props?.rowPaddingTop, props?.rowPaddingRight, props?.rowPaddingBottom, props?.rowPaddingLeft, props?.rowStylingBox, props?.rowPadding]);
 
   const effectiveRowBorder = useMemo(() => {
     const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
-    if (isDesignMode) {
-      console.warn('Row Border - rowBorderStyle:', props?.rowBorderStyle, 'converted:', converted, 'fallback:', props?.rowBorder);
-    }
     return converted || props?.rowBorder;
-  }, [props?.rowBorderStyle, props?.rowBorder, isDesignMode]);
+  }, [props?.rowBorderStyle, props?.rowBorder]);
 
   // Compute effective header font values with backward compatibility
   const effectiveHeaderFontFamily = useMemo(() => {
@@ -217,25 +204,51 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   requireColumns(); // our component requires columns loading. it's safe to call on each render
 
   useDeepCompareEffect(() => {
+    // Normalize inputs: ensure configuredColumns is always an array
+    const normalizedConfiguredColumns = Array.isArray(configuredColumns) ? configuredColumns : [];
+
     // register columns
     const permissibleColumns = isDesignMode
-      ? items
-      : items
-        ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
+      ? normalizedConfiguredColumns
+      : normalizedConfiguredColumns
+        .filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
         .filter(filterVisibility({ data: formData, globalState }));
 
-    registerConfigurableColumns(id, permissibleColumns);
-  }, [items, isDesignMode]);
+    // Normalize metadata properties using type guard helper
+    const metadataProperties = isPropertiesArray(metadata.metadata?.properties)
+      ? metadata.metadata.properties
+      : [];
+
+    // We need to check if the columns at least one exists in the store as well... otherwise the registration is going to fail
+    const qualifyingColumns = metadataProperties.filter((propertyMetadata) => {
+      const exists = permissibleColumns
+        .map((permissibleColumn) => toCamelCase(permissibleColumn.accessor))
+        .includes(toCamelCase(propertyMetadata.path));
+      return exists;
+    });
+
+    // Check if there are any non-data columns (actions, crud-operations, etc.)
+    const hasNonDataColumns = permissibleColumns.some((col) =>
+      col.columnType && col.columnType !== 'data',
+    );
+
+    // Register columns if:
+    // 1. At least one column matches metadata properties, OR
+    // 2. There are no configured columns (empty state), OR
+    // 3. There are non-data columns that don't need to match metadata
+    if (qualifyingColumns.length > 0 || normalizedConfiguredColumns.length === 0 || hasNonDataColumns)
+      registerConfigurableColumns(id, permissibleColumns);
+  }, [configuredColumns, isDesignMode, metadata, formData, globalState, anyOfPermissionsGranted, filterVisibility, toCamelCase]);
 
   // Auto-configure columns when DataTable is dropped into a DataContext
   useEffect(() => {
-    // Only attempt auto-config if we have empty items and haven't tried yet
+    // Only attempt auto-config if we have empty configuredColumns and haven't tried yet
     if (hasAutoConfiguredRef.current || !isDesignMode || !formDesigner) {
       return;
     }
 
     // Check if we should auto-configure
-    const hasNoColumns = !items || items.length === 0;
+    const hasNoColumns = !configuredColumns || configuredColumns.length === 0;
     const hasMetadata = metadata?.metadata != null;
 
     if (!hasNoColumns || !hasMetadata) {
@@ -257,15 +270,14 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             } as ITableComponentProps,
           });
         }
-      } catch (error) {
-        console.warn('Failed to auto-configure DataTable columns:', error);
+      } catch {
         // Reset flag to allow retry if it failed
         hasAutoConfiguredRef.current = false;
       }
     };
 
     autoConfigureColumns();
-  }, [isDesignMode, formDesigner, metadata?.metadata, items, id]);
+  }, [isDesignMode, formDesigner, metadata.metadata, configuredColumns, id, props]);
 
   const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
@@ -279,7 +291,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     return <Fragment />;
   };
 
-  const hasNoColumns = !items || items.length === 0;
+  const hasNoColumns = !configuredColumns || configuredColumns.length === 0;
 
   // Check if DataContext has configuration errors (not just info messages)
   const hasContextConfigErrorsOrWarnings = contextValidation?.hasErrors && (contextValidation?.validationType === 'warning' || contextValidation?.validationType === 'error');
@@ -383,6 +395,10 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
+            bodyFontFamily={props?.font?.type}
+            bodyFontSize={props?.font?.size ? `${props.font.size}px` : undefined}
+            bodyFontWeight={props?.font?.weight}
+            bodyFontColor={props?.font?.color}
           />
         </div>
       </div>

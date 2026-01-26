@@ -135,9 +135,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
   body {
     margin: 0;
     div {
-      .ant-tabs-dropdown {
-        z-index: 1250 !important;
-      }
       .ant-dropdown-menu-submenu-title {
         display: flex !important;
         align-items: center !important;

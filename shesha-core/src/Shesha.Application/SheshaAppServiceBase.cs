@@ -294,8 +294,8 @@ namespace Shesha
             await FluentValidationsOnEntityAsync(entity, validationResults);
             var result = !validationResults.Any();
             if (ValidatorManager != null)
-                result = result && await ValidatorManager.ValidateObjectAsync(entity, validationResults);
-            return result && Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
+                result = await ValidatorManager.ValidateObjectAsync(entity, validationResults) && result;
+            return Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults) && result;
         }
 
         /// <summary>
@@ -429,19 +429,18 @@ namespace Shesha
             var jObject = dto._jObject;
 
             var result = new DynamicDtoMapingResult();
-            bool mapResult = true;
             if (jObject != null)
             {
                 // Update the Jobject from the input because it might have changed
                 ObjectToJsonExtension.ObjectToJObject(dto, jObject);
-                mapResult = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
+                await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
             }
             else
             {
                 await MapStaticPropertiesToEntityDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
             }
 
-            mapResult = mapResult && await ValidateEntityAsync<TEntity>(entity, result.ValidationResults);
+            await ValidateEntityAsync(entity, result.ValidationResults);
 
             if (result.HasValidationError)
                 return result;

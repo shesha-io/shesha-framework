@@ -3,6 +3,7 @@ import { IDocumentInstance, DocumentType, DocumentDefinition, LoadingStatus, For
 export type DocumentInstanceArgs = DocumentInstanceFactoryArgs & {
   definition: DocumentDefinition;
   itemType: string;
+  discriminator: string;
 };
 
 export class DocumentInstance implements IDocumentInstance {
@@ -13,6 +14,8 @@ export class DocumentInstance implements IDocumentInstance {
   type: DocumentType = 'ci';
 
   itemType: string;
+
+  discriminator: string;
 
   flags: DocumentFlags;
 
@@ -31,6 +34,7 @@ export class DocumentInstance implements IDocumentInstance {
   constructor(args: DocumentInstanceArgs) {
     this.definition = args.definition;
     this.itemType = args.itemType;
+    this.discriminator = args.discriminator;
     this.itemId = args.itemId;
     this.label = args.label;
     this.moduleId = args.moduleId;

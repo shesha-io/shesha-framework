@@ -13,16 +13,20 @@ import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimens
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { validationError } from '../utils';
+
+const outsideContextValidationError = validationError('Quick Search');
 
 const QuickSearchComponent: QuickSearchComponentDefinition = {
   type: 'datatable.quickSearch',
   isInput: false,
   name: 'Quick Search',
   icon: <SearchOutlined />,
-  Factory: ({ model: { block, hidden, dimensions, size: _size } }) => {
+  Factory: ({ model }) => {
+    const { block, hidden, dimensions, size: modelSize } = model;
     const store = useDataTableStore(false);
     const { styles } = useStyles();
-    const size = useMemo(() => _size, [_size]);
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -34,28 +38,31 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
       ...(store ? {} : { width: additionalStyles.width ?? '360px' }),
     });
 
+    useComponentValidation(
+      () => !store ? outsideContextValidationError : undefined,
+      [store],
+    );
+
     if (hidden) return null;
 
-    const content = store
+    return store
       ? (
         <GlobalTableFilter
           block={block}
           style={finalStyle}
           searchProps={{
-            size,
+            size: modelSize,
           }}
         />
       )
       : (
         <div className={styles.quickSearchContainer} style={finalStyle}>
           <Search
-            size={size}
+            size={modelSize}
             disabled
           />
         </div>
       );
-
-    return content;
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {

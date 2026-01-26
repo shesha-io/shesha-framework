@@ -210,7 +210,9 @@ export interface IReactTableProps extends ITableRowDragProps {
   onSelectionChangeAction?: IConfigurableActionConfiguration;
 
   // Cell-specific styling
+  /** @deprecated Use bodyFontColor instead. Cell text color duplicates body font color. */
   cellTextColor?: string;
+  /** @deprecated Use rowBackgroundColor instead. Cell background color duplicates row background color. */
   cellBackgroundColor?: string;
   cellBorderColor?: string;
   /** @deprecated Use rowStylingBox instead. This property is migrated to rowStylingBox in migration v19 */
@@ -308,6 +310,12 @@ export interface IReactTableProps extends ITableRowDragProps {
   rowPadding?: string;
   rowBorder?: string; // Deprecated: use rowBorderStyle for full border control
   rowBorderStyle?: IBorderValue; // Full border configuration with per-side control
+
+  // Body font styling
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
 
   // Overall table styling
   borderRadius?: string;
