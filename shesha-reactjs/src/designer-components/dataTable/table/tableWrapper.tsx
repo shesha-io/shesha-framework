@@ -48,7 +48,9 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const hasAutoConfiguredRef = useRef(false);
   const componentIdRef = useRef(id);
   const normalizedConfiguredColumns = useMemo(
-    () => flattenConfiguredColumns(configuredColumns as ColumnsItemProps[]),
+    () => flattenConfiguredColumns(
+      Array.isArray(configuredColumns) ? configuredColumns as ColumnsItemProps[] : undefined,
+    ),
     [configuredColumns],
   );
   const metadataProperties = useMemo(
