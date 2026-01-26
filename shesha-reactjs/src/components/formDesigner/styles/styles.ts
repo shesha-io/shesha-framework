@@ -502,6 +502,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               cursor: grab;
               border: 1px dashed ${token.colorPrimary};
               box-sizing: border-box;
+              height: 100%;
+              display: flex;
             }
             &:not(:hover) {
                 .${shaComponentControls} {

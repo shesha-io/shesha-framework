@@ -308,6 +308,13 @@ export interface IFlatComponentsStructure {
   componentRelations: IComponentRelations;
 }
 
+export interface IFormItemMargin {
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+}
+
 export interface IFormSettingsCommon {
   modelType?: IEntityTypeIdentifier | string;
   layout: FormLayout;
@@ -319,6 +326,7 @@ export interface IFormSettingsCommon {
   isSettingsForm?: boolean;
   permissions?: string[] | undefined;
   access?: number | undefined;
+  formItemMargin?: IFormItemMargin;
 }
 
 export interface ILegacyFormSettings extends IFormSettingsCommon {
@@ -490,6 +498,7 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
   permissions: [],
+  formItemMargin: { bottom: 5 },
 };
 
 export type ActionParametersJs = string;

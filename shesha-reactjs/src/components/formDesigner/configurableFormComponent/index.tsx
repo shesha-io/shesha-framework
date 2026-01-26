@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { DataContextTopLevels, EditMode, IConfigurableFormComponent } from '@/providers';
+import { DataContextTopLevels, EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -25,12 +25,16 @@ import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedCompon
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getComponentTypeInfo } from '../utils/componentTypeUtils';
+import { getComponentDimensions, getDeviceDimensions, getDeviceFlexBasis } from '../utils/dimensionUtils';
+import { createRootContainerStyle, removeMarginsFromStylingBox } from '../utils/stylingUtils';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
   selectedComponentId?: string;
   readOnly?: boolean;
-  settingsPanelRef?: MutableRefObject<any>;
+  settingsPanelRef?: MutableRefObject<HTMLElement>;
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
@@ -43,11 +47,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   componentEditMode,
 }) => {
   const { styles } = useStyles();
-
   const getToolboxComponent = useFormDesignerComponentGetter();
+  const { activeDevice } = useCanvas();
+
+  const component = getToolboxComponent(componentModel?.type);
+  const typeInfo = getComponentTypeInfo(component);
+  const fullComponentModel = { ...componentModel, ...componentModel?.[activeDevice] };
+  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...fullComponentModel });
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
-
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
 
   const hiddenFx = isPropertySettings(componentModel.hidden);
@@ -57,22 +65,19 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
 
   const settingsEditor = useMemo(() => {
-    const renderRerquired = isSelected && settingsPanelRef.current;
+    const renderRequired = isSelected && settingsPanelRef.current;
 
-    if (!renderRerquired)
+    if (!renderRequired)
       return null;
 
-    const createPortalInner = true
-      ? createPortal
-      : (a) => a;
-    const result = createPortalInner((
+    const result = createPortal((
       <div
         onClick={(e) => e.stopPropagation()}
         onMouseOver={(e) => e.stopPropagation()}
         onMouseOut={(e) => e.stopPropagation()}
       >
         <ComponentProperties
-          componentModel={componentModel}
+          componentModel={fullComponentModel}
           readOnly={readOnly}
           toolboxComponent={getToolboxComponent(componentModel.type)}
         />
@@ -82,8 +87,43 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
+  // Extract margins from component styling, with fallback to form defaults
+  const margins = useMemo(() => ({
+    marginTop: stylingBoxAsCSS?.marginTop ?? 0,
+    marginBottom: stylingBoxAsCSS?.marginBottom ?? 0,
+    marginLeft: stylingBoxAsCSS?.marginLeft ?? 0,
+    marginRight: stylingBoxAsCSS?.marginRight ?? 0,
+  }), [stylingBoxAsCSS?.marginTop, stylingBoxAsCSS?.marginBottom, stylingBoxAsCSS?.marginLeft, stylingBoxAsCSS?.marginRight]);
+
+  // Get component dimensions (handles special cases like DataTable context)
+  const componentDimensions = useMemo(() =>
+    getComponentDimensions(typeInfo, dimensionsStyles),
+  [typeInfo, dimensionsStyles],
+  );
+
+  // Create the model for rendering - components receive 100% dimensions
+  // and no margins (since wrapper handles margins as padding)
+  const renderComponentModel = useMemo(() => {
+    const deviceDimensions = getDeviceDimensions();
+    const stylingBoxWithoutMargins = removeMarginsFromStylingBox(fullComponentModel.stylingBox);
+
+    return {
+      ...fullComponentModel,
+      dimensions: typeInfo.shouldSkip ? dimensionsStyles : deviceDimensions,
+      stylingBox: stylingBoxWithoutMargins,
+      flexBasis: getDeviceFlexBasis(dimensionsStyles),
+    };
+  }, [fullComponentModel, activeDevice, dimensionsStyles]);
+
+  // Create wrapper style - owns dimensions and margins
+  const rootContainerStyle = useMemo(() =>
+    createRootContainerStyle(componentDimensions, margins, component.isInput),
+  [componentDimensions, margins, component.isInput],
+  );
+
   return (
     <div
+      style={rootContainerStyle}
       className={classNames(styles.shaComponent, {
         "selected": isSelected,
         'has-config-errors': invalidConfiguration,
@@ -107,6 +147,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
             <StopOutlined />
           </Tooltip>
         </Show>
+
         <Show when={!componentEditModeFx && componentEditMode === 'editable'}>
           <Tooltip title="This component is always in Edit/Action mode">
             <EditOutlined />
@@ -115,10 +156,23 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      <div>
+
+      <div style={{
+        width: '100%',
+        height: '100%',
+        boxSizing: 'border-box',
+      }}
+      >
         <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
-          <div style={{ padding: '5px 3px' }}>
-            <FormComponent componentModel={componentModel} />
+          <div style={{
+            width: '100%',
+            height: '100%',
+            boxSizing: 'border-box',
+          }}
+          >
+            <FormComponent
+              componentModel={renderComponentModel}
+            />
           </div>
         </DragWrapper>
       </div>

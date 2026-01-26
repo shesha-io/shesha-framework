@@ -317,7 +317,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
 
 
-    return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
+    return getFileIcon(type);
   };
 
   // Helper function to get or create cached file context data
@@ -587,7 +587,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                     disabled={disabled}
                     {...uploadBtnProps}
                     className={classNames(styles.uploadButton, uploadBtnProps?.className)}
-                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle, border: 'unset' } : { ...model?.allStyles?.fontStyles }}
+                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model?.allStyles?.fontStyles }}
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>

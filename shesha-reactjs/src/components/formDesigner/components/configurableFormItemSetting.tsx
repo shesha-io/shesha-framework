@@ -5,6 +5,7 @@ import { getPropertySettingsFromData } from '@/designer-components/_settings/uti
 import { SettingsControl, useShaFormInstance } from '@/index';
 import { IConfigurableFormItemChildFunc, IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
+import { useStyles } from './styles';
 
 export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   children,
@@ -12,7 +13,8 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   valuePropName,
 }) => {
   const { formData } = useShaFormInstance();
-
+  const hasLabel = !!model.label;
+  const { styles } = useStyles({ layout: 'vertical', hasLabel });
   if (model.hidden) return null;
 
   const { _mode: mode } = getPropertySettingsFromData(formData, model.propertyName);
@@ -24,12 +26,13 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
     required: model.validate?.required,
     tooltip: model.description || undefined,
     hidden: model.hidden,
+    className: styles.formItem,
   };
 
   if (typeof children === 'function') {
     const childrenFunc = children as IConfigurableFormItemChildFunc;
     return (
-      <Form.Item {...formProps}>
+      <Form.Item {...formProps} className={styles.formItem}>
         <SettingsControl propertyName={model.propertyName} mode={mode}>
           {(value, onChange, propertyName) => childrenFunc(value, onChange, propertyName)}
         </SettingsControl>

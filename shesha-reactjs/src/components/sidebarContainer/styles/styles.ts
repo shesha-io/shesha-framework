@@ -23,7 +23,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;

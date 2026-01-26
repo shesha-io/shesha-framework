@@ -72,6 +72,7 @@ const ContainerComponent: ContainerComponentDefinition = {
           }}
           style={{
             ...getStyle(model?.style, formData),
+            height: '100%',
           }}
           noDefaultStyling={model.noDefaultStyling}
           className={cx(model.className, styles.container)}
