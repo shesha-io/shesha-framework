@@ -51,6 +51,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
     .ant-typography {
       display: ${model.hideFileName ? 'none' : 'block'};
       color: ${color ?? token.colorPrimary} !important;
@@ -67,7 +69,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       flex: 1;
       cursor: pointer;
       max-width: 100%;
-      width: max-content;
+      min-width: 0;
     }
   `);
 
@@ -258,22 +260,19 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       ${!hasFiles && 'display: none;'}
       >.ant-upload-list-item-container {
         > div {
-          display: flex;
-         justify-content: ${textAlign === 'right' ? 'flex-end' : textAlign === 'center' ? 'center' : 'flex-start'} !important;
           >.file-name-wrapper {
             >.item-file-name {
               width: 100%;
               gap: 8px;
             }
           }
+          > .downloaded-icon {
+            position: relative;
+            top: unset;
+            right: unset;
+          }
         }
       }
-    }
-      > .downloaded-icon {
-      position: relative;
-      top: unset;
-      right: unset;
-     }
     }
 
     .${prefixCls}-upload-select {

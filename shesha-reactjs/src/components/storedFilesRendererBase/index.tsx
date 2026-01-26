@@ -203,6 +203,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       gap: addPx(gap),
       layout: listType === 'thumbnail' && !isDragger,
       hideFileName: rest.hideFileName && listType === 'thumbnail',
+      isDragger,
       isStub,
       downloadZip,
       fontStyles: model?.allStyles?.fontStyles,
@@ -442,8 +443,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return (
           <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
             <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
+              <div className={styles.fileName}>
                 {iconRender(file)}
                 <FileNameDisplay file={file} className={styles.fileName} />
+              </div>
             </Popover>
             {isDownloaded && styleDownloadedFiles && (
               <div className={styles.downloadedIcon}>
