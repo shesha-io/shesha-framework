@@ -604,55 +604,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     components: [...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'pnlRowDimensions',
-                        label: 'Row Dimensions',
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              inline: true,
-                              inputs: [
-                                {
-                                  type: 'textField',
-                                  id: nanoid(),
-                                  label: "Height",
-                                  width: 85,
-                                  propertyName: "rowDimensions.height",
-                                  icon: "heightIcon",
-                                  tooltip: "Row height. You can use any unit (%, px, em, etc). px by default if without unit",
-                                },
-                                {
-                                  type: 'textField',
-                                  id: nanoid(),
-                                  label: "Min Height",
-                                  width: 85,
-                                  hideLabel: true,
-                                  propertyName: "rowDimensions.minHeight",
-                                  icon: "minHeightIcon",
-                                  tooltip: "Minimum row height. Rows will not be smaller than this value",
-                                },
-                                {
-                                  type: 'textField',
-                                  id: nanoid(),
-                                  label: "Max Height",
-                                  width: 85,
-                                  hideLabel: true,
-                                  propertyName: "rowDimensions.maxHeight",
-                                  icon: "maxHeightIcon",
-                                  tooltip: "Maximum row height. Rows will not be taller than this value",
-                                },
-                              ],
-                            })
-                            .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
                         propertyName: 'rowPaddingPanel',
                         label: 'Cell Padding',
                         labelAlign: 'right',
@@ -875,6 +826,57 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
                                   tooltip: "Maximum height. Default: auto",
+                                },
+                              ],
+                            })
+                            .toJson(),
+                          ],
+                        },
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlRowDimensions',
+                        label: 'Row Dimensions',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: styleRouterId,
+                              inline: true,
+                              inputs: [
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Height",
+                                  width: 85,
+                                  propertyName: "rowDimensions.height",
+                                  icon: "heightIcon",
+                                  tooltip: "Row height. You can use any unit (%, px, em, etc). px by default if without unit. Default: auto",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Min Height",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "rowDimensions.minHeight",
+                                  icon: "minHeightIcon",
+                                  tooltip: "Minimum row height. Rows will not be smaller than this value. Default: auto",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Max Height",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "rowDimensions.maxHeight",
+                                  icon: "maxHeightIcon",
+                                  tooltip: "Maximum row height. Rows will not be taller than this value. Default: auto",
                                 },
                               ],
                             })

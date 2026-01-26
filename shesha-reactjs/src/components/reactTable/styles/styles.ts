@@ -72,6 +72,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   bodyFontSize,
   bodyFontWeight,
   bodyFontColor,
+  freezeHeaders,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -105,6 +106,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   bodyFontSize?: string;
   bodyFontWeight?: string;
   bodyFontColor?: string;
+  freezeHeaders?: boolean;
 }) => {
   const {
     shaTable,
@@ -188,13 +190,21 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
-      overflow: ${boxShadow ? 'visible' : 'auto'};
-      ${boxShadow ? `
+      /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
+      overflow: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
+      ${boxShadow && !freezeHeaders ? `
         /* Apply box shadow to container */
         box-shadow: ${boxShadow};
         /* Add margin to create space for shadow without affecting table width */
         margin: 8px;
         /* Remove margin from parent to compensate */
+        position: relative;
+      ` : ''}
+      ${boxShadow && freezeHeaders ? `
+        /* When both boxShadow and freezeHeaders are enabled, apply shadow differently */
+        /* to avoid breaking sticky positioning */
+        box-shadow: ${boxShadow};
+        margin: 8px;
         position: relative;
       ` : ''}
 
@@ -630,7 +640,19 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           /* Use effectivePadding from props (rowStylingBox or cellPadding) or default to 0.5rem */
           ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
-          ${!rowHeight || rowHeight === 'auto' ? 'height: 40px;' : ''}
+
+          /* Only apply minimum height when rowHeight is auto to prevent empty cell collapse */
+          ${!rowHeight || rowHeight === 'auto' ? `
+            height: 44px;
+            vertical-align: middle;
+            line-height: normal;
+
+            /* Force empty cells to maintain height */
+            &:empty::before {
+              content: '';
+              display: inline-block;
+            }
+          ` : ''}
 
           /* In this example we use an absolutely position resizer, so this is required. */
           position: relative;

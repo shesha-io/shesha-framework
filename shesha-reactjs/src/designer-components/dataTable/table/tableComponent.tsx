@@ -52,17 +52,32 @@ const TableComponent: TableComponentDefinition = {
     const tableDefaults = getTableDefaults();
     const tableSettingsDefaults = getTableSettingsDefaults();
 
+    const defaultRowDimensions = {
+      height: 'auto',
+      minHeight: 'auto',
+      maxHeight: 'auto',
+    };
+
     return {
       items: [],
-      rowDimensions: {
-        height: 'auto',
-        minHeight: 'auto',
-        maxHeight: 'auto',
-      },
+      rowDimensions: defaultRowDimensions,
       ...defaults,
       ...tableDefaults,
       ...tableSettingsDefaults,
       ...model,
+      // Ensure device-specific rowDimensions are also defaulted to auto
+      mobile: {
+        ...model.mobile,
+        rowDimensions: model.mobile?.rowDimensions ?? defaultRowDimensions,
+      },
+      tablet: {
+        ...model.tablet,
+        rowDimensions: model.tablet?.rowDimensions ?? defaultRowDimensions,
+      },
+      desktop: {
+        ...model.desktop,
+        rowDimensions: model.desktop?.rowDimensions ?? defaultRowDimensions,
+      },
     };
   },
   settingsFormMarkup: getSettings,
@@ -159,7 +174,7 @@ const TableComponent: TableComponentDefinition = {
       .add<ITableComponentProps>(20, (prev) => ({ ...prev, hoverHighlight: prev.hoverHighlight ?? true }))
       .add<ITableComponentProps>(21, (prev) => ({
         ...prev,
-        rowDimensions: prev.rowDimensions ?? { height: '40px' },
+        rowDimensions: prev.rowDimensions ?? { height: 'auto', minHeight: 'auto', maxHeight: 'auto' },
       }))
       .add<ITableComponentProps>(22, (prev) => ({
         ...prev,

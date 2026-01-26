@@ -180,6 +180,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     bodyFontSize,
     bodyFontWeight,
     bodyFontColor,
+    freezeHeaders,
   });
 
   const { setDragState } = useDataTableStore();
