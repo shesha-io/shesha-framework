@@ -248,13 +248,20 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     // 3. There are non-data columns that don't need to match metadata
     if (qualifyingColumns.length > 0 || normalizedConfiguredColumns.length === 0 || hasNonDataColumns)
       registerConfigurableColumns(id, permissibleColumns);
-  }, [qualifyingColumns.length, normalizedConfiguredColumns.length, hasNonDataColumns, id, permissibleColumns, registerConfigurableColumns]);
+    // Note: registerConfigurableColumns is omitted from dependencies to avoid effect re-runs
+    // when the actions object is recreated. The effect only needs to re-run when the actual
+    // column configuration changes (qualifyingColumns, normalizedConfiguredColumns, etc.)
+  }, [qualifyingColumns.length, normalizedConfiguredColumns.length, hasNonDataColumns, id, permissibleColumns]);
 
   // Auto-configure columns when DataTable is dropped into a DataContext
   useEffect(() => {
+    let cancelled = false;
+
     // Only attempt auto-config if we have empty configuredColumns and haven't tried yet
     if (hasAutoConfiguredRef.current || !isDesignMode || !formDesigner) {
-      return;
+      return () => {
+        cancelled = true;
+      };
     }
 
     // Check if we should auto-configure
@@ -262,7 +269,9 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     const hasMetadata = metadata?.metadata != null;
 
     if (!hasNoColumns || !hasMetadata) {
-      return;
+      return () => {
+        cancelled = true;
+      };
     }
 
     // Mark as attempted to prevent multiple triggers
@@ -274,7 +283,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
         if (!metadata?.metadata) return;
 
         const defaultColumns = await calculateDefaultColumns(metadata.metadata);
-        if (defaultColumns.length > 0) {
+        if (!cancelled && defaultColumns.length > 0) {
           formDesigner.updateComponent({
             componentId: id,
             settings: {
@@ -284,13 +293,19 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
           });
         }
       } catch {
-        // Reset flag to allow retry if it failed
-        hasAutoConfiguredRef.current = false;
+        // Reset flag to allow retry if it failed (only if not cancelled)
+        if (!cancelled) {
+          hasAutoConfiguredRef.current = false;
+        }
       }
     };
 
     autoConfigureColumns();
-  }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id, props]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id]);
 
   const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
