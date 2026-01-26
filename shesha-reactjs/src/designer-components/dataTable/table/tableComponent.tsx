@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { getSettings } from './tableSettings';
-import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
+import { ColumnsItemProps, IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps, TableComponentDefinition } from './models';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
@@ -22,13 +22,59 @@ import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
-import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
+import { collectMetadataPropertyPaths, defaultStyles, flattenConfiguredColumns, getDataColumnAccessor, getTableDefaults, getTableSettingsDefaults } from './utils';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { parseFetchError } from '../utils';
+import { useMetadata } from '@/providers/metadata';
+import { isPropertiesArray } from '@/interfaces/metadata';
+
+const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.';
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
+  const metadata = useMetadata(false);
+  const configuredColumns = useMemo(
+    () => flattenConfiguredColumns(model.items as ColumnsItemProps[]),
+    [model.items],
+  );
+  const metadataProperties = useMemo(
+    () => (metadata && isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
+    [metadata, metadata?.metadata],
+  );
+  const metadataPropertyNameSet = useMemo(
+    () => new Set(collectMetadataPropertyPaths(metadataProperties)),
+    [metadataProperties],
+  );
+  const dataColumns = useMemo(
+    () => configuredColumns.filter((column) => column.columnType === 'data'),
+    [configuredColumns],
+  );
+  const invalidDataColumns = useMemo(
+    () => dataColumns.filter((column) => {
+      const candidate = getDataColumnAccessor(column);
+      if (!candidate) return true; // Empty candidates are invalid
+
+      // Check if the full path exists
+      if (metadataPropertyNameSet.has(candidate)) return false; // Valid - filter out
+
+      // For nested properties (e.g., "module.name"), check if the root property exists
+      if (candidate.includes('.')) {
+        const firstSegment = candidate.split('.')[0];
+        if (metadataPropertyNameSet.has(firstSegment)) return false; // Valid - filter out
+      }
+
+      return true; // Invalid - keep in the list
+    }),
+    [dataColumns, metadataPropertyNameSet],
+  );
+  const columnsMismatch = useMemo(
+    () => dataColumns.length > 0 &&
+      metadataPropertyNameSet.size > 0 &&
+      invalidDataColumns.length > 0 &&
+      invalidDataColumns.length === dataColumns.length, // Only error when ALL columns are invalid
+    [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns.length],
+  );
 
   // CRITICAL: Register validation errors - FormComponent will display them
   // Must be called before any conditional returns (React Hooks rules)
@@ -41,11 +87,23 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
         errors.push(...parseFetchError(store.fetchTableDataError));
       }
 
+      const exportError = store?.exportToExcelError ?? store?.error?.exportToExcel;
+      if (exportError) {
+        errors.push(...parseFetchError(exportError));
+      }
+
       // Check for missing context error
       if (!store) {
         errors.push({
           propertyName: 'Missing Required Parent Component',
           error: 'CONFIGURATION ERROR: DataTable MUST be placed inside a Data Context component.\nThis component cannot function without a data source.',
+        });
+      }
+
+      if (columnsMismatch) {
+        errors.push({
+          propertyName: 'Column Mismatches',
+          error: columnsMismatchError,
         });
       }
 
@@ -60,7 +118,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
 
       return undefined;
     },
-    [store?.fetchTableDataError, store],
+    [store, store?.fetchTableDataError, store?.exportToExcelError, store?.error?.exportToExcel, columnsMismatch],
   );
 
   if (model.hidden) return null;
@@ -68,7 +126,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   // Show TableWrapper when inside DataContext (even with no columns, to allow auto-configuration)
   // Show StandaloneTable only when outside DataContext
   if (store) {
-    return <TableWrapper {...model} />;
+    return <TableWrapper {...model} columnsMismatch={columnsMismatch} />;
   } else {
     return <StandaloneTable {...model} />;
   }

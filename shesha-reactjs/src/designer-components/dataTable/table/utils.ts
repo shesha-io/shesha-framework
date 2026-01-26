@@ -1,9 +1,9 @@
 import { nanoid } from '@/utils/uuid';
-import { IConfigurableColumnsProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { ColumnsItemProps, IConfigurableColumnsProps, IDataColumnsProps, isDataColumn } from '@/providers/datatableColumnsConfigurator/models';
 import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/form/utils';
 import { IConfigurableFormComponent, IStyleType } from "@/index";
 import { IModelMetadata, IPropertyMetadata, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
-import { toCamelCase, humanizeString } from '@/utils/string';
+import { camelcaseDotNotation, toCamelCase, humanizeString } from '@/utils/string';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 const MAX_NUMBER_OF_DEFAULT_COLS = 20;
@@ -20,6 +20,70 @@ export const generateNewKey = (json: IConfigurableFormComponent[]): IConfigurabl
   } catch {
     return json;
   }
+};
+
+export const flattenConfiguredColumns = (items?: ColumnsItemProps[]): IConfigurableColumnsProps[] => {
+  const safeItems = Array.isArray(items) ? items : [];
+  const result: IConfigurableColumnsProps[] = [];
+
+  const walk = (item: ColumnsItemProps): void => {
+    if (!item) return;
+
+    const group = item as { childItems?: ColumnsItemProps[] };
+    if (Array.isArray(group.childItems) && group.childItems.length > 0) {
+      group.childItems.forEach(walk);
+      return;
+    }
+
+    result.push(item as IConfigurableColumnsProps);
+  };
+
+  safeItems.forEach(walk);
+  return result;
+};
+
+export const getDataColumnAccessor = (column: IConfigurableColumnsProps): string => {
+  const candidate = isDataColumn(column)
+    ? column.propertyName
+    : column.accessor || column.id || '';
+  return camelcaseDotNotation(candidate);
+};
+
+export const collectMetadataPropertyPaths = (properties: IPropertyMetadata[]): string[] => {
+  const names = new Set<string>();
+
+  const normalize = (value?: string | null): string => {
+    return value ? camelcaseDotNotation(value) : '';
+  };
+
+  const walk = (property: IPropertyMetadata, prefix: string = ''): void => {
+    if (!property) return;
+
+    const segment = normalize(property.path);
+    if (!segment) return;
+
+    const fullPath = prefix && !segment.startsWith(`${prefix}.`)
+      ? `${prefix}.${segment}`
+      : segment;
+
+    names.add(fullPath);
+
+    const columnName = normalize(property.columnName);
+    if (columnName) {
+      names.add(columnName);
+      if (prefix && !columnName.startsWith(`${prefix}.`)) {
+        names.add(`${prefix}.${columnName}`);
+      }
+    }
+
+    if (isPropertiesArray(property.properties)) {
+      property.properties.forEach((child) => walk(child, fullPath));
+    }
+  };
+
+  (properties ?? []).forEach((property) => walk(property));
+
+  return Array.from(names);
 };
 
 export const filterVisibility =

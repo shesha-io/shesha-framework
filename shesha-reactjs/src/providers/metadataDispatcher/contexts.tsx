@@ -1,6 +1,5 @@
-import { IDictionary } from '@/interfaces';
-import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
-import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IModelMetadata, IPropertyMetadata, IDictionary } from "@/interfaces";
+import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 
 export interface IGetMetadataPayload {
   modelType: string | IEntityTypeIdentifier;

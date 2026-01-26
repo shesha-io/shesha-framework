@@ -740,7 +740,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
-  const flagSetters = getFlagSetters(dispatch);
+  const flagSetters = useMemo(() => getFlagSetters(dispatch), [dispatch]);
 
   //#region public
 
@@ -888,7 +888,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dispatch(setMultiSelectedRowAction(rows));
   };
 
-  const actions: IDataTableActionsContext = {
+  const actions: IDataTableActionsContext = useMemo(() => ({
     onSort,
     onGroup,
     ...flagSetters,
@@ -923,7 +923,42 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     registerDataFetchDependency,
     unregisterDataFetchDependency,
     setColumnWidths,
-  };
+  }), [
+    onSort,
+    onGroup,
+    flagSetters,
+    changeDisplayColumn,
+    setCurrentPage,
+    changePageSize,
+    toggleColumnVisibility,
+    toggleColumnFilter,
+    removeColumnFilter,
+    changeFilterOption,
+    changeFilter,
+    applyFilters,
+    clearFilters,
+    changeQuickSearch,
+    performQuickSearch,
+    toggleSaveFilterModal,
+    changeActionedRow,
+    changeSelectedStoredFilterIds,
+    setPredefinedFilters,
+    setPermanentFilter,
+    changeSelectedIds,
+    refreshTable,
+    registerConfigurableColumns,
+    getCurrentFilter,
+    changePersistedFiltersToggle,
+    getRepository,
+    setRowData,
+    setSelectedRow,
+    setDraggingState,
+    setMultiSelectedRow,
+    requireColumns,
+    registerDataFetchDependency,
+    unregisterDataFetchDependency,
+    setColumnWidths,
+  ]);
 
   /* Data Context section */
 
