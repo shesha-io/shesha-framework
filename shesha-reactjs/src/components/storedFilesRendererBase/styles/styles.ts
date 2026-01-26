@@ -280,11 +280,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       ${rest}
       border: unset;
       ${`width: ${layout ? thumbnailWidth : '100%'} !important;`};
-      ${`height: ${layout ? thumbnailHeight: '100%'} !important;`};
+      ${`height: ${layout ? thumbnailHeight : '100%'} !important;`};
       align-items: center;
 
       &.${prefixCls}-upload-btn {
-          padding: unset ;
+          padding: unset;
 
         .${prefixCls}-upload-drag-icon {
           margin: unset !important;
