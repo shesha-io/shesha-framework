@@ -1,9 +1,8 @@
 import { DesignerToolbarSettings } from '@/index';
-import { ToolbarSettingsProp } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { IEntityReferenceControlProps } from '../entityReference';
 
-export const getReferenceTypeSettings = (data: IEntityReferenceControlProps, parentId: string): ToolbarSettingsProp[] => {
+export const getReferenceTypeSettings = (data: IEntityReferenceControlProps, parentId: string): DesignerToolbarSettings => {
   return new DesignerToolbarSettings(data)
     .addDropdown({
       id: nanoid(),

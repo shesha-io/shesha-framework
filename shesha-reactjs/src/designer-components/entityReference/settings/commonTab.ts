@@ -1,9 +1,8 @@
 import { DesignerToolbarSettings } from '@/index';
-import { ToolbarSettingsProp } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { IEntityReferenceControlProps } from '../entityReference';
 
-export const getCommonTabSettings = (data: IEntityReferenceControlProps, tabId: string): ToolbarSettingsProp[] => {
+export const getCommonTabSettings = (data: IEntityReferenceControlProps, tabId: string): DesignerToolbarSettings => {
   const propertyNameId = nanoid();
   const hiddenId = nanoid();
 
