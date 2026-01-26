@@ -11,6 +11,7 @@ import { migrateV15toV16 } from './migrations/migrate-v16';
 import { migrateV17toV18 } from './migrations/migrate-v18';
 import { migrateV18toV19 } from './migrations/migrate-v19';
 import { migrateV24toV25 } from './migrations/migrate-v25';
+import { migrateV25toV26 } from './migrations/migrate-v26';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
@@ -145,17 +146,32 @@ const TableComponent: TableComponentDefinition = {
     const tableDefaults = getTableDefaults();
     const tableSettingsDefaults = getTableSettingsDefaults();
 
+    const defaultRowDimensions = {
+      height: 'auto',
+      minHeight: 'auto',
+      maxHeight: 'auto',
+    };
+
     return {
       items: [],
-      rowDimensions: {
-        height: '40px',
-        minHeight: 'auto',
-        maxHeight: 'auto',
-      },
+      rowDimensions: defaultRowDimensions,
       ...defaults,
       ...tableDefaults,
       ...tableSettingsDefaults,
       ...model,
+      // Ensure device-specific rowDimensions are also defaulted to auto
+      mobile: {
+        ...model.mobile,
+        rowDimensions: model.mobile?.rowDimensions ?? defaultRowDimensions,
+      },
+      tablet: {
+        ...model.tablet,
+        rowDimensions: model.tablet?.rowDimensions ?? defaultRowDimensions,
+      },
+      desktop: {
+        ...model.desktop,
+        rowDimensions: model.desktop?.rowDimensions ?? defaultRowDimensions,
+      },
     };
   },
   settingsFormMarkup: getSettings,
@@ -252,7 +268,7 @@ const TableComponent: TableComponentDefinition = {
       .add<ITableComponentProps>(20, (prev) => ({ ...prev, hoverHighlight: prev.hoverHighlight ?? true }))
       .add<ITableComponentProps>(21, (prev) => ({
         ...prev,
-        rowDimensions: prev.rowDimensions ?? { height: '40px' },
+        rowDimensions: prev.rowDimensions ?? { height: 'auto', minHeight: 'auto', maxHeight: 'auto' },
       }))
       .add<ITableComponentProps>(22, (prev) => ({
         ...prev,
@@ -311,7 +327,53 @@ const TableComponent: TableComponentDefinition = {
         }
         return prev;
       })
-      .add<ITableComponentProps>(25, migrateV24toV25),
+      .add<ITableComponentProps>(25, migrateV24toV25)
+      .add<ITableComponentProps>(26, migrateV25toV26)
+      .add<ITableComponentProps>(27, (prev) => ({
+        ...prev,
+        hoverHighlight: true,
+        mobile: {
+          ...prev.mobile,
+          hoverHighlight: true,
+        },
+        tablet: {
+          ...prev.tablet,
+          hoverHighlight: true,
+        },
+        desktop: {
+          ...prev.desktop,
+          hoverHighlight: true,
+        },
+      }))
+      .add<ITableComponentProps>(28, (prev) => {
+        const updateRowHeight = (dimensions?: { height?: string; minHeight?: string; maxHeight?: string }): { height?: string; minHeight?: string; maxHeight?: string } | undefined => {
+          if (dimensions?.height === '40px') {
+            return { ...dimensions, height: 'auto' };
+          }
+          return dimensions;
+        };
+
+        return {
+          ...prev,
+          rowHeight: prev.rowHeight === '40px' ? 'auto' : prev.rowHeight,
+          rowDimensions: updateRowHeight(prev.rowDimensions),
+          mobile: {
+            ...prev.mobile,
+            rowHeight: prev.mobile?.rowHeight === '40px' ? 'auto' : prev.mobile?.rowHeight,
+            rowDimensions: updateRowHeight(prev.mobile?.rowDimensions),
+          },
+          tablet: {
+            ...prev.tablet,
+            rowHeight: prev.tablet?.rowHeight === '40px' ? 'auto' : prev.tablet?.rowHeight,
+            rowDimensions: updateRowHeight(prev.tablet?.rowDimensions),
+          },
+          desktop: {
+            ...prev.desktop,
+            rowHeight: prev.desktop?.rowHeight === '40px' ? 'auto' : prev.desktop?.rowHeight,
+            rowDimensions: updateRowHeight(prev.desktop?.rowDimensions),
+          },
+        };
+      }),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

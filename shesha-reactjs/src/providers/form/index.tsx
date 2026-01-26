@@ -167,8 +167,8 @@ export {
 
 export {
   ValidationErrorsProvider,
-  useValidationErrors,
-  useValidationErrorsState,
-  useValidationErrorsActions,
+  useValidationErrorsOrDefault,
+  useValidationErrorsStateOrDefault,
+  useValidationErrorsActionsOrDefault,
   useComponentValidation,
 } from '../validationErrors';

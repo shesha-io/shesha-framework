@@ -134,7 +134,7 @@ export const getTableDefaults = (): {
   headerFontFamily: string;
 } => {
   return {
-    rowHeight: '40px',
+    rowHeight: 'auto',
     rowPadding: '8px 12px',
     rowBorder: 'none',
 
@@ -145,7 +145,7 @@ export const getTableDefaults = (): {
 
     rowAlternateBackgroundColor: '#f5f5f5',
     striped: true,
-    hoverHighlight: false,
+    hoverHighlight: true,
   };
 };
 

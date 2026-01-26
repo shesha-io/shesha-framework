@@ -10,7 +10,7 @@ import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
-import { FormComponentValidationProvider, useValidationErrorsActions, useValidationErrorsState } from '@/providers/validationErrors';
+import { FormComponentValidationProvider, useValidationErrorsActionsOrDefault, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -24,12 +24,20 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
-  const { getValidation } = useValidationErrorsActions();
-  const { errors } = useValidationErrorsState(); // Get errors map to trigger re-renders when errors change
+  const { getValidation } = useValidationErrorsActionsOrDefault();
+  const { errors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
   const errorCount = errors.size; // Track size to trigger useMemo
 
-  const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice] }
+  // Early return if componentModel is undefined
+  if (!componentModel) {
+    return null;
+  }
+
+  // Default to 'desktop' when there's no canvas context (e.g., in datatables)
+  const effectiveDevice = activeDevice || 'desktop';
+
+  const deviceModel = Boolean(effectiveDevice) && typeof effectiveDevice === 'string'
+    ? { ...componentModel, ...componentModel?.[effectiveDevice] }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);

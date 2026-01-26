@@ -10,11 +10,21 @@ interface IInputFieldProps {
 function InputField({ value, style, children }: IInputFieldProps): JSX.Element {
   const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
 
-  const { fontSize, fontWeight, color, fontFamily, height } = style || {};
+  const { height } = style || {};
 
+  // Apply all styles to single container to avoid double borders
   return value || children ? (
-    <div style={{ ...style }} className={styles.wrapper}>
-      <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily, whiteSpace: height === 'auto' ? 'pre-wrap' : 'nowrap', flex: 'none' }}>{value || children}</div>
+    <div
+      className={styles.inputField}
+      style={{
+        ...style,
+        whiteSpace: height === 'auto' ? 'pre-wrap' : 'nowrap',
+        display: 'flex',
+        alignItems: 'center',
+        boxSizing: 'border-box',
+      }}
+    >
+      {value || children}
     </div>
   ) : null;
 }

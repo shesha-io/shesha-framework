@@ -145,24 +145,42 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
   );
 };
 
+const defaultState: IValidationErrorsStateContext = {
+  errors: new Map(),
+  componentId: '',
+  componentName: '',
+  componentType: '',
+};
+
 /**
  * Hook to access validation errors state
  */
-export const useValidationErrorsState = (): IValidationErrorsStateContext => {
+export const useValidationErrorsStateOrDefault = (): IValidationErrorsStateContext => {
   const context = useContext(ValidationErrorsStateContext);
   if (context === undefined) {
-    throw new Error('useValidationErrorsState must be used within a ValidationErrorsProvider');
+    return defaultState;
   }
   return context;
+};
+
+const defaultActions: IValidationErrorsActionsContext = {
+  registerValidation: (validation?: IModelValidation) => {
+    console.warn('useValidationErrorsActionsOrDefault must be used within a ValidationErrorsProvider. Cannot register validation', validation);
+  },
+  unregisterValidation: () => {
+    // Noop
+  },
+  getValidation: () => undefined,
+  getAllValidations: () => [],
 };
 
 /**
  * Hook to access validation errors actions
  */
-export const useValidationErrorsActions = (): IValidationErrorsActionsContext => {
+export const useValidationErrorsActionsOrDefault = (): IValidationErrorsActionsContext => {
   const context = useContext(ValidationErrorsActionsContext);
   if (context === undefined) {
-    throw new Error('useValidationErrorsActions must be used within a ValidationErrorsProvider');
+    return defaultActions;
   }
   return context;
 };
@@ -170,10 +188,10 @@ export const useValidationErrorsActions = (): IValidationErrorsActionsContext =>
 /**
  * Combined hook to access both state and actions
  */
-export const useValidationErrors = (): IValidationErrorsStateContext & IValidationErrorsActionsContext => {
+export const useValidationErrorsOrDefault = (): IValidationErrorsStateContext & IValidationErrorsActionsContext => {
   return {
-    ...useValidationErrorsState(),
-    ...useValidationErrorsActions(),
+    ...useValidationErrorsStateOrDefault(),
+    ...useValidationErrorsActionsOrDefault(),
   };
 };
 
