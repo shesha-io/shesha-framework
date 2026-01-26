@@ -16,6 +16,13 @@ import { FormRawMarkup, IConfigurableFormComponent, IConfigurableTheme } from "@
 import { readThemeColor } from "@/components/colorPicker";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
 
+// Helper to check if a width value is effectively zero
+const isZeroWidth = (width: string | number | undefined): boolean => {
+  if (!width) return true;
+  const strWidth = String(width).trim().toLowerCase();
+  return strWidth === '0' || strWidth === '0px' || strWidth === '0em' || strWidth === '0rem' || strWidth === '0%';
+};
+
 export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
   if (!input) return {};
 
@@ -24,10 +31,11 @@ export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.C
   const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
   const handleBorderPart = (part, prefix: string, theme?: IConfigurableTheme): void => {
-    const hideBorder = !part?.color || !part?.width || input?.border?.[input.borderType]?.style === 'none';
+    // Hide border if: no color, no width, width is "0px", or style is explicitly "none"
+    const hideBorder = !part?.color || !part?.width || isZeroWidth(part?.width) || input?.border?.[input.borderType]?.style === 'none';
     if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width || all?.width);
     if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style || all?.style;
-    if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color || all?.color;
+    if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = hideBorder ? 'transparent' : part?.color || all?.color;
 
     if (theme && readThemeColor(theme)[`${input?.border?.all?.color}`]) {
       style[`borderColor`] = readThemeColor(theme)[`${input?.border?.all?.color}`];

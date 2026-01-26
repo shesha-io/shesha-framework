@@ -28,8 +28,16 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   const { errors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
   const errorCount = errors.size; // Track size to trigger useMemo
 
-  const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice] }
+  // Early return if componentModel is undefined
+  if (!componentModel) {
+    return null;
+  }
+
+  // Default to 'desktop' when there's no canvas context (e.g., in datatables)
+  const effectiveDevice = activeDevice || 'desktop';
+
+  const deviceModel = Boolean(effectiveDevice) && typeof effectiveDevice === 'string'
+    ? { ...componentModel, ...componentModel?.[effectiveDevice] }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);

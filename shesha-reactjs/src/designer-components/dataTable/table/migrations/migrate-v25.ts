@@ -2,19 +2,10 @@ import { ITableComponentProps } from "../models";
 import { SettingsMigrationContext } from "@/interfaces";
 import { defaultStyles } from "../utils";
 
-/**
- * Migration v24 to v25: Set device-specific and top-level defaults for properties that previously relied on placeholders
- *
- * This migration ensures that all properties that had placeholder values in the settings form
- * are initialized with proper defaults. This includes:
- * - Device-specific properties (desktop/mobile/tablet) for font, dimensions, background, shadow
- * - Top-level properties like headerFont and rowPadding fields
- */
 export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsMigrationContext): ITableComponentProps => {
   const defaults = defaultStyles();
   const result = { ...props };
 
-  // Device-specific defaults for responsive design (desktop, mobile, tablet)
   const devices = ['desktop', 'mobile', 'tablet'] as const;
 
   devices.forEach((device) => {
@@ -92,7 +83,7 @@ export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsM
   result.rowPaddingLeft ??= '12px';
 
   // Fix hoverHighlight default - migration v20 set it to true, but new default is false
-  result.hoverHighlight = false;
+  result.hoverHighlight = true;
 
   return result;
 };

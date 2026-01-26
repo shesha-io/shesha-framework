@@ -62,7 +62,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const effectiveRowHeight = useMemo(() => {
     const converted = convertRowDimensionsToHeight(props?.rowDimensions);
     return converted || props?.rowHeight;
-  }, [props?.rowDimensions, props?.rowHeight, isDesignMode]);
+  }, [props?.rowDimensions, props?.rowHeight]);
 
   const effectiveRowPadding = useMemo(() => {
     // Try new individual padding fields first
@@ -76,22 +76,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     // Fall back to deprecated rowStylingBox for backward compatibility
     const convertedFromBox = convertRowStylingBoxToPadding(props?.rowStylingBox);
 
-    if (isDesignMode) {
-      console.warn('Row Padding - individual fields:', {
-        top: props?.rowPaddingTop,
-        right: props?.rowPaddingRight,
-        bottom: props?.rowPaddingBottom,
-        left: props?.rowPaddingLeft,
-      }, 'converted:', convertedFromFields, 'fallback rowStylingBox:', props?.rowStylingBox, 'converted:', convertedFromBox, 'final fallback:', props?.rowPadding);
-    }
-
     return convertedFromFields || convertedFromBox || props?.rowPadding;
-  }, [props?.rowPaddingTop, props?.rowPaddingRight, props?.rowPaddingBottom, props?.rowPaddingLeft, props?.rowStylingBox, props?.rowPadding, isDesignMode]);
+  }, [props?.rowPaddingTop, props?.rowPaddingRight, props?.rowPaddingBottom, props?.rowPaddingLeft, props?.rowStylingBox, props?.rowPadding]);
 
   const effectiveRowBorder = useMemo(() => {
     const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
     return converted || props?.rowBorder;
-  }, [props?.rowBorderStyle, props?.rowBorder, isDesignMode]);
+  }, [props?.rowBorderStyle, props?.rowBorder]);
 
   // Compute effective header font values with backward compatibility
   const effectiveHeaderFontFamily = useMemo(() => {
@@ -404,6 +395,10 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
+            bodyFontFamily={props?.font?.type}
+            bodyFontSize={props?.font?.size ? `${props.font.size}px` : undefined}
+            bodyFontWeight={props?.font?.weight}
+            bodyFontColor={props?.font?.color}
           />
         </div>
       </div>

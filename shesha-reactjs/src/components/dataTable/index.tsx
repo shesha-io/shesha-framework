@@ -206,6 +206,12 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   rowBorder?: string;
   rowBorderStyle?: IBorderValue;
 
+  // Body font styling
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
+
   // Cell styling
   cellTextColor?: string;
   cellBackgroundColor?: string;
@@ -286,6 +292,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
   ...props
 }) => {
   const store = useDataTableStore(false);
@@ -603,6 +613,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
   }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, appContext.contexts.lastUpdate]);
+
+  // Check if there's a crud operations column - if so, disable row selection
+  const hasCrudOperationsColumn = useMemo(() => {
+    return columns.filter((c) => !!c.show).some((c) => c.columnType === 'crud-operations');
+  }, [columns]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
     const localPreparedColumns = columns
@@ -1034,14 +1049,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     useMultiSelect: multiSelect,
     selectionMode: mode,
     freezeHeaders,
-    onSelectRow: onSelectRowLocal,
+    // Disable row selection when there's a crud operations column
+    onSelectRow: hasCrudOperationsColumn ? undefined : onSelectRowLocal,
     onRowDoubleClick: combinedDblClickHandler,
     onSelectedIdsChanged: mode === 'multiple' ? changeSelectedIds : undefined,
     onMultiRowSelect: mode === 'multiple' ? onMultiRowSelect : undefined,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,
     // Only use selectedRowIndex in single mode; in multiple mode, row.isSelected controls highlighting
-    selectedRowIndex: mode === 'single' ? selectedRowIndex : undefined,
+    // Disable row selection highlighting when there's a crud operations column
+    selectedRowIndex: mode === 'single' && !hasCrudOperationsColumn ? selectedRowIndex : undefined,
     loading: isFetchingTableData,
     pageCount: totalPages,
     manualFilters: true, // informs React Table that you'll be handling sorting and pagination server-side
@@ -1119,6 +1136,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     headerShadow: props.headerShadow,
     rowShadow: props.rowShadow,
     rowDividers: props.rowDividers,
+    bodyFontFamily,
+    bodyFontSize,
+    bodyFontWeight,
+    bodyFontColor,
   };
 
   // Register validation errors with the parent FormComponent
