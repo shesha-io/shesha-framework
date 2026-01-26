@@ -11,7 +11,7 @@ import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
-import React, { CSSProperties, FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useSheshaApplication, useStoredFile, useTheme } from '@/providers';
@@ -36,7 +36,7 @@ export interface IFileUploadProps {
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  style?: CSSProperties;
+  styles?: any;
   type?: string;
 }
 
@@ -51,7 +51,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   isDragger = false,
   listType = 'text',
   hideFileName = false,
-  style,
+  styles: stylesProp,
 }) => {
   const {
     fileInfo,
@@ -62,7 +62,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   } = useStoredFile();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const props = {
-    style,
+    style: stylesProp,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
@@ -221,7 +221,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
-    style: isDragger ? undefined : style,
+    style: !isDragger && stylesProp,
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
       if (!isFileTypeAllowed(file.name, allowedFileTypes)) {

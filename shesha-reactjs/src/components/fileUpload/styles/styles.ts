@@ -1,8 +1,7 @@
 import { createStyles } from '@/styles';
 import { CSSObject } from '@emotion/serialize';
-import { CSSProperties } from 'react';
 
-interface StyleProps extends CSSProperties {
+interface StyleProps extends CSSObject {
   jsStyle?: CSSObject;
 }
 
@@ -173,7 +172,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         border-radius: ${borderRadius} !important;
         padding: 0 !important;
         ${commonBorderStyles}
-        ${{ ...style }}
+        ${style}
       }
 
       .thumbnail-item-name {
@@ -195,7 +194,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         align-items: center;
         justify-content: center;
         border: 1px ${borderStyle} ${borderColor} !important;
-        ${{ ...style }}
+        ${style}
       }
 
       .ant-upload-list-text {
@@ -244,7 +243,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         * {
           ${commonTextStyles}
         }
-        ${listType === 'thumbnail' && { ...style }}
+        ${listType === 'thumbnail' && style}
         width: 100%;
         height: 100%;
       }
@@ -262,7 +261,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           animation: none !important;
           transition: none !important;
         }
-        ${listType !== 'thumbnail' && { ...style }}
+        ${listType !== 'thumbnail' && style}
       }
     `,
   );
@@ -341,7 +340,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           object-fit: cover !important;
         }
       }
-      ${{ ...style }}
+      ${style}
     `,
   );
 

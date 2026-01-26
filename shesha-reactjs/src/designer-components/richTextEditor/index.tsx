@@ -14,7 +14,7 @@ import {
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { useDeepCompareMemoKeepReference } from '@/hooks';
-import { useFormData } from '@/providers';
+import { useForm, useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';
@@ -35,6 +35,9 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     const { data: formData } = useFormData();
     const { allStyles } = model;
     const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles;
+
+    const { formMode } = useForm();
+
 
     const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
       const typedConfig: PartialRichTextEditorConfig = {

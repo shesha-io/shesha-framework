@@ -21,7 +21,6 @@ import { defaultStyles } from './utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 const FileUploadComponent: FileUploadComponentDefinition = {
   type: 'fileUpload',
@@ -33,14 +32,10 @@ const FileUploadComponent: FileUploadComponentDefinition = {
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
 
-    const { dimensionsStyles } = useFormComponentStyles(model?.thumbnail);
-
     const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
       ...model.allStyles.fontStyles,
-      ...dimensionsStyles,
-    } : { ...model.allStyles.fullStyle,
-      ...dimensionsStyles };
-
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
@@ -75,7 +70,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
                 allowReplace={enabled && model.allowReplace}
                 allowedFileTypes={model?.allowedFileTypes}
                 isDragger={model?.isDragger}
-                style={finalStyle}
+                styles={finalStyle}
               />
             </StoredFileProvider>
           );
