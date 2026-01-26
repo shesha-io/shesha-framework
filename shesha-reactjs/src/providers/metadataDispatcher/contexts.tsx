@@ -4,7 +4,6 @@ import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/m
 export interface IGetMetadataPayload {
   modelType: string | IEntityTypeIdentifier;
   dataType: string | null;
-  signal?: AbortSignal;
 }
 
 export type IGetPropertyMetadataFromMetaPayload = {

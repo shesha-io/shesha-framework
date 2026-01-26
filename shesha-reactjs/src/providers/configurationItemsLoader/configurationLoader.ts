@@ -41,7 +41,7 @@ export interface IConfigurationLoader {
 
   getFormAsync: (payload: IGetFormPayload) => Promise<IFormDto>;
   getRefListAsync: (payload: IGetRefListPayload) => PromisedValue<ReferenceListDto>;
-  getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string, signal?: AbortSignal) => Promise<FormFullName>;
+  getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string) => Promise<FormFullName>;
   clearFormCache: (payload: IClearFormCachePayload) => void;
   getComponentAsync: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
   updateComponentAsync: (payload: IUpdateComponentPayload) => Promise<void>;
