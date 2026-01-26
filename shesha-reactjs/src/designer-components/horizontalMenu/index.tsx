@@ -4,6 +4,7 @@ import { filterObjFromKeys } from "@/utils";
 import { EditOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import {
   ConfigurableComponentRenderer,
+  getShadowStyle,
   getStyle,
   IConfigurableFormComponent,
   ISidebarMenuItem,
@@ -27,6 +28,7 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   fontSize?: string;
   gap?: string;
   height?: string;
+  containerStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
   styleOnSubMenu?: string;
@@ -49,6 +51,13 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   background?: {
     type?: string;
     color?: string;
+  };
+  menuItemShadow?: {
+    color: string;
+    offsetX?: number;
+    offsetY?: number;
+    blurRadius?: number;
+    spreadRadius?: number;
   };
 }
 
@@ -87,7 +96,10 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     const fontSize = model?.font?.size || model?.fontSize || "14";
     const gap = model?.gap || "12";
     const height = model?.height || "6";
-    const width = model?.dimensions?.width || model?.width || "500px";
+
+    // Normalize width: if no unit provided, append 'px'
+    const rawWidth = (model?.dimensions?.width || model?.width || "500px").toString().trim();
+    const width = /^\d+(\.\d+)?$/.test(rawWidth) ? `${rawWidth}px` : rawWidth;
 
     const colors: ILayoutColor = {
       ...filterObjFromKeys(model, [
@@ -97,20 +109,25 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "itemBackground",
         "hoverItemColor",
         "hoverItemBackground",
+        "subItemColor",
+        "subItemBackground",
       ]),
-      // Only set itemBackground for 'color' type or when no type is specified
-      // For other types (gradient, image, url, storedFile), let allStyles.backgroundStyles handle it
-      itemBackground: model.itemBackground || ((!model.background?.type || model.background?.type === 'color') ? model.background?.color : undefined),
-      itemColor: model.itemColor || model.font?.color,
     };
 
-    const finalStyle = useMemo(() => {
-      return {
+    const finalContainerStyle = useMemo(() => {
+      const computedStyle = {
         ...model.allStyles?.fullStyle,
         ...model.allStyles?.backgroundStyles,
-        ...(model.style ? getStyle(model.style, data) : {}),
+        ...(model.containerStyle ? getStyle(model.containerStyle, data) : {}),
       };
-    }, [model.allStyles, model.style, data]);
+
+      // Set default background color if not defined
+      if (!computedStyle.backgroundColor && !computedStyle.background) {
+        computedStyle.backgroundColor = '#ffffff';
+      }
+
+      return computedStyle;
+    }, [model.allStyles, model.containerStyle, data]);
 
     const finalFontStyles = useMemo(() => {
       return {
@@ -121,6 +138,10 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         textAlign: model?.font?.align as any,
       };
     }, [model.font, fontSize]);
+
+    const menuItemShadowStyle = useMemo(() => {
+      return getShadowStyle(model?.menuItemShadow);
+    }, [model?.menuItemShadow]);
 
     if (model.hidden) return null;
 
@@ -141,14 +162,16 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 fontSize={typeof fontSize === 'string' ? fontSize : String(fontSize)}
                 padding={{ x: gap, y: height }}
                 style={{
-                  ...finalStyle,
+                  ...finalContainerStyle,
                   ...finalFontStyles,
                   width: width,
                 } as React.CSSProperties}
+                itemStyle={getStyle(model?.style, data)}
                 styleOnHover={getStyle(model?.styleOnHover, data)}
                 styleOnSelected={getStyle(model?.styleOnSelected, data)}
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
-                overflow={model.overflow}
+                menuItemStyle={menuItemShadowStyle}
+                overflow={model.overflow || 'dropdown'}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
                 menuId={model.id}
@@ -162,7 +185,13 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
-    .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<IMenuListProps>(0, (prev) => ({
+      ...migratePrevStyles(prev, defaultStyles()),
+    }))
+    .add<IMenuListProps>(1, (prev) => ({
+      ...prev,
+      overflow: prev.overflow ?? 'dropdown',
+    })),
 };
 
 export default MenuListComponent;
