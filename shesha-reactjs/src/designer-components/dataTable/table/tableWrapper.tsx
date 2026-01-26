@@ -53,7 +53,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   );
   const metadataProperties = useMemo(
     () => (metadata && isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
-    [metadata, metadata?.metadata],
+    [metadata?.metadata],
   );
   const metadataPropertyNameSet = useMemo(
     () => new Set(collectMetadataPropertyPaths(metadataProperties)),
