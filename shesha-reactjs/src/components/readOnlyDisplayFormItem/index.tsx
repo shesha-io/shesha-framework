@@ -173,6 +173,8 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showItemName,
     solidColor,
     tagStyle,
+    style,
+    styles.wrapper,
   ]);
 
   // Only apply layout-related styles to outer container, not appearance styles
