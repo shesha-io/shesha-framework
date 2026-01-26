@@ -29,6 +29,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
     `);
   const codeEditorContainer = cx("sha-code-editor-container", css`
+        height: 100%;
         display: flex;
         flex-direction: column;
     `);
