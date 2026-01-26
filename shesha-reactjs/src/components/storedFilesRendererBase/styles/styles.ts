@@ -283,6 +283,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       ${`height: ${layout ? thumbnailHeight : '100%'} !important;`};
       align-items: center;
 
+      .ant-upload {
+        ${`width: ${layout ? thumbnailWidth : '100%'} !important;`};
+        ${`height: ${layout ? thumbnailHeight : '100%'} !important;`};
+      }
+
       &.${prefixCls}-upload-btn {
           padding: unset;
 
@@ -323,7 +328,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       display: flex;
       margin-top: 4px;
       justify-content: flex-end;
-      width: ${containerWidth};
+      width: 100%;
       max-width: ${containerMaxWidth};
       min-width: ${containerMinWidth};
     }
