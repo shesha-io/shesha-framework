@@ -252,8 +252,7 @@ const TableComponent: TableComponentDefinition = {
         },
       }))
       .add<ITableComponentProps>(28, (prev) => {
-        // Update row height from '40px' to 'auto'
-        const updateRowHeight = (dimensions?: { height?: string; minHeight?: string; maxHeight?: string }) => {
+        const updateRowHeight = (dimensions?: { height?: string; minHeight?: string; maxHeight?: string }): { height?: string; minHeight?: string; maxHeight?: string } | undefined => {
           if (dimensions?.height === '40px') {
             return { ...dimensions, height: 'auto' };
           }
