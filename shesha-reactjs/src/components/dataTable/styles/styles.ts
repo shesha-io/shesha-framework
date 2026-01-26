@@ -36,6 +36,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box;
+        height: auto !important;
       }
 
       /* Handle select dropdowns */
@@ -70,6 +71,9 @@ export const useStyles = createStyles(({ css, cx }) => {
     `;
 
   const shaFormCell = cx("sha-form-cell", shaCellBase, css`
+      /* Override base overflow to allow dropdowns and validation messages */
+      overflow: visible;
+
       .ant-form-item-control {
         flex-direction: column;
         display: flex;
@@ -88,7 +92,15 @@ export const useStyles = createStyles(({ css, cx }) => {
       .ant-form-item-control-input-content {
         width: 100%;
         max-width: 100%;
-        overflow: hidden;
+        overflow: visible;
+      }
+
+      /* Ensure validation messages are visible */
+      .ant-form-item-explain,
+      .ant-form-item-explain-error {
+        overflow: visible;
+        white-space: normal;
+        word-wrap: break-word;
       }
     `);
 
@@ -98,6 +110,11 @@ export const useStyles = createStyles(({ css, cx }) => {
         width: 100%;
         max-width: 100%;
         overflow: hidden;
+
+        /* Exception for tag wrappers - allow overflow for tags */
+        &[data-tag-wrapper="true"] {
+          overflow: visible;
+        }
       }
     `);
 

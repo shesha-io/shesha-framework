@@ -32,10 +32,16 @@ interface ConfirmArgs {
   content?: string;
 };
 
+type ModalWarningArgs = {
+  title: ReactNode;
+  content?: ReactNode;
+};
+
 export interface IModalApi {
   showModalFormAsync: <TResponse = void>(args: ShowModalFormArgs) => Promise<TResponse | undefined>;
   showModalContentAsync: <TResponse = void>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings) => Promise<TResponse | undefined>;
   confirmYesNoAsync: (args: ConfirmArgs) => Promise<boolean>;
+  warning: (args: ModalWarningArgs) => Promise<void>;
 };
 
 type CreateModalType = ReturnType<typeof useDynamicModals>['createModal'];
@@ -77,6 +83,18 @@ export class ModalApi implements IModalApi {
         },
         onOk: () => {
           resolve(true);
+        },
+      });
+    });
+  };
+
+  warning = ({ title, content }: ModalWarningArgs): Promise<void> => {
+    return new Promise<void>((resolve) => {
+      this._antdApi.warning({
+        title,
+        content,
+        onOk: () => {
+          resolve();
         },
       });
     });

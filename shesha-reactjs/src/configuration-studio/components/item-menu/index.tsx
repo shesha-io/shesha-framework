@@ -13,7 +13,8 @@ type MenuItems = Required<MenuProps>["items"];
 
 export const ConfigurationItemMenu: FC = () => {
   const cs = useConfigurationStudio();
-  const { getDocumentDefinition } = useConfigurationStudioEnvironment();
+  const csEnv = useConfigurationStudioEnvironment();
+  const { getDocumentDefinition } = csEnv;
   const activeDoc = useActiveDoc();
 
   // TODO: add current tree selection to the dependencies list
@@ -26,6 +27,7 @@ export const ConfigurationItemMenu: FC = () => {
           key: activeDoc.itemId,
           nodeType: TreeNodeType.ConfigurationItem,
           itemType: activeDoc.itemType,
+          discriminator: activeDoc.discriminator,
           name: activeDoc.label,
           label: activeDoc.label,
           moduleId: activeDoc.moduleId,
@@ -39,7 +41,7 @@ export const ConfigurationItemMenu: FC = () => {
 
   if (!activeDoc || menuItems.length === 0)
     return undefined;
-  const icon = getIcon(TreeNodeType.ConfigurationItem, activeDoc.itemType);
+  const icon = getIcon(csEnv, TreeNodeType.ConfigurationItem, activeDoc.itemType);
 
   return (
     <CustomErrorBoundary key={activeDoc.itemId}>

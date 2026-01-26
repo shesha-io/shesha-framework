@@ -30,9 +30,7 @@ const PagerComponent: PagerComponentDefinition = {
 
     if (model.hidden) return null;
 
-    return (
-      <TablePager {...model} style={additionalStyles} />
-    );
+    return <TablePager {...model} style={additionalStyles} />;
   },
   initModel: (model: IPagerComponentProps) => {
     return {

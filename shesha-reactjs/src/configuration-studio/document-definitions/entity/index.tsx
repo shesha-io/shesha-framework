@@ -7,9 +7,11 @@ import { Form, Space } from "antd";
 import ModelConfiguratorRenderer from "@/components/modelConfigurator/renderer";
 import { ModelConfiguratorProvider, useModelConfigurator } from "@/providers";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
+import { TableOutlined } from "@ant-design/icons";
 
 export const EntityDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.ENTITY,
+  icon: <TableOutlined />,
   Editor: ({ doc }: ItemEditorProps): ReactNode => {
     const cs = useConfigurationStudio();
     const { load, saveForm, isModified } = useModelConfigurator();
@@ -50,7 +52,12 @@ export const EntityDocumentDefinition: DocumentDefinition = {
     );
   },
   documentInstanceFactory: (args) => {
-    return new DocumentInstance({ ...args, itemType: EntityDocumentDefinition.documentType, definition: EntityDocumentDefinition });
+    return new DocumentInstance({
+      ...args,
+      itemType: EntityDocumentDefinition.documentType,
+      discriminator: EntityDocumentDefinition.documentType,
+      definition: EntityDocumentDefinition,
+    });
   },
   contextMenuBuilder: (menu) => menu.filter((item) => !['rename', 'duplicate', 'viewJsonConfig'].includes(item?.key as string)),
 };

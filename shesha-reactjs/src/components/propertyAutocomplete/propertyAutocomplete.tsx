@@ -115,7 +115,10 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
         const preparedProperties = Boolean(propertyModeltype)
           // Filter properties by propertyModelType
           ? isEntityTypeIdentifier(propertyModeltype)
-            ? properties.filter((p) => p.dataType === DataTypes.entityReference && p.entityModule === propertyModeltype.module && p.entityType === propertyModeltype.name)
+            ? (() => {
+              const normalizedModule = propertyModeltype.module ?? null;
+              return properties.filter((p) => p.dataType === DataTypes.entityReference && (p.entityModule ?? null) === normalizedModule && p.entityType === propertyModeltype.name);
+            })()
             : properties.filter((p) => p.dataType === DataTypes.entityReference && (('fullClassName' in p && p.fullClassName === propertyModeltype) || !('fullClassName' in p)))
           : properties;
         setProperties(preparedProperties, containerPath ?? containerPathMultiple);

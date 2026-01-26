@@ -5,7 +5,7 @@ import { useDataSources } from '@/providers/dataSourcesProvider';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
-import DataListControl, { NotConfiguredWarning } from './dataListControl';
+import DataListControl from './dataListControl';
 import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -21,28 +21,21 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
-    if (model.hidden) return null;
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
-    // Check if form is configured
-    const hasFormConfigured =
-      (model.formSelectionMode === "name" && model.formId) ||
-      (model.formSelectionMode === "view" && model.formType) ||
-      (model.formSelectionMode === "expression" && model.formIdExpression);
+    // Check if there's a real data source available
+    // In designer mode, if no data source is configured and none is available from context, show error
+    if (model.hidden) return null;
 
-    return dataSource
-      ? <DataListControl {...model} dataSourceInstance={dataSource} />
-      : (
-        <NotConfiguredWarning
-          message={hasFormConfigured
-            ? "This Data List has no data source configured. Data Lists require to be placed inside a Data Context (like a Data Table or Entity Picker) to fetch data."
-            : "This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items."}
-          isWarning={true}
-        />
-      );
+    return (
+      <DataListControl
+        {...model}
+        dataSourceInstance={dataSource ?? null}
+      />
+    );
   },
   migrator: (m) => m
     .add<IDataListComponentProps>(0, (prev) => ({
@@ -51,7 +44,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       selectionMode: 'single',
       items: [],
       // Set default form to the starter template
-      // formId: { name: 'data-list-dummy-default', module: 'Shesha' }
+      formId: { name: 'dummy-datalist-item', module: 'Shesha' },
     }))
     .add<IDataListComponentProps>(1, (prev) => ({ ...prev, orientation: 'vertical', listItemWidth: 1 }))
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -67,7 +60,6 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         inlineSaveMode: 'manual',
         dblClickActionConfiguration: prev['actionConfiguration'],
         showEditIcons: true,
-
       };
     })
     .add<IDataListComponentProps>(6, (prev) => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))
@@ -115,6 +107,28 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     })
     .add<IDataListComponentProps>(11, (prev) => ({ ...prev, showEditIcons: true })),
   settingsFormMarkup: getSettings,
+  validateModel: (model, addModelError) => {
+    // Validate form configuration
+    if (model.formSelectionMode === "name") {
+      if (!model.formId) {
+        addModelError('formId', 'This Data List has no form selected.\nSelecting a Form tells the Data List what data structure it should use when rendering items.');
+      } else if (typeof model.formId === 'string' && model.formId.trim() === '') {
+        addModelError('formId', 'This Data List has an invalid form selected (empty form name).\nPlease select a valid form.');
+      } else if (typeof model.formId === 'object' && (!model.formId.name || model.formId.name.trim() === '')) {
+        addModelError('formId', 'This Data List has an invalid form selected (empty form name).\nPlease select a valid form.');
+      }
+    }
+
+    if (model.formSelectionMode === "view" && (!model.formType || model.formType.trim() === '')) {
+      addModelError('formType', 'This Data List has no form type specified.\nSelecting a Form Type tells the Data List what data structure it should use when rendering items.');
+    }
+
+    if (model.formSelectionMode === "expression" && (!model.formIdExpression || model.formIdExpression.trim() === '')) {
+      addModelError('formIdExpression', 'This Data List has no form identifier expression configured.\nConfiguring an expression tells the Data List how to dynamically determine which form to use.');
+    }
+
+    // Note: DataContext validation is handled via useComponentValidation hook in the Factory/Control functions
+  },
 };
 
 export default DataListComponent;

@@ -174,7 +174,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       spinning={treeLoadingState.status === 'loading'}
       wrapperClassName={styles.csNavPanelSpinner}
     >
-      {isDefined(treeNodes) && (
+      {treeLoadingState.status === 'ready' && isDefined(treeNodes) && (
         <div className={styles.csNavPanelContent}>
           <div className={styles.csNavPanelHeader}>
             <Input.Search

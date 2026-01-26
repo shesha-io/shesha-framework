@@ -9,9 +9,11 @@ import React, { ReactNode, useEffect } from "react";
 import { FormToolbar } from "./toolbar";
 import { useFormDesigner } from "@/providers/formDesigner";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
+import { FormOutlined } from "@ant-design/icons";
 
 export const FormDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.FORM,
+  icon: <FormOutlined />,
   Editor: (props: ItemEditorProps): ReactNode => {
     const { styles } = useMainStyles();
     const cs = useConfigurationStudio();
@@ -58,7 +60,12 @@ export const FormDocumentDefinition: DocumentDefinition = {
     );
   },
   documentInstanceFactory: (args) => {
-    return new DocumentInstance({ ...args, itemType: FormDocumentDefinition.documentType, definition: FormDocumentDefinition });
+    return new DocumentInstance({
+      ...args,
+      itemType: FormDocumentDefinition.documentType,
+      discriminator: FormDocumentDefinition.documentType,
+      definition: FormDocumentDefinition,
+    });
   },
   createModalFooterButtons: 'none',
 };

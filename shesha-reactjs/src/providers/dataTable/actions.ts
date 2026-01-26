@@ -104,9 +104,14 @@ export const fetchTableDataSuccessAction = createAction<ITableDataInternalRespon
   (p) => p,
 );
 
-export const fetchTableDataErrorAction = createAction(DataTableActionEnums.FetchTableDataError, () => {
-  /* nop*/
-});
+export interface IFetchTableDataErrorPayload {
+  error?: any;
+}
+
+export const fetchTableDataErrorAction = createAction<IFetchTableDataErrorPayload, IFetchTableDataErrorPayload>(
+  DataTableActionEnums.FetchTableDataError,
+  (p) => p,
+);
 
 export interface ISetRowDataPayload {
   rowIndex: number;
