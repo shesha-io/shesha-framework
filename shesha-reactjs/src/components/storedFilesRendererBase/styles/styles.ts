@@ -10,6 +10,7 @@ interface IModelInterface {
   downloadZip?: boolean;
   listType?: listType;
   fontStyles?: CSSProperties;
+  hasFiles?: boolean;
 };
 
 export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles }: { style: CSSProperties; model: IModelInterface; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties }) => {
@@ -25,7 +26,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     minWidth: containerMinWidth, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
     paddingLeft, paddingRight, paddingBottom, ...restContainerStyles } = containerStyles;
 
-  const { gap, layout, isDragger } = model;
+  const { gap, layout, isDragger, hasFiles } = model;
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
@@ -69,6 +70,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
   const fileNameWrapper = cx("file-name-wrapper", css`
     display: ${model.hideFileName ? 'none' : 'flex'};
+    gap: 8px;
     cursor: pointer;
     &:hover {
       background-color: ${colorBgTextHover} !important;
@@ -103,6 +105,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
       font-family: ${downloadedFileStyles?.fontFamily ?? fontFamily} !important;
       text-align: ${downloadedFileStyles?.textAlign ?? textAlign} !important;
+      ${downloadedFileStyles?.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles?.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;
     }
 
     .ant-upload-list-item-action {
@@ -138,7 +141,19 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
   const thumbnailHeight = layout ? (height ?? '54px') : '100%';
   const marginGap = gap ?? '8px';
 
-  const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
+  const antUploadDragIcon = cx(`${prefixCls}-upload-drag-icon`, css`
+     .${prefixCls}-upload-drag-icon {
+          width: 32px;
+        }
+    `);
+  const antUploadText = cx(`${prefixCls}-upload-text`, css`
+    font-size: 16px !important;
+    `);
+  const antUploadHint = cx(`${prefixCls}-upload-hint`, css`
+
+    `);
+
+
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
     margin-top: ${marginTop};
     margin-left: ${marginLeft};
@@ -173,6 +188,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       .icon {
         color: ${token.colorPrimary} !important;
       };
+    }
+
+    .ant-upload-drag {
+      ${hasFiles ? 'border: unset' : ''}
     }
   
     .ant-upload-list-item {
@@ -233,11 +252,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
      }
     }
 
-    .ant-upload-drag:hover:not(.ant-upload-disabled) {
-      border-color: ${token.colorPrimary} !important;
-    }
-
-    .${prefixCls}-upload {
+    .${prefixCls}-upload:not(.ant-upload-drag) {
       ${rest}
       border: unset;
       ${(layout && !isDragger) && `width: ${thumbnailWidth} !important;`};
@@ -246,6 +261,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       align-items: center;
 
       &.${prefixCls}-upload-btn {
+          padding: unset;
+
         .${prefixCls}-upload-drag-icon {
           margin: unset;
         }
@@ -280,7 +297,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
   
     .${prefixCls}-upload-list {
-      ${layout ? `gap: ${marginGap}` : 'unset'};
+      ${layout ? `gap: ${marginGap} !important` : 'unset'};
       padding: 2px;
       overflow-y: auto;
       display: flex;
@@ -435,8 +452,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
   `);
 
   const uploadButton = cx("upload-button", css`
-    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
-    ${model.listType === 'thumbnail' ? { ...style } : { ...model.fontStyles }}
+    width: 100%;
+    justify-content: ${textAlign === 'center' || model.listType === 'thumbnail' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
   `);
 
   return {
@@ -449,6 +466,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     downloadedFile,
     downloadedIcon,
     antUploadDragIcon,
+    antUploadText,
+    antUploadHint,
     thumbnailReadOnly,
     fileName,
     fileNameWrapper,
