@@ -479,7 +479,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return (
       <div>
         {renderContent()}
-        {listType === 'thumbnail' && (
+        {listType === 'thumbnail' && !isDragger && (
           <div className={isDownloaded ? styles.downloadedFile : ''}>
             <FileNameDisplay file={file} className={styles.fileName} />
           </div>

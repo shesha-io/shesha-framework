@@ -108,7 +108,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       .ant-typography {
         width: ${width};
         display: ${model.hideFileName ? 'none' : 'flex'};
-        color: ${downloadedFileStyles.color ?? color} !important;
+        color: ${downloadedFileStyles?.color ?? color} !important;
         font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
         font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
         font-family: ${downloadedFileStyles?.fontFamily ?? fontFamily} !important;
