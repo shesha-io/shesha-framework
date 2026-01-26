@@ -29,7 +29,6 @@ export const useStyles = createStyles(({ css, cx }) => {
 
     `);
   const codeEditorContainer = cx("sha-code-editor-container", css`
-        height: 65vh;
         display: flex;
         flex-direction: column;
     `);
@@ -40,6 +39,7 @@ export const useStyles = createStyles(({ css, cx }) => {
             text-overflow: ellipsis;
             display: inline-flex;
             align-items: center;
+            justify-content: normal;
         `);
 
   return {
