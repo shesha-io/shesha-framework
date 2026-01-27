@@ -258,7 +258,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
     .ant-upload-list-text {
       overflow: hidden;
-      ${!hasFiles && 'display: none;'}
+      ${!hasFiles ? 'display: none;' : ''}
       >.ant-upload-list-item-container {
         > div {
           >.file-name-wrapper {
@@ -306,13 +306,20 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     .${prefixCls}-upload-drag {
-      ${hasFiles && 'border: unset !important;'}
+      ${hasFiles ? 'border: unset !important;' : ''}
       .${prefixCls}-upload-btn {
         padding: unset !important;
         width: 100% !important;
 
         .ant-upload-drag-icon {
          margin: 0 !important;
+        }
+      }
+
+      .item-file-name {
+        width: max-content !important;
+        .ant-typography {
+          width: max-content !important;
         }
       }
     }
