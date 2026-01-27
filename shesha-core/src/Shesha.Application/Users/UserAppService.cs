@@ -624,6 +624,7 @@ namespace Shesha.Users
 
         #endregion
 
+        [AbpAllowAnonymous]
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
             if (_abpSession.UserId == null)
@@ -647,6 +648,7 @@ namespace Shesha.Users
             _personRepository.GetAll().FirstOrDefault(x => x.User == user)?.AddHistoryEvent("Password changed", "Password changed");
 
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
+            user.RequireChangePassword = false;
             await CurrentUnitOfWork.SaveChangesAsync();
             return true;
         }
@@ -678,6 +680,7 @@ namespace Shesha.Users
                 person?.AddHistoryEvent("Password reset", "Password reset");
 
                 user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
+                user.RequireChangePassword = input.RequireChangePassword;
                 user.IsActive = true;
                 if (user.LockoutEndDateUtc.HasValue && user.LockoutEndDateUtc > DateTime.Now)
                     user.LockoutEndDateUtc = DateTime.Now;

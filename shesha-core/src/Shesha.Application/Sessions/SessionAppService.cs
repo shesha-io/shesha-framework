@@ -65,7 +65,8 @@ namespace Shesha.Sessions
                     MobileNumber = user.PhoneNumber,
                     GrantedPermissions = await GetGrantedPermissionsAsync(),
                     PersonId = person.Id,
-                    HomeUrl = homeUrl
+                    HomeUrl = homeUrl,
+                    RequireChangePassword = user.RequireChangePassword
                 };
             }
 

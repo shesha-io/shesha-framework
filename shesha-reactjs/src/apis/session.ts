@@ -23,6 +23,7 @@ export interface UserLoginInfoDto {
   homeUrl?: string | null;
   isSelfServiceUser?: boolean;
   grantedPermissions?: GrantedPermissionDto[] | null;
+  requireChangePassword?: boolean;
 }
 export interface ApplicationInfoDto {
   version?: string | null;
