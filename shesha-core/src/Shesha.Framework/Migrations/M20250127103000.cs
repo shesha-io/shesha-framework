@@ -2,6 +2,7 @@ using FluentMigrator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Shesha.FluentMigrator;
+using System;
 using System.Data;
 
 namespace Shesha.Migrations
@@ -79,9 +80,10 @@ namespace Shesha.Migrations
                             shouldUpdate = true;
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // If verification fails, skip the update
+                        // Log the failure so operators can see that the flag wasn't set
+                        Console.WriteLine($"WARNING: Failed to verify password for admin user (Id=1). RequireChangePassword flag will not be set. Error: {ex.Message}");
                     }
                 }
             }
