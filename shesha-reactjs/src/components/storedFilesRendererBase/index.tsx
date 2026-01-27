@@ -487,8 +487,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             <FileNameDisplay
               file={file}
               className={styles.fileName}
-              popoverContent={actions}
-              popoverClassName={styles.actionsPopover}
             />
           </div>
         )}
