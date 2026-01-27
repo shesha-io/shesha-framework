@@ -45,7 +45,7 @@ namespace Shesha.Migrations
             var tableName = useSqlServerSyntax ? "AbpUsers" : "\"AbpUsers\"";
 
             selectCommand.CommandText = $@"
-                SELECT {idColumn}, {userNameColumn}, {passwordColumn}
+                SELECT {userNameColumn}, {passwordColumn}
                 FROM {tableName}
                 WHERE {idColumn} = 1
                 AND {isDeletedCheck}
@@ -56,9 +56,8 @@ namespace Shesha.Migrations
 
             if (reader.Read())
             {
-                var userId = reader.GetInt64(0);
-                var userName = reader.IsDBNull(1) ? "" : reader.GetString(1);
-                var hashedPassword = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                var userName = reader.IsDBNull(0) ? "" : reader.GetString(0);
+                var hashedPassword = reader.IsDBNull(1) ? "" : reader.GetString(1);
 
                 if (!string.IsNullOrEmpty(hashedPassword))
                 {
