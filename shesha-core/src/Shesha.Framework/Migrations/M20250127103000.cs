@@ -86,8 +86,6 @@ namespace Shesha.Migrations
                     }
                 }
             }
-            reader.Close();
-
             // Update RequireChangePassword for admin user if password is still default
             if (shouldUpdate)
             {
