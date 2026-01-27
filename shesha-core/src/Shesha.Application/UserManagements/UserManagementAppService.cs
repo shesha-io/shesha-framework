@@ -106,6 +106,7 @@ namespace Shesha.UserManagements
                 input.LastName,
                 input.MobileNumber,
                 input.EmailAddress,
+                input.RequireChangePassword,
                 defaultMethods);
 
             // Creating Person entity

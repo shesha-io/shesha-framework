@@ -9,6 +9,7 @@ using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Web.Models.AbpUserConfiguration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
@@ -617,11 +618,12 @@ namespace Shesha.Users
 
         #endregion
 
+        [AbpAllowAnonymous]
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
             if (_abpSession.UserId == null)
             {
-                throw new UserFriendlyException("Please log in before attemping to change password.");
+                throw new UserFriendlyException("Please log in before attempting to change password.");
             }
             long userId = _abpSession.UserId.Value;
             var user = await _userManager.GetUserByIdAsync(userId);
@@ -640,6 +642,7 @@ namespace Shesha.Users
             (await _personRepository.FirstOrDefaultAsync(x => x.User == user))?.AddHistoryEvent("Password changed", "Password changed");
 
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
+            user.RequireChangePassword = false;
             await CurrentUnitOfWork.SaveChangesAsync();
             return true;
         }
@@ -671,6 +674,7 @@ namespace Shesha.Users
                 person?.AddHistoryEvent("Password reset", "Password reset");
 
                 user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
+                user.RequireChangePassword = input.RequireChangePassword;
                 user.IsActive = true;
                 if (user.LockoutEndDateUtc.HasValue && user.LockoutEndDateUtc > DateTime.Now)
                     user.LockoutEndDateUtc = DateTime.Now;

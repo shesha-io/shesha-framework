@@ -158,7 +158,7 @@ namespace Shesha.Domain
             if (string.IsNullOrWhiteSpace(emailAddress1))
                 return true;
 
-            var alreadyExist = await _repository.GetAll().Where(m => m.EmailAddress1 != null && m.EmailAddress1.ToLower() == emailAddress1.ToLower() && m.Id != person.Id).AnyAsync();
+            var alreadyExist = await _repository.AnyAsync(m => m.EmailAddress1 != null && m.EmailAddress1.ToLower() == emailAddress1.ToLower() && m.Id != person.Id);
             return !alreadyExist;
         }
         private async Task<bool> UniqueMobileNumber1Async(Person person, string? mobileNumber1, CancellationToken cancellationToken)
@@ -166,7 +166,7 @@ namespace Shesha.Domain
             if (string.IsNullOrWhiteSpace(mobileNumber1))
                 return true;
 
-            var alreadyExist = await _repository.GetAll().Where(m => m.MobileNumber1 != null && m.MobileNumber1.ToLower() == mobileNumber1.ToLower() && m.Id != person.Id).AnyAsync();
+            var alreadyExist = await _repository.AnyAsync(m => m.MobileNumber1 != null && m.MobileNumber1.ToLower() == mobileNumber1.ToLower() && m.Id != person.Id);
             return !alreadyExist;
         }
     }
