@@ -19,6 +19,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
 
 const FileUploadComponent: FileUploadComponentDefinition = {
@@ -118,13 +119,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
       .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
       .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
       .add<IFileUploadProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IFileUploadProps>(6, (prev) => ({
-        ...prev,
-        ...defaultStyles(),
-        desktop: { ...defaultStyles() },
-        mobile: { ...defaultStyles() },
-        tablet: { ...defaultStyles() },
-      })),
+      .add<IFileUploadProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };

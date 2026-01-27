@@ -4,6 +4,19 @@ export const useStyles = createStyles(({ css, cx }) => {
   const codeEditorModalBody = cx("sha-code-editor-modal-body", css`
         overflow: hidden;
         max-height: 70vh;
+        .ant-tabs {
+          height: 70vh;
+        .ant-tabs-content-holder {
+            height: 100%;
+          .ant-tabs-content {
+            height: 100%;
+            .ant-tabs-tabpane {
+              height: 100%;
+              overflow: auto;
+              }
+            }
+          }
+        }
     `);
   const codeEditorModal = cx("sha-code-editor-modal", css`
         max-height: 80vh;
@@ -13,9 +26,10 @@ export const useStyles = createStyles(({ css, cx }) => {
           background-color: inherit !important;
           z-index: 10;
         }
+
     `);
   const codeEditorContainer = cx("sha-code-editor-container", css`
-        height: 65vh;
+        height: 100%;
         display: flex;
         flex-direction: column;
     `);
@@ -26,6 +40,7 @@ export const useStyles = createStyles(({ css, cx }) => {
             text-overflow: ellipsis;
             display: inline-flex;
             align-items: center;
+            justify-content: normal;
         `);
 
   return {

@@ -758,6 +758,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       } catch (error) {
         this.log('LOG: failed to submit', error);
         this.dataSubmitState = { status: 'failed', error: error };
+        this.setValidationErrors(error);
         this.forceRootUpdate();
         throw error;
       }

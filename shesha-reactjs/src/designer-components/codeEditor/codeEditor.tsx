@@ -18,6 +18,7 @@ import { Show } from '@/components';
 import { useSourcesFolder } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import type { TabsProps } from 'antd';
 import { useStyles } from './styles';
+import classNames from 'classnames';
 
 type TabItem = TabsProps['items'][number];
 
@@ -148,7 +149,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     : (
       <>
         <Button
-          className={props.className}
+          className={classNames(props.className, styles.button)}
           size="small"
           onClick={openEditorDialog}
           style={hasValue ? { fontFamily: 'monospace', fontSize: '12px', width: '100%' } : { width: '100%' }}

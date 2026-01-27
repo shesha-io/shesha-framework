@@ -10,6 +10,10 @@ import { defaultStyles } from './utils';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { validationError } from '../utils';
+
+const outsideContextValidationError = validationError('Table Filter');
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.filter',
@@ -30,22 +34,25 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       ...model.allStyles.jsStyle,
     };
 
+    useComponentValidation(
+      () => !store ? outsideContextValidationError : undefined,
+      [store],
+    );
+
     if (model.hidden) return null;
 
-    if (!store) {
-      return (
-        <div className={styles.hintContainer}>
-          <div className={styles.disabledComponentWrapper}>
-            <div className={styles.filterButtonMockup}>
-              <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
-              Table Filter
-            </div>
+    return !store ? (
+      <div className={styles.hintContainer}>
+        <div className={styles.disabledComponentWrapper}>
+          <div className={styles.filterButtonMockup}>
+            <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
+            Table Filter
           </div>
         </div>
-      );
-    }
-
-    return <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />;
+      </div>
+    ) : (
+      <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />
+    );
   },
   initModel: (model) => {
     return {

@@ -45,7 +45,6 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
     const meta = apiBuilder.build();
 
     return Promise.resolve(meta);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [httpClient, props.plugins]);
 
   return contextMetadata;

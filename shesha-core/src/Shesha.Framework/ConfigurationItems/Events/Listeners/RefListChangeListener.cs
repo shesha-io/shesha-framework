@@ -9,7 +9,7 @@ namespace Shesha.ConfigurationItems.Events.Listeners
     /// Listener for <see cref="ReferenceList"/> changes
     /// Detects changes and adds them to the configuration changes collector (<see cref="IConfigurationChangesCollector"/>)
     /// </summary>
-    public class RefListChangeListener : IEventHandler<EntityChangingEventData<ReferenceList>>,
+    public class RefListChangeListener : 
         IEventHandler<EntityChangingEventData<ReferenceListItem>>,
         IEventHandler<EntityCreatingEventData<ReferenceListItem>>,
         IEventHandler<EntityDeletingEventData<ReferenceListItem>>,
@@ -20,11 +20,6 @@ namespace Shesha.ConfigurationItems.Events.Listeners
         public RefListChangeListener(IConfigurationChangesCollector configurationChangesCollector)
         {
             _configurationChangesCollector = configurationChangesCollector;
-        }
-
-        public void HandleEvent(EntityChangingEventData<ReferenceList> eventData)
-        {
-            _configurationChangesCollector.AddUpdate(eventData.Entity);
         }
 
         public void HandleEvent(EntityChangingEventData<ReferenceListItem> eventData)

@@ -83,6 +83,7 @@ export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInl
   selectionMode?: TableSelectionMode;
   freezeHeaders?: boolean;
   disableCustomFilters?: boolean;
+  columnsMismatch?: boolean;
   /**
    * @deprecated pass this on an `IndexTableProvider` level
    */

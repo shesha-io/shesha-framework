@@ -61,8 +61,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   boxShadow,
   sortableIndicatorColor,
   striped: _striped,
-  cellTextColor,
-  cellBackgroundColor,
   cellBorderColor,
   cellBorders,
   headerBorder,
@@ -70,6 +68,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerShadow,
   rowShadow,
   rowDividers,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
+  freezeHeaders,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -91,8 +94,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   boxShadow?: string;
   sortableIndicatorColor?: string;
   striped?: boolean;
-  cellTextColor?: string;
-  cellBackgroundColor?: string;
   cellBorderColor?: string;
   cellBorders?: boolean;
   cellPadding?: string;
@@ -101,6 +102,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerShadow?: IShadowValue;
   rowShadow?: IShadowValue;
   rowDividers?: boolean;
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
+  freezeHeaders?: boolean;
 }) => {
   const {
     shaTable,
@@ -184,13 +190,21 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
-      overflow: ${boxShadow ? 'visible' : 'auto'};
-      ${boxShadow ? `
+      /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
+      overflow: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
+      ${boxShadow && !freezeHeaders ? `
         /* Apply box shadow to container */
         box-shadow: ${boxShadow};
         /* Add margin to create space for shadow without affecting table width */
         margin: 8px;
         /* Remove margin from parent to compensate */
+        position: relative;
+      ` : ''}
+      ${boxShadow && freezeHeaders ? `
+        /* When both boxShadow and freezeHeaders are enabled, apply shadow differently */
+        /* to avoid breaking sticky positioning */
+        box-shadow: ${boxShadow};
+        margin: 8px;
         position: relative;
       ` : ''}
 
@@ -285,7 +299,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
-          ${rowHeight ? `height: ${rowHeight};` : 'height: 100%;'}
+          ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
           ${(() => {
             // Prefer rowBorderStyle over rowBorder for full border control
             if (rowBorderStyle) {
@@ -294,7 +308,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
                 .join(' ');
             }
-            // Fallback to simple border string
             return rowBorder ? `border: ${rowBorder};` : '';
           })()}
 
@@ -329,35 +342,20 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
             }
 
-            /* Apply alignment to body cell content divs */
-            .${td} > div {
-              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
-              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
-            }
-
-            /* Apply alignment to nested body cell content */
-            .${td} > div > div {
-              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
-              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
-            }
-
-            /* Apply text alignment to text elements inside body table cells */
-            .${td} span,
-            .${td} p,
-            .${td} div:not(.sha-action-button):not(.sha-link) {
-              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
-            }
-
-            /* Apply alignment to crud cells within body rows only */
-            .${shaCrudCell} {
-              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            /* Make dropdowns transparent to inherit row background by default */
+            /* Can be overridden by component-level appearance settings */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent;
+              background-color: transparent;
             }
           }
 
           .${td} {
             vertical-align: middle;
-            ${cellTextColor ? `color: ${cellTextColor};` : ''}
-            ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
           }
@@ -373,7 +371,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             min-height: 22px;
             height: 100%;
             justify-content: center;
-            align-items: center; 
+            align-items: center;
+            ${bodyFontFamily ? `font-family: ${bodyFontFamily};` : ''}
+            ${bodyFontSize ? `font-size: ${bodyFontSize};` : ''}
+            ${bodyFontWeight ? `font-weight: ${bodyFontWeight};` : ''}
+            ${bodyFontColor ? `color: ${bodyFontColor};` : ''}
 
             .sha-link {
               border: none;
@@ -382,9 +384,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: auto;
 
               .${iconPrefixCls} {
-                font-size: 16px;
-                width: 16px;
-                min-width: 16px;
+                font-size: ${bodyFontSize || '16px'};
+                width: ${bodyFontSize || '16px'};
+                height: ${bodyFontSize || '16px'};
+                min-width: ${bodyFontSize || '16px'};
+                min-height: ${bodyFontSize || '16px'};
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
               }
             }
             .sha-action-button {
@@ -394,9 +401,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               align-items: center;
 
               .${iconPrefixCls} {
-                font-size: 16px;
-                width: 16px;
-                min-width: 16px;
+                font-size: ${bodyFontSize || '16px'};
+                width: ${bodyFontSize || '16px'};
+                height: ${bodyFontSize || '16px'};
+                min-width: ${bodyFontSize || '16px'};
+                min-height: ${bodyFontSize || '16px'};
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
               }
             }
           }
@@ -430,6 +442,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           &.${trOdd} {
             ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
+
+            /* Make dropdowns transparent to inherit row background by default */
+            /* Can be overridden by component-level appearance settings */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent;
+              background-color: transparent;
+            }
           }
 
           &.${trSelected} {
@@ -445,13 +468,59 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
             .sha-form-cell{
               .ant-form-item-control-input-content, a, button {
-                  color: inherit;
+                  color: white;
               }
 
               .sha-stored-files-renderer, .ant-upload-list {
                   color: white;
               }
 
+            }
+
+            .sha-data-cell {
+              color: white;
+            }
+
+            /* Remove white background from dropdowns in selected rows */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent !important;
+              background-color: transparent !important;
+            }
+
+            /* Ensure all form component text is white in selected rows */
+            .ant-select-selection-item,
+            .ant-select-selection-placeholder,
+            .ant-input,
+            .ant-input-number-input,
+            .ant-picker-input > input,
+            .sha-data-cell input,
+            .sha-data-cell .ant-select-selection-search-input {
+              color: white !important;
+            }
+
+            /* Ensure autocomplete text is white */
+            .sha-autocomplete-raw-value,
+            .sha-entity-reference-display-name {
+              color: white !important;
+            }
+
+            /* Ensure readonly display components show white text */
+            .read-only-display-form-item,
+            .read-only-display-form-item div {
+              color: white !important;
+            }
+
+            /* Ensure sha-input components (textfield) show white text */
+            .sha-input {
+              color: white !important;
+
+              input {
+                color: white !important;
+              }
             }
           }
 
@@ -572,8 +641,26 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
 
+          /* Only apply minimum height when rowHeight is auto to prevent empty cell collapse */
+          ${!rowHeight || rowHeight === 'auto' ? `
+            height: 44px;
+            vertical-align: middle;
+            line-height: normal;
+
+            /* Force empty cells to maintain height */
+            &:empty::before {
+              content: '';
+              display: inline-block;
+            }
+          ` : ''}
+
           /* In this example we use an absolutely position resizer, so this is required. */
           position: relative;
+
+          /* Allow overflow for cells with forms to show validation messages */
+          &:has(.sha-form-cell) {
+            overflow: visible;
+          }
 
           .resizer {
             /* prevents from scrolling while dragging on touch devices */

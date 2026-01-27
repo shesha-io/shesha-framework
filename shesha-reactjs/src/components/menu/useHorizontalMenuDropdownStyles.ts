@@ -6,10 +6,11 @@ interface UseHorizontalMenuDropdownStylesProps {
   menuId?: string;
   colors?: ILayoutColor;
   fontStyles?: React.CSSProperties;
-  style?: React.CSSProperties;
+  itemStyle?: React.CSSProperties;
   styleOnHover?: React.CSSProperties;
   styleOnSelected?: React.CSSProperties;
   styleOnSubMenu?: React.CSSProperties;
+  menuItemStyle?: React.CSSProperties;
 }
 
 const BLACK_CLR = "#000000e0";
@@ -18,10 +19,11 @@ export const useHorizontalMenuDropdownStyles = ({
   menuId,
   colors,
   fontStyles,
-  style,
+  itemStyle,
   styleOnHover,
   styleOnSelected,
   styleOnSubMenu,
+  menuItemStyle,
 }: UseHorizontalMenuDropdownStylesProps): void => {
   useLayoutEffect(() => {
     if (!menuId) return undefined;
@@ -33,35 +35,39 @@ export const useHorizontalMenuDropdownStyles = ({
       existingStyle.remove();
     }
 
-    const customStyle = convertJsonToCss(style);
+    const customItemStyle = convertJsonToCss(itemStyle);
     const customStyleOnHover = convertJsonToCss(styleOnHover);
     const customStyleOnSelected = convertJsonToCss(styleOnSelected);
     const customStyleOnSubMenu = convertJsonToCss(styleOnSubMenu);
+    const customMenuItemStyle = convertJsonToCss(menuItemStyle);
 
     const styleElement = document.createElement('style');
     styleElement.id = styleId;
     styleElement.textContent = `
       /* Dropdown styles for horizontalMenu-${menuId} */
       .horizontal-menu-${menuId}-dropdown .ant-menu {
-        ${customStyleOnSubMenu || customStyle || `
-          background: ${colors?.itemBackground || 'transparent'} !important;
-        `}
-        border: none !important;
+        border: none;
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
+        min-width: 100px !important;
+        max-width: 400px !important;
+        width: auto !important;
+        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground} !important;` : ''}
+        ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item {
-        ${customStyle || `
-          color: ${colors?.itemColor || BLACK_CLR} !important;
-          background: ${colors?.itemBackground || 'transparent'} !important;
-        `}
-        border: none !important;
+        border: none;
         margin: 0 !important;
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
+        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR} !important;
+        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground} !important;` : ''}
+        ${customMenuItemStyle || ''}
+        ${customItemStyle || ''}
+        ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover {
@@ -72,22 +78,22 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item.ant-menu-item-selected {
-        ${customStyleOnSelected || `
-          color: ${colors?.selectedItemColor || BLACK_CLR} !important;
-          background: ${colors?.selectedItemBackground || 'transparent'} !important;
-        `}
+        color: ${colors?.selectedItemColor || BLACK_CLR} !important;
+        background: ${colors?.selectedItemBackground || 'transparent'} !important;
+        ${customStyleOnSelected || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title {
-        ${customStyleOnSubMenu || customStyle || `
-          color: ${colors?.itemColor || BLACK_CLR} !important;
-          background: ${colors?.itemBackground || 'transparent'} !important;
-        `}
-        border: none !important;
+        border: none;
         margin: 0 !important;
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
+        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR} !important;
+        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground} !important;` : ''}
+        ${customMenuItemStyle || ''}
+        ${customItemStyle || ''}
+        ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
@@ -98,10 +104,9 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu.ant-menu-submenu-selected .ant-menu-submenu-title {
-        ${customStyleOnSelected || `
-          color: ${colors?.selectedItemColor || BLACK_CLR} !important;
-          background: ${colors?.selectedItemBackground || 'transparent'} !important;
-        `}
+        color: ${colors?.selectedItemColor || BLACK_CLR} !important;
+        background: ${colors?.selectedItemBackground || 'transparent'} !important;
+        ${customStyleOnSelected || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item-active {
@@ -127,5 +132,5 @@ export const useHorizontalMenuDropdownStyles = ({
         styleElement.remove();
       }
     };
-  }, [menuId, colors, fontStyles, style, styleOnHover, styleOnSelected, styleOnSubMenu]);
+  }, [menuId, colors, fontStyles, itemStyle, styleOnHover, styleOnSelected, styleOnSubMenu, menuItemStyle]);
 };

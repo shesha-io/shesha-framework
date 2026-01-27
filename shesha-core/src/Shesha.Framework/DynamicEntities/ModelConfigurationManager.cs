@@ -488,7 +488,7 @@ namespace Shesha.DynamicEntities
             // remove unused nested properties
             if (input.DataType != DataTypes.Array)
                 input.ItemsType = null;
-            if (input.DataType != DataTypes.Array && !(input.DataType == DataTypes.Object && input.DataFormat == ObjectFormats.Interface))
+            if (input.DataType != DataTypes.Array && !(input.DataType == DataTypes.Object && input.DataFormat == ObjectFormats.Object))
                 input.Properties = new List<ModelPropertyDto>();
 
             if (input.ItemsType != null)

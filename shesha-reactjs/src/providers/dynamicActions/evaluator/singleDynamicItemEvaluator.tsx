@@ -44,7 +44,6 @@ export const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = (
       item.isResolved = true;
       onEvaluated(evaluatedItems);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [evaluatedItems, item.resolvedItems]);
 
   return null;

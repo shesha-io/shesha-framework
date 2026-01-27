@@ -63,6 +63,7 @@ export interface IStyleType {
   background?: IBackgroundValue;
   font?: IFontValue;
   shadow?: IShadowValue;
+  menuItemShadow?: IShadowValue;
   dimensions?: IDimensionsValue;
   size?: SizeType;
   style?: string;
@@ -71,7 +72,7 @@ export interface IStyleType {
   primaryBgColor?: ColorValueType;
   secondaryBgColor?: ColorValueType;
   secondaryTextColor?: ColorValueType;
-  overflow?: boolean;
+  overflow?: boolean | "dropdown" | "menu" | "scroll";
   hideScrollBar?: boolean;
 }
 
