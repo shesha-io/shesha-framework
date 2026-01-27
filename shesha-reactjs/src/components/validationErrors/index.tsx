@@ -7,7 +7,7 @@ import { useStyles } from './styles/styles';
 import axios, { AxiosResponse } from 'axios';
 import { ErrorIconPopover } from '@/components/componentErrors/errorIconPopover';
 import { IModelValidation } from '@/utils/errors';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IValidationErrorsProps extends AlertProps {
   error: string | IErrorInfo | IAjaxErrorResponse | AxiosResponse<IAjaxResponseBase> | Error | unknown;
@@ -150,7 +150,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
     return renderValidationErrors({ message: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: violations, ...rest });
   }
 
-  if (parsedError.details) {
+  if (!isNullOrWhiteSpace(parsedError.details) && parsedError.details !== parsedError.message) {
     return renderValidationErrors({ message: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: parsedError.details, ...rest });
   }
 
