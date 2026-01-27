@@ -89,14 +89,17 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
 
     const { gap = "12", height = "auto" } = model;
 
-    const colors: ILayoutColor = filterObjFromKeys(model, [
-      "selectedItemColor",
-      "selectedItemBackground",
-      "itemColor",
-      "itemBackground",
-      "hoverItemColor",
-      "hoverItemBackground",
-    ]);
+    const colors: ILayoutColor = {
+      ...filterObjFromKeys(model, [
+        "selectedItemColor",
+        "selectedItemBackground",
+        "itemColor",
+        "itemBackground",
+        "hoverItemColor",
+        "hoverItemBackground",
+      ]),
+      itemBackground: model?.itemBackground || 'white',
+    };
 
     if (model.hidden) return null;
 
