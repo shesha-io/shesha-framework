@@ -51,7 +51,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex: 1;
     min-width: 0;
     .ant-typography {
       display: ${model.hideFileName ? 'none' : 'block'};
@@ -66,7 +65,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      flex: 1;
       cursor: pointer;
       max-width: 100%;
       min-width: 0;
@@ -119,7 +117,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        flex: 1;
         cursor: pointer;
       }
     }
