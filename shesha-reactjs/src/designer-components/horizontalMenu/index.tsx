@@ -112,6 +112,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "subItemColor",
         "subItemBackground",
       ]),
+      itemBackground: model?.itemBackground || 'white',
     };
 
     const finalContainerStyle = useMemo(() => {
