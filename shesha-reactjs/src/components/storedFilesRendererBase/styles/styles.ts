@@ -269,13 +269,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     .${prefixCls}-upload-select {
       ${rest}
       border: unset;
-      ${`width: ${layout ? thumbnailWidth : '100%'} !important;`};
-      ${`height: ${layout ? thumbnailHeight : '100%'} !important;`};
+      width: ${layout ? thumbnailWidth : '100%'} !important;
+      height: ${layout ? thumbnailHeight : '100%'} !important;
       align-items: center;
 
       .ant-upload {
-        ${`width: ${layout ? thumbnailWidth : '100%'} !important;`};
-        ${`height: ${layout ? thumbnailHeight : '100%'} !important;`};
+        width: ${layout ? thumbnailWidth : '100%'} !important;
+        height: ${layout ? thumbnailHeight : '100%'} !important;
       }
 
       &.${prefixCls}-upload-btn {
