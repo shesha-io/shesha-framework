@@ -99,137 +99,154 @@ export const getSettings = (_data?: IWizardStepProps) =>
       defaultValue: false,
       validate: {},
     })
-    .addSectionSeparator({
-      id: '4d2ca388-22ef-4e24-924b-2c2e3a7e0161',
-      propertyName: 'nextButtonSeparatorVisibility',
-      parentId: 'root',
-      label: 'Next Button',
-    })
-    .addTextField({
-      id: '737ae9b8-61d2-4ecd-9891-feaaec244a3a',
-      propertyName: 'nextButtonText',
-      label: 'Text',
-      labelAlign: 'right',
-      parentId: 'root',
-    })
-    .addCodeEditor({
-      id: 'f39e604f-b2c9-4e6a-9101-fc12d32b7b3a',
-      propertyName: 'nextButtonCustomEnabled',
-      label: 'Custom Enabled',
-      description: 'Write the code that returns whether this button is enabled',
-      labelAlign: 'right',
-      parentId: 'root',
-      exposedVariables: [
-        {
-          id: '7651de1d-d1eb-490b-9349-46c55bca8322',
-          name: 'globalState',
-          description: 'The Global state',
-          type: 'object',
-        },
-        {
-          id: '65b0260e-a9a5-4c31-a0a1-beb76c2633c4',
-          name: 'data',
-          description: 'Selected form values',
-          type: 'object',
-        },
-      ],
-      wrapInTemplate: true,
-      templateSettings: {
-        functionName: 'getNextButtonCustomEnabled'
-      },
-      availableConstantsExpression: getStandardConstants,
-    })
-    .addConfigurableActionConfigurator({
-      id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
-      propertyName: 'beforeNextActionConfiguration',
-      label: 'Before Next action',
-      hidden: false,
-      validate: {},
-      settingsValidationErrors: [],
-    })
-    .addConfigurableActionConfigurator({
-      id: 'ac7c19c4-f75a-4ce0-b96a-1698b6bdb289',
-      propertyName: 'afterNextActionConfiguration',
-      label: 'After Next action',
-      hidden: false,
-      customVisibility: '',
-      validate: {},
-      settingsValidationErrors: [],
-    })
-    .addSectionSeparator({
-      id: '4beaa8dc-300f-4742-8e1f-d4cf76be942c',
-      propertyName: 'backButtonSeparatorVisibility',
-      parentId: 'root',
-      label: 'Back Button',
-    })
     .addCheckbox({
-      id: 'c3f15e0f-7c8a-4d8b-9f0e-5a3b8c9d1e2f',
-      propertyName: 'showBackButton',
-      label: 'Show Back Button',
-      description: 'Controls the visibility of the Back button. Note: The Back button is always hidden on the first step.',
+      id: '7146e31e-056d-1594-a7d3-898afe88f6c9',
+      propertyName: 'customActions',
+      label: 'Custom Actions',
       labelAlign: 'right',
       parentId: 'root',
-      hidden: false,
-      defaultValue: true,
+      defaultValue: false,
       validate: {},
     })
-    .addTextField({
-      id: 'ed059dec-4f1b-408b-8739-05f0242d662a',
-      propertyName: 'backButtonText',
-      label: 'Text',
-      labelAlign: 'right',
-      parentId: 'root',
-    })
-    .addCodeEditor({
-      id: 'fbc47133-caf4-45c7-bebf-ddc54159bfeb',
-      propertyName: 'backButtonCustomEnabled',
-      description: 'Write the code that returns whether this button is enabled',
-      label: 'Custom Enabled',
-      labelAlign: 'right',
-      parentId: 'root',
-      exposedVariables: [
-        {
-          id: '31e69153-4b96-4532-89e9-2ace8d400f37',
-          name: 'globalState',
-          description: 'The Global state',
-          type: 'object',
+    .addContainer({
+      id: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
+      propertyName: 'containerComponents',
+      direction: 'vertical',
+      hidden: { _code: 'return  getSettingValue(data?.customActions);', _mode: 'code', _value: false } as any,
+      parentId: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
+      components: new DesignerToolbarSettings()
+      .addSectionSeparator({
+        id: '4d2ca388-22ef-4e24-924b-2c2e3a7e0161',
+        propertyName: 'nextButtonSeparatorVisibility',
+        parentId: 'root',
+        label: 'Next Button',
+      })
+      .addTextField({
+        id: '737ae9b8-61d2-4ecd-9891-feaaec244a3a',
+        propertyName: 'nextButtonText',
+        label: 'Text',
+        labelAlign: 'right',
+        parentId: 'root',
+      })
+      .addCodeEditor({
+        id: 'f39e604f-b2c9-4e6a-9101-fc12d32b7b3a',
+        propertyName: 'nextButtonCustomEnabled',
+        label: 'Custom Enabled',
+        description: 'Write the code that returns whether this button is enabled',
+        labelAlign: 'right',
+        parentId: 'root',
+        exposedVariables: [
+          {
+            id: '7651de1d-d1eb-490b-9349-46c55bca8322',
+            name: 'globalState',
+            description: 'The Global state',
+            type: 'object',
+          },
+          {
+            id: '65b0260e-a9a5-4c31-a0a1-beb76c2633c4',
+            name: 'data',
+            description: 'Selected form values',
+            type: 'object',
+          },
+        ],
+        wrapInTemplate: true,
+        templateSettings: {
+          functionName: 'getNextButtonCustomEnabled'
         },
-        {
-          id: 'fa3e68a4-3f35-46e4-bfe1-2c77c7918fd5',
-          name: 'data',
-          description: 'Selected form values',
-          type: 'object',
+        availableConstantsExpression: getStandardConstants,
+      })
+      .addConfigurableActionConfigurator({
+        id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
+        propertyName: 'beforeNextActionConfiguration',
+        label: 'Before Next action',
+        hidden: false,
+        validate: {},
+        settingsValidationErrors: [],
+      })
+      .addConfigurableActionConfigurator({
+        id: 'ac7c19c4-f75a-4ce0-b96a-1698b6bdb289',
+        propertyName: 'afterNextActionConfiguration',
+        label: 'After Next action',
+        hidden: false,
+        customVisibility: '',
+        validate: {},
+        settingsValidationErrors: [],
+      })
+      .addSectionSeparator({
+        id: '4beaa8dc-300f-4742-8e1f-d4cf76be942c',
+        propertyName: 'backButtonSeparatorVisibility',
+        parentId: 'root',
+        label: 'Back Button',
+      })
+      .addCheckbox({
+        id: 'c3f15e0f-7c8a-4d8b-9f0e-5a3b8c9d1e2f',
+        propertyName: 'showBackButton',
+        label: 'Show Back Button',
+        description: 'Controls the visibility of the Back button. Note: The Back button is always hidden on the first step.',
+        labelAlign: 'right',
+        parentId: 'root',
+        hidden: false,
+        defaultValue: true,
+        validate: {},
+      })
+      .addTextField({
+        id: 'ed059dec-4f1b-408b-8739-05f0242d662a',
+        propertyName: 'backButtonText',
+        label: 'Text',
+        labelAlign: 'right',
+        parentId: 'root',
+      })
+      .addCodeEditor({
+        id: 'fbc47133-caf4-45c7-bebf-ddc54159bfeb',
+        propertyName: 'backButtonCustomEnabled',
+        description: 'Write the code that returns whether this button is enabled',
+        label: 'Custom Enabled',
+        labelAlign: 'right',
+        parentId: 'root',
+        exposedVariables: [
+          {
+            id: '31e69153-4b96-4532-89e9-2ace8d400f37',
+            name: 'globalState',
+            description: 'The Global state',
+            type: 'object',
+          },
+          {
+            id: 'fa3e68a4-3f35-46e4-bfe1-2c77c7918fd5',
+            name: 'data',
+            description: 'Selected form values',
+            type: 'object',
+          },
+        ],
+        wrapInTemplate: true,
+        templateSettings: {
+          functionName: 'getBackButtonCustomEnabled'
         },
-      ],
-      wrapInTemplate: true,
-      templateSettings: {
-        functionName: 'getBackButtonCustomEnabled'
-      },
-      availableConstantsExpression: getStandardConstants,
-    })
-    .addConfigurableActionConfigurator({
-      id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
-      propertyName: 'beforeBackActionConfiguration',
-      label: 'Before Back action',
-      hidden: false,
-      validate: {},
-      settingsValidationErrors: [],
-    })
-    .addConfigurableActionConfigurator({
-      id: '59bb6f37-55b9-496e-8eff-dc20f610baee',
-      propertyName: 'afterBackActionConfiguration',
-      label: 'After Back action',
-      hidden: false,
-      customVisibility: '',
-      validate: {},
-      settingsValidationErrors: [],
-    })
-    .addSectionSeparator({
-      id: 'b20d139e-0869-482a-8171-ffa1b09b4113',
-      propertyName: 'doneButtonSeparatorVisibility',
-      parentId: 'root',
-      label: 'Done Button',
-    })
+        availableConstantsExpression: getStandardConstants,
+      })
+      .addConfigurableActionConfigurator({
+        id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
+        propertyName: 'beforeBackActionConfiguration',
+        label: 'Before Back action',
+        hidden: false,
+        validate: {},
+        settingsValidationErrors: [],
+      })
+      .addConfigurableActionConfigurator({
+        id: '59bb6f37-55b9-496e-8eff-dc20f610baee',
+        propertyName: 'afterBackActionConfiguration',
+        label: 'After Back action',
+        hidden: false,
+        customVisibility: '',
+        validate: {},
+        settingsValidationErrors: [],
+      })
+      .addSectionSeparator({
+        id: 'b20d139e-0869-482a-8171-ffa1b09b4113',
+        propertyName: 'doneButtonSeparatorVisibility',
+        parentId: 'root',
+        label: 'Done Button',
+      })
+
     .addCheckbox({
       id: 'a8e9c6d4-2b3a-4f5e-8c7d-1a2b3c4d5e6f',
       propertyName: 'showDoneButton',
@@ -303,6 +320,8 @@ export const getSettings = (_data?: IWizardStepProps) =>
       label: 'Text',
       labelAlign: 'right',
       parentId: 'root',
+    })
+      .toJson()
     })
     .addCodeEditor({
       id: '4a2af13f-2f16-4b05-b66f-b0d236988e5e',

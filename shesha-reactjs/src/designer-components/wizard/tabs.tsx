@@ -78,7 +78,9 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                     <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                 </div>
 
-                <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
+                {
+                  currentStep?.customActions ? <ComponentsContainer containerId={`${currentStep?.id}-actions`}/> :
+                  <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
                     <div
                         className={classNames(styles.shaStepsButtonsContainer, {
                             split: splitButtons,
@@ -146,7 +148,8 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                             )}
                         </ConditionalWrap>
                     </div>
-                </ConditionalWrap>
+                  </ConditionalWrap>
+                }
             </div>
         </ParentProvider>
     );
