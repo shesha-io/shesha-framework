@@ -42,12 +42,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
   const fileName = cx("item-file-name", css`
     display: flex;
     gap: 8px;
-    font-size: ${fontSize ?? '14px'} !important;
-    font-weight: ${fontWeight ?? '400'} !important;
-    font-family: ${fontFamily ?? 'Segoe UI'} !important;
-    text-align: ${textAlign ?? 'left'} !important;
-    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'} !important;
-    color: ${color ?? token.colorPrimary} !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -104,7 +98,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
     .item-file-name {
       .ant-typography {
-        width: ${width};
         display: ${model.hideFileName ? 'none' : 'flex'};
         color: ${downloadedFileStyles?.color ?? color} !important;
         font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;

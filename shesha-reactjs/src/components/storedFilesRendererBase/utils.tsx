@@ -183,19 +183,34 @@ const formatFileSize = (bytes?: number): string => {
 };
 
 // Helper component to render file name with ellipsis and title
-export const FileNameDisplay: FC<{ file: UploadFile; className?: string }> = ({ file, className }) => {
+export const FileNameDisplay: FC<{
+  file: UploadFile;
+  className?: string;
+  popoverContent?: React.ReactNode;
+  popoverClassName?: string;
+}> = ({ file, className, popoverContent, popoverClassName }) => {
   const sizeStr = formatFileSize(file.size);
   const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
 
+  const textElement = (
+    <Text
+      ellipsis
+      title={title}
+      style={{ display: 'block' }}
+    >
+      {file.name}
+    </Text>
+  );
+
   return (
     <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
-      <Text
-        ellipsis
-        title={title}
-        style={{ display: 'block' }}
-      >
-        {file.name}
-      </Text>
+      {popoverContent ? (
+        <Popover content={popoverContent} trigger="hover" placement="top" classNames={{ root: popoverClassName }}>
+          {textElement}
+        </Popover>
+      ) : (
+        textElement
+      )}
     </div>
   );
 };
