@@ -176,7 +176,7 @@ const { Text } = Typography;
 
 // Helper function to format file size
 const formatFileSize = (bytes?: number): string => {
-  if (bytes === null) return '';
+  if (bytes === undefined) return '';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
