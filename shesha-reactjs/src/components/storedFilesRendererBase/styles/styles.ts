@@ -113,7 +113,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
         font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
         font-family: ${downloadedFileStyles?.fontFamily ?? fontFamily} !important;
         text-align: ${downloadedFileStyles?.textAlign ?? textAlign} !important;
-        ${downloadedFileStyles?.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles?.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;margin: 2px 0px;
+        ${downloadedFileStyles?.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles?.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;
+        margin: 2px 0px;
         position: relative;
         white-space: nowrap;
         overflow: hidden;
