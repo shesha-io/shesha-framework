@@ -62,7 +62,9 @@ namespace Shesha.Metadata
         private async Task<List<EntityModelDto>> GetAllModelsAsync()
         {
             return (await _entityModelProvider.GetModelsAsync())
-                .Where(x => !x.IsExposed && !x.FullClassName.StartsWith("Abp.")) // Remove ABP entities from Autocomplete
+                .Where(x => !x.IsExposed
+                    && x.ModuleIsEnabled // Use models from not disabled module only
+                    && !x.FullClassName.StartsWith("Abp.")) // Remove ABP entities from Autocomplete
                 .ToList();
         }
 

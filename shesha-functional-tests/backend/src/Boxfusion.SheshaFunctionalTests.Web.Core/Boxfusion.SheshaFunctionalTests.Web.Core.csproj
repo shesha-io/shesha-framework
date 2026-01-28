@@ -70,6 +70,7 @@
     <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
     <ProjectReference Include="..\Boxfusion.SheshaFunctionalTests.Common.Application\Boxfusion.SheshaFunctionalTests.Common.Application.csproj" />
     <ProjectReference Include="..\Module\Boxfusion.SheshaFunctionalTests.Common.Domain\Boxfusion.SheshaFunctionalTests.Common.Domain.csproj" />
+    <ProjectReference Include="..\Module\Boxfusion.SheshaFunctionalTests.DisabledModule\Boxfusion.SheshaFunctionalTest.DisabledModule\Boxfusion.SheshaFunctionalTest.DisabledModule.csproj" />
     <ProjectReference Include="..\Module\Boxfusion.SheshaFunctionalTests.ModuleA\Boxfusion.SheshaFunctionalTests.ModuleA.csproj" />
     <ProjectReference Include="..\Module\Boxfusion.SheshaFunctionalTests.ModuleB\Boxfusion.SheshaFunctionalTests.ModuleB.csproj" />
   </ItemGroup>

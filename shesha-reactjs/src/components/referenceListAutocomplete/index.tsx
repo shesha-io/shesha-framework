@@ -35,6 +35,14 @@ const moduleNotEmpty = {
     null,
   ],
 };
+const moduleNotDisable = {
+  "==": [
+    {
+      var: "module.isEnabled",
+    },
+    true,
+  ],
+};
 const notExposedFilter = {
   "!=": [
     {
@@ -54,7 +62,7 @@ const getFilter = (term: string): string => {
     }
     : undefined;
 
-  const allFilters = [moduleNotEmpty, notExposedFilter, termFilter].filter((f) => Boolean(f));
+  const allFilters = [moduleNotEmpty, notExposedFilter, moduleNotDisable, termFilter].filter((f) => Boolean(f));
   const filter = allFilters.length === 0
     ? undefined
     : allFilters.length === 1
