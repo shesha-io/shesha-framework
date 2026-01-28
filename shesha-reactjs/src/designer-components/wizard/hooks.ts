@@ -10,6 +10,16 @@ import { useFormExpression } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
+import {
+  IWizardNextActionArguments,
+  IWizardBackActionArguments,
+  IWizardDoneActionArguments,
+  IWizardCancelActionArguments,
+  wizardNextArgumentsForm,
+  wizardBackArgumentsForm,
+  wizardDoneArgumentsForm,
+  wizardCancelArgumentsForm,
+} from './configurable-actions/wizard-action-arguments';
 
 interface IWizardComponent {
   back: () => void;
@@ -226,13 +236,29 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   // #region configurable actions
   const actionDependencies = [actionOwnerName, actionsOwnerId, current];
 
-  useConfigurableAction(
+  useConfigurableAction<IWizardBackActionArguments>(
     {
       name: 'Back',
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
+      hasArguments: true,
+      argumentsFormMarkup: wizardBackArgumentsForm,
+      executer: (actionArgs) => {
+        // Apply action arguments to current step if provided
+        if (actionArgs && currentStep) {
+          if (actionArgs.backButtonText !== undefined) {
+            currentStep.backButtonText = actionArgs.backButtonText;
+          }
+          if (actionArgs.backButtonCustomEnabled !== undefined) {
+            currentStep.backButtonCustomEnabled = actionArgs.backButtonCustomEnabled;
+          }
+          if (actionArgs.beforeBackActionConfiguration) {
+            currentStep.beforeBackActionConfiguration = actionArgs.beforeBackActionConfiguration;
+          }
+          if (actionArgs.afterBackActionConfiguration) {
+            currentStep.afterBackActionConfiguration = actionArgs.afterBackActionConfiguration;
+          }
+        }
         back();
         return Promise.resolve();
       },
@@ -240,13 +266,29 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     actionDependencies
   );
 
-  useConfigurableAction(
+  useConfigurableAction<IWizardNextActionArguments>(
     {
       name: 'Next',
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
+      hasArguments: true,
+      argumentsFormMarkup: wizardNextArgumentsForm,
+      executer: (actionArgs) => {
+        // Apply action arguments to current step if provided
+        if (actionArgs && currentStep) {
+          if (actionArgs.nextButtonText !== undefined) {
+            currentStep.nextButtonText = actionArgs.nextButtonText;
+          }
+          if (actionArgs.nextButtonCustomEnabled !== undefined) {
+            currentStep.nextButtonCustomEnabled = actionArgs.nextButtonCustomEnabled;
+          }
+          if (actionArgs.beforeNextActionConfiguration) {
+            currentStep.beforeNextActionConfiguration = actionArgs.beforeNextActionConfiguration;
+          }
+          if (actionArgs.afterNextActionConfiguration) {
+            currentStep.afterNextActionConfiguration = actionArgs.afterNextActionConfiguration;
+          }
+        }
         next();
         return Promise.resolve();
       },
@@ -254,13 +296,29 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     actionDependencies
   );
 
-  useConfigurableAction(
+  useConfigurableAction<IWizardCancelActionArguments>(
     {
       name: 'Cancel',
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
+      hasArguments: true,
+      argumentsFormMarkup: wizardCancelArgumentsForm,
+      executer: (actionArgs) => {
+        // Apply action arguments to current step if provided
+        if (actionArgs && currentStep) {
+          if (actionArgs.cancelButtonText !== undefined) {
+            currentStep.cancelButtonText = actionArgs.cancelButtonText;
+          }
+          if (actionArgs.cancelButtonCustomEnabled !== undefined) {
+            currentStep.cancelButtonCustomEnabled = actionArgs.cancelButtonCustomEnabled;
+          }
+          if (actionArgs.beforeCancelActionConfiguration) {
+            currentStep.beforeCancelActionConfiguration = actionArgs.beforeCancelActionConfiguration;
+          }
+          if (actionArgs.afterCancelActionConfiguration) {
+            currentStep.afterCancelActionConfiguration = actionArgs.afterCancelActionConfiguration;
+          }
+        }
         cancel();
         return Promise.resolve();
       },
@@ -268,13 +326,29 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     actionDependencies
   );
 
-  useConfigurableAction(
+  useConfigurableAction<IWizardDoneActionArguments>(
     {
       name: 'Done',
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
+      hasArguments: true,
+      argumentsFormMarkup: wizardDoneArgumentsForm,
+      executer: (actionArgs) => {
+        // Apply action arguments to current step if provided
+        if (actionArgs && currentStep) {
+          if (actionArgs.doneButtonText !== undefined) {
+            currentStep.doneButtonText = actionArgs.doneButtonText;
+          }
+          if (actionArgs.doneButtonCustomEnabled !== undefined) {
+            currentStep.doneButtonCustomEnabled = actionArgs.doneButtonCustomEnabled;
+          }
+          if (actionArgs.beforeDoneActionConfiguration) {
+            currentStep.beforeDoneActionConfiguration = actionArgs.beforeDoneActionConfiguration;
+          }
+          if (actionArgs.afterDoneActionConfiguration) {
+            currentStep.afterDoneActionConfiguration = actionArgs.afterDoneActionConfiguration;
+          }
+        }
         done();
         return Promise.resolve();
       },

@@ -100,7 +100,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       validate: {},
     })
     .addCheckbox({
-      id: '7146e31e-056d-1594-a7d3-898afe88f6c9',
+      id: '7146e31e-056d-a7d3-898afe8-9u9u9j8f6c9',
       propertyName: 'customActions',
       label: 'Custom Actions',
       labelAlign: 'right',
@@ -112,8 +112,8 @@ export const getSettings = (_data?: IWizardStepProps) =>
       id: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
       propertyName: 'containerComponents',
       direction: 'vertical',
-      hidden: { _code: 'return  getSettingValue(data?.customActions);', _mode: 'code', _value: false } as any,
-      parentId: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
+      hidden: { _code: 'return getSettingValue(data?.customActions);', _mode: 'code', _value: false } as any,
+      parentId: 'root',
       components: new DesignerToolbarSettings()
       .addSectionSeparator({
         id: '4d2ca388-22ef-4e24-924b-2c2e3a7e0161',
@@ -321,8 +321,6 @@ export const getSettings = (_data?: IWizardStepProps) =>
       labelAlign: 'right',
       parentId: 'root',
     })
-      .toJson()
-    })
     .addCodeEditor({
       id: '4a2af13f-2f16-4b05-b66f-b0d236988e5e',
       propertyName: 'cancelButtonCustomEnabled',
@@ -367,6 +365,8 @@ export const getSettings = (_data?: IWizardStepProps) =>
       customVisibility: '',
       validate: {},
       settingsValidationErrors: [],
+    })
+      .toJson()
     })
     .addSectionSeparator({
       id: 'e576bbdf-8d92-4285-acae-dff5fcfb4e11',

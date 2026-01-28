@@ -1,0 +1,37 @@
+{
+    "components": [
+        {
+            "id": "D5133335-4349-459A-8E9E-4371C814CE1A",
+            "propertyName": "beforeDoneActionConfiguration",
+            "label": "Before Done action",
+            "hidden": false,
+            "validate": {},
+            "type": "configurableActionConfigurator",
+            "version": 1,
+            "parentId": "root"
+        },
+        {
+            "id": "D5133335-4349-459A-8E9E-4371C814C111",
+            "propertyName": "afterDoneActionConfiguration",
+            "label": "After Done action",
+            "hidden": false,
+            "validate": {},
+            "type": "configurableActionConfigurator",
+            "version": 1,
+            "parentId": "root"
+        }
+    ],
+    "formSettings": {
+        "access": null,
+        "permissions": null,
+        "version": 6,
+        "labelCol": {
+            "span": 5
+        },
+        "wrapperCol": {
+            "span": 19
+        },
+        "layout": "horizontal",
+        "colon": true
+    }
+}
