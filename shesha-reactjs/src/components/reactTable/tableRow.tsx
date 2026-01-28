@@ -86,6 +86,17 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const handleRowClick = (event: React.MouseEvent<HTMLDivElement>): void => {
     // Check if the click target is an editable element during inline editing
     const target = event.target as HTMLElement;
+
+    // Check if click is inside a portal (dropdown, picker, popover, etc.)
+    // These are rendered outside the row DOM but should still prevent row clicks
+    const isInPortal = target.closest('.ant-select-dropdown') ||
+      target.closest('.ant-picker-dropdown') ||
+      target.closest('.ant-dropdown') ||
+      target.closest('.ant-popover') ||
+      target.closest('.ant-modal') ||
+      target.closest('.ant-drawer') ||
+      target.closest('.ant-tooltip');
+
     const isEditableElement = target.tagName === 'INPUT' ||
       target.tagName === 'TEXTAREA' ||
       target.tagName === 'SELECT' ||
@@ -102,8 +113,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       target.closest('.sha-form-cell') ||
       target.closest('[contenteditable="true"]');
 
-    // Don't trigger row click when clicking on editable elements or in edit mode
-    if (isEditableElement || editMode === 'edit') {
+    // Don't trigger row click when clicking on editable elements, in portals, or in edit mode
+    if (isEditableElement || isInPortal || editMode === 'edit') {
       return;
     }
 
