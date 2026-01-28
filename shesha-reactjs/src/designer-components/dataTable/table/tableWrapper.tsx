@@ -9,6 +9,7 @@ import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
+import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import {
   SidebarContainer,
   DataTable,
@@ -149,6 +150,19 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     return props?.font?.align;
   }, [props?.font?.align]);
 
+  // Convert background object to CSS string
+  const effectiveBackground = useMemo(() => {
+    const bgStyles = getBackgroundStyle(props?.background, undefined);
+    // Combine all background properties into a single string
+    if (bgStyles.backgroundImage) {
+      return bgStyles.backgroundImage;
+    }
+    if (bgStyles.backgroundColor) {
+      return bgStyles.backgroundColor;
+    }
+    return undefined;
+  }, [props?.background]);
+
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
     fontWeight: props?.font?.weight,
@@ -164,7 +178,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     rowHoverBackgroundColor: props?.rowHoverBackgroundColor,
     rowSelectedBackgroundColor: props?.rowSelectedBackgroundColor,
     border: props?.border,
-    backgroundColor: props?.background?.color,
+    backgroundColor: effectiveBackground,
     headerFontFamily: effectiveHeaderFontFamily,
     headerFontSize: effectiveHeaderFontSize,
     headerFontWeight: effectiveHeaderFontWeight,
@@ -401,7 +415,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             border={props.border}
             striped={props.striped}
             hoverHighlight={props.hoverHighlight}
-            backgroundColor={props.background?.color}
+            backgroundColor={effectiveBackground}
             headerFont={props.headerFont}
             headerFontFamily={effectiveHeaderFontFamily}
             headerFontSize={effectiveHeaderFontSize}
