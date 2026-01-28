@@ -186,7 +186,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const shaReactTable = cx(
     'sha-react-table',
     css`
-      background: white;
+      ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
@@ -332,7 +332,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               }
               return rowBorder ? `border: ${rowBorder};` : '';
             })()}
-            ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
+            ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : 'background: transparent !important;'}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
@@ -440,7 +440,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trOdd} {
-            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
+            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : 'background: transparent !important;'}
 
             /* Make dropdowns transparent to inherit row background by default */
             /* Can be overridden by component-level appearance settings */
