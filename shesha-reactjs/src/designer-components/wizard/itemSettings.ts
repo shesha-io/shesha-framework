@@ -112,7 +112,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       id: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
       propertyName: 'containerComponents',
       direction: 'vertical',
-      hidden: { _code: 'return getSettingValue(data?.customActions);', _mode: 'code', _value: false } as any,
+      hidden: { _code: 'return getSettingValue(data?.customActions);', _mode: 'code', _value: false },
       parentId: 'root',
       components: new DesignerToolbarSettings()
       .addSectionSeparator({

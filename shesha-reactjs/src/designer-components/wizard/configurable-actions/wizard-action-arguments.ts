@@ -33,7 +33,7 @@ export interface IWizardCancelActionArguments {
   afterCancelActionConfiguration?: IConfigurableActionConfiguration;
 }
 
-export const wizardNextArgumentsForm = wizardNextArgumentsJson as any as FormMarkup;
-export const wizardBackArgumentsForm = wizardBackArgumentsJson as any as FormMarkup;
-export const wizardDoneArgumentsForm = wizardDoneArgumentsJson as any as FormMarkup;
-export const wizardCancelArgumentsForm = wizardCancelArgumentsJson as any as FormMarkup;
+export const wizardNextArgumentsForm = wizardNextArgumentsJson as FormMarkup;
+export const wizardBackArgumentsForm = wizardBackArgumentsJson as FormMarkup;
+export const wizardDoneArgumentsForm = wizardDoneArgumentsJson as FormMarkup;
+export const wizardCancelArgumentsForm = wizardCancelArgumentsJson as FormMarkup;
