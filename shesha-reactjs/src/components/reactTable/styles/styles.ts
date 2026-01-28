@@ -336,9 +336,85 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
-            /* Apply text alignment to body cells */
+            /* Apply text alignment and font styles to body cells */
             .${td} {
               ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize};` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight};` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor};` : ''}
+            }
+
+            /* Apply body font styles to custom component wrappers */
+            .sha-data-cell,
+            .sha-form-cell {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+
+            }
+
+            /* Apply body font styles to form component content */
+            .sha-form-cell .ant-form-item-control-input-content {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Override Ant Design component defaults with table body font styles */
+            .ant-select-selection-item,
+            .ant-select-selection-placeholder,
+            .ant-input,
+            .ant-input-number-input,
+            .ant-picker-input > input,
+            .sha-data-cell input,
+            .sha-data-cell .ant-select-selection-search-input {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to autocomplete and entity reference components */
+            .sha-autocomplete-raw-value,
+            .sha-entity-reference-display-name {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to readonly display components */
+            .read-only-display-form-item,
+            .read-only-display-form-item div {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to text field components */
+            .sha-input {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              input {
+                ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+                ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+                ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+                ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+                ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+
+              }
             }
 
             /* Make dropdowns transparent to inherit row background by default */
