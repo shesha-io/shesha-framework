@@ -89,13 +89,21 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     const isEditableElement = target.tagName === 'INPUT' ||
       target.tagName === 'TEXTAREA' ||
       target.tagName === 'SELECT' ||
+      target.tagName === 'BUTTON' ||
       target.closest('.ant-select') ||
       target.closest('.ant-picker') ||
       target.closest('.ant-input-number') ||
+      target.closest('.ant-checkbox') ||
+      target.closest('.ant-radio') ||
+      target.closest('.ant-switch') ||
+      target.closest('.ant-slider') ||
+      target.closest('.ant-rate') ||
+      target.closest('.ant-upload') ||
+      target.closest('.sha-form-cell') ||
       target.closest('[contenteditable="true"]');
 
-    // Don't trigger row click when clicking on editable elements
-    if (isEditableElement) {
+    // Don't trigger row click when clicking on editable elements or in edit mode
+    if (isEditableElement || editMode === 'edit') {
       return;
     }
 
