@@ -24,5 +24,6 @@ namespace Shesha.Sessions.Dto
         public string HomeUrl { get; set; }
         public bool IsSelfServiceUser { get; set; }
         public List<GrantedPermissionDto> GrantedPermissions { get; set; } = new List<GrantedPermissionDto>();
+        public bool RequireChangePassword { get; set; }
     }
 }

@@ -16,6 +16,7 @@ export interface AuthenticateResultModel {
   redirectUrl?: string;
   redirectModule?: string;
   redirectForm?: string;
+  requireChangePassword?: boolean;
 }
 
 export interface AuthenticateResultModelAjaxResponse extends IAjaxResponse<AuthenticateResultModel> {}
