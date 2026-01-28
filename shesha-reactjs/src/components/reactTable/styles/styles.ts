@@ -299,18 +299,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
-          ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
-          ${(() => {
-            // Prefer rowBorderStyle over rowBorder for full border control
-            if (rowBorderStyle) {
-              const borderStyles = getBorderStyle(rowBorderStyle, {});
-              return Object.entries(borderStyles)
-                .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
-                .join(' ');
-            }
-            return rowBorder ? `border: ${rowBorder};` : '';
-          })()}
-
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
             ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
@@ -333,6 +321,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trBody} {
+            ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
+            ${(() => {
+              // Prefer rowBorderStyle over rowBorder for full border control
+              if (rowBorderStyle) {
+                const borderStyles = getBorderStyle(rowBorderStyle, {});
+                return Object.entries(borderStyles)
+                  .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
+                  .join(' ');
+              }
+              return rowBorder ? `border: ${rowBorder};` : '';
+            })()}
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
@@ -631,15 +630,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
 
-        /* Single source of truth for cell padding - applies to both headers and data cells */
+        /* Common cell styles for both headers and body cells */
         .${th}, .${td} {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
-          /* Use effectivePadding from props (rowStylingBox or cellPadding) or default to 0.5rem */
-          ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
+          padding: 0.5rem; /* Default padding for all cells */
 
           /* Only apply minimum height when rowHeight is auto to prevent empty cell collapse */
           ${!rowHeight || rowHeight === 'auto' ? `
@@ -701,6 +699,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${boxShadowRight} {
             box-shadow: -5px 0 3px -2px #ccc;
           }
+        }
+
+        /* Table body cell-specific padding from rowPadding prop */
+        .${td} {
+          ${effectivePadding ? `padding: ${effectivePadding};` : ''}
         }
       }
     `,
