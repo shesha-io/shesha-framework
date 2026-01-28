@@ -222,7 +222,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
-        background-color: ${backgroundColor};
+        background: transparent;
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {
@@ -249,7 +249,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${tbody} {
           overflow-x: hidden;
-          ${backgroundColor ? `background-color: ${backgroundColor};` : ''}
+          background: transparent;
 
           > .${shaSortable}:not(.${shaDragging}) {
             .${tr}.${trBody}:hover {
