@@ -109,7 +109,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       target.closest('[contenteditable="true"]');
 
 
-      if (isEditableElement || isInPortal || editMode === 'edit') {
+    if (isEditableElement || isInPortal || editMode === 'edit') {
       return;
     }
 
