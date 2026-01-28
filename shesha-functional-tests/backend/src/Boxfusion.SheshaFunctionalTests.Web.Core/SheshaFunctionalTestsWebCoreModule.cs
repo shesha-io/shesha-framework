@@ -1,5 +1,6 @@
 using Abp.Modules;
 using Abp.Reflection.Extensions;
+using Boxfusion.SheshaFunctionalTest.DisabledModule;
 using Boxfusion.SheshaFunctionalTests.Common;
 using Boxfusion.SheshaFunctionalTests.Common.Authorization;
 using Boxfusion.SheshaFunctionalTests.ModuleA;
@@ -36,6 +37,7 @@ namespace Boxfusion.SheshaFunctionalTests
         typeof(SheshaFunctionalTestsCommonModule),
         typeof(SheshaElmahModule),
         typeof(SheshaFunctionalTestsCommonApplicationModule),
+        typeof(SheshaFunctionalTestsDisabledModule),
         typeof(SheshaFunctionalTestsModuleA),
         typeof(SheshaFunctionalTestsModuleB)
      )]
