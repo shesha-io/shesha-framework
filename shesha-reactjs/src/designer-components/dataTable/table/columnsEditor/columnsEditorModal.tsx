@@ -7,6 +7,7 @@ import { deepCopyViaJson } from '@/utils/object';
 import { useDataTableStore } from '@/providers/dataTable';
 import { useMetadata } from '@/providers/metadata';
 import { calculateDefaultColumns } from '../utils';
+import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
 
 export interface IColumnsEditorModal {
   readOnly: boolean;
@@ -21,6 +22,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
   const isSmall = useMedia('(max-width: 480px)');
   const dataTableStore = useDataTableStore(false); // Don't require - modal may not be in a DataTable context
   const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
+  const isEntitySource = dataTableStore?.getRepository?.()?.repositoryType === BackendRepositoryType;
 
   const [startedEmpty, setStartedEmpty] = useState(false);
   const [prevValue, setPrevValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
@@ -28,7 +30,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
 
   // Prepopulate with default columns when modal opens if items are empty and we're in a DataTable context
   useEffect(() => {
-    if (visible && dataTableStore && metadata?.metadata && (!value || value.length === 0)) {
+    if (visible && dataTableStore && isEntitySource && metadata?.metadata && (!value || value.length === 0)) {
       const loadDefaultColumns = async (): Promise<void> => {
         try {
           const defaultColumns = await calculateDefaultColumns(metadata.metadata);
@@ -45,7 +47,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
 
       loadDefaultColumns();
     }
-  }, [metadata?.metadata, visible, onChange]);
+  }, [metadata?.metadata, visible, onChange, isEntitySource]);
 
   const onOk = (): void => {
     onChange?.(deepCopyViaJson(localValue)); // make copy of localValue to re-render table

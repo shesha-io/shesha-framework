@@ -33,6 +33,7 @@ import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { StandaloneTable } from './standaloneTable';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
+import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
 
 type TableWrapperProps = ITableComponentProps & { columnsMismatch?: boolean };
 
@@ -251,30 +252,38 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     removeColumnFilter,
     tableFilter,
     contextValidation,
+    getRepository,
   } = useDataTableStore();
 
   const { totalRows } = useDataTable();
+  const repositoryType = getRepository?.()?.repositoryType;
+  const isEntitySource = repositoryType === BackendRepositoryType;
 
   requireColumns(); // our component requires columns loading. it's safe to call on each render
+
+  const shouldRegisterColumns = !isEntitySource ||
+    qualifyingColumns.length > 0 ||
+    normalizedConfiguredColumns.length === 0 ||
+    hasNonDataColumns;
 
   useDeepCompareEffect(() => {
     // Register columns if:
     // 1. At least one column matches metadata properties, OR
     // 2. There are no configured columns (empty state), OR
     // 3. There are non-data columns that don't need to match metadata
-    if (qualifyingColumns.length > 0 || normalizedConfiguredColumns.length === 0 || hasNonDataColumns)
+    if (shouldRegisterColumns)
       registerConfigurableColumns(id, permissibleColumns);
     // Note: registerConfigurableColumns is omitted from dependencies to avoid effect re-runs
     // when the actions object is recreated. The effect only needs to re-run when the actual
     // column configuration changes (qualifyingColumns, normalizedConfiguredColumns, etc.)
-  }, [qualifyingColumns.length, normalizedConfiguredColumns.length, hasNonDataColumns, id, permissibleColumns]);
+  }, [shouldRegisterColumns, id, permissibleColumns]);
 
   // Auto-configure columns when DataTable is dropped into a DataContext
   useEffect(() => {
     let cancelled = false;
 
     // Only attempt auto-config if we have empty configuredColumns and haven't tried yet
-    if (hasAutoConfiguredRef.current || !isDesignMode || !formDesigner) {
+    if (hasAutoConfiguredRef.current || !isDesignMode || !formDesigner || !isEntitySource) {
       return () => {
         cancelled = true;
       };
@@ -321,7 +330,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     return () => {
       cancelled = true;
     };
-  }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id]);
+  }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id, isEntitySource]);
 
   const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
