@@ -35,6 +35,7 @@ const ShaMenuDrawer: FC<IProps> = ({
   menuId,
 }) => {
   const backgroundColor = itemStyle?.backgroundColor || colors?.itemBackground || 'transparent';
+  const textAlign = typeof fontStyles?.textAlign === 'string' ? fontStyles.textAlign : undefined;
 
   return (
     <ShaMenuDrawerStyledWrapper
@@ -54,7 +55,7 @@ const ShaMenuDrawer: FC<IProps> = ({
           color: colors?.itemColor,
           fontFamily: fontStyles?.fontFamily,
           fontWeight: fontStyles?.fontWeight,
-          textAlign: fontStyles?.textAlign as any,
+          textAlign,
           borderBottom: 'none',
         },
       }}
@@ -81,7 +82,7 @@ const ShaMenuDrawer: FC<IProps> = ({
           color: colors?.itemColor,
           fontFamily: fontStyles?.fontFamily,
           fontWeight: fontStyles?.fontWeight,
-          textAlign: fontStyles?.textAlign as any,
+          textAlign,
           border: 'none',
         }}
       />

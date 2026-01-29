@@ -134,38 +134,14 @@ export const useHorizontalMenuDropdownStyles = ({
     const nestedStyleElement = document.createElement('style');
     nestedStyleElement.id = nestedStyleId;
     nestedStyleElement.textContent = `
-      /* Standardize all nested submenu popup widths */
-      .ant-menu-submenu-popup .ant-menu {
+      /* Standardize nested submenu popup widths for this menu */
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu {
         min-width: 200px !important;
         max-width: 400px !important;
         width: 200px !important;
       }
 
-      /* All leaf items (without children) in submenu popups at any nesting level */
-      .ant-menu-submenu-popup .ant-menu-item {
-        ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
-      }
-
-      .ant-menu-submenu-popup .ant-menu-item:hover {
-        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
-        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
-        ${customStyleOnHover || ''}
-      }
-
-      /* All submenu items (with children) in submenu popups at any nesting level */
-      .ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title {
-        ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
-      }
-
-      .ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {
-        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
-        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
-        ${customStyleOnHover || ''}
-      }
-
-      /* First level dropdown items */
+      /* Leaf items (without children) in submenu popups */
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item {
         ${customMenuItemStyle || ''}
         ${customItemStyle || ''}
@@ -177,7 +153,7 @@ export const useHorizontalMenuDropdownStyles = ({
         ${customStyleOnHover || ''}
       }
 
-      /* First level dropdown submenu titles */
+      /* Submenu items (with children) in submenu popups */
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title {
         ${customMenuItemStyle || ''}
         ${customItemStyle || ''}

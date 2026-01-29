@@ -37,17 +37,20 @@ export interface IBlockOverlayProps {
 const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, children, visible }) => {
   if (!visible) return null;
 
-  // Clone the children and add onClick handler to them
+  type ClickableProps = { onClick?: React.MouseEventHandler };
+
+  // Clone the children and compose onClick handlers
   const enhancedChildren = React.Children.map(children, (child) => {
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child, {
-        onClick: (e: React.MouseEvent) => {
-          e.stopPropagation();
-          if (onClick) onClick();
-        },
-      } as any);
-    }
-    return child;
+    if (!React.isValidElement<ClickableProps>(child)) return child;
+
+    const existingOnClick = child.props.onClick;
+    const mergedOnClick: React.MouseEventHandler = (e) => {
+      e.stopPropagation();
+      existingOnClick?.(e);
+      onClick?.();
+    };
+
+    return React.cloneElement(child, { onClick: mergedOnClick });
   });
 
   return (
