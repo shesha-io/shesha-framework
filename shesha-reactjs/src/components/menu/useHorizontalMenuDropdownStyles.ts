@@ -50,9 +50,9 @@ export const useHorizontalMenuDropdownStyles = ({
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
-        min-width: 100px !important;
+        min-width: 200px !important;
         max-width: 400px !important;
-        width: auto !important;
+        width: 200px !important;
         ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground} !important;` : ''}
         ${customStyleOnSubMenu || ''}
       }
@@ -63,18 +63,18 @@ export const useHorizontalMenuDropdownStyles = ({
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
-        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR} !important;
-        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground} !important;` : ''}
+        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR};
+        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground};` : ''}
         ${customMenuItemStyle || ''}
         ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
-      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover {
-        ${customStyleOnHover || `
-          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${colors?.hoverItemBackground || 'transparent'} !important;
-        `}
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover,
+      .horizontal-menu-${menuId}-dropdown .ant-menu-item:hover {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
+        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item.ant-menu-item-selected {
@@ -89,18 +89,17 @@ export const useHorizontalMenuDropdownStyles = ({
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
-        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR} !important;
-        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground} !important;` : ''}
+        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR};
+        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground};` : ''}
         ${customMenuItemStyle || ''}
         ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
-        ${customStyleOnHover || `
-          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${colors?.hoverItemBackground || 'transparent'} !important;
-        `}
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
+        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu.ant-menu-submenu-selected .ant-menu-submenu-title {
@@ -110,26 +109,97 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item-active {
-        ${customStyleOnHover || `
-          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${colors?.hoverItemBackground || 'transparent'} !important;
-        `}
+        ${customStyleOnHover || ''}
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor};` : ''}
+        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu-active .ant-menu-submenu-title {
-        ${customStyleOnHover || `
-          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${colors?.hoverItemBackground || 'transparent'} !important;
-        `}
+        ${customStyleOnHover || ''}
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor};` : ''}
+        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
       }
+
     `;
 
     document.head.appendChild(styleElement);
+
+    // Add global styles for nested submenu popups
+    const nestedStyleId = `horizontal-menu-nested-dropdown-styles-${menuId}`;
+    const existingNestedStyle = document.getElementById(nestedStyleId);
+    if (existingNestedStyle) {
+      existingNestedStyle.remove();
+    }
+
+    const nestedStyleElement = document.createElement('style');
+    nestedStyleElement.id = nestedStyleId;
+    nestedStyleElement.textContent = `
+      /* Standardize all nested submenu popup widths */
+      .ant-menu-submenu-popup .ant-menu {
+        min-width: 200px !important;
+        max-width: 400px !important;
+        width: 200px !important;
+      }
+
+      /* All leaf items (without children) in submenu popups at any nesting level */
+      .ant-menu-submenu-popup .ant-menu-item {
+        ${customMenuItemStyle || ''}
+        ${customItemStyle || ''}
+      }
+
+      .ant-menu-submenu-popup .ant-menu-item:hover {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
+        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
+      }
+
+      /* All submenu items (with children) in submenu popups at any nesting level */
+      .ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title {
+        ${customMenuItemStyle || ''}
+        ${customItemStyle || ''}
+      }
+
+      .ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
+        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
+      }
+
+      /* First level dropdown items */
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item {
+        ${customMenuItemStyle || ''}
+        ${customItemStyle || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item:hover {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
+        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
+      }
+
+      /* First level dropdown submenu titles */
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title {
+        ${customMenuItemStyle || ''}
+        ${customItemStyle || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
+        ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
+      }
+    `;
+
+    document.head.appendChild(nestedStyleElement);
 
     return () => {
       const styleElement = document.getElementById(styleId);
       if (styleElement) {
         styleElement.remove();
+      }
+      const nestedStyleElement = document.getElementById(nestedStyleId);
+      if (nestedStyleElement) {
+        nestedStyleElement.remove();
       }
     };
   }, [menuId, colors, fontStyles, itemStyle, styleOnHover, styleOnSelected, styleOnSubMenu, menuItemStyle]);

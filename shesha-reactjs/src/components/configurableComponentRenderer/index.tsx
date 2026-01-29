@@ -37,9 +37,22 @@ export interface IBlockOverlayProps {
 const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, children, visible }) => {
   if (!visible) return null;
 
+  // Clone the children and add onClick handler to them
+  const enhancedChildren = React.Children.map(children, (child) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, {
+        onClick: (e: React.MouseEvent) => {
+          e.stopPropagation();
+          if (onClick) onClick();
+        },
+      } as any);
+    }
+    return child;
+  });
+
   return (
-    <div onClick={onClick} className="sha-configurable-component-overlay">
-      {children}
+    <div className="sha-configurable-component-overlay">
+      {enhancedChildren}
     </div>
   );
 };

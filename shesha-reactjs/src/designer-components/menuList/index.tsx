@@ -99,6 +99,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "hoverItemBackground",
       ]),
       itemBackground: model?.itemBackground || 'white',
+      itemColor: model?.itemColor || allStyles?.fontStyles?.color,
     };
 
     if (model.hidden) return null;
@@ -110,15 +111,18 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         settingsEditor={{ render: Editor }}
       >
         {(componentState, BlockOverlay) => {
+          // Only use custom styles for items, not all computed styles
+          const finalItemStyle = model?.style ? getStyle(model.style, data) : undefined;
+
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`} style={allStyles.fullStyle}>
+            <div className={`sidebar ${componentState.wrapperClassName}`}>
               <BlockOverlay>
                 <RebaseEditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>
               <LayoutMenu
                 colors={colors}
                 padding={{ x: gap, y: height }}
-                style={getStyle(model?.style, data)}
+                itemStyle={finalItemStyle}
                 styleOnHover={getStyle(model?.styleOnHover, data)}
                 styleOnSelected={getStyle(model?.styleOnSelected, data)}
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
