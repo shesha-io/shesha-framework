@@ -4,7 +4,6 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Enums;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,6 +21,7 @@ namespace Shesha.Domain
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-entity-create")]
     [SnakeCaseNaming]
     [DiscriminatorValue(ItemTypeName)]
+    [Exposable(ItemTypeName)]
     public class EntityConfig : ConfigurationItem
     {
         public const string ItemTypeName = "entity";
