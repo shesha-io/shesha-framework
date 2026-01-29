@@ -507,7 +507,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     multiple,
     fileList,
     disabled,
-
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
       if (status === 'done') {
@@ -548,15 +547,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         message.error(`Image must smaller than ${maxFileLength}MB!`);
       }
       return isValidFileType && isAcceptableFileSize;
-    },
-    onDrop(e) {
-      if (!isDragger) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-
-      return true;
     },
     iconRender,
     itemRender: itemRenderFunction,
