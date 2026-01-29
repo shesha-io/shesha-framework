@@ -184,14 +184,14 @@ export interface IGetListDataPayload {
 }
 
 export interface ITableConfigResponse {
-  readonly columns?: any[];
-  readonly storedFilters?: any[];
+  readonly columns?: ITableColumn[];
+  readonly storedFilters?: IStoredFilter[];
 }
 
 export interface ITableFilter {
   readonly columnId: string;
   readonly filterOption: IndexColumnFilterOption;
-  readonly filter: any;
+  readonly filter: ColumnFilter;
 }
 
 export interface IQuickFilter {
