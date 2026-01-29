@@ -24,6 +24,7 @@ import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
+import { ConfigurableForm, useShaFormInstance } from '@/index';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -41,7 +42,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   contentStyle?: CSSProperties;
   layoutBackgroundStyle?: CSSProperties;
   footerStyle?: CSSProperties;
-  footer?: ReactNodeOrFunc;
+  footerFormId?: FormFullName;
   heading?: ReactNodeOrFunc;
   /**
    * @deprecated - if passed it will still be used, but the one from the ThemeProvider is the one being used
@@ -80,7 +81,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     style,
     contentStyle,
     layoutBackgroundStyle = {},
-    footer,
+    footerFormId,
     footerStyle,
     heading,
     fixHeading = false,
@@ -93,6 +94,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const { theme: themeFromStorage } = useTheme();
   const { styles } = useStyles();
   const sidebarDefaults = useSidebarMenuDefaults();
+  const { formMode } = useShaFormInstance();
 
   const { setGlobalVariables } = useSheshaApplication();
 
@@ -248,9 +250,9 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
           </NodeOrFuncRenderer>
         </Content>
 
-        {footer && (
+        {footerFormId && (
           <Footer style={footerStyle}>
-            <NodeOrFuncRenderer>{footer}</NodeOrFuncRenderer>
+            <ConfigurableForm mode={formMode} formId={footerFormId} />
           </Footer>
         )}
       </Layout>
