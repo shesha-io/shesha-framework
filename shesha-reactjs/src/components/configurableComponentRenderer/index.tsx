@@ -42,6 +42,7 @@ const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, chil
   // Clone the children and compose onClick handlers
   const enhancedChildren = React.Children.map(children, (child) => {
     if (!React.isValidElement<ClickableProps>(child)) return child;
+    if (child.type === React.Fragment) return child;
 
     const existingOnClick = child.props.onClick;
     const mergedOnClick: React.MouseEventHandler = (e) => {
