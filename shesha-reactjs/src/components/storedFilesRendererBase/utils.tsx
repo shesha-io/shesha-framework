@@ -186,9 +186,10 @@ const formatFileSize = (bytes?: number): string => {
 export const FileNameDisplay: FC<{
   file: UploadFile;
   className?: string;
+  icon?: JSX.Element;
   popoverContent?: React.ReactNode;
   popoverClassName?: string;
-}> = ({ file, className, popoverContent, popoverClassName }) => {
+}> = ({ file, icon, className, popoverContent, popoverClassName }) => {
   const sizeStr = formatFileSize(file.size);
   const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
 
@@ -196,9 +197,8 @@ export const FileNameDisplay: FC<{
     <Text
       ellipsis
       title={title}
-      style={{ display: 'block' }}
     >
-      {file.name}
+      {icon} {file.name}
     </Text>
   );
 
