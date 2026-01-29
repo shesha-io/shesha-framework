@@ -113,11 +113,11 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "subItemBackground",
       ]),
       itemBackground: model?.itemBackground || 'white',
+      itemColor: model?.itemColor || model?.font?.color,
     };
 
     const finalContainerStyle = useMemo(() => {
       const computedStyle = {
-        ...model.allStyles?.fullStyle,
         ...model.allStyles?.backgroundStyles,
         ...(model.containerStyle ? getStyle(model.containerStyle, data) : {}),
       };
@@ -129,6 +129,11 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
 
       return computedStyle;
     }, [model.allStyles, model.containerStyle, data]);
+
+    const finalItemStyle = useMemo(() => {
+      // Only use custom styles for items, not all computed styles
+      return model?.style ? getStyle(model.style, data) : undefined;
+    }, [model.style, data]);
 
     const finalFontStyles = useMemo(() => {
       return {
@@ -167,7 +172,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                   ...finalFontStyles,
                   width: width,
                 } as React.CSSProperties}
-                itemStyle={getStyle(model?.style, data)}
+                itemStyle={finalItemStyle}
                 styleOnHover={getStyle(model?.styleOnHover, data)}
                 styleOnSelected={getStyle(model?.styleOnSelected, data)}
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
