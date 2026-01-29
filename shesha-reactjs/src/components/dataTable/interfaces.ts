@@ -26,6 +26,8 @@ export type DataTableColumn<D extends object = object> = Column<D> & {
   metadata?: IPropertyMetadata;
   anchored?: IAnchoredDirection;
   cellStyleAccessor?: CellStyleFunc;
+  cellBackgroundColor?: string;
+  cellTextColor?: string;
 };
 
 export type IStyledColumn<D extends object = object> = DataTableColumn<D> & {

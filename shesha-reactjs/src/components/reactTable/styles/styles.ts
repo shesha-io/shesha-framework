@@ -452,6 +452,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${bodyFontWeight ? `font-weight: ${bodyFontWeight};` : ''}
             ${bodyFontColor ? `color: ${bodyFontColor};` : ''}
 
+            .anticon {
+              font-size: ${bodyFontSize || '16px'};
+            }
+
             .sha-link {
               border: none;
               padding: 0 5px;

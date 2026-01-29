@@ -88,6 +88,11 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
   );
 
   const componentModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
+    const cellBackgroundColor = columnConfig.cellBackgroundColor;
+    const columnStyle = cellBackgroundColor
+      ? `return { backgroundColor: "${cellBackgroundColor}" };`
+      : undefined;
+
     // migrate component
     let editorModel: IColumnEditorProps = {
       ...actualModel,
@@ -98,6 +103,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
       label: null,
       hideLabel: true,
       readOnly: actualModel.readOnly === undefined ? props.readOnly : actualModel.readOnly,
+      style: actualModel?.style || columnStyle,
     };
 
     const adapter = getEditorAdapter(component);

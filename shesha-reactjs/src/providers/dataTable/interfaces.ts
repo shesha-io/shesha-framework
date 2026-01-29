@@ -89,6 +89,10 @@ export interface ITableDataColumn extends ITableColumn, ITableDataFetchColumn, I
   entityTypeName?: string;
   entityTypeModule?: string;
   allowInherited?: boolean;
+  
+  // Table-level cell styling passed from table settings
+  cellBackgroundColor?: string;
+  cellTextColor?: string;
 }
 
 export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {

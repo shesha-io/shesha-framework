@@ -542,6 +542,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           resizable: !strictWidth,
           originalConfig: columnItem,
           cellStyleAccessor: cellStyleAccessor,
+          cellBackgroundColor: props.cellBackgroundColor,
+          cellTextColor: props.cellTextColor,
         };
         return removeUndefinedProperties(column) as DataTableColumn<any>;
       });
