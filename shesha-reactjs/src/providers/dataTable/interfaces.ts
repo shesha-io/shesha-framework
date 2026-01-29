@@ -61,18 +61,18 @@ export interface IAnchoredColumnProps {
   shift?: number;
   shadowPosition?: number;
 }
-export interface CellStyleFuncArgs {
+export interface CellStyleFuncArgs<R = unknown, V = unknown> {
   /**
    * Row values
    */
-  row: any;
+  row: R;
   /**
    * Cell value
    */
-  value: any;
+  value: V;
 }
-export type CellStyleFunc = (args: CellStyleFuncArgs) => CSSProperties;
-export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
+export type CellStyleFunc<R = unknown, V = unknown> = (args: CellStyleFuncArgs<R, V>) => CSSProperties;
+export type CellStyleAccessor<R = unknown, V = unknown> = CSSProperties | CellStyleFunc<R, V> | undefined;
 
 export interface ITableDataFetchColumn extends ITableColumn {
   propertiesToFetch?: string | string[];
