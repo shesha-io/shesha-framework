@@ -237,6 +237,22 @@ export const FileUpload: FC<IFileUploadProps> = ({
         message.error(`${info.file.name} upload failed`);
       }
     },
+    onDrop: (e) => {
+      // Prevent drag-and-drop upload when isDragger is false
+      if (!isDragger) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    },
+    onDragOver: (e) => {
+      // Prevent drag cursor on non-dragger uploads
+      if (!isDragger) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    },
     itemRender: (_originNode, file) => renderFileItem(file),
   };
 

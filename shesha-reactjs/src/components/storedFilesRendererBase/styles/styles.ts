@@ -45,7 +45,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0;
+    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'} !important;
+    flex: 1 !important;
     .ant-typography {
       display: ${model.hideFileName ? 'none' : 'block'};
       color: ${color ?? token.colorPrimary} !important;
@@ -53,7 +54,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       font-weight: ${fontWeight ?? '400'} !important;
       font-family: ${fontFamily ?? 'Segoe UI'} !important;
       text-align: ${textAlign ?? 'left'} !important;
-      justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'} !important;
       margin: 2px 0px;
       position: relative;
       white-space: nowrap;
@@ -97,14 +97,14 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     .item-file-name {
+      ${downloadedFileStyles?.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles?.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;
       .ant-typography {
-        display: ${model.hideFileName ? 'none' : 'flex'};
+        display: ${model.hideFileName ? 'none' : 'block'};
         color: ${downloadedFileStyles?.color ?? color} !important;
         font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
         font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
         font-family: ${downloadedFileStyles?.fontFamily ?? fontFamily} !important;
         text-align: ${downloadedFileStyles?.textAlign ?? textAlign} !important;
-        ${downloadedFileStyles?.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles?.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;
         margin: 2px 0px;
         position: relative;
         white-space: nowrap;
@@ -200,7 +200,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       display: flex;
       padding: 0 !important;
       border: unset !important; 
-      width: 100%;
+      width: ${layout ? width : '100%'};
       :before {
         ${rest}
         display: none;
@@ -243,7 +243,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     .ant-upload-list-item-name {
-      ${layout ? 'display: none !important' : ''};
+      ${layout || model.hideFileName ? 'display: none !important' : ''};
     }
 
     .ant-upload-list-text {
@@ -487,6 +487,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
   const uploadButton = cx("upload-button", css`
     width: 100%;
+    padding: 0px !important;
     justify-content: ${textAlign === 'center' || model.listType === 'thumbnail' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
   `);
 

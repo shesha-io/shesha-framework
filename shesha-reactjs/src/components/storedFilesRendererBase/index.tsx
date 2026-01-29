@@ -127,6 +127,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   gap,
+  hideFileName,
   enableStyleOnReadonly = true,
   downloadedFileStyles,
   styleDownloadedFiles = false,
@@ -202,7 +203,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     model: {
       gap: addPx(gap),
       layout: listType === 'thumbnail' && !isDragger,
-      hideFileName: rest.hideFileName && listType === 'thumbnail',
+      hideFileName: hideFileName && listType === 'thumbnail',
       isDragger,
       isStub,
       downloadZip,
@@ -310,7 +311,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return (
           <>
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-            <p className="ant-upload-list-item-name">{file.name}</p>
+            {!hideFileName && <p className="ant-upload-list-item-name">{file.name}</p>}
           </>
         );
       }
@@ -443,9 +444,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return (
           <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
             <div className={styles.fileName}>
-              {iconRender(file)}
               <FileNameDisplay
                 file={file}
+                icon={iconRender(file)}
                 className={styles.fileName}
                 popoverContent={actions}
                 popoverClassName={styles.actionsPopover}
@@ -482,7 +483,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return (
       <div>
         {renderContent()}
-        {listType === 'thumbnail' && !isDragger && (
+        {listType === 'thumbnail' && !isDragger && !hideFileName && (
           <div className={isDownloaded ? styles.downloadedFile : ''}>
             <FileNameDisplay
               file={file}
@@ -506,6 +507,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     multiple,
     fileList,
     disabled,
+
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
       if (status === 'done') {
@@ -547,6 +549,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
       return isValidFileType && isAcceptableFileSize;
     },
+    onDrop(e) {
+      if (!isDragger) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+
+      return true;
+    },
     iconRender,
     itemRender: itemRenderFunction,
     showUploadList: isDragger && !disabled ? false : {
@@ -564,9 +575,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           icon={<UploadOutlined />}
           disabled={disabled}
           {...uploadBtnProps}
+          onDrop={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }}
           className={classNames(styles.uploadButton, uploadBtnProps?.className)}
         >
-          {isDragger ? "Click or drag file to upload" : listType === 'text' && '(press to upload)'}
+          {isDragger ? "(Click or drag file to upload)" : listType === 'text' && '(press to upload)'}
         </Button>
       )
     );
@@ -590,12 +606,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                     disabled={disabled}
                     {...uploadBtnProps}
                     className={classNames(styles.uploadButton, uploadBtnProps?.className)}
-                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle, border: 'unset' } : { ...model?.allStyles?.fontStyles }}
+                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model?.allStyles?.fontStyles }}
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
                   <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
-                    {listType !== 'text' && !rest.hideFileName && (
+                    {listType !== 'text' && !hideFileName && (
                       <div className={styles.fileName}>
                         file name
                       </div>
@@ -612,23 +628,23 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             )
             : (props.disabled && fileList.length === 0
               ? null
-              : props.disabled && !isDragger
+              : props.disabled
                 ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
                 : isDragger
                   ? (
                     <Dragger {...props} openFileDialogOnClick={true}>
                       {fileList.length === 0 ? (
                         <DraggerStub styles={styles} />
-                      ) : !disabled ? (
+                      ) : (
                         <div>
+                          {renderUploadContent()}
                           {fileList.map((file) => (
                             <div key={file.uid}>
                               {itemRenderFunction(<></>, file)}
                             </div>
                           ))}
-                          {renderUploadContent()}
                         </div>
-                      ) : null}
+                      )}
                     </Dragger>
                   )
                   : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
