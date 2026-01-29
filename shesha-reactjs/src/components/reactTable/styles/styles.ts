@@ -186,7 +186,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const shaReactTable = cx(
     'sha-react-table',
     css`
-      background: white;
+      ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
@@ -222,7 +222,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
-        background-color: ${backgroundColor};
+        background: transparent;
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {
@@ -249,7 +249,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${tbody} {
           overflow-x: hidden;
-          ${backgroundColor ? `background-color: ${backgroundColor};` : ''}
+          background: transparent;
 
           > .${shaSortable}:not(.${shaDragging}) {
             .${tr}.${trBody}:hover {
@@ -299,18 +299,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
-          ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
-          ${(() => {
-            // Prefer rowBorderStyle over rowBorder for full border control
-            if (rowBorderStyle) {
-              const borderStyles = getBorderStyle(rowBorderStyle, {});
-              return Object.entries(borderStyles)
-                .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
-                .join(' ');
-            }
-            return rowBorder ? `border: ${rowBorder};` : '';
-          })()}
-
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
             ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
@@ -333,13 +321,100 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trBody} {
-            ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
+            ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
+            ${(() => {
+              // Prefer rowBorderStyle over rowBorder for full border control
+              if (rowBorderStyle) {
+                const borderStyles = getBorderStyle(rowBorderStyle, {});
+                return Object.entries(borderStyles)
+                  .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
+                  .join(' ');
+              }
+              return rowBorder ? `border: ${rowBorder};` : '';
+            })()}
+            ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : 'background: transparent !important;'}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
-            /* Apply text alignment to body cells */
+            /* Apply text alignment and font styles to body cells */
             .${td} {
               ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize};` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight};` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor};` : ''}
+            }
+
+            /* Apply body font styles to custom component wrappers */
+            .sha-data-cell,
+            .sha-form-cell {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+
+            }
+
+            /* Apply body font styles to form component content */
+            .sha-form-cell .ant-form-item-control-input-content {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Override Ant Design component defaults with table body font styles */
+            .ant-select-selection-item,
+            .ant-select-selection-placeholder,
+            .ant-input,
+            .ant-input-number-input,
+            .ant-picker-input > input,
+            .sha-data-cell input,
+            .sha-data-cell .ant-select-selection-search-input {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to autocomplete and entity reference components */
+            .sha-autocomplete-raw-value,
+            .sha-entity-reference-display-name {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to readonly display components */
+            .read-only-display-form-item,
+            .read-only-display-form-item div {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to text field components */
+            .sha-input {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              input {
+                ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+                ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+                ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+                ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+                ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+
+              }
             }
 
             /* Make dropdowns transparent to inherit row background by default */
@@ -441,7 +516,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trOdd} {
-            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
+            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : 'background: transparent !important;'}
 
             /* Make dropdowns transparent to inherit row background by default */
             /* Can be overridden by component-level appearance settings */
@@ -631,15 +706,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
 
-        /* Single source of truth for cell padding - applies to both headers and data cells */
+        /* Common cell styles for both headers and body cells */
         .${th}, .${td} {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
-          /* Use effectivePadding from props (rowStylingBox or cellPadding) or default to 0.5rem */
-          ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
+          padding: 0.5rem; /* Default padding for all cells */
 
           /* Only apply minimum height when rowHeight is auto to prevent empty cell collapse */
           ${!rowHeight || rowHeight === 'auto' ? `
@@ -701,6 +775,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${boxShadowRight} {
             box-shadow: -5px 0 3px -2px #ccc;
           }
+        }
+
+        /* Table body cell-specific padding from rowPadding prop */
+        .${td} {
+          ${effectivePadding ? `padding: ${effectivePadding};` : ''}
         }
       }
     `,
