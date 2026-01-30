@@ -112,7 +112,7 @@ namespace Shesha.Bootstrappers
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"An error occured during bootstrapping of the referenceList {list.Attribute.FullName}", e);
+                    throw new Exception($"An error occurred during bootstrapping of the referenceList {list.Attribute.FullName}", e);
                 }
             }
 

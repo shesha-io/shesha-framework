@@ -1,4 +1,15 @@
-﻿using System;
+﻿using Abp.Application.Services;
+using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
+using Abp.Runtime.Validation;
+using Hangfire;
+using Microsoft.AspNetCore.Mvc;
+using Shesha.Domain;
+using Shesha.Exceptions;
+using Shesha.Import.Dto;
+using Shesha.Services;
+using Shesha.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -6,24 +17,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using Abp.Application.Services;
-using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
-using Abp.Runtime.Validation;
-using Hangfire;
-using Microsoft.AspNetCore.Mvc;
-using Shesha.Domain;
-using Shesha.Domain.Enums;
-using Shesha.Exceptions;
-using Shesha.Import.Dto;
-using Shesha.Services;
-using Shesha.Utilities;
 
 namespace Shesha.Import
 {
     public abstract class ImportApplicationService<TImport, TResult> : ApplicationService
         where TResult : ImportResult, new()
-        where TImport : IImport<TResult>
+        where TImport : IAsyncImport<TResult>
     {
         protected IStoredFileService _fileService;
         protected IRepository<TResult, Guid> _importResultsRepository;
@@ -100,7 +99,7 @@ namespace Shesha.Import
 
             try
             {
-                BackgroundJob.Enqueue<TImport>(i => i.Import(importResultId, CancellationToken.None));
+                BackgroundJob.Enqueue<TImport>(i => i.ImportAsync(importResultId, CancellationToken.None));
 
                 result.IsSuccess = true;
             }

@@ -26,7 +26,7 @@ namespace Shesha.Import
     /// <summary>
     /// Base class of the import process
     /// </summary>
-    public abstract class ImportServiceBase<T>: IImport<T> where T : ImportResult
+    public abstract class ImportServiceBase<T> : IAsyncImport<T> where T : ImportResult
     {
         private readonly IIocResolver _iocResolver;
         protected IStoredFileService _fileService;
@@ -52,10 +52,23 @@ namespace Shesha.Import
             SheshaSettings = sheshaSettings;
            
             ObjectMapper = NullObjectMapper.Instance;
+        }
+
+        private void EnsureLoggerInitialized()
+        {
+            if (_logger != null)
+                return;
 
             _loggerName = this.GetType().Name;
             _logGroupName = this.GetType().Name;
             _logger = CreateLogger(_loggerName);
+        }
+
+        public void SetExternalLogger(ILog logger, string logGroupName) 
+        {
+            _logger = logger;
+            _logGroupName = logGroupName;
+            _loggerName = _logger.Logger.Name;
         }
 
         private ILog CreateLogger(string loggerName)
@@ -178,17 +191,17 @@ namespace Shesha.Import
         /// </summary>
         /// <param name="id"></param>
         /// <param name="updateAction"></param>
-        protected void UpdateImportResult(Guid id, Action<T> updateAction)
+        protected async Task UpdateImportResultAsync(Guid id, Func<T, Task> updateAction)
         {
             using (var uow = _unitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                var result = ImportResultsRepository.Get(id);
+                var result = await ImportResultsRepository.GetAsync(id);
                 
-                updateAction.Invoke(result);
+                await updateAction.Invoke(result);
 
-                ImportResultsRepository.InsertOrUpdate(result);
+                await ImportResultsRepository.InsertOrUpdateAsync(result);
 
-                uow.Complete();
+                await uow.CompleteAsync();
             }
         }
 
@@ -201,15 +214,18 @@ namespace Shesha.Import
             result.LogFilePath = Path.Combine(appDataPath, "ImportLogs", $"{date:yyyyMMdd-hh.mm.ss}_{result.ImportedFile.FileName}.log");
         }
 
-        public void Import(Guid importResultId, CancellationToken cancellationToken)
+        public async Task ImportAsync(Guid importResultId, CancellationToken cancellationToken)
         {
+            EnsureLoggerInitialized();
+
             var logFileName = Path.GetTempFileName();
 
-            UpdateImportResult(importResultId, result =>
+            await UpdateImportResultAsync(importResultId, result =>
             {
                 result.StartedOn = result.StartedOn ?? DateTime.Now;
                 GenerateLogFileName(result, result.StartedOn.Value);
                 logFileName = result.LogFilePath;
+                return Task.CompletedTask;
             });
 
             ConfigureAppenders(logFileName);
@@ -219,17 +235,18 @@ namespace Shesha.Import
                 {
                     using (var uow = _unitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
                     {
-                        var importResult = ImportResultsRepository.Get(importResultId);
-                        DoImport(importResult, cancellationToken, _logger);
+                        var importResult = await ImportResultsRepository.GetAsync(importResultId);
+                        await DoImportAsync(importResult, cancellationToken, _logger);
                         
-                        uow.Complete();
+                        await uow.CompleteAsync();
                     }
                 }
                 catch (Exception e)
                 {
-                    UpdateImportResult(importResultId, result =>
+                    await UpdateImportResultAsync(importResultId, result =>
                     {
                         result.ErrorMessage = e.Message;
+                        return Task.CompletedTask;
                     });
                     
                     if (e is OperationCanceledException)
@@ -249,6 +266,7 @@ namespace Shesha.Import
 
         public async Task ImportAsync(string fileName, Stream stream, CancellationToken cancellationToken, Action<T> prepareResultAction)
         {
+            EnsureLoggerInitialized();
             try
             {
                 Guid importResultId = Guid.Empty;
@@ -272,7 +290,7 @@ namespace Shesha.Import
                     importResultId = importResult.Id;
                 }
 
-                Import(importResultId, cancellationToken);
+                await ImportAsync(importResultId, cancellationToken);
             }
             catch (Exception e)
             {
@@ -287,6 +305,6 @@ namespace Shesha.Import
         /// <param name="importResult">Detailed results of the import including error message</param>
         /// <param name="cancellationToken"></param>
         /// <param name="logger">Logger to log all messages</param>
-        protected abstract void DoImport(T importResult, CancellationToken cancellationToken, ILog logger);
+        protected abstract Task DoImportAsync(T importResult, CancellationToken cancellationToken, ILog logger);        
     }
 }

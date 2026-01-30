@@ -149,7 +149,7 @@ namespace Shesha.StoredFiles
                 ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified");
 
             if (!ModelState.IsValid)
-                throw new AbpValidationException("An error occured");//, ModelState.Keys.Select(k => new ValidationResult(ModelState.Values[k], new List<string>() { k })));
+                throw new AbpValidationException("An error occurred");//, ModelState.Keys.Select(k => new ValidationResult(ModelState.Values[k], new List<string>() { k })));
 
             object owner = null;
 
@@ -270,7 +270,7 @@ namespace Shesha.StoredFiles
                 ModelState.AddModelError(nameof(input.File), $"{nameof(input.File)} must not be null");
 
             if (!ModelState.IsValid)
-                throw new AbpValidationException("An error occured");//, ModelState.Keys.Select(k => new ValidationResult(ModelState.Values[k], new List<string>() { k })));
+                throw new AbpValidationException("An error occurred");//, ModelState.Keys.Select(k => new ValidationResult(ModelState.Values[k], new List<string>() { k })));
 
             var uploadedFile = new StoredFileDto();
             var fileName = input.File.FileName.CleanupFileName();
@@ -355,7 +355,7 @@ namespace Shesha.StoredFiles
                 ModelState.AddModelError(nameof(input.File), $"{nameof(input.File)} must not be null");
 
             if (!ModelState.IsValid)
-                throw new AbpValidationException("An error occured", GetValidationResults(ModelState));
+                throw new AbpValidationException("An error occurred", GetValidationResults(ModelState));
 
             var uploadedFile = new StoredFileDto();
             var fileName = input.File.FileName.CleanupFileName();

@@ -41,6 +41,8 @@ import Rate from '@/designer-components/rate';
 import ReferenceListAutocompleteComponent from '@/designer-components/referenceListAutocomplete';
 import RichTextEditor from '@/designer-components/richTextEditor';
 import ScheduledJobExecutionLog from '@/designer-components/scheduledJobExecutionLog/scheduledJobExecutionLog';
+import ProcessMonitor from '@/designer-components/processMonitor/processMonitorComponent';
+import LogViewer from '@/designer-components/logViewer/logViewer';
 import Section from '@/designer-components/section';
 import SectionSeprator from '@/designer-components/sectionSeprator';
 import SizableColumnsComponent from '@/designer-components/sizableColumns/sizableColumns';
@@ -262,6 +264,8 @@ export const getToolboxComponents = (
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,
+        ProcessMonitor,
+        LogViewer,
       ],
     },
     {

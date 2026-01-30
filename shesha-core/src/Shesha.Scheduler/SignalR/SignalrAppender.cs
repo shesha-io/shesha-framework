@@ -7,8 +7,6 @@ namespace Shesha.Scheduler.SignalR
 {
     public class SignalrAppender : AppenderSkeleton
     {
-        //private readonly List<AllEvents>
-
         private readonly IHubContext<SignalrAppenderHub> _hub;
 
         /// <summary>
