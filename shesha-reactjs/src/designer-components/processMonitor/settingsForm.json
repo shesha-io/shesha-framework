@@ -19,25 +19,43 @@
       "jsSetting": false
     },
     {
-      "id": "b85ad1b3-0e5b-46a2-8a87-7fad5d62a22e",
-      "type": "checkbox",
-      "propertyName": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
+      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "propertyName": "label",
+      "parentId": "V7fTtlRl67ZoKhBMqXwoF",
+      "label": "Label",
+      "version": 3,
+      "textType": "text"
     },
     {
-      "id": "a11c0adc-04ae-4508-a7c8-e07b144c0279",
+      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
       "type": "checkbox",
       "propertyName": "hideLabel",
-      "parentId": "root",
-      "label": "Hide Label"
+      "parentId": "V7fTtlRl67ZoKhBMqXwoF",
+      "label": "Hide Label",
+      "version": 2
     },
     {
-      "id": "8d062b35-39b8-434b-a4af-a140786ae825",
-      "type": "editModeSelector",
-      "propertyName": "editMode",
+      "id": "A4F852ED-D4EC-4C1C-B449-1B6ED5BFE1D5",
+      "type": "textField",
+      "propertyName": "processType",
       "parentId": "root",
-      "label": "Edit mode"
+      "label": "Process Type",
+      "validate": {
+        "required": true
+      },
+      "jsSetting": true
+    },
+    {
+      "id": "66E1F49D-3B86-469C-897F-F8BF91644AD2",
+      "type": "textField",
+      "propertyName": "processId",
+      "parentId": "root",
+      "label": "Process Id",
+      "validate": {
+        "required": true
+      },
+      "jsSetting": true
     }
   ],
   "formSettings": {
