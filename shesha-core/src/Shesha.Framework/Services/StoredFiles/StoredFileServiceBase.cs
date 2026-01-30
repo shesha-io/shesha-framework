@@ -251,7 +251,7 @@ namespace Shesha.Services.StoredFiles
             {
                 var className = config.EntityType.FullName;
 
-                query = VersionRepository.GetAll().Where(e => e.File.Owner != null && e.File.Owner.Id == stringId);
+                query = query.Where(e => e.File.Owner != null && e.File.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
                     ? query.Where(e => e.File.Owner != null && (e.File.Owner._className == className || e.File.Owner._className == config.TypeShortAlias))
                     : query.Where(e => e.File.Owner != null && e.File.Owner._className == className);
@@ -261,7 +261,7 @@ namespace Shesha.Services.StoredFiles
             }
             else
             {
-                query = VersionRepository.GetAll().Where(e => e.File.Owner != null && e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
+                query = query.Where(e => e.File.Owner != null && e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }

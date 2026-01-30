@@ -67,8 +67,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     ]),
   },
   [CheckboxComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties,
-    ]),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties]),
   },
   [TimeFieldComponent.type]: {
     propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties, 'range', 'picker']),

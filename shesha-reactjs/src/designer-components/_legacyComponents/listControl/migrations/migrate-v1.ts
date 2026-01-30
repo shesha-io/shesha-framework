@@ -289,10 +289,11 @@ export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigra
       return item;
 
     const button = item as IButtonGroupButtonV0;
+    const isGhost = button.buttonType === 'ghost';
     const newItem: IButtonItem = {
       ...button,
-      buttonType: button.buttonType === 'ghost' ? 'default' : button.buttonType,
-      ghost: button.buttonType === 'ghost',
+      buttonType: isGhost ? 'default' : button.buttonType,
+      ghost: isGhost,
     };
     newItem.actionConfiguration = getActionConfiguration(button, context);
 

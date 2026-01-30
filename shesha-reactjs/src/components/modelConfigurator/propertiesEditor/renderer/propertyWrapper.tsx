@@ -34,16 +34,14 @@ export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
     props.source !== 1 &&
     Boolean(props.initStatus & (EntityInitFlags.DbActionRequired | EntityInitFlags.InitializationRequired)) && // eslint-disable-line no-bitwise
     !props.inheritedFromId &&
-    !props.parent &&
-    props.dataType !== DataTypes.advanced;
+    !props.parent;
 
   const hasError =
     props.source !== 1 &&
     Boolean(props.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) && // eslint-disable-line no-bitwise
     !props.inheritedFromId &&
     !props.parent &&
-    !(props.dataType === DataTypes.array && props.dataFormat === ArrayFormats.entityReference) &&
-    props.dataType !== DataTypes.advanced;
+    !(props.dataType === DataTypes.array && props.dataFormat === ArrayFormats.entityReference);
 
   return (
     <div
@@ -54,18 +52,19 @@ export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
       <div className={styles.shaToolbarItemHeader}>
         <DragHandle id={props.id} />
         {props.suppress && !props.isItemsType && <span><EyeInvisibleOutlined /> </span>}
-        {needRestart && (
-          <Tooltip
-            title={hasError
-              ? `This property has initialization errors which require a fix and an application restart: ${props.initMessage ?? 'undefined'}`
-              : "This property has changes which require an application restart before they can take effect"}
-          >
+        {needRestart && !hasError && (
+          <Tooltip title="This property has changes which require an application restart before they can take effect">
+            <span style={{ color: 'red' }}><InfoCircleOutlined /> </span>
+          </Tooltip>
+        )}
+        {hasError && (
+          <Tooltip title={`This property has initialization errors which require a fix and an application restart: ${props.initMessage ?? 'undefined'}`}>
             <span style={{ color: 'red' }}><WarningFilled /> </span>
           </Tooltip>
         )}
         {hasInputError && (
           <Tooltip title={`This property has configuration errors: ${hasInputError}`}>
-            <span style={{ color: 'red' }}><InfoCircleOutlined /> </span>
+            <span style={{ color: 'red' }}><WarningFilled /> </span>
           </Tooltip>
         )}
         {props.children}

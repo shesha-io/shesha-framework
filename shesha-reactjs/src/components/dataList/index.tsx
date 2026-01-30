@@ -259,12 +259,29 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     // If it's a string, it should not be empty
     if (typeof formId === 'string') {
-      return formId.trim().length > 0;
+      const isValid = formId.trim().length > 0;
+      if (!isValid) {
+        console.warn('Invalid formId: empty string');
+      }
+      return isValid;
     }
 
     // If it's an object (FormFullName), it should have both name and module
     if (typeof formId === 'object') {
-      return !!(formId.name && formId.module);
+      const hasName = formId.name && typeof formId.name === 'string' && formId.name.trim().length > 0;
+      const hasModule = formId.module && typeof formId.module === 'string' && formId.module.trim().length > 0;
+      const isValid = hasName && hasModule;
+
+      if (!isValid) {
+        console.warn('Invalid formId object:', {
+          name: formId.name,
+          module: formId.module,
+          hasName,
+          hasModule,
+        });
+      }
+
+      return isValid;
     }
 
     return false;
@@ -411,40 +428,57 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         return null;
       }
 
-      // In designer mode, show the configuration warning
+      // In designer mode, show placeholder matching DataListPlaceholder style
+      // Validation errors are now handled by validateModel and useComponentValidation at the component level
+      // This placeholder is shown for items when the form is not configured
       return (
         <div
           style={{
-            padding: '16px 20px',
-            border: `2px dashed ${theme.colorWarning}`,
-            borderRadius: '8px',
-            backgroundColor: theme.colorWarningBg,
-            minHeight: '100px',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
+            padding: '12px 16px',
+            backgroundColor: theme.colorBgContainer,
+            borderTop: `1px solid ${theme.colorBorder}`,
+            borderBottom: `1px solid ${theme.colorBorder}`,
           }}
         >
-          <div style={{ fontSize: '24px', color: theme.colorWarning, flexShrink: 0 }}>
-            ⚠️
+          {/* Icon placeholder */}
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: theme.colorFillSecondary,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              fontSize: '18px',
+              color: theme.colorTextQuaternary,
+            }}
+          >
+            👤
           </div>
-          <div style={{ flex: 1, textAlign: 'left' }}>
+          {/* Text content */}
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: '14px',
+                color: theme.colorTextSecondary,
                 marginBottom: '4px',
               }}
             >
-              Configuration Required
+              Heading
             </div>
             <div
               style={{
-                fontSize: '13px',
-                lineHeight: '1.5',
+                fontSize: '12px',
+                color: theme.colorTextTertiary,
               }}
             >
-              Please configure a valid Form ID in the DataList settings to display list items
+              Subtext
             </div>
           </div>
         </div>

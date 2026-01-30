@@ -86,5 +86,11 @@ namespace Shesha.Services.ReferenceLists
 
             return dto;
         }
+
+        public override async Task<string> GetBackwardCompatibleModuleNameAsync(string name)
+        {
+            var list = await _refListHelper.GetReferenceListAsync(new ReferenceListIdentifier(null, name));
+            return list?.Module?.Name ?? string.Empty;
+        }
     }
 }

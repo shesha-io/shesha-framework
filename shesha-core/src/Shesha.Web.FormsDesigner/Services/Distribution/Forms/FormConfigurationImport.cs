@@ -31,7 +31,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// <summary>
         /// Iten type
         /// </summary>
-        public string ItemType => FormConfiguration.ItemTypeName;
+        public override string ItemType => FormConfiguration.ItemTypeName;
 
         protected override Task AfterImportAsync(FormConfiguration item, DistributedFormConfiguration distributedItem, IConfigurationItemsImportContext context)
         {

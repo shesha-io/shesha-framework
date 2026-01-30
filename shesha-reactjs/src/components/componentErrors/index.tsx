@@ -1,57 +1,44 @@
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
-import { Alert, Button, Tooltip } from 'antd';
 import React, { FC } from 'react';
-import { useStyles } from './styles/styles';
+import ErrorIconPopover from './errorIconPopover';
 
 export interface IComponentErrorProps {
   errors?: IModelValidation;
-  resetErrorBoundary?: (...args: Array<unknown>) => void;
   type?: ISheshaErrorTypes;
   message?: string;
 }
+
 const ComponentError: FC<IComponentErrorProps> = ({
   errors,
-  resetErrorBoundary,
   type = 'warning',
   message,
 }) => {
-  const { styles } = useStyles();
+  // Show error icon if there are validation errors
+  if (errors) {
+    return (
+      <ErrorIconPopover
+        mode="validation"
+        validationResult={errors}
+        type={type}
+        position="top-right"
+      />
+    );
+  }
 
-  const errortip = (errors: IModelValidation): JSX.Element => <ul>{errors.errors.map((error, index) => <li key={index}>{error.error}</li>)}</ul>;
+  // Show error icon if there's an error message
+  if (message) {
+    return (
+      <ErrorIconPopover
+        mode="message"
+        message={message}
+        type={type}
+        position="top-right"
+      />
+    );
+  }
 
-  const tooltipClassName = type === 'info'
-    ? styles.cmoponentErrorInfo
-    : type === 'warning'
-      ? styles.cmoponentErrorWaring
-      : type === 'error'
-        ? styles.cmoponentErrorError
-        : '';
-
-  const alertClassName = type === 'info'
-    ? styles.cmoponentErrorTextInfo
-    : type === 'warning'
-      ? styles.cmoponentErrorTextWaring
-      : type === 'error'
-        ? styles.cmoponentErrorTextError
-        : '';
-
-  const messageText = !message
-    ? `'${errors.componentType}' has configuration issue(s)`
-    : message;
-
-  const body = (
-    <Alert
-      className={alertClassName}
-      type={type}
-      message={<strong>{messageText}</strong>}
-      action={Boolean(resetErrorBoundary) && <Button type="link" onClick={resetErrorBoundary}>Try again</Button>}
-      showIcon={true}
-    />
-  );
-
-  return errors?.errors?.length > 0
-    ? <Tooltip overlayClassName={tooltipClassName} title={errortip(errors)}>{body}</Tooltip>
-    : body;
+  // No errors or message - return null
+  return null;
 };
 
 export default ComponentError;

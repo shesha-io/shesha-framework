@@ -12,6 +12,7 @@ using Shesha.Extensions;
 using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -29,12 +30,17 @@ namespace Shesha.ConfigurationItems
             _iocManager = iocManager;
             _typeFinder = typeFinder;
             _entityConfigStore = entityConfigStore;
+
+            ItemTypes = BuildItemTypesDictionary();
+            ItemTypeDtos = BuildItemTypeDtos(ItemTypes);
+            ItemTypeByDiscriminator = BuildItemTypeByDiscriminator(ItemTypeDtos);
         }
 
-        private Dictionary<string, Type>? _itemTypes;
-        protected Dictionary<string, Type> ItemTypes => _itemTypes ?? (_itemTypes = GetItemTypesDictionary());
+        protected Dictionary<string, Type> ItemTypes;
+        protected List<IConfigurationItemTypeDto> ItemTypeDtos;
+        protected Dictionary<string, string> ItemTypeByDiscriminator;
 
-        private Dictionary<string, Type> GetItemTypesDictionary() 
+        private Dictionary<string, Type> BuildItemTypesDictionary()
         {
             var types = _typeFinder.Find(t => t.IsAssignableTo(typeof(ConfigurationItem)) && !t.IsAbstract && !t.IsGenericType).ToList();
             var typesWithDiscriminator = types.Select(t => {
@@ -53,9 +59,9 @@ namespace Shesha.ConfigurationItems
             return typesWithDiscriminator.ToDictionary(e => e.DiscriminatorValue, e => e.Type);
         }
 
-        public Type GetTypeByDiscriminator(string itemType)
+        public Type GetTypeByDiscriminator(string discriminator)
         {
-            return ItemTypes[itemType];
+            return ItemTypes[discriminator];
         }
 
         public IConfigurationItemManager GetManager(ConfigurationItem item)
@@ -63,9 +69,9 @@ namespace Shesha.ConfigurationItems
             return _iocManager.GetItemManager(item) ?? throw new ConfigurationItemManagerNotFoundException(item.GetType().Name);
         }
 
-        public IConfigurationItemManager GetManager(string itemType)
+        public IConfigurationItemManager GetManagerByDiscriminator(string discriminator)
         {
-            var runtimeType = GetTypeByDiscriminator(itemType);
+            var runtimeType = GetTypeByDiscriminator(discriminator);
             return _iocManager.GetItemManager(runtimeType) ?? throw new ConfigurationItemManagerNotFoundException(runtimeType.Name);
         }
 
@@ -74,22 +80,44 @@ namespace Shesha.ConfigurationItems
             return ItemTypes.Single(e => e.Value == itemType).Key;
         }
 
-        /// <summary>
-        /// Get available configuration item types
-        /// </summary>
-
-        public Task<List<IConfigurationItemTypeDto>> GetAvailableItemTypesAsync()
+        private Type? GetParentType(Type type)
         {
-            var itemTypes = ItemTypes
+            var chain = type.GetFullChain(t => t.BaseType)
+                .SkipWhile(t => t == type)
+                .TakeWhile(t => t.IsAssignableTo(typeof(ConfigurationItem)) && !t.IsAbstract && !t.IsGenericType && t != typeof(ConfigurationItem))
+                .ToList();
+            return chain.FirstOrDefault();
+        }
+
+        private string GetItemType(Type type)
+        {
+            var instance = Activator.CreateInstance(type).ForceCastAs<ConfigurationItem>();
+            return instance.ItemType;
+        }
+
+        private List<IConfigurationItemTypeDto> BuildItemTypeDtos(Dictionary<string, Type> itemTypes) 
+        { 
+            return itemTypes
                 .Where(t => t.Value != typeof(ConfigurationItem))
                 .Select(t => {
+                    var browsable = t.Value.GetAttributeOrNull<BrowsableAttribute>();
+                    if (browsable != null && !browsable.Browsable)
+                        return null;
+
                     var config = _entityConfigStore.Get(t.Value);
 
                     var attrs = t.Value.GetCustomAttributes<FixedViewAttribute>() ?? new List<FixedViewAttribute>();
-                
+
+                    var itemType = GetItemType(t.Value);
+
+                    var parentType = GetParentType(t.Value);
+                    var parentItemType = parentType != null ? GetDiscriminator(parentType) : null;
+
                     return new ConfigurationItemTypeDto
                     {
-                        ItemType = t.Key,
+                        ItemType = itemType,
+                        Discriminator = t.Key,
+                        ParentType = parentItemType,
                         EntityClassName = t.Value.FullName.NotNull(),
                         Description = t.Value.GetDescription(),
                         FriendlyName = config.FriendlyName,
@@ -97,10 +125,27 @@ namespace Shesha.ConfigurationItems
                         RenameFormId = attrs.SingleOrDefault(a => a.ViewType == ConfigurationItemsViews.Rename)?.FormId,
                     };
                 })
+                .WhereNotNull()
                 .Cast<IConfigurationItemTypeDto>()
                 .ToList();
+        }
 
-            return Task.FromResult(itemTypes);
+        private Dictionary<string, string> BuildItemTypeByDiscriminator(List<IConfigurationItemTypeDto> itemTypeDtos)
+        {
+            return itemTypeDtos.ToDictionary(e => e.Discriminator, e => e.ItemType);
+        }
+
+        /// <summary>
+        /// Get available configuration item types
+        /// </summary>
+        public Task<List<IConfigurationItemTypeDto>> GetAvailableItemTypesAsync()
+        {
+            return Task.FromResult(ItemTypeDtos);
+        }
+
+        public string GetItemTypeByDiscriminator(string discriminator)
+        {
+            return ItemTypeByDiscriminator.TryGetValue(discriminator, out var itemType) ? itemType : string.Empty;
         }
     }
 }

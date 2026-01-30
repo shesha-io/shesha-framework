@@ -18,7 +18,7 @@ export interface IOverlayProps {
 
 export type ConfigurableComponentChildrenFn<TSettings = any> = (
   componentState: IComponentStateProps<TSettings>,
-  BlockOverlay: (props: IOverlayProps) => React.ReactElement
+  BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
 export interface IConfigurableComponentRendererProps<TSettings = any> {
@@ -37,9 +37,26 @@ export interface IBlockOverlayProps {
 const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, children, visible }) => {
   if (!visible) return null;
 
+  type ClickableProps = { onClick?: React.MouseEventHandler };
+
+  // Clone the children and compose onClick handlers
+  const enhancedChildren = React.Children.map(children, (child) => {
+    if (!React.isValidElement<ClickableProps>(child)) return child;
+    if (child.type === React.Fragment) return child;
+
+    const existingOnClick = child.props.onClick;
+    const mergedOnClick: React.MouseEventHandler = (e) => {
+      e.stopPropagation();
+      existingOnClick?.(e);
+      onClick?.();
+    };
+
+    return React.cloneElement(child, { onClick: mergedOnClick });
+  });
+
   return (
-    <div onClick={onClick} className="sha-configurable-component-overlay">
-      {children}
+    <div className="sha-configurable-component-overlay">
+      {enhancedChildren}
     </div>
   );
 };

@@ -93,15 +93,64 @@ export const getNumericValue = (localValue: number | string): number => {
   }
 };
 
-export function toCamelCase(str: string): string {
-  return str
-    .replace(/\s(.)/g, function ($1) {
-      return $1.toUpperCase();
-    })
-    .replace(/\s/g, '')
-    .replace(/^(.)/, function ($1) {
-      return $1.toLowerCase();
-    });
+export interface CamelCaseOptions {
+  /** Keep the leading separator: `_foo_bar` → `_fooBar`.
+   * NOTE! The camelCase and PascalCase standards remove the leading separators. Use this option with caution.
+   * Default is true because we need it for using special fields like `_className` and `_displayName`
+  @default true
+   */
+  readonly keepLeadingSeparators?: boolean;
+
+  /** Uppercase the first character: `foo-bar` → `FooBar`.
+  @default false
+   */
+  readonly pascalCase?: boolean;
+
+  /** Preserve the consecutive uppercase characters: `foo-BAR` → `FooBAR`.
+  @default false
+   */
+  readonly preserveConsecutiveUppercase?: boolean;
+
+  /**
+  The locale parameter indicates the locale to be used to convert to upper/lower case according to any locale-specific case mappings. If multiple locales are given in an array, the best available locale is used.
+  Setting `locale: false` ignores the platform locale and uses the [Unicode Default Case Conversion](https://unicode-org.github.io/icu/userguide/transforms/casemappings.html#simple-single-character-case-mapping) algorithm.
+  Default: The host environment’s current locale.
+  @example
+  ```
+  import camelCase = require('camelcase');
+  camelCase('lorem-ipsum', {locale: 'en-US'});
+  //=> 'loremIpsum'
+  camelCase('lorem-ipsum', {locale: 'tr-TR'});
+  //=> 'loremİpsum'
+  camelCase('lorem-ipsum', {locale: ['en-US', 'en-GB']});
+  //=> 'loremIpsum'
+  camelCase('lorem-ipsum', {locale: ['tr', 'TR', 'tr-TR']});
+  //=> 'loremİpsum'
+  ```
+   */
+  readonly locale?: false | string | readonly string[];
+}
+
+const leadingSeparatorsRegex = /^[-_.\s]+/;
+
+export function toCamelCase(str: string | null | undefined, options?: CamelCaseOptions): string | null | undefined {
+  const text = str?.trim();
+
+  if (!text) return text;
+
+  // The camelCase and PascalCase standards remove the leading separators.
+  // But we need it for using special fields like `_className` and `_displayName`
+  const leadingSeparators = options?.keepLeadingSeparators ?? true
+    ? text.match(leadingSeparatorsRegex)?.[0] ?? ''
+    : '';
+
+  const result = camelcase(text.replace(leadingSeparatorsRegex, ''), {
+    locale: options?.locale ?? undefined,
+    pascalCase: options?.pascalCase ?? false,
+    preserveConsecutiveUppercase: options?.preserveConsecutiveUppercase ?? false,
+  });
+
+  return leadingSeparators + result;
 }
 
 export function getNumberFormat(str: string, format: string): string {
@@ -140,11 +189,6 @@ export const capitalizeFirstLetter = (str: string): string => {
   if (isNullOrWhiteSpace(str))
     return str;
   return `${str.charAt(0).toUpperCase()}${str.substring(1)}`;
-};
-
-
-export const verifiedCamelCase = (value: string): string => {
-  return camelcase(value);
 };
 
 /**

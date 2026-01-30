@@ -2,50 +2,43 @@ import React from 'react';
 import { ITableViewSelectorComponentProps, TableViewSelectorComponentDefinition } from './models';
 import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
+import { SelectOutlined } from '@ant-design/icons';
 import { TableViewSelector } from './tableViewSelector';
-import { Popover } from 'antd';
 import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings } from '@/index';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { validationError } from '../utils';
+
+const outsideContextValidationError = validationError('Table View Selector');
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
   isInput: false,
-  name: 'Table view selector',
+  name: 'Table View Selector',
   icon: <SelectOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
 
+    useComponentValidation(
+      () => !store ? outsideContextValidationError : undefined,
+      [store],
+    );
+
+    const content = store
+      ? <TableViewSelector {...model} />
+      : (
+        <div className={styles.hintContainer}>
+          <div className={styles.viewSelectorMockup}>
+            View: Default
+          </div>
+        </div>
+      );
+
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-        {store
-          ? <TableViewSelector {...model} />
-          : (
-            <div className={styles.hintContainer}>
-              <div className={styles.viewSelectorMockup}>
-                View: Default
-              </div>
-              <Popover
-                placement="right"
-                title="Hint:"
-                rootClassName={styles.tableViewSelectorHintPopover}
-                classNames={{
-                  body: styles.tableViewSelectorHintPopover,
-                }}
-                content={(
-                  <p>The Table View Selector component must be<br /> placed inside of a Data Context<br /> component to be fully functional.
-                    <br />
-                    <br />
-                    <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-                  </p>
-                )}
-              >
-                <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
-              </Popover>
-            </div>
-          )}
+        {content}
       </ConfigurableFormItem>
     );
   },

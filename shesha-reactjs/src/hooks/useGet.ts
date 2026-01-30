@@ -116,12 +116,12 @@ export const useGetInternal = <TData = unknown, TError = unknown, TQueryParams =
 
 export function useGet<TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
   path: UseGetProps<TData, TQueryParams, TPathParams>['path'],
-  props: Omit<UseGetProps<TData, TQueryParams, TPathParams>, 'path'>
+  props: Omit<UseGetProps<TData, TQueryParams, TPathParams>, 'path'>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare
 export function useGet<TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
-  props: UseGetProps<TData, TQueryParams, TPathParams>
+  props: UseGetProps<TData, TQueryParams, TPathParams>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare

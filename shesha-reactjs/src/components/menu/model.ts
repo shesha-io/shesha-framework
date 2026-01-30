@@ -5,4 +5,6 @@ export interface ILayoutColor {
   itemBackground?: string;
   hoverItemColor?: string;
   hoverItemBackground?: string;
+  subItemColor?: string;
+  subItemBackground?: string;
 }

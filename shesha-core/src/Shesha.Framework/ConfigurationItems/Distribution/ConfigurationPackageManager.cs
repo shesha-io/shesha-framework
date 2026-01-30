@@ -2,7 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Timing;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+using NetTopologySuite.Index.HPRtree;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
@@ -18,7 +18,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -202,6 +201,14 @@ namespace Shesha.ConfigurationItems.Distribution
             return Path.Combine(folder, $"{item.Name.RemovePathIllegalCharacters()}.json");
         }
 
+        private async Task<DistributedConfigurableItemBase> ReadDtoAsync(IConfigurableItemImport importer, Func<Stream> streamGetter) 
+        {
+            using (var jsonStream = streamGetter()) 
+            {
+                return await importer.ReadFromJsonAsync(jsonStream);
+            }
+        }
+
         public async Task ImportAsync(ConfigurationItemsPackage package, PackageImportContext context)
         {
             async Task updateResultAsync(Action<ImportResult> updateAction)
@@ -228,24 +235,28 @@ namespace Shesha.ConfigurationItems.Distribution
 
                 foreach (var group in groups)
                 {
-                    var importer = group.First().Importer.NotNull();
-                    var items = new List<DistributedConfigurableItemBase>();
+                    var mainImporter = group.First().Importer.NotNull();
+                    var itemsToImport = new List<ItemToImport>();
                     foreach (var item in group)
                     {
                         context.CancellationToken.ThrowIfCancellationRequested();
                         try
                         {
-                            using (var jsonStream = item.StreamGetter())
+                            var itemDto = await ReadDtoAsync(mainImporter, item.StreamGetter);
+                            var shouldImport = context.ShouldImportItem == null || context.ShouldImportItem.Invoke(itemDto);
+
+                            if (shouldImport)
                             {
-                                var itemDto = await importer.ReadFromJsonAsync(jsonStream);
-                                var shouldImport = context.ShouldImportItem == null || context.ShouldImportItem.Invoke(itemDto);
+                                var subtypeImporter = mainImporter.GetSubtypeImporter(itemDto);
+                                
+                                // read DTO again using correct subtype importer to handle custom properties
+                                if (subtypeImporter != mainImporter)
+                                    itemDto = await ReadDtoAsync(subtypeImporter, item.StreamGetter);
 
-                                if (shouldImport)
-                                    items.Add(itemDto);
-                                else
-                                    context.Logger.Info($"Item skipped by condition");
-
+                                itemsToImport.Add(new ItemToImport(itemDto, subtypeImporter));
                             }
+                            else
+                                context.Logger.Info($"Item skipped by condition");
                         }
                         catch (Exception e)
                         {
@@ -254,33 +265,38 @@ namespace Shesha.ConfigurationItems.Distribution
                         }
                     }
 
-                    items = await importer.SortItemsAsync(items);
-
-                    foreach (var item in items)
+                    var groupsByImporter = itemsToImport.GroupBy(x => x.Importer, (importer, items) => new { Importer = importer, Items = items.Select(x => x.Item).ToList() });
+                    foreach (var subGroup in groupsByImporter)
                     {
-                        context.CancellationToken.ThrowIfCancellationRequested();
+                        var importer = subGroup.Importer;
+                        var items = await importer.SortItemsAsync(subGroup.Items);
 
-                        try
+                        foreach (var item in items)
                         {
-                            await importer.ImportItemAsync(item, context);
-                        }
-                        catch (Exception e)
-                        {
-                            context.Logger.Error($"Item import failed", e);
-                            throw;
-                        }
+                            context.CancellationToken.ThrowIfCancellationRequested();
 
-                        var span = (Clock.Now - startTime);
-                        var speed = Math.Round(rowNo / (span.TotalSeconds > 0 ? span.TotalSeconds : 1), 2);
-                        //importResult.AvgSpeed = Convert.ToDecimal(speed);
-                        var estimated = new TimeSpan(span.Ticks / rowNo * totalItems);
-                        context.Logger.Info($"processed {rowNo} from {totalItems} ({(double)rowNo / totalItems * 100:0.#}%), estimated time = {estimated.Minutes:D2}:{estimated.Seconds:D2}:{estimated.Milliseconds:D3}, speed = {speed} row/sec");
-                        rowNo++;
+                            try
+                            {
+                                await importer.ImportItemAsync(item, context);
+                            }
+                            catch (Exception e)
+                            {
+                                context.Logger.Error($"Item import failed", e);
+                                throw;
+                            }
 
-                        await updateResultAsync(res => {
-                            res.AvgSpeed = Convert.ToDecimal(speed);
-                        });
-                    }
+                            var span = (Clock.Now - startTime);
+                            var speed = Math.Round(rowNo / (span.TotalSeconds > 0 ? span.TotalSeconds : 1), 2);
+                            //importResult.AvgSpeed = Convert.ToDecimal(speed);
+                            var estimated = new TimeSpan(span.Ticks / rowNo * totalItems);
+                            context.Logger.Info($"processed {rowNo} from {totalItems} ({(double)rowNo / totalItems * 100:0.#}%), estimated time = {estimated.Minutes:D2}:{estimated.Seconds:D2}:{estimated.Milliseconds:D3}, speed = {speed} row/sec");
+                            rowNo++;
+
+                            await updateResultAsync(res => {
+                                res.AvgSpeed = Convert.ToDecimal(speed);
+                            });
+                        }
+                    }                    
                 }
 
                 context.Logger.Info($"Package imported successfully");
@@ -451,6 +467,25 @@ namespace Shesha.ConfigurationItems.Distribution
             return DateTime.TryParseExact(version, "yyyyMMddHHmm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
                 ? date
                 : null;
+        }
+
+        private class ItemToImport
+        {
+            /// <summary>
+            /// Item
+            /// </summary>
+            public DistributedConfigurableItemBase Item { get; set; }
+
+            /// <summary>
+            /// Corresponding importer
+            /// </summary>
+            public IConfigurableItemImport Importer { get; set; }
+
+            public ItemToImport(DistributedConfigurableItemBase item, IConfigurableItemImport importer)
+            {
+                Item = item;
+                Importer = importer;
+            }
         }
     }
 }

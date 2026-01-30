@@ -165,6 +165,7 @@ namespace Shesha
                 .RegisterConfigurableItemExport<NotificationTypeConfig, INotificationTypeExport, NotificationTypeExport>()
                 .RegisterConfigurableItemImport<NotificationTypeConfig, INotificationTypeImport, NotificationTypeImport>()
 
+                .RegisterConfigurableItemManager<NotificationChannelConfig, INotificationChannelManager, NotificationChannelManager>()
                 .RegisterConfigurableItemExport<NotificationChannelConfig, INotificationChannelExport, NotificationChannelExport>()
                 .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>();
 

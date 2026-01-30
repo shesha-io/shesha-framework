@@ -478,6 +478,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   parentId: eventsTabId,
                   label: 'On Row Select',
                   description: 'Action to execute when a row is selected',
+                  hidden: { _code: 'return getSettingValue(data?.selectionMode) === "none";', _mode: 'code', _value: false } as any,
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -485,6 +486,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   parentId: eventsTabId,
                   label: 'On Selection Change',
                   description: 'Action to execute when the selection changes',
+                  hidden: { _code: 'return getSettingValue(data?.selectionMode) === "none";', _mode: 'code', _value: false } as any,
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -512,7 +514,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'headerStyling',
-                  label: 'Header Styling',
+                  label: 'Header Styles',
                   labelAlign: 'right',
                   ghost: true,
                   parentId: appearanceTabId,
@@ -521,22 +523,68 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   content: {
                     id: nanoid(),
                     components: [...fbf()
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'headerFontSize',
-                        label: 'Header Font Size',
-                        inputType: 'textField',
-                        tooltip: 'Font size for table headers (e.g., 14px, 1.2em)',
-                        jsSetting: false,
+                        inline: true,
+                        propertyName: 'headerFont',
+                        inputs: [
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Family',
+                            propertyName: 'headerFont.type',
+                            hideLabel: true,
+                            dropdownOptions: fontTypes,
+                          },
+                          {
+                            type: 'numberField',
+                            id: nanoid(),
+                            label: 'Size',
+                            propertyName: 'headerFont.size',
+                            hideLabel: true,
+                            width: 50,
+                            tooltip: 'Font size in pixels. Default: 14px',
+                          },
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Weight',
+                            propertyName: 'headerFont.weight',
+                            hideLabel: true,
+                            tooltip: "Controls text thickness (light, normal, bold, etc.). Default: 500 (medium)",
+                            dropdownOptions: fontWeightsOptions,
+                            width: 100,
+                          },
+                          {
+                            type: 'colorPicker',
+                            id: nanoid(),
+                            label: 'Color',
+                            hideLabel: true,
+                            propertyName: 'headerFont.color',
+                          },
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Align',
+                            propertyName: 'headerFont.align',
+                            hideLabel: true,
+                            width: 60,
+                            dropdownOptions: textAlignOptions,
+                          },
+                        ],
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'headerFontWeight',
-                        label: 'Header Font Weight',
-                        inputType: 'dropdown',
-                        dropdownOptions: fontWeightsOptions,
-                        tooltip: 'Font weight for table headers',
-                        jsSetting: false,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'headerBackgroundColor',
+                            label: 'Background Color',
+                            type: 'colorPicker',
+                            tooltip: 'Background color for table headers. Default: #fafafa',
+                            jsSetting: true,
+                          },
+                        ],
                       })
                       .toJson(),
                     ],
@@ -545,7 +593,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'tableBodyStyling',
-                  label: 'Table Body Styling',
+                  label: 'Table Body Styles',
                   labelAlign: 'right',
                   ghost: true,
                   parentId: appearanceTabId,
@@ -556,8 +604,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     components: [...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'pnlRowDimensions',
-                        label: 'Row Dimensions',
+                        propertyName: 'rowPaddingPanel',
+                        label: 'Cell Padding',
                         labelAlign: 'right',
                         ghost: true,
                         collapsible: 'header',
@@ -566,56 +614,45 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
-                              inline: true,
                               inputs: [
                                 {
-                                  type: 'textField',
                                   id: nanoid(),
-                                  label: "Height",
-                                  width: 85,
-                                  propertyName: "rowDimensions.height",
-                                  icon: "heightIcon",
-                                  tooltip: "Row height. You can use any unit (%, px, em, etc). px by default if without unit",
+                                  propertyName: 'rowPaddingTop',
+                                  label: 'Top',
+                                  type: 'textField',
+                                  tooltip: 'Top padding for table rows (e.g., 8px, 1rem, 0.5em)',
+                                  jsSetting: true,
                                 },
                                 {
-                                  type: 'textField',
                                   id: nanoid(),
-                                  label: "Min Height",
-                                  width: 85,
-                                  hideLabel: true,
-                                  propertyName: "rowDimensions.minHeight",
-                                  icon: "minHeightIcon",
-                                },
-                                {
+                                  propertyName: 'rowPaddingRight',
+                                  label: 'Right',
                                   type: 'textField',
-                                  id: nanoid(),
-                                  label: "Max Height",
-                                  width: 85,
-                                  hideLabel: true,
-                                  propertyName: "rowDimensions.maxHeight",
-                                  icon: "maxHeightIcon",
+                                  tooltip: 'Right padding for table rows (e.g., 12px, 1rem, 0.5em)',
+                                  jsSetting: true,
                                 },
                               ],
                             })
-                            .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'rowStylingBoxPanel',
-                        label: 'Cell Padding',
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
-                            .addStyleBox({
+                            .addSettingsInputRow({
                               id: nanoid(),
-                              label: 'Cell Padding',
-                              hideLabel: true,
-                              propertyName: 'rowStylingBox',
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'rowPaddingBottom',
+                                  label: 'Bottom',
+                                  type: 'textField',
+                                  tooltip: 'Bottom padding for table rows (e.g., 8px, 1rem, 0.5em)',
+                                  jsSetting: true,
+                                },
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'rowPaddingLeft',
+                                  label: 'Left',
+                                  type: 'textField',
+                                  tooltip: 'Left padding for table rows (e.g., 12px, 1rem, 0.5em)',
+                                  jsSetting: true,
+                                },
+                              ],
                             })
                             .toJson(),
                           ],
@@ -674,6 +711,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'font.size',
                                   hideLabel: true,
                                   width: 50,
+                                  tooltip: 'Font size in pixels. Default: 14px',
                                 },
                                 {
                                   type: 'dropdown',
@@ -681,7 +719,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Weight',
                                   propertyName: 'font.weight',
                                   hideLabel: true,
-                                  tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                  tooltip: "Controls text thickness (light, normal, bold, etc.). Default: 400 (normal)",
                                   dropdownOptions: fontWeightsOptions,
                                   width: 100,
                                 },
@@ -691,6 +729,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Color',
                                   hideLabel: true,
                                   propertyName: 'font.color',
+                                  tooltip: 'Font color. Default: black (#000000)',
                                 },
                                 {
                                   type: 'dropdown',
@@ -730,7 +769,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   width: 85,
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                  tooltip: "You can use any unit (%, px, em, etc). Default: 100%",
                                 },
                                 {
                                   type: 'textField',
@@ -740,6 +779,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.minWidth",
                                   icon: "minWidthIcon",
+                                  tooltip: "Minimum width. Default: 0px",
                                 },
                                 {
                                   type: 'textField',
@@ -749,6 +789,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
+                                  tooltip: "Maximum width. Default: none",
                                 },
                               ],
                             })
@@ -764,7 +805,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   width: 85,
                                   propertyName: "dimensions.height",
                                   icon: "heightIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                  tooltip: "You can use any unit (%, px, em, etc). Default: auto",
                                 },
                                 {
                                   type: 'textField',
@@ -774,6 +815,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.minHeight",
                                   icon: "minHeightIcon",
+                                  tooltip: "Minimum height. Default: auto",
                                 },
                                 {
                                   type: 'textField',
@@ -783,6 +825,58 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
+                                  tooltip: "Maximum height. Default: auto",
+                                },
+                              ],
+                            })
+                            .toJson(),
+                          ],
+                        },
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlRowDimensions',
+                        label: 'Row Dimensions',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: styleRouterId,
+                              inline: true,
+                              inputs: [
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Height",
+                                  width: 85,
+                                  propertyName: "rowDimensions.height",
+                                  icon: "heightIcon",
+                                  tooltip: "Row height. You can use any unit (%, px, em, etc). px by default if without unit. Default: auto",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Min Height",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "rowDimensions.minHeight",
+                                  icon: "minHeightIcon",
+                                  tooltip: "Minimum row height. Rows will not be smaller than this value. Default: auto",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Max Height",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "rowDimensions.maxHeight",
+                                  icon: "maxHeightIcon",
+                                  tooltip: "Maximum row height. Rows will not be taller than this value. Default: auto",
                                 },
                               ],
                             })
@@ -822,6 +916,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: "background.color",
                                   hideLabel: true,
                                   jsSetting: false,
+                                  tooltip: 'Background color. Default: white (#fff)',
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
                               })
@@ -941,7 +1036,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   label: 'Offset X',
                                   hideLabel: true,
-                                  tooltip: 'Offset X',
+                                  tooltip: 'Horizontal shadow offset. Default: 0px',
                                   width: 80,
                                   icon: "offsetHorizontalIcon",
                                   propertyName: 'shadow.offsetX',
@@ -951,7 +1046,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   label: 'Offset Y',
                                   hideLabel: true,
-                                  tooltip: 'Offset Y',
+                                  tooltip: 'Vertical shadow offset. Default: 2px',
                                   width: 80,
                                   icon: 'offsetVerticalIcon',
                                   propertyName: 'shadow.offsetY',
@@ -961,7 +1056,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   label: 'Blur',
                                   hideLabel: true,
-                                  tooltip: 'Blur Radius',
+                                  tooltip: 'Shadow blur radius. Default: 8px',
                                   width: 80,
                                   icon: 'blurIcon',
                                   propertyName: 'shadow.blurRadius',
@@ -971,7 +1066,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   label: 'Spread',
                                   hideLabel: true,
-                                  tooltip: 'Spread Radius',
+                                  tooltip: 'Shadow spread radius. Default: 0px',
                                   width: 80,
                                   icon: 'spreadIcon',
                                   propertyName: 'shadow.spreadRadius',
@@ -982,6 +1077,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Color',
                                   hideLabel: true,
                                   propertyName: 'shadow.color',
+                                  tooltip: 'Shadow color. Default: rgba(0, 0, 0, 0.1)',
                                 },
                               ],
                             })
@@ -1028,16 +1124,15 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'striped',
                                   label: 'Striped Rows',
                                   type: 'switch',
-                                  tooltip: 'Enable alternating row colors',
+                                  tooltip: 'Enable alternating row colors. Default: enabled',
                                   jsSetting: true,
-                                  value: 'checked',
                                 },
                                 {
                                   id: nanoid(),
                                   propertyName: 'hoverHighlight',
                                   label: 'Hover Highlight',
                                   type: 'switch',
-                                  tooltip: 'Highlight rows on hover',
+                                  tooltip: 'Highlight rows on hover. Default: enabled',
                                   jsSetting: true,
                                 },
                               ],
@@ -1058,7 +1153,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'rowAlternateBackgroundColor',
                                   label: 'Alternate Background',
                                   type: 'colorPicker',
-                                  tooltip: 'Background color for alternate rows (when striped is enabled)',
+                                  tooltip: 'Background color for alternate rows (when striped is enabled). Default: #f5f5f5',
                                   jsSetting: true,
                                 },
                               ],
@@ -1081,82 +1176,22 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   type: 'colorPicker',
                                   tooltip: 'Background color for selected rows',
                                   jsSetting: true,
+                                  hidden: { _code: 'return getSettingValue(data?.selectionMode) === "none";', _mode: 'code', _value: false } as any,
                                 },
                               ],
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                               id: nanoid(),
-                              propertyName: 'stickyHeader',
-                              label: 'Sticky Header',
-                              inputType: 'switch',
-                              tooltip: 'Make header stick to top when scrolling',
-                              jsSetting: true,
-                            })
-                            .toJson(),
-                          ],
-                        },
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'headerBackgroundColor',
-                        label: 'Header Background Color',
-                        inputType: 'colorPicker',
-                        tooltip: 'Background color for table headers',
-                        parentId: styleRouterId,
-                        jsSetting: true,
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'headerTextColor',
-                        label: 'Header Text Color',
-                        inputType: 'colorPicker',
-                        tooltip: 'Text color for table headers',
-                        parentId: styleRouterId,
-                        jsSetting: true,
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'sortableIndicatorColor',
-                        label: 'Sort Indicator Color',
-                        inputType: 'colorPicker',
-                        tooltip: 'Color for sortable column indicators',
-                        parentId: styleRouterId,
-                        jsSetting: true,
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Custom Styles',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'style',
-                              hideLabel: false,
-                              label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'tableStyle',
-                              hideLabel: false,
-                              label: 'Table Style',
-                              description: 'The style that will be applied to the table',
-                            })
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'containerStyle',
-                              hideLabel: false,
-                              label: 'Container Style',
-                              description: 'The style that will be applied to the table container/wrapper',
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'sortableIndicatorColor',
+                                  label: 'Sort Indicator Color',
+                                  type: 'colorPicker',
+                                  tooltip: 'Color for sortable column indicators',
+                                  jsSetting: true,
+                                },
+                              ],
                             })
                             .toJson(),
                           ],
@@ -1173,27 +1208,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         content: {
                           id: nanoid(),
                           components: [...fbf()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              inputs: [
-                                {
-                                  id: nanoid(),
-                                  propertyName: 'cellTextColor',
-                                  label: 'Cell Text Color',
-                                  type: 'colorPicker',
-                                  tooltip: 'Text color for table cells',
-                                  jsSetting: true,
-                                },
-                                {
-                                  id: nanoid(),
-                                  propertyName: 'cellBackgroundColor',
-                                  label: 'Cell Background',
-                                  type: 'colorPicker',
-                                  tooltip: 'Background color for table cells',
-                                  jsSetting: true,
-                                },
-                              ],
-                            })
                             .addSettingsInputRow({
                               id: nanoid(),
                               inputs: [
@@ -1229,8 +1243,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'footerStyling',
-                        label: 'Footer Styling',
+                        propertyName: 'customStyle',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: styleRouterId,
@@ -1243,19 +1257,24 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               inputs: [
                                 {
                                   id: nanoid(),
-                                  propertyName: 'footerBackgroundColor',
-                                  label: 'Footer Background',
-                                  type: 'colorPicker',
-                                  tooltip: 'Background color for table footer',
-                                  jsSetting: true,
+                                  type: 'codeEditor',
+                                  propertyName: 'containerStyle',
+                                  label: 'Container Style',
+                                  tooltip: 'Custom CSS styles for the table container/wrapper',
+                                  description: 'The style that will be applied to the table container/wrapper',
                                 },
+                              ],
+                            })
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              inputs: [
                                 {
                                   id: nanoid(),
-                                  propertyName: 'footerTextColor',
-                                  label: 'Footer Text Color',
-                                  type: 'colorPicker',
-                                  tooltip: 'Text color for table footer',
-                                  jsSetting: true,
+                                  type: 'codeEditor',
+                                  propertyName: 'tableStyle',
+                                  label: 'Table Style',
+                                  tooltip: 'Custom CSS styles for the table element',
+                                  description: 'The style that will be applied to the table',
                                 },
                               ],
                             })

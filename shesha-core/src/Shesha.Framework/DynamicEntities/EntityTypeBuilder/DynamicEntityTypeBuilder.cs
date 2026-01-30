@@ -14,6 +14,7 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.EntityTypeBuilder.Model;
+using Shesha.DynamicEntities.Enums;
 using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -66,6 +67,22 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             _moduleList = moduleList;
             _typeFinder = typeFinder;
             _errorHandler = errorHandler;
+        }
+
+        private async Task UpdateSuccessAsync(EntityConfig config)
+        {
+            config.InitStatus &= ~EntityInitFlags.InitializationRequired;
+            config.InitStatus &= ~EntityInitFlags.InitializationFailed;
+            config.InitMessage = "";
+            config.IsCodegenPending = false;
+            await _entityConfigRepo.UpdateAsync(config);
+        }
+        private async Task UpdateSuccessAsync(EntityProperty property)
+        {
+            property.InitStatus &= ~EntityInitFlags.InitializationRequired;
+            property.InitStatus &= ~EntityInitFlags.InitializationFailed;
+            property.InitMessage = "";
+            await _propertyConfigRepo.UpdateAsync(property);
         }
 
         public async Task<List<Type>> GenerateTypesAsync(IEntityTypeConfigurationStore entityConfigurationStore)
@@ -238,11 +255,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             var properties = await _propertyConfigRepo.GetAll().Where(x => x.EntityConfig.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted).ToListAsync();
             var t = await CreateTypeAsync(typeBuilderType, properties, context);
 
-            typeBuilderType.EntityConfig.InitStatus &= ~Enums.EntityInitFlags.InitializationRequired;
-            typeBuilderType.EntityConfig.InitStatus &= ~Enums.EntityInitFlags.InitializationFailed;
-            typeBuilderType.EntityConfig.InitMessage = "";
-            typeBuilderType.EntityConfig.IsCodegenPending = false;
-            await _entityConfigRepo.UpdateAsync(typeBuilderType.EntityConfig);
+            await UpdateSuccessAsync(typeBuilderType.EntityConfig);
             return t;
         }
 
@@ -343,24 +356,23 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             if (properties != null)
             {
                 var existProperties = typeBuilderType.TypeBuilder.BaseType?.GetProperties();
-                var propertiesToAdd = properties.Where(x =>
-                    x.Name != "Id"
-                    && (!existProperties?.Any(y => y.Name == x.Name) ?? true)
-                    && x.ParentProperty == null
-                );
+                var propertiesToAdd = properties.Where(x => x.ParentProperty == null);
                 foreach (var property in propertiesToAdd)
                 {
+                    if ((existProperties?.Any(y => y.Name == property.Name) ?? false)
+                        || IsIgnorePropertyType(property)
+                        || property.Name == "Id")
+                    {
+                        await UpdateSuccessAsync(property);
+                        continue;
+                    }
                     var propType = GetPropertyType(property, context);
                     if (propType != null)
                     {
                         try
                         {
                             CreateProperty(typeBuilderType.TypeBuilder, property, propType);
-
-                            property.InitStatus &= ~Enums.EntityInitFlags.InitializationRequired;
-                            property.InitStatus &= ~Enums.EntityInitFlags.InitializationFailed;
-                            property.InitMessage = "";
-                            await _propertyConfigRepo.UpdateAsync(property);
+                            await UpdateSuccessAsync(property);
                         }
                         catch (Exception e)
                         {
@@ -464,6 +476,11 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             var attribute = attributeType.GetConstructor(argTypes);
             var attributeBuilder = new CustomAttributeBuilder(attribute.NotNull(), arguments);
             propertyBuilder.SetCustomAttribute(attributeBuilder);
+        }
+
+        public bool IsIgnorePropertyType(EntityProperty property)
+        {
+            return property.DataType == DataTypes.Advanced;
         }
 
         /// <summary>

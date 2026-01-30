@@ -22,6 +22,7 @@ namespace Shesha.Domain
     public class ShaRole : ConfigurationItem
     {
         public const string ItemTypeName = "role";
+        public override string ItemType => ItemTypeName;
 
         public override string ToString()
         {

@@ -1,8 +1,6 @@
 import _ from 'lodash';
 import React, { FC, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
-import { InfoCircleFilled } from '@ant-design/icons';
-import { Popover } from 'antd';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { ITableViewSelectorComponentProps } from './models';
 import {
@@ -102,23 +100,6 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
           <div className={styles.viewSelectorMockup}>
             View: Default
           </div>
-          <Popover
-            placement="right"
-            title="Hint:"
-            rootClassName={styles.tableViewSelectorHintPopover}
-            classNames={{
-              body: styles.tableViewSelectorHintPopover,
-            }}
-            content={(
-              <p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
-                <br />
-                <br />
-                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-              </p>
-            )}
-          >
-            <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
-          </Popover>
         </div>
       );
     }

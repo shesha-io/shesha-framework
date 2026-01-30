@@ -57,10 +57,10 @@ namespace Shesha.Notifications
             }
 
             // Step 2: Check for Parsed Override Channels
-            if (type.ParsedOverrideChannels.Any())
+            if (type.OverrideChannels != null && type.OverrideChannels.Any())
             {
                 var overrideChannels = new List<NotificationChannelConfig>();
-                foreach (var channel in type.ParsedOverrideChannels) 
+                foreach (var channel in type.OverrideChannels) 
                 {
                     // TODO: check versioned query
                     var dbChannel = await _notificationChannelRepository.GetAll().Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression())

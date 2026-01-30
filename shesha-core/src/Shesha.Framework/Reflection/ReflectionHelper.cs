@@ -756,6 +756,9 @@ namespace Shesha.Reflection
         [DebuggerStepThrough]
         public static T NotNull<T>([NotNull]this T? value, string message = "Value must not be null")
         {
+            if ((typeof(T).Assembly.FullName ?? "").StartsWith("FluentMigrator"))
+                throw new ArgumentException($"{nameof(NotNull)} cannot be used for FluentMigrator types");
+
             return value ?? throw new Exception(message);
         }
 

@@ -3,7 +3,6 @@ import { ModalProps } from 'antd/lib/modal';
 import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
-import { ValidationErrors } from '..';
 import {
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
@@ -49,11 +48,11 @@ import { IShadowValue } from '@/designer-components/_settings/utils/shadow/inter
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
-import { useStyles } from './styles/styles';
 import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
+import { StandaloneTable } from '@/designer-components/dataTable/table/standaloneTable';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -82,16 +81,40 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   backgroundColor?: string;
 
   // Header styling
-  headerFontSize?: string;
-  headerFontWeight?: string;
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
   headerBackgroundColor?: string;
+  headerTextAlign?: string; // Alignment for header cells
+  bodyTextAlign?: string; // Alignment for body cells
+
+  // Deprecated - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
   headerTextColor?: string;
+  /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
+  textAlign?: string;
 
   // Table body styling
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
   rowBorderStyle?: IBorderValue;
+
+  // Body font styling
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
 
   // Cell styling
   cellTextColor?: string;
@@ -151,27 +174,47 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowSelectedBackgroundColor,
   border,
   hoverHighlight,
-  striped = true,
+  striped,
   onRowClick,
   onRowDoubleClick,
   onRowHover,
   onRowSelect,
   onSelectionChange,
   backgroundColor,
+  headerFont,
+  headerFontFamily,
   headerFontSize,
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
+  textAlign,
   rowHeight,
   rowPadding,
   rowBorder,
   rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
+  columnsMismatch,
   ...props
 }) => {
-  const store = useDataTableStore();
+  const store = useDataTableStore(false);
+  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const multiSelect = mode === 'multiple';
   const appContext = useAvailableConstantsData();
+
+  // Compute effective header font values with backward compatibility
+  const effectiveHeaderFontFamily = headerFont?.type ?? headerFontFamily;
+  const effectiveHeaderFontSize = headerFont?.size ? `${headerFont.size}px` : headerFontSize;
+  const effectiveHeaderFontWeight = headerFont?.weight ?? headerFontWeight;
+  const effectiveHeaderTextColor = headerFont?.color ?? headerTextColor;
+  const effectiveHeaderTextAlign = headerFont?.align ?? headerTextAlign ?? textAlign;
+  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign; // Body uses bodyTextAlign or falls back to textAlign (deprecated)
 
   if (tableRef) tableRef.current = store;
 
@@ -180,6 +223,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     isFetchingTableData,
     totalPages,
     columns,
+    configurableColumns,
     groupingColumns,
     pageSizeOptions,
     currentPage,
@@ -214,7 +258,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!onRowSelect?.actionName) return undefined;
 
     return (row: any, rowIndex: number) => {
-      const evaluationContext = { ...appContext, data: row, rowIndex };
+      const currentSelectedRow = { index: rowIndex, row: row, id: row?.id };
+      const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
 
       try {
         executeAction({
@@ -226,6 +271,20 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       }
     };
   }, [onRowSelect, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
+
+  // Clear all selections when selection mode changes
+  const previousMode = usePrevious(mode);
+  useEffect(() => {
+    // Only clear if mode actually changed
+    if (previousMode !== undefined && previousMode !== mode) {
+      if (selectedRow && setSelectedRow) {
+        setSelectedRow(null, null);
+      }
+      if (selectedIds && selectedIds.length > 0 && changeSelectedIds) {
+        changeSelectedIds([]);
+      }
+    }
+  }, [mode, previousMode, selectedRow, selectedIds, setSelectedRow, changeSelectedIds]);
 
   const onSelectRowLocal = (index: number, row: any): void => {
     if (onSelectRow) {
@@ -249,10 +308,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const previousIds = usePrevious(selectedIds);
 
   useEffect(() => {
-    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
+    if (
+      mode === 'multiple' &&
+      !(previousIds?.length === 0 && selectedIds?.length === 0) &&
+      typeof onSelectedIdsChanged === 'function'
+    ) {
       onSelectedIdsChanged(selectedIds);
     }
-  }, [selectedIds, previousIds]);
+  }, [selectedIds]);
 
   useEffect(() => {
     if (!isFetchingTableData && tableData?.length && onFetchDataSuccess) {
@@ -297,9 +360,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onRowsChanged(tableData);
     }
   }, [tableData]);
-  const { styles } = useStyles();
 
-  const metadata = useMetadata(false)?.metadata;
+  const entityMetadata = useMetadata(false);
+  const metadata = entityMetadata?.metadata;
 
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
@@ -408,7 +471,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         );
       }
     }
-    return false;
   };
 
   const crudOptions = useMemo(() => {
@@ -431,6 +493,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
   }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, appContext.contexts.lastUpdate]);
+
+  // Check if there's a crud operations column - if so, disable row selection
+  const hasCrudOperationsColumn = useMemo(() => {
+    return columns.filter((c) => !!c.show).some((c) => c.columnType === 'crud-operations');
+  }, [columns]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
     const localPreparedColumns = columns
@@ -859,16 +926,19 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect: selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect),
-    selectionMode,
+    useMultiSelect: multiSelect,
+    selectionMode: mode,
     freezeHeaders,
-    onSelectRow: selectionMode === 'none' ? undefined : onSelectRowLocal,
+    // Disable row selection when there's a crud operations column
+    onSelectRow: hasCrudOperationsColumn ? undefined : onSelectRowLocal,
     onRowDoubleClick: combinedDblClickHandler,
-    onSelectedIdsChanged: selectionMode === 'none' ? undefined : changeSelectedIds,
-    onMultiRowSelect: (selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect)) ? onMultiRowSelect : undefined,
+    onSelectedIdsChanged: mode === 'multiple' ? changeSelectedIds : undefined,
+    onMultiRowSelect: mode === 'multiple' ? onMultiRowSelect : undefined,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,
-    selectedRowIndex,
+    // Only use selectedRowIndex in single mode; in multiple mode, row.isSelected controls highlighting
+    // Disable row selection highlighting when there's a crud operations column
+    selectedRowIndex: mode === 'single' && !hasCrudOperationsColumn ? selectedRowIndex : undefined,
     loading: isFetchingTableData,
     pageCount: totalPages,
     manualFilters: true, // informs React Table that you'll be handling sorting and pagination server-side
@@ -899,8 +969,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineDisplayComponents,
     minHeight: props.minHeight,
     maxHeight: props.maxHeight,
-    noDataText,
-    noDataSecondaryText,
+    noDataText: noDataText,
+    noDataSecondaryText: noDataSecondaryText,
     noDataIcon,
     allowReordering: allowReordering && reorderingAvailable,
     onRowsReordered: handleRowsReordered,
@@ -912,15 +982,18 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     rowBackgroundColor,
     rowAlternateBackgroundColor,
-    rowHoverBackgroundColor: hoverHighlight ? rowHoverBackgroundColor : undefined,
+    rowHoverBackgroundColor: hoverHighlight ? (rowHoverBackgroundColor || '') : undefined,
     rowSelectedBackgroundColor,
     border,
     striped,
     backgroundColor,
-    headerFontSize,
-    headerFontWeight,
+    headerFontFamily: effectiveHeaderFontFamily,
+    headerFontSize: effectiveHeaderFontSize,
+    headerFontWeight: effectiveHeaderFontWeight,
     headerBackgroundColor,
-    headerTextColor,
+    headerTextColor: effectiveHeaderTextColor,
+    headerTextAlign: effectiveHeaderTextAlign,
+    bodyTextAlign: effectiveBodyTextAlign,
     rowHeight,
     rowPadding,
     rowBorder,
@@ -943,15 +1016,30 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     headerShadow: props.headerShadow,
     rowShadow: props.rowShadow,
     rowDividers: props.rowDividers,
+    bodyFontFamily,
+    bodyFontSize,
+    bodyFontWeight,
+    bodyFontColor,
   };
+
+  // Always render ReactTable - it handles empty columns gracefully
+  // Only show StandaloneTable in designer mode when there are truly no configured columns
+  // Only show StandaloneTable when:
+  // 1. In designer mode
+  // 2. configurableColumns has been initialized (not undefined) AND is empty
+  // 3. columns (from store) is also empty
+  // This prevents showing StandaloneTable during initial load before columns are registered
+  const shouldShowStandaloneTable =
+    configurableColumns !== undefined && configurableColumns.length === 0 &&
+    (!columns || columns.length === 0);
 
   return (
     <Fragment>
-      <div className={styles.shaChildTableErrorContainer}>
-        {exportToExcelError && <ValidationErrors error="Error occurred while exporting to excel" />}
-      </div>
-
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
+      {shouldShowStandaloneTable ? (
+        <StandaloneTable items={[]} type="" id="" />
+      ) : (
+        <ReactTable {...tableProps} />
+      )}
     </Fragment>
   );
 };

@@ -210,7 +210,9 @@ export interface IReactTableProps extends ITableRowDragProps {
   onSelectionChangeAction?: IConfigurableActionConfiguration;
 
   // Cell-specific styling
+  /** @deprecated Use bodyFontColor instead. Cell text color duplicates body font color. */
   cellTextColor?: string;
+  /** @deprecated Use rowBackgroundColor instead. Cell background color duplicates row background color. */
   cellBackgroundColor?: string;
   cellBorderColor?: string;
   /** @deprecated Use rowStylingBox instead. This property is migrated to rowStylingBox in migration v19 */
@@ -274,10 +276,30 @@ export interface IReactTableProps extends ITableRowDragProps {
   showExpandedView?: boolean;
 
   // Header styling
-  headerFontSize?: string;
-  headerFontWeight?: string;
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
   headerBackgroundColor?: string;
+
+  // Text alignment
+  headerTextAlign?: string; // Alignment for header cells
+  bodyTextAlign?: string; // Alignment for body cells
+
+  // Deprecated - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
   headerTextColor?: string;
+  /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
+  textAlign?: string;
 
   // Table body styling
   rowBackgroundColor?: string;
@@ -288,6 +310,12 @@ export interface IReactTableProps extends ITableRowDragProps {
   rowPadding?: string;
   rowBorder?: string; // Deprecated: use rowBorderStyle for full border control
   rowBorderStyle?: IBorderValue; // Full border configuration with per-side control
+
+  // Body font styling
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
 
   // Overall table styling
   borderRadius?: string;

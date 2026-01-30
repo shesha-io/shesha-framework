@@ -24,7 +24,7 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value }) =>
       className={getStyleClassName(type, direction)}
       onChange={onModifyChange}
       value={getStyleValue(type, direction, value)}
-      type="number"
+      type="text"
       disabled={readOnly}
     />
   );

@@ -41,6 +41,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         public ConfigurationItemTreeNodeType NodeType { get; set; }
 
         public string? ItemType { get; set; }
+        public string? Discriminator { get; set; }
 
         public bool IsCodeBased { get; set; }
         public bool IsCodegenPending { get; set; }

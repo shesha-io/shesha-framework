@@ -47,10 +47,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowSelectedBackgroundColor,
   border,
   backgroundColor,
+  headerFontFamily,
   headerFontSize,
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
   rowHeight,
   rowPadding,
   rowBorder,
@@ -58,8 +61,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   boxShadow,
   sortableIndicatorColor,
   striped: _striped,
-  cellTextColor,
-  cellBackgroundColor,
   cellBorderColor,
   cellBorders,
   headerBorder,
@@ -67,6 +68,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerShadow,
   rowShadow,
   rowDividers,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
+  freezeHeaders,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -74,10 +80,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowSelectedBackgroundColor?: string;
   border?: IBorderValue;
   backgroundColor?: string;
+  headerFontFamily?: string;
   headerFontSize?: string;
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  headerTextAlign?: string;
+  bodyTextAlign?: string;
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
@@ -85,8 +94,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   boxShadow?: string;
   sortableIndicatorColor?: string;
   striped?: boolean;
-  cellTextColor?: string;
-  cellBackgroundColor?: string;
   cellBorderColor?: string;
   cellBorders?: boolean;
   cellPadding?: string;
@@ -95,6 +102,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerShadow?: IShadowValue;
   rowShadow?: IShadowValue;
   rowDividers?: boolean;
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
+  freezeHeaders?: boolean;
 }) => {
   const {
     shaTable,
@@ -125,15 +137,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaSpanCenterVertically,
   } = tableClassNames;
 
-  // Generate border styles from the border configuration
   const borderStyles = getBorderStyle(border || {}, {});
   const headerBorderStyles = getBorderStyle(headerBorder || {}, {});
   const cellBorderStyles = getBorderStyle(cellBorder || {}, {});
   const headerShadowStyles = getShadowStyle(headerShadow);
   const rowShadowStyles = getShadowStyle(rowShadow);
 
-  // rowPadding should already be a string (converted in tableWrapper.tsx via convertRowStylingBoxToPadding)
-  // cellPadding is deprecated and migrated to rowStylingBox in migration v19
   const effectivePadding = rowPadding;
 
   const hasBorderRadius = border?.radius && (
@@ -145,9 +154,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   );
 
   // var(--ant-primary-3)
-  const hoverableRow = rowHoverBackgroundColor ? `
+  const hoverableRow = rowHoverBackgroundColor !== undefined ? `
         &:not(.${trSelected}) {
-            background: ${rowHoverBackgroundColor} !important;
+            background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
         }
     ` : '';
 
@@ -177,11 +186,27 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const shaReactTable = cx(
     'sha-react-table',
     css`
-      background: white;
+      ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
-      overflow: auto;
+      /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
+      overflow: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
+      ${boxShadow && !freezeHeaders ? `
+        /* Apply box shadow to container */
+        box-shadow: ${boxShadow};
+        /* Add margin to create space for shadow without affecting table width */
+        margin: 8px;
+        /* Remove margin from parent to compensate */
+        position: relative;
+      ` : ''}
+      ${boxShadow && freezeHeaders ? `
+        /* When both boxShadow and freezeHeaders are enabled, apply shadow differently */
+        /* to avoid breaking sticky positioning */
+        box-shadow: ${boxShadow};
+        margin: 8px;
+        position: relative;
+      ` : ''}
 
       .${shaSpanCenterVertically} {
         display: flex;
@@ -197,8 +222,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
-        background-color: ${backgroundColor}
-        ${boxShadow ? `box-shadow: ${boxShadow};` : ''}
+        background: transparent;
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {
@@ -207,10 +231,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           return `${cssKey}: ${value};`;
         }).join('\n')}
 
-        /* When border-radius is present, ensure content respects the bounds */
-        /* Only apply to tables without fixed columns since overflow:hidden breaks position:sticky */
+        /* When border-radius is present, clip content but not shadows */
+        /* Only apply to tables without fixed columns since overflow affects position:sticky */
         &:not(:has(.${fixedColumn})) {
-          ${hasBorderRadius ? `overflow: hidden;` : ''}
+          ${hasBorderRadius ? `
+            border-radius: inherit;
+            > .${thead}, > .${tbody} {
+              overflow: hidden;
+            }
+          ` : ''}
         }
 
         .${thead} {
@@ -220,7 +249,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${tbody} {
           overflow-x: hidden;
-          ${backgroundColor ? `background-color: ${backgroundColor};` : ''}
+          background: transparent;
 
           > .${shaSortable}:not(.${shaDragging}) {
             .${tr}.${trBody}:hover {
@@ -239,7 +268,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             align-items: center;
           }
 
-          //
           .${prefixCls}-collapse {
             border: none;
 
@@ -271,27 +299,20 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
-          ${rowHeight ? `height: ${rowHeight};` : 'height: 100%;'}
-          ${(() => {
-            // Prefer rowBorderStyle over rowBorder for full border control
-            if (rowBorderStyle) {
-              const borderStyles = getBorderStyle(rowBorderStyle, {});
-              return Object.entries(borderStyles)
-                .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
-                .join(' ');
-            }
-            // Fallback to simple border string
-            return rowBorder ? `border: ${rowBorder};` : '';
-          })()}
-
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
             ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
+            ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
             ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
             ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
-            ${headerTextColor ? `color: ${headerTextColor};` : ''}
+            ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
             ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+
+            /* Apply text alignment to header cells */
+            .${th} {
+              ${headerTextAlign ? `text-align: ${headerTextAlign} !important;` : ''}
+            }
 
             /* Apply header background to relative columns within headers */
             .${relativeColumn} {
@@ -300,21 +321,123 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trBody} {
-            ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
+            ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
+            ${(() => {
+              // Prefer rowBorderStyle over rowBorder for full border control
+              if (rowBorderStyle) {
+                const borderStyles = getBorderStyle(rowBorderStyle, {});
+                return Object.entries(borderStyles)
+                  .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
+                  .join(' ');
+              }
+              return rowBorder ? `border: ${rowBorder};` : '';
+            })()}
+            ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : 'background: transparent !important;'}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
+
+            /* Apply text alignment and font styles to body cells */
+            .${td} {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize};` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight};` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor};` : ''}
+            }
+
+            /* Apply body font styles to custom component wrappers */
+            .sha-data-cell,
+            .sha-form-cell {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+
+            }
+
+            /* Apply body font styles to form component content */
+            .sha-form-cell .ant-form-item-control-input-content {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Override Ant Design component defaults with table body font styles */
+            .ant-select-selection-item,
+            .ant-select-selection-placeholder,
+            .ant-input,
+            .ant-input-number-input,
+            .ant-picker-input > input,
+            .sha-data-cell input,
+            .sha-data-cell .ant-select-selection-search-input {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to autocomplete and entity reference components */
+            .sha-autocomplete-raw-value,
+            .sha-entity-reference-display-name {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to readonly display components */
+            .read-only-display-form-item,
+            .read-only-display-form-item div {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply to text field components */
+            .sha-input {
+              ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+              ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+              ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+              ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              input {
+                ${bodyFontFamily ? `font-family: ${bodyFontFamily} !important;` : ''}
+                ${bodyFontSize ? `font-size: ${bodyFontSize} !important;` : ''}
+                ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
+                ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
+                ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+
+              }
+            }
+
+            /* Make dropdowns transparent to inherit row background by default */
+            /* Can be overridden by component-level appearance settings */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent;
+              background-color: transparent;
+            }
           }
 
           .${td} {
             vertical-align: middle;
-            ${cellTextColor ? `color: ${cellTextColor};` : ''}
-            ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
           }
 
           .${th} {
             vertical-align: middle;
+            ${headerTextAlign ? `text-align: ${headerTextAlign};` : ''}
           }
 
           .${shaCrudCell} {
@@ -323,7 +446,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             min-height: 22px;
             height: 100%;
             justify-content: center;
-            align-items: center; 
+            align-items: center;
+            ${bodyFontFamily ? `font-family: ${bodyFontFamily};` : ''}
+            ${bodyFontSize ? `font-size: ${bodyFontSize};` : ''}
+            ${bodyFontWeight ? `font-weight: ${bodyFontWeight};` : ''}
+            ${bodyFontColor ? `color: ${bodyFontColor};` : ''}
 
             .sha-link {
               border: none;
@@ -332,9 +459,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: auto;
 
               .${iconPrefixCls} {
-                font-size: 16px;
-                width: 16px;
-                min-width: 16px;
+                font-size: ${bodyFontSize || '16px'};
+                width: ${bodyFontSize || '16px'};
+                height: ${bodyFontSize || '16px'};
+                min-width: ${bodyFontSize || '16px'};
+                min-height: ${bodyFontSize || '16px'};
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
               }
             }
             .sha-action-button {
@@ -344,9 +476,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               align-items: center;
 
               .${iconPrefixCls} {
-                font-size: 16px;
-                width: 16px;
-                min-width: 16px;
+                font-size: ${bodyFontSize || '16px'};
+                width: ${bodyFontSize || '16px'};
+                height: ${bodyFontSize || '16px'};
+                min-width: ${bodyFontSize || '16px'};
+                min-height: ${bodyFontSize || '16px'};
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
               }
             }
           }
@@ -379,7 +516,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trOdd} {
-            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
+            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : 'background: transparent !important;'}
+
+            /* Make dropdowns transparent to inherit row background by default */
+            /* Can be overridden by component-level appearance settings */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent;
+              background-color: transparent;
+            }
           }
 
           &.${trSelected} {
@@ -395,14 +543,66 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
             .sha-form-cell{
               .ant-form-item-control-input-content, a, button {
-                  color: inherit;
+                  color: white;
               }
-            
+
               .sha-stored-files-renderer, .ant-upload-list {
                   color: white;
               }
 
             }
+
+            .sha-data-cell {
+              color: white;
+            }
+
+            /* Remove white background from dropdowns in selected rows */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent !important;
+              background-color: transparent !important;
+            }
+
+            /* Ensure all form component text is white in selected rows */
+            .ant-select-selection-item,
+            .ant-select-selection-placeholder,
+            .ant-input,
+            .ant-input-number-input,
+            .ant-picker-input > input,
+            .sha-data-cell input,
+            .sha-data-cell .ant-select-selection-search-input {
+              color: white !important;
+            }
+
+            /* Ensure autocomplete text is white */
+            .sha-autocomplete-raw-value,
+            .sha-entity-reference-display-name {
+              color: white !important;
+            }
+
+            /* Ensure readonly display components show white text */
+            .read-only-display-form-item,
+            .read-only-display-form-item div {
+              color: white !important;
+            }
+
+            /* Ensure sha-input components (textfield) show white text */
+            .sha-input {
+              color: white !important;
+
+              input {
+                color: white !important;
+              }
+            }
+          }
+
+          /* Ensure selected row styling always takes priority over striped rows */
+          &.${trOdd}.${trSelected} {
+            background: ${rowSelectedBackgroundColor || token.colorPrimary} !important;
+            color: white;
           }
 
           .${prefixCls}-form-item {
@@ -469,9 +669,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${th} {
           ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : ''}
+          ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
           ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
           ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
-          ${headerTextColor ? `color: ${headerTextColor};` : ''}
+          ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
 
           &.${sortedAsc} {
             border-top: 3px solid ${sortableIndicatorColor || token.colorPrimary};
@@ -481,7 +682,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             border-bottom: 3px solid ${sortableIndicatorColor || token.colorPrimary};
           }
           &.${fixedColumn} {
-            display: inline-block;
             position: sticky;
             z-index: 999;
             opacity: 1;
@@ -506,18 +706,35 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
 
-        /* Single source of truth for cell padding - applies to both headers and data cells */
+        /* Common cell styles for both headers and body cells */
         .${th}, .${td} {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
-          /* Use effectivePadding from props (rowStylingBox or cellPadding) or default to 0.5rem */
-          ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
+          padding: 0.5rem; /* Default padding for all cells */
+
+          /* Only apply minimum height when rowHeight is auto to prevent empty cell collapse */
+          ${!rowHeight || rowHeight === 'auto' ? `
+            height: 44px;
+            vertical-align: middle;
+            line-height: normal;
+
+            /* Force empty cells to maintain height */
+            &:empty::before {
+              content: '';
+              display: inline-block;
+            }
+          ` : ''}
 
           /* In this example we use an absolutely position resizer, so this is required. */
           position: relative;
+
+          /* Allow overflow for cells with forms to show validation messages */
+          &:has(.sha-form-cell) {
+            overflow: visible;
+          }
 
           .resizer {
             /* prevents from scrolling while dragging on touch devices */
@@ -540,7 +757,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             z-index: 10;
           }
           &.${fixedColumn} {
-            display: inline-block;
             position: sticky;
             z-index: 10;
             opacity: 1;
@@ -559,6 +775,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${boxShadowRight} {
             box-shadow: -5px 0 3px -2px #ccc;
           }
+        }
+
+        /* Table body cell-specific padding from rowPadding prop */
+        .${td} {
+          ${effectivePadding ? `padding: ${effectivePadding};` : ''}
         }
       }
     `,

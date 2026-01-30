@@ -1,10 +1,10 @@
 export interface IHasVersion {
-  version?: number | 'latest' | undefined;
+  version?: number | 'latest' | undefined | undefined;
 }
 
 export type Migration<TPrev = IHasVersion, TNext = IHasVersion, TContext = any> = (
   prev: TPrev,
-  context: TContext
+  context: TContext,
 ) => TNext;
 export interface MigrationRegistration<TPrev = IHasVersion, TNext = IHasVersion> {
   version: number;
@@ -28,7 +28,7 @@ interface IMigrationRegistrationsOwner<TDst = IHasVersion, TContext = any> {
 }
 
 export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext = any> {
-  readonly migrator: IMigrationRegistrationsOwner<TDst>;
+  readonly migrator: IMigrationRegistrationsOwner<TDst, TContext>;
 
   constructor(owner: IMigrationRegistrationsOwner<TDst>) {
     this.migrator = owner;

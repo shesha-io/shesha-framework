@@ -38,11 +38,13 @@ const DropdownComponent: DropdownComponentDefinition = {
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
+    // When enableStyleOnReadonly is true, apply all configured styles in readonly mode
+    // When enableStyleOnReadonly is false, apply only minimal styles (font + dimensions)
     const finalStyle = model.readOnly
       ? model.enableStyleOnReadonly
-        ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
-        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles, ...model.allStyles.backgroundStyles, width: '100%', height: '100%', overflow: 'hidden' }
-      : { ...model.allStyles.fullStyle, width: '100%', height: '100%', overflow: 'hidden' };
+        ? { ...model.allStyles.fullStyle, overflow: 'auto' }
+        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
+      : { ...model.allStyles.fullStyle, overflow: 'auto' };
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -105,7 +107,7 @@ const DropdownComponent: DropdownComponentDefinition = {
         style: prev.style,
       };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
     .add<IDropdownComponentProps>(8, (prev) => {
       const styles: IInputStyles = {
@@ -121,7 +123,7 @@ const DropdownComponent: DropdownComponentDefinition = {
         backgroundColor: prev.backgroundColor,
         stylingBox: prev.stylingBox,
       };
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IDropdownComponentProps>(10, (prev) => {
@@ -138,6 +140,16 @@ const DropdownComponent: DropdownComponentDefinition = {
         tablet: { ...prev.tablet, tag: { ...initTagStyle } },
         mobile: { ...prev.mobile, tag: { ...initTagStyle } },
       };
+    })
+    .add<IDropdownComponentProps>(11, (prev) => {
+      const result = { ...prev };
+      delete result['referenceListNamespace'];
+      delete result['referenceListName'];
+      const { referenceListId } = result;
+      const knownPrefixes = ["Shesha.Framework", "Shesha.Core", "Shesha.Scheduler"];
+      if (referenceListId && referenceListId.name && !referenceListId.module && knownPrefixes.some((p) => referenceListId.name.startsWith(p)))
+        result.referenceListId = { module: "Shesha", name: referenceListId.name };
+      return result;
     }),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;

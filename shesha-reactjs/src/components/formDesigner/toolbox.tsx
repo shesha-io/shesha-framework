@@ -3,7 +3,7 @@ import { ToolboxComponents } from './toolboxComponents';
 import { ToolboxDataSources } from './toolboxDataSources';
 import { useStyles } from './styles/styles';
 import { Tabs } from 'antd';
-import { isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
+import { isEntityMetadata, isJsonEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { useMetadata } from '@/providers';
 
 const Toolbox: FC = () => {
@@ -15,7 +15,7 @@ const Toolbox: FC = () => {
 
     const defaultItems = [{ key: '1', label: 'Components', children: <ToolboxComponents /> }];
 
-    if (isEntityMetadata(currentMeta?.metadata))
+    if (isEntityMetadata(currentMeta?.metadata) || isJsonEntityMetadata(currentMeta?.metadata))
       dataSources.push({
         id: currentMeta.id,
         name: currentMeta.metadata.name,

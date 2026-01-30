@@ -8,6 +8,7 @@ import {
   Menu,
   Space,
 } from 'antd';
+import { ButtonType } from 'antd/es/button/buttonHelpers';
 import {
   ButtonGroupItemProps,
   IButtonGroup,
@@ -19,6 +20,7 @@ import { ConfigurableButton } from '../configurableButton';
 import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
 import {
   IApplicationContext,
+  standardActualModelPropertyFilter,
   useAvailableConstantsData,
 } from '@/providers/form/utils';
 import { getButtonGroupMenuItem } from './utils';
@@ -32,7 +34,7 @@ import classNames from 'classnames';
 import { removeNullUndefined } from '@/providers/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
-import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
+import { getGhostStyleOverrides } from '@/utils/style';
 import { addPx } from '@/utils/style';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
@@ -61,6 +63,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
     ...stylingBoxAsCSS,
     ...jsStyle,
     justifyContent: model.font?.align,
+    zIndex: 0,
   });
 
 
@@ -126,6 +129,10 @@ const InlineItem: FC<InlineItemProps> = (props) => {
     const menuItems = item.childItems
       .filter((item) => (getIsVisible(item)))
       .map((childItem) => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
+    // Ghost buttons: only foreground color, no background/border/shadow
+    const isGhostType = item.buttonType === 'ghost';
+    const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+
     return (
       <Dropdown
         key={uuid}
@@ -134,10 +141,12 @@ const InlineItem: FC<InlineItemProps> = (props) => {
       >
         <Button
           icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
-          type={item.buttonType}
+          type={isGhostType ? 'default' : (item.buttonType as ButtonType)}
+          ghost={isGhostType}
           title={item.tooltip}
           disabled={item.readOnly}
           className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
+          style={ghostOverrides}
         >
           {item.label ? item.label : undefined}
           {item.downIcon ? <ShaIcon iconName={item.downIcon as IconType} /> : undefined}
@@ -250,7 +259,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
     props.items?.map((item) => ({ ...item, size: item.size ?? props.size ?? 'middle' })),
     props.readOnly,
     null,
-    standartActualModelPropertyFilter,
+    standardActualModelPropertyFilter,
   );
   const memoizedItems = useDeepCompareMemo(() => items, [items]) ?? [];
   return (

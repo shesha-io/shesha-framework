@@ -8,17 +8,21 @@ interface IStyleProps {
   fontSize?: string;
   isScrolling: boolean;
   padding?: { x: string; y: string };
+  itemStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
+  menuItemStyle?: string;
   width: string;
   fontStyles?: React.CSSProperties;
 }
 
 interface IGlobalMenuProps {
   colors: ILayoutColor;
+  itemStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
   styleOnSubMenu?: string;
+  menuItemStyle?: string;
   fontStyles?: React.CSSProperties;
   menuId?: string;
 }
@@ -34,16 +38,16 @@ export const useStyles = createStyles(
       colors,
       fontSize,
       isScrolling,
-      padding,
+      itemStyle,
       styleOnHover,
       styleOnSelected,
+      menuItemStyle,
       width,
       fontStyles,
     }: IStyleProps,
   ) => {
     const menuContainer = css`
       display: flex;
-      ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
       flex-direction: row;
       white-space: nowrap;
       align-items: center;
@@ -92,69 +96,105 @@ export const useStyles = createStyles(
         }
 
         .${prefixCls}-menu-submenu, .${prefixCls}-menu-item {
-          padding: ${padding?.y}px ${padding?.x}px;
+          padding: 0 !important;
           color: ${colors?.itemColor ?? BLACK_CLR};
           ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
+          margin-right: 0;
           font-family: ${fontStyles?.fontFamily};
           font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
           font-weight: ${fontStyles?.fontWeight};
+          ${menuItemStyle || ''}
+          ${itemStyle || ''}
 
           .${prefixCls}-menu-submenu-title {
             color: ${colors?.itemColor ?? BLACK_CLR};
             font-family: ${fontStyles?.fontFamily};
             font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
             font-weight: ${fontStyles?.fontWeight};
+            ${itemStyle || ''}
 
             .${prefixCls}-icon {
               font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
               color: ${colors?.itemColor ?? BLACK_CLR};
 
               &:hover {
-                ${styleOnHover}
+                ${styleOnHover || ''}
+                ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
               }
             }
 
             &:hover {
-             ${styleOnHover}
+             ${styleOnHover || ''}
+             ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
+             ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
             }
           }
 
           &:hover {
-            ${styleOnHover ? styleOnHover : `
-              background: ${colors?.hoverItemBackground
-                ? `${colors.hoverItemBackground} !important`
-                : "transparent"};
-              color: ${colors?.hoverItemColor
-                ? `${colors.hoverItemColor} !important`
-                : BLACK_CLR};
-            `}
+            ${styleOnHover || ''}
+            ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
+            ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
           }
         }
 
-        .${prefixCls}-menu-submenu-active {
-          ${styleOnHover ? styleOnHover : `
-            background: ${colors?.hoverItemBackground
-              ? `${colors.hoverItemBackground} !important`
-              : "transparent"};
-
-            .${prefixCls}-menu-submenu-title {
-              color: ${colors?.hoverItemColor ?? BLACK_CLR};
-              font-family: ${fontStyles?.fontFamily};
-              font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
-              font-weight: ${fontStyles?.fontWeight};
-            }
-          `}
+        .${prefixCls}-menu-item-active {
+          ${styleOnHover || ''}
+          ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
+          ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
         }
 
-        .${prefixCls}-menu-item-selected {
-          ${styleOnSelected ? styleOnSelected : `
-            background: ${colors?.selectedItemBackground
-              ? `${colors.selectedItemBackground} !important`
-              : "transparent"};
+        .${prefixCls}-menu-submenu-active {
+          ${styleOnHover || ''}
+          ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
+
+          .${prefixCls}-menu-submenu-title {
+            ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
+            font-family: ${fontStyles?.fontFamily};
+            font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
+            font-weight: ${fontStyles?.fontWeight};
+          }
+        }
+
+        .${prefixCls}-menu-submenu-active.${prefixCls}-menu-submenu-selected {
+          background: ${colors?.selectedItemBackground
+            ? `${colors.selectedItemBackground} !important`
+            : "transparent"};
+
+          .${prefixCls}-menu-submenu-title {
             color: ${colors?.selectedItemColor
               ? `${colors.selectedItemColor} !important`
               : BLACK_CLR};
-          `}
+            font-family: ${fontStyles?.fontFamily};
+            font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
+            font-weight: ${fontStyles?.fontWeight};
+          }
+          ${styleOnSelected || ''}
+        }
+
+        .${prefixCls}-menu-item-selected {
+          background: ${colors?.selectedItemBackground
+            ? `${colors.selectedItemBackground} !important`
+            : "transparent"};
+          color: ${colors?.selectedItemColor
+            ? `${colors.selectedItemColor} !important`
+            : BLACK_CLR};
+          ${styleOnSelected || ''}
+        }
+
+        .${prefixCls}-menu-submenu-selected {
+          background: ${colors?.selectedItemBackground
+            ? `${colors.selectedItemBackground} !important`
+            : "transparent"};
+
+          .${prefixCls}-menu-submenu-title {
+            color: ${colors?.selectedItemColor
+              ? `${colors.selectedItemColor} !important`
+              : BLACK_CLR};
+            font-family: ${fontStyles?.fontFamily};
+            font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
+            font-weight: ${fontStyles?.fontWeight};
+          }
+          ${styleOnSelected || ''}
         }
 
         ::-webkit-scrollbar {
@@ -175,7 +215,6 @@ export const useStyles = createStyles(
       width: 80px;
       display: flex;
       height: 100%;
-      ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
       color: ${colors?.itemColor};
       flex-direction: row;
       justify-content: center;
@@ -217,13 +256,26 @@ export const useStyles = createStyles(
 );
 
 export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGlobalStyle`
+  /* Enable text overflow with ellipsis for all menu items */
+  .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-title-content {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Standardize dropdown widths globally */
+  .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-popup .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
+    min-width: 200px !important;
+    max-width: 400px !important;
+    width: 200px !important;
+  }
+
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
 
     ${(p: GlobalMenuType) => p?.styleOnSubMenu};
 
-    ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
     border: none !important;
     box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
     font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
@@ -235,100 +287,127 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     }
 
     .${(p) => p?.theme.prefixCls}-menu-item {
-      color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
-      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
+      color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
+      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
       border: none !important;
       margin: 0 !important;
+      margin-right: 0 !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
-
+      ${(p: GlobalMenuType) => p?.menuItemStyle || ''}
+      ${(p: GlobalMenuType) => p?.itemStyle || ''}
       &:hover {
-        ${(p: GlobalMenuType) => p?.styleOnHover || `
-          color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
-        `}
+        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
       }
 
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
-        ${(p: GlobalMenuType) => p?.styleOnSelected || `
-          color: ${p?.colors?.selectedItemColor || BLACK_CLR} !important;
-          background: ${p?.colors?.selectedItemBackground || 'transparent'} !important;
-        `}
+        color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
+        background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+        ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
       }
     }
 
     /* Parent submenu items (items that have children) */
     .${(p) => p?.theme.prefixCls}-menu-submenu {
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-        color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
-        ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
+        color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
+        ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
         border: none !important;
         margin: 0 !important;
+        margin-right: 0 !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
         font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
+        ${(p: GlobalMenuType) => p?.menuItemStyle || ''}
+        ${(p: GlobalMenuType) => p?.itemStyle || ''}
 
         &:hover {
-          ${(p: GlobalMenuType) => p?.styleOnHover || `
-            color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
-            background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
-          `}
+          ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
         }
 
         .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
-          color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
+          color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
         }
       }
 
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-          ${(p: GlobalMenuType) => p?.styleOnSelected || `
-            color: ${p?.colors.selectedItemColor || BLACK_CLR} !important;
-            background: ${p?.colors?.selectedItemBackground || 'transparent'} !important;
-          `}
+          color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
+          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
         }
       }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-item-active {
       ${(p: GlobalMenuType) => p?.styleOnHover || `
-        color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
-        background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+        color: ${p?.colors?.hoverItemColor || BLACK_CLR};
+        background: ${p?.colors?.hoverItemBackground || 'transparent'};
       `}
+
+      .${(p) => p?.theme.prefixCls}-menu-title-content {
+        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+      }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-submenu-active {
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-        ${(p: GlobalMenuType) => p?.styleOnHover || `
-          color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
-        `}
+        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
       }
 
       .${(p) => p?.theme.prefixCls}-menu-title-content {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
+        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR};
+      }
+
+      /* When submenu has a selected child */
+      &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
+        .${(p) => p?.theme.prefixCls}-menu-submenu-title {
+          color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
+          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
+        }
       }
     }
   }
 `;
 
 export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGlobalStyle`
+  /* Enable text overflow with ellipsis for all menu items in scoped menus */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-title-content,
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-title-content {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Standardize dropdown widths for scoped horizontal menus */
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId}-dropdown.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-popup .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
+    min-width: 200px !important;
+    max-width: 400px !important;
+    width: 200px !important;
+  }
+
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer {
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-content-wrapper,
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-content {
-      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
     }
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-header {
-      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
-      color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
+      color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
       border-bottom: none !important;
 
       .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-title {
-        color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
+        color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
         font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
@@ -336,7 +415,6 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     }
 
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body {
-      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
       padding: 0 !important;
     }
   }
@@ -350,31 +428,53 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
     ${(p: GlobalMenuType) => p?.styleOnSubMenu};
 
-    ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
     border: none !important;
     font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
     font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
     text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
+  }
 
-    /* Hide submenu arrows */
+  /* Hide submenu arrows only for horizontal menu (not drawer) */
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
     .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
       display: none !important;
     }
+  }
+
+  /* Show submenu arrows for drawer menu */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
+    .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
+      display: inline-block !important;
+    }
+  }
+
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu,
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
 
     .${(p) => p?.theme.prefixCls}-menu-item {
-      color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
-      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
+      color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
+      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
       border: none !important;
       margin: 0 !important;
+      margin-right: 0 !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
+      ${(p: GlobalMenuType) => p?.menuItemStyle || ''}
+      ${(p: GlobalMenuType) => p?.itemStyle || ''}
 
       &:hover {
-        ${(p: GlobalMenuType) => p?.styleOnHover || `
-          color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
-        `}
+        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
       }
 
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
@@ -387,53 +487,67 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
     .${(p) => p?.theme.prefixCls}-menu-submenu {
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-        color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
-        ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
+        color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
+        ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
         border: none !important;
         margin: 0 !important;
+        margin-right: 0 !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
         font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
+        ${(p: GlobalMenuType) => p?.menuItemStyle || ''}
+        ${(p: GlobalMenuType) => p?.itemStyle || ''}
 
         &:hover {
-          ${(p: GlobalMenuType) => p?.styleOnHover || `
-            color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
-            background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
-          `}
+          ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
         }
 
         .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
-          color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
+          color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
         }
       }
 
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-          ${(p: GlobalMenuType) => p?.styleOnSelected || `
-            color: ${p?.colors.selectedItemColor || BLACK_CLR} !important;
-            background: ${p?.colors?.selectedItemBackground || 'transparent'} !important;
-          `}
+          color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
+          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
         }
       }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-item-active {
       ${(p: GlobalMenuType) => p?.styleOnHover || `
-        color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
-        background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+        color: ${p?.colors?.hoverItemColor || BLACK_CLR};
+        background: ${p?.colors?.hoverItemBackground || 'transparent'};
       `}
+
+      .${(p) => p?.theme.prefixCls}-menu-title-content {
+        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+      }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-submenu-active {
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-        ${(p: GlobalMenuType) => p?.styleOnHover || `
-          color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
-        `}
+        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
       }
 
       .${(p) => p?.theme.prefixCls}-menu-title-content {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
+        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR};
+      }
+
+      /* When submenu has a selected child */
+      &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
+        .${(p) => p?.theme.prefixCls}-menu-submenu-title {
+          color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
+          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
+        }
       }
     }
   }

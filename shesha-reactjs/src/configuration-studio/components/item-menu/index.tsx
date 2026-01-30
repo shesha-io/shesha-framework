@@ -1,4 +1,5 @@
 import { CustomErrorBoundary } from '@/components';
+import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-environment/contexts';
 import { useConfigurationStudio } from '@/configuration-studio/cs/contexts';
 import { useActiveDoc } from '@/configuration-studio/cs/hooks';
 import { buildConfiguraitonItemMenu } from '@/configuration-studio/menu-utils';
@@ -12,6 +13,8 @@ type MenuItems = Required<MenuProps>["items"];
 
 export const ConfigurationItemMenu: FC = () => {
   const cs = useConfigurationStudio();
+  const csEnv = useConfigurationStudioEnvironment();
+  const { getDocumentDefinition } = csEnv;
   const activeDoc = useActiveDoc();
 
   // TODO: add current tree selection to the dependencies list
@@ -24,19 +27,21 @@ export const ConfigurationItemMenu: FC = () => {
           key: activeDoc.itemId,
           nodeType: TreeNodeType.ConfigurationItem,
           itemType: activeDoc.itemType,
+          discriminator: activeDoc.discriminator,
           name: activeDoc.label,
           label: activeDoc.label,
           moduleId: activeDoc.moduleId,
           moduleName: activeDoc.moduleName,
           flags: activeDoc.flags,
         },
+        getDocumentDefinition,
       })
       : [];
-  }, [cs, activeDoc]);
+  }, [cs, activeDoc, getDocumentDefinition]);
 
   if (!activeDoc || menuItems.length === 0)
     return undefined;
-  const icon = getIcon(TreeNodeType.ConfigurationItem, activeDoc.itemType);
+  const icon = getIcon(csEnv, TreeNodeType.ConfigurationItem, activeDoc.itemType);
 
   return (
     <CustomErrorBoundary key={activeDoc.itemId}>

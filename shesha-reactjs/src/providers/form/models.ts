@@ -63,6 +63,7 @@ export interface IStyleType {
   background?: IBackgroundValue;
   font?: IFontValue;
   shadow?: IShadowValue;
+  menuItemShadow?: IShadowValue;
   dimensions?: IDimensionsValue;
   size?: SizeType;
   style?: string;
@@ -71,7 +72,7 @@ export interface IStyleType {
   primaryBgColor?: ColorValueType;
   secondaryBgColor?: ColorValueType;
   secondaryTextColor?: ColorValueType;
-  overflow?: boolean;
+  overflow?: boolean | "dropdown" | "menu" | "scroll";
   hideScrollBar?: boolean;
 }
 
@@ -437,16 +438,16 @@ export interface IFormSections {
  * Form DTO
  */
 export interface FormDto {
-  id?: string;
+  id: string;
   /**
    * Form name
    */
-  name?: string;
+  name: string;
 
   /**
    * Module
    */
-  module?: string;
+  module: string;
   /**
    * Form label
    */
@@ -467,11 +468,14 @@ export interface FormDto {
    * Type
    */
   type?: string | null;
+  access: number | null;
+  permissions: string[] | null;
 }
 
 export interface IFormDto extends Omit<FormDto, 'markup'> {
   markup: FormRawMarkup | null;
   settings: IFormSettings | null;
+  readOnly: boolean;
 }
 
 export interface IFormValidationRulesOptions {

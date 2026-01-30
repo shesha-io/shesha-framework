@@ -16,7 +16,7 @@ namespace Shesha.DynamicEntities.Distribution
     public class ShaRoleImport : ConfigurationItemImportBase<ShaRole, DistributedShaRole>, IShaRoleImport, ITransientDependency
     {
         private readonly IRepository<ShaRolePermission, Guid> _rolePermissionRepo;
-        public string ItemType => ShaRole.ItemTypeName;
+        public override string ItemType => ShaRole.ItemTypeName;
 
         public ShaRoleImport(
             IRepository<Module, Guid> moduleRepo,

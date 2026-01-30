@@ -8,12 +8,14 @@ import {
   IDataTableStateContext,
   ISelectionProps,
 } from './contexts';
+import { IModelValidation } from '@/utils/errors';
 import {
   DataTableActionEnums,
   IChangeFilterAction,
   IChangeFilterOptionPayload,
   IFetchColumnsSuccessSuccessPayload,
   IFetchGroupingColumnsSuccessPayload,
+  IFetchTableDataErrorPayload,
   IRegisterConfigurableColumnsPayload,
   ISetPermanentFilterActionPayload,
   ISetPredefinedFiltersPayload,
@@ -35,16 +37,27 @@ import { Row } from 'react-table';
 import { ProperyDataType } from '@/interfaces/metadata';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
+/** Represents the shape of a table row with at minimum an id property */
+interface ITableRowData {
+  id: string;
+  [key: string]: any;
+}
+
+/** Type guard to check if an object has the required row data shape */
+const isTableRowData = (obj: unknown): obj is ITableRowData => {
+  return typeof obj === 'object' && obj !== null && 'id' in obj;
+};
+
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
   return [...(state.tableFilterDirty || state.tableFilter || [])];
 };
 
-const getRowSelection = (rows: object[], selectedId: string): ISelectionProps => {
+const getRowSelection = (rows: ITableRowData[], selectedId: string): ISelectionProps => {
   if (!selectedId || !rows || rows.length === 0)
     return null;
 
-  const rowIndex = rows.findIndex((row) => row["id"] === selectedId);
+  const rowIndex = rows.findIndex((row) => row.id === selectedId);
   return rowIndex > -1
     ? {
       row: rows[rowIndex],
@@ -82,25 +95,45 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetMultiSelectedRow]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<Row[] | Row>,
+      action: ReduxActions.Action<Row<ITableRowData>[] | Row<ITableRowData>>,
     ) => {
       const { payload } = action;
-      const { selectedRows: rows } = state;
-      let selectedRows;
+      const { selectedRows: rows = [] } = state; // Ensure rows is always an array
+      let selectedRows: any[];
 
       if (Array.isArray(payload)) {
         selectedRows = payload?.filter(({ isSelected }) => isSelected).map(({ original }) => original);
       } else {
-        const data = payload.original as any;
-        const exists = rows.some(({ id }) => id === data?.id);
+        // Type-safe extraction with runtime validation
+        if (!isTableRowData(payload.original)) {
+          console.warn('SetMultiSelectedRow: Invalid row data shape', { payload });
+          return state;
+        }
+
+        const data = payload.original;
+        const rowId = data.id;
         const isSelected = payload.isSelected;
 
+        if (!rowId) {
+          console.warn('SetMultiSelectedRow: Row ID is missing', { payload, data });
+          return state;
+        }
+
+        // Check if row exists in selectedRows using strict equality
+        const exists = rows.some((row) => String(row.id) === String(rowId));
+
         if (exists && isSelected) {
-          selectedRows = [...rows.filter(({ id }) => id !== data?.id), data];
+          // Row exists and should be selected - replace it with updated data
+          selectedRows = [...rows.filter((row) => String(row.id) !== String(rowId)), data as any];
         } else if (exists && !isSelected) {
-          selectedRows = rows.filter(({ id }) => id !== data?.id);
+          // Row exists and should be deselected - remove it
+          selectedRows = rows.filter((row) => String(row.id) !== String(rowId));
         } else if (!exists && isSelected) {
-          selectedRows = [...rows, data];
+          // Row doesn't exist and should be selected - add it
+          selectedRows = [...rows, data as any];
+        } else {
+          // Row doesn't exist and should be deselected - no change
+          selectedRows = rows;
         }
       }
 
@@ -247,11 +280,15 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return newState;
     },
 
-    [DataTableActionEnums.FetchTableDataError]: (state: IDataTableStateContext) => {
+    [DataTableActionEnums.FetchTableDataError]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IFetchTableDataErrorPayload>,
+    ) => {
       return {
         ...state,
         isFetchingTableData: false,
         hasFetchTableDataError: true,
+        fetchTableDataError: action.payload?.error,
       };
     },
 
@@ -263,7 +300,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         payload: { rows, totalPages, totalRows, totalRowsBeforeFilter },
       } = action;
 
-      const selectedRow = getRowSelection(rows, state.selectedRow?.id);
+      const selectedRow = getRowSelection(rows as ITableRowData[], state.selectedRow?.id);
 
       return {
         ...state,
@@ -272,6 +309,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
         totalRows,
         totalRowsBeforeFilter,
         isFetchingTableData: false,
+        hasFetchTableDataError: false, // Clear error flag on success
+        fetchTableDataError: undefined, // Clear error details on success
         selectedRow: selectedRow,
       };
     },
@@ -570,6 +609,18 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         standardSorting: [...payload],
+      };
+    },
+
+    [DataTableActionEnums.SetContextValidation]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IModelValidation | undefined>,
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        contextValidation: payload,
       };
     },
 

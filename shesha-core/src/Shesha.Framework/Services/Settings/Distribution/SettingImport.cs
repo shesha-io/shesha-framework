@@ -27,7 +27,7 @@ namespace Shesha.Services.Settings.Distribution
             _settingValueRepo = settingValueRepo;
         }
 
-        public string ItemType => SettingConfiguration.ItemTypeName;
+        public override string ItemType => SettingConfiguration.ItemTypeName;
 
         protected override Task<bool> CustomPropsAreEqualAsync(SettingConfiguration item, DistributedSettingConfiguration distributedItem)
         {

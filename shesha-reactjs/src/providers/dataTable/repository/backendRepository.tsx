@@ -4,7 +4,7 @@ import qs from "qs";
 import React, { ComponentType, useMemo, FC } from "react";
 
 import { camelcaseDotNotation } from "@/utils/string";
-import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
+import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
 import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs, SupportsGroupingArgs } from "./interfaces";
 import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
@@ -253,8 +253,19 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
   const exportToExcel = async (payload: IGetListDataPayload): Promise<void> => {
-    let excelColumns = payload.columns
-      .map<IExcelColumn>((c) => ({ propertyName: c.propertyName, label: c.caption }));
+    let excelColumns: IExcelColumn[] = [];
+
+    for (const prop of payload.columns) {
+      if (isDataColumn(prop))
+        excelColumns.push({ propertyName: prop.propertyName, label: prop.caption });
+
+      // ToDo: Add support for form columns
+      /* if (isFormColumn(prop)) {
+        for (const fProp of prop.propertiesToFetch) {
+          excelColumns.push({ propertyName: fProp, label: prop.caption });
+        }
+      }*/
+    }
 
     if (excelColumns.findIndex((c) => c.propertyName === 'id') === -1) {
       excelColumns = [{ propertyName: 'id', label: 'Id' }, ...excelColumns];

@@ -9,6 +9,7 @@ import { FormSettingsButton } from './formSettingsButton';
 import { useStyles } from '../styles/styles';
 import { CanvasConfig } from './canvasConfig';
 import { CustomActions } from './customActions';
+import { FormName } from './formName';
 
 export const FormDesignerToolbar: FC = () => {
   const readOnly = useFormDesignerReadOnly();
@@ -24,9 +25,7 @@ export const FormDesignerToolbar: FC = () => {
       {isGranted && (
         <>
           <div className={styles.shaDesignerToolbarLeft}>
-            {!readOnly && (
-              <SaveMenu />
-            )}
+            {readOnly ? <FormName /> : <SaveMenu />}
           </div>
           <div className={styles.shaDesignerToolbarCenter}>
             <CanvasConfig />

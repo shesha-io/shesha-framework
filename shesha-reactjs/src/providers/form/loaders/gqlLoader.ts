@@ -137,10 +137,11 @@ export class GqlLoader implements IFormDataLoader {
 
           // TODO: AS - calc actual propName from JS setting
           if (typeof propName === 'string') {
-            fieldNames.push(propName);
             const fieldsFunc = component?.getFieldsToFetch;
             if (typeof fieldsFunc === 'function')
               fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata) ?? []);
+            else
+              fieldNames.push(propName);
           }
         }
       }

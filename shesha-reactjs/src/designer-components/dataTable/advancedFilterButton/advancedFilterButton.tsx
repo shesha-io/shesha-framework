@@ -1,33 +1,54 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Badge, Button, Tooltip } from 'antd';
 import { FilterFilled, FilterOutlined } from '@ant-design/icons';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from './style';
-import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import * as Icons from '@ant-design/icons';
+import { ButtonType } from 'antd/es/button/buttonHelpers';
+import { getGhostStyleOverrides } from '@/utils/style';
+import { IAdvancedFilterButtonComponentProps } from './types';
 
-export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
+export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (props) => {
   const {
     isInProgress: { isFiltering },
     setIsInProgressFlag,
     tableFilter,
   } = useDataTableStore();
-
   const [icon, setIcon] = useState(null);
   const { styles } = useStyles(props.styles?.fontSize);
-
 
   const filterColumns = tableFilter?.map((filter) => filter.columnId);
   const hasFilters = filterColumns?.length > 0 || isFiltering;
 
-  const buttonStyle = {
+  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
+  const isGhostType = props.buttonType === 'ghost';
+
+  // Build base button style without border/shadow to avoid conflicts
+  const baseButtonStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     ...{ color: props.buttonType !== 'primary' && !props.danger ? styles.primaryColor : '' },
     padding: '3px',
-    border: props.buttonType === 'link' ? 'none' : hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
+  };
+
+  // Ghost buttons should never have borders, backgrounds, or shadows - only foreground color
+  // Link buttons also don't have borders
+  // For other types (primary, default, dashed), let the configured styles handle borders/shadows
+  const borderStyle = ['link', 'ghost'].includes(props.buttonType)
+    ? { border: 'none' }
+    : hasFilters
+      ? { border: `1px solid ${styles.primaryColor}` }
+      : {};
+
+  // Ghost buttons: only foreground color, no background/border/shadow
+  const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+
+  const buttonStyle = {
+    ...baseButtonStyle,
+    ...borderStyle,
     ...props.styles,
+    ...ghostOverrides,
   };
 
   const startFilteringColumns = (): void => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
@@ -39,7 +60,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
       .split(' ');
   };
 
-  const customIcon = (): FC | null => {
+  const customIcon = useCallback(() => {
     if (props.icon) {
       const splitIconName = splitByCapitalLetters(props.icon as string);
       splitIconName.pop();
@@ -50,15 +71,16 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
     }
 
     return null;
-  };
+  }, [props.icon, hasFilters]);
 
   useEffect(() => {
     setIcon(customIcon());
-  }, [props.icon, hasFilters]);
+  }, [props.icon, hasFilters, customIcon]);
 
   const IconComponent = icon;
   const defaultIcon = hasFilters ? <FilterFilled /> : <FilterOutlined />;
   const filterIcon = icon ? <IconComponent /> : defaultIcon;
+  const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
 
   return (
     <span>
@@ -70,7 +92,8 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
       >
         <Tooltip title={props.tooltip}>
           <Button
-            type={props.buttonType}
+            type={actualButtonType}
+            ghost={isGhostType}
             title={filterColumns?.join('  ')}
             onClick={startFilteringColumns}
             className={styles.button}
@@ -79,7 +102,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
             icon={filterIcon}
             size={props.size}
             style={isFiltering || props.readOnly
-              ? { ...buttonStyle, opacity: 0.5, border: props.buttonType === 'link' ? 'none' : buttonStyle.border }
+              ? { ...buttonStyle, opacity: 0.5, border: ['link', 'ghost'].includes(props.buttonType) ? 'none' : buttonStyle.border }
               : { ...buttonStyle }}
           >
             {props.label}

@@ -9,7 +9,7 @@ import { HttpClientApi } from "@/publicJsApis/httpClient";
 import qs from "qs";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import { getEntityTypeIdentifierQueryParams, isEntityTypeIdentifier } from "./entities/utils";
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty, isEntityTypeIdentifier } from "./entities/utils";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 
 interface IPropertyPathWithMetadata {
@@ -206,6 +206,8 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
   getPropertyMetadata = async (payload: IGetPropertyMetadataPayload): Promise<IPropertyMetadata | null> => {
     const { dataType, modelType, propertyPath } = payload;
+
+    if (isEntityTypeIdEmpty(modelType)) return null;
 
     // get container metadata
     const metadata = await this.getMetadata({ dataType, modelType });
