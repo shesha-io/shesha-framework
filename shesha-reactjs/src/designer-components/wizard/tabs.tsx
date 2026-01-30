@@ -77,7 +77,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         });
     }, [visibleSteps, current]);
 
-    console.log("Current step :: ", currentStep, "Steps: : ", steps);
     const splitButtons = buttonsLayout === 'spaceBetween';
 
     if (model?.hidden) return null;
@@ -95,6 +94,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                         direction={direction}
                         labelPlacement={labelPlacement}
                     />
+
                     <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                 </div>
 
@@ -107,7 +107,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                 ) : (
                     <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
                         <div
-                            className={classNames(styles.shaStepsButtonsContainer, {
+                            className={classNames( styles.shaStepsButtonsContainer, {
                                 split: splitButtons,
                                 left: buttonsLayout === 'left',
                                 right: buttonsLayout === 'right',

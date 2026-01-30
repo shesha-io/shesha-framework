@@ -45,8 +45,6 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
       backButtonText: 'Back',
       components: [],
       status: undefined,
-      hasCustomActions: false,
-      customActions: { id: `${stepId}-actions`, components: [] },
     };
 
     return buttonProps;

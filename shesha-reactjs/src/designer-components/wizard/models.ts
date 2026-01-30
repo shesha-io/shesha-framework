@@ -38,7 +38,7 @@ export interface IWizardStepProps {
 
   showBackButton?: boolean;
   showDoneButton?: boolean;
-  hasCustomActions?: boolean;
+  customActions?: boolean;
 
   cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
   nextButtonActionConfiguration?: IConfigurableActionConfiguration;
@@ -64,8 +64,6 @@ export interface IWizardStepProps {
 
   beforeDoneActionConfiguration?: IConfigurableActionConfiguration;
   afterDoneActionConfiguration?: IConfigurableActionConfiguration;
-
-  customActions?: boolean; // Enable custom footer actions instead of default buttons
 }
 
 export interface IWizardSequence {

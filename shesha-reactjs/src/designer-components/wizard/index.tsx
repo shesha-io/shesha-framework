@@ -30,7 +30,6 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       dataType: DataTypes.object
     } as IObjectMetadata), []);
 
-    console.log("Model : ", model);
     return (
       <DataContextProvider
         id={'ctx_' + model.id}
