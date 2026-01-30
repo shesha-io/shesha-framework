@@ -705,7 +705,8 @@ export const ReactTable: FC<IReactTableProps> = ({
         }}
         onRowHover={() => {
           if (onRowHover) onRowHover(rowIndex, row.original);
-          dispatchRowEvent(onRowHoverAction, row.original, rowIndex);
+          const currentSelectedRow = { index: rowIndex, row: row.original, id: row.original?.id };
+          dispatchRowEvent(onRowHoverAction, row.original, rowIndex, currentSelectedRow);
         }}
         row={row}
         showExpandedView={showExpandedView}
