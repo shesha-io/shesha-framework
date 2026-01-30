@@ -2,6 +2,10 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { FormInstance, StepProps } from 'antd';
 
+interface ICustomActionsProps {
+  id: string;
+  components?: IConfigurableFormComponent[];
+}
 export interface IWizardStepProps {
   id: string;
   icon?: string;
@@ -28,8 +32,7 @@ export interface IWizardStepProps {
 
   showBackButton?: boolean;
   showDoneButton?: boolean;
-  customActions?: boolean;
-
+  hasCustomActions?: boolean;
 
   cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
   nextButtonActionConfiguration?: IConfigurableActionConfiguration;
@@ -41,6 +44,7 @@ export interface IWizardStepProps {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
+  customActions?: ICustomActionsProps;
 
   onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
 

@@ -101,7 +101,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
     })
     .addCheckbox({
       id: '7a8b0aaf-5d6b-4c7e-9e7b-3e8c5f0c6d1b',
-      propertyName: 'customActions',
+      propertyName: 'hasCustomActions',
       label: 'Custom Actions',
       labelAlign: 'right',
       parentId: 'root',

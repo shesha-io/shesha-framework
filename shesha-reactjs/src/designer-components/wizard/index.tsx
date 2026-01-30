@@ -30,6 +30,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       dataType: DataTypes.object
     } as IObjectMetadata), []);
 
+    console.log("Model : ", model);
     return (
       <DataContextProvider
         id={'ctx_' + model.id}
@@ -118,12 +119,28 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           showDoneButton: step.showDoneButton ?? true
         })) ?? []
       }))
+      .add<IWizardComponentProps>(9, (prev) => ({
+        ...prev,
+        steps: prev.steps?.map(step => ({
+          ...step,
+          customActions: step.hasCustomActions
+            ? { 
+                id: `${step.id}-actions`, 
+                components: step.customActions?.components ?? [] 
+              }
+            : step.customActions
+        })) ?? []
+      }))
   ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  customContainerNames: ['steps'],
+  customContainerNames: ['steps', 'customActions'],
   getContainers: (model) => {
-    return model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    const stepContainers = model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    const customActionsContainers = model.steps
+      .filter((t) => t.hasCustomActions)
+      .map<IFormComponentContainer>((t) => ({ id: `${t.id}-actions` }));
+    return [...stepContainers, ...customActionsContainers];
   },
 };
 

@@ -57,6 +57,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         });
     }, [visibleSteps, current]);
 
+    console.log("Current step :: ", currentStep, "Steps: : ", steps);
     const splitButtons = buttonsLayout === 'spaceBetween';
 
     if (model?.hidden) return null;
@@ -74,12 +75,10 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                         direction={direction}
                         labelPlacement={labelPlacement}
                     />
-
                     <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                 </div>
-
                 {
-                  currentStep?.customActions ? <ComponentsContainer containerId={`${currentStep?.id}-actions`}/> :
+                  currentStep?.hasCustomActions ? <ComponentsContainer containerId={`${currentStep?.id}-actions`} dynamicComponents={isDynamic ? currentStep?.customActions?.components : []}/> :
                   <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
                     <div
                         className={classNames(styles.shaStepsButtonsContainer, {

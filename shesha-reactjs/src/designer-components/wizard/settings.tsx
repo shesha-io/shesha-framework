@@ -45,8 +45,9 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 
   const onAddNewItem = (items) => {
     const count = (items ?? []).length;
+    const stepId = nanoid();
     const buttonProps: IWizardStepProps = {
-      id: nanoid(),
+      id: stepId,
       name: `step${count + 1}`,
       label: `Step ${count + 1}`,
       key: `stepKey${count + 1}`,
@@ -57,6 +58,8 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
       backButtonText: 'Back',
       components: [],
       status: undefined,
+      hasCustomActions: false,
+      customActions: { id: `${stepId}-actions`, components: [] },
     };
 
     return buttonProps;
