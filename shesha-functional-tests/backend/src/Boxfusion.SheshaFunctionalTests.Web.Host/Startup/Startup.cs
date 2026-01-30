@@ -90,7 +90,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
 
-			services.AddSignalR();
+			services.AddSignalR(options => { 
+				options.EnableDetailedErrors = true;
+			});
 
 			services.AddCors();
 			
