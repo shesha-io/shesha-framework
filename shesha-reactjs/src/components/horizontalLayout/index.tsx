@@ -14,7 +14,7 @@ import { useTheme } from '@/providers';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles';
 import { ConfigurableForm } from '../configurableForm';
-import { FOOTER_CONFIGURATION, HEADER_CONFIGURATION } from '../mainLayout/constant';
+import { ACTIVE_FOOTER, ACTIVE_HEADER } from '../mainLayout/constant';
 
 const { Content, Footer } = Layout;
 
@@ -74,7 +74,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
       <div>
         <ConfigurableForm
           mode="readonly"
-          formId={HEADER_CONFIGURATION}
+          formId={ACTIVE_HEADER}
           showFormInfoOverlay={false}
           showDataLoadingIndicator={false}
           showMarkupLoadingIndicator={false}
@@ -111,7 +111,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
         ) : (
           <ConfigurableForm
             mode="readonly"
-            formId={FOOTER_CONFIGURATION}
+            formId={ACTIVE_FOOTER}
             showFormInfoOverlay={false}
             showDataLoadingIndicator={false}
             showMarkupLoadingIndicator={false}
