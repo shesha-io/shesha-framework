@@ -493,6 +493,23 @@ const getSubContainers = (component: IConfigurableFormComponent, componentRegist
  * allComponents - dictionary (key:value) of components. key - Id of the component, value - conponent settings
  * componentRelations - dictionary of component relations. key - id of the container, value - ordered list of subcomponent ids
  */
+
+interface INestedContainer {
+  id: string;
+  components: IConfigurableFormComponent[];
+}
+
+const isNestedContainer = (value: unknown): value is INestedContainer => {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'id' in value &&
+    typeof (value as { id: unknown }).id === 'string' &&
+    'components' in value &&
+    Array.isArray((value as { components: unknown }).components)
+  );
+};
+
 export const componentsTreeToFlatStructure = (
   toolboxComponents: IToolboxComponents,
   components: IConfigurableFormComponent[]
@@ -627,21 +644,6 @@ export const getClosestTableId = (context: SettingsMigrationContext) => {
 
 /** Convert flat components structure to a component tree */
 
-interface INestedContainer {
-    id: string;
-    components: IConfigurableFormComponent[];
-  }
-  
-  const isNestedContainer = (value: unknown): value is INestedContainer => {
-    return (
-      value !== null &&
-      typeof value === 'object' &&
-      'id' in value &&
-      typeof (value as { id: unknown }).id === 'string' &&
-      'components' in value &&
-      Array.isArray((value as { components: unknown }).components)
-    );
-  };
 export const componentsFlatStructureToTree = (
   toolboxComponents: IToolboxComponents,
   flat: IFlatComponentsStructure
