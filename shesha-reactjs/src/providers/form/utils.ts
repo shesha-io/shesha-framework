@@ -493,6 +493,23 @@ const getSubContainers = (component: IConfigurableFormComponent, componentRegist
  * allComponents - dictionary (key:value) of components. key - Id of the component, value - conponent settings
  * componentRelations - dictionary of component relations. key - id of the container, value - ordered list of subcomponent ids
  */
+
+interface INestedContainer {
+  id: string;
+  components: IConfigurableFormComponent[];
+}
+
+const isNestedContainer = (value: unknown): value is INestedContainer => {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'id' in value &&
+    typeof (value as { id: unknown }).id === 'string' &&
+    'components' in value &&
+    Array.isArray((value as { components: unknown }).components)
+  );
+};
+
 export const componentsTreeToFlatStructure = (
   toolboxComponents: IToolboxComponents,
   components: IConfigurableFormComponent[]
@@ -526,6 +543,34 @@ export const componentsTreeToFlatStructure = (
           });
         }
       });
+
+      // Handle nested custom containers inside array items (e.g., stepFooter inside steps)
+      // Generic approach: look for any property that is a container (has id and components)
+      if (componentRegistration?.customContainerNames) {
+        componentRegistration.customContainerNames.forEach((containerName) => {
+          const containerData = component[containerName];
+          if (Array.isArray(containerData)) {
+            containerData.forEach((item: unknown) => {
+              // Type guard: check item is a non-null object
+              if (item && typeof item === 'object' && item !== null) {
+                const itemRecord = item as Record<string, unknown>;
+                // Check all properties of the item for nested containers
+                Object.keys(itemRecord).forEach((key) => {
+                  const prop = itemRecord[key];
+                  // Type guard: check prop is an object with 'id' and 'components' array
+                  if (
+                    isNestedContainer(prop)
+                  ) {
+                    prop.components.forEach((c: IConfigurableFormComponent) => {
+                      processComponent(c, prop.id);
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     }
   };
 
@@ -597,6 +642,7 @@ export const getClosestTableId = (context: SettingsMigrationContext) => {
 //#endregion
 
 /** Convert flat components structure to a component tree */
+
 export const componentsFlatStructureToTree = (
   toolboxComponents: IToolboxComponents,
   flat: IFlatComponentsStructure
@@ -612,7 +658,10 @@ export const componentsFlatStructureToTree = (
     const ownerDefinition = ownerComponent && ownerComponent.type
       ? toolboxComponents[ownerComponent.type]
       : undefined;
-    const staticContainerIds = [];
+    const staticContainerIds: string[] = [];
+    // Track nested container ids that should be handled separately (e.g., stepFooter)
+    const nestedContainerMap: Map<string, { parent: unknown; property: string }> = new Map();
+    
     if (ownerDefinition?.customContainerNames) {
       ownerDefinition.customContainerNames.forEach(sc => {
         const subContainer = ownerComponent[sc];
@@ -622,9 +671,24 @@ export const componentsFlatStructureToTree = (
             staticContainerIds.push(subContainer.id);
           // container without id (array of components)
           if (Array.isArray(subContainer))
-            subContainer.forEach(c => {
-              if (c.id)
-                staticContainerIds.push(c.id);
+            subContainer.forEach((c: unknown) => {
+              // Type guard: check c has an id property
+              if (c && typeof c === 'object' && c !== null && 'id' in c && typeof (c as { id: unknown }).id === 'string') {
+                staticContainerIds.push((c as { id: string }).id);
+              }
+              // Track nested containers inside array items (generic approach)
+              if (c && typeof c === 'object' && c !== null) {
+                const itemRecord = c as Record<string, unknown>;
+                Object.keys(itemRecord).forEach((key) => {
+                  const prop = itemRecord[key];
+                  // Type guard: check prop is an object with 'id' and 'components' array
+                  if (
+                    isNestedContainer(prop)
+                  ) {
+                    nestedContainerMap.set(prop.id, { parent: c, property: key });
+                  }
+                });
+              }
             });
         }
       });
@@ -632,6 +696,10 @@ export const componentsFlatStructureToTree = (
 
     // iterate all component ids on the current level
     componentIds.forEach((id) => {
+      // Skip nested container ids (they'll be handled separately)
+      if (nestedContainerMap.has(id))
+        return;
+
       // extract current component and add to hierarchy
       const component = { ...flat.allComponents[id] };
       if (!staticContainerIds.includes(id))
@@ -661,6 +729,22 @@ export const componentsFlatStructureToTree = (
               const childComponents: IConfigurableFormComponent[] = [];
               processComponent(childComponents, c.id);
               c.components = childComponents;
+              // Handle nested containers inside array items (generic approach)
+              // Type guard: check c is a non-null object
+              if (c && typeof c === 'object' && c !== null) {
+                const containerRecord = c as unknown as Record<string, unknown>;
+                Object.keys(containerRecord).forEach((key) => {
+                  const prop = containerRecord[key];
+                  // Type guard: check prop is an object with 'id' and 'components' array
+                  if (
+                    isNestedContainer(prop)
+                  ) {
+                    const nestedComponents: IConfigurableFormComponent[] = [];
+                    processComponent(nestedComponents, prop.id);
+                    prop.components = nestedComponents;
+                  }
+                });
+              }
             });
           }
         });
