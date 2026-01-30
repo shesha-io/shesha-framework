@@ -144,12 +144,12 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [props?.headerFont?.color, props?.headerTextColor]);
 
   const effectiveHeaderTextAlign = useMemo(() => {
-    return props?.headerFont?.align ?? props?.headerTextAlign;
-  }, [props?.headerFont?.align, props?.headerTextAlign]);
+    return props?.headerFont?.align;
+  }, [props?.headerFont?.align]);
 
   const effectiveBodyTextAlign = useMemo(() => {
-    return props?.font?.align ?? props?.bodyTextAlign;
-  }, [props?.font?.align, props?.bodyTextAlign]);
+    return props?.font?.align;
+  }, [props?.font?.align]);
 
   // Convert background object to CSS string
   const effectiveBackground = useMemo(() => {
