@@ -167,22 +167,22 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
     // Add position if present
     if (bgStyles.backgroundPosition) {
-      parts.push(bgStyles.backgroundPosition);
+      parts.push(String(bgStyles.backgroundPosition));
     }
 
     // Add size if present (must come after position with / separator)
     if (bgStyles.backgroundSize) {
       // If position exists, add size with / separator, otherwise add it separately
       if (bgStyles.backgroundPosition) {
-        parts[parts.length - 1] = `${parts[parts.length - 1]} / ${bgStyles.backgroundSize}`;
+        parts[parts.length - 1] = `${parts[parts.length - 1]} / ${String(bgStyles.backgroundSize)}`;
       } else {
-        parts.push(`/ ${bgStyles.backgroundSize}`);
+        parts.push(`/ ${String(bgStyles.backgroundSize)}`);
       }
     }
 
     // Add repeat if present
     if (bgStyles.backgroundRepeat) {
-      parts.push(bgStyles.backgroundRepeat);
+      parts.push(String(bgStyles.backgroundRepeat));
     }
 
     return parts.length > 0 ? parts.join(' ') : undefined;
