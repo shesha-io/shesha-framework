@@ -533,15 +533,26 @@ export const componentsTreeToFlatStructure = (
         componentRegistration.customContainerNames.forEach((containerName) => {
           const containerData = component[containerName];
           if (Array.isArray(containerData)) {
-            containerData.forEach((item: any) => {
-              if (item && typeof item === 'object') {
+            containerData.forEach((item: unknown) => {
+              // Type guard: check item is a non-null object
+              if (item && typeof item === 'object' && item !== null) {
+                const itemRecord = item as Record<string, unknown>;
                 // Check all properties of the item for nested containers
-                Object.keys(item).forEach((key) => {
-                  const prop = item[key];
-                  // A container has an 'id' and 'components' array
-                  if (prop && typeof prop === 'object' && prop.id && Array.isArray(prop.components)) {
-                    prop.components.forEach((c: IConfigurableFormComponent) => {
-                      processComponent(c, prop.id);
+                Object.keys(itemRecord).forEach((key) => {
+                  const prop = itemRecord[key];
+                  // Type guard: check prop is an object with 'id' and 'components' array
+                  if (
+                    prop &&
+                    typeof prop === 'object' &&
+                    prop !== null &&
+                    'id' in prop &&
+                    typeof (prop as { id: unknown }).id === 'string' &&
+                    'components' in prop &&
+                    Array.isArray((prop as { components: unknown[] }).components)
+                  ) {
+                    const container = prop as { id: string; components: IConfigurableFormComponent[] };
+                    container.components.forEach((c: IConfigurableFormComponent) => {
+                      processComponent(c, container.id);
                     });
                   }
                 });
@@ -638,7 +649,7 @@ export const componentsFlatStructureToTree = (
       : undefined;
     const staticContainerIds: string[] = [];
     // Track nested container ids that should be handled separately (e.g., stepFooter)
-    const nestedContainerMap: Map<string, { parent: any; property: string }> = new Map();
+    const nestedContainerMap: Map<string, { parent: unknown; property: string }> = new Map();
     
     if (ownerDefinition?.customContainerNames) {
       ownerDefinition.customContainerNames.forEach(sc => {
@@ -649,17 +660,28 @@ export const componentsFlatStructureToTree = (
             staticContainerIds.push(subContainer.id);
           // container without id (array of components)
           if (Array.isArray(subContainer))
-            subContainer.forEach(c => {
-              if (c.id)
-                staticContainerIds.push(c.id);
+            subContainer.forEach((c: unknown) => {
+              // Type guard: check c has an id property
+              if (c && typeof c === 'object' && c !== null && 'id' in c && typeof (c as { id: unknown }).id === 'string') {
+                staticContainerIds.push((c as { id: string }).id);
+              }
               // Track nested containers inside array items (generic approach)
-              const item = c as any;
-              if (item && typeof item === 'object') {
-                Object.keys(item).forEach((key) => {
-                  const prop = item[key];
-                  // A container has an 'id' and optionally 'components' array
-                  if (prop && typeof prop === 'object' && prop.id && Array.isArray(prop.components)) {
-                    nestedContainerMap.set(prop.id, { parent: item, property: key });
+              if (c && typeof c === 'object' && c !== null) {
+                const itemRecord = c as Record<string, unknown>;
+                Object.keys(itemRecord).forEach((key) => {
+                  const prop = itemRecord[key];
+                  // Type guard: check prop is an object with 'id' and 'components' array
+                  if (
+                    prop &&
+                    typeof prop === 'object' &&
+                    prop !== null &&
+                    'id' in prop &&
+                    typeof (prop as { id: unknown }).id === 'string' &&
+                    'components' in prop &&
+                    Array.isArray((prop as { components: unknown[] }).components)
+                  ) {
+                    const container = prop as { id: string; components: IConfigurableFormComponent[] };
+                    nestedContainerMap.set(container.id, { parent: c, property: key });
                   }
                 });
               }
@@ -704,15 +726,25 @@ export const componentsFlatStructureToTree = (
               processComponent(childComponents, c.id);
               c.components = childComponents;
               // Handle nested containers inside array items (generic approach)
-              const containerWithNested = c as any;
-              if (containerWithNested && typeof containerWithNested === 'object') {
-                Object.keys(containerWithNested).forEach((key) => {
-                  const prop = containerWithNested[key];
-                  // A container has an 'id' and optionally 'components' array
-                  if (prop && typeof prop === 'object' && prop.id && Array.isArray(prop.components)) {
+              // Type guard: check c is a non-null object
+              if (c && typeof c === 'object' && c !== null) {
+                const containerRecord = c as unknown as Record<string, unknown>;
+                Object.keys(containerRecord).forEach((key) => {
+                  const prop = containerRecord[key];
+                  // Type guard: check prop is an object with 'id' and 'components' array
+                  if (
+                    prop &&
+                    typeof prop === 'object' &&
+                    prop !== null &&
+                    'id' in prop &&
+                    typeof (prop as { id: unknown }).id === 'string' &&
+                    'components' in prop &&
+                    Array.isArray((prop as { components: unknown[] }).components)
+                  ) {
+                    const container = prop as { id: string; components: IConfigurableFormComponent[] };
                     const nestedComponents: IConfigurableFormComponent[] = [];
-                    processComponent(nestedComponents, prop.id);
-                    prop.components = nestedComponents;
+                    processComponent(nestedComponents, container.id);
+                    container.components = nestedComponents;
                   }
                 });
               }
