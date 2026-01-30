@@ -227,8 +227,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 };
 
 export const WizardSettingsForm: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
-  const onValuesChange = React.useCallback((changedValues: any, values: IWizardComponentProps) => {
-    // Sync stepFooters when steps change
+  const onValuesChange = React.useCallback((changedValues: Partial<IWizardComponentProps>, values: IWizardComponentProps) => {    // Sync stepFooters when steps change
     if (changedValues.steps) {
       const stepFooters = values.stepFooters || [];
       const updatedFooters = [...stepFooters];
