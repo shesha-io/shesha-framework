@@ -317,6 +317,10 @@ export interface IReactTableProps extends ITableRowDragProps {
   bodyFontWeight?: string;
   bodyFontColor?: string;
 
+  // Action column icon styling
+  actionIconSize?: string | number;
+  actionIconColor?: string;
+
   // Overall table styling
   borderRadius?: string;
   border?: IBorderValue;

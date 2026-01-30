@@ -73,6 +73,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   bodyFontWeight,
   bodyFontColor,
   freezeHeaders,
+  actionIconSize,
+  actionIconColor,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -107,6 +109,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   bodyFontWeight?: string;
   bodyFontColor?: string;
   freezeHeaders?: boolean;
+  actionIconSize?: string | number;
+  actionIconColor?: string;
 }) => {
   const {
     shaTable,
@@ -312,6 +316,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             /* Apply text alignment to header cells */
             .${th} {
               ${headerTextAlign ? `text-align: ${headerTextAlign} !important;` : ''}
+
+              /* Map headerTextAlign to justify-content for flex containers */
+              ${headerTextAlign === 'left' ? 'justify-content: flex-start !important;' : ''}
+              ${headerTextAlign === 'right' ? 'justify-content: flex-end !important;' : ''}
+              ${headerTextAlign === 'center' ? 'justify-content: center !important;' : ''}
+              ${headerTextAlign === 'justify' ? 'justify-content: space-between !important;' : ''}
             }
 
             /* Apply header background to relative columns within headers */
@@ -322,6 +332,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           &.${trBody} {
             ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
+            /* Row must be positioned and use flex for separators to work */
+            position: relative;
+            display: flex;
+            align-items: stretch;
             ${(() => {
               // Prefer rowBorderStyle over rowBorder for full border control
               if (rowBorderStyle) {
@@ -353,7 +367,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
               ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
               ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
-
             }
 
             /* Apply body font styles to form component content */
@@ -433,6 +446,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             vertical-align: middle;
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+
+            /* Action icons styling for all table cells */
+            .sha-link {
+              .${iconPrefixCls} {
+                font-size: ${actionIconSize || bodyFontSize || '16px'};
+                width: ${actionIconSize || bodyFontSize || '16px'};
+                height: ${actionIconSize || bodyFontSize || '16px'};
+                min-width: ${actionIconSize || bodyFontSize || '16px'};
+                min-height: ${actionIconSize || bodyFontSize || '16px'};
+                ${actionIconColor ? `color: ${actionIconColor};` : ''}
+              }
+            }
           }
 
           .${th} {
@@ -459,11 +484,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: auto;
 
               .${iconPrefixCls} {
-                font-size: ${bodyFontSize || '16px'};
-                width: ${bodyFontSize || '16px'};
-                height: ${bodyFontSize || '16px'};
-                min-width: ${bodyFontSize || '16px'};
-                min-height: ${bodyFontSize || '16px'};
+                font-size: ${actionIconSize || bodyFontSize || '16px'};
+                width: ${actionIconSize || bodyFontSize || '16px'};
+                height: ${actionIconSize || bodyFontSize || '16px'};
+                min-width: ${actionIconSize || bodyFontSize || '16px'};
+                min-height: ${actionIconSize || bodyFontSize || '16px'};
+                ${actionIconColor ? `color: ${actionIconColor};` : ''}
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -476,11 +502,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               align-items: center;
 
               .${iconPrefixCls} {
-                font-size: ${bodyFontSize || '16px'};
-                width: ${bodyFontSize || '16px'};
-                height: ${bodyFontSize || '16px'};
-                min-width: ${bodyFontSize || '16px'};
-                min-height: ${bodyFontSize || '16px'};
+                font-size: ${actionIconSize || bodyFontSize || '16px'};
+                width: ${actionIconSize || bodyFontSize || '16px'};
+                height: ${actionIconSize || bodyFontSize || '16px'};
+                min-width: ${actionIconSize || bodyFontSize || '16px'};
+                min-height: ${actionIconSize || bodyFontSize || '16px'};
+                ${actionIconColor ? `color: ${actionIconColor};` : ''}
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -712,14 +739,33 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
-          border-right: 1px solid rgba(0, 0, 0, 0.05);
           padding: 0.5rem; /* Default padding for all cells */
+
+          /* Add vertical separator using pseudo-element that stretches full height */
+          &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0px;
+            width: 1px;
+            background-color: rgba(0, 0, 0, 0.05);
+            pointer-events: none;
+          }
 
           /* Only apply minimum height when rowHeight is auto to prevent empty cell collapse */
           ${!rowHeight || rowHeight === 'auto' ? `
-            height: 44px;
-            vertical-align: middle;
-            line-height: normal;
+            /* Force cells to stretch to row height - !important overrides React Table inline styles */
+            min-height: 44px !important;
+            height: auto !important;
+            align-self: stretch !important;
+            display: flex !important;
+            justify-content: ${bodyTextAlign === 'right'
+              ? 'flex-end'
+              : bodyTextAlign === 'center'
+                ? 'center'
+                : 'flex-start'} !important;
+            align-items: center !important;
 
             /* Force empty cells to maintain height */
             &:empty::before {

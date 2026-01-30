@@ -134,6 +134,7 @@ export const getTableDefaults = (): {
   hoverHighlight: boolean;
   headerBackgroundColor: string;
   headerFontFamily: string;
+  actionIconSize: string;
 } => {
   return {
     rowHeight: 'auto',
@@ -148,6 +149,7 @@ export const getTableDefaults = (): {
     rowAlternateBackgroundColor: '#f5f5f5',
     striped: true,
     hoverHighlight: true,
+    actionIconSize: '14px',
   };
 };
 
