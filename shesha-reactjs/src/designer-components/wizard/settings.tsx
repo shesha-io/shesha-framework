@@ -45,6 +45,8 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
       backButtonText: 'Back',
       components: [],
       status: undefined,
+      hasCustomFooter: false,
+      stepFooter: { id: `${stepId}_footer`, components: [] },
     };
 
     return buttonProps;
@@ -227,43 +229,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 };
 
 export const WizardSettingsForm: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
-  const onValuesChange = React.useCallback((changedValues: Partial<IWizardComponentProps>, values: IWizardComponentProps) => {    // Sync stepFooters when steps change
-    if (changedValues.steps) {
-      const stepFooters = values.stepFooters || [];
-      const updatedFooters = [...stepFooters];
-
-      // Ensure every step with customActions has a footer container
-      values.steps?.forEach(step => {
-        if (step.customActions) {
-          const existingFooter = updatedFooters.find(f => f.stepId === step.id);
-          if (!existingFooter) {
-            updatedFooters.push({
-              id: nanoid(),
-              stepId: step.id,
-              components: []
-            });
-          }
-        }
-      });
-
-      // Remove footers for steps without customActions
-      const finalFooters = updatedFooters.filter(footer => {
-        const step = values.steps?.find(s => s.id === footer.stepId);
-        return step && step.customActions;
-      });
-
-      // If footers changed, update the model
-      if (JSON.stringify(finalFooters) !== JSON.stringify(stepFooters)) {
-        values.stepFooters = finalFooters;
-      }
-    }
-
-    if (props.onValuesChange) {
-      props.onValuesChange(changedValues, values);
-    }
-  }, [props]);
-
-  return SettingsForm<IWizardComponentProps>({ ...props, onValuesChange, children: <WizardSettings {...props} /> });
+  return SettingsForm<IWizardComponentProps>({ ...props, children: <WizardSettings {...props} /> });
 };
 
 export default WizardSettingsForm;

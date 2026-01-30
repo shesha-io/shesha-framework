@@ -8,7 +8,6 @@ import { FormInstance, StepProps } from 'antd';
  */
 export interface IStepFooterContainer {
   id: string;
-  stepId: string; // Maps this footer to a specific step
   components?: IConfigurableFormComponent[];
 }
 
@@ -38,7 +37,7 @@ export interface IWizardStepProps {
 
   showBackButton?: boolean;
   showDoneButton?: boolean;
-  customActions?: boolean;
+  hasCustomFooter?: boolean;
 
   cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
   nextButtonActionConfiguration?: IConfigurableActionConfiguration;
@@ -50,6 +49,7 @@ export interface IWizardStepProps {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
+  stepFooter?: IStepFooterContainer;
 
   onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
 
@@ -78,7 +78,6 @@ export interface IStepProps extends StepProps {
 
 export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'> {
   steps: IWizardStepProps[];
-  stepFooters?: IStepFooterContainer[]; // Footer containers mapped to steps by stepId
   wizardType?: 'default' | 'navigation';
   form?: FormInstance<any>;
   hidden?: boolean;

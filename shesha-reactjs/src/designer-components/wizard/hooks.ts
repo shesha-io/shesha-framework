@@ -1,7 +1,7 @@
 import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
+import { IConfigurableFormComponent, useForm, useSheshaApplication, ShaForm } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useDataContext } from '@/providers/dataContextProvider/contexts';
@@ -56,7 +56,10 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     return getDefaultStepIndex(defaultActiveStep);
   });
 
+  const { componentRelations, allComponents } = ShaForm.useMarkup();
+
   //Remove every tab from the equation that isn't visible either by customVisibility or permissions
+  //Also populate stepFooter components from form markup
   const visibleSteps = useMemo(
     () =>
       tabs
@@ -65,8 +68,25 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
           return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
+        })
+        .map((step) => {
+          if (step.hasCustomFooter && step.stepFooter?.id) {
+            const footerComponentIds = componentRelations[step.stepFooter.id] || [];
+            const footerComponents = footerComponentIds
+              .map((id) => allComponents[id])
+              .filter(Boolean);
+
+            return {
+              ...step,
+              stepFooter: {
+                ...step.stepFooter,
+                components: footerComponents,
+              },
+            };
+          }
+          return step;
         }),
-    [tabs]
+    [tabs, componentRelations, allComponents]
   );
 
   const currentStep = visibleSteps[current];

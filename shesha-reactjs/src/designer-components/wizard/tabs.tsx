@@ -30,7 +30,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         wizardType = 'default',
         showBackButton = true,
         showDoneButton = true,
-        stepFooters = [],
     } = model;
 
     // Get or create footer container for current step
@@ -38,19 +37,18 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         if (!currentStep) return undefined;
 
         // Try to find existing footer
-        let footer = stepFooters.find(f => f.stepId === currentStep.id);
+        let footer = currentStep.stepFooter;
 
         // If customActions is enabled but no footer exists, create a temporary one
-        if (!footer && currentStep.customActions) {
+        if (!footer && currentStep.hasCustomFooter) {
             footer = {
                 id: currentStep.id + '_footer',
-                stepId: currentStep.id,
                 components: []
             };
         }
 
         return footer;
-    }, [stepFooters, currentStep]);
+    }, [ currentStep]);
 
     const steps = useMemo(() => {
         return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status }, index) => {
@@ -98,7 +96,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                     <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                 </div>
 
-                {currentStep?.customActions && currentStepFooter ? (
+                {currentStep?.hasCustomFooter && currentStepFooter ? (
                     <div className={styles.shaStepsButtonsContainer}>
                         <ComponentsContainer
                             containerId={currentStepFooter.id}
