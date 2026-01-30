@@ -50,7 +50,6 @@ export interface IWizardStepProps {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
-  customActions?: ICustomActionsProps;
 
   onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
 
