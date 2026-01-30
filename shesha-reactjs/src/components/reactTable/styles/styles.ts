@@ -316,6 +316,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             /* Apply text alignment to header cells */
             .${th} {
               ${headerTextAlign ? `text-align: ${headerTextAlign} !important;` : ''}
+
+              /* Map headerTextAlign to justify-content for flex containers */
+              ${headerTextAlign === 'left' ? 'justify-content: flex-start !important;' : ''}
+              ${headerTextAlign === 'right' ? 'justify-content: flex-end !important;' : ''}
+              ${headerTextAlign === 'center' ? 'justify-content: center !important;' : ''}
+              ${headerTextAlign === 'justify' ? 'justify-content: space-between !important;' : ''}
             }
 
             /* Apply header background to relative columns within headers */
@@ -361,7 +367,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               ${bodyFontWeight ? `font-weight: ${bodyFontWeight} !important;` : ''}
               ${bodyFontColor ? `color: ${bodyFontColor} !important;` : ''}
               ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
-
             }
 
             /* Apply body font styles to form component content */
@@ -755,7 +760,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             height: auto !important;
             align-self: stretch !important;
             display: flex !important;
-            justify-content: center !important;
+            justify-content: ${bodyTextAlign === 'right'
+              ? 'flex-end'
+              : bodyTextAlign === 'center'
+                ? 'center'
+                : 'flex-start'} !important;
+            align-items: center !important;
 
             /* Force empty cells to maintain height */
             &:empty::before {
