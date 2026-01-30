@@ -69,9 +69,9 @@ namespace Shesha.Scheduler.ProcessMonitor
             {
                 var fileVersion = execution.LogFile?.LastVersion();
                 
-                    return fileVersion != null
-                        ? LogFileInfo.Available(fileVersion.FileName, () => _storedFileService.GetStreamAsync(fileVersion))
-                        : LogFileInfo.Unavailable();
+                return fileVersion != null
+                    ? LogFileInfo.Available(fileVersion.FileName, () => _storedFileService.GetStreamAsync(fileVersion))
+                    : LogFileInfo.Unavailable();
             }
             else
             {

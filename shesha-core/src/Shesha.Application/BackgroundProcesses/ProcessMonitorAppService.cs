@@ -5,6 +5,7 @@ using Shesha.BackgroundProcesses.Models;
 using Shesha.Extensions;
 using Shesha.Utilities;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Shesha.BackgroundProcesses
@@ -53,12 +54,14 @@ namespace Shesha.BackgroundProcesses
             if (!logInfo.IsAvailable)
                 throw new LogFileIsUnavailableException(processType, processId);
 
+            var fileName = Path.GetFileName(logInfo.FileName);
+
 #pragma warning disable IDISP001 // Dispose created
             var fileContentStream = await logInfo.StreamGetter();
 #pragma warning restore IDISP001 // Dispose created
-            var result = new FileStreamResult(fileContentStream, logInfo.FileName.GetContentType())
+            var result = new FileStreamResult(fileContentStream, fileName.GetContentType())
             {
-                FileDownloadName = logInfo.FileName,
+                FileDownloadName = fileName,
             };
             return result;            
         }

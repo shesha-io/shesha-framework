@@ -4,7 +4,7 @@ using Abp.Domain.Entities;
 namespace Shesha.BackgroundProcesses.Exceptions
 {
     /// <summary>
-    /// Configuration Item not found exception
+    /// Indicates that log file is not available
     /// </summary>
     public class LogFileIsUnavailableException : EntityNotFoundException, IHasErrorCode
     {

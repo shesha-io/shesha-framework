@@ -30,10 +30,10 @@ export const ProcessMonitorProvider: FC<PropsWithChildren<ProcessMonitorProvider
             httpClient,
             forceRender: forceRender,
         });
-        void instance.startAsync();
         return instance;
     });
     useEffect(() => {
+        void processMonitor.startAsync();
         return () => {
             void processMonitor.stopAsync();
         };
