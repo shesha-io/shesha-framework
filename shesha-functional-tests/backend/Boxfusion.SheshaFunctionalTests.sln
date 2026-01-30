@@ -63,7 +63,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shesha.Tests.ModuleA", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shesha.Tests.ModuleB", "..\..\shesha-core\test\Shesha.Tests.ModuleB\Shesha.Tests.ModuleB.csproj", "{BF46801F-B5F5-490A-BDF1-1474EF2240F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxfusion.SheshaFunctionalTest.DisabledModule", "src\Module\Boxfusion.SheshaFunctionalTests.DisabledModule\Boxfusion.SheshaFunctionalTest.DisabledModule\Boxfusion.SheshaFunctionalTest.DisabledModule.csproj", "{D456D00C-4A9C-4380-9F16-B05645A69EDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxfusion.SheshaFunctionalTest.DisabledModule", "src\Module\Boxfusion.SheshaFunctionalTests.DisabledModule\Boxfusion.SheshaFunctionalTest.DisabledModule.csproj", "{D456D00C-4A9C-4380-9F16-B05645A69EDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
