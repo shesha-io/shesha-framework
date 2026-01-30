@@ -42,6 +42,7 @@ import { CustomLabelValueEditorWrapper } from "./customLabelValueEditor";
 import { KeyInformationBarColumnsWrapper } from "./keyInformationBarColumns";
 import { SizableColumnsConfigWrapper } from "./sizableColumnsConfig";
 import { LayerSelectorSettingsModalWrapper } from "./layerSelectorSettingsModal";
+import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
 
 
 type InputType = ISettingsInputProps['type'];
@@ -84,6 +85,7 @@ export const editorRegistry: EditorDictionary = {
   queryBuilder: QueryBuilderWrapper,
   filtersList: FiltersListWrapper,
   editModeSelector: EditModeSelectorWrapper,
+  threeStateSwitch: ThreeStateSwitchWrapper,
   configurableActionConfigurator: ConfigurableActionConfiguratorWrapper,
   RefListItemSelectorSettingsModal: RefListItemSelectorSettingsModalWrapper,
   Password: PasswordWrapper,

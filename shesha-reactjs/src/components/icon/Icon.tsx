@@ -24,6 +24,8 @@ export const Icon = ({
   const icons = antdIcons;
 
   if (typeof icon !== 'string') {
+    if (React.isValidElement(icon))
+      return <Tooltip title={hint}>{icon}</Tooltip>;
     return icon;
   }
 
