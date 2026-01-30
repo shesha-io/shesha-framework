@@ -322,6 +322,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           &.${trBody} {
             ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
+            /* Row must be positioned and use flex for separators to work */
+            position: relative;
+            display: flex;
+            align-items: stretch;
             ${(() => {
               // Prefer rowBorderStyle over rowBorder for full border control
               if (rowBorderStyle) {
@@ -712,14 +716,29 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
-          border-right: 1px solid rgba(0, 0, 0, 0.05);
           padding: 0.5rem; /* Default padding for all cells */
+
+          /* Add vertical separator using pseudo-element that stretches full height */
+          &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0px;
+            width: 1px;
+            background-color: rgba(0, 0, 0, 0.05);
+            pointer-events: none;
+          }
 
           /* Only apply minimum height when rowHeight is auto to prevent empty cell collapse */
           ${!rowHeight || rowHeight === 'auto' ? `
-            height: 44px;
-            vertical-align: middle;
-            line-height: normal;
+            /* Force cells to stretch to row height - !important overrides React Table inline styles */
+            min-height: 44px !important;
+            height: auto !important;
+            align-self: stretch !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
 
             /* Force empty cells to maintain height */
             &:empty::before {

@@ -154,14 +154,38 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   // Convert background object to CSS string
   const effectiveBackground = useMemo(() => {
     const bgStyles = getBackgroundStyle(props?.background, undefined);
-    // Combine all background properties into a single string
+
+    // Build complete background CSS string with all properties
+    const parts: string[] = [];
+
+    // Add image or color
     if (bgStyles.backgroundImage) {
-      return bgStyles.backgroundImage;
+      parts.push(bgStyles.backgroundImage);
+    } else if (bgStyles.backgroundColor) {
+      return bgStyles.backgroundColor; // Color doesn't need size/position
     }
-    if (bgStyles.backgroundColor) {
-      return bgStyles.backgroundColor;
+
+    // Add position if present
+    if (bgStyles.backgroundPosition) {
+      parts.push(bgStyles.backgroundPosition);
     }
-    return undefined;
+
+    // Add size if present (must come after position with / separator)
+    if (bgStyles.backgroundSize) {
+      // If position exists, add size with / separator, otherwise add it separately
+      if (bgStyles.backgroundPosition) {
+        parts[parts.length - 1] = `${parts[parts.length - 1]} / ${bgStyles.backgroundSize}`;
+      } else {
+        parts.push(`/ ${bgStyles.backgroundSize}`);
+      }
+    }
+
+    // Add repeat if present
+    if (bgStyles.backgroundRepeat) {
+      parts.push(bgStyles.backgroundRepeat);
+    }
+
+    return parts.length > 0 ? parts.join(' ') : undefined;
   }, [props?.background]);
 
   const { styles } = useStyles({
@@ -204,17 +228,18 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
         baseStyle = props.allStyles.fullStyle;
       }
 
-      if (props.border && baseStyle) {
+      if (baseStyle) {
         const {
-          border,
+          // Remove border properties if border prop is set
+          border: borderProp,
           borderTop,
           borderRight,
           borderBottom,
           borderLeft,
           borderWidth,
-          borderStyle,
+          borderStyle: borderStyleProp,
           borderColor,
-          borderRadius,
+          borderRadius: borderRadiusProp,
           borderTopWidth,
           borderRightWidth,
           borderBottomWidth,
@@ -231,9 +256,53 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
           borderTopRightRadius,
           borderBottomLeftRadius,
           borderBottomRightRadius,
-          ...styleWithoutBorder
+          // Remove background properties to prevent duplicate application
+          background,
+          backgroundColor,
+          backgroundImage,
+          backgroundSize,
+          backgroundPosition,
+          backgroundRepeat,
+          backgroundAttachment,
+          backgroundOrigin,
+          backgroundClip,
+          ...styleWithoutBorderAndBackground
         } = baseStyle;
-        return styleWithoutBorder;
+
+        // Only remove border properties if props.border is set
+        if (props.border) {
+          return styleWithoutBorderAndBackground;
+        }
+
+        // Remove background properties but keep border properties
+        return {
+          borderProp,
+          borderTop,
+          borderRight,
+          borderBottom,
+          borderLeft,
+          borderWidth,
+          borderStyle: borderStyleProp,
+          borderColor,
+          borderRadius: borderRadiusProp,
+          borderTopWidth,
+          borderRightWidth,
+          borderBottomWidth,
+          borderLeftWidth,
+          borderTopStyle,
+          borderRightStyle,
+          borderBottomStyle,
+          borderLeftStyle,
+          borderTopColor,
+          borderRightColor,
+          borderBottomColor,
+          borderLeftColor,
+          borderTopLeftRadius,
+          borderTopRightRadius,
+          borderBottomLeftRadius,
+          borderBottomRightRadius,
+          ...styleWithoutBorderAndBackground,
+        };
       }
       return baseStyle;
     }
