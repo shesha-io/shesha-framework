@@ -561,9 +561,8 @@ export const componentsTreeToFlatStructure = (
                   if (
                     isNestedContainer(prop)
                   ) {
-                    const container = prop as { id: string; components: IConfigurableFormComponent[] };
-                    container.components.forEach((c: IConfigurableFormComponent) => {
-                      processComponent(c, container.id);
+                    prop.components.forEach((c: IConfigurableFormComponent) => {
+                      processComponent(c, prop.id);
                     });
                   }
                 });
@@ -686,8 +685,7 @@ export const componentsFlatStructureToTree = (
                   if (
                     isNestedContainer(prop)
                   ) {
-                    const container = prop as { id: string; components: IConfigurableFormComponent[] };
-                    nestedContainerMap.set(container.id, { parent: c, property: key });
+                    nestedContainerMap.set(prop.id, { parent: c, property: key });
                   }
                 });
               }
@@ -741,10 +739,9 @@ export const componentsFlatStructureToTree = (
                   if (
                     isNestedContainer(prop)
                   ) {
-                    const container = prop as { id: string; components: IConfigurableFormComponent[] };
                     const nestedComponents: IConfigurableFormComponent[] = [];
-                    processComponent(nestedComponents, container.id);
-                    container.components = nestedComponents;
+                    processComponent(nestedComponents, prop.id);
+                    prop.components = nestedComponents;
                   }
                 });
               }
