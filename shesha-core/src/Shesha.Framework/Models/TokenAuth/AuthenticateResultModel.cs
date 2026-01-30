@@ -21,5 +21,6 @@ namespace Shesha.Models.TokenAuth
         public string RedirectUrl { get; set; }
         public string RedirectModule { get; set; }
         public string RedirectForm { get; set; }
+        public bool RequireChangePassword { get; set; }
     }
 }

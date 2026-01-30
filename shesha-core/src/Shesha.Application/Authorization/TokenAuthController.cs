@@ -125,6 +125,7 @@ namespace Shesha.Authorization
                 ExpireInSeconds = expireInSeconds,
                 ExpireOn = expiresOn,
                 UserId = loginResult.User.Id,
+                RequireChangePassword = loginResult.User.RequireChangePassword,
                 PersonId = personId,
                 DeviceName = device?.Name,
                 ResultType = AuthenticateResultType.Success

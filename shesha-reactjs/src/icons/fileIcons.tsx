@@ -29,10 +29,10 @@ export const fileIcons = {
   "default": { color: '#848588', icon: PaperClipOutlined },
 };
 
-export const getFileIcon = (type: string, fontSize?: string | number): JSX.Element => {
+export const getFileIcon = (type: string, iconSize?: string | number): JSX.Element => {
   const fileIcon = fileIcons[type] || fileIcons.default;
   const Icon = fileIcon.icon;
-  const style = { color: fileIcon.color, fontSize };
+  const style = { color: fileIcon.color, fontSize: iconSize };
 
   return fileIcon.fill
     ? <Icon fill={fileIcon.color} style={style} />

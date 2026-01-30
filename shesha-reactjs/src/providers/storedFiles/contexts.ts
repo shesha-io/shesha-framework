@@ -62,6 +62,7 @@ export interface IStoredFilesStateContext
   fileId?: string;
   url?: string;
   originalFileId?: IStoredFile['id'];
+  currentFile?: IStoredFile;
 }
 
 export interface IStoredFilesActionsContext
@@ -71,6 +72,7 @@ export interface IStoredFilesActionsContext
   deleteFile: (fileIdToDelete: string) => void;
   downloadZipFile: (payload?: IDownloadZipPayload) => void;
   downloadFile: (payload: IDownloadFilePayload) => void;
+  setCurrentFile: (file: IStoredFile) => void;
 }
 
 export const STORED_FILES_CONTEXT_INITIAL_STATE: IStoredFilesStateContext = {

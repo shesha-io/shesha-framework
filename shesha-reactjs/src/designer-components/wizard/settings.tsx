@@ -30,19 +30,6 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 
   const { model } = useSettingsForm<IWizardComponentProps>();
 
-  /*const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
-    // whenever the tabs change, check to see if `defaultActiveStep` is still present within the tabs. If not, remove it
-    const foundIndex = values?.defaultActiveStep
-      ? values?.steps?.findIndex(item => item?.id === values?.defaultActiveStep)
-      : 0;
-
-    const newValues = { ...state, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep };
-
-    setState(prev => ({ ...prev, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep }));
-
-    if (props.onValuesChange) props.onValuesChange(changedValues, newValues);
-  };*/
-
   const onAddNewItem = (items) => {
     const count = (items ?? []).length;
     const stepId = nanoid();
@@ -242,7 +229,44 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 };
 
 export const WizardSettingsForm: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
-  return SettingsForm<IWizardComponentProps>({ ...props, children: <WizardSettings {...props} /> });
+  const onValuesChange = React.useCallback((changedValues: any, values: IWizardComponentProps) => {
+    // Sync stepFooters when steps change
+    if (changedValues.steps) {
+      const stepFooters = values.stepFooters || [];
+      const updatedFooters = [...stepFooters];
+
+      // Ensure every step with customActions has a footer container
+      values.steps?.forEach(step => {
+        if (step.customActions) {
+          const existingFooter = updatedFooters.find(f => f.stepId === step.id);
+          if (!existingFooter) {
+            updatedFooters.push({
+              id: nanoid(),
+              stepId: step.id,
+              components: []
+            });
+          }
+        }
+      });
+
+      // Remove footers for steps without customActions
+      const finalFooters = updatedFooters.filter(footer => {
+        const step = values.steps?.find(s => s.id === footer.stepId);
+        return step && step.customActions;
+      });
+
+      // If footers changed, update the model
+      if (JSON.stringify(finalFooters) !== JSON.stringify(stepFooters)) {
+        values.stepFooters = finalFooters;
+      }
+    }
+
+    if (props.onValuesChange) {
+      props.onValuesChange(changedValues, values);
+    }
+  }, [props]);
+
+  return SettingsForm<IWizardComponentProps>({ ...props, onValuesChange, children: <WizardSettings {...props} /> });
 };
 
 export default WizardSettingsForm;

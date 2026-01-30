@@ -30,7 +30,27 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         wizardType = 'default',
         showBackButton = true,
         showDoneButton = true,
+        stepFooters = [],
     } = model;
+
+    // Get or create footer container for current step
+    const currentStepFooter = useMemo(() => {
+        if (!currentStep) return undefined;
+
+        // Try to find existing footer
+        let footer = stepFooters.find(f => f.stepId === currentStep.id);
+
+        // If customActions is enabled but no footer exists, create a temporary one
+        if (!footer && currentStep.customActions) {
+            footer = {
+                id: currentStep.id + '_footer',
+                stepId: currentStep.id,
+                components: []
+            };
+        }
+
+        return footer;
+    }, [stepFooters, currentStep]);
 
     const steps = useMemo(() => {
         return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status }, index) => {
@@ -77,16 +97,22 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                     />
                     <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                 </div>
-                {
-                  currentStep?.hasCustomActions ? <ComponentsContainer containerId={`${currentStep?.id}-actions`} dynamicComponents={isDynamic ? currentStep?.customActions?.components : []}/> :
-                  <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
-                    <div
-                        className={classNames(styles.shaStepsButtonsContainer, {
-                            split: splitButtons,
-                            left: buttonsLayout === 'left',
-                            right: buttonsLayout === 'right',
-                        })}
-                    >
+
+                {currentStep?.customActions && currentStepFooter ? (
+                    <div className={styles.shaStepsButtonsContainer}>
+                        <ComponentsContainer
+                            containerId={currentStepFooter.id}
+                        />
+                    </div>
+                ) : (
+                    <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
+                        <div
+                            className={classNames(styles.shaStepsButtonsContainer, {
+                                split: splitButtons,
+                                left: buttonsLayout === 'left',
+                                right: buttonsLayout === 'right',
+                            })}
+                        >
                         <ConditionalWrap
                             condition={splitButtons}
                             wrap={(children) => (
@@ -147,8 +173,8 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                             )}
                         </ConditionalWrap>
                     </div>
-                  </ConditionalWrap>
-                }
+                    </ConditionalWrap>
+                )}
             </div>
         </ParentProvider>
     );

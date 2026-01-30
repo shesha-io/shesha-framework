@@ -47,7 +47,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     ...model,
     stylingBox: "{\"marginBottom\":\"5\"}",
     showBackButton: true,
-    showDoneButton: true
+    showDoneButton: true,
+    stepFooters: []
   }),
   migrator: (m) =>
     m
@@ -119,28 +120,57 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           showDoneButton: step.showDoneButton ?? true
         })) ?? []
       }))
-      .add<IWizardComponentProps>(9, (prev) => ({
-        ...prev,
-        steps: prev.steps?.map(step => ({
-          ...step,
-          customActions: step.hasCustomActions
-            ? { 
-                id: `${step.id}-actions`, 
-                components: step.customActions?.components ?? [] 
-              }
-            : step.customActions
-        })) ?? []
-      }))
+      .add<IWizardComponentProps>(9, (prev) => {
+        // Initialize stepFooters array
+        const stepFooters = prev.stepFooters || [];
+
+        // Ensure every step with customActions has a footer container
+        const updatedFooters = [...stepFooters];
+
+        prev.steps?.forEach(step => {
+          if (step.customActions) {
+            const existingFooter = updatedFooters.find(f => f.stepId === step.id);
+            if (!existingFooter) {
+              updatedFooters.push({
+                id: nanoid(),
+                stepId: step.id,
+                components: []
+              });
+            }
+          }
+        });
+
+        // Remove footers for steps without customActions
+        const finalFooters = updatedFooters.filter(footer => {
+          const step = prev.steps?.find(s => s.id === footer.stepId);
+          return step && step.customActions;
+        });
+
+        return {
+          ...prev,
+          stepFooters: finalFooters
+        };
+      })
   ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  customContainerNames: ['steps', 'customActions'],
+  customContainerNames: ['steps', 'stepFooters'],
   getContainers: (model) => {
-    const stepContainers = model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
-    const customActionsContainers = model.steps
-      .filter((t) => t.hasCustomActions)
-      .map<IFormComponentContainer>((t) => ({ id: `${t.id}-actions` }));
-    return [...stepContainers, ...customActionsContainers];
+    const containers: IFormComponentContainer[] = [];
+
+    // Add step containers
+    model.steps.forEach((step) => {
+      containers.push({ id: step.id });
+    });
+
+    // Add step footer containers
+    if (model.stepFooters) {
+      model.stepFooters.forEach((footer) => {
+        containers.push({ id: footer.id });
+      });
+    }
+
+    return containers;
   },
 };
 

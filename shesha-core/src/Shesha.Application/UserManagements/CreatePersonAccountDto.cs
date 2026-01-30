@@ -29,5 +29,6 @@ namespace Shesha.Persons
         [Required(AllowEmptyStrings = false)]
         public virtual string EmailAddress { get; set; }
         public virtual ReferenceListItemValueDto TypeOfAccount { get; set; }
+        public virtual bool RequireChangePassword { get; set; }
     }
 }

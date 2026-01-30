@@ -9,5 +9,6 @@ namespace Shesha.Users.Dto
 
         [Required]
         public string NewPassword { get; set; }
+        public bool RequireChangePassword { get; set; }
     }
 }

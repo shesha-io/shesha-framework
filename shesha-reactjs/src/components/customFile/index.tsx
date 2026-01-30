@@ -40,6 +40,7 @@ export interface ICustomFileProps extends IInputStyles {
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
   itemStyle?: string;
+  iconSize?: string | number;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {

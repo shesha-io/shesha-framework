@@ -26,6 +26,7 @@ import {
   replaceFileErrorAction,
   replaceFileRequestAction,
   replaceFileSuccessAction,
+  setCurrentFileAction,
   updateAllFilesDownloadedByCurrentUser,
   updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
@@ -241,7 +242,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           });
       })
       .catch((e) => {
-        const errorMessage = e?.response?.data?.error || e?.message || 'Please check your configuration and try again';
+        const errorMessage = e?.data?.error?.details || e?.data?.message || 'Please check your configuration and try again';
         message.error(`File upload failed. ${errorMessage}`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
@@ -389,6 +390,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       });
   };
 
+  const setCurrentFile = (file: IStoredFile): void => {
+    dispatch(setCurrentFileAction(file));
+  };
+
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {
       return Promise.resolve({
@@ -424,7 +429,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
             replaceFile,
             deleteFile,
             downloadZipFile,
-            downloadFile, /* NEW_ACTION_GOES_HERE */
+            downloadFile,
+            setCurrentFile, /* NEW_ACTION_GOES_HERE */
           }}
         >
           {children}

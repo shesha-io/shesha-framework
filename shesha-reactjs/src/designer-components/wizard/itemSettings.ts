@@ -383,6 +383,23 @@ export const getSettings = (_data?: IWizardStepProps) =>
       settingsValidationErrors: [],
     })
     .addSectionSeparator({
+      id: '8f7e6d5c-4b3a-2g1h-0i9j-8k7l6m5n4o3p',
+      propertyName: 'footerActionsSeparator',
+      parentId: 'root',
+      label: 'Footer Actions',
+    })
+    .addCheckbox({
+      id: '9g8h7i6j-5k4l-3m2n-1o0p-9q8r7s6t5u4v',
+      propertyName: 'customActions',
+      label: 'Use Custom Actions',
+      description: 'Enable to drag and drop custom components for footer actions instead of default buttons',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      defaultValue: false,
+      validate: {},
+    })
+    .addSectionSeparator({
       id: 'ae7ae12f-afb8-44a7-a8cb-805550415aeb',
       propertyName: 'otherSeparatorVisibility',
       parentId: 'root',

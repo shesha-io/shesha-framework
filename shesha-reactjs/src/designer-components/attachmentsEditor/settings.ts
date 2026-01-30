@@ -386,6 +386,12 @@ export const getSettings = () =>
                         allowClear: true
                       })
                       .addTextField({
+                        id: nanoid(),
+                        propertyName: 'iconSize',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Icon Size',
+                      })
+                      .addTextField({
                         id: '1c03863c-880d-4308-8667-c3d996619cb8',
                         propertyName: 'thumbnailWidth',
                         parentId: 'item-styles-content-880d-4308-c3d996619cb',
