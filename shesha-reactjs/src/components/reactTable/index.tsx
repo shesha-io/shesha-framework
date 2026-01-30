@@ -839,10 +839,10 @@ export const ReactTable: FC<IReactTableProps> = ({
                           alignItems: 'center',
                           // Map headerTextAlign to justify-content for flex container
                           justifyContent:
-                            effectiveHeaderTextAlign === 'center' ? 'center' :
-                            effectiveHeaderTextAlign === 'right' ? 'flex-end' :
-                            effectiveHeaderTextAlign === 'justify' ? 'space-between' :
-                            'flex-start', // default for 'left' or undefined
+                            effectiveHeaderTextAlign === 'center' ? 'center'
+                              : effectiveHeaderTextAlign === 'right' ? 'flex-end'
+                                : effectiveHeaderTextAlign === 'justify' ? 'space-between'
+                                  : 'flex-start', // default for 'left' or undefined
                         }}
                       >
                         {column.render('Header')}
