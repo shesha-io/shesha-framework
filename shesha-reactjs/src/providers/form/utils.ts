@@ -542,13 +542,7 @@ export const componentsTreeToFlatStructure = (
                   const prop = itemRecord[key];
                   // Type guard: check prop is an object with 'id' and 'components' array
                   if (
-                    prop &&
-                    typeof prop === 'object' &&
-                    prop !== null &&
-                    'id' in prop &&
-                    typeof (prop as { id: unknown }).id === 'string' &&
-                    'components' in prop &&
-                    Array.isArray((prop as { components: unknown[] }).components)
+                    isNestedContainer(prop)
                   ) {
                     const container = prop as { id: string; components: IConfigurableFormComponent[] };
                     container.components.forEach((c: IConfigurableFormComponent) => {
@@ -632,6 +626,22 @@ export const getClosestTableId = (context: SettingsMigrationContext) => {
 //#endregion
 
 /** Convert flat components structure to a component tree */
+
+interface INestedContainer {
+    id: string;
+    components: IConfigurableFormComponent[];
+  }
+  
+  const isNestedContainer = (value: unknown): value is INestedContainer => {
+    return (
+      value !== null &&
+      typeof value === 'object' &&
+      'id' in value &&
+      typeof (value as { id: unknown }).id === 'string' &&
+      'components' in value &&
+      Array.isArray((value as { components: unknown }).components)
+    );
+  };
 export const componentsFlatStructureToTree = (
   toolboxComponents: IToolboxComponents,
   flat: IFlatComponentsStructure
@@ -672,13 +682,7 @@ export const componentsFlatStructureToTree = (
                   const prop = itemRecord[key];
                   // Type guard: check prop is an object with 'id' and 'components' array
                   if (
-                    prop &&
-                    typeof prop === 'object' &&
-                    prop !== null &&
-                    'id' in prop &&
-                    typeof (prop as { id: unknown }).id === 'string' &&
-                    'components' in prop &&
-                    Array.isArray((prop as { components: unknown[] }).components)
+                    isNestedContainer(prop)
                   ) {
                     const container = prop as { id: string; components: IConfigurableFormComponent[] };
                     nestedContainerMap.set(container.id, { parent: c, property: key });
@@ -733,13 +737,7 @@ export const componentsFlatStructureToTree = (
                   const prop = containerRecord[key];
                   // Type guard: check prop is an object with 'id' and 'components' array
                   if (
-                    prop &&
-                    typeof prop === 'object' &&
-                    prop !== null &&
-                    'id' in prop &&
-                    typeof (prop as { id: unknown }).id === 'string' &&
-                    'components' in prop &&
-                    Array.isArray((prop as { components: unknown[] }).components)
+                    isNestedContainer(prop)
                   ) {
                     const container = prop as { id: string; components: IConfigurableFormComponent[] };
                     const nestedComponents: IConfigurableFormComponent[] = [];
