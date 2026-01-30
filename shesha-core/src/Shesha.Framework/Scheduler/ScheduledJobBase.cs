@@ -2,11 +2,12 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
+using Hangfire.Server;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Exceptions;
-using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
@@ -15,7 +16,6 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -26,30 +26,44 @@ namespace Shesha.Scheduler
     /// <summary>
     /// Scheduled job base class
     /// </summary>
-    public abstract class ScheduledJobBase<T>: ScheduledJobBase where T : ScheduledJobStatistic, new()
+    public abstract class ScheduledJobBase<TStat, TParams> : ScheduledJobBase, IParametrizedJob<TParams>
+        where TStat : ScheduledJobStatistic, new()
+        where TParams : class, new()
     {
-        public virtual T JobStatistics { get; private set; }
+        public virtual TParams JobParameters { get; private set; }
+
+        public virtual TStat JobStatistics { get; private set; }
 
         protected ScheduledJobBase()
         {
-            JobStatistics = new T();
+            JobStatistics = new TStat();
         }
 
-        public override void SuccessExecutionInfo()
+        public override Task MarkExecutionAsSuccessAsync()
         {
-            UpdateExecutionInfo(e =>
+            return UpdateExecutionInfoAsync(async e =>
             {
                 e.FinishedOn = DateTime.Now;
-                if (e.Status == ExecutionStatus.InProgress)
-                    e.Status = ExecutionStatus.Completed;
+                e.Status = ExecutionStatus.Completed;
 
                 if (_logMode == LogMode.StoredFile)
-                    e.LogFile = AsyncHelper.RunSync(() => { return CreateStoredFileLogAsync(LogFilePath, LogFileName, LogFolderName); });
+                    e.LogFile = await CreateStoredFileLogAsync(LogFilePath, LogFileName, LogFolderName);
 
                 if (JobStatistics != null)
                     e.JobStatistics = JobStatistics;
             });
         }
+
+        public Task ReadParametersJsonAsync(string json)
+        {
+            JobParameters = JsonConvert.DeserializeObject<TParams>(json);
+            return Task.CompletedTask;
+        }
+    }
+
+    public abstract class ScheduledJobBase<T> : ScheduledJobBase<T, object>
+        where T : ScheduledJobStatistic, new()
+    { 
     }
 
     public abstract class ScheduledJobBase
@@ -60,11 +74,6 @@ namespace Shesha.Scheduler
 
         public string Name => GetType().StripCastleProxyType().Name;
         public string TriggerName => $"{Name}_Trigger";
-
-        /// <summary>
-        /// Type of the parameters class
-        /// </summary>
-        public virtual Type ParametersType { get; }
 
         private Guid? _id;
         public Guid Id
@@ -181,124 +190,44 @@ namespace Shesha.Scheduler
         /// <param name="executionId">Pre-defined Id of the job execution, is used for the progress tracking</param>
         /// <param name="startedById">Id of the user who started the job (in case it was started manually)</param>
         /// <param name="cancellationToken"></param>
+        /// <param name="context"></param>
         /// <returns></returns>
         [UnitOfWork]
-        public async Task ExecuteAsync(Guid executionId, Int64? startedById, CancellationToken cancellationToken)
+        public async Task ExecuteAsync(Guid executionId, Int64? startedById, CancellationToken cancellationToken, PerformContext context = null)
         {
             var task = Task.Run(async () =>
             {
-                try
+                var method = this.GetType().GetMethod(nameof(DoExecuteAsync));
+                var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
+
+                if (unitOfWorkAttribute != null && unitOfWorkAttribute.IsDisabled)
                 {
-                    //SaveJobExecutionIdForLogging();
+                    await DoExecuteAsync(cancellationToken);
+                }
+                else
+                {
+                    var unitOfWork = unitOfWorkAttribute != null
+                        ? UnitOfWorkManager.Begin(new UnitOfWorkOptions
+                        {
+                            IsTransactional = unitOfWorkAttribute.IsTransactional,
+                            IsolationLevel = unitOfWorkAttribute.IsolationLevel,
+                            Timeout = unitOfWorkAttribute.Timeout,
+                            Scope = unitOfWorkAttribute.Scope
+                        })
+                        : UnitOfWorkManager.Begin();
 
-                    var method = this.GetType().GetMethod(nameof(DoExecuteAsync));
-                    var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
-
-                    if (unitOfWorkAttribute != null && unitOfWorkAttribute.IsDisabled)
+                    using (unitOfWork)
                     {
                         await DoExecuteAsync(cancellationToken);
-                    }
-                    else
-                    {
-                        var unitOfWork = unitOfWorkAttribute != null
-                            ? UnitOfWorkManager.Begin(new UnitOfWorkOptions
-                            {
-                                IsTransactional = unitOfWorkAttribute.IsTransactional,
-                                IsolationLevel = unitOfWorkAttribute.IsolationLevel,
-                                Timeout = unitOfWorkAttribute.Timeout,
-                                Scope = unitOfWorkAttribute.Scope
-                            })
-                            : UnitOfWorkManager.Begin();
-
-                        using (unitOfWork)
-                        {
-                            await DoExecuteAsync(cancellationToken);
-                            await unitOfWork.CompleteAsync();
-                        }
-                    }
-
-                    await OnSuccessAsync();
-                }
-                catch (Exception e)
-                {
-                    if (e is OperationCanceledException ||
-                        e.InnerException != null &&
-                        e.InnerException is OperationCanceledException)
-                        Log.ErrorFormat("Job {0} interrupted", Name);
-                    else
-                    {
-                        Log.Error($"Error occured during {Name} run: {e.Message}", e);
-                        await OnFailAsync(e);
+                        await unitOfWork.CompleteAsync();
                     }
                 }
             }, CancellationToken);
 
+
             await task;
         }
-
-        /*
-        protected Tp GetParamsOrDefault<Tp>(IJobExecutionContext context, Tp defaultValue = null) where Tp : class, new()
-        {
-            return GetParams<Tp>(context, false) ?? new Tp();
-        }
-
-        protected Tp GetParams<Tp>(IJobExecutionContext context, bool throwIfEmpty = true) where Tp : class
-        {
-            var explicitParams = context.MergedJobDataMap.Get("explicitParams") as Tp;
-            if (explicitParams != null)
-                return explicitParams;
-
-            var trigger = GetTrigger(context);
-            var parametersJson = trigger.GetJsonParameters() as Tp;
-            if (parametersJson == null && throwIfEmpty)
-                throw new Exception("Settings are empty");
-            return parametersJson;
-        }
-        */
-
-
-        public virtual async Task OnSuccessAsync()
-        {
-            try
-            {
-                using (var uow = UnitOfWorkManager.Begin())
-                {
-                    var trigger = GetTrigger();
-                    if (trigger == null)
-                        return;
-
-                    // todo: implement notifications
-
-                    await uow.CompleteAsync();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e.Message, e);
-            }
-        }
-
-        public virtual async Task OnFailAsync(Exception ex)
-        {
-            try
-            {
-                using (var uow = UnitOfWorkManager.Begin())
-                {
-                    var trigger = GetTrigger();
-                    if (trigger == null)
-                        return;
-
-                    // todo: implement notifications
-
-                    await uow.CompleteAsync();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e.Message, e);
-            }
-        }
-
+        
         protected ScheduledJobExecution GetExecutionRecord()
         {
             return JobExecutionRepository.Get(JobExecutionId);
@@ -311,30 +240,54 @@ namespace Shesha.Scheduler
                 : null;
         }
 
-        public void FailExecutionInfo(Exception e)
+        public async Task MarkExecutionAsFailureAsync(Exception e)
         {
-            UpdateExecutionInfo(execution =>
+            await UpdateExecutionInfoAsync(execution =>
             {
                 execution.ErrorMessage = e.FullMessage();
                 execution.Status = ExecutionStatus.Failed;
+                return Task.CompletedTask;
             });
-
         }
 
-        public virtual void SuccessExecutionInfo()
+        public async Task StartExecutionAsync(Guid executionId)
         {
-            UpdateExecutionInfo(e =>
+            JobExecutionId = executionId;
+
+            await UpdateExecutionInfoAsync(execution =>
+            {
+                execution.Status = ExecutionStatus.InProgress;
+
+                LogFileName = !string.IsNullOrWhiteSpace(execution.LogFilePath) ? Path.GetFileName(execution.LogFilePath) : null;
+                LogFilePath = execution.LogFilePath;
+
+                return Task.CompletedTask;
+            });
+        }
+
+        public async Task MarkExecutionAsCancelledAsync(Exception e)
+        {
+            await UpdateExecutionInfoAsync(execution =>
+            {
+                execution.ErrorMessage = e.FullMessage();
+                execution.Status = ExecutionStatus.Cancelled;
+                return Task.CompletedTask;
+            });
+        }
+
+        public virtual async Task MarkExecutionAsSuccessAsync()
+        {
+            await UpdateExecutionInfoAsync(async e =>
             {
                 e.FinishedOn = DateTime.Now;
-                if (e.Status == ExecutionStatus.InProgress)
-                    e.Status = ExecutionStatus.Completed;
+                e.Status = ExecutionStatus.Completed;
 
                 if (_logMode == LogMode.StoredFile)
-                    e.LogFile = AsyncHelper.RunSync(() => { return CreateStoredFileLogAsync(LogFilePath, LogFileName, LogFolderName); });
+                    e.LogFile = await CreateStoredFileLogAsync(LogFilePath, LogFileName, LogFolderName);
             });
         }
 
-        public void UpdateExecutionInfo(Action<ScheduledJobExecution> updateAction)
+        public async Task UpdateExecutionInfoAsync(Func<ScheduledJobExecution, Task> updateAction)
         {
             try
             {
@@ -343,44 +296,23 @@ namespace Shesha.Scheduler
 
                 using (var unitOfWork = UnitOfWorkManager.Begin())
                 {
-                    var jobExecution = JobExecutionRepository.Get(JobExecutionId);
-                    updateAction.Invoke(jobExecution);
-                    JobExecutionRepository.Update(jobExecution);
+                    var jobExecution = await JobExecutionRepository.GetAsync(JobExecutionId);
+                    await updateAction.Invoke(jobExecution);
+                    await JobExecutionRepository.UpdateAsync(jobExecution);
 
                     // save changes
-                    unitOfWork.Complete();
+                    await unitOfWork.CompleteAsync();
                 }
             }
             catch (Exception e)
             {
                 // rollback
                 Logger.Error(e.Message, e);
+                throw;
             }
         }
 
-        public async Task<Guid> AddStartExecutionRecordAsync(Guid executionId, Int64? startedById)
-        {
-            return await CreateExecutionRecordAsync(executionId,
-                execution =>
-                {
-                    JobExecutionId = execution.Id;
-                    LogFileName = $"{DateTime.Now:yyyy-MM-dd_HHmmss}_{JobExecutionId}.log";
-                    LogFilePath = PathHelper.MapVirtualPath($"{LogFolderPath}/{LogFolderName}/{LogFileName}");
-
-                    // save path to execution
-                    execution.Status = ExecutionStatus.InProgress;
-                    execution.LogFilePath = LogFilePath;
-                    execution.StartedBy = startedById.HasValue
-                        ? UserRepository.Get(startedById.Value)
-                        : null;
-                }
-            );
-        }
-
-        /// <summary>
-        /// Create execution record
-        /// </summary>
-        public async Task<Guid> CreateExecutionRecordAsync(Guid executionId, Action<ScheduledJobExecution> prepare)
+        public async Task CreateExecutionRecordAsync(Guid executionId, Int64? startedById)
         {
             try
             {
@@ -389,38 +321,27 @@ namespace Shesha.Scheduler
 
                 using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
                 {
-                    var existingExecution = await JobExecutionRepository.GetAll().Where(ex => ex.Id == executionId).FirstOrDefaultAsync();
-                    ScheduledJobExecution jobExecution = null;
+                    var logFileName = $"{DateTime.Now:yyyy-MM-dd_HHmmss}_{executionId}.log";
+                    var logFilePath = PathHelper.MapVirtualPath($"{LogFolderPath}/{LogFolderName}/{logFileName}");
 
-                    if (existingExecution != null && existingExecution.Status == ExecutionStatus.Enqueued)
+                    var job = await JobRepository.GetAsync(Id);
+                    var trigger = GetTrigger();
+                    var jobExecution = new ScheduledJobExecution()
                     {
-                        jobExecution = existingExecution;
-                        jobExecution.Status = ExecutionStatus.InProgress;
-                    }
-                    else
-                    {
-                        var job = await JobRepository.GetAsync(Id);
-                        var trigger = GetTrigger();
-                        jobExecution = new ScheduledJobExecution()
-                        {
-                            Id = existingExecution != null
-                                ? Guid.NewGuid()
-                                : executionId,
-                            Job = job,
-                            StartedOn = DateTime.Now,
-                            Status = ExecutionStatus.Enqueued,
-                            Trigger = trigger,
-                            ParentExecution = existingExecution
-                        };
-                    }
-
-                    prepare?.Invoke(jobExecution);
+                        Id = executionId,
+                        Job = job,
+                        StartedOn = DateTime.Now,
+                        Status = ExecutionStatus.Enqueued,
+                        Trigger = trigger,
+                        LogFilePath = logFilePath,
+                        StartedBy = startedById.HasValue
+                            ? await UserRepository.GetAsync(startedById.Value)
+                            : null
+                    };
 
                     await JobExecutionRepository.InsertAsync(jobExecution);
 
                     await unitOfWork.CompleteAsync();
-
-                    return jobExecution.Id;
                 }
             }
             catch (Exception e)

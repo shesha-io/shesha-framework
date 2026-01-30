@@ -89,13 +89,17 @@ namespace Shesha.Scheduler.Bootstrappers
                         // note: the user can't create/delete jobs manually, so we assume that the job was inactivated by this bootstrapper
                         if (existingJob != null)
                         {
+                            existingJob.JobName = jobInfo.Class.Name;
+                            existingJob.JobNamespace = jobInfo.Class.Namespace;
+                            existingJob.JobType = jobInfo.Class.FullName;
+
                             if (existingJob.IsDeleted)
                             {
                                 existingJob.IsDeleted = false;
                                 existingJob.DeletionTime = null;
                                 existingJob.DeleterUserId = null;
-                                await _jobRepo.UpdateAsync(existingJob);
                             }
+                            await _jobRepo.UpdateAsync(existingJob);
 
                             continue;
                         }
@@ -135,7 +139,7 @@ namespace Shesha.Scheduler.Bootstrappers
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"An error occured during bootstrapping of the scheduled job {jobInfo.Attribute.Uid}", e);
+                    throw new Exception($"An error occurred during bootstrapping of the scheduled job {jobInfo.Attribute.Uid}", e);
                 }
             }
 

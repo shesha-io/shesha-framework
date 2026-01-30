@@ -2,8 +2,6 @@
 using Hangfire;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain.Enums;
-using Shesha.Scheduler.Logging;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +11,6 @@ namespace Shesha.Scheduler
     [DisableConcurrentExecution(30*60)]
     public class TestJob: ScheduledJobBase<TestJobStats>, ITransientDependency
     {
-        //[UnitOfWork(IsDisabled = true)]
         public override Task DoExecuteAsync(CancellationToken cancellationToken)
         {
             Log.Info("Started...");
@@ -45,23 +42,6 @@ namespace Shesha.Scheduler
             Log.Info("Finished...");
 
             return Task.CompletedTask;
-        }
-
-        public override Task OnSuccessAsync()
-        {
-            Log.Info("TestJob.OnSuccess executed.");
-            return Task.CompletedTask;
-        }
-
-        public override Task OnFailAsync(Exception ex)
-        {
-            Log.Info("TestJob.OnFail executed");
-            return Task.CompletedTask;
-        }
-
-        /*public override void OnLog(object sender, ScheduledJobOnLogEventArgs e)
-        {
-            Log.Info("TestJob.OnLog executed");
-        }*/
+        }        
     }
 }

@@ -79,7 +79,7 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     };
     get formArguments() {
         return this.#form.formArguments;
-    }    
+    }
     get parentFormValues() {
         return this.#form.parentFormValues;
     }
@@ -550,7 +550,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         const { formData: data, antdForm } = this;
         const { getDelayedUpdates } = this.dataSubmitContext ?? {};
 
-        if (this.useDataSubmitter) {
+        if (this.useDataSubmitter && this.dataSubmitter) {
             this.dataSubmitState = { status: 'loading', hint: 'Saving data...', error: null };
             this.forceRootUpdate();
 
@@ -583,11 +583,11 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
                 throw error;
             }
         } else {
-            this.onFinish(data);
-
+            if (this.onFinish) {
+                this.onFinish(data);
+            }
             if (this.onAfterSubmit)
                 this.onAfterSubmit(data, data);
-
             return Promise.resolve(data);
         }
     };
