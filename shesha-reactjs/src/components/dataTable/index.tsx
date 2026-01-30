@@ -116,6 +116,10 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   bodyFontWeight?: string;
   bodyFontColor?: string;
 
+  // Action column icon styling
+  actionIconSize?: string | number;
+  actionIconColor?: string;
+
   // Cell styling
   cellTextColor?: string;
   cellBackgroundColor?: string;
@@ -200,6 +204,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   bodyFontSize,
   bodyFontWeight,
   bodyFontColor,
+  actionIconSize,
+  actionIconColor,
   columnsMismatch,
   ...props
 }) => {
@@ -1020,6 +1026,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     bodyFontSize,
     bodyFontWeight,
     bodyFontColor,
+    actionIconSize,
+    actionIconColor,
   };
 
   // Always render ReactTable - it handles empty columns gracefully

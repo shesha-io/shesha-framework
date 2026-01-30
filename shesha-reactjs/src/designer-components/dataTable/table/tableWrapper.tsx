@@ -522,6 +522,8 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             bodyFontSize={props?.font?.size ? `${props.font.size}px` : undefined}
             bodyFontWeight={props?.font?.weight}
             bodyFontColor={props?.font?.color}
+            actionIconSize={props.actionIconSize}
+            actionIconColor={props.actionIconColor}
           />
         </div>
       </div>

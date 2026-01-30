@@ -73,6 +73,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   bodyFontWeight,
   bodyFontColor,
   freezeHeaders,
+  actionIconSize,
+  actionIconColor,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -107,6 +109,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   bodyFontWeight?: string;
   bodyFontColor?: string;
   freezeHeaders?: boolean;
+  actionIconSize?: string | number;
+  actionIconColor?: string;
 }) => {
   const {
     shaTable,
@@ -437,6 +441,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             vertical-align: middle;
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+
+            /* Action icons styling for all table cells */
+            .sha-link {
+              .${iconPrefixCls} {
+                font-size: ${actionIconSize || bodyFontSize || '16px'};
+                width: ${actionIconSize || bodyFontSize || '16px'};
+                height: ${actionIconSize || bodyFontSize || '16px'};
+                min-width: ${actionIconSize || bodyFontSize || '16px'};
+                min-height: ${actionIconSize || bodyFontSize || '16px'};
+                ${actionIconColor ? `color: ${actionIconColor};` : ''}
+              }
+            }
           }
 
           .${th} {
@@ -463,11 +479,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: auto;
 
               .${iconPrefixCls} {
-                font-size: ${bodyFontSize || '16px'};
-                width: ${bodyFontSize || '16px'};
-                height: ${bodyFontSize || '16px'};
-                min-width: ${bodyFontSize || '16px'};
-                min-height: ${bodyFontSize || '16px'};
+                font-size: ${actionIconSize || bodyFontSize || '16px'};
+                width: ${actionIconSize || bodyFontSize || '16px'};
+                height: ${actionIconSize || bodyFontSize || '16px'};
+                min-width: ${actionIconSize || bodyFontSize || '16px'};
+                min-height: ${actionIconSize || bodyFontSize || '16px'};
+                ${actionIconColor ? `color: ${actionIconColor};` : ''}
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -480,11 +497,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               align-items: center;
 
               .${iconPrefixCls} {
-                font-size: ${bodyFontSize || '16px'};
-                width: ${bodyFontSize || '16px'};
-                height: ${bodyFontSize || '16px'};
-                min-width: ${bodyFontSize || '16px'};
-                min-height: ${bodyFontSize || '16px'};
+                font-size: ${actionIconSize || bodyFontSize || '16px'};
+                width: ${actionIconSize || bodyFontSize || '16px'};
+                height: ${actionIconSize || bodyFontSize || '16px'};
+                min-width: ${actionIconSize || bodyFontSize || '16px'};
+                min-height: ${actionIconSize || bodyFontSize || '16px'};
+                ${actionIconColor ? `color: ${actionIconColor};` : ''}
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -737,7 +755,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             height: auto !important;
             align-self: stretch !important;
             display: flex !important;
-            flex-direction: column !important;
             justify-content: center !important;
 
             /* Force empty cells to maintain height */

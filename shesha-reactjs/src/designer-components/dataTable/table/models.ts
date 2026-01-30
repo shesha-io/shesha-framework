@@ -134,6 +134,9 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   rowDividers?: boolean; // Horizontal dividers between rows
   responsiveMode?: 'scroll' | 'stack' | 'collapse';
 
+  actionIconSize?: string | number; // Icon size for action columns (inherits from bodyFontSize if not set)
+  actionIconColor?: string; // Icon color for action columns
+
   // Table settings nested structure for form binding
   tableSettings?: {
     rowHeight?: string;

@@ -662,6 +662,43 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     ],
                   },
                 })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'actionIconStyling',
+                  label: 'Action Column Icons',
+                  labelAlign: 'right',
+                  ghost: true,
+                  parentId: appearanceTabId,
+                  collapsible: 'header',
+                  className: 'ant-collapse-ghost',
+                  content: {
+                    id: nanoid(),
+                    components: [...fbf()
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'actionIconSize',
+                            label: 'Icon Size',
+                            type: 'textField',
+                            tooltip: 'Size of action column icons (e.g., 16px, 1.2em). Inherits from table font size if not specified.',
+                            jsSetting: true,
+                          },
+                          {
+                            id: nanoid(),
+                            propertyName: 'actionIconColor',
+                            label: 'Icon Color',
+                            type: 'colorPicker',
+                            tooltip: 'Color of action column icons',
+                            jsSetting: true,
+                          },
+                        ],
+                      })
+                      .toJson(),
+                    ],
+                  },
+                })
                 .toJson(),
               ...fbf()
                 .addPropertyRouter({
