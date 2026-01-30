@@ -24,7 +24,7 @@ import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
-import { ConfigurableForm, useShaFormInstance } from '@/index';
+import { ConfigurableForm } from '@/index';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -94,7 +94,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const { theme: themeFromStorage } = useTheme();
   const { styles } = useStyles();
   const sidebarDefaults = useSidebarMenuDefaults();
-  const { formMode } = useShaFormInstance();
 
   const { setGlobalVariables } = useSheshaApplication();
 
@@ -252,7 +251,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 
         {footerFormId && (
           <Footer style={footerStyle}>
-            <ConfigurableForm mode={formMode} formId={footerFormId} />
+            <ConfigurableForm mode="edit" formId={footerFormId} />
           </Footer>
         )}
       </Layout>
