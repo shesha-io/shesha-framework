@@ -30,23 +30,11 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 
   const { model } = useSettingsForm<IWizardComponentProps>();
 
-  /*const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
-    // whenever the tabs change, check to see if `defaultActiveStep` is still present within the tabs. If not, remove it
-    const foundIndex = values?.defaultActiveStep
-      ? values?.steps?.findIndex(item => item?.id === values?.defaultActiveStep)
-      : 0;
-
-    const newValues = { ...state, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep };
-
-    setState(prev => ({ ...prev, ...values, defaultActiveStep: foundIndex < 0 ? null : values?.defaultActiveStep }));
-
-    if (props.onValuesChange) props.onValuesChange(changedValues, newValues);
-  };*/
-
   const onAddNewItem = (items) => {
     const count = (items ?? []).length;
+    const stepId = nanoid();
     const buttonProps: IWizardStepProps = {
-      id: nanoid(),
+      id: stepId,
       name: `step${count + 1}`,
       label: `Step ${count + 1}`,
       key: `stepKey${count + 1}`,
@@ -57,6 +45,8 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
       backButtonText: 'Back',
       components: [],
       status: undefined,
+      hasCustomFooter: false,
+      stepFooter: { id: `${stepId}_footer`, components: [] },
     };
 
     return buttonProps;

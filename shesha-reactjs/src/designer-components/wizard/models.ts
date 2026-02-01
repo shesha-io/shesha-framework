@@ -2,6 +2,15 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { FormInstance, StepProps } from 'antd';
 
+/**
+ * Footer container for wizard steps.
+ * Stored at wizard level and mapped to steps via stepId.
+ */
+export interface IStepFooterContainer {
+  id: string;
+  components?: IConfigurableFormComponent[];
+}
+
 export interface IWizardStepProps {
   id: string;
   icon?: string;
@@ -28,6 +37,7 @@ export interface IWizardStepProps {
 
   showBackButton?: boolean;
   showDoneButton?: boolean;
+  hasCustomFooter?: boolean;
 
   cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
   nextButtonActionConfiguration?: IConfigurableActionConfiguration;
@@ -39,6 +49,7 @@ export interface IWizardStepProps {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
+  stepFooter?: IStepFooterContainer;
 
   onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
 
