@@ -29,6 +29,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
+    stylingBox: "{\"marginBottom\":\"5\"}",
+    showBackButton: true,
+    showDoneButton: true,
   }),
   migrator: (m) =>
     m
@@ -95,7 +98,19 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
   customContainerNames: ['steps'],
   getContainers: (model) => {
-    return model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    const containers: IFormComponentContainer[] = [];
+
+    // Add step containers
+    model.steps.forEach((step) => {
+      containers.push({ id: step.id });
+    });
+
+    // Add step footer containers
+    const footerContainers = model.steps
+      .filter((s) => s.hasCustomFooter && s.stepFooter)
+      .map((s) => ({ id: `${s.id}_footer`, parentId: model.id }));
+
+    return [...containers, ...footerContainers];
   },
 };
 

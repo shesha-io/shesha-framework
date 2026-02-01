@@ -142,6 +142,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
       &.right {
         justify-content: flex-end;
       }
+
+          >.sha-components-container  {
+            flex: 1;
+          }
     }
   `);
   return {

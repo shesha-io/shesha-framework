@@ -153,6 +153,15 @@ export const getItemSettings = () => {
               validate: {},
               jsSetting: true,
             })
+            .addSwitch({
+              id: nanoid(),
+              propertyName: 'hasCustomFooter',
+              label: 'Custom Footer',
+              labelAlign: 'right',
+              parentId: commonTabId,
+              defaultValue: false,
+              validate: {},
+            })
             .addCollapsiblePanel({
               id: nanoid(),
               propertyName: 'nextButtonCollapsiblePanel',
