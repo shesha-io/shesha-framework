@@ -377,7 +377,12 @@ const TableComponent: TableComponentDefinition = {
             rowDimensions: updateRowHeight(prev.desktop?.rowDimensions),
           },
         };
-      }),
+      })
+      .add<ITableComponentProps>(29, (prev) => ({
+        ...prev,
+        // Set default actionIconSize for existing tables
+        actionIconSize: prev.actionIconSize ?? '14px',
+      })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [
