@@ -170,6 +170,7 @@ export const getItemSettings = () => {
               parentId: commonTabId,
               ghost: true,
               collapsible: 'header',
+              hidden: { _code: 'return getSettingValue(data.hasCustomFooter);', _mode: 'code', _value: false },
               content: {
                 id: nextButtonContentId,
                 components: [...new DesignerToolbarSettings()
@@ -234,6 +235,7 @@ export const getItemSettings = () => {
               parentId: commonTabId,
               ghost: true,
               collapsible: 'header',
+              hidden: { _code: 'return getSettingValue(data.hasCustomFooter);', _mode: 'code', _value: false },
               content: {
                 id: backButtonContentId,
                 components: [...new DesignerToolbarSettings()
@@ -305,6 +307,7 @@ export const getItemSettings = () => {
               parentId: commonTabId,
               ghost: true,
               collapsible: 'header',
+              hidden: { _code: 'return getSettingValue(data.hasCustomFooter);', _mode: 'code', _value: false },
               content: {
                 id: doneButtonContentId,
                 components: [...new DesignerToolbarSettings()
@@ -377,6 +380,7 @@ export const getItemSettings = () => {
               parentId: commonTabId,
               ghost: true,
               collapsible: 'header',
+              hidden: { _code: 'return getSettingValue(data.hasCustomFooter);', _mode: 'code', _value: false },
               content: {
                 id: cancelButtonContentId,
                 components: [...new DesignerToolbarSettings()
