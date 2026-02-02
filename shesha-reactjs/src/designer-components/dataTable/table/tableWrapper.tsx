@@ -148,8 +148,12 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [props?.headerFont?.align]);
 
   const effectiveBodyTextAlign = useMemo(() => {
-    return props?.font?.align;
-  }, [props?.font?.align]);
+    // Use resolved font styles from allStyles to properly handle device-specific styling
+    // This ensures font.align from the current device (desktop/tablet/mobile) is used
+    console.log("table styles",props?.allStyles)
+
+    return props?.allStyles?.fontStyles?.textAlign ?? props?.font?.align;
+  }, [props?.allStyles?.fontStyles?.textAlign, props?.font?.align]);
 
   // Convert background object to CSS string
   const effectiveBackground = useMemo(() => {
@@ -189,11 +193,14 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [props?.background]);
 
   const { styles } = useStyles({
-    fontFamily: props?.font?.type,
-    fontWeight: props?.font?.weight,
-    textAlign: props?.font?.align,
-    color: props?.font?.color,
-    fontSize: props?.font?.size,
+    // Use resolved font styles from allStyles to properly handle device-specific styling
+    fontFamily: props?.allStyles?.fontStyles?.fontFamily ?? props?.font?.type,
+    fontWeight: props?.allStyles?.fontStyles?.fontWeight ?? props?.font?.weight,
+    textAlign: props?.allStyles?.fontStyles?.textAlign ?? props?.font?.align,
+    color: props?.allStyles?.fontStyles?.color ?? props?.font?.color,
+    fontSize: props?.allStyles?.fontStyles?.fontSize
+      ? parseInt(props.allStyles.fontStyles.fontSize as string, 10)
+      : props?.font?.size,
     striped: props?.striped,
     hoverHighlight: props?.hoverHighlight,
     enableStyleOnReadonly: props?.enableStyleOnReadonly,
@@ -518,10 +525,12 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
-            bodyFontFamily={props?.font?.type}
-            bodyFontSize={props?.font?.size ? `${props.font.size}px` : undefined}
-            bodyFontWeight={props?.font?.weight}
-            bodyFontColor={props?.font?.color}
+            bodyFontFamily={props?.allStyles?.fontStyles?.fontFamily ?? props?.font?.type}
+            bodyFontSize={props?.allStyles?.fontStyles?.fontSize
+              ? (props.allStyles.fontStyles.fontSize as string)
+              : (props?.font?.size ? `${props.font.size}px` : undefined)}
+            bodyFontWeight={props?.allStyles?.fontStyles?.fontWeight ?? props?.font?.weight}
+            bodyFontColor={props?.allStyles?.fontStyles?.color ?? props?.font?.color}
             actionIconSize={props.actionIconSize}
             actionIconColor={props.actionIconColor}
           />
