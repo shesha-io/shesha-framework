@@ -14,7 +14,6 @@ import {
   // Available form configurations from @shesha-io/reactjs
   HEADER_CONFIGURATION,
   LOGIN_CONFIGURATION,
-  FOOTER_CONFIGURATION,
 } from '@shesha-io/reactjs';
 
 //#region Active Layout Configuration
@@ -39,6 +38,6 @@ export const ACTIVE_HEADER: FormFullName = HEADER_CONFIGURATION;
 export const ACTIVE_LOGIN: FormFullName = LOGIN_CONFIGURATION;
 
 /** The footer form to display in the layout */
-export const ACTIVE_FOOTER: FormFullName = FOOTER_CONFIGURATION;
+export const ACTIVE_FOOTER: FormFullName = null; // No footer form is set
 //#endregion
 
