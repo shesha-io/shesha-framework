@@ -148,10 +148,6 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [props?.headerFont?.align]);
 
   const effectiveBodyTextAlign = useMemo(() => {
-    // Use resolved font styles from allStyles to properly handle device-specific styling
-    // This ensures font.align from the current device (desktop/tablet/mobile) is used
-    console.log("table styles",props?.allStyles)
-
     return props?.allStyles?.fontStyles?.textAlign ?? props?.font?.align;
   }, [props?.allStyles?.fontStyles?.textAlign, props?.font?.align]);
 
