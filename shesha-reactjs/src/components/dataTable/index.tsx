@@ -113,8 +113,8 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   // Body font styling
   bodyFontFamily?: string;
   bodyFontSize?: string;
-  bodyFontWeight?: string;
-  bodyFontColor?: string;
+  bodyFontWeight?: number & {} | string;
+  bodyFontColor?: number & {} | string;
 
   // Action column icon styling
   actionIconSize?: string | number;
