@@ -180,7 +180,7 @@ const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigIte
       label: "Open",
       key: "open",
       onClick: () => {
-        configurationStudio.activateDocumentById(node.id);
+        configurationStudio.selectTreeNode(node);
       },
     });
   result.push({
