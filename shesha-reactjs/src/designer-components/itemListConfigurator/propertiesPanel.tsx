@@ -4,7 +4,7 @@ import { ConfigurableFormInstance } from '@/interfaces';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
 import { Empty, Form } from 'antd';
-import React, { useMemo, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ItemSettingsMarkupFactory } from './interfaces';
 import { FormWithRawMarkup } from '@/components/configurableForm/formWithRawMarkup';
@@ -19,42 +19,49 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
     const [form] = Form.useForm();
 
     const formRef = useRef<ConfigurableFormInstance>(null);
-  
+
+    // Use a ref to always have access to the latest item value
+    const itemRef = useRef<TItem>(item);
+    itemRef.current = item;
+
     const debouncedSave = useDebouncedCallback(
-      values => {
-        onChange?.({ ...item, ...values });
-      },
-      // delay in ms
-      300
-    );  
+        (values: Partial<TItem>) => {            // Use the ref to get the latest item value, avoiding stale closure issues
+            onChange?.({ ...itemRef.current, ...values });
+        },
+        // delay in ms
+        300
+    );
 
-    const editor = useMemo(() => {
-        const emptyEditor = null;
-        if (!item) return emptyEditor;
+    //Guard debounced saves when switching items to prevent applying stale values to new items
+    useEffect(() => {
+        debouncedSave.cancel();
+    }, [item?.id]);
 
-        const markup = settingsMarkupFactory(item) ?? [];
+    if (!item) {
         return (
-            <SourceFilesFolderProvider folder={`item-${item.id}`}>
-                <FormWithRawMarkup
-                    //key={selectedItemId} // rerender for each item to initialize all controls
-                    formRef={formRef}
-                    labelCol={{ span: 24 }}
-                    wrapperCol={{ span: 24 }}
-                    mode={readOnly ? 'readonly' : 'edit'}
-                    markup={markup}
-                    form={form}
-                    initialValues={item}
-                    onValuesChange={debouncedSave}
-                    className={sheshaStyles.verticalSettingsClass}
-                    isSettingsForm={true}
-                />
-            </SourceFilesFolderProvider>
+            <div>
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
+            </div>
         );
-    }, [item]);
+    }
 
-    return Boolean(item)
-    ? (<>{editor}</>)
-    : (<div>
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
-    </div>);
+    const markup = settingsMarkupFactory(item) ?? [];
+
+    return (
+        <SourceFilesFolderProvider folder={`item-${item.id}`}>
+            <FormWithRawMarkup
+                key={item.id} // Force remount only when switching between different items
+                formRef={formRef}
+                labelCol={{ span: 24 }}
+                wrapperCol={{ span: 24 }}
+                mode={readOnly ? 'readonly' : 'edit'}
+                markup={markup}
+                form={form}
+                initialValues={item}
+                onValuesChange={debouncedSave}
+                className={sheshaStyles.verticalSettingsClass}
+                isSettingsForm={true}
+            />
+        </SourceFilesFolderProvider>
+    );
 };
