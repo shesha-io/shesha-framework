@@ -52,10 +52,6 @@ const buildConfiguraitonItemActionsMenu = ({ configurationStudio, node }: BuildN
         await configurationStudio.showRevisionHistoryAsync(node);
       },
     },
-    {
-      label: "View Json Config",
-      key: "viewJsonConfig",
-    },
   ];
 };
 
