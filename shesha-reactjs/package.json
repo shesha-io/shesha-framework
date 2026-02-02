@@ -198,6 +198,7 @@
     "react-split": "^2.0.14",
     "react-syntax-highlighter": "^15.6.1",
     "react-table": "^7.7.0",
+    "react-window": "^2.2.5",
     "remark-gfm": "^3.0.1",
     "scheduler": "^0.26.0",
     "tree-to-list": "^3.0.2",
