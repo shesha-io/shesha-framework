@@ -148,28 +148,55 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [props?.headerFont?.align]);
 
   const effectiveBodyTextAlign = useMemo(() => {
-    return props?.font?.align;
-  }, [props?.font?.align]);
+    return props?.allStyles?.fontStyles?.textAlign ?? props?.font?.align;
+  }, [props?.allStyles?.fontStyles?.textAlign, props?.font?.align]);
 
   // Convert background object to CSS string
   const effectiveBackground = useMemo(() => {
     const bgStyles = getBackgroundStyle(props?.background, undefined);
-    // Combine all background properties into a single string
+
+    // Build complete background CSS string with all properties
+    const parts: string[] = [];
+
+    // Add image or color
     if (bgStyles.backgroundImage) {
-      return bgStyles.backgroundImage;
+      parts.push(bgStyles.backgroundImage);
+    } else if (bgStyles.backgroundColor) {
+      return bgStyles.backgroundColor; // Color doesn't need size/position
     }
-    if (bgStyles.backgroundColor) {
-      return bgStyles.backgroundColor;
+
+    // Add position if present
+    if (bgStyles.backgroundPosition) {
+      parts.push(String(bgStyles.backgroundPosition));
     }
-    return undefined;
+
+    // Add size if present (must come after position with / separator)
+    if (bgStyles.backgroundSize) {
+      // If position exists, add size with / separator, otherwise add it separately
+      if (bgStyles.backgroundPosition) {
+        parts[parts.length - 1] = `${parts[parts.length - 1]} / ${String(bgStyles.backgroundSize)}`;
+      } else {
+        parts.push(`/ ${String(bgStyles.backgroundSize)}`);
+      }
+    }
+
+    // Add repeat if present
+    if (bgStyles.backgroundRepeat) {
+      parts.push(String(bgStyles.backgroundRepeat));
+    }
+
+    return parts.length > 0 ? parts.join(' ') : undefined;
   }, [props?.background]);
 
   const { styles } = useStyles({
-    fontFamily: props?.font?.type,
-    fontWeight: props?.font?.weight,
-    textAlign: props?.font?.align,
-    color: props?.font?.color,
-    fontSize: props?.font?.size,
+    // Use resolved font styles from allStyles to properly handle device-specific styling
+    fontFamily: props?.allStyles?.fontStyles?.fontFamily ?? props?.font?.type,
+    fontWeight: props?.allStyles?.fontStyles?.fontWeight ?? props?.font?.weight,
+    textAlign: props?.allStyles?.fontStyles?.textAlign ?? props?.font?.align,
+    color: props?.allStyles?.fontStyles?.color ?? props?.font?.color,
+    fontSize: props?.allStyles?.fontStyles?.fontSize
+      ? parseInt(props.allStyles.fontStyles.fontSize as string, 10)
+      : props?.font?.size,
     striped: props?.striped,
     hoverHighlight: props?.hoverHighlight,
     enableStyleOnReadonly: props?.enableStyleOnReadonly,
@@ -204,17 +231,18 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
         baseStyle = props.allStyles.fullStyle;
       }
 
-      if (props.border && baseStyle) {
+      if (baseStyle) {
         const {
-          border,
+          // Remove border properties if border prop is set
+          border: borderProp,
           borderTop,
           borderRight,
           borderBottom,
           borderLeft,
           borderWidth,
-          borderStyle,
+          borderStyle: borderStyleProp,
           borderColor,
-          borderRadius,
+          borderRadius: borderRadiusProp,
           borderTopWidth,
           borderRightWidth,
           borderBottomWidth,
@@ -231,9 +259,53 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
           borderTopRightRadius,
           borderBottomLeftRadius,
           borderBottomRightRadius,
-          ...styleWithoutBorder
+          // Remove background properties to prevent duplicate application
+          background,
+          backgroundColor,
+          backgroundImage,
+          backgroundSize,
+          backgroundPosition,
+          backgroundRepeat,
+          backgroundAttachment,
+          backgroundOrigin,
+          backgroundClip,
+          ...styleWithoutBorderAndBackground
         } = baseStyle;
-        return styleWithoutBorder;
+
+        // Only remove border properties if props.border is set
+        if (props.border) {
+          return styleWithoutBorderAndBackground;
+        }
+
+        // Remove background properties but keep border properties
+        return {
+          borderProp,
+          borderTop,
+          borderRight,
+          borderBottom,
+          borderLeft,
+          borderWidth,
+          borderStyle: borderStyleProp,
+          borderColor,
+          borderRadius: borderRadiusProp,
+          borderTopWidth,
+          borderRightWidth,
+          borderBottomWidth,
+          borderLeftWidth,
+          borderTopStyle,
+          borderRightStyle,
+          borderBottomStyle,
+          borderLeftStyle,
+          borderTopColor,
+          borderRightColor,
+          borderBottomColor,
+          borderLeftColor,
+          borderTopLeftRadius,
+          borderTopRightRadius,
+          borderBottomLeftRadius,
+          borderBottomRightRadius,
+          ...styleWithoutBorderAndBackground,
+        };
       }
       return baseStyle;
     }
@@ -449,10 +521,14 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
-            bodyFontFamily={props?.font?.type}
-            bodyFontSize={props?.font?.size ? `${props.font.size}px` : undefined}
-            bodyFontWeight={props?.font?.weight}
-            bodyFontColor={props?.font?.color}
+            bodyFontFamily={props?.allStyles?.fontStyles?.fontFamily ?? props?.font?.type}
+            bodyFontSize={props?.allStyles?.fontStyles?.fontSize
+              ? (props.allStyles.fontStyles.fontSize as string)
+              : (props?.font?.size ? `${props.font.size}px` : undefined)}
+            bodyFontWeight={props?.allStyles?.fontStyles?.fontWeight ?? props?.font?.weight}
+            bodyFontColor={props?.allStyles?.fontStyles?.color ?? props?.font?.color as string}
+            actionIconSize={props.actionIconSize}
+            actionIconColor={props.actionIconColor}
           />
         </div>
       </div>

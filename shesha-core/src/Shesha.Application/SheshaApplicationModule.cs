@@ -154,6 +154,11 @@ namespace Shesha
                     UseResetPasswordViaEmailLink = true,
                     ResetPasswordEmailLinkLifetime = 300
                 });
+                s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
+                {
+                    AllowSelfRegistration = true,
+                    CreationMode = RefListCreationMode.CreateNewButLinkIfExist
+                });
             });
 
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);

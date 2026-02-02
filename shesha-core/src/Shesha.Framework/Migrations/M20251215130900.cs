@@ -70,7 +70,16 @@ namespace Shesha.Migrations
                   -- ============================================================================
                   DECLARE @OldSecurityValue NVARCHAR(MAX);
                   DECLARE @OldSecurityId UNIQUEIDENTIFIER;
-                  
+
+                  -- Declare variables that will be used in Step 3 (must be outside IF block)
+                  DECLARE @AutoLogoffTimeout INT;
+                  DECLARE @UseResetPasswordViaEmailLink BIT;
+                  DECLARE @ResetPasswordEmailLinkLifetime INT;
+                  DECLARE @UseResetPasswordViaSmsOtp BIT;
+                  DECLARE @ResetPasswordSmsOtpLifetime INT;
+                  DECLARE @UseResetPasswordViaSecurityQuestions BIT;
+                  DECLARE @ResetPasswordViaSecurityQuestionsNumQuestionsAllowed INT;
+
                   -- Find the old Security setting
                   SELECT TOP 1
                       @OldSecurityId = sv.Id,
@@ -81,20 +90,20 @@ namespace Shesha.Migrations
                       INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
                   WHERE
                       ci.item_type = 'setting-configuration'
-                      ci.Name = 'Shesha.Security'
+                      AND ci.Name = 'Shesha.Security'
                       AND sv.Value IS NOT NULL
                       AND ISJSON(sv.Value) = 1;
-                  
+
                   IF @OldSecurityValue IS NOT NULL AND ISJSON(@OldSecurityValue) = 1
                   BEGIN
                       -- Extract values
-                      DECLARE @AutoLogoffTimeout INT = CAST(JSON_VALUE(@OldSecurityValue, '$.autoLogoffTimeout') AS INT);
-                      DECLARE @UseResetPasswordViaEmailLink BIT = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaEmailLink') AS BIT);
-                      DECLARE @ResetPasswordEmailLinkLifetime INT = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordEmailLinkLifetime') AS INT);
-                      DECLARE @UseResetPasswordViaSmsOtp BIT = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaSmsOtp') AS BIT);
-                      DECLARE @ResetPasswordSmsOtpLifetime INT = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordSmsOtpLifetime') AS INT);
-                      DECLARE @UseResetPasswordViaSecurityQuestions BIT = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaSecurityQuestions') AS BIT);
-                      DECLARE @ResetPasswordViaSecurityQuestionsNumQuestionsAllowed INT = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordViaSecurityQuestionsNumQuestionsAllowed') AS INT);
+                      SET @AutoLogoffTimeout = CAST(JSON_VALUE(@OldSecurityValue, '$.autoLogoffTimeout') AS INT);
+                      SET @UseResetPasswordViaEmailLink = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaEmailLink') AS BIT);
+                      SET @ResetPasswordEmailLinkLifetime = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordEmailLinkLifetime') AS INT);
+                      SET @UseResetPasswordViaSmsOtp = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaSmsOtp') AS BIT);
+                      SET @ResetPasswordSmsOtpLifetime = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordSmsOtpLifetime') AS INT);
+                      SET @UseResetPasswordViaSecurityQuestions = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaSecurityQuestions') AS BIT);
+                      SET @ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordViaSecurityQuestionsNumQuestionsAllowed') AS INT);
                   
                       -- Transform to GeneralFrontendSecuritySettings
                       DECLARE @NewGeneralSecurityValue NVARCHAR(MAX);

@@ -15,6 +15,7 @@ namespace Shesha.Domain
     [DiscriminatorValue(ItemTypeName)]
     [JoinedProperty("form_configurations", Schema = "frwk")]
     [SnakeCaseNaming]
+    [Exposable(ItemTypeName)]
     public class FormConfiguration : ConfigurationItem
     {
         public const string ItemTypeName = "form";

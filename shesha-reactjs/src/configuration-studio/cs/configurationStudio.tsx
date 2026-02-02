@@ -63,6 +63,11 @@ export const SPECIAL_NODES: { HOME: SpecialTreeNode; SETTINGS: SpecialTreeNode }
   },
 };
 
+type IndexedItem<T> = {
+  value: T;
+  originalIndex: number;
+};
+
 type DynamicProperties<K extends string | number | symbol, T> = {
   [P in K]: T;
 };
@@ -595,7 +600,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.notifySubscribers(['tabs', 'doc']);
 
     // if the document was active - activate next if available
-    if (activateNextTab && isActive) {
+    if (activateNextTab || isActive) {
       const indexToSwitch = this.docs.length - 1 >= index
         ? index
         : index - 1;
@@ -615,12 +620,16 @@ export class ConfigurationStudio implements IConfigurationStudio {
   closeMultipleDocumentsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean, confirmUnsavedChanges: boolean): Promise<void> => {
     const activeDoc = this.activeDocument;
     // build list of reversed docs with active one on top of it
-    const allDocs = activeDoc
-      ? [...this.docs.filter((t) => t !== activeDoc), activeDoc]
-      : [...this.docs];
-    allDocs.reverse();
+    const indexedDocs = this.docs.map<IndexedItem<IDocumentInstance>>((d, idx) => ({ value: d, originalIndex: idx }));
+    if (activeDoc) {
+      const activeDocIndex = indexedDocs.findIndex((d) => d.value === activeDoc);
+      const [activeDocElement] = indexedDocs.splice(activeDocIndex, 1);
+      if (activeDocElement)
+        indexedDocs.push(activeDocElement);
+    }
+    indexedDocs.reverse();
 
-    const docsToClose = allDocs.filter(predicate);
+    const docsToClose = indexedDocs.filter((item) => predicate(item.value, item.originalIndex)).map((item) => item.value);
 
     const last = docsToClose.at(-1);
     for (const doc of docsToClose) {
