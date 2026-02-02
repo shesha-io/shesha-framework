@@ -402,7 +402,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id: 'pnl54bf6-f76d-4139-a850-0f7aeb5bb7ce',
+        id: 'pnl54bf6-f76d-4139-a850-dff5fcfb4e11',
         components: [...new DesignerToolbarSettings()
           .addConfigurableActionConfigurator({
             id: 'ca210f0c-ac55-4b33-a7f5-be17cb3eeda5',
@@ -424,7 +424,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id: 'pnl54bf6-f76d-4139-a850-0f7aeb5bb7ce',
+        id: 'pnl54bf6-f76d-4139-a850-805550415aeb',
         components: [...new DesignerToolbarSettings()
           .addCodeEditor({
             id: 'd2f01684-31e5-41a3-b32a-c23abc20e700',
@@ -434,7 +434,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
             validate: {},
             settingsValidationErrors: [],
             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-            exposedVariables: [{ id: '', name: 'data', description: 'Form values', type: 'object' }],
+            exposedVariables: [{ id: 'd2f01684-31e5-41a3-b32a-c23abc20e701', name: 'data', description: 'Form values', type: 'object' }],
             mode: 'dialog',
             wrapInTemplate: true,
             templateSettings: {

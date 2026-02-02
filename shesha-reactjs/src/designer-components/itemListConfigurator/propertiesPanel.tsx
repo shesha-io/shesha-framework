@@ -25,8 +25,7 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
     itemRef.current = item;
 
     const debouncedSave = useDebouncedCallback(
-        values => {
-            // Use the ref to get the latest item value, avoiding stale closure issues
+        (values: Partial<TItem>) => {            // Use the ref to get the latest item value, avoiding stale closure issues
             onChange?.({ ...itemRef.current, ...values });
         },
         // delay in ms
