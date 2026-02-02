@@ -106,7 +106,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowDividers?: boolean;
   bodyFontFamily?: string;
   bodyFontSize?: string;
-  bodyFontWeight?: string;
+  bodyFontWeight?: number & {} | string;
   bodyFontColor?: string;
   freezeHeaders?: boolean;
   actionIconSize?: string | number;
