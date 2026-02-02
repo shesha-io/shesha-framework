@@ -4,7 +4,7 @@ import { ConfigurableFormInstance } from '@/interfaces';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
 import { Empty, Form } from 'antd';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ItemSettingsMarkupFactory } from './interfaces';
 import { FormWithRawMarkup } from '@/components/configurableForm/formWithRawMarkup';
@@ -31,6 +31,11 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
         // delay in ms
         300
     );
+
+    //Guard debounced saves when switching items to prevent applying stale values to new items
+    useEffect(() => {
+        debouncedSave.cancel();
+    }, [item?.id]);
 
     if (!item) {
         return (
