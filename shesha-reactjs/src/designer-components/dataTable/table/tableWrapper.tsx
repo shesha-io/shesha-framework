@@ -8,6 +8,7 @@ import React, {
 import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding, flattenConfiguredColumns, getDataColumnAccessor } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import {
@@ -48,6 +49,9 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
+
+  const calculatedStyles = useFormComponentStyles(props);
+  const allStyles = props.allStyles ?? calculatedStyles;
   const componentIdRef = useRef(id);
   const normalizedConfiguredColumns = useMemo(
     () => flattenConfiguredColumns(
@@ -148,8 +152,8 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [props?.headerFont?.align]);
 
   const effectiveBodyTextAlign = useMemo(() => {
-    return props?.allStyles?.fontStyles?.textAlign ?? props?.font?.align;
-  }, [props?.allStyles?.fontStyles?.textAlign, props?.font?.align]);
+    return allStyles?.fontStyles?.textAlign ?? props?.font?.align;
+  }, [allStyles?.fontStyles?.textAlign, props?.font?.align]);
 
   // Convert background object to CSS string
   const effectiveBackground = useMemo(() => {
@@ -190,12 +194,12 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
   const { styles } = useStyles({
     // Use resolved font styles from allStyles to properly handle device-specific styling
-    fontFamily: props?.allStyles?.fontStyles?.fontFamily ?? props?.font?.type,
-    fontWeight: props?.allStyles?.fontStyles?.fontWeight ?? props?.font?.weight,
-    textAlign: props?.allStyles?.fontStyles?.textAlign ?? props?.font?.align,
-    color: props?.allStyles?.fontStyles?.color ?? props?.font?.color,
-    fontSize: props?.allStyles?.fontStyles?.fontSize
-      ? parseInt(props.allStyles.fontStyles.fontSize as string, 10)
+    fontFamily: allStyles?.fontStyles?.fontFamily ?? props?.font?.type,
+    fontWeight: allStyles?.fontStyles?.fontWeight ?? props?.font?.weight,
+    textAlign: allStyles?.fontStyles?.textAlign ?? props?.font?.align,
+    color: allStyles?.fontStyles?.color ?? props?.font?.color,
+    fontSize: allStyles?.fontStyles?.fontSize
+      ? parseInt(allStyles.fontStyles.fontSize as string, 10)
       : props?.font?.size,
     striped: props?.striped,
     hoverHighlight: props?.hoverHighlight,
@@ -220,15 +224,16 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   });
 
   const finalStyle = useMemo(() => {
-    if (props.allStyles) {
+    if (allStyles) {
       let baseStyle;
       if (!props.enableStyleOnReadonly && props.readOnly) {
         baseStyle = {
-          ...props.allStyles.fontStyles,
-          ...props.allStyles.dimensionsStyles,
+          ...allStyles.fontStyles,
+          ...allStyles.dimensionsStyles,
+          ...allStyles.stylingBoxAsCSS,
         };
       } else {
-        baseStyle = props.allStyles.fullStyle;
+        baseStyle = allStyles.fullStyle;
       }
 
       if (baseStyle) {
@@ -310,7 +315,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
       return baseStyle;
     }
     return {};
-  }, [props.enableStyleOnReadonly, props.readOnly, props.allStyles, props.border]);
+  }, [props.enableStyleOnReadonly, props.readOnly, allStyles, props.border]);
 
   const {
     isInProgress: { isFiltering, isSelectingColumns },
@@ -521,12 +526,12 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
-            bodyFontFamily={props?.allStyles?.fontStyles?.fontFamily ?? props?.font?.type}
-            bodyFontSize={props?.allStyles?.fontStyles?.fontSize
-              ? (props.allStyles.fontStyles.fontSize as string)
+            bodyFontFamily={allStyles?.fontStyles?.fontFamily ?? props?.font?.type as string}
+            bodyFontSize={allStyles?.fontStyles?.fontSize
+              ? (allStyles.fontStyles.fontSize as string)
               : (props?.font?.size ? `${props.font.size}px` : undefined)}
-            bodyFontWeight={props?.allStyles?.fontStyles?.fontWeight ?? props?.font?.weight}
-            bodyFontColor={props?.allStyles?.fontStyles?.color ?? props?.font?.color as string}
+            bodyFontWeight={allStyles?.fontStyles?.fontWeight ?? props?.font?.weight as string}
+            bodyFontColor={allStyles?.fontStyles?.color ?? props?.font?.color as string}
             actionIconSize={props.actionIconSize}
             actionIconColor={props.actionIconColor}
           />
