@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { IHtmlHeadProps } from '@/components/htmlHead';
 import { Layout } from 'antd';
-import { useTheme } from '@/providers';
+import { FormFullName, useTheme } from '@/providers';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles';
 import { ConfigurableForm } from '../configurableForm';
@@ -25,6 +25,8 @@ export interface IHorizontalLayoutProps extends IHtmlHeadProps {
   layoutBackgroundStyle?: CSSProperties;
   headerStyle?: CSSProperties;
   footerStyle?: CSSProperties;
+  headerFormId?: FormFullName;
+  footerFormId?: FormFullName;
   footer?: ReactNodeOrFunc;
   heading?: ReactNodeOrFunc;
   fixHeading?: boolean;
@@ -41,6 +43,8 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
     contentStyle,
     layoutBackgroundStyle = {},
     footerStyle,
+    headerFormId,
+    footerFormId,
     heading,
     fixHeading = false,
     showHeading = true,
@@ -74,7 +78,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
       <div>
         <ConfigurableForm
           mode="readonly"
-          formId={ACTIVE_HEADER}
+          formId={headerFormId ?? ACTIVE_HEADER}
           showFormInfoOverlay={false}
           showDataLoadingIndicator={false}
           showMarkupLoadingIndicator={false}
@@ -111,7 +115,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
         ) : (
           <ConfigurableForm
             mode="readonly"
-            formId={ACTIVE_FOOTER}
+            formId={footerFormId ?? ACTIVE_FOOTER}
             showFormInfoOverlay={false}
             showDataLoadingIndicator={false}
             showMarkupLoadingIndicator={false}
