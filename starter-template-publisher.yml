@@ -21,11 +21,11 @@ steps:
       Write-Host "Renaming frontend to adminportal and delete Intent"
       Rename-Item -Path "frontend" -NewName "adminportal"
       # Remove-Item -LiteralPath "intent/.intent" -Force -Recurse
-      Write-Host "Completed"
-      Write-Host "Copy database to root and delete database folder"
-      Copy-Item 'database/*' -Destination '.' -Recurse
-      Remove-Item -LiteralPath "database" -Force -Recurse
-      Write-Host "Completed"
+      # Write-Host "Completed"
+      # Write-Host "Copy database to root and delete database folder"
+      # Copy-Item 'database/*' -Destination '.' -Recurse
+      # Remove-Item -LiteralPath "database" -Force -Recurse
+      # Write-Host "Completed"
        # Write-Host "Changing version reference in packages.json to latest public version"
        # Set-Location -Path "$(System.DefaultWorkingDirectory)/shesha-starter/adminportal"
        # $filePath = "package.json"
