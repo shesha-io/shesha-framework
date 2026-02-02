@@ -449,6 +449,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
             /* Action icons styling for all table cells */
             .sha-link {
+              /* Always center icons regardless of cell text-align */
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 100%;
+
               .${iconPrefixCls} {
                 font-size: ${actionIconSize || bodyFontSize || '16px'};
                 width: ${actionIconSize || bodyFontSize || '16px'};
