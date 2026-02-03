@@ -118,7 +118,11 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
 
     const finalContainerStyle = useMemo(() => {
       const computedStyle = {
+        ...model.allStyles?.dimensionsStyles,
+        ...model.allStyles?.borderStyles,
         ...model.allStyles?.backgroundStyles,
+        ...model.allStyles?.shadowStyles,
+        ...model.allStyles?.overflowStyles,
         ...(model.containerStyle ? getStyle(model.containerStyle, data) : {}),
       };
 

@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react';
 import { ILayoutColor } from './model';
-import { convertJsonToCss } from '@/utils';
+import { convertJsonToCss, convertJsonToCssWithImportant } from '@/utils';
 
 interface UseHorizontalMenuDropdownStylesProps {
   menuId?: string;
@@ -36,8 +36,8 @@ export const useHorizontalMenuDropdownStyles = ({
     }
 
     const customItemStyle = convertJsonToCss(itemStyle);
-    const customStyleOnHover = convertJsonToCss(styleOnHover);
-    const customStyleOnSelected = convertJsonToCss(styleOnSelected);
+    const customStyleOnHover = convertJsonToCssWithImportant(styleOnHover);
+    const customStyleOnSelected = convertJsonToCssWithImportant(styleOnSelected);
     const customStyleOnSubMenu = convertJsonToCss(styleOnSubMenu);
     const customMenuItemStyle = convertJsonToCss(menuItemStyle);
 
@@ -58,7 +58,6 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item {
-        border: none;
         margin: 0 !important;
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
@@ -70,10 +69,20 @@ export const useHorizontalMenuDropdownStyles = ({
         ${customStyleOnSubMenu || ''}
       }
 
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item .anticon {
+        margin-left: 10px !important;
+      }
+
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover,
       .horizontal-menu-${menuId}-dropdown .ant-menu-item:hover {
         ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
         ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover .anticon,
+      .horizontal-menu-${menuId}-dropdown .ant-menu-item:hover .anticon {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
         ${customStyleOnHover || ''}
       }
 
@@ -84,7 +93,6 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title {
-        border: none;
         margin: 0 !important;
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
@@ -96,9 +104,18 @@ export const useHorizontalMenuDropdownStyles = ({
         ${customStyleOnSubMenu || ''}
       }
 
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .anticon {
+        margin-left: 10px !important;
+      }
+
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
         ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
         ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover .anticon {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
         ${customStyleOnHover || ''}
       }
 
@@ -114,10 +131,20 @@ export const useHorizontalMenuDropdownStyles = ({
         ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
       }
 
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item-active .anticon {
+        ${customStyleOnHover || ''}
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor};` : ''}
+      }
+
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu-active .ant-menu-submenu-title {
         ${customStyleOnHover || ''}
         ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor};` : ''}
         ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu-active .ant-menu-submenu-title .anticon {
+        ${customStyleOnHover || ''}
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor};` : ''}
       }
 
     `;
@@ -147,9 +174,18 @@ export const useHorizontalMenuDropdownStyles = ({
         ${customItemStyle || ''}
       }
 
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item .anticon {
+        margin-left: 10px !important;
+      }
+
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item:hover {
         ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
         ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item:hover .anticon {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
         ${customStyleOnHover || ''}
       }
 
@@ -159,9 +195,18 @@ export const useHorizontalMenuDropdownStyles = ({
         ${customItemStyle || ''}
       }
 
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .anticon {
+        margin-left: 10px !important;
+      }
+
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {
         ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
         ${!customStyleOnHover && colors?.hoverItemBackground ? `background: ${colors?.hoverItemBackground} !important;` : ''}
+        ${customStyleOnHover || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover .anticon {
+        ${!customStyleOnHover && colors?.hoverItemColor ? `color: ${colors?.hoverItemColor} !important;` : ''}
         ${customStyleOnHover || ''}
       }
     `;

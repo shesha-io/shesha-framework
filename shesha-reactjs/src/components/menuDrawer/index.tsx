@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import { ShaMenuDrawerStyledWrapper } from "./styles";
 import { ILayoutColor } from "../menu/model";
 import { ScopedMenuStyles } from "../menu/styles";
-import { convertJsonToCss } from "@/utils";
+import { convertJsonToCss, convertJsonToCssWithImportant } from "@/utils";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -67,8 +67,8 @@ const ShaMenuDrawer: FC<IProps> = ({
         <ScopedMenuStyles
           colors={colors}
           itemStyle={convertJsonToCss(itemStyle)}
-          styleOnHover={convertJsonToCss(styleOnHover)}
-          styleOnSelected={convertJsonToCss(styleOnSelected)}
+          styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
+          styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
           fontStyles={fontStyles}
           menuId={menuId}

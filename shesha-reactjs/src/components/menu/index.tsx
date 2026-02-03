@@ -1,6 +1,7 @@
 import {
   IConfigurableActionConfiguration,
   convertJsonToCss,
+  convertJsonToCssWithImportant,
   evaluateString,
   isNavigationActionConfiguration,
   normalizeUrl,
@@ -73,8 +74,8 @@ export const LayoutMenu: FC<IProps> = ({
     isScrolling,
     padding,
     itemStyle: convertJsonToCss(itemStyle),
-    styleOnHover: convertJsonToCss(styleOnHover),
-    styleOnSelected: convertJsonToCss(styleOnSelected),
+    styleOnHover: convertJsonToCssWithImportant(styleOnHover),
+    styleOnSelected: convertJsonToCssWithImportant(styleOnSelected),
     menuItemStyle: convertJsonToCss(menuItemStyle),
     width,
     fontStyles,
@@ -250,8 +251,8 @@ export const LayoutMenu: FC<IProps> = ({
         <ScopedMenuStyles
           colors={colors}
           itemStyle={convertJsonToCss(itemStyle)}
-          styleOnHover={convertJsonToCss(styleOnHover)}
-          styleOnSelected={convertJsonToCss(styleOnSelected)}
+          styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
+          styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
           menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
@@ -261,8 +262,8 @@ export const LayoutMenu: FC<IProps> = ({
         <GlobalMenuStyles
           colors={colors}
           itemStyle={convertJsonToCss(itemStyle)}
-          styleOnHover={convertJsonToCss(styleOnHover)}
-          styleOnSelected={convertJsonToCss(styleOnSelected)}
+          styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
+          styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
           menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
