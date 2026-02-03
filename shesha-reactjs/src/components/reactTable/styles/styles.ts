@@ -190,12 +190,16 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const shaReactTable = cx(
     'sha-react-table',
     css`
+      /* 
+       * Use max-content to expand with table columns, while allowing horizontal scroll
+       * when content exceeds parent container width (via overflow-x on parent)
+       */
       display: inline-block;
-      width: max-content;
-      min-width: calc(100% - 16px);
+      width: calc(100% - 16px);
+      overflow-x: auto;
       /* These styles are required for a horizontaly scrollable table overflow */
       /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
-      overflow: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
+      overflow-y: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
       ${boxShadow && !freezeHeaders ? `
         /* Apply box shadow to container */
         box-shadow: ${boxShadow};
