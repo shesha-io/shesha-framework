@@ -195,7 +195,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
        * when content exceeds parent container width (via overflow-x on parent)
        */
       display: inline-block;
-      width: max-content%;
+      width: calc(100% - 16px);
       overflow-x: auto;
       /* These styles are required for a horizontaly scrollable table overflow */
       /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
