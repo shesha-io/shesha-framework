@@ -171,6 +171,17 @@
             "version": 1
           },
           {
+            "id": "021adb3d-6fae-450b-afb5-0867e6a30d06",
+            "type": "checkbox",
+            "propertyName": "accent",
+            "label": "Accent",
+            "labelAlign": "right",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "hidden": false,
+            "isDynamic": false,
+            "description": "Make the primary colored border visible"
+          },
+          {
             "id": "6bac1a1f-67a2-48b5-a11e-b474e30d282e",
             "type": "numberField",
             "propertyName": "borderRadius",
