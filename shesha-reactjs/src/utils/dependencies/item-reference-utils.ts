@@ -40,8 +40,8 @@ export class ItemReferenceFinder {
     const visited = new WeakSet();
     const seen = new Set<string>();
 
-    const traverse = (current: any, path: string = '', depth = 0): void => {
-      if (depth > maxDepth || current == null || visited.has(current)) {
+    const traverse = (current: unknown, path: string = '', depth = 0): void => {
+      if (depth > maxDepth || current == null || (typeof (current) === 'object' && visited.has(current))) {
         return;
       }
 
@@ -109,21 +109,3 @@ export class ItemReferenceFinder {
     return Array.from(modules);
   }
 }
-
-// // Usage examples
-// const data: any = { /* your data */ };
-
-// // Get all references
-// const allRefs = ItemReferenceFinder.findAll(data);
-
-// // Get unique references
-// const uniqueRefs = ItemReferenceFinder.findAll(data, { unique: true });
-
-// // Map to different format
-// const names = ItemReferenceFinder.findAndMap(
-//   data,
-//   ref => `${ref.module}.${ref.name}`
-// );
-
-// // Get all unique modules
-// const modules = ItemReferenceFinder.extractUniqueModules(data);
