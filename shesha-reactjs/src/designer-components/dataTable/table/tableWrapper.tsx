@@ -4,13 +4,14 @@ import React, {
   useMemo,
   useRef,
   useEffect,
+  useState,
 } from 'react';
 import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding, flattenConfiguredColumns, getDataColumnAccessor } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
+import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import {
   SidebarContainer,
   DataTable,
@@ -44,7 +45,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
-  const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const isDesignMode = formMode === 'designer';
   const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
   const formDesigner = useFormDesignerOrUndefined();
@@ -155,9 +156,25 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     return allStyles?.fontStyles?.textAlign ?? props?.font?.align;
   }, [allStyles?.fontStyles?.textAlign, props?.font?.align]);
 
+  // State for stored file background URL
+  const [storedFileBackgroundUrl, setStoredFileBackgroundUrl] = useState<string>('');
+
+  // Fetch stored file URL when background type is 'storedFile'
+  useEffect(() => {
+    const fetchStoredFileUrl = async (): Promise<void> => {
+      if (props?.background?.type === 'storedFile' && props?.background?.storedFile?.id) {
+        const url = await getBackgroundImageUrl(props.background, backendUrl, httpHeaders);
+        setStoredFileBackgroundUrl(url);
+      } else {
+        setStoredFileBackgroundUrl('');
+      }
+    };
+    fetchStoredFileUrl();
+  }, [props?.background, backendUrl, httpHeaders]);
+
   // Convert background object to CSS string
   const effectiveBackground = useMemo(() => {
-    const bgStyles = getBackgroundStyle(props?.background, undefined);
+    const bgStyles = getBackgroundStyle(props?.background, undefined, storedFileBackgroundUrl);
 
     // Build complete background CSS string with all properties
     const parts: string[] = [];
@@ -190,7 +207,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     }
 
     return parts.length > 0 ? parts.join(' ') : undefined;
-  }, [props?.background]);
+  }, [props?.background, storedFileBackgroundUrl]);
 
   const { styles } = useStyles({
     // Use resolved font styles from allStyles to properly handle device-specific styling
