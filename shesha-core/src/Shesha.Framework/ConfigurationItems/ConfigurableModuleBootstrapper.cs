@@ -190,7 +190,8 @@ namespace Shesha.ConfigurationItems
                     var submodulesInitialized = false;
                     foreach (var submodule in submodules)
                     {
-                        submodulesInitialized = submodulesInitialized || await submodule.InitializeConfigurationAsync();
+                        if (await submodule.InitializeConfigurationAsync())
+                            submodulesInitialized = true;
                     }
 
                     if (mainModuleInitialized || submodulesInitialized)

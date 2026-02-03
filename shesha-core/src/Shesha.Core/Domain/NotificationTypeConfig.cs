@@ -8,7 +8,6 @@ namespace Shesha.Domain
     [Prefix(UsePrefixes = false)]
     [JoinedProperty("notification_types", Schema = "frwk")]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-notification-type-create")]
-    [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
     [Entity(
         FriendlyName = "Notification",
         TypeShortAlias = "Shesha.Domain.NotificationTypeConfig"

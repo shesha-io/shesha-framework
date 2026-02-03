@@ -11,7 +11,6 @@ namespace Shesha.Domain
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration", FriendlyName = "Form", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-form-create")]
-    [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
     [DiscriminatorValue(ItemTypeName)]
     [JoinedProperty("form_configurations", Schema = "frwk")]
     [SnakeCaseNaming]
