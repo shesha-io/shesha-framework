@@ -118,6 +118,17 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           showDoneButton: step.showDoneButton ?? true
         })) ?? []
       }))
+      .add<IWizardComponentProps>(9, (prev) => ({
+        ...prev,
+        steps: prev.steps?.map(step => ({
+          ...step,
+          hasCustomFooter: step.hasCustomFooter ?? false,
+          stepFooter: step?.stepFooter ?? {
+            id: `${step.id}_footer`,
+            components: step?.stepFooter?.components ?? [],
+          }
+        })) ?? []
+      }))
   ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
@@ -133,7 +144,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     // Add step footer containers
     const footerContainers = model.steps
       .filter((s) => s.hasCustomFooter && s.stepFooter)
-      .map((s) => ({ id: `${s.id}_footer`, parentId: model.id }));
+      .map((s) => ({ id: s.stepFooter.id, parentId: model.id }));
 
     return [...containers, ...footerContainers];
   },
