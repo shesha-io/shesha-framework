@@ -28,11 +28,12 @@
     "lint": "eslint",
     "lint-errors": "eslint --quiet",
     "lint-fix": "eslint --fix",
-    "dev": "next dev",
+    "dev": "npm run postinstall && next dev",
     "build-next": "next build",
     "start-next": "cross-env NODE_ENV=production node --max-old-space-size=8192 server.js",
     "prepare": "husky",
-    "type-check": "tsc --build tsconfig.strictNulls.json"
+    "type-check": "tsc --build tsconfig.strictNulls.json",
+    "postinstall": "node scripts/postinstall.js || true"
   },
   "overrides": {
     "rc-resize-observer": "1.4.0",
@@ -145,7 +146,8 @@
   "files": [
     "dist",
     "lib",
-    "es"
+    "es",
+    "scripts/postinstall.js"
   ],
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.2",

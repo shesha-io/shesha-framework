@@ -7,14 +7,15 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run postinstall && next dev",
+    "build": "npm run postinstall && next build",
     "export": "next export",
     "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint **/*.{js,jsx,ts,tsx}",
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
-    "test": "jest -c test/jest.config.js"
+    "test": "jest -c test/jest.config.js",
+    "postinstall": "node node_modules/@shesha-io/reactjs/scripts/postinstall.js || node ../../shesha-reactjs/scripts/postinstall.js || true"
   },
   "publishConfig": {
     "registry": "https://pkgs.dev.azure.com/boxfusion/_packaging/npm.shesha.dev/npm/registry/"
