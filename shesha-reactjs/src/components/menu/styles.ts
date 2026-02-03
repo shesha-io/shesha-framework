@@ -490,7 +490,10 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   }
 
   /* Show arrows for horizontal menu items with children */
-  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-horizontal > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-arrow {
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-horizontal
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title
+    .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-arrow {
     display: inline-block !important;
   }
 
