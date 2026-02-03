@@ -22,6 +22,29 @@ Visit [https://docs.shesha.io/docs/get-started/Introduction](https://docs.shesha
 
 Visit [https://docs.shesha.io/docs/category/front-end-basics](https://docs.shesha.io/docs/category/front-end-basics) to get started with @shesha-io/reactjs
 
+## Monaco Editor Assets (Required for Consumers)
+
+Shesha uses Monaco Editor in the code editor components. Monaco runs language services in ESM web workers which import additional `vs/*` modules at runtime, so the full Monaco ESM tree must be available via URL.
+
+**What consumer apps must do**
+
+Add a `postinstall` script in the consuming app so Monaco assets are copied into `public/monaco/vs`:
+
+```json
+{
+  "scripts": {
+    "postinstall": "node node_modules/@shesha-io/reactjs/scripts/postinstall.js || node ../../shesha-reactjs/scripts/postinstall.js || true"
+  }
+}
+```
+
+This script copies `node_modules/monaco-editor/esm/vs/**` into `public/monaco/vs/**`. Next.js serves `public/` at the site root, which is where `MonacoEnvironment` expects the workers.
+
+**Notes**
+
+- If you ignore build artifacts in git, consider adding `public/monaco/` to the consuming app’s `.gitignore`.
+- If you use a non-standard static host, ensure `/monaco/vs/**` is publicly reachable.
+
 <p align="center">
   <a href="https://www.shesha.io?utm_source=github&utm_medium=organic&utm_campaign=readme">
     <img src="https://github.com/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="500">
