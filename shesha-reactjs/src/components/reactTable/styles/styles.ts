@@ -199,7 +199,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       overflow-x: auto;
       /* These styles are required for a horizontaly scrollable table overflow */
       /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
-      overflow: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
+      overflow-y: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
       ${boxShadow && !freezeHeaders ? `
         /* Apply box shadow to container */
         box-shadow: ${boxShadow};
