@@ -161,15 +161,33 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
   // Fetch stored file URL when background type is 'storedFile'
   useEffect(() => {
+    let isCancelled = false;
+
     const fetchStoredFileUrl = async (): Promise<void> => {
       if (props?.background?.type === 'storedFile' && props?.background?.storedFile?.id) {
-        const url = await getBackgroundImageUrl(props.background, backendUrl, httpHeaders);
-        setStoredFileBackgroundUrl(url);
+        try {
+          const url = await getBackgroundImageUrl(props.background, backendUrl, httpHeaders);
+          if (!isCancelled) {
+            setStoredFileBackgroundUrl(url);
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            console.warn('Failed to fetch stored file background image:', error);
+            setStoredFileBackgroundUrl('');
+          }
+        }
       } else {
-        setStoredFileBackgroundUrl('');
+        if (!isCancelled) {
+          setStoredFileBackgroundUrl('');
+        }
       }
     };
+
     fetchStoredFileUrl();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [props?.background, backendUrl, httpHeaders]);
 
   // Convert background object to CSS string
