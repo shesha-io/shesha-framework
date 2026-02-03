@@ -15,8 +15,6 @@ export const useStyles = createStyles(({ css, cx, token }, {
   borderRadius,
 }) => {
   const dataTable = cx("sha-data-table", css`
-    
-    overflow-x: auto;
     ${`
       .ant-table {
         border-radius: ${borderRadius};
