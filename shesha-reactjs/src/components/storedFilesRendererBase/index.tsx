@@ -29,7 +29,7 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile } from './utils';
+import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile, FileNameDisplay } from './utils';
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import ShaIcon, { IconType } from '@/components/shaIcon';
@@ -127,6 +127,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   gap,
+  hideFileName,
   enableStyleOnReadonly = true,
   downloadedFileStyles,
   styleDownloadedFiles = false,
@@ -202,7 +203,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     model: {
       gap: addPx(gap),
       layout: listType === 'thumbnail' && !isDragger,
-      hideFileName: rest.hideFileName && listType === 'thumbnail',
+      hideFileName: hideFileName && listType === 'thumbnail',
       isDragger,
       isStub,
       downloadZip,
@@ -310,7 +311,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return (
           <>
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-            <p className="ant-upload-list-item-name">{file.name}</p>
+            {!hideFileName && <p className="ant-upload-list-item-name">{file.name}</p>}
           </>
         );
       }
@@ -443,12 +444,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return (
           <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
             <div className={styles.fileName}>
-              <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
-                <Space direction="horizontal" size="small">
-                  <span>{iconRender(file)}</span>
-                  <span>{file.name}</span>
-                </Space>
-              </Popover>
+              <FileNameDisplay
+                file={file}
+                icon={iconRender(file)}
+                className={styles.fileName}
+                popoverContent={actions}
+                popoverClassName={styles.actionsPopover}
+              />
             </div>
             {isDownloaded && styleDownloadedFiles && (
               <div className={styles.downloadedIcon}>
@@ -481,9 +483,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return (
       <div>
         {renderContent()}
-        {listType === 'thumbnail' && (
+        {listType === 'thumbnail' && !isDragger && !hideFileName && (
           <div className={isDownloaded ? styles.downloadedFile : ''}>
-            <div className={styles.fileName}>{file.name}</div>
+            <FileNameDisplay
+              file={file}
+              className={styles.fileName}
+            />
           </div>
         )}
         {hasExtraContent && extraFormId && (
@@ -560,10 +565,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           icon={<UploadOutlined />}
           disabled={disabled}
           {...uploadBtnProps}
-          onClick={isDragger ? undefined : () => hiddenUploadInputRef.current.click()}
+          onDrop={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }}
           className={classNames(styles.uploadButton, uploadBtnProps?.className)}
         >
-          {isDragger ? "Click or drag file to upload" : listType === 'text' && '(press to upload)'}
+          {isDragger ? "(Click or drag file to upload)" : listType === 'text' && '(press to upload)'}
         </Button>
       )
     );
@@ -587,12 +596,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                     disabled={disabled}
                     {...uploadBtnProps}
                     className={classNames(styles.uploadButton, uploadBtnProps?.className)}
-                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle, border: 'unset' } : { ...model?.allStyles?.fontStyles }}
+                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model?.allStyles?.fontStyles }}
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
                   <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
-                    {listType !== 'text' && !rest.hideFileName && (
+                    {listType !== 'text' && !hideFileName && (
                       <div className={styles.fileName}>
                         file name
                       </div>
@@ -604,29 +613,28 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                       />
                     )}
                   </div>
-
                 </>
               )
             )
             : (props.disabled && fileList.length === 0
               ? null
-              : props.disabled && !isDragger
+              : props.disabled
                 ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
                 : isDragger
                   ? (
                     <Dragger {...props} openFileDialogOnClick={true}>
                       {fileList.length === 0 ? (
                         <DraggerStub styles={styles} />
-                      ) : !disabled ? (
+                      ) : (
                         <div>
+                          {renderUploadContent()}
                           {fileList.map((file) => (
                             <div key={file.uid}>
                               {itemRenderFunction(<></>, file)}
                             </div>
                           ))}
-                          {renderUploadContent()}
                         </div>
-                      ) : null}
+                      )}
                     </Dragger>
                   )
                   : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}

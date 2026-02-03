@@ -52,10 +52,6 @@ const buildConfiguraitonItemActionsMenu = ({ configurationStudio, node }: BuildN
         await configurationStudio.showRevisionHistoryAsync(node);
       },
     },
-    {
-      label: "View Json Config",
-      key: "viewJsonConfig",
-    },
   ];
 };
 
@@ -180,7 +176,7 @@ const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigIte
       label: "Open",
       key: "open",
       onClick: () => {
-        configurationStudio.activateDocumentById(node.id);
+        configurationStudio.selectTreeNode(node);
       },
     });
   result.push({

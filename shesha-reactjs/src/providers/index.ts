@@ -24,7 +24,6 @@ export * from './metadataDispatcher';
 export * from './modelConfigurator';
 export * from './notes';
 export * from './queryBuilder';
-export * from './scheduledJobExecution';
 export * from './settings';
 export * from './shaRouting';
 export * from './sheshaApplication';

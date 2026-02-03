@@ -27,6 +27,7 @@ import { useComponentValidation } from '@/providers/validationErrors';
 import { parseFetchError } from '../utils';
 import { useMetadata } from '@/providers/metadata';
 import { isPropertiesArray } from '@/interfaces/metadata';
+import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
 
 const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.';
 
@@ -34,6 +35,8 @@ const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not 
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
   const metadata = useMetadata(false);
+  const repositoryType = store?.getRepository?.()?.repositoryType;
+  const isEntitySource = repositoryType === BackendRepositoryType;
   const configuredColumns = useMemo(
     () => flattenConfiguredColumns(model.items as ColumnsItemProps[]),
     [model.items],
@@ -69,11 +72,12 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     [dataColumns, metadataPropertyNameSet],
   );
   const columnsMismatch = useMemo(
-    () => dataColumns.length > 0 &&
+    () => isEntitySource &&
+      dataColumns.length > 0 &&
       metadataPropertyNameSet.size > 0 &&
       invalidDataColumns.length > 0 &&
       invalidDataColumns.length === dataColumns.length, // Only error when ALL columns are invalid
-    [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns.length],
+    [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns.length, isEntitySource],
   );
 
   // CRITICAL: Register validation errors - FormComponent will display them
@@ -373,7 +377,12 @@ const TableComponent: TableComponentDefinition = {
             rowDimensions: updateRowHeight(prev.desktop?.rowDimensions),
           },
         };
-      }),
+      })
+      .add<ITableComponentProps>(29, (prev) => ({
+        ...prev,
+        // Set default actionIconSize for existing tables
+        actionIconSize: prev.actionIconSize ?? '14px',
+      })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [
