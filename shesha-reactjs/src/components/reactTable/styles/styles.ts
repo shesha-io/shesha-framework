@@ -190,9 +190,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const shaReactTable = cx(
     'sha-react-table',
     css`
-      ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}
-      /* These styles are suggested for the table fill all available space in its containing element */
-      display: block;
+      display: inline-block;
+      width: max-content;
+      min-width: calc(100% - 16px);
       /* These styles are required for a horizontaly scrollable table overflow */
       /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
       overflow: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
@@ -226,7 +226,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
-        background: transparent;
+        /* Background applied to table ensures it covers all rows when scrolling with freezeHeaders */
+        ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {
