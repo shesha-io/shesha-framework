@@ -630,6 +630,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
         &:hover {
           ${(p: GlobalMenuType) => p?.styleOnHover || ''}
           ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
 
           .anticon {
             ${(p: GlobalMenuType) => p?.styleOnHover || ''}
