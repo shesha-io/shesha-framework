@@ -92,7 +92,17 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
       .add<IWizardComponentProps>(7, (prev) => ({ ...prev, ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()), overflow: true }))
       .add<IWizardComponentProps>(8, (prev) => ({ ...prev, stepWidth: '200px' }))
-      .add<IWizardComponentProps>(9, (prev) => ({ ...prev, ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()), overflow: true })),
+      .add<IWizardComponentProps>(9, (prev) => ({
+        ...prev,
+        steps: prev.steps?.map(step => ({
+          ...step,
+          hasCustomFooter: step.hasCustomFooter ?? false,
+          stepFooter: step?.stepFooter ?? {
+            id: `${step.id}_footer`,
+            components: step.stepFooter?.components ?? [],
+          }
+        })) ?? []
+      })),
   settingsFormMarkup: () => getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 
@@ -107,9 +117,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     // Add step footer containers
     const footerContainers = model.steps
-      .filter((s) => s.hasCustomFooter && s.stepFooter)
-      .map((s) => ({ id: `${s.id}_footer`, parentId: model.id }));
-
+      .filter((s) => s.hasCustomFooter && s.stepFooter?.id)
+      .map((s) => ({ id: s.stepFooter.id, parentId: model.id }));
     return [...containers, ...footerContainers];
   },
 };
