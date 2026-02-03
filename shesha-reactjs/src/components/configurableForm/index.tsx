@@ -24,7 +24,6 @@ export type ConfigurableFormProps<Values extends object = object> = Omit<IConfig
   externalShaForm?: IShaFormInstance<Values> | undefined;
 } & SheshaFormProps;
 
-// export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
 export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
   const {
     formId,
