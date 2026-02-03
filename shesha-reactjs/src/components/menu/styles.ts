@@ -117,7 +117,9 @@ export const useStyles = createStyles(
         }
 
         .${prefixCls}-menu-submenu {
-          padding: 0 1px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          border-radius: 0 !important;
 
           .${prefixCls}-menu-submenu-title {
             color: ${colors?.itemColor ?? BLACK_CLR};
@@ -128,6 +130,7 @@ export const useStyles = createStyles(
             display: flex !important;
             align-items: center !important;
             padding: 0 3px !important;
+            border-radius: 0 !important;
 
             .${prefixCls}-menu-title-content {
               flex: 1 !important;
@@ -376,7 +379,9 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
     /* Parent submenu items (items that have children) */
     .${(p) => p?.theme.prefixCls}-menu-submenu {
-      padding: 0 1px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
 
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
         color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
@@ -384,6 +389,7 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
         margin: 0 !important;
         margin-right: 0 !important;
         padding: 0 3px !important;
+        border-radius: 0 !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
         font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
