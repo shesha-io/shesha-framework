@@ -55,6 +55,8 @@ export const GlobalTableStyles = createGlobalStyle`
 
   .sha-datatable-wrapper {
     position: relative;
+    /* Enable horizontal scrolling when table content exceeds container width */
+    overflow-x: auto;
   }
 
   .sha-react-table {
