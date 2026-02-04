@@ -163,7 +163,7 @@ namespace Shesha.UserManagements
             var creationMode = registrationSettings?.CreationMode;
             // Find existing person once to avoid duplicate database calls
             var existingPerson = await FindExistingPersonEntityAsync(input.EmailAddress, input.UserName);
-            await HandleCreationModeAsync(creationMode, existingPerson);
+            HandleCreationMode(creationMode, existingPerson);
 
             validationResults.ThrowValidationExceptionIfAny(L);
 
@@ -243,10 +243,8 @@ namespace Shesha.UserManagements
         /// <summary>
         /// Handles CreationMode validation logic using dynamic person type
         /// </summary>
-        private static async Task HandleCreationModeAsync(RefListCreationMode? creationMode, object? existingPerson)
+        private static void HandleCreationMode(RefListCreationMode? creationMode, object? existingPerson)
         {
-            await Task.CompletedTask; // Make it async compatible since we no longer need to call database
-
             switch (creationMode)
             {
                 case RefListCreationMode.Always:
@@ -265,7 +263,7 @@ namespace Shesha.UserManagements
 
                 default:
                     // Default behavior (no creation mode specified) - create new person
-                    throw new NotImplementedException();
+                    throw new UserFriendlyException($"Invalid or unsupported creation mode: {creationMode}");
             }
         }
 
