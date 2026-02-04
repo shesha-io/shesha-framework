@@ -27,7 +27,6 @@ using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -178,27 +177,20 @@ namespace Shesha.DynamicEntities.Binder
                     var property = properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
                     if (property == null && jName.EndsWith("Id"))
                     {
-                        var idName = Utilities.StringHelper.Left(jName, jName.Length - 2);
+                        var idName = StringHelper.Left(jName, jName.Length - 2);
                         property = properties.FirstOrDefault(x => x.Name.ToCamelCase() == idName.ToCamelCase());
                     }
                     if (property != null)
                     {
                         properties.Remove(property);
 
-                        // skip Read only properties
-                        if (property.IsReadOnly())
-                            continue;
-
-                        var propConfig = context.ModelConfiguration?.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
-
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
 
+                        var propConfig = context.ModelConfiguration?.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
+                        var readOnly = property.IsReadOnly() || (propConfig?.ReadOnly ?? false);
                         var propType = _metadataProvider.GetDataType(property, entityType);
-
                         var dbValue = property.GetValue(entity);
-                        var isReadOnly = property.GetCustomAttribute<ReadonlyPropertyAttribute>() != null
-                            || property.GetCustomAttribute<ReadOnlyAttribute>() != null;
 
                         var result = true;
                         if (jproperty.Value.IsNull())
@@ -252,6 +244,8 @@ namespace Shesha.DynamicEntities.Binder
                                             property.SetValue(entity, parsedRefListValue);
                                     break;
                                 case DataTypes.Array:
+                                    if (readOnly)
+                                        break;
                                     switch (propType.DataFormat)
                                     {
                                         case ArrayFormats.MultivalueReferenceList:
@@ -397,7 +391,7 @@ namespace Shesha.DynamicEntities.Binder
                                     }
                                     break;
                                 case DataTypes.Object:
-                                    if (isReadOnly)
+                                    if (readOnly)
                                         break;
                                     if (jproperty.Value is JObject jObject)
                                     {
@@ -457,8 +451,7 @@ namespace Shesha.DynamicEntities.Binder
                 if (_metadataProvider.IsFrameworkRelatedProperty(skippedProperty) || name == "id")
                     continue;
                 var fullName = string.IsNullOrWhiteSpace(propertyName) ? name : $"{propertyName}.{name}";
-                var value = skippedProperty.GetValue(entity, null);
-                await _objectValidatorManager.ValidatePropertyAsync(entity, fullName, value, context.LocalValidationResult);
+                await _objectValidatorManager.ValidatePropertyAsync(entity, fullName, context.LocalValidationResult);
             }
 
             context.ValidationResult.AddRange(context.LocalValidationResult);
@@ -490,6 +483,8 @@ namespace Shesha.DynamicEntities.Binder
 
             if (jValue is JObject jEntity)
             {
+                // value is entity reference
+
                 var jchildId = jEntity.Property("id")?.Value.ToString();
                 var jchildClassName = jEntity.Property(nameof(EntityReferenceDto<int>._className).ToCamelCase())?.Value.ToString();
                 var jchildDisplyName = jEntity.Property(nameof(EntityReferenceDto<int>._displayName).ToCamelCase())?.Value.ToString();
@@ -544,16 +539,14 @@ namespace Shesha.DynamicEntities.Binder
                         r = r && await _objectValidatorManager.ValidateObjectAsync(newChildEntity, context.LocalValidationResult);
                     }
 
-                    if (dbValue != newChildEntity)
-                    {
-                        if (r)
-                        {
-                            if (propertyType == typeof(GenericEntityReference))
-                                action(new GenericEntityReference(newChildEntity.NotNull()));
-                            else
-                                action(newChildEntity);
+                    r = r && await _objectValidatorManager.ValidatePropertyAsync(entity, jPropertyName, newChildEntity, context.LocalValidationResult);
 
-                        }
+                    if (r && dbValue != newChildEntity)
+                    {
+                        if (propertyType == typeof(GenericEntityReference))
+                            action(new GenericEntityReference(newChildEntity.NotNull()));
+                        else
+                            action(newChildEntity);
                         if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
                         {
                             await DeleteUnreferencedEntityAsync(dbValue, entity);
@@ -614,6 +607,8 @@ namespace Shesha.DynamicEntities.Binder
             }
             else
             {
+                // value is simple Id
+
                 var jchildId = jValue.ToString();
                 if (!string.IsNullOrEmpty(jchildId))
                 {
@@ -633,9 +628,14 @@ namespace Shesha.DynamicEntities.Binder
                         }
                     }
 
-                    if (dbValue != newChildEntity)
+                    var r = await _objectValidatorManager.ValidatePropertyAsync(entity, jPropertyName, newChildEntity, context.LocalValidationResult);
+
+                    if (r && dbValue != newChildEntity)
                     {
-                        action(newChildEntity);
+                        if (propertyType == typeof(GenericEntityReference))
+                            action(new GenericEntityReference(newChildEntity.NotNull()));
+                        else
+                            action(newChildEntity);
                         if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
                             await DeleteUnreferencedEntityAsync(dbValue, entity);
                     }
