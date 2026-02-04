@@ -211,10 +211,10 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
       allowNonTsExtensions: true,
       baseUrl: './',
       allowSyntheticDefaultImports: true,
-      // Don't load default TypeScript libraries - they're already in the worker
-      // This prevents Monaco from trying to use loadForeignModule which causes
-      // "Unexpected usage" errors in the worker context
-      noLib: false, // Keep default libs for IntelliSense
+      // Keep default TypeScript libraries for IntelliSense.
+      // Note: loadForeignModule errors are typically caused by worker initialization issues,
+      // not by this setting. Ensure MonacoEnvironment.getWorker() is properly configured.
+      noLib: false,
     });
 
     // Set eager model sync to reduce worker communication errors
