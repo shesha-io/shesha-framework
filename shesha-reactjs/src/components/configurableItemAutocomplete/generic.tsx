@@ -46,22 +46,10 @@ interface IOption<TData = ConfigurableItemFullName> {
 
 const baseItemFilter = undefined;
 
-const moduleNotEmpty = {
-  "!=": [
-    {
-      var: "module",
-    },
-    null,
-  ],
-};
-const notExposedFilter = {
-  "!=": [
-    {
-      var: "isExposed",
-    },
-    true,
-  ],
-};
+const moduleNotEmpty = { "!=": [{ var: "module" }, null] };
+const moduleIsEnabled = { "==": [{ var: "module.isEnabled" }, true] };
+const moduleNotDeleted = { "==": [{ var: "module.isDeleted" }, false] };
+const notExposedFilter = { "==": [{ var: "isExposed" }, false] };
 
 const getFilter = (term: string, staticFilter?: object): string => {
   const termFilter = term
@@ -72,7 +60,7 @@ const getFilter = (term: string, staticFilter?: object): string => {
       ],
     }
     : undefined;
-  const allFilters = [moduleNotEmpty, notExposedFilter, termFilter, staticFilter].filter((f) => Boolean(f));
+  const allFilters = [moduleNotEmpty, moduleIsEnabled, moduleNotDeleted, notExposedFilter, termFilter, staticFilter].filter((f) => Boolean(f));
   const filter = allFilters.length === 0
     ? undefined
     : allFilters.length === 1
