@@ -56,7 +56,6 @@ namespace Shesha.Migrations.ConfigurationStudio
 				"login-public-portal",
 				"logon-audit",
 				"main-menu-settings",
-				"module-details",
 				"modules",
 				"notifications-audit",
 				"otp-audit",

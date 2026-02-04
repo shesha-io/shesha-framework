@@ -32,11 +32,14 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, render
         <CanvasConfig />
         <div className="sha-designer-toolbar-right" style={{ marginRight: renderSource === "modal" ? "30px" : "auto" }}>
           <FormSettingsButton buttonText="" size="small" />
-          <OpenOnNewPageButton />
-          <PreviewButton size="small" />
-          <DebugButton />
-
-          {!readOnly && (<UndoRedoButtons size="small" />)}
+          {!readOnly && (
+            <>
+              <OpenOnNewPageButton />
+              <PreviewButton size="small" />
+              <DebugButton />
+              <UndoRedoButtons size="small" />
+            </>
+          )}
         </div>
       </Space>
       <div className="sha-designer-toolbar-right">
