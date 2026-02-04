@@ -214,10 +214,10 @@ namespace Shesha.UserManagements
         {
             var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
             if (userRegistration == null)
-                throw new Exception("User registration not found");
+                throw new UserFriendlyException("User registration not found");
 
             if (userRegistration.IsComplete)
-                throw new Exception("User registration already completed");
+                throw new UserFriendlyException("User registration already completed");
 
             userRegistration.IsComplete = true;
             await _userRegistration.UpdateAsync(userRegistration);
