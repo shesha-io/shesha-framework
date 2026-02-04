@@ -177,7 +177,7 @@ const { Text } = Typography;
 // Helper component to render file name with ellipsis and title
 export const FileNameDisplay: FC<{ file: UploadFile; className?: string }> = ({ file, className }) => {
 
-  const sizeStr = file?.size ? filesize(file?.size) : null;
+  const sizeStr = file.size ? filesize(file.size) : null;
   const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
 
   return (
