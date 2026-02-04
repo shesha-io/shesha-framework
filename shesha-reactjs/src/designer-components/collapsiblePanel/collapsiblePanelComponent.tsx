@@ -46,6 +46,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       isSimpleDesign,
       hideCollapseContent,
       hideWhenEmpty,
+      accent,
     } = model;
 
     const panelContextState = useContext(PanelContext);
@@ -111,6 +112,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             bodyColor={bodyColor}
             headerColor={headerColor}
             isSimpleDesign={isSimpleDesign}
+            accent={accent}
             panelHeadType={headType}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
@@ -175,6 +177,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(7, (prev) => ({
         ...prev,
         customHeader: { id: nanoid(), components: [] }
+      }))
+      .add<ICollapsiblePanelComponentProps>(8, (prev) => ({
+        ...prev,
+        accent: prev.accent ?? true
       }))
 
   ,

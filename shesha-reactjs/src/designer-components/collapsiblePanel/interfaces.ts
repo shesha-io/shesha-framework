@@ -27,6 +27,7 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   hasCustomHeader?: boolean;
   customHeader?: ICollapsiblePanelContent;
   panelHeadType?: headerType;
+  accent?: boolean;
 }
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {

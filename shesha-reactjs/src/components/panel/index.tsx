@@ -30,6 +30,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   primaryColor?: string;
   dynamicBorderRadius?: number;
   panelHeadType?: headerType;
+  accent?: boolean;
 }
 
 /**
@@ -46,8 +47,8 @@ const StyledCollapse: any = styled(Collapse) <
 >`
   .ant-collapse-header {
     visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
-    border-top: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'parent' ? `3px solid  ${primaryColor}` : 'none')};
-    border-left: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'child' ? `3px solid  ${primaryColor}` : 'none')};
+    border-top: ${({ primaryColor, panelHeadType, accent }) => (panelHeadType === 'parent' && accent ? `3px solid ${primaryColor}` : 'none')};
+    border-left: ${({ primaryColor, panelHeadType, accent }) => (panelHeadType === 'child' && accent ? `3px solid ${primaryColor}` : 'none')};
     font-size: ${({ panelHeadType }) => (panelHeadType === 'parent' ? '13px' : '16px')};
     font-weight: 'bold';
     background-color: ${({ headerColor }) => headerColor} !important;
@@ -82,7 +83,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   hideWhenEmpty = false,
   panelHeadType = 'default',
   dynamicBorderRadius,
-
+  accent,
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
@@ -105,6 +106,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       hideCollapseContent={hideCollapseContent}
       primaryColor={token.colorPrimary}
       panelHeadType={panelHeadType}
+      accent={accent}
       items={[
         {
           key: "1",
