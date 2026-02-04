@@ -25,7 +25,7 @@ export const Icon = ({
 
   if (typeof icon !== 'string') {
     if (React.isValidElement(icon))
-      return <Tooltip title={hint}>{icon}</Tooltip>;
+      return <Tooltip title={hint}><span style={style} className={className}>{icon}</span></Tooltip>;
     return icon;
   }
 

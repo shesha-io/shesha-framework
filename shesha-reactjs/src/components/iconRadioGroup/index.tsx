@@ -4,7 +4,7 @@ import Icon from '../icon/Icon';
 
 export interface IIconRadioGroupValue {
   value: unknown;
-  icon: React.ReactNode;
+  icon: string | React.ReactNode;
   hint?: string;
 }
 
