@@ -533,7 +533,7 @@ namespace Shesha.UserManagements
         private static async Task HandleAllowedDomainsAsync(string email, string allowedDomains)
         {
             if (string.IsNullOrWhiteSpace(email))
-                throw new ArgumentException("Email address is required.", nameof(email));
+                throw new UserFriendlyException("Email address is required.", nameof(email));
 
             // Normalize email
             email = email.Trim().ToLowerInvariant();
@@ -553,14 +553,14 @@ namespace Shesha.UserManagements
             // Extract domain from email
             var atIndex = email.LastIndexOf('@');
             if (atIndex < 0)
-                throw new ArgumentException("Invalid email address format.", nameof(email));
+                throw new UserFriendlyException("Invalid email address format.", nameof(email));
 
             var emailDomain = email.Substring(atIndex);
 
             // Check if email domain matches any of the allowed domains
             if (!domainList.Any(allowed => emailDomain.EndsWith(allowed)))
             {
-                throw new InvalidOperationException(
+                throw new UserFriendlyException(
                     $"Email domain '{emailDomain}' is not allowed. Allowed domains: {string.Join(", ", domainList)}."
                 );
             }
