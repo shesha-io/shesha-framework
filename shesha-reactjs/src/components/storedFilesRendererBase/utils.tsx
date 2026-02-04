@@ -174,18 +174,10 @@ export const ExtraContent: FC<IExtraContentProps> = ({ file, formId }) => {
 
 const { Text } = Typography;
 
-// Helper function to format file size
-const formatFileSize = (bytes?: number): string => {
-  if (bytes === undefined) return '';
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-};
-
 // Helper component to render file name with ellipsis and title
 export const FileNameDisplay: FC<{ file: UploadFile; className?: string }> = ({ file, className }) => {
-  const sizeStr = formatFileSize(file.size);
+
+  const sizeStr = file?.size ? filesize(file?.size) : null;
   const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
 
   return (
