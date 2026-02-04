@@ -170,9 +170,6 @@ namespace Shesha.UserManagements
             // Supported password reset methods for the user
             // This might need reviewing since some methods might be unavailable for some users during time of
             // creation.
-            // Supported password reset methods for the user
-            // This might need reviewing since some methods might be unavailable for some users during time of
-            // creation.
             RefListPasswordResetMethods supportedPasswordResetMethods = 0;
             if (defaultAuthenticationSettings.UseResetPasswordViaEmailLink)
                 supportedPasswordResetMethods |= RefListPasswordResetMethods.EmailLink;
