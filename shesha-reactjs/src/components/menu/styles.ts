@@ -95,8 +95,13 @@ export const useStyles = createStyles(
           border: none !important;
         }
 
-        .${prefixCls}-menu-submenu, .${prefixCls}-menu-item {
-          padding: 0 !important;
+        /* Show arrows for horizontal menu items with children */
+        &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-submenu > .${prefixCls}-menu-submenu-title .${prefixCls}-menu-submenu-arrow {
+          display: inline-block !important;
+        }
+
+        .${prefixCls}-menu-item {
+          padding: 0 3px !important;
           color: ${colors?.itemColor ?? BLACK_CLR};
           ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
           margin-right: 0;
@@ -106,16 +111,37 @@ export const useStyles = createStyles(
           ${menuItemStyle || ''}
           ${itemStyle || ''}
 
+          .anticon {
+            margin-left: 10px;
+          }
+        }
+
+        .${prefixCls}-menu-submenu {
+          padding: 0 !important;
+          margin: 0 !important;
+          border-radius: 0 !important;
+
           .${prefixCls}-menu-submenu-title {
             color: ${colors?.itemColor ?? BLACK_CLR};
             font-family: ${fontStyles?.fontFamily};
             font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
             font-weight: ${fontStyles?.fontWeight};
             ${itemStyle || ''}
+            display: flex !important;
+            align-items: center !important;
+            padding: 0 3px !important;
+            border-radius: 0 !important;
+
+            .${prefixCls}-menu-title-content {
+              flex: 1 !important;
+              display: flex !important;
+              align-items: center !important;
+            }
 
             .${prefixCls}-icon {
               font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
               color: ${colors?.itemColor ?? BLACK_CLR};
+              margin-left: 10px;
 
               &:hover {
                 ${styleOnHover || ''}
@@ -123,16 +149,50 @@ export const useStyles = createStyles(
               }
             }
 
-            &:hover {
-             ${styleOnHover || ''}
-             ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
-             ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
+            .anticon {
+              margin-left: 10px;
+            }
+
+            .${prefixCls}-menu-submenu-arrow {
+              margin-left: auto !important;
+              padding-left: 4px !important;
+              position: static !important;
+              display: inline-block !important;
+              inset: unset !important;
+              transform: none !important;
             }
           }
 
-          &:hover {
+        }
+
+        /* Apply hover styles specifically to submenu title, not container */
+        .${prefixCls}-menu-submenu:hover {
+          .${prefixCls}-menu-submenu-title {
             ${styleOnHover || ''}
             ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
+            ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
+
+            .${prefixCls}-icon,
+            .anticon {
+              ${styleOnHover || ''}
+              ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
+            }
+
+            .${prefixCls}-menu-submenu-arrow {
+              ${styleOnHover || ''}
+              ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor} !important;` : ''}
+            }
+          }
+        }
+
+        /* Apply hover styles to regular menu items */
+        .${prefixCls}-menu-item:hover {
+          ${styleOnHover || ''}
+          ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
+          ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
+
+          .anticon {
+            ${styleOnHover || ''}
             ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
           }
         }
@@ -144,15 +204,7 @@ export const useStyles = createStyles(
         }
 
         .${prefixCls}-menu-submenu-active {
-          ${styleOnHover || ''}
-          ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
-
-          .${prefixCls}-menu-submenu-title {
-            ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
-            font-family: ${fontStyles?.fontFamily};
-            font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
-            font-weight: ${fontStyles?.fontWeight};
-          }
+          /* Removed hover styles from active state - they should only apply on :hover */
         }
 
         .${prefixCls}-menu-submenu-active.${prefixCls}-menu-submenu-selected {
@@ -270,6 +322,11 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     width: 200px !important;
   }
 
+  /* Show arrows for horizontal menu items with children */
+  .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-horizontal > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-arrow {
+    display: inline-block !important;
+  }
+
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
@@ -289,18 +346,28 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     .${(p) => p?.theme.prefixCls}-menu-item {
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
       ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
-      border: none !important;
       margin: 0 !important;
       margin-right: 0 !important;
+      padding: 0 3px !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
       ${(p: GlobalMenuType) => p?.menuItemStyle || ''}
       ${(p: GlobalMenuType) => p?.itemStyle || ''}
+
+      .anticon {
+        margin-left: 10px !important;
+      }
+
       &:hover {
         ${(p: GlobalMenuType) => p?.styleOnHover || ''}
         ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
         ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
+
+        .anticon {
+          ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        }
       }
 
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
@@ -312,26 +379,62 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
     /* Parent submenu items (items that have children) */
     .${(p) => p?.theme.prefixCls}-menu-submenu {
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
         color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
         ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
-        border: none !important;
         margin: 0 !important;
         margin-right: 0 !important;
+        padding: 0 3px !important;
+        border-radius: 0 !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
         font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
         ${(p: GlobalMenuType) => p?.menuItemStyle || ''}
         ${(p: GlobalMenuType) => p?.itemStyle || ''}
+        display: flex !important;
+        align-items: center !important;
 
-        &:hover {
-          ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
-          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
+        .${(p) => p?.theme.prefixCls}-menu-title-content {
+          flex: 1 !important;
+          display: flex !important;
+          align-items: center !important;
+        }
+
+        .anticon {
+          margin-right: 10px !important;
         }
 
         .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
           color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
+          margin-left: auto !important;
+          padding-left: 4px !important;
+          position: static !important;
+          display: inline-block !important;
+          inset: unset !important;
+          transform: none !important;
+        }
+      }
+
+      /* Apply hover styles to title */
+      &:hover {
+        .${(p) => p?.theme.prefixCls}-menu-submenu-title {
+          ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+
+          .anticon {
+            ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+            ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+          }
+
+          .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
+            ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+            ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor} !important;` : ''}
+          }
         }
       }
 
@@ -354,18 +457,15 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
         ${(p: GlobalMenuType) => p?.styleOnHover || ''}
         ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
       }
+
+      .anticon {
+        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+      }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-submenu-active {
-      .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
-      }
-
-      .${(p) => p?.theme.prefixCls}-menu-title-content {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR};
-      }
+      /* Removed hover styles from active state - they should only apply on :hover */
 
       /* When submenu has a selected child */
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
@@ -393,6 +493,14 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     min-width: 200px !important;
     max-width: 400px !important;
     width: 200px !important;
+  }
+
+  /* Show arrows for horizontal menu items with children */
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-horizontal
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title
+    .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-arrow {
+    display: inline-block !important;
   }
 
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer {
@@ -462,19 +570,28 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     .${(p) => p?.theme.prefixCls}-menu-item {
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
       ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
-      border: none !important;
       margin: 0 !important;
       margin-right: 0 !important;
+      padding: 0 3px !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
       ${(p: GlobalMenuType) => p?.menuItemStyle || ''}
       ${(p: GlobalMenuType) => p?.itemStyle || ''}
 
+      .anticon {
+        margin-left: 10px !important;
+      }
+
       &:hover {
         ${(p: GlobalMenuType) => p?.styleOnHover || ''}
         ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
         ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
+
+        .anticon {
+          ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        }
       }
 
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
@@ -489,23 +606,51 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
         color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
         ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
-        border: none !important;
         margin: 0 !important;
         margin-right: 0 !important;
+        padding: 0 3px !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
         font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
         ${(p: GlobalMenuType) => p?.menuItemStyle || ''}
         ${(p: GlobalMenuType) => p?.itemStyle || ''}
+        display: flex !important;
+        align-items: center !important;
+
+        .${(p) => p?.theme.prefixCls}-menu-title-content {
+          flex: 1 !important;
+          display: flex !important;
+          align-items: center !important;
+        }
+
+        .anticon {
+          margin-left: 10px !important;
+        }
 
         &:hover {
           ${(p: GlobalMenuType) => p?.styleOnHover || ''}
           ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
           ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
+
+          .anticon {
+            ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+            ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+          }
+
+          .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
+            ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+            ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor} !important;` : ''}
+          }
         }
 
         .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
           color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
+          margin-left: auto !important;
+          padding-left: 4px !important;
+          position: static !important;
+          display: inline-block !important;
+          inset: unset !important;
+          transform: none !important;
         }
       }
 
@@ -528,18 +673,15 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
         ${(p: GlobalMenuType) => p?.styleOnHover || ''}
         ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
       }
+
+      .anticon {
+        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+      }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-submenu-active {
-      .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
-      }
-
-      .${(p) => p?.theme.prefixCls}-menu-title-content {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR};
-      }
+      /* Removed hover styles from active state - they should only apply on :hover */
 
       /* When submenu has a selected child */
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {

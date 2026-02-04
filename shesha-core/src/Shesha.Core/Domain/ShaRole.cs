@@ -13,7 +13,6 @@ namespace Shesha.Domain
     /// </summary>
     [Entity(FriendlyName = "Role", TypeShortAlias = "Shesha.Core.ShaRole")]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-role-create")]
-    [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
     [DisplayManyToManyAuditTrail(typeof(ShaRoleAppointedPerson), "Person", DisplayName = "Member")]
     [JoinedProperty("roles", Schema = "frwk")]
     [Prefix(UsePrefixes = false)]

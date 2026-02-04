@@ -79,7 +79,9 @@ namespace Shesha.Domain
         {
         }
 
+        [JsonIgnore]
         public override Type ItemType => typeof(TItem);
+        [JsonIgnore]
         public override string ItemTypeName => ItemType.Name;
     }
 

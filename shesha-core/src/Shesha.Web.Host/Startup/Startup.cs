@@ -215,6 +215,7 @@ namespace Shesha.Web.Host.Startup
                 options.IgnoreObsoleteActions();
                 options.AddXmlDocuments();
 
+                options.SchemaFilter<JsonIgnoreSchemaFilter>();
                 options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
