@@ -366,6 +366,14 @@ namespace Shesha.UserManagements
         /// </summary>
         private async Task<object> CreateNewPersonEntityAsync(CreatePersonAccountDto input, User user, Type personEntityType)
         {
+            // Ensure the type has a public parameterless constructor
+            if (personEntityType.GetConstructor(Type.EmptyTypes) == null)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot create an instance of type '{personEntityType.FullName}' because it does not have a public parameterless constructor. " +
+                    "The person entity type must have a public parameterless constructor, or a custom factory/DI mechanism should be provided.");
+            }
+
             // Ensure personEntity is not null after creation
             var personEntity = Activator.CreateInstance(personEntityType)
                 ?? throw new InvalidOperationException($"Failed to create an instance of type {personEntityType.FullName}");
