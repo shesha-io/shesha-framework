@@ -18,6 +18,12 @@ namespace Shesha.Validations
             _iocManager = iocManager;
         }
 
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, List<ValidationResult> validationResult)
+        {
+            validationResult ??= new List<ValidationResult>();
+            return await ValidateAsync((v) => v.ValidatePropertyAsync(obj, propertyName, validationResult));
+        }
+
         public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult)
         {
             validationResult ??= new List<ValidationResult>();

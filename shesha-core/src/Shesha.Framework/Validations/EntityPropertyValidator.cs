@@ -1,4 +1,4 @@
-﻿using Abp.Collections.Extensions;
+﻿﻿using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Shesha.DynamicEntities;
@@ -32,6 +32,15 @@ namespace Shesha.Validations
             return await Task.FromResult(true);
         }
 
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
+        {
+            if (obj is TEntity entity)
+            {
+                return await ValidateEntityPropertyAsync(entity, propertyName, validationResult, modelConfig);
+            }
+            return true;
+        }
+
         public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
         {
             if (obj is TEntity entity)
@@ -40,11 +49,16 @@ namespace Shesha.Validations
             }
             return true;
         }
-        public virtual async Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
+
+        public virtual Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
         {
-            return await Task.FromResult(true);
+            return Task.FromResult(true);
         }
 
+        public virtual Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
+        {
+            return Task.FromResult(true);
+        }    
     }
 
     public class EntityPropertyValidator : IPropertyValidator, ITransientDependency
@@ -56,18 +70,38 @@ namespace Shesha.Validations
             _configurationManager = configurationManager;
         }
 
-        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
+        private async Task<List<ModelPropertyDto>?> GetPropertiesAsync(object obj, ModelConfigurationDto? modelConfig = null)
         {
-            if (!obj.GetType().IsEntityType() 
-                && !obj.GetType().IsJsonEntityType())
-                return true;
-
             var entityType = obj.GetType().StripCastleProxyType();
 
             var props = (modelConfig == null
                 ? await _configurationManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace, entityType.Name, true)
                 : modelConfig
                 )?.Properties;
+            return props;
+        }
+
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
+        {
+            if (!obj.GetType().IsEntityType()
+                && !obj.GetType().IsJsonEntityType())
+                return true;
+
+            var props = await GetPropertiesAsync(obj, modelConfig);
+
+            if (props == null || !props.Any())
+                return true;
+
+            return Validate(obj, propertyName, null, validationResult, props, false);
+        }
+
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
+        {
+            if (!obj.GetType().IsEntityType() 
+                && !obj.GetType().IsJsonEntityType())
+                return true;
+
+            var props = await GetPropertiesAsync(obj, modelConfig);
 
             if (props == null || !props.Any())
                 return true;

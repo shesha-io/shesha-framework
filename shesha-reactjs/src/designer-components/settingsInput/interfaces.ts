@@ -415,6 +415,12 @@ export interface IEditModeSelectorSettingsInputProps extends ISettingsInputBase 
 }
 export const isEditModeSelectorProps = (value: ISettingsInputBase): value is IEditModeSelectorSettingsInputProps => value.type === 'editModeSelector';
 
+// Three State Switch
+export interface IThreeStateSwitchSettingsInputProps extends ISettingsInputBase {
+  type: 'threeStateSwitch';
+}
+export const isThreeStateSwitchProps = (value: ISettingsInputBase): value is IThreeStateSwitchSettingsInputProps => value.type === 'threeStateSwitch';
+
 // Permissions
 export interface IPermissionsSettingsInputProps extends ISettingsInputBase {
   type: 'permissions';
@@ -513,7 +519,8 @@ export type BaseInputProps =
   ICustomLabelValueEditorSettingsInputProps |
   IKeyInformationBarColumnsInputProps |
   ISizableColumnsConfigSettingsInputProps |
-  ILayerSelectorSettingsInputProps;
+  ILayerSelectorSettingsInputProps |
+  IThreeStateSwitchSettingsInputProps;
 
 export type InputTypes = BaseInputProps['type'];
 
