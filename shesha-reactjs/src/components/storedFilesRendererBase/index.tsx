@@ -27,7 +27,7 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile } from './utils';
+import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile, FileNameDisplay } from './utils';
 import classNames from 'classnames';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { addPx } from '@/designer-components/button/util';
@@ -333,9 +333,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       if (listType === 'thumbnail' && !isDragger) {
         return (
           <Space size="small" direction="vertical">
-            <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-            <p className="ant-upload-list-item-name">{file.name}</p>
-          </Space>
+            <Image src={imageUrls[uid]} alt={file.name} preview={false} />          </Space>
         );
       }
     }
@@ -511,21 +509,22 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         if (listType === 'text') {
           return (
             <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
-              <div className={styles.fileName}>
-                <Popover
-                  content={actions}
-                  trigger="hover"
-                  placement="top"
-                  style={{ padding: '0px' }}
-                  onOpenChange={(open) => {
-                    if (open) {
-                      storedFilesActions?.setCurrentFile(file as IStoredFile);
-                    }
-                  }}
-                >
-                  {iconRender(file)}{file.name}
-                </Popover>
-              </div>
+              <Popover
+                content={actions}
+                trigger="hover"
+                placement="top"
+                style={{ padding: '0px' }}
+                onOpenChange={(open) => {
+                  if (open) {
+                    storedFilesActions?.setCurrentFile(file as IStoredFile);
+                  }
+                }}
+              >
+                <div className={styles.fileName}>
+                  {iconRender(file)}
+                  <FileNameDisplay file={file} />
+                </div>
+              </Popover>
               {isDownloaded && styleDownloadedFiles && (
                 <div className={styles.downloadedIcon}>
                   <ShaIcon iconName={downloadedIcon} />
@@ -569,7 +568,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           {renderContent()}
           {listType === 'thumbnail' && (
             <div className={isDownloaded ? styles.downloadedFile : ''}>
-              <div className={styles.fileName}>{file.name}</div>
+              <FileNameDisplay file={file} className={styles.fileName} />
             </div>
           )}
           {hasExtraContent && extraFormId && (
@@ -621,7 +620,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail thumbnail-stub' : ''}
               >
                 <Button type="link"
-                  icon={<PictureOutlined />}
+                  icon={<PictureOutlined style={{fontSize: iconSize}}/>}
                   disabled={disabled}
                   {...uploadBtnProps}
                   style={{ color: fontColor }}>
@@ -630,9 +629,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               </div>
               <div style={(listType === 'thumbnail' && !isDragger) ? { width } : {}}>
                 {listType !== 'text' && !rest.hideFileName && (
-                  <div className={styles.fileName}>
-                    file name
-                  </div>
+                  <FileNameDisplay file={placeholderFile} className={styles.fileName} />
                 )}
                 {hasExtraContent && extraFormId && (
                   <ExtraContent

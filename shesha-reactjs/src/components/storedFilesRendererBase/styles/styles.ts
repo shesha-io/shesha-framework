@@ -9,76 +9,65 @@ interface ModelProps {
   hideFileName?: boolean;
 }
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, downloadedFileStyles }: {style: CSSProperties; model: ModelProps; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties}) => {
-  const { borderRadius, borderWidth, borderColor, borderStyle, color, fontSize, width, height, ...restStyles } = style;
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, downloadedFileStyles }: { style: CSSProperties; model: ModelProps; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties }) => {
+  const { borderRadius, borderWidth, borderColor, borderStyle, color, textAlign, fontSize, width, height, ...restStyles } = style;
 
   const { width: containerWidth, height: containerHeight, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
     paddingLeft, paddingRight, paddingBottom, ...restContainerStyles } = containerStyles;
 
-    const { color: downloadedFileColor, fontSize: downloadedFileFontSize, ...restDownloadedFileStyles} = downloadedFileStyles;
+  const { color: downloadedFileColor, fontSize: downloadedFileFontSize, ...restDownloadedFileStyles } = downloadedFileStyles;
   const { gap, layout, isDragger } = model;
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
 
   const fileName = cx("item-file-name", css`
-    display: ${model.hideFileName ? 'none' : 'flex'};
-    color: ${color ?? token.colorPrimary} !important;
-    font-size: ${fontSize ?? '14px'} !important;
-    margin: 2px 0px;
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex: 1;
-    cursor: pointer;
-    &:hover {
-      background-color: ${token.colorBgSpotlight} !important;
-      opacity: 1 !important;
-      overflow: visible;
-      width: max-content;
-      border-radius: 4px;
-      padding: 0 8px;
-      z-index: 999 !important;
+    display: flex;
+    width: 100%;
+    .ant-typography {
+      display: ${model.hideFileName ? 'none' : 'flex'};
+      color: ${color ?? token.colorPrimary} !important;
+      text-align: ${textAlign};
+      font-size: ${fontSize ?? '14px'} !important;
+      margin: 2px 0px;
+      position: relative;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      cursor: pointer;
     }
   `);
 
   const fileNameWrapper = cx("file-name-wrapper", css`
     display: ${model.hideFileName ? 'none' : 'flex'};
     cursor: pointer;
-    &:hover {
-      background-color: ${token.colorBgTextHover} !important;
-      border-radius: ${borderRadius ?? '4px'} !important;
-    }
-    > .item-file-name {
-      &:hover {
-        background-color: transparent !important;
-        padding: 0;
-      }
-    }
+    max-width: 100%;
   `);
 
   const downloadedFile = cx("downloaded-file", css`
     position: relative;
-    display: flex;
-
-    .ant-upload-list-item-container {
-      opacity: 0.8;
-      position: relative;
-    }
-
     .ant-upload-list-item-thumbnail {
-      opacity: 0.8;
       border: 2px solid ${downloadedFileColor ?? token.colorSuccess} !important;
       box-shadow: 0 0 0 1px ${downloadedFileColor ?? token.colorSuccess}20;
       ${restDownloadedFileStyles}
     }
 
     .item-file-name {
-      display: ${model.hideFileName ? 'none' : 'flex'};
-      color: ${downloadedFileColor ?? color} !important;
-      font-size: ${addPx(downloadedFileFontSize) ?? fontSize} !important;
+      .ant-typography {
+        width: ${width};
+        display: ${model.hideFileName ? 'none' : 'flex'};
+        color: ${downloadedFileColor ?? color} !important;
+        text-align: ${textAlign};
+        font-size: ${addPx(downloadedFileFontSize) ?? fontSize} !important;
+        margin: 2px 0px;
+        position: relative;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+        cursor: pointer;
+      }
     }
 
     .ant-upload-list-item-action {
@@ -180,6 +169,23 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-text {
+    overflow: hidden;
+    >.ant-upload-list-item-container {
+     > div {
+      display: flex;
+      justify-content: ${textAlign === 'right' ? 'flex-end' : textAlign === 'center' ? 'center' : 'flex-start'} !important;
+
+        >.file-name-wrapper {
+          >.item-file-name {
+          width: 100%;
+          display: flex;
+          gap: 8px;
+        }
+      }
+      }
+     }
+    
+
       > .downloaded-icon {
       position: relative;
       top: unset;
