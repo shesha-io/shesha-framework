@@ -361,7 +361,7 @@ namespace Shesha.Users
             var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
+            await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.SmsOtp);
 
             var lifetime = defaultAuthSettings.ResetPasswordSmsOtpLifetime;
 
@@ -384,7 +384,7 @@ namespace Shesha.Users
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SecurityQuestions);
+            await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.SecurityQuestions);
 
             var questions = await _questionRepository.GetAllIncluding(q => q.User, q => q.SelectedQuestion).Where(q => q.User == user).Select(q => q.SelectedQuestion).ToListAsync();
 
@@ -409,7 +409,7 @@ namespace Shesha.Users
 
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, input.Method);
+            await ValidateUserPasswordResetMethodAsync(user, input.Method);
 
             if (String.IsNullOrEmpty(user.PasswordResetCode) || String.IsNullOrWhiteSpace(user.PasswordResetCode))
             {
@@ -455,7 +455,7 @@ namespace Shesha.Users
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == input.Username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SecurityQuestions);
+            await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.SecurityQuestions);
 
             var validationErrors = 0;
             var validationResult = new VerifyPinResponse();
@@ -508,7 +508,7 @@ namespace Shesha.Users
 
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.EmailLink);
+            await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.EmailLink);
 
             if (string.IsNullOrWhiteSpace(user.EmailAddress))
                 throw new UserFriendlyException("User has no email address");
@@ -596,9 +596,9 @@ namespace Shesha.Users
         /// <param name="user"></param>
         /// <param name="resetMethod"></param>
         /// <exception cref="UserFriendlyException"></exception>
-        private void ValidateUserPasswordResetMethod(User user, long resetMethod)
+        private async Task ValidateUserPasswordResetMethodAsync(User user, long resetMethod)
         {
-            var defaultAuthSettings = _userManagementSettings.DefaultAuthentication.GetValue();
+            var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
 
             var isEmailLinkEnabled = defaultAuthSettings.UseResetPasswordViaEmailLink;
             var isSmsOtpEnabled = defaultAuthSettings.UseResetPasswordViaSmsOtp;
