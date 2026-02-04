@@ -78,7 +78,6 @@ export type FormDesignerFormState = {
 };
 
 export type FormDesignerState = {
-  // toolboxComponentGroups: IToolboxComponentGroup[];
   state: FormDesignerFormState;
 
   selectedComponentId: string | undefined;
