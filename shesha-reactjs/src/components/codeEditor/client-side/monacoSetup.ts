@@ -58,7 +58,7 @@ if (typeof window !== 'undefined') {
   const originalError = console.error;
   const originalWarn = console.warn;
 
-  console.error = function (...args: any[]) {
+  console.error = function (...args: unknown[]) {
     // Check both string messages and Error objects
     const firstArg = args[0];
     let message = '';
@@ -83,7 +83,7 @@ if (typeof window !== 'undefined') {
     originalError.apply(console, args);
   };
 
-  console.warn = function (...args: any[]) {
+  console.warn = function (...args: unknown[]) {
     const firstArg = args[0];
     let message = '';
 
@@ -105,4 +105,5 @@ if (typeof window !== 'undefined') {
   };
 }
 
-export default monaco as typeof import('monaco-editor');
+// Export monaco with proper type - undefined during SSR, initialized on client
+export default monaco;

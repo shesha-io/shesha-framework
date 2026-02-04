@@ -21,9 +21,11 @@ import { Environment } from "@/publicJsApis/metadataBuilder";
 import { useIsDevMode } from "@/hooks/useIsDevMode";
 import monaco from './monacoSetup';
 
-// Configure Monaco to use local files instead of CDN
+// Configure Monaco to use local files instead of CDN (client-only)
 // The monaco-editor package will be bundled with the application
-loader.config({ monaco });
+if (typeof window !== 'undefined' && monaco) {
+  loader.config({ monaco });
+}
 
 interface EditorFileNamesState {
   modelFilePath: string;
