@@ -51,6 +51,20 @@ export interface ICodeEditorProps {
   availableConstants?: IObjectMetadata;
   resultType?: ResultType;
   environment?: Environment;
+
+  /**
+   * Enable eager model synchronization between editor and TypeScript worker.
+   *
+   * When true, all model changes are immediately synced to the worker, enabling
+   * cross-file IntelliSense but increasing startup time and worker resource usage.
+   *
+   * When false (default), syncing happens on-demand, reducing overhead but
+   * cross-file references may not work immediately.
+   *
+   * @default false
+   * @remarks Only enable if you require cross-file TypeScript IntelliSense
+   */
+  enableEagerModelSync?: boolean;
 }
 
 export const CODE_TEMPLATE_DEFAULTS: CodeTemplateSettings = {

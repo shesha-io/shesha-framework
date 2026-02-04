@@ -28,12 +28,13 @@
     "lint": "eslint",
     "lint-errors": "eslint --quiet",
     "lint-fix": "eslint --fix",
-    "dev": "npm run postinstall && next dev",
+    "dev": "next dev",
     "build-next": "next build",
     "start-next": "cross-env NODE_ENV=production node --max-old-space-size=8192 server.js",
     "prepare": "husky",
     "type-check": "tsc --build tsconfig.strictNulls.json",
-    "postinstall": "node scripts/postinstall.js || true"
+    "postinstall": "node scripts/postinstall.js || true",
+    "clean-public-monaco": "node -e \"require('fs').rmSync('public/monaco', {recursive: true, force: true})\""
   },
   "overrides": {
     "rc-resize-observer": "1.4.0",

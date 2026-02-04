@@ -14,7 +14,9 @@
     "lint": "eslint src/**/*.ts{,x}",
     "lint-errors": "eslint src/**/*.ts{,x} --quiet",
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
-    "test": "jest -c test/jest.config.js"
+    "test": "jest -c test/jest.config.js",
+    "postinstall": "node node_modules/@shesha-io/reactjs/scripts/postinstall.js || true",
+    "clean-public-monaco": "node -e \"require('fs').rmSync('public/monaco', {recursive: true, force: true})\""
   },
   "resolutions": {
     "@emotion/react": "11.11.3",

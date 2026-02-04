@@ -103,6 +103,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     style,
     templateSettings = CODE_TEMPLATE_DEFAULTS,
     environment = Environment.None,
+    enableEagerModelSync = false,
   } = props;
   const monacoInst = useRef<Monaco>();
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
@@ -217,9 +218,13 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
       noLib: false, // Keep default libs for IntelliSense
     });
 
-    // Set eager model sync to reduce worker communication errors
-    monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+    // Configure eager model sync based on prop
+    // When enabled, all model changes are immediately synced to the worker, which:
+    // - Enables cross-file IntelliSense and import resolution
+    // - Increases startup time and worker resource usage
+    // Default is false to reduce overhead for single-file editing scenarios
+    monaco.languages.typescript.typescriptDefaults.setEagerModelSync(enableEagerModelSync);
+    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(enableEagerModelSync);
   };
 
   const isInitialPath = (path?: string): boolean => {
