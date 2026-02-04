@@ -10,7 +10,6 @@ const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
 const baseFormFilter = {
   and: [
     { "==": [{ var: "isTemplate" }, false] },
-    { "==": [{ var: "module.isEnabled" }, true] },
   ],
 };
 
