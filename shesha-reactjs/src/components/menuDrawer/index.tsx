@@ -14,6 +14,7 @@ interface IProps {
     e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>,
   ) => void;
   colors?: ILayoutColor;
+  padding?: { x: string; y: string };
   fontStyles?: React.CSSProperties;
   itemStyle?: React.CSSProperties;
   styleOnHover?: React.CSSProperties;
@@ -27,6 +28,7 @@ const ShaMenuDrawer: FC<IProps> = ({
   open,
   onClose,
   colors,
+  padding,
   fontStyles,
   itemStyle,
   styleOnHover,
@@ -66,10 +68,11 @@ const ShaMenuDrawer: FC<IProps> = ({
       {colors && menuId && (
         <ScopedMenuStyles
           colors={colors}
+          padding={padding}
           itemStyle={convertJsonToCss(itemStyle)}
           styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
           styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
-          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
           fontStyles={fontStyles}
           menuId={menuId}
         />

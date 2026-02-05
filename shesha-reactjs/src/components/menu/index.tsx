@@ -98,6 +98,7 @@ export const LayoutMenu: FC<IProps> = ({
   useHorizontalMenuDropdownStyles({
     menuId,
     colors,
+    padding,
     fontStyles,
     itemStyle,
     styleOnHover,
@@ -235,6 +236,7 @@ export const LayoutMenu: FC<IProps> = ({
           open={open}
           onClose={onClose}
           colors={colors}
+          padding={padding}
           fontStyles={fontStyles}
           itemStyle={itemStyle}
           styleOnHover={styleOnHover}
@@ -250,10 +252,11 @@ export const LayoutMenu: FC<IProps> = ({
       {menuId ? (
         <ScopedMenuStyles
           colors={colors}
+          padding={padding}
           itemStyle={convertJsonToCss(itemStyle)}
           styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
           styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
-          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
           menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
           menuId={menuId}
@@ -261,10 +264,11 @@ export const LayoutMenu: FC<IProps> = ({
       ) : (
         <GlobalMenuStyles
           colors={colors}
+          padding={padding}
           itemStyle={convertJsonToCss(itemStyle)}
           styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
           styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
-          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
           menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
         />
