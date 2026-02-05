@@ -8,8 +8,8 @@ import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useStyles } from './styles';
 import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
-
-const componentsToSkip = ['attachmentsEditor', 'checkbox'];
+import { DEFAULT_FORM_ITEM_MARGINS } from '../utils/designerConstants';
+import { shouldSkipComponent } from '../utils/componentTypeUtils';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -33,9 +33,14 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const settings = shaForm.settings;
 
   const isInDesigner = shaForm.formMode === 'designer';
-  const shouldSkip = componentsToSkip.includes(model.type);
+  const shouldSkip = shouldSkipComponent(model.type);
 
-  const defaultMargins = settings?.formItemMargin || { top: '5px', bottom: '5px', left: '3px', right: '3px' };
+  const defaultMargins = settings?.formItemMargin || {
+    top: DEFAULT_FORM_ITEM_MARGINS.top,
+    bottom: DEFAULT_FORM_ITEM_MARGINS.bottom,
+    left: DEFAULT_FORM_ITEM_MARGINS.left,
+    right: DEFAULT_FORM_ITEM_MARGINS.right,
+  };
   const { top, left, right, bottom } = defaultMargins;
   const {
     marginTop = isInDesigner ? 0 : top,
@@ -63,19 +68,41 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         ? '100%'
         : height;
 
-    return {
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,
-      width: calculatedWidth,
-      height: calculatedHeight,
-      minHeight,
-      minWidth,
-      maxHeight,
-      maxWidth,
-    };
-  }, [shouldSkip, isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth]);
+    // In designer mode: ONLY apply padding from stylebox, margins are handled by wrapper
+    // In live mode: Apply both margins and padding from stylebox
+    return isInDesigner
+      ? {
+        // No margins in designer mode - wrapper handles them as padding
+        width: calculatedWidth,
+        height: calculatedHeight,
+        minHeight,
+        minWidth,
+        maxHeight,
+        maxWidth,
+        // Only padding from stylebox (if any)
+        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
+        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
+        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
+        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
+      }
+      : {
+        // Live mode: apply both margins and padding
+        marginTop,
+        marginBottom,
+        marginLeft,
+        marginRight,
+        width: calculatedWidth,
+        height: calculatedHeight,
+        minHeight,
+        minWidth,
+        maxHeight,
+        maxWidth,
+        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
+        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
+        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
+        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
+      };
+  }, [shouldSkip, isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;
   const hasLabel = !hideLabel && !!model.label;

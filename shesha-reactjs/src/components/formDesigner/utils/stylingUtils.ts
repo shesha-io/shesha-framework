@@ -1,5 +1,6 @@
 import { CSSProperties } from 'react';
 import { addPx, hasNumber } from '@/utils/style';
+import { DEFAULT_MARGINS, calculateDesignerHeight, calculateAdjustedDimension } from './designerConstants';
 
 export interface StyleConfig {
   marginTop?: number | string;
@@ -12,35 +13,67 @@ export interface StyleConfig {
   paddingRight?: number | string;
 }
 
+interface DefaultMargins {
+  vertical: string;
+  horizontal: string;
+}
+
+/**
+ * Gets default margins based on component type.
+ * Input components have default margins, others don't.
+ *
+ * @param isInput - Whether the component is an input field
+ * @returns Default margin values
+ */
+export const getDefaultMargins = (isInput: boolean): DefaultMargins => ({
+  vertical: isInput ? DEFAULT_MARGINS.vertical : '0px',
+  horizontal: isInput ? DEFAULT_MARGINS.horizontal : '0px',
+});
+
 /**
  * Creates the root container style for wrapping components in designer mode.
- * Margins are applied as padding to the wrapper, and wrapper dimensions are expanded
- * to accommodate the padding (height = height + marginTop + marginBottom).
- * This ensures the wrapper is always sized correctly to contain the component plus margins.
+ *
+ * The wrapper pattern works by:
+ * 1. Converting component margins to wrapper padding (prevents margin collapse)
+ * 2. Expanding wrapper dimensions to accommodate the padding
+ * 3. Setting component dimensions to 100% to fill the wrapper
+ *
+ * @param dimensions - The dimension styles (width, height, min/max values)
+ * @param margins - Margin configuration from stylingBox
+ * @param isInput - Whether the component is an input (affects default margins)
+ * @returns CSSProperties for the wrapper element
+ *
+ * @example
+ * ```tsx
+ * const rootContainerStyle = createRootContainerStyle(
+ *   { width: '200px', height: '40px' },
+ *   { marginTop: '10px', marginBottom: '10px' },
+ *   true
+ * );
+ * // Returns wrapper style with padding accounting for margins
+ * ```
  */
 export const createRootContainerStyle = (
   dimensions: CSSProperties,
   margins: StyleConfig,
   isInput: boolean,
 ): CSSProperties => {
-  const defaultMargins = {
-    vertical: isInput ? '5px' : '0px',
-    horizontal: isInput ? '3px' : '0px',
-  };
+  const defaultMargins = getDefaultMargins(isInput);
 
-  // Convert margins to padding
+  // Convert margins to padding on the wrapper
+  // This prevents margin collapse issues in the designer
   const paddingTop = addPx(margins?.marginTop || defaultMargins.vertical);
   const paddingBottom = addPx(margins?.marginBottom || defaultMargins.vertical);
   const paddingLeft = addPx(margins?.marginLeft || defaultMargins.horizontal);
   const paddingRight = addPx(margins?.marginRight || defaultMargins.horizontal);
 
-  // Calculate wrapper dimensions including padding
-  const width = dimensions.width && hasNumber(dimensions.width)
-    ? `calc(${dimensions.width} - ${paddingLeft} - ${paddingRight})`
-    : dimensions.width;
-  // add 4px to the height to cater for border width in designer
+  // Calculate wrapper dimensions to accommodate padding
+  // Width is reduced because padding adds to the total size
+  const width = calculateAdjustedDimension(dimensions.width, paddingLeft, paddingRight);
+
+  // Height is expanded to include padding plus border width (8px = 4px top + 4px bottom)
   const height = dimensions.height && hasNumber(dimensions.height)
-    ? `calc(${dimensions.height} + ${paddingTop} + ${paddingBottom} + 8px)`
+    ? calculateDesignerHeight(dimensions.height, paddingTop, paddingBottom)
     : dimensions.height;
 
   const minHeight = dimensions.minHeight && hasNumber(dimensions.minHeight)
@@ -79,8 +112,19 @@ export const createRootContainerStyle = (
 
 /**
  * Creates a stylingBox configuration with margins removed (set to 0).
+ *
  * Used in designer mode to prevent double-application of margins
- * since the wrapper already handles margins as padding.
+ * since the wrapper already handles margins as padding. The inner
+ * component should have no margins since they're applied to the wrapper.
+ *
+ * @param stylingBox - The stylingBox JSON string from component model
+ * @returns Modified stylingBox string with margins set to 0
+ *
+ * @example
+ * ```tsx
+ * const stylingBoxWithoutMargins = removeMarginsFromStylingBox(componentModel.stylingBox);
+ * // Returns: '{"marginTop":0,"marginBottom":0,...otherProps}'
+ * ```
  */
 export const removeMarginsFromStylingBox = (stylingBox: string | undefined): string => {
   if (!stylingBox) return JSON.stringify({});
@@ -93,6 +137,67 @@ export const removeMarginsFromStylingBox = (stylingBox: string | undefined): str
       marginBottom: 0,
       marginLeft: 0,
       marginRight: 0,
+    });
+  } catch {
+    return stylingBox;
+  }
+};
+
+/**
+ * Creates margin values object from stylingBox CSS values.
+ *
+ * @param stylingBoxAsCSS - The parsed stylingBox CSS properties
+ * @param isInDesigner - Whether currently in designer mode (returns 0 for margins)
+ * @param defaultMargins - Default margin values to use if not specified
+ * @returns StyleConfig with margin values
+ */
+export const createMarginsFromStylingBox = (
+  stylingBoxAsCSS: StyleConfig | undefined,
+  isInDesigner: boolean,
+  defaultMargins = { top: '5px', bottom: '5px', left: '3px', right: '3px' },
+): StyleConfig => {
+  if (isInDesigner) {
+    return {
+      marginTop: 0,
+      marginBottom: 0,
+      marginLeft: 0,
+      marginRight: 0,
+    };
+  }
+
+  return {
+    marginTop: stylingBoxAsCSS?.marginTop ?? defaultMargins.top,
+    marginBottom: stylingBoxAsCSS?.marginBottom ?? defaultMargins.bottom,
+    marginLeft: stylingBoxAsCSS?.marginLeft ?? defaultMargins.left,
+    marginRight: stylingBoxAsCSS?.marginRight ?? defaultMargins.right,
+  };
+};
+
+/**
+ * Creates a stylingBox string with only padding properties (no margins).
+ *
+ * Used in designer mode to create a stylingBox configuration that only
+ * applies padding to the component, while margins are handled by the wrapper.
+ *
+ * @param stylingBox - The original stylingBox JSON string
+ * @returns JSON string with only padding properties
+ *
+ * @example
+ * ```tsx
+ * const paddingOnlyStylingBox = createPaddingOnlyStylingBox('{"marginTop":10,"paddingTop":5}');
+ * // Returns: '{"paddingTop":5}'
+ * ```
+ */
+export const createPaddingOnlyStylingBox = (stylingBox: string | undefined): string => {
+  if (!stylingBox) return JSON.stringify({});
+
+  try {
+    const parsed = JSON.parse(stylingBox);
+    return JSON.stringify({
+      paddingTop: parsed.paddingTop,
+      paddingRight: parsed.paddingRight,
+      paddingBottom: parsed.paddingBottom,
+      paddingLeft: parsed.paddingLeft,
     });
   } catch {
     return stylingBox;

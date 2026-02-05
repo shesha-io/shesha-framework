@@ -29,6 +29,7 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getComponentTypeInfo } from '../utils/componentTypeUtils';
 import { getComponentDimensions, getDeviceDimensions, getDeviceFlexBasis } from '../utils/dimensionUtils';
 import { createRootContainerStyle, removeMarginsFromStylingBox } from '../utils/stylingUtils';
+import { WRAPPER_FILL_STYLE } from '../utils/designerConstants';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -107,10 +108,37 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const deviceDimensions = getDeviceDimensions();
     const stylingBoxWithoutMargins = removeMarginsFromStylingBox(fullComponentModel.stylingBox);
 
+    // Also remove margins and set dimensions to 100% for device-specific configs
+    // This ensures that when device settings are spread, they don't overwrite our 100% dimensions
+    const desktopForDesigner = fullComponentModel.desktop
+      ? {
+        ...fullComponentModel.desktop,
+        stylingBox: removeMarginsFromStylingBox(fullComponentModel.desktop.stylingBox),
+        dimensions: typeInfo.shouldSkip ? fullComponentModel.desktop.dimensions : deviceDimensions,
+      }
+      : undefined;
+    const tabletForDesigner = fullComponentModel.tablet
+      ? {
+        ...fullComponentModel.tablet,
+        stylingBox: removeMarginsFromStylingBox(fullComponentModel.tablet.stylingBox),
+        dimensions: typeInfo.shouldSkip ? fullComponentModel.tablet.dimensions : deviceDimensions,
+      }
+      : undefined;
+    const mobileForDesigner = fullComponentModel.mobile
+      ? {
+        ...fullComponentModel.mobile,
+        stylingBox: removeMarginsFromStylingBox(fullComponentModel.mobile.stylingBox),
+        dimensions: typeInfo.shouldSkip ? fullComponentModel.mobile.dimensions : deviceDimensions,
+      }
+      : undefined;
+
     return {
       ...fullComponentModel,
       dimensions: typeInfo.shouldSkip ? dimensionsStyles : deviceDimensions,
       stylingBox: stylingBoxWithoutMargins,
+      desktop: desktopForDesigner,
+      tablet: tabletForDesigner,
+      mobile: mobileForDesigner,
       flexBasis: getDeviceFlexBasis(dimensionsStyles),
     };
   }, [fullComponentModel, activeDevice, dimensionsStyles]);
@@ -157,22 +185,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
 
-      <div style={{
-        width: '100%',
-        height: '100%',
-        boxSizing: 'border-box',
-      }}
-      >
+      <div style={WRAPPER_FILL_STYLE}>
         <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
-          <div style={{
-            width: '100%',
-            height: '100%',
-            boxSizing: 'border-box',
-          }}
-          >
-            <FormComponent
-              componentModel={renderComponentModel}
-            />
+          <div style={WRAPPER_FILL_STYLE}>
+            <FormComponent componentModel={renderComponentModel} />
           </div>
         </DragWrapper>
       </div>

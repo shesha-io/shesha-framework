@@ -104,11 +104,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
     width: ${width};
-    min-width: ${minWidth};
-    max-width: ${maxWidth};
-    height: ${height};
-    min-height: ${minHeight};
-    max-height: ${maxHeight};
+      min-width: ${minWidth};
+      max-width: ${maxWidth};
+      height: ${height};
+      min-height: ${minHeight};
+      max-height: ${maxHeight};
 
     > .ant-collapse-item {
       display: flex;
@@ -123,8 +123,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     }
    
     > .ant-collapse-item > .ant-collapse-content {
-      width: 100%;
-      height: 100%;
+      flex: 1;
       background: ${backgroundImage || backgroundColor};
       background-size: ${backgroundSize};
       background-position: ${backgroundPosition};
@@ -167,8 +166,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       background-size: ${headerBackgroundSize};
       background-repeat: ${headerBackgroundRepeat};
       background-position: ${headerBackgroundPosition};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
       height: ${headerHeight};
       min-height: ${headerMinHeight};
       max-height: ${headerMaxHeight};
@@ -212,6 +209,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
           border-bottom: 2px solid ${token.colorPrimary};
           ${accentStyle && `border-top: 3px solid var(--primary-color);`}
           font-weight: ${fontWeight || '500'};
+
+          .ant-collapse-header-text {
+            margin-left: -8px;
+          }
         }
         > .ant-collapse-content {
           border: none;

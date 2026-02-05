@@ -36,8 +36,16 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   // Default to 'desktop' when there's no canvas context (e.g., in datatables)
   const effectiveDevice = activeDevice || 'desktop';
 
+  // Preserve the margin-free stylingBox and 100% dimensions from designer wrapper
+  // Device-specific settings should not restore margins or original dimensions
+  const extendedModel = componentModel as IConfigurableFormComponent & IStyleType;
   const deviceModel = Boolean(effectiveDevice) && typeof effectiveDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[effectiveDevice] }
+    ? {
+      ...componentModel,
+      ...componentModel?.[effectiveDevice],
+      stylingBox: extendedModel.stylingBox,
+      dimensions: extendedModel.dimensions, // Preserve 100% dimensions
+    }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
