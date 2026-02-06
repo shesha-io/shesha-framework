@@ -7,7 +7,7 @@ interface IStyleProps {
   colors: ILayoutColor;
   fontSize?: string;
   isScrolling: boolean;
-  padding?: { x: string; y: string };
+  padding?: { x: number; y: number };
   itemStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
@@ -18,6 +18,7 @@ interface IStyleProps {
 
 interface IGlobalMenuProps {
   colors: ILayoutColor;
+  padding?: { x: number; y: number };
   itemStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
@@ -38,6 +39,7 @@ export const useStyles = createStyles(
       colors,
       fontSize,
       isScrolling,
+      padding,
       itemStyle,
       styleOnHover,
       styleOnSelected,
@@ -101,7 +103,7 @@ export const useStyles = createStyles(
         }
 
         .${prefixCls}-menu-item {
-          padding: 0 3px !important;
+          padding: ${padding?.y ? `${padding.y}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;
           color: ${colors?.itemColor ?? BLACK_CLR};
           ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
           margin-right: 0;
@@ -116,12 +118,12 @@ export const useStyles = createStyles(
           }
         }
 
-        .${prefixCls}-menu-submenu {
+        /* Only apply to top-level submenus */
+        &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-submenu {
           padding: 0 !important;
-          margin: 0 !important;
           border-radius: 0 !important;
 
-          .${prefixCls}-menu-submenu-title {
+          > .${prefixCls}-menu-submenu-title {
             color: ${colors?.itemColor ?? BLACK_CLR};
             font-family: ${fontStyles?.fontFamily};
             font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
@@ -129,7 +131,7 @@ export const useStyles = createStyles(
             ${itemStyle || ''}
             display: flex !important;
             align-items: center !important;
-            padding: 0 3px !important;
+            padding: ${padding?.y ? `${padding.y}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;
             border-radius: 0 !important;
 
             .${prefixCls}-menu-title-content {
@@ -145,7 +147,7 @@ export const useStyles = createStyles(
 
               &:hover {
                 ${styleOnHover || ''}
-                ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
+                ${!styleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR};` : ''}
               }
             }
 
@@ -165,54 +167,51 @@ export const useStyles = createStyles(
 
         }
 
-        /* Apply hover styles specifically to submenu title, not container */
-        .${prefixCls}-menu-submenu:hover {
-          .${prefixCls}-menu-submenu-title {
+        /* Apply hover styles specifically to top-level submenu title, not container */
+        &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-submenu:hover {
+          > .${prefixCls}-menu-submenu-title {
+            color: ${colors?.hoverItemColor || BLACK_CLR};
+            background: ${colors?.hoverItemBackground || 'white'} !important;
             ${styleOnHover || ''}
-            ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
-            ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
 
             .${prefixCls}-icon,
             .anticon {
-              ${styleOnHover || ''}
-              ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
+              ${!styleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR};` : ''}
             }
 
             .${prefixCls}-menu-submenu-arrow {
-              ${styleOnHover || ''}
-              ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor} !important;` : ''}
+              ${!styleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
             }
           }
         }
 
         /* Apply hover styles to regular menu items */
         .${prefixCls}-menu-item:hover {
+          color: ${colors?.hoverItemColor || BLACK_CLR};
+          background: ${colors?.hoverItemBackground || 'white'} !important;
           ${styleOnHover || ''}
-          ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
-          ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
 
           .anticon {
-            ${styleOnHover || ''}
-            ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
+            ${!styleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR};` : ''}
           }
         }
 
         .${prefixCls}-menu-item-active {
+          color: ${colors?.hoverItemColor || BLACK_CLR};
+          background: ${colors?.hoverItemBackground || 'white'} !important;
           ${styleOnHover || ''}
-          ${!styleOnHover && colors?.hoverItemBackground ? `background: ${colors.hoverItemBackground} !important;` : ''}
-          ${!styleOnHover && colors?.hoverItemColor ? `color: ${colors.hoverItemColor};` : ''}
         }
 
         .${prefixCls}-menu-submenu-active {
           /* Removed hover styles from active state - they should only apply on :hover */
         }
 
-        .${prefixCls}-menu-submenu-active.${prefixCls}-menu-submenu-selected {
+        &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-submenu-active.${prefixCls}-menu-submenu-selected {
           background: ${colors?.selectedItemBackground
             ? `${colors.selectedItemBackground} !important`
-            : "transparent"};
+            : "white"};
 
-          .${prefixCls}-menu-submenu-title {
+          > .${prefixCls}-menu-submenu-title {
             color: ${colors?.selectedItemColor
               ? `${colors.selectedItemColor} !important`
               : BLACK_CLR};
@@ -226,19 +225,19 @@ export const useStyles = createStyles(
         .${prefixCls}-menu-item-selected {
           background: ${colors?.selectedItemBackground
             ? `${colors.selectedItemBackground} !important`
-            : "transparent"};
+            : "white"};
           color: ${colors?.selectedItemColor
             ? `${colors.selectedItemColor} !important`
             : BLACK_CLR};
           ${styleOnSelected || ''}
         }
 
-        .${prefixCls}-menu-submenu-selected {
+        &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-submenu-selected {
           background: ${colors?.selectedItemBackground
             ? `${colors.selectedItemBackground} !important`
-            : "transparent"};
+            : "white"};
 
-          .${prefixCls}-menu-submenu-title {
+          > .${prefixCls}-menu-submenu-title {
             color: ${colors?.selectedItemColor
               ? `${colors.selectedItemColor} !important`
               : BLACK_CLR};
@@ -266,7 +265,7 @@ export const useStyles = createStyles(
     const scrollButtons = css`
       width: 80px;
       display: flex;
-      height: 100%;
+      height: 60px;
       color: ${colors?.itemColor};
       flex-direction: row;
       justify-content: center;
@@ -288,7 +287,7 @@ export const useStyles = createStyles(
         background: ${colors?.hoverItemBackground
           ? `${colors.hoverItemBackground}`
           : "#e8e8e8"};
-        color: ${colors?.hoverItemColor};
+        color: ${colors?.hoverItemColor || BLACK_CLR};
         z-index: 1;
 
         ${styleOnHover}
@@ -331,8 +330,6 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
 
-    ${(p: GlobalMenuType) => p?.styleOnSubMenu};
-
     border: none !important;
     box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
     font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
@@ -346,9 +343,6 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     .${(p) => p?.theme.prefixCls}-menu-item {
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
       ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
-      margin: 0 !important;
-      margin-right: 0 !important;
-      padding: 0 3px !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
@@ -356,23 +350,23 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       ${(p: GlobalMenuType) => p?.itemStyle || ''}
 
       .anticon {
-        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-left: 0 !important;
       }
 
       &:hover {
+        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR};
+        background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'white'} !important;
         ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
 
         .anticon {
-          ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
         }
       }
 
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
         color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+        background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'white'} !important;
         ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
       }
     }
@@ -380,15 +374,11 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     /* Parent submenu items (items that have children) */
     .${(p) => p?.theme.prefixCls}-menu-submenu {
       padding: 0 !important;
-      margin: 0 !important;
       border-radius: 0 !important;
 
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
         color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
         ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
-        margin: 0 !important;
-        margin-right: 0 !important;
-        padding: 0 3px !important;
         border-radius: 0 !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
         font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
@@ -406,6 +396,7 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
         .anticon {
           margin-right: 10px !important;
+          margin-left: 0 !important;
         }
 
         .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
@@ -422,18 +413,16 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       /* Apply hover styles to title */
       &:hover {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
+          color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR};
+          background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'white'} !important;
           ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
-          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
 
           .anticon {
-            ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-            ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+            ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
           }
 
           .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
-            ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-            ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor} !important;` : ''}
+            ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
           }
         }
       }
@@ -441,7 +430,7 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
           color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
-          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'white'} !important;
           ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
         }
       }
@@ -450,17 +439,15 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     .${(p) => p?.theme.prefixCls}-menu-item-active {
       ${(p: GlobalMenuType) => p?.styleOnHover || `
         color: ${p?.colors?.hoverItemColor || BLACK_CLR};
-        background: ${p?.colors?.hoverItemBackground || 'transparent'};
+        background: ${p?.colors?.hoverItemBackground || 'white'};
       `}
 
       .${(p) => p?.theme.prefixCls}-menu-title-content {
-        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
       }
 
       .anticon {
-        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
       }
     }
 
@@ -471,11 +458,32 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
           color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
-          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'white'} !important;
           ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
         }
       }
     }
+  }
+
+  /* Drawer menu items - ensure consistent height and padding for all items */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+    height: 40px !important;
+    line-height: 40px !important;
+  }
+
+  /* Ensure regular items match submenu title padding */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+    padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
+  }
+
+  /* Drawer menu items - override itemStyle with styleOnSubMenu for submenu items */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+    ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
+  }
+
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+    ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
   }
 `;
 
@@ -527,15 +535,23 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     }
   }
 
-  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
-  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
-  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu,
+  /* Submenu container styles for drawer */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub {
+    border: none !important;
+    font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
+    font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
+    text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
+  }
+
+  /* Override Ant Design's default grey background on inline submenus */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline {
+    background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'white'} !important;
+  }
+
+  /* Submenu container styles for horizontal menu dropdowns */
   .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
   .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
   .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
-
-    ${(p: GlobalMenuType) => p?.styleOnSubMenu};
-
     border: none !important;
     font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
     font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
@@ -552,14 +568,19 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   }
 
   /* Show submenu arrows for drawer menu */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
-  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub {
     .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
       display: inline-block !important;
     }
   }
 
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu,
@@ -570,9 +591,6 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     .${(p) => p?.theme.prefixCls}-menu-item {
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
       ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
-      margin: 0 !important;
-      margin-right: 0 !important;
-      padding: 0 3px !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
@@ -580,24 +598,24 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       ${(p: GlobalMenuType) => p?.itemStyle || ''}
 
       .anticon {
-        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-left: 0 !important;
       }
 
       &:hover {
+        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR};
+        background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'white'} !important;
         ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
 
         .anticon {
-          ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
         }
       }
 
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
         ${(p: GlobalMenuType) => p?.styleOnSelected || `
           color: ${p?.colors.selectedItemColor || BLACK_CLR} !important;
-          background: ${p?.colors?.selectedItemBackground || 'transparent'} !important;
+          background: ${p?.colors?.selectedItemBackground || 'white'} !important;
         `}
       }
     }
@@ -606,9 +624,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
         color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR};
         ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground};` : ''}
-        margin: 0 !important;
-        margin-right: 0 !important;
-        padding: 0 3px !important;
+        padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
         font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
@@ -624,22 +640,21 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
         }
 
         .anticon {
-          margin-left: 10px !important;
+          margin-right: 10px !important;
+          margin-left: 0 !important;
         }
 
         &:hover {
+          color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR};
           ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
-          ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemBackground ? `background: ${p?.colors?.hoverItemBackground} !important;` : ''}
+          ${(p: GlobalMenuType) => !p?.styleOnHover ? `background: ${p?.colors?.hoverItemBackground || 'white'} !important;` : ''}
 
           .anticon {
-            ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-            ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+            ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
           }
 
           .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
-            ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-            ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor} !important;` : ''}
+            ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
           }
         }
 
@@ -657,7 +672,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
           color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
-          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'white'} !important;
           ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
         }
       }
@@ -666,17 +681,15 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     .${(p) => p?.theme.prefixCls}-menu-item-active {
       ${(p: GlobalMenuType) => p?.styleOnHover || `
         color: ${p?.colors?.hoverItemColor || BLACK_CLR};
-        background: ${p?.colors?.hoverItemBackground || 'transparent'};
+        background: ${p?.colors?.hoverItemBackground || 'white'};
       `}
 
       .${(p) => p?.theme.prefixCls}-menu-title-content {
-        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
       }
 
       .anticon {
-        ${(p: GlobalMenuType) => p?.styleOnHover || ''}
-        ${(p: GlobalMenuType) => !p?.styleOnHover && p?.colors?.hoverItemColor ? `color: ${p?.colors?.hoverItemColor};` : ''}
+        ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
       }
     }
 
@@ -687,10 +700,31 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
           color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
-          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'white'} !important;
           ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
         }
       }
     }
+  }
+
+  /* Drawer menu items - ensure consistent height and padding for all items */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+    height: 40px !important;
+    line-height: 40px !important;
+  }
+
+  /* Ensure regular items match submenu title padding */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+    padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
+  }
+
+  /* Drawer menu items - override itemStyle with styleOnSubMenu for submenu items */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+    ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
+  }
+
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+    ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
   }
 `;
