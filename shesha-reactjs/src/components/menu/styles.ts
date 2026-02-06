@@ -479,11 +479,11 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
   /* Drawer menu items - override itemStyle with styleOnSubMenu for submenu items */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
-    ${(p: GlobalMenuType) => p?.styleOnSubMenu};
+    ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
   }
 
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
-    ${(p: GlobalMenuType) => p?.styleOnSubMenu};
+    ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
   }
 `;
 
@@ -721,10 +721,10 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
   /* Drawer menu items - override itemStyle with styleOnSubMenu for submenu items */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
-    ${(p: GlobalMenuType) => p?.styleOnSubMenu};
+    ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
   }
 
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
-    ${(p: GlobalMenuType) => p?.styleOnSubMenu};
+    ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
   }
 `;
