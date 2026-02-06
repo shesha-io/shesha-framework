@@ -56,16 +56,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const uploadDraggerSpanRef = useRef(null);
   const { message, modal } = App.useApp();
 
-  const onCustomRequest = (options): any => {
+  const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
-    // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
-    // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
-    const lastDotIndex = options?.file?.name.lastIndexOf(".");
-    const fileName = lastDotIndex === -1 ? options?.file?.name : options?.file?.name.substring(0, lastDotIndex) + options?.file?.name.substring(lastDotIndex).toLowerCase();
-
-    const normalizedFile = new File([options.file], fileName, { type: options.file.type });
-
-    uploadFile({ file: normalizedFile });
+    uploadFile({ file: file as File }, callback);
   };
 
   const onDownloadClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
