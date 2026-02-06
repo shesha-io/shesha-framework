@@ -4,11 +4,14 @@ import React, {
   useMemo,
   useRef,
   useEffect,
+  useState,
 } from 'react';
-import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding } from './utils';
+import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding, flattenConfiguredColumns, getDataColumnAccessor } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
+import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import {
   SidebarContainer,
   DataTable,
@@ -31,20 +34,64 @@ import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { StandaloneTable } from './standaloneTable';
 import { isPropertiesArray } from '@/interfaces/metadata';
-import { toCamelCase } from '@/utils/string';
+import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
+import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
 
-export const TableWrapper: FC<ITableComponentProps> = (props) => {
-  const { id, items: configuredColumns, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
+type TableWrapperProps = ITableComponentProps & { columnsMismatch?: boolean };
+
+export const TableWrapper: FC<TableWrapperProps> = (props) => {
+  const { id, items: configuredColumns, useMultiselect, selectionMode, tableStyle, containerStyle, columnsMismatch } = props;
 
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
-  const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const isDesignMode = formMode === 'designer';
   const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
+
+  const calculatedStyles = useFormComponentStyles(props);
+  const allStyles = props.allStyles ?? calculatedStyles;
   const componentIdRef = useRef(id);
+  const normalizedConfiguredColumns = useMemo(
+    () => flattenConfiguredColumns(
+      Array.isArray(configuredColumns) ? configuredColumns as ColumnsItemProps[] : undefined,
+    ),
+    [configuredColumns],
+  );
+  const metadataProperties = useMemo(
+    () => (metadata && isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
+    [metadata?.metadata],
+  );
+  const metadataPropertyNameSet = useMemo(
+    () => new Set(collectMetadataPropertyPaths(metadataProperties)),
+    [metadataProperties],
+  );
+  const visibilityFilter = useMemo(
+    () => filterVisibility({ data: formData, globalState }),
+    [formData, globalState],
+  );
+  const permissibleColumns = useMemo(
+    () => (isDesignMode
+      ? normalizedConfiguredColumns
+      : normalizedConfiguredColumns
+        .filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
+        .filter(visibilityFilter)),
+    [normalizedConfiguredColumns, isDesignMode, anyOfPermissionsGranted, visibilityFilter],
+  );
+  const hasNonDataColumns = useMemo(
+    () => permissibleColumns.some((col) => col.columnType && col.columnType !== 'data'),
+    [permissibleColumns],
+  );
+  const qualifyingColumns = useMemo(
+    () => permissibleColumns.filter((permissibleColumn) => {
+      if (permissibleColumn.columnType !== 'data') return false;
+      const candidate = getDataColumnAccessor(permissibleColumn);
+      return candidate && metadataPropertyNameSet.has(candidate);
+    }),
+    [permissibleColumns, metadataPropertyNameSet],
+  );
 
   useEffect(() => {
     if (componentIdRef.current !== id) {
@@ -106,15 +153,89 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   }, [props?.headerFont?.align]);
 
   const effectiveBodyTextAlign = useMemo(() => {
-    return props?.font?.align;
-  }, [props?.font?.align]);
+    return allStyles?.fontStyles?.textAlign ?? props?.font?.align;
+  }, [allStyles?.fontStyles?.textAlign, props?.font?.align]);
+
+  // State for stored file background URL
+  const [storedFileBackgroundUrl, setStoredFileBackgroundUrl] = useState<string>('');
+
+  // Fetch stored file URL when background type is 'storedFile'
+  useEffect(() => {
+    let isCancelled = false;
+
+    const fetchStoredFileUrl = async (): Promise<void> => {
+      if (props?.background?.type === 'storedFile' && props?.background?.storedFile?.id) {
+        try {
+          const url = await getBackgroundImageUrl(props.background, backendUrl, httpHeaders);
+          if (!isCancelled) {
+            setStoredFileBackgroundUrl(url);
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            console.warn('Failed to fetch stored file background image:', error);
+            setStoredFileBackgroundUrl('');
+          }
+        }
+      } else {
+        if (!isCancelled) {
+          setStoredFileBackgroundUrl('');
+        }
+      }
+    };
+
+    fetchStoredFileUrl();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [props?.background, backendUrl, httpHeaders]);
+
+  // Convert background object to CSS string
+  const effectiveBackground = useMemo(() => {
+    const bgStyles = getBackgroundStyle(props?.background, undefined, storedFileBackgroundUrl);
+
+    // Build complete background CSS string with all properties
+    const parts: string[] = [];
+
+    // Add image or color
+    if (bgStyles.backgroundImage) {
+      parts.push(bgStyles.backgroundImage);
+    } else if (bgStyles.backgroundColor) {
+      return bgStyles.backgroundColor; // Color doesn't need size/position
+    }
+
+    // Add position if present
+    if (bgStyles.backgroundPosition) {
+      parts.push(String(bgStyles.backgroundPosition));
+    }
+
+    // Add size if present (must come after position with / separator)
+    if (bgStyles.backgroundSize) {
+      // If position exists, add size with / separator, otherwise add it separately
+      if (bgStyles.backgroundPosition) {
+        parts[parts.length - 1] = `${parts[parts.length - 1]} / ${String(bgStyles.backgroundSize)}`;
+      } else {
+        parts.push(`/ ${String(bgStyles.backgroundSize)}`);
+      }
+    }
+
+    // Add repeat if present
+    if (bgStyles.backgroundRepeat) {
+      parts.push(String(bgStyles.backgroundRepeat));
+    }
+
+    return parts.length > 0 ? parts.join(' ') : undefined;
+  }, [props?.background, storedFileBackgroundUrl]);
 
   const { styles } = useStyles({
-    fontFamily: props?.font?.type,
-    fontWeight: props?.font?.weight,
-    textAlign: props?.font?.align,
-    color: props?.font?.color,
-    fontSize: props?.font?.size,
+    // Use resolved font styles from allStyles to properly handle device-specific styling
+    fontFamily: allStyles?.fontStyles?.fontFamily ?? props?.font?.type,
+    fontWeight: allStyles?.fontStyles?.fontWeight ?? props?.font?.weight,
+    textAlign: allStyles?.fontStyles?.textAlign ?? props?.font?.align,
+    color: allStyles?.fontStyles?.color ?? props?.font?.color,
+    fontSize: allStyles?.fontStyles?.fontSize
+      ? parseInt(allStyles.fontStyles.fontSize as string, 10)
+      : props?.font?.size,
     striped: props?.striped,
     hoverHighlight: props?.hoverHighlight,
     enableStyleOnReadonly: props?.enableStyleOnReadonly,
@@ -124,7 +245,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     rowHoverBackgroundColor: props?.rowHoverBackgroundColor,
     rowSelectedBackgroundColor: props?.rowSelectedBackgroundColor,
     border: props?.border,
-    backgroundColor: props?.background?.color,
+    backgroundColor: effectiveBackground,
     headerFontFamily: effectiveHeaderFontFamily,
     headerFontSize: effectiveHeaderFontSize,
     headerFontWeight: effectiveHeaderFontWeight,
@@ -138,28 +259,30 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   });
 
   const finalStyle = useMemo(() => {
-    if (props.allStyles) {
+    if (allStyles) {
       let baseStyle;
       if (!props.enableStyleOnReadonly && props.readOnly) {
         baseStyle = {
-          ...props.allStyles.fontStyles,
-          ...props.allStyles.dimensionsStyles,
+          ...allStyles.fontStyles,
+          ...allStyles.dimensionsStyles,
+          ...allStyles.stylingBoxAsCSS,
         };
       } else {
-        baseStyle = props.allStyles.fullStyle;
+        baseStyle = allStyles.fullStyle;
       }
 
-      if (props.border && baseStyle) {
+      if (baseStyle) {
         const {
-          border,
+          // Remove border properties if border prop is set
+          border: borderProp,
           borderTop,
           borderRight,
           borderBottom,
           borderLeft,
           borderWidth,
-          borderStyle,
+          borderStyle: borderStyleProp,
           borderColor,
-          borderRadius,
+          borderRadius: borderRadiusProp,
           borderTopWidth,
           borderRightWidth,
           borderBottomWidth,
@@ -176,14 +299,58 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
           borderTopRightRadius,
           borderBottomLeftRadius,
           borderBottomRightRadius,
-          ...styleWithoutBorder
+          // Remove background properties to prevent duplicate application
+          background,
+          backgroundColor,
+          backgroundImage,
+          backgroundSize,
+          backgroundPosition,
+          backgroundRepeat,
+          backgroundAttachment,
+          backgroundOrigin,
+          backgroundClip,
+          ...styleWithoutBorderAndBackground
         } = baseStyle;
-        return styleWithoutBorder;
+
+        // Only remove border properties if props.border is set
+        if (props.border) {
+          return styleWithoutBorderAndBackground;
+        }
+
+        // Remove background properties but keep border properties
+        return {
+          borderProp,
+          borderTop,
+          borderRight,
+          borderBottom,
+          borderLeft,
+          borderWidth,
+          borderStyle: borderStyleProp,
+          borderColor,
+          borderRadius: borderRadiusProp,
+          borderTopWidth,
+          borderRightWidth,
+          borderBottomWidth,
+          borderLeftWidth,
+          borderTopStyle,
+          borderRightStyle,
+          borderBottomStyle,
+          borderLeftStyle,
+          borderTopColor,
+          borderRightColor,
+          borderBottomColor,
+          borderLeftColor,
+          borderTopLeftRadius,
+          borderTopRightRadius,
+          borderBottomLeftRadius,
+          borderBottomRightRadius,
+          ...styleWithoutBorderAndBackground,
+        };
       }
       return baseStyle;
     }
     return {};
-  }, [props.enableStyleOnReadonly, props.readOnly, props.allStyles, props.border]);
+  }, [props.enableStyleOnReadonly, props.readOnly, allStyles, props.border]);
 
   const {
     isInProgress: { isFiltering, isSelectingColumns },
@@ -197,54 +364,41 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     removeColumnFilter,
     tableFilter,
     contextValidation,
+    getRepository,
   } = useDataTableStore();
 
   const { totalRows } = useDataTable();
+  const repositoryType = getRepository?.()?.repositoryType;
+  const isEntitySource = repositoryType === BackendRepositoryType;
 
   requireColumns(); // our component requires columns loading. it's safe to call on each render
 
+  const shouldRegisterColumns = !isEntitySource ||
+    qualifyingColumns.length > 0 ||
+    normalizedConfiguredColumns.length === 0 ||
+    hasNonDataColumns;
+
   useDeepCompareEffect(() => {
-    // Normalize inputs: ensure configuredColumns is always an array
-    const normalizedConfiguredColumns = Array.isArray(configuredColumns) ? configuredColumns : [];
-
-    // register columns
-    const permissibleColumns = isDesignMode
-      ? normalizedConfiguredColumns
-      : normalizedConfiguredColumns
-        .filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-        .filter(filterVisibility({ data: formData, globalState }));
-
-    // Normalize metadata properties using type guard helper
-    const metadataProperties = isPropertiesArray(metadata.metadata?.properties)
-      ? metadata.metadata.properties
-      : [];
-
-    // We need to check if the columns at least one exists in the store as well... otherwise the registration is going to fail
-    const qualifyingColumns = metadataProperties.filter((propertyMetadata) => {
-      const exists = permissibleColumns
-        .map((permissibleColumn) => toCamelCase(permissibleColumn.accessor))
-        .includes(toCamelCase(propertyMetadata.path));
-      return exists;
-    });
-
-    // Check if there are any non-data columns (actions, crud-operations, etc.)
-    const hasNonDataColumns = permissibleColumns.some((col) =>
-      col.columnType && col.columnType !== 'data',
-    );
-
     // Register columns if:
     // 1. At least one column matches metadata properties, OR
     // 2. There are no configured columns (empty state), OR
     // 3. There are non-data columns that don't need to match metadata
-    if (qualifyingColumns.length > 0 || normalizedConfiguredColumns.length === 0 || hasNonDataColumns)
+    if (shouldRegisterColumns)
       registerConfigurableColumns(id, permissibleColumns);
-  }, [configuredColumns, isDesignMode, metadata, formData, globalState, anyOfPermissionsGranted, filterVisibility, toCamelCase]);
+    // Note: registerConfigurableColumns is omitted from dependencies to avoid effect re-runs
+    // when the actions object is recreated. The effect only needs to re-run when the actual
+    // column configuration changes (qualifyingColumns, normalizedConfiguredColumns, etc.)
+  }, [shouldRegisterColumns, id, permissibleColumns]);
 
   // Auto-configure columns when DataTable is dropped into a DataContext
   useEffect(() => {
+    let cancelled = false;
+
     // Only attempt auto-config if we have empty configuredColumns and haven't tried yet
-    if (hasAutoConfiguredRef.current || !isDesignMode || !formDesigner) {
-      return;
+    if (hasAutoConfiguredRef.current || !isDesignMode || !formDesigner || !isEntitySource) {
+      return () => {
+        cancelled = true;
+      };
     }
 
     // Check if we should auto-configure
@@ -252,7 +406,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const hasMetadata = metadata?.metadata != null;
 
     if (!hasNoColumns || !hasMetadata) {
-      return;
+      return () => {
+        cancelled = true;
+      };
     }
 
     // Mark as attempted to prevent multiple triggers
@@ -260,8 +416,11 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
     const autoConfigureColumns = async (): Promise<void> => {
       try {
+        // Guard against metadata becoming undefined after initial check
+        if (!metadata?.metadata) return;
+
         const defaultColumns = await calculateDefaultColumns(metadata.metadata);
-        if (defaultColumns.length > 0) {
+        if (!cancelled && defaultColumns.length > 0) {
           formDesigner.updateComponent({
             componentId: id,
             settings: {
@@ -271,13 +430,19 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
           });
         }
       } catch {
-        // Reset flag to allow retry if it failed
-        hasAutoConfiguredRef.current = false;
+        // Reset flag to allow retry if it failed (only if not cancelled)
+        if (!cancelled) {
+          hasAutoConfiguredRef.current = false;
+        }
       }
     };
 
     autoConfigureColumns();
-  }, [isDesignMode, formDesigner, metadata.metadata, configuredColumns, id, props]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id, isEntitySource]);
 
   const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
@@ -330,6 +495,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
             onMultiRowSelect={setMultiSelectedRow}
             selectedRowIndex={selectedRow?.index}
+            columnsMismatch={columnsMismatch}
             useMultiselect={useMultiselect}
             selectionMode={selectionMode}
             freezeHeaders={props.freezeHeaders}
@@ -370,7 +536,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             border={props.border}
             striped={props.striped}
             hoverHighlight={props.hoverHighlight}
-            backgroundColor={props.background?.color}
+            backgroundColor={effectiveBackground}
             headerFont={props.headerFont}
             headerFontFamily={effectiveHeaderFontFamily}
             headerFontSize={effectiveHeaderFontSize}
@@ -395,10 +561,14 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
-            bodyFontFamily={props?.font?.type}
-            bodyFontSize={props?.font?.size ? `${props.font.size}px` : undefined}
-            bodyFontWeight={props?.font?.weight}
-            bodyFontColor={props?.font?.color}
+            bodyFontFamily={allStyles?.fontStyles?.fontFamily ?? props?.font?.type as string}
+            bodyFontSize={allStyles?.fontStyles?.fontSize
+              ? (allStyles.fontStyles.fontSize as string)
+              : (props?.font?.size ? `${props.font.size}px` : undefined)}
+            bodyFontWeight={allStyles?.fontStyles?.fontWeight ?? props?.font?.weight as string}
+            bodyFontColor={allStyles?.fontStyles?.color ?? props?.font?.color as string}
+            actionIconSize={props.actionIconSize}
+            actionIconColor={props.actionIconColor}
           />
         </div>
       </div>

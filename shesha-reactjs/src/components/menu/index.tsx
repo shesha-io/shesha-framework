@@ -36,10 +36,12 @@ interface IProps {
   fontSize?: string;
   overflow: "dropdown" | "menu" | "scroll";
   style?: React.CSSProperties;
+  itemStyle?: React.CSSProperties;
   padding?: { x: string; y: string };
   styleOnHover?: React.CSSProperties;
   styleOnSelected?: React.CSSProperties;
   styleOnSubMenu?: React.CSSProperties;
+  menuItemStyle?: React.CSSProperties;
   width?: string;
   fontStyles?: React.CSSProperties;
   menuId?: string;
@@ -55,9 +57,11 @@ export const LayoutMenu: FC<IProps> = ({
   overflow,
   padding,
   style,
+  itemStyle,
   styleOnHover,
   styleOnSelected,
   styleOnSubMenu,
+  menuItemStyle,
   width,
   fontStyles,
   menuId,
@@ -68,8 +72,10 @@ export const LayoutMenu: FC<IProps> = ({
     fontSize,
     isScrolling,
     padding,
+    itemStyle: convertJsonToCss(itemStyle),
     styleOnHover: convertJsonToCss(styleOnHover),
     styleOnSelected: convertJsonToCss(styleOnSelected),
+    menuItemStyle: convertJsonToCss(menuItemStyle),
     width,
     fontStyles,
   });
@@ -92,10 +98,11 @@ export const LayoutMenu: FC<IProps> = ({
     menuId,
     colors,
     fontStyles,
-    style,
+    itemStyle,
     styleOnHover,
     styleOnSelected,
     styleOnSubMenu,
+    menuItemStyle,
   });
 
   const [openedKeys, setOpenedKeys] = useLocalStorage(
@@ -228,6 +235,7 @@ export const LayoutMenu: FC<IProps> = ({
           onClose={onClose}
           colors={colors}
           fontStyles={fontStyles}
+          itemStyle={itemStyle}
           styleOnHover={styleOnHover}
           styleOnSelected={styleOnSelected}
           styleOnSubMenu={styleOnSubMenu}
@@ -241,18 +249,22 @@ export const LayoutMenu: FC<IProps> = ({
       {menuId ? (
         <ScopedMenuStyles
           colors={colors}
+          itemStyle={convertJsonToCss(itemStyle)}
           styleOnHover={convertJsonToCss(styleOnHover)}
           styleOnSelected={convertJsonToCss(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
           menuId={menuId}
         />
       ) : (
         <GlobalMenuStyles
           colors={colors}
+          itemStyle={convertJsonToCss(itemStyle)}
           styleOnHover={convertJsonToCss(styleOnHover)}
           styleOnSelected={convertJsonToCss(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
         />
       )}

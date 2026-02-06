@@ -192,6 +192,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         height: 100%;
         pointer-events: none;
         transform-origin: top left;
+        z-index: 100;
 
         > * {
           pointer-events: auto;

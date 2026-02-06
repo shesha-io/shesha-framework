@@ -16,6 +16,7 @@ namespace Shesha.Domain
     [JoinedProperty("reference_lists", Schema = "frwk")]
     [DiscriminatorValue(ItemTypeName)]
     [SnakeCaseNaming]
+    [Exposable(ItemTypeName)]
     public class ReferenceList : ConfigurationItem
     {
         public const string ItemTypeName = "reference-list";

@@ -94,6 +94,14 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
       blurRadius: prevStyles?.shadow?.blurRadius ?? prev?.shadow?.blurRadius ?? defaults?.shadow?.blurRadius ?? 0,
       spreadRadius: prevStyles?.shadow?.spreadRadius ?? prev?.shadow?.spreadRadius ?? defaults?.shadow?.spreadRadius ?? 0,
     },
+    menuItemShadow: {
+      offsetX: prevStyles?.menuItemShadow?.offsetX ?? prev?.menuItemShadow?.offsetX ?? defaults?.menuItemShadow?.offsetX ?? 0,
+      offsetY: prevStyles?.menuItemShadow?.offsetY ?? prev?.menuItemShadow?.offsetY ?? defaults?.menuItemShadow?.offsetY ?? 0,
+      color: prevStyles?.menuItemShadow?.color ?? prev?.menuItemShadow?.color ?? defaults?.menuItemShadow?.color ?? '#000',
+      blurRadius: prevStyles?.menuItemShadow?.blurRadius ?? prev?.menuItemShadow?.blurRadius ?? defaults?.menuItemShadow?.blurRadius ?? 0,
+      spreadRadius: prevStyles?.menuItemShadow?.spreadRadius ?? prev?.menuItemShadow?.spreadRadius ?? defaults?.menuItemShadow?.spreadRadius ?? 0,
+    },
+    overflow: prevStyles?.overflow ?? prev?.overflow ?? defaults?.overflow,
     ...(defaults?.display && { display: defaults?.display || 'block' }),
     stylingBox: prevStyles?.stylingBox ?? prev?.stylingBox ?? defaults?.stylingBox ?? '{}',
   };

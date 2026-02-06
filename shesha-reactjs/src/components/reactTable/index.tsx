@@ -128,6 +128,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   bodyFontSize,
   bodyFontWeight,
   bodyFontColor,
+  actionIconSize,
+  actionIconColor,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -181,6 +183,8 @@ export const ReactTable: FC<IReactTableProps> = ({
     bodyFontWeight,
     bodyFontColor,
     freezeHeaders,
+    actionIconSize,
+    actionIconColor,
   });
 
   const { setDragState } = useDataTableStore();
@@ -531,11 +535,12 @@ export const ReactTable: FC<IReactTableProps> = ({
         /* noop */
       };
 
-    return (data, selectedRow?) => {
+    return (rowData, rowIndex, selectedRow?) => {
       const evaluationContext = {
         ...allData,
-        data,
-        selectedRow: selectedRow || data?.original,
+        row: rowData,
+        rowIndex,
+        selectedRow: selectedRow || rowData,
       };
 
       executeAction({
@@ -548,7 +553,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const handleDoubleClickRow = (row, index): void => {
     if (typeof onRowDoubleClick === 'object') {
       const currentSelectedRow = { index, row: row.original, id: row.original?.id };
-      performOnRowDoubleClick(row, currentSelectedRow);
+      performOnRowDoubleClick(row.original, index, currentSelectedRow);
     } else if (typeof onRowDoubleClick === 'function') {
       onRowDoubleClick(row?.original, index);
     }
@@ -700,7 +705,8 @@ export const ReactTable: FC<IReactTableProps> = ({
         }}
         onRowHover={() => {
           if (onRowHover) onRowHover(rowIndex, row.original);
-          dispatchRowEvent(onRowHoverAction, row.original, rowIndex);
+          const currentSelectedRow = { index: rowIndex, row: row.original, id: row.original?.id };
+          dispatchRowEvent(onRowHoverAction, row.original, rowIndex, currentSelectedRow);
         }}
         row={row}
         showExpandedView={showExpandedView}
@@ -831,7 +837,12 @@ export const ReactTable: FC<IReactTableProps> = ({
                           fontWeight: '600',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: effectiveHeaderTextAlign === 'center' ? 'center' : effectiveHeaderTextAlign === 'right' ? 'flex-end' : 'flex-start',
+                          // Map headerTextAlign to justify-content for flex container
+                          justifyContent:
+                            effectiveHeaderTextAlign === 'center' ? 'center'
+                              : effectiveHeaderTextAlign === 'right' ? 'flex-end'
+                                : effectiveHeaderTextAlign === 'justify' ? 'space-between'
+                                  : 'flex-start', // default for 'left' or undefined
                         }}
                       >
                         {column.render('Header')}

@@ -76,6 +76,7 @@ namespace Shesha.Metadata
                         Accessor = entityConfig.Accessor,
                         Module = entityConfig.Module?.Name,
                         ModuleAccessor = entityConfig.Module?.Accessor,
+                        ModuleIsEnabled = entityConfig.Module?.IsEnabled ?? false,
                         Md5 = metadata.Md5,
                         ModificationTime = metadata.ChangeTime,
                         Metadata = metadata,
