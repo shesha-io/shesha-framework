@@ -350,7 +350,8 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       ${(p: GlobalMenuType) => p?.itemStyle || ''}
 
       .anticon {
-        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-left: 0 !important;
       }
 
       &:hover {
@@ -395,6 +396,7 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
         .anticon {
           margin-right: 10px !important;
+          margin-left: 0 !important;
         }
 
         .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
@@ -463,12 +465,16 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     }
   }
 
-  /* Drawer menu items - ensure consistent height for all items */
+  /* Drawer menu items - ensure consistent height and padding for all items */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
-    padding: 0 !important;
     height: 40px !important;
     line-height: 40px !important;
+  }
+
+  /* Ensure regular items match submenu title padding */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+    padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
   }
 
   /* Drawer menu items - override itemStyle with styleOnSubMenu for submenu items */
@@ -537,6 +543,11 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
   }
 
+  /* Override Ant Design's default grey background on inline submenus */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline {
+    background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'white'} !important;
+  }
+
   /* Submenu container styles for horizontal menu dropdowns */
   .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub,
   .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline,
@@ -587,7 +598,8 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       ${(p: GlobalMenuType) => p?.itemStyle || ''}
 
       .anticon {
-        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-left: 0 !important;
       }
 
       &:hover {
@@ -628,7 +640,8 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
         }
 
         .anticon {
-          margin-left: 10px !important;
+          margin-right: 10px !important;
+          margin-left: 0 !important;
         }
 
         &:hover {
@@ -694,12 +707,16 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     }
   }
 
-  /* Drawer menu items - ensure consistent height for all items */
+  /* Drawer menu items - ensure consistent height and padding for all items */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
-    padding: 0 !important;
     height: 40px !important;
     line-height: 40px !important;
+  }
+
+  /* Ensure regular items match submenu title padding */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+    padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
   }
 
   /* Drawer menu items - override itemStyle with styleOnSubMenu for submenu items */

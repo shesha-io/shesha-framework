@@ -5,7 +5,7 @@ import { convertJsonToCss, convertJsonToCssWithImportant } from '@/utils';
 interface UseHorizontalMenuDropdownStylesProps {
   menuId?: string;
   colors?: ILayoutColor;
-  padding?: { x: string; y: string };
+  padding?: string;
   fontStyles?: React.CSSProperties;
   itemStyle?: React.CSSProperties;
   styleOnHover?: React.CSSProperties;
@@ -70,7 +70,8 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item .anticon {
-        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-left: 0 !important;
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover,
@@ -103,7 +104,8 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .anticon {
-        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-left: 0 !important;
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
@@ -170,7 +172,8 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item .anticon {
-        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-left: 0 !important;
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item:hover {
@@ -190,7 +193,8 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .anticon {
-        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-left: 0 !important;
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {

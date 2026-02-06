@@ -39,6 +39,7 @@ interface IProps {
   style?: React.CSSProperties;
   itemStyle?: React.CSSProperties;
   padding?: { x: string; y: string };
+  dropdownPadding?: string;
   styleOnHover?: React.CSSProperties;
   styleOnSelected?: React.CSSProperties;
   styleOnSubMenu?: React.CSSProperties;
@@ -57,6 +58,7 @@ export const LayoutMenu: FC<IProps> = ({
   fontSize,
   overflow,
   padding,
+  dropdownPadding,
   style,
   itemStyle,
   styleOnHover,
@@ -98,7 +100,7 @@ export const LayoutMenu: FC<IProps> = ({
   useHorizontalMenuDropdownStyles({
     menuId,
     colors,
-    padding,
+    padding: dropdownPadding,
     fontStyles,
     itemStyle,
     styleOnHover,
