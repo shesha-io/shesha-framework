@@ -99,7 +99,11 @@ export class GqlLoader implements IFormDataLoader {
 
       const response = await this.#httpClient.get<IAjaxResponse<IEntity>>(finalUrl);
 
-      return extractAjaxResponse(response.data, 'Failed to load data');
+      const responseData = extractAjaxResponse(response.data, 'Failed to load data');
+
+      loadingCallback?.({ loadingState: 'ready', loaderHint: undefined });
+
+      return responseData;
     } catch (error) {
       loadingCallback?.({ loadingState: 'failed', error: error });
       return undefined;
