@@ -36,8 +36,21 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   // Default to 'desktop' when there's no canvas context (e.g., in datatables)
   const effectiveDevice = activeDevice || 'desktop';
 
+  // In designer mode: preserve the padding-only stylingBox and 100% dimensions from wrapper
+  // In preview/live mode: use original device-specific stylingBox (with margins) and dimensions
+  const isDesignerMode = shaForm.formMode === 'designer';
+  const extendedModel = componentModel as IConfigurableFormComponent & IStyleType;
   const deviceModel = Boolean(effectiveDevice) && typeof effectiveDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[effectiveDevice] }
+    ? {
+      ...componentModel,
+      ...componentModel?.[effectiveDevice],
+      // In designer: preserve padding-only stylingBox from wrapper
+      // In preview: use original stylingBox with margins from device settings
+      ...(isDesignerMode
+        ? { stylingBox: extendedModel.stylingBox, dimensions: extendedModel.dimensions }
+        : { stylingBox: componentModel?.[effectiveDevice]?.stylingBox }
+      ),
+    }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);

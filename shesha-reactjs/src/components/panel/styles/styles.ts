@@ -103,6 +103,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
+    width: ${width};
+      min-width: ${minWidth};
+      max-width: ${maxWidth};
+      height: ${height};
+      min-height: ${minHeight};
+      max-height: ${maxHeight};
 
     > .ant-collapse-item {
       display: flex;
@@ -113,15 +119,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       margin-top: ${marginTop};
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
+      height: 100%;
     }
    
     > .ant-collapse-item > .ant-collapse-content {
-      width: ${width};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
-      height: ${height};
-      min-height: ${minHeight};
-      max-height: ${maxHeight};
+      flex: 1;
       background: ${backgroundImage || backgroundColor};
       background-size: ${backgroundSize};
       background-position: ${backgroundPosition};
@@ -140,7 +142,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       > .ant-collapse-content-box {
         --ant-collapse-content-padding: 0px !important;
         padding: 0px !important;
-        height: 100%;
         width: 100%;
         overflow: ${overflow?.overflow ?? 'auto'};
         ${overflow};
@@ -160,12 +161,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       position: relative;
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};
-      width: ${width};
+      width: 100%;
       background-size: ${headerBackgroundSize};
       background-repeat: ${headerBackgroundRepeat};
       background-position: ${headerBackgroundPosition};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
       height: ${headerHeight};
       min-height: ${headerMinHeight};
       max-height: ${headerMaxHeight};

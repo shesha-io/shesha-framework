@@ -14,6 +14,8 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './util';
+import { useShaFormInstance } from '@/providers';
+import { mergeWithDesignerDimensions } from '@/components/formDesigner/utils/dimensionUtils';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -23,18 +25,26 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   name: 'Button',
   icon: <BorderOutlined />,
   Factory: ({ model, form }) => {
+    const shaForm = useShaFormInstance();
     const { style, ...restProps } = model;
 
-    const finalStyle = {
-      ...model.allStyles.dimensionsStyles,
-      ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.borderStyles),
-      ...model.allStyles.fontStyles,
-      ...(['dashed', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.backgroundStyles),
-      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
-      ...model.allStyles.stylingBoxAsCSS,
-      ...model.allStyles.jsStyle,
-      justifyContent: model.font?.align,
-    };
+    const isDesignerMode = shaForm.formMode === 'designer';
+
+    // Merge base styles with designer dimensions (100% width/height in designer mode)
+    const finalStyle = mergeWithDesignerDimensions(
+      {
+        ...model.allStyles.dimensionsStyles,
+        ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.borderStyles),
+        ...model.allStyles.fontStyles,
+        ...(['dashed', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.backgroundStyles),
+        ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
+        ...model.allStyles.stylingBoxAsCSS,
+        ...model.allStyles.jsStyle,
+        justifyContent: model.font?.align,
+      },
+      isDesignerMode,
+      false, // Button should not skip designer dimensions
+    );
 
     return model.hidden ? null : (
       <ConfigurableButton
