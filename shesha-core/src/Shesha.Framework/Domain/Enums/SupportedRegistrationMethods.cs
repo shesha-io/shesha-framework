@@ -14,17 +14,22 @@ namespace Shesha.Domain.Enums
         /// <summary>
         /// Requires Email Verification
         /// </summary>
-        [Display(Name = "Email Address")]
+        [Display(Name = "Email OTP")]
         EmailAddress = 2,
         /// <summary>
         /// Requires mobile verification - could be useful for public/citizen who don’t necessarily have email address.
         /// </summary>
-        [Display(Name = "Mobile Number")]
+        [Display(Name = "Mobile OTP")]
         MobileNumber = 3,
         /// <summary>
         /// if so, must be able to specify which providers
         /// </summary>
         [Display(Name = "OAuth")]
         OAuth = 4,
+        /// <summary>
+        /// Send email link for verification
+        /// </summary>
+        [Display(Name = "Email Link")]
+        EmailLink = 5
     }
 }
