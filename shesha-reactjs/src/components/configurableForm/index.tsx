@@ -14,6 +14,7 @@ import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { IShaFormInstance } from '@/providers/form/store/interfaces';
 import ParentProvider from '@/providers/parentProvider';
 import { ShaSpin } from '..';
+import { DataLoadingError } from './dataLoadingError';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
@@ -147,21 +148,31 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
                 isScope
               >
                 {markupLoadingState.status === 'ready' && (
-                  <FormWithFlatMarkup
-                    {...props}
-                    isActionsOwner={isActionsOwner}
-                    form={form}
-                    initialValues={shaForm.initialValues}
-                    formFlatMarkup={shaForm.flatStructure}
-                    formSettings={shaForm.settings}
-                    persistedFormProps={shaForm.form}
-                    onMarkupUpdated={() => {
-                      shaForm.reloadMarkup();
-                    }}
-                    shaForm={shaForm}
-                    actions={actions}
-                    sections={sections}
-                  />
+                  <>
+                    {dataLoadingState.status === 'failed'
+                      ? (
+                        <DataLoadingError formId={formId} dataLoadingState={dataLoadingState} />
+                      )
+                      : (
+                        <FormWithFlatMarkup
+                          {...props}
+                          mode={dataLoadingState.status !== 'ready' ? 'readonly' : props.mode}
+                          isActionsOwner={isActionsOwner}
+                          form={form}
+                          initialValues={shaForm.initialValues}
+                          formFlatMarkup={shaForm.flatStructure}
+                          formSettings={shaForm.settings}
+                          persistedFormProps={shaForm.form}
+                          onMarkupUpdated={() => {
+                            shaForm.reloadMarkup();
+                          }}
+                          shaForm={shaForm}
+                          actions={actions}
+                          sections={sections}
+                        />
+                      )}
+
+                  </>
                 )}
                 {markupLoadingState.status === 'failed' && (
                   <MarkupErrorRender formId={formId} markupLoadingState={markupLoadingState} />
