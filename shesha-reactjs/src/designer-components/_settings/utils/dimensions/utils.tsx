@@ -3,37 +3,55 @@ import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTable
 import { IDimensionsValue } from "./interfaces";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
-import { widthRelativeToCanvas } from "@/providers/canvas/utils";
+import { widthRelativeToCanvas, heightRelativeToCanvas } from "@/providers/canvas/utils";
 
-const getDimension = (main: string | number, canvasWidth?): string | number => {
-  const width = canvasWidth ? widthRelativeToCanvas(main, canvasWidth) : main;
+const getWidthDimension = (main: string | number, canvasWidth?): string | number => {
+  // If canvasWidth is provided and main contains vw, convert to calc
+  if (canvasWidth && typeof main === 'string' && /vw/i.test(main)) {
+    return widthRelativeToCanvas(main, canvasWidth);
+  }
 
-  return !hasNumber(main) ? main : addPx(width);
+  // For simple numeric values or values without vw, use addPx
+  return !hasNumber(main) ? main : addPx(main);
+};
+
+const getHeightDimension = (main: string | number, canvasHeight?): string | number => {
+  // If canvasHeight is provided and main contains vh, convert to calc
+  if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
+    return heightRelativeToCanvas(main, canvasHeight);
+  }
+
+  // For simple numeric values or values without vh, use addPx
+  return !hasNumber(main) ? main : addPx(main);
 };
 
 export const getCalculatedDimension = (main: string | number, firstMargin?: string | number, secondMargin?: string | number): string => {
   return `calc(${main} - ${firstMargin} - ${secondMargin})`;
 };
 
-export const getDimensionsStyle = (dimensions: IDimensionsValue | undefined, canvasWidth?: string): CSSProperties => {
+export const getDimensionsStyle = (
+  dimensions: IDimensionsValue | undefined,
+  canvasWidth?: string,
+  canvasHeight?: string,
+): CSSProperties => {
   return {
     width: dimensions?.width
-      ? getDimension(dimensions.width, canvasWidth)
+      ? getWidthDimension(dimensions.width, canvasWidth)
       : undefined,
     height: dimensions?.height
-      ? getDimension(dimensions.height, canvasWidth)
+      ? getHeightDimension(dimensions.height, canvasHeight)
       : undefined,
     minWidth: dimensions?.minWidth
-      ? getDimension(dimensions.minWidth, canvasWidth)
+      ? getWidthDimension(dimensions.minWidth, canvasWidth)
       : undefined,
     minHeight: dimensions?.minHeight
-      ? getDimension(dimensions.minHeight, canvasWidth)
+      ? getHeightDimension(dimensions.minHeight, canvasHeight)
       : undefined,
     maxWidth: dimensions?.maxWidth
-      ? getDimension(dimensions.maxWidth, canvasWidth)
+      ? getWidthDimension(dimensions.maxWidth, canvasWidth)
       : undefined,
     maxHeight: dimensions?.maxHeight
-      ? getDimension(dimensions.maxHeight, canvasWidth)
+      ? getHeightDimension(dimensions.maxHeight, canvasHeight)
       : undefined,
   };
 };

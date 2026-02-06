@@ -28,7 +28,7 @@ import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getComponentTypeInfo } from '../utils/componentTypeUtils';
 import { getComponentDimensions, getDeviceDimensions, getDeviceFlexBasis } from '../utils/dimensionUtils';
-import { createRootContainerStyle, removeMarginsFromStylingBox } from '../utils/stylingUtils';
+import { createRootContainerStyle, createPaddingOnlyStylingBox } from '../utils/stylingUtils';
 import { WRAPPER_FILL_STYLE } from '../utils/designerConstants';
 
 export interface IConfigurableFormComponentDesignerProps {
@@ -102,46 +102,66 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   [typeInfo, dimensionsStyles],
   );
 
-  // Create the model for rendering - components receive 100% dimensions
+  // Create the model for rendering - components receive dimensions based on their config
   // and no margins (since wrapper handles margins as padding)
   const renderComponentModel = useMemo(() => {
     const deviceDimensions = getDeviceDimensions();
-    const stylingBoxWithoutMargins = removeMarginsFromStylingBox(fullComponentModel.stylingBox);
+    // In designer mode, component only gets padding (margins go to wrapper)
+    const stylingBoxWithPaddingOnly = createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
 
-    // Also remove margins and set dimensions to 100% for device-specific configs
-    // This ensures that when device settings are spread, they don't overwrite our 100% dimensions
+    // Helper to get designer dimensions based on original config
+    // - If width is 'auto' and component is button -> use 'max-content'
+    // - If width is 'auto' for other components -> use '100%' (fill remaining space)
+    // - Otherwise use 100% to fill the wrapper
+    const getDesignerDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions | undefined => {
+      if (typeInfo.shouldSkip) return originalDims;
+
+      // Check if component explicitly has auto width
+      const isAutoWidth = originalDims?.width === 'auto';
+      const isButton = component.type === 'button' || component.type === 'buttonGroup';
+
+      if (isAutoWidth && isButton) {
+        // Button with auto width should size to content
+        return { ...deviceDimensions, width: 'max-content' as const };
+      }
+
+      // All other cases: fill the wrapper
+      return deviceDimensions;
+    };
+
+    // Also remove margins and set dimensions for device-specific configs
     const desktopForDesigner = fullComponentModel.desktop
       ? {
         ...fullComponentModel.desktop,
-        stylingBox: removeMarginsFromStylingBox(fullComponentModel.desktop.stylingBox),
-        dimensions: typeInfo.shouldSkip ? fullComponentModel.desktop.dimensions : deviceDimensions,
+        stylingBox: createPaddingOnlyStylingBox(fullComponentModel.desktop.stylingBox),
+        dimensions: getDesignerDimensions(fullComponentModel.desktop.dimensions),
       }
       : undefined;
     const tabletForDesigner = fullComponentModel.tablet
       ? {
         ...fullComponentModel.tablet,
-        stylingBox: removeMarginsFromStylingBox(fullComponentModel.tablet.stylingBox),
-        dimensions: typeInfo.shouldSkip ? fullComponentModel.tablet.dimensions : deviceDimensions,
+        stylingBox: createPaddingOnlyStylingBox(fullComponentModel.tablet.stylingBox),
+        dimensions: getDesignerDimensions(fullComponentModel.tablet.dimensions),
       }
       : undefined;
     const mobileForDesigner = fullComponentModel.mobile
       ? {
         ...fullComponentModel.mobile,
-        stylingBox: removeMarginsFromStylingBox(fullComponentModel.mobile.stylingBox),
-        dimensions: typeInfo.shouldSkip ? fullComponentModel.mobile.dimensions : deviceDimensions,
+        stylingBox: createPaddingOnlyStylingBox(fullComponentModel.mobile.stylingBox),
+        dimensions: getDesignerDimensions(fullComponentModel.mobile.dimensions),
       }
       : undefined;
 
     return {
       ...fullComponentModel,
-      dimensions: typeInfo.shouldSkip ? dimensionsStyles : deviceDimensions,
-      stylingBox: stylingBoxWithoutMargins,
+      dimensions: getDesignerDimensions(fullComponentModel.dimensions),
+      stylingBox: stylingBoxWithPaddingOnly,
       desktop: desktopForDesigner,
       tablet: tabletForDesigner,
       mobile: mobileForDesigner,
       flexBasis: getDeviceFlexBasis(dimensionsStyles),
     };
-  }, [fullComponentModel, activeDevice, dimensionsStyles]);
+  }, [fullComponentModel, activeDevice, dimensionsStyles, component.type]);
 
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() =>

@@ -23,7 +23,7 @@ import { CSSProperties } from 'react';
  *
  * These components typically:
  * - Have their own internal sizing logic (checkbox, attachmentsEditor)
- * - Are container components that manage their own layout (datatableContext)
+ * - Are container components that manage their own layout (datatableContext, container)
  *
  * @remarks
  * When a component is in this list, the designer will not apply the standard

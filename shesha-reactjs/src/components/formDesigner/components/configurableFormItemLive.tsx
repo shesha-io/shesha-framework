@@ -56,10 +56,16 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   } = model?.allStyles?.fullStyle || {};
 
   const formItemStyle = useMemo(() => {
+    // Handle auto width in designer mode
+    // - auto width should fill remaining space (100%) in designer
+    const isAutoWidth = width === 'auto';
+
     const calculatedWidth = shouldSkip
       ? 'auto'
       : isInDesigner
-        ? getCalculatedDimension('100%', marginRight, marginLeft)
+        ? isAutoWidth
+          ? '100%' // Auto width fills wrapper in designer
+          : getCalculatedDimension('100%', marginRight, marginLeft)
         : getCalculatedDimension(width, marginLeft, marginRight);
 
     const calculatedHeight = shouldSkip

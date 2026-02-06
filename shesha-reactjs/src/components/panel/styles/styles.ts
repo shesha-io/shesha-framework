@@ -142,7 +142,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       > .ant-collapse-content-box {
         --ant-collapse-content-padding: 0px !important;
         padding: 0px !important;
-        height: 100%;
         width: 100%;
         overflow: ${overflow?.overflow ?? 'auto'};
         ${overflow};
