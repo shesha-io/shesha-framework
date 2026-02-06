@@ -83,7 +83,7 @@ namespace Shesha.StoredFiles
             {
                 return StatusCode(304);
             }
-
+                
 #pragma warning disable IDISP001 // Dispose created
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
@@ -91,10 +91,7 @@ namespace Shesha.StoredFiles
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
 
-            // Normalize file extension to lowercase to handle legacy files with uppercase extensions
-            var normalizedFileType = fileVersion.FileType?.ToLower() ?? fileVersion.FileType;
-
-            return File(fileContents, normalizedFileType.GetContentType(), fileVersion.FileName);
+            return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
         }
 
         [HttpGet, Route("HasDownloaded")]
@@ -184,7 +181,7 @@ namespace Shesha.StoredFiles
                     storedFile.IsVersionControlled = true;
                     fileVersion = await _fileService.GetNewOrDefaultVersionAsync(storedFile);
                     fileVersion.FileName = fileName;
-                    fileVersion.FileType = Path.GetExtension(fileName)?.ToLower();
+                    fileVersion.FileType = Path.GetExtension(fileName);
                     await _fileVersionRepository.InsertOrUpdateAsync(fileVersion);
 
                     await using (var fileStream = input.File.OpenReadStream())
@@ -309,7 +306,7 @@ namespace Shesha.StoredFiles
                 storedFile.IsVersionControlled = true;
                 var version = await _fileService.GetNewOrDefaultVersionAsync(storedFile);
                 version.FileName = fileName;
-                version.FileType = Path.GetExtension(fileName)?.ToLower();
+                version.FileType = Path.GetExtension(fileName);
                 await _fileVersionRepository.InsertOrUpdateAsync(version);
 
                 await using (var fileStream = input.File.OpenReadStream())
@@ -366,7 +363,7 @@ namespace Shesha.StoredFiles
             storedFile.IsVersionControlled = true;
             var version = await _fileService.GetNewOrDefaultVersionAsync(storedFile);
             version.FileName = fileName;
-            version.FileType = Path.GetExtension(fileName)?.ToLower();
+            version.FileType = Path.GetExtension(fileName);
             await _fileVersionRepository.InsertOrUpdateAsync(version);
 
             await using (var fileStream = input.File.OpenReadStream())
@@ -698,7 +695,7 @@ namespace Shesha.StoredFiles
                 storedFile.IsVersionControlled = true;
                 fileVersion = await _fileService.GetNewOrDefaultVersionAsync(storedFile);
                 fileVersion.FileName = fileName;
-                fileVersion.FileType = Path.GetExtension(fileName)?.ToLower();
+                fileVersion.FileType = Path.GetExtension(fileName);
                 await _fileVersionRepository.InsertOrUpdateAsync(fileVersion);
 
                 await using (var fileStream = input.File.OpenReadStream())
@@ -875,10 +872,7 @@ namespace Shesha.StoredFiles
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; // Ten minutes cache
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
 
-            // Normalize file extension to lowercase to handle legacy files with uppercase extensions
-            var normalizedFileType = fileVersion.FileType?.ToLower() ?? fileVersion.FileType;
-
-            return File(resultStream, normalizedFileType.GetContentType(), fileName);
+            return File(resultStream, fileVersion.FileType.GetContentType(), fileName);
         }
 
         private static SKBitmap GenerateThumbnail(SKBitmap originalImage, int width, int height, FitOptions fitOption)
