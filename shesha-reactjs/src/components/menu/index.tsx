@@ -38,7 +38,7 @@ interface IProps {
   overflow: "dropdown" | "menu" | "scroll";
   style?: React.CSSProperties;
   itemStyle?: React.CSSProperties;
-  padding?: { x: string; y: string };
+  padding?: { x: number; y: number };
   dropdownPadding?: string;
   styleOnHover?: React.CSSProperties;
   styleOnSelected?: React.CSSProperties;

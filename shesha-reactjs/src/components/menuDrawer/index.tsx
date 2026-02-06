@@ -14,7 +14,7 @@ interface IProps {
     e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>,
   ) => void;
   colors?: ILayoutColor;
-  padding?: { x: string; y: string };
+  padding?: { x: number; y: number };
   fontStyles?: React.CSSProperties;
   itemStyle?: React.CSSProperties;
   styleOnHover?: React.CSSProperties;

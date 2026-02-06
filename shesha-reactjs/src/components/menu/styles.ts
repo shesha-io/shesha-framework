@@ -7,7 +7,7 @@ interface IStyleProps {
   colors: ILayoutColor;
   fontSize?: string;
   isScrolling: boolean;
-  padding?: { x: string; y: string };
+  padding?: { x: number; y: number };
   itemStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
@@ -18,7 +18,7 @@ interface IStyleProps {
 
 interface IGlobalMenuProps {
   colors: ILayoutColor;
-  padding?: { x: string; y: string };
+  padding?: { x: number; y: number };
   itemStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
