@@ -708,7 +708,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this._itemTypesMap.clear();
     this._itemTypes = [];
 
-    // const definition = this.csEnvironment.getDocumentDefinition(node.itemType);
     backEndItemTypes.forEach((it) => {
       const frontEndDefinition = this.csEnvironment.getDocumentDefinition(it.itemType);
       const definition: ItemTypeDefinition = {
@@ -728,7 +727,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         editor: frontEndDefinition,
       };
       this._itemTypes.push(definition);
-      this._itemTypesMap.set(it.itemType, definition);
+      this._itemTypesMap.set(it.discriminator, definition);
     });
   };
 
@@ -861,7 +860,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   createItemAsync = async ({ moduleId, folderId, itemType, discriminator, prevItemId }: CreateItemArgs): Promise<void> => {
     this.log(`create item of type '${itemType}'`, { moduleId, folderId });
 
-    const definition = this.getItemTypeDefinition(itemType);
+    const definition = this.getItemTypeDefinition(discriminator);
     if (!definition.createFormId)
       throw new Error(`Create form is not specified for item type '${itemType}'`);
 
@@ -900,7 +899,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   deleteItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
-    const definition = this.getItemTypeDefinition(node.itemType);
+    const definition = this.getItemTypeDefinition(node.discriminator);
     if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
       return;
 
@@ -919,7 +918,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   renameItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
     try {
-      const definition = this.getItemTypeDefinition(node.itemType);
+      const definition = this.getItemTypeDefinition(node.discriminator);
       if (!isDefined(definition.renameFormId))
         throw new Error("Rename form is not configured for item type '" + node.itemType + "'");
 
@@ -939,7 +938,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   duplicateItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
-    const definition = this.getItemTypeDefinition(node.itemType);
+    const definition = this.getItemTypeDefinition(node.discriminator);
     try {
       const response = await duplicateItemAsync(this.httpClient, { itemId: node.id });
       if (!response.success)

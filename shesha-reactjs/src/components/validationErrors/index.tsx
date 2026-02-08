@@ -4,9 +4,10 @@ import classNames from 'classnames';
 import { IErrorInfo, isErrorInfo, isHasErrorInfo } from '@/interfaces/errorInfo';
 import { IAjaxResponseBase, isAxiosResponse, isAjaxErrorResponse, IAjaxErrorResponse } from '@/interfaces/ajaxResponse';
 import { useStyles } from './styles/styles';
-import { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { ErrorIconPopover } from '@/components/componentErrors/errorIconPopover';
 import { IModelValidation } from '@/utils/errors';
+import { isDefined } from '@/utils/nullables';
 
 export interface IValidationErrorsProps extends AlertProps {
   error: string | IErrorInfo | IAjaxErrorResponse | AxiosResponse<IAjaxResponseBase> | Error | unknown;
@@ -17,6 +18,35 @@ export interface IValidationErrorsProps extends AlertProps {
 }
 
 const DEFAULT_ERROR_MSG = 'Sorry, an error has occurred. Please try again later';
+
+const extractErrorInfo = (error: unknown): IErrorInfo | undefined => {
+  if (!isDefined(error))
+    return undefined;
+
+  if (typeof error === 'string') {
+    return { message: error };
+  }
+
+  if (error instanceof Error) {
+    if (axios.isAxiosError(error)) {
+      const responseData = error.response?.data;
+      if (isAjaxErrorResponse(responseData))
+        return { message: responseData.error.message, details: responseData.error.details };
+    }
+
+    return { message: error.message };
+  } else {
+    return isAxiosResponse(error) && isAjaxErrorResponse(error.data)
+      ? error.data.error
+      : isAjaxErrorResponse(error)
+        ? error.error
+        : isHasErrorInfo(error)
+          ? error.errorInfo
+          : isErrorInfo(error)
+            ? error
+            : undefined;
+  }
+};
 
 /**
  * A component for displaying validation errors
@@ -31,7 +61,8 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   ...rest
 }) => {
   const { styles } = useStyles();
-  if (!error) return null;
+  const parsedError = extractErrorInfo(error);
+  if (!parsedError) return null;
 
   const renderValidationErrors = (props: AlertProps): JSX.Element => {
     const widthStyle = props.style?.width && props.style?.marginLeft && props.style?.marginRight
@@ -67,36 +98,6 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
       </Fragment>
     );
   };
-
-  // Parse error into structured format
-  const parseError = (): { message?: string; details?: string | React.ReactElement; validationErrors?: IErrorInfo['validationErrors'] } => {
-    if (typeof error === 'string') {
-      return { message: error };
-    }
-
-    const errorObj =
-      error instanceof Error
-        ? ({ message: error.message } as IErrorInfo)
-        : isAxiosResponse(error) && isAjaxErrorResponse(error.data)
-          ? error.data.error
-          : isAjaxErrorResponse(error)
-            ? error.error
-            : isHasErrorInfo(error)
-              ? error.errorInfo
-              : isErrorInfo(error)
-                ? error
-                : undefined;
-
-    const { message, details, validationErrors } = errorObj || {};
-
-    return {
-      message: message || undefined,
-      details,
-      validationErrors,
-    };
-  };
-
-  const parsedError = parseError();
 
   // Render using ErrorIconPopover mode
   if (renderMode === 'popover') {

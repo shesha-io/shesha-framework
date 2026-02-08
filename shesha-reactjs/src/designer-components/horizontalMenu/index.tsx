@@ -94,8 +94,9 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     };
 
     const fontSize = model?.font?.size || model?.fontSize || "14";
-    const gap = model?.gap || "12";
-    const height = model?.height || "6";
+    const gap = Number(model?.gap || "12");
+    const height = Number(model?.height || "6");
+    const dropdownPadding = `${gap}px`;
 
     // Normalize width: if no unit provided, append 'px'
     const rawWidth = (model?.dimensions?.width || model?.width || "500px").toString().trim();
@@ -171,6 +172,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 colors={colors}
                 fontSize={typeof fontSize === 'string' ? fontSize : String(fontSize)}
                 padding={{ x: gap, y: height }}
+                dropdownPadding={dropdownPadding}
                 style={{
                   ...finalContainerStyle,
                   ...finalFontStyles,
