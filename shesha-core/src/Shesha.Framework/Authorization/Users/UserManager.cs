@@ -281,8 +281,8 @@ namespace Shesha.Authorization.Users
 
             // Try to find existing user by username first, then by email if not found
             var existingUser = await FindByNameAsync(username);
-            if (existingUser == null)
-                existingUser = await FindByEmailAsync(emailAddress!);
+            if (existingUser == null && !string.IsNullOrWhiteSpace(emailAddress))
+                existingUser = await FindByEmailAsync(emailAddress);
 
             if (existingUser == null)
             {
@@ -295,6 +295,7 @@ namespace Shesha.Authorization.Users
             // Update user details if new values are provided
             existingUser.EmailAddress = emailAddress ?? existingUser.EmailAddress;
             existingUser.PhoneNumber = mobileNumber ?? existingUser.PhoneNumber;
+            existingUser.Name = firstname ?? existingUser.Name;
             existingUser.Surname = lastname ?? existingUser.Surname;
             existingUser.SupportedPasswordResetMethods = supportedPasswordResetMethods ?? existingUser.SupportedPasswordResetMethods;
 
@@ -345,7 +346,7 @@ namespace Shesha.Authorization.Users
             Options.Password.RequireLowercase = defaultAuthSettings?.RequireLowercase ?? true;
             Options.Password.RequireNonAlphanumeric = defaultAuthSettings?.RequireNonAlphanumeric ?? false;
             Options.Password.RequireUppercase = defaultAuthSettings?.RequireUppercase ?? false;
-            Options.Password.RequiredLength = defaultAuthSettings?.RequiredLength ?? 0;
+            Options.Password.RequiredLength = defaultAuthSettings?.RequiredLength ?? 3;
         }
 
         public override async Task InitializeOptionsAsync(int? tenantId)
