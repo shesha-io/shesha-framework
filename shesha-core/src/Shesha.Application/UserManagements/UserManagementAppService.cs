@@ -104,7 +104,7 @@ namespace Shesha.UserManagements
                         throw new UserFriendlyException($"Person entity configuration with ID '{personEntityReference}' not found.");
 
                     // Now get the actual entity configuration using TypeShortAlias
-                    var fullClassName = entityConfigRecord.FullClassName ?? throw new UserFriendlyException("EntityConfig TypeShortAlias is null");
+                    var fullClassName = entityConfigRecord.FullClassName ?? throw new UserFriendlyException("EntityConfig FullClassName is null");
                     var entityConfig = _entityConfigurationStore.Get(fullClassName);
                     if (entityConfig == null)
                         throw new UserFriendlyException($"Person entity type '{fullClassName}' not found in configuration store.");

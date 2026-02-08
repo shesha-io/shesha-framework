@@ -20,7 +20,8 @@ namespace Shesha.Configuration
         /// <summary>
         /// Redirect path after successful login
         /// </summary>
-        [Display(Name = "Success Login Redirect Path", Description = "The page the user should be redirected to  after successfully logging in")]
+        [Display(Name = "Success Login Redirect Path", Description = "The page the user should be redirected to after successfully logging in")]
+        //[Setting(SheshaSettingNames.SuccessLoginRedirectPath, isClientSpecific: true)]
         public string SuccessLoginRedirectPath { get; set; }
 
         /// <summary>
