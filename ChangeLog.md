@@ -2,4 +2,9 @@
 
 ## 💪 Enhancements
 
-- Updating EasyNetQ package version to 8.0.1
+- Enforce password update on first login
+- Custom footer for Wizard
+- New Accent property for Panel, which applies an accent border to visually emphasize the panel
+
+## 🐞 Bug Fixes
+- File with uppercase extension not downloadable
