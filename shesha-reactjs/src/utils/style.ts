@@ -63,13 +63,13 @@ export const canAddToCalc = (dimensionValue: string | number | undefined): boole
 
   // Allow calc(...) and var(...) tokens
   if (!parsed) {
-      if (typeof dimensionValue === 'string') {
-        const v = dimensionValue.trim();
-        if (v.startsWith('calc(') || v.startsWith('var(')) return true;
-      }
-      return false;
+    if (typeof dimensionValue === 'string') {
+      const v = dimensionValue.trim();
+      if (v.startsWith('calc(') || v.startsWith('var(')) return true;
     }
-  
+    return false;
+  }
+
   // Auto and none cannot be used in calc with additions
   if (parsed.unit === 'auto' || parsed.unit === 'none') {
     return false;
