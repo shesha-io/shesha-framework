@@ -49,7 +49,9 @@ export const getComponentDimensions = (
     return dimensionsStyles?.[dimensionType];
   };
 
-  const flexBasis = dimensionsStyles?.maxWidth || dimensionsStyles?.width;
+  const flexBasis = shouldSkip 
+    ? undefined 
+    : (dimensionsStyles?.maxWidth || dimensionsStyles?.width);
 
   return {
     width,
@@ -88,7 +90,7 @@ export const getDeviceDimensions = (): IStyleType['dimensions'] => {
 export const getDeviceFlexBasis = (
   dimensionsStyles: CSSProperties,
 ): string | number | undefined => {
-  return dimensionsStyles?.width;
+  return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
 };
 
 /**

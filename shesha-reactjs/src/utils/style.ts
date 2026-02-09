@@ -59,10 +59,8 @@ export const canAddToCalc = (dimensionValue: string | number | undefined): boole
   if (!dimensionValue) return false;
 
   const parsed = parseDimension(dimensionValue);
-  if (!parsed) return false;
-
-  // Allow calc(...) and var(...) tokens
   if (!parsed) {
+    // Allow calc(...) and var(...) tokens
     if (typeof dimensionValue === 'string') {
       const v = dimensionValue.trim();
       if (v.startsWith('calc(') || v.startsWith('var(')) return true;

@@ -592,9 +592,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ...fbf()
                             .addCollapsiblePanel({
                               id: nanoid(),
-                              propertyName: 'pnlDimensions',
+                              propertyName: 'pnlBoxDimensions',
                               label: 'Dimensions',
-                              parentId: 'styleRouter',
+                              parentId: styleRouterId,
                               labelAlign: 'right',
                               ghost: true,
                               collapsible: 'header',

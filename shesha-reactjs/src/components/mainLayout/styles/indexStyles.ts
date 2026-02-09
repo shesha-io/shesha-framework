@@ -85,14 +85,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
       margin: unset;
     }
   }
-  
-
-  .${(p) => p.theme.prefixCls}-form-item {
-    .${(p) => p.theme.prefixCls}-row {
-      &.${(p) => p.theme.prefixCls}-form-item-row {
-      }
-    }
-  }
 
   .sha-form-settings-editor .ant-form-item .ant-row.ant-form-item-row {
    margin-bottom: 0px !important;
