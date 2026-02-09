@@ -12,7 +12,6 @@ namespace Shesha.Domain
         GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService
     )]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-reflist-create")]
-    [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
     [JoinedProperty("reference_lists", Schema = "frwk")]
     [DiscriminatorValue(ItemTypeName)]
     [SnakeCaseNaming]

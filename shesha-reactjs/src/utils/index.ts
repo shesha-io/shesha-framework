@@ -219,6 +219,15 @@ export const convertJsonToCss = (style: CSSProperties): string | null => {
   return !!css ? `${css};` : null;
 };
 
+export const convertJsonToCssWithImportant = (style: CSSProperties): string | null => {
+  const css = Object.entries(style || {})
+    .map(([k, v]) => [k.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`), v])
+    .map(([k, v]) => `${k}:${v} !important`)
+    .join(';');
+
+  return !!css ? `${css};` : null;
+};
+
 export { unwrapAbpResponse } from './fetchers';
 export * from './metadata/index';
 export * from './datatable';

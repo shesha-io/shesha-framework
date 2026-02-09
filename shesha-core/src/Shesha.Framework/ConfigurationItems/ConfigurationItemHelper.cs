@@ -122,7 +122,7 @@ namespace Shesha.ConfigurationItems
                         Description = t.Value.GetDescription(),
                         FriendlyName = config.FriendlyName,
                         CreateFormId = attrs.SingleOrDefault(a => a.ViewType == ConfigurationItemsViews.Create)?.FormId,
-                        RenameFormId = attrs.SingleOrDefault(a => a.ViewType == ConfigurationItemsViews.Rename)?.FormId,
+                        RenameFormId = attrs.SingleOrDefault(a => a.ViewType == ConfigurationItemsViews.Rename)?.FormId ?? new FormIdentifier(SheshaFrameworkModule.ModuleName, "cs-item-rename"),
                     };
                 })
                 .WhereNotNull()
