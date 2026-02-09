@@ -13,7 +13,7 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
     try {
       return new RegExp(regExp, 'g');
     } catch (error) {
-      console.warn('Invalid regExp pattern:', regExp, error);
+      console.warn(`Invalid regExp pattern for '${props.propertyName}':`, regExp, error);
       return null;
     }
   }, [regExp]);
@@ -23,9 +23,9 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
       size={size}
       onChange={(e) => {
         const inputValue: string | undefined = e.target.value?.toString();
-        if (regExpObj && inputValue)
-          onChange(inputValue.replace(regExpObj, ''));
-        else
+        const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
+        const isRegExpMatch = regExpObj && inputValue.match(regExpObj) !== null;
+        if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty)
           onChange(inputValue);
       }}
       readOnly={readOnly}

@@ -47,7 +47,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       try {
         return new RegExp(model.regExp, 'g');
       } catch (error) {
-        console.warn('Invalid regExp pattern:', model.regExp, error);
+        console.warn(`Invalid regExp pattern for '${model.propertyName}':`, model, error);
         return null;
       }
     }, [model.regExp]);
@@ -76,9 +76,12 @@ const TextFieldComponent: TextFieldComponentDefinition = {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]): void => {
             const inputValue: string | undefined = args[0]?.currentTarget?.value?.toString();
-            const newValue = regExpObj ? inputValue?.replace(regExpObj, '') : inputValue;
-            const changedValue = customEvents.onChange({ value: newValue }, args[0]);
-            if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : newValue);
+            const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
+            const isRegExpMatch = regExpObj && inputValue.match(regExpObj) !== null;
+            if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
+              const changedValue = customEvents.onChange({ value: inputValue }, args[0]);
+              if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : inputValue);
+            }
           };
 
           return inputProps.readOnly
