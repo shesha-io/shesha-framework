@@ -129,7 +129,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
 
       // Set default background color if not defined
       if (!computedStyle.backgroundColor && !computedStyle.background) {
-        computedStyle.backgroundColor = '#ffffff';
+        computedStyle.backgroundColor = 'transparent';
       }
 
       return computedStyle;
@@ -164,7 +164,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`}>
+            <div className={`sidebar ${componentState.wrapperClassName}`} style={{ overflow: 'visible' }}>
               <BlockOverlay>
                 <EditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>

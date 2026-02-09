@@ -108,6 +108,10 @@ export const useHorizontalMenuDropdownStyles = ({
         margin-left: 0 !important;
       }
 
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .ant-menu-submenu-arrow {
+        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR} !important;
+      }
+
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
         color: ${colors?.hoverItemColor || BLACK_CLR} !important;
         background: ${colors?.hoverItemBackground || 'white'} !important;
@@ -115,6 +119,10 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover .anticon {
+        ${!customStyleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover .ant-menu-submenu-arrow {
         ${!customStyleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
       }
 
@@ -169,6 +177,7 @@ export const useHorizontalMenuDropdownStyles = ({
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item {
         ${customMenuItemStyle || ''}
         ${customItemStyle || ''}
+        ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item .anticon {
@@ -190,11 +199,16 @@ export const useHorizontalMenuDropdownStyles = ({
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title {
         ${customMenuItemStyle || ''}
         ${customItemStyle || ''}
+        ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+      }
+
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .ant-menu-submenu-arrow {
+        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR} !important;
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {
@@ -204,6 +218,10 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover .anticon {
+        ${!customStyleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover .ant-menu-submenu-arrow {
         ${!customStyleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
       }
     `;
