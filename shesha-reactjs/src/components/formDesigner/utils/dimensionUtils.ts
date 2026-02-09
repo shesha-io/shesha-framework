@@ -49,8 +49,8 @@ export const getComponentDimensions = (
     return dimensionsStyles?.[dimensionType];
   };
 
-  const flexBasis = shouldSkip 
-    ? undefined 
+  const flexBasis = shouldSkip
+    ? undefined
     : (dimensionsStyles?.maxWidth || dimensionsStyles?.width);
 
   return {
