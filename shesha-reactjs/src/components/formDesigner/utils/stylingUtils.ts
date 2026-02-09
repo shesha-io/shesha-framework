@@ -41,6 +41,7 @@ export const getDefaultMargins = (isInput: boolean): DefaultMargins => ({
  * @param dimensions - The dimension styles (width, height, min/max values)
  * @param margins - Margin configuration from stylingBox
  * @param isInput - Whether the component is an input (affects default margins)
+ * @param isButton - Whether the component is a button (affects auto width handling)
  * @returns CSSProperties for the wrapper element
  *
  * @example
@@ -57,6 +58,7 @@ export const createRootContainerStyle = (
   dimensions: CSSProperties,
   margins: StyleConfig,
   isInput: boolean,
+  isButton: boolean = false,
 ): CSSProperties => {
   const defaultMargins = getDefaultMargins(isInput);
 
@@ -69,7 +71,11 @@ export const createRootContainerStyle = (
 
   // Calculate wrapper dimensions to accommodate padding
   // Width is reduced because padding adds to the total size
-  const width = calculateAdjustedDimension(dimensions.width, paddingLeft, paddingRight);
+  // When width is 'auto' for button, use 'max-content' for WYSIWYG behavior (wrapper shrinks to fit content)
+  const rawWidth = (isButton && dimensions.width === 'auto') ? 'max-content' : dimensions.width;
+  const width = rawWidth && hasNumber(rawWidth)
+    ? calculateAdjustedDimension(rawWidth, paddingLeft, paddingRight)
+    : rawWidth;
 
   // Height is expanded to include padding plus border width (8px = 4px top + 4px bottom)
   const height = dimensions.height && hasNumber(dimensions.height)

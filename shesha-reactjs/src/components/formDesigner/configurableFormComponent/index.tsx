@@ -110,19 +110,19 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const stylingBoxWithPaddingOnly = createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
 
     // Helper to get designer dimensions based on original config
-    // - If width is 'auto' and component is button -> use 'max-content'
-    // - If width is 'auto' for other components -> use '100%' (fill remaining space)
+    // - If width is 'auto' and component is button -> use 'auto' (WYSIWYG: wrapper handles sizing with max-content)
     // - Otherwise use 100% to fill the wrapper
     const getDesignerDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions | undefined => {
       if (typeInfo.shouldSkip) return originalDims;
 
-      // Check if component explicitly has auto width
+      // Check if component explicitly has auto width and is a button
       const isAutoWidth = originalDims?.width === 'auto';
       const isButton = component.type === 'button' || component.type === 'buttonGroup';
 
       if (isAutoWidth && isButton) {
-        // Button with auto width should size to content
-        return { ...deviceDimensions, width: 'max-content' as const };
+        // WYSIWYG: Keep 'auto' width so button sizes to its content
+        // The wrapper uses 'max-content' to shrink-to-fit
+        return { ...deviceDimensions, width: 'auto' as const };
       }
 
       // All other cases: fill the wrapper
@@ -163,10 +163,13 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     };
   }, [fullComponentModel, activeDevice, dimensionsStyles, component.type]);
 
+  // Check if component is a button for WYSIWYG auto width handling
+  const isButton = component.type === 'button' || component.type === 'buttonGroup';
+
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() =>
-    createRootContainerStyle(componentDimensions, margins, component?.isInput ?? false),
-  [componentDimensions, margins, component?.isInput],
+    createRootContainerStyle(componentDimensions, margins, component?.isInput ?? false, isButton),
+  [componentDimensions, margins, component?.isInput, isButton],
   );
 
   return (
