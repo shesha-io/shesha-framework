@@ -29,6 +29,7 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel }: UseSty
                     width: 100%;
                     > div {
                      height: 100%;
+                     width: 100%;
                     }
                 }
             }
