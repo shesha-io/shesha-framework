@@ -208,10 +208,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
           border-bottom: 2px solid ${token.colorPrimary};
           ${accentStyle && `border-top: 3px solid var(--primary-color);`}
           font-weight: ${fontWeight || '500'};
-
-          .ant-collapse-header-text {
-            margin-left: -8px;
-          }
         }
         > .ant-collapse-content {
           border: none;
