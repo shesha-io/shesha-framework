@@ -26,27 +26,21 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const shaForm = useShaFormInstance();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
-  const layout = useMemo(() => {
+  const colLayout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
-  }, [formItemlabelCol, formItemWrapperCol]);
+  }, [formItemlabelCol, formItemWrapperCol, labelCol, wrapperCol]);
   const settings = shaForm.settings;
 
   const isInDesigner = shaForm.formMode === 'designer';
   const shouldSkip = shouldSkipComponent(model.type);
 
-  const defaultMargins = settings?.formItemMargin || {
-    top: DEFAULT_FORM_ITEM_MARGINS.top,
-    bottom: DEFAULT_FORM_ITEM_MARGINS.bottom,
-    left: DEFAULT_FORM_ITEM_MARGINS.left,
-    right: DEFAULT_FORM_ITEM_MARGINS.right,
-  };
-  const { top, left, right, bottom } = defaultMargins;
+  const { top: MarginTop, left: MarginLeft, right: MarginRight, bottom: MarginBottom } = DEFAULT_FORM_ITEM_MARGINS;
   const {
-    marginTop = isInDesigner ? 0 : top,
-    marginBottom = isInDesigner ? 0 : bottom,
-    marginRight = isInDesigner ? 0 : right,
-    marginLeft = isInDesigner ? 0 : left,
+    marginTop = isInDesigner ? 0 : MarginTop,
+    marginBottom = isInDesigner ? 0 : MarginBottom,
+    marginRight = isInDesigner ? 0 : MarginRight,
+    marginLeft = isInDesigner ? 0 : MarginLeft,
     width,
     height,
     minWidth,
@@ -112,7 +106,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
 
   const { hideLabel, hidden } = model;
   const hasLabel = !hideLabel && !!model.label;
-  const { styles } = useStyles({ layout: settings.layout, hasLabel });
+  const { styles } = useStyles({ layout: settings?.layout, hasLabel });
   if (hidden) return null;
 
   const propName = namePrefix && !model.initialContext
@@ -120,7 +114,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className, styles.formItem, settings.layout),
+    className: classNames(className, styles.formItem, settings?.layout),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
@@ -128,8 +122,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     initialValue: initialValue,
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
-    labelCol: layout?.labelCol,
-    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
+    labelCol: colLayout?.labelCol,
+    wrapperCol: hideLabel ? { span: 24 } : colLayout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     style: formItemStyle,

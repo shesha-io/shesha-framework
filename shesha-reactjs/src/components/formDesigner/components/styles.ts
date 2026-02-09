@@ -1,7 +1,8 @@
 import { createStyles } from '@/styles';
+import { FormLayout } from 'antd/es/form/Form';
 
 export interface UseStylesProps {
-  layout: 'vertical' | 'horizontal' | 'inline' | undefined;
+  layout: FormLayout;
   hasLabel: boolean;
 }
 
@@ -34,8 +35,6 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel }: UseSty
                 }
             }
         }
-
-
   `);
   return {
     formItem,

@@ -4,13 +4,13 @@ import { IStyleType } from '@/index';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 
 export interface DimensionConfig {
-  width?: string;
-  height?: string;
-  maxWidth?: string;
-  minWidth?: string;
-  maxHeight?: string;
-  minHeight?: string;
-  flexBasis?: string;
+  width?: string | number;
+  height?: string | number;
+  maxWidth?: string | number;
+  minWidth?: string | number;
+  maxHeight?: string | number;
+  minHeight?: string | number;
+  flexBasis?: string | number;
 }
 
 /**
@@ -44,7 +44,7 @@ export const getComponentDimensions = (
     ? 'auto'
     : dimensionsStyles?.height || 'auto';
 
-  const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number => {
+  const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
     if (shouldSkip) return 'auto';
     return dimensionsStyles?.[dimensionType];
   };
@@ -87,7 +87,7 @@ export const getDeviceDimensions = (): IStyleType['dimensions'] => {
  */
 export const getDeviceFlexBasis = (
   dimensionsStyles: CSSProperties,
-): string | number => {
+): string | number | undefined => {
   return dimensionsStyles?.width;
 };
 

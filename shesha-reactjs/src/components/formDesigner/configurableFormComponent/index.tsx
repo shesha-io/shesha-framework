@@ -165,8 +165,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() =>
-    createRootContainerStyle(componentDimensions, margins, component.isInput),
-  [componentDimensions, margins, component.isInput],
+    createRootContainerStyle(componentDimensions, margins, component?.isInput ?? false),
+  [componentDimensions, margins, component?.isInput],
   );
 
   return (

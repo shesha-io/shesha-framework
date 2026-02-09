@@ -3,7 +3,7 @@ import { ColProps } from 'antd/lib/col';
 import { FormInstance, FormProps } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
-import { FormMode, Store, HasFormIdOrMarkup, IFormActions, IFormSections, FormIdentifier, IFormItemMargin } from '@/providers/form/models';
+import { FormMode, Store, HasFormIdOrMarkup, IFormActions, IFormSections, FormIdentifier } from '@/providers/form/models';
 import { IConfigurableFormComponent, ValidateErrorEntity } from '@/interfaces';
 import { IShaFormInstance, ProcessingState } from '@/providers/form/store/interfaces';
 
@@ -14,7 +14,6 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
   showDataSubmitIndicator?: boolean;
   labelCol?: ColProps;
   wrapperCol?: ColProps;
-  formItemMargin?: IFormItemMargin;
   layout?: FormLayout;
   initialValues?: Store;
   parentFormValues?: Store;
