@@ -146,7 +146,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         fontFamily: model?.font?.type,
         fontWeight: model?.font?.weight as CSSProperties['fontWeight'],
         color: model?.font?.color,
-        textAlign: model?.font?.align as any,
+        textAlign: model?.font?.align as CSSProperties['textAlign'],
       };
     }, [model.font, fontSize]);
 

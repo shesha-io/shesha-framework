@@ -55,15 +55,15 @@ export const useHorizontalMenuDropdownStyles = ({
         min-width: 200px !important;
         max-width: 400px !important;
         width: 200px !important;
-        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground} !important;` : ''}
+        ${colors?.subItemBackground ? `background: ${colors?.subItemBackground} !important;` : ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item {
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
-        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR};
-        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground};` : ''}
+        color: ${colors?.subItemColor || BLACK_CLR};
+        ${colors?.subItemBackground ? `background: ${colors?.subItemBackground};` : ''}
         ${customMenuItemStyle || ''}
         ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
@@ -96,8 +96,8 @@ export const useHorizontalMenuDropdownStyles = ({
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
-        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR};
-        ${colors?.subItemBackground || colors?.itemBackground ? `background: ${colors?.subItemBackground || colors?.itemBackground};` : ''}
+        color: ${colors?.subItemColor || BLACK_CLR};
+        ${colors?.subItemBackground ? `background: ${colors?.subItemBackground};` : ''}
         ${customMenuItemStyle || ''}
         ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
@@ -109,7 +109,7 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .ant-menu-submenu-arrow {
-        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR} !important;
+        color: ${colors?.subItemColor || BLACK_CLR} !important;
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
@@ -208,7 +208,7 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .ant-menu-submenu-arrow {
-        color: ${colors?.subItemColor || colors?.itemColor || BLACK_CLR} !important;
+        color: ${colors?.subItemColor || BLACK_CLR} !important;
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {
