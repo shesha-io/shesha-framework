@@ -145,7 +145,7 @@ export const removeMarginsFromStylingBox = (stylingBox: string | undefined): str
       marginRight: 0,
     });
   } catch {
-    return stylingBox;
+    return JSON.stringify({});
   }
 };
 

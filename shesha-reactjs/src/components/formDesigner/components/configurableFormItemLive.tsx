@@ -59,7 +59,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       : isInDesigner
         ? isAutoWidth
           ? '100%' // Auto width fills wrapper in designer
-          : getCalculatedDimension('100%', marginRight, marginLeft)
+          : getCalculatedDimension('100%', marginLeft, marginRight)
         : getCalculatedDimension(width, marginLeft, marginRight);
 
     const calculatedHeight = shouldSkip

@@ -5,7 +5,7 @@ import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { widthRelativeToCanvas, heightRelativeToCanvas } from "@/providers/canvas/utils";
 
-const getWidthDimension = (main: string | number, canvasWidth?): string | number => {
+const getWidthDimension = (main: string | number, canvasWidth?: string): string | number => {
   // If canvasWidth is provided and main contains vw, convert to calc
   if (canvasWidth && typeof main === 'string' && /vw/i.test(main)) {
     return widthRelativeToCanvas(main, canvasWidth);
@@ -15,7 +15,7 @@ const getWidthDimension = (main: string | number, canvasWidth?): string | number
   return !hasNumber(main) ? main : addPx(main);
 };
 
-const getHeightDimension = (main: string | number, canvasHeight?): string | number => {
+const getHeightDimension = (main: string | number, canvasHeight?: string): string | number => {
   // If canvasHeight is provided and main contains vh, convert to calc
   if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
     return heightRelativeToCanvas(main, canvasHeight);

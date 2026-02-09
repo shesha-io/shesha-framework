@@ -53,7 +53,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   const component = getToolboxComponent(componentModel?.type);
   const typeInfo = getComponentTypeInfo(component);
-  const fullComponentModel = { ...componentModel, ...componentModel?.[activeDevice] };
+  const fullComponentModel = useMemo(
+    () => ({ ...componentModel, ...componentModel?.[activeDevice] }),
+    [componentModel, activeDevice],
+  );
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...fullComponentModel });
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;

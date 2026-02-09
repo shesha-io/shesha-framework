@@ -51,5 +51,6 @@ export const defaultStyles = (): IStyleType => {
       color: '#000',
       blurRadius: 0,
       spreadRadius: 0,
-    } };
+    },
+  };
 };

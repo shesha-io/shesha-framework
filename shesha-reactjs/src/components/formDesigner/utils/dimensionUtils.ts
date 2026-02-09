@@ -45,7 +45,7 @@ export const getComponentDimensions = (
     : dimensionsStyles?.height || 'auto';
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
-    if (shouldSkip) return 'auto';
+    if (shouldSkip) return undefined;
     return dimensionsStyles?.[dimensionType];
   };
 

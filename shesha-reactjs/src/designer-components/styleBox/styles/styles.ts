@@ -23,7 +23,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const title = "title";
 
   const shaStyleBox = cx("sha-style-box", css`
-        height: 155px !important;
+        height: 155px;
         overflow: hidden;
         width: 240px;
         margin-top: 10px;

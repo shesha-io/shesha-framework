@@ -40,18 +40,16 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   // In preview/live mode: use original device-specific stylingBox (with margins) and dimensions
   const isDesignerMode = shaForm.formMode === 'designer';
   const extendedModel = componentModel as IConfigurableFormComponent & IStyleType;
-  const deviceModel = Boolean(effectiveDevice) && typeof effectiveDevice === 'string'
-    ? {
-      ...componentModel,
-      ...componentModel?.[effectiveDevice],
-      // In designer: preserve padding-only stylingBox from wrapper
-      // In preview: use original stylingBox with margins from device settings
-      ...(isDesignerMode
-        ? { stylingBox: extendedModel.stylingBox, dimensions: extendedModel.dimensions }
-        : { stylingBox: componentModel?.[effectiveDevice]?.stylingBox }
-      ),
-    }
-    : componentModel;
+  const deviceModel = {
+    ...componentModel,
+    ...componentModel?.[effectiveDevice],
+    // In designer: preserve padding-only stylingBox from wrapper
+    // In preview: use original stylingBox with margins from device settings
+    ...(isDesignerMode
+      ? { stylingBox: extendedModel.stylingBox, dimensions: extendedModel.dimensions }
+      : { stylingBox: componentModel?.[effectiveDevice]?.stylingBox }
+    ),
+  };
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
 

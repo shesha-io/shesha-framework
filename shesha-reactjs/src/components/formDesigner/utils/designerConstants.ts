@@ -96,15 +96,6 @@ export const WRAPPER_FILL_STYLE: CSSProperties = {
   boxSizing: 'border-box',
 } as const;
 
-/**
- * CSS style for the drag wrapper element in the designer.
- * Ensures the drag handle fills the available space.
- */
-export const DRAG_WRAPPER_STYLE: CSSProperties = {
-  width: '100%',
-  height: '100%',
-  boxSizing: 'border-box',
-} as const;
 
 /**
  * Calculates the adjusted height for designer mode wrapper elements.

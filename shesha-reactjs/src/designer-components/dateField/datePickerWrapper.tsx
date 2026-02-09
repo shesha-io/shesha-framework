@@ -215,7 +215,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         showNow={showNow}
         picker={picker}
         format={pickerFormat}
-        style={{ ...finalStyles, width: '100%' }}
+        style={{ ...finalStyles }}
         onCalendarChange={(dates) => {
           if (dates && showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);
         }}

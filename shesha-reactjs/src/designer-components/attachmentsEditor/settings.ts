@@ -531,7 +531,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       labelAlign: 'right',
                       ghost: true,
                       collapsible: 'header',
-                      // hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: styleDimensionsPnlId,
                         components: [...fbf()
