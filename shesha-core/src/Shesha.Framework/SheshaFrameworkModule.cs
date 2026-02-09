@@ -2,7 +2,6 @@
 using Abp.AutoMapper;
 using Abp.Dependency;
 using Abp.Modules;
-using Abp.Reflection;
 using Abp.Web.Models;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -15,7 +14,6 @@ using Shesha.Configuration.Security;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution;
-using Shesha.DynamicEntities.EntityTypeBuilder;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Locks;
