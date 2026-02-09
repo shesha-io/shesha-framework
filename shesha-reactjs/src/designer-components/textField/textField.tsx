@@ -47,7 +47,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       try {
         return new RegExp(model.regExp, 'g');
       } catch (error) {
-        console.warn('Invalid regExp pattern:', model.regExp, error);
+        console.warn(`Invalid regExp pattern for '${model.propertyName}':`, model, error);
         return null;
       }
     }, [model.regExp]);
@@ -76,9 +76,19 @@ const TextFieldComponent: TextFieldComponentDefinition = {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]): void => {
             const inputValue: string | undefined = args[0]?.currentTarget?.value?.toString();
-            const newValue = regExpObj ? inputValue?.replace(regExpObj, '') : inputValue;
-            const changedValue = customEvents.onChange({ value: newValue }, args[0]);
-            if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : newValue);
+            const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
+            const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
+            if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
+              const changedValue = customEvents.onChange({ value: inputValue }, args[0]);
+              if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : inputValue);
+            } else {
+              // Workaround because if the value is undefined, input component leave the inputed value
+              // Rendering of the component is not called
+              // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
+              if (Boolean(regExpObj) && value === undefined && typeof onChange === 'function') {
+                onChange('');
+              }
+            }
           };
 
           return inputProps.readOnly

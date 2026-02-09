@@ -64,7 +64,7 @@ export const getSettings = (
             components: [...fbf()
               .addSettingsInput({ parentId: commonTabId, inputType: 'switch', propertyName: 'suppress', label: 'Hidden' })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'name', label: 'Name', validate: { required: true },
-                regExp: '(?!^)[^a-zA-Z0-9_-]|^[^a-zA-Z]',
+                regExp: '^[a-zA-Z][a-zA-Z0-9]*$',
                 editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
               })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
@@ -290,7 +290,7 @@ export const getSettings = (
                   })
                   .addContainer({ id: manyToOneFormatId, parentId: dataTabId, hidden: { _code: 'return data?.listConfiguration?.mappingType !== \'many-to-one\';', _mode: 'code', _value: false },
                     components: [...fbf()
-                      .addSettingsInput({ parentId: manyToOneFormatId, inputType: 'textField', propertyName: 'listConfiguration.foreignProperty', label: 'Foreign ptoperty name', editMode: false })
+                      .addSettingsInput({ parentId: manyToOneFormatId, inputType: 'textField', propertyName: 'listConfiguration.foreignProperty', label: 'Foreign property name', editMode: false })
                       .toJson(),
                     ],
                   })
