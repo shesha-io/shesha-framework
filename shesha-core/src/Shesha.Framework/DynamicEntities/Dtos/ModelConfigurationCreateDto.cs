@@ -17,7 +17,8 @@ namespace Shesha.DynamicEntities.Dtos
         public string? InheritedFromClassName { get; set; }
         public string? InheritedFromNamespace { get; set; }
 
-        // ConfigurationItem        
+        // ConfigurationItem
+        public Guid? FolderId { get; set; }
         public Guid? ModuleId { get; set; }
         public string? Module { get; set; }
         public string Name { get; set; }
