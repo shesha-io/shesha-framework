@@ -330,18 +330,24 @@ export interface IContextMetadata extends IMetadata, IContainerWithNestedPropert
 export type IModelMetadata = IEntityMetadata | IObjectMetadata | IContextMetadata;
 
 export const isEntityMetadata = (value: IModelMetadata): value is IEntityMetadata => {
-  return value && value.dataType === DataTypes.entityReference;
+  return Boolean(value) && value.dataType === DataTypes.entityReference;
 };
 export const isJsonEntityMetadata = (value: IModelMetadata): value is IJsonEntityMetadata => {
   const typed = value as IJsonEntityMetadata;
-  return value && value.dataType === DataTypes.object && typeof typed.module === 'string';
+  // If module exists then it's json entity
+  return Boolean(value) && value.dataType === DataTypes.object && typeof typed.module === 'string' && Boolean(typed.module);
+};
+export const isObjectMetadata = (value: IModelMetadata): value is IObjectMetadata => {
+  const typed = value as IJsonEntityMetadata; // cast only to check module property
+  // If module doesn't exist then it's object
+  return Boolean(value) && value.dataType === DataTypes.object && !typed.module;
 };
 export const isContextMetadata = (value: IModelMetadata): value is IContextMetadata => {
-  return value && value.dataType === DataTypes.context;
+  return Boolean(value) && value.dataType === DataTypes.context;
 };
 
 export const metadataHasNestedProperties = (value: IModelMetadata): value is IContainerWithNestedProperties & IModelMetadata => {
-  return (isEntityMetadata(value) || isJsonEntityMetadata(value) || isContextMetadata(value)) &&
+  return (isEntityMetadata(value) || isJsonEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value)) &&
     Array.isArray((value as IContainerWithNestedProperties).properties);
 };
 

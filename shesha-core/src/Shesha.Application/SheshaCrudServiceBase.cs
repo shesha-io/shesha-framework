@@ -208,6 +208,9 @@ namespace Shesha
 
             if (result.Errors != null)
             {
+                if (result.Errors.Count() == 1 && result.Errors.First().InnerException is EntityNotFoundException notFoundException)
+                    throw notFoundException;
+
                 var validationResults = result.Errors.Select(e => new ValidationResult(e.FullMessage())).ToList();
                 throw new AbpValidationException(string.Join("\r\n", validationResults.Select(r => r.ErrorMessage)), validationResults);
             }

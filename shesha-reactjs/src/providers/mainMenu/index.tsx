@@ -45,7 +45,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     return actualItems;
   };
 
-  const updatetFormNamigationVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): void => {
+  const updatetFormNavigationVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): void => {
     if (
       item.actionConfiguration?.actionOwner === 'shesha.common' &&
       item.actionConfiguration?.actionName === 'Navigate' &&
@@ -90,7 +90,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
         .then((result) => {
           if (isAjaxSuccessResponse(result)) {
             itemsToCheck.forEach((item) => {
-              return updatetFormNamigationVisible(item, result.result);
+              return updatetFormNavigationVisible(item, result.result);
             });
             formPermissionedItems.current = [...items];
             dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));

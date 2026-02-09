@@ -149,6 +149,10 @@ export type MarkupLoadingErrorRenderProps = {
   formId: FormIdentifier;
   markupLoadingState: ProcessingState;
 };
+export type DataLoadingErrorRenderProps = {
+  formId: FormIdentifier;
+  dataLoadingState: ProcessingState;
+};
 export type IConfigurableFormRenderingProps = {
   markupLoadingError?: (args: MarkupLoadingErrorRenderProps) => React.ReactNode;
 };

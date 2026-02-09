@@ -38,7 +38,8 @@ interface IProps {
   overflow: "dropdown" | "menu" | "scroll";
   style?: React.CSSProperties;
   itemStyle?: React.CSSProperties;
-  padding?: { x: string; y: string };
+  padding?: { x: number; y: number };
+  dropdownPadding?: string;
   styleOnHover?: React.CSSProperties;
   styleOnSelected?: React.CSSProperties;
   styleOnSubMenu?: React.CSSProperties;
@@ -57,6 +58,7 @@ export const LayoutMenu: FC<IProps> = ({
   fontSize,
   overflow,
   padding,
+  dropdownPadding,
   style,
   itemStyle,
   styleOnHover,
@@ -98,6 +100,7 @@ export const LayoutMenu: FC<IProps> = ({
   useHorizontalMenuDropdownStyles({
     menuId,
     colors,
+    padding: dropdownPadding,
     fontStyles,
     itemStyle,
     styleOnHover,
@@ -235,6 +238,7 @@ export const LayoutMenu: FC<IProps> = ({
           open={open}
           onClose={onClose}
           colors={colors}
+          padding={padding}
           fontStyles={fontStyles}
           itemStyle={itemStyle}
           styleOnHover={styleOnHover}
@@ -250,10 +254,11 @@ export const LayoutMenu: FC<IProps> = ({
       {menuId ? (
         <ScopedMenuStyles
           colors={colors}
+          padding={padding}
           itemStyle={convertJsonToCss(itemStyle)}
           styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
           styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
-          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
           menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
           menuId={menuId}
@@ -261,10 +266,11 @@ export const LayoutMenu: FC<IProps> = ({
       ) : (
         <GlobalMenuStyles
           colors={colors}
+          padding={padding}
           itemStyle={convertJsonToCss(itemStyle)}
           styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
           styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
-          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
           menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
         />
