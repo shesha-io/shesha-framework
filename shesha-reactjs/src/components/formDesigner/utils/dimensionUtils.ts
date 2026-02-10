@@ -39,20 +39,20 @@ export const getComponentDimensions = (
 
   const width = shouldSkip
     ? 'auto'
-    : jsStyle?.width || dimensionsStyles?.width || 'auto';
+    : jsStyle?.width ?? dimensionsStyles?.width ?? 'auto';
 
   const height = shouldSkip
     ? 'auto'
-    : jsStyle?.height || dimensionsStyles?.height || 'auto';
+    : jsStyle?.height ?? dimensionsStyles?.height ?? 'auto';
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
     if (shouldSkip) return undefined;
-    return jsStyle?.[dimensionType] || dimensionsStyles?.[dimensionType];
+    return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
   };
 
   const flexBasis = shouldSkip
     ? undefined
-    : (jsStyle?.maxWidth || dimensionsStyles?.maxWidth || dimensionsStyles?.width);
+    : (jsStyle?.maxWidth ?? dimensionsStyles?.maxWidth ?? dimensionsStyles?.width);
 
   return {
     width,
