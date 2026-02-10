@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { ComponentTypeInfo, shouldPreserveOriginalDimensions } from './componentTypeUtils';
+import { ComponentTypeInfo } from './componentTypeUtils';
 import { IStyleType } from '@/index';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 
@@ -13,204 +13,146 @@ export interface DimensionConfig {
   flexBasis?: string | number;
 }
 
+/* eslint-disable @stylistic/no-trailing-spaces */
 /**
- * Gets component dimensions based on component type.
+ * Dimension utility functions for form designer components.
  *
- * For components that should skip standard processing, returns 'auto'.
- * For other components, returns the calculated dimensions from styles.
- *
- * @param typeInfo - Component type classification from getComponentTypeInfo
- * @param dimensionsStyles - Calculated dimension styles from useFormComponentStyles
- * @returns CSSProperties with width, height, and other dimension values
+ * This namespace provides functions for calculating and managing component dimensions
+ * in both designer and live modes, including handling the wrapper pattern where
+ * components fill 100% of their container in designer mode.
  *
  * @example
  * ```tsx
- * const typeInfo = getComponentTypeInfo(toolboxComponent);
- * const componentDimensions = getComponentDimensions(typeInfo, dimensionsStyles);
- * // Returns: { width: '100%', height: 'auto', ... } or { width: 'auto', ... } for skipped components
+ * import { dimensionUtils } from '@/components/formDesigner/utils/dimensionUtils';
+ *
+ * const dims = dimensionUtils.getComponentDimensions(typeInfo, dimensionsStyles, jsStyle);
+ * const merged = dimensionUtils.mergeWithDesignerDimensions(baseStyle, isDesignerMode, false);
  * ```
  */
-export const getComponentDimensions = (
-  typeInfo: ComponentTypeInfo,
-  dimensionsStyles: CSSProperties,
-  jsStyle: CSSProperties,
-): CSSProperties => {
-  const { shouldPreserveDimensions } = typeInfo;
+export const dimensionUtils = {
+  /**
+   * Gets component dimensions based on component type.
+   *
+   * For components that preserve their dimensions, returns 'auto'.
+   * For other components, returns the calculated dimensions from styles.
+   */
+  getComponentDimensions(
+    typeInfo: ComponentTypeInfo,
+    dimensionsStyles: CSSProperties,
+    jsStyle: CSSProperties,
+  ): CSSProperties {
+    const { preserveDimensionsInDesigner } = typeInfo;
 
-  const width = shouldPreserveDimensions
-    ? 'auto'
-    : jsStyle?.width ?? dimensionsStyles?.width ?? 'auto';
+    const width = preserveDimensionsInDesigner
+      ? 'auto'
+      : jsStyle?.width ?? dimensionsStyles?.width ?? 'auto';
 
-  const height = shouldPreserveDimensions
-    ? 'auto'
-    : jsStyle?.height ?? dimensionsStyles?.height ?? 'auto';
+    const height = preserveDimensionsInDesigner
+      ? 'auto'
+      : jsStyle?.height ?? dimensionsStyles?.height ?? 'auto';
 
-  const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
-    if (shouldPreserveDimensions) return undefined;
-    return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
-  };
+    const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
+      if (preserveDimensionsInDesigner) return undefined;
+      return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
+    };
 
-  const flexBasis = shouldPreserveDimensions
-    ? undefined
-    : (jsStyle?.maxWidth ?? dimensionsStyles?.maxWidth ?? dimensionsStyles?.width);
+    const flexBasis = preserveDimensionsInDesigner
+      ? undefined
+      : (jsStyle?.maxWidth ?? dimensionsStyles?.maxWidth ?? dimensionsStyles?.width);
 
-  return {
-    width,
-    height,
-    maxWidth: getDimensionValue('maxWidth'),
-    minWidth: getDimensionValue('minWidth'),
-    maxHeight: getDimensionValue('maxHeight'),
-    minHeight: getDimensionValue('minHeight'),
-    flexBasis,
-  };
+    return {
+      width,
+      height,
+      maxWidth: getDimensionValue('maxWidth'),
+      minWidth: getDimensionValue('minWidth'),
+      maxHeight: getDimensionValue('maxHeight'),
+      minHeight: getDimensionValue('minHeight'),
+      flexBasis,
+    };
+  },
+
+  /**
+   * Returns 100% dimensions for components wrapped in the root container.
+   * The wrapper handles actual sizing, so components fill 100% of the wrapper.
+   */
+  getDeviceDimensions(): IStyleType['dimensions'] {
+    return { ...DESIGNER_DIMENSIONS };
+  },
+
+  /**
+   * Gets the flex-basis value from dimension styles.
+   * Uses maxWidth if available, otherwise falls back to width.
+   */
+  getDeviceFlexBasis(dimensionsStyles: CSSProperties): string | number | undefined {
+    return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
+  },
+
+  /**
+   * Gets component dimensions based on current form mode.
+   *
+   * In designer mode:
+   * - If component preserves dimensions: returns original dimensions
+   * - Otherwise: returns 100% width/height to fill wrapper
+   *
+   * In live/edit mode: returns original dimensions
+   */
+  getComponentDimensionsForMode(
+    typeInfo: ComponentTypeInfo,
+    dimensionsStyles: CSSProperties,
+    isDesignerMode: boolean,
+  ): CSSProperties {
+    // In live mode, always use original dimensions
+    if (!isDesignerMode) {
+      return dimensionsStyles;
+    }
+
+    // In designer mode, components preserving dimensions keep original dimensions
+    if (typeInfo.preserveDimensionsInDesigner) {
+      return dimensionsStyles;
+    }
+
+    // Standard components fill wrapper in designer mode
+    return { ...DESIGNER_DIMENSIONS };
+  },
+
+  /**
+   * Merges base styles with designer mode overrides.
+   *
+   * In designer mode, applies 100% width and height to ensure components
+   * fill their wrapper containers. In live mode, returns base styles unchanged.
+   */
+  mergeWithDesignerDimensions(
+    baseStyle: CSSProperties,
+    isDesignerMode: boolean,
+    preserveDimensions: boolean = false,
+  ): CSSProperties {
+    if (!isDesignerMode || preserveDimensions) {
+      return baseStyle;
+    }
+
+    return {
+      ...baseStyle,
+      ...DESIGNER_DIMENSIONS,
+    };
+  },
+
+  /**
+   * Hook-compatible version of mergeWithDesignerDimensions.
+   * Returns a function that can be used in components.
+   */
+  getDesignerDimensionsMerger(isDesignerMode: boolean) {
+    return (baseStyle: CSSProperties, preserveDimensions: boolean = false): CSSProperties => {
+      return dimensionUtils.mergeWithDesignerDimensions(baseStyle, isDesignerMode, preserveDimensions);
+    };
+  },
 };
 
-/**
- * Returns 100% dimensions for components wrapped in the root container.
- * The wrapper handles actual sizing, so components fill 100% of the wrapper.
- *
- * @returns Dimensions object with width and height set to '100%'
- *
- * @example
- * ```tsx
- * const deviceDimensions = getDeviceDimensions();
- * // Returns: { width: '100%', height: '100%' }
- * ```
- */
-export const getDeviceDimensions = (): IStyleType['dimensions'] => {
-  return { ...DESIGNER_DIMENSIONS };
-};
-
-/**
- * Gets the flex-basis value from dimension styles.
- * Uses maxWidth if available, otherwise falls back to width.
- *
- * @param dimensionsStyles - The dimension styles object
- * @returns The flex-basis value (width or maxWidth)
- */
-export const getDeviceFlexBasis = (
-  dimensionsStyles: CSSProperties,
-): string | number | undefined => {
-  return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
-};
-
-/**
- * Gets component dimensions based on current form mode.
- *
- * In designer mode:
- * - If component should skip: returns original dimensions
- * - Otherwise: returns 100% width/height to fill wrapper
- *
- * In live/edit mode: returns original dimensions
- *
- * @param typeInfo - Component type classification
- * @param dimensionsStyles - Original dimension styles
- * @param isDesignerMode - Whether currently in designer mode
- * @returns Appropriate dimensions for the current mode
- *
- * @example
- * ```tsx
- * const dimensions = getComponentDimensionsForMode(
- *   typeInfo,
- *   dimensionsStyles,
- *   shaForm.formMode === 'designer'
- * );
- * ```
- */
-export const getComponentDimensionsForMode = (
-  typeInfo: ComponentTypeInfo,
-  dimensionsStyles: CSSProperties,
-  isDesignerMode: boolean,
-): CSSProperties => {
-  // In live mode, always use original dimensions
-  if (!isDesignerMode) {
-    return dimensionsStyles;
-  }
-
-  // In designer mode, components with custom dimensions keep original dimensions
-  if (typeInfo.shouldPreserveDimensions) {
-    return dimensionsStyles;
-  }
-
-  // Standard components fill wrapper in designer mode
-  return { ...DESIGNER_DIMENSIONS };
-};
-
-/**
- * Gets component dimensions by component type string.
- * Convenience overload for when you only have the component type string.
- *
- * @param componentType - The component type (e.g., 'textField', 'checkbox')
- * @param dimensionsStyles - Original dimension styles
- * @param isDesignerMode - Whether currently in designer mode
- * @returns Appropriate dimensions for the current mode
- */
-export const getComponentDimensionsByType = (
-  componentType: string | undefined,
-  dimensionsStyles: CSSProperties,
-  isDesignerMode: boolean,
-): CSSProperties => {
-  const preserveDimensions = shouldPreserveOriginalDimensions(componentType);
-
-  if (!isDesignerMode || preserveDimensions) {
-    return dimensionsStyles;
-  }
-
-  return { ...DESIGNER_DIMENSIONS };
-};
-
-/**
- * Merges base styles with designer mode overrides.
- *
- * In designer mode, applies 100% width and height to ensure components
- * fill their wrapper containers. In live mode, returns base styles unchanged.
- *
- * @param baseStyle - The base CSS styles
- * @param isDesignerMode - Whether currently in designer mode
- * @param preserveDimensions - Whether to preserve original dimensions instead of applying 100%
- * @returns Merged styles with designer overrides if applicable
- *
- * @example
- * ```tsx
- * const finalStyle = mergeWithDesignerDimensions(
- *   { color: 'red', fontSize: '14px' },
- *   shaForm.formMode === 'designer',
- *   false
- * );
- * // In designer mode: { color: 'red', fontSize: '14px', width: '100%', height: '100%' }
- * // In live mode: { color: 'red', fontSize: '14px' }
- * ```
- */
-export const mergeWithDesignerDimensions = (
-  baseStyle: CSSProperties,
-  isDesignerMode: boolean,
-  preserveDimensions: boolean = false,
-): CSSProperties => {
-  if (!isDesignerMode || preserveDimensions) {
-    return baseStyle;
-  }
-
-  return {
-    ...baseStyle,
-    ...DESIGNER_DIMENSIONS,
-  };
-};
-
-/**
- * Hook-compatible version of mergeWithDesignerDimensions.
- * Returns a function that can be used in components.
- *
- * @param isDesignerMode - Whether currently in designer mode
- * @returns Function that merges styles with designer dimensions
- *
- * @example
- * ```tsx
- * const mergeDimensions = useDesignerDimensionsMerger(shaForm.formMode === 'designer');
- * const style = mergeDimensions(baseStyle, shouldPreserveOriginalDimensions(type));
- * ```
- */
-export const getDesignerDimensionsMerger = (isDesignerMode: boolean) => {
-  return (baseStyle: CSSProperties, preserveDimensions: boolean = false): CSSProperties => {
-    return mergeWithDesignerDimensions(baseStyle, isDesignerMode, preserveDimensions);
-  };
-};
+// Re-export individual functions for backward compatibility and tree-shaking
+export const {
+  getComponentDimensions,
+  getDeviceDimensions,
+  getDeviceFlexBasis,
+  getComponentDimensionsForMode,
+  mergeWithDesignerDimensions,
+  getDesignerDimensionsMerger,
+} = dimensionUtils;

@@ -187,6 +187,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   actualModelPropertyFilter?: (name: string, value: any) => boolean;
 
   editorAdapter?: IEditorAdapter;
+
+  /**
+   * If true, the component will preserve its original dimensions in designer mode instead of
+   * filling 100% of its wrapper. Use this for components that manage their own sizing.
+   */
+  preserveDimensionsInDesigner?: boolean;
 } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =

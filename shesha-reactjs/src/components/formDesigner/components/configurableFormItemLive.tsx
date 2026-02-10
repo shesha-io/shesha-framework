@@ -8,8 +8,8 @@ import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useStyles } from './styles';
 import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
-import { DEFAULT_FORM_ITEM_MARGINS } from '../utils/designerConstants';
-import { shouldPreserveOriginalDimensions } from '../utils/componentTypeUtils';
+import { designerConstants } from '../utils/designerConstants';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -24,6 +24,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const shaForm = useShaFormInstance();
+  const getToolboxComponent = useFormDesignerComponentGetter();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
   const colLayout = useMemo(() => {
@@ -33,9 +34,11 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const settings = shaForm.settings;
 
   const isInDesigner = shaForm.formMode === 'designer';
-  const preserveDimensions = shouldPreserveOriginalDimensions(model.type);
+  // Get component definition to check if it preserves its own dimensions
+  const component = getToolboxComponent(model.type);
+  const preserveDimensionsInDesigner = component?.preserveDimensionsInDesigner ?? false;
 
-  const { top: MarginTop, left: MarginLeft, right: MarginRight, bottom: MarginBottom } = DEFAULT_FORM_ITEM_MARGINS;
+  const { top: MarginTop, left: MarginLeft, right: MarginRight, bottom: MarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
   const {
     marginTop = isInDesigner ? 0 : MarginTop,
     marginBottom = isInDesigner ? 0 : MarginBottom,
@@ -54,7 +57,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     // - auto width should fill remaining space (100%) in designer
     const isAutoWidth = width === 'auto';
 
-    const calculatedWidth = preserveDimensions
+    const calculatedWidth = preserveDimensionsInDesigner
       ? 'auto'
       : isInDesigner
         ? isAutoWidth
@@ -62,7 +65,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
           : getCalculatedDimension('100%', marginLeft, marginRight)
         : getCalculatedDimension(width, marginLeft, marginRight);
 
-    const calculatedHeight = preserveDimensions
+    const calculatedHeight = preserveDimensionsInDesigner
       ? 'auto'
       : isInDesigner
         ? '100%'
@@ -102,7 +105,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
         paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
       };
-  }, [preserveDimensions, isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
+  }, [preserveDimensionsInDesigner, isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;
   const hasLabel = !hideLabel && !!model.label;

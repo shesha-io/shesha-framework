@@ -27,9 +27,9 @@ import { ComponentProperties } from '../componentPropertiesPanel/componentProper
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getComponentTypeInfo } from '../utils/componentTypeUtils';
-import { getComponentDimensions, getDeviceDimensions, getDeviceFlexBasis } from '../utils/dimensionUtils';
-import { createRootContainerStyle, createPaddingOnlyStylingBox } from '../utils/stylingUtils';
-import { WRAPPER_FILL_STYLE } from '../utils/designerConstants';
+import { dimensionUtils } from '../utils/dimensionUtils';
+import { stylingUtils } from '../utils/stylingUtils';
+import { designerConstants } from '../utils/designerConstants';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -52,7 +52,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { activeDevice } = useCanvas();
 
   const component = getToolboxComponent(componentModel?.type);
-  const typeInfo = getComponentTypeInfo(component);
+  // Extract primitive values for stable dependencies - avoid object recreation triggering re-renders
+  const { isInput: componentIsInput, preserveDimensionsInDesigner } = getComponentTypeInfo(component);
   const fullComponentModel = useMemo(
     () => ({ ...componentModel, ...componentModel?.[activeDevice] }),
     [componentModel, activeDevice],
@@ -100,23 +101,28 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   }), [stylingBoxAsCSS?.marginTop, stylingBoxAsCSS?.marginBottom, stylingBoxAsCSS?.marginLeft, stylingBoxAsCSS?.marginRight]);
 
   // Get component dimensions (handles special cases like DataTable context)
+  // Memoized because getComponentDimensions creates new objects and computes flexBasis logic
   const componentDimensions = useMemo(() =>
-    getComponentDimensions(typeInfo, dimensionsStyles, jsStyle),
-  [typeInfo, dimensionsStyles, jsStyle],
+    dimensionUtils.getComponentDimensions(
+      { isInput: componentIsInput, preserveDimensionsInDesigner },
+      dimensionsStyles,
+      jsStyle,
+    ),
+  [preserveDimensionsInDesigner, componentIsInput, dimensionsStyles, jsStyle],
   );
 
   // Create the model for rendering - components receive dimensions based on their config
   // and no margins (since wrapper handles margins as padding)
   const renderComponentModel = useMemo(() => {
-    const deviceDimensions = getDeviceDimensions();
+    const deviceDimensions = dimensionUtils.getDeviceDimensions();
     // In designer mode, component only gets padding (margins go to wrapper)
-    const stylingBoxWithPaddingOnly = createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
+    const stylingBoxWithPaddingOnly = stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
 
     // Helper to get designer dimensions based on original config
     // - If width is 'auto' and component is button -> use 'auto' (WYSIWYG: wrapper handles sizing with max-content)
     // - Otherwise use 100% to fill the wrapper
     const getDesignerDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions | undefined => {
-      if (typeInfo.shouldPreserveDimensions) return originalDims;
+      if (preserveDimensionsInDesigner) return originalDims;
 
       // Check if component explicitly has auto width and is a button
       const isAutoWidth = originalDims?.width === 'auto';
@@ -137,7 +143,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const desktopForDesigner = fullComponentModel.desktop
       ? {
         ...fullComponentModel.desktop,
-        stylingBox: createPaddingOnlyStylingBox(fullComponentModel.desktop.stylingBox),
+        stylingBox: stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.desktop.stylingBox),
         dimensions: getDesignerDimensions(fullComponentModel.desktop.dimensions),
         style: fullComponentModel.desktop.style ?? fullComponentModel.style,
       }
@@ -145,7 +151,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const tabletForDesigner = fullComponentModel.tablet
       ? {
         ...fullComponentModel.tablet,
-        stylingBox: createPaddingOnlyStylingBox(fullComponentModel.tablet.stylingBox),
+        stylingBox: stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.tablet.stylingBox),
         dimensions: getDesignerDimensions(fullComponentModel.tablet.dimensions),
         style: fullComponentModel.tablet.style ?? fullComponentModel.style,
       }
@@ -153,7 +159,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const mobileForDesigner = fullComponentModel.mobile
       ? {
         ...fullComponentModel.mobile,
-        stylingBox: createPaddingOnlyStylingBox(fullComponentModel.mobile.stylingBox),
+        stylingBox: stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.mobile.stylingBox),
         dimensions: getDesignerDimensions(fullComponentModel.mobile.dimensions),
         style: fullComponentModel.mobile.style ?? fullComponentModel.style,
       }
@@ -166,17 +172,17 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       desktop: desktopForDesigner,
       tablet: tabletForDesigner,
       mobile: mobileForDesigner,
-      flexBasis: getDeviceFlexBasis(dimensionsStyles),
+      flexBasis: dimensionUtils.getDeviceFlexBasis(dimensionsStyles),
     };
-  }, [fullComponentModel, activeDevice, dimensionsStyles, component.type]);
+  }, [fullComponentModel, activeDevice, dimensionsStyles, component.type, preserveDimensionsInDesigner]);
 
   // Check if component is a button for WYSIWYG auto width handling
   const isButton = component.type === 'button' || component.type === 'buttonGroup';
 
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() =>
-    createRootContainerStyle(componentDimensions, margins, component?.isInput ?? false, isButton),
-  [componentDimensions, margins, component?.isInput, isButton],
+    stylingUtils.createRootContainerStyle(componentDimensions, margins, componentIsInput, isButton),
+  [componentDimensions, margins, componentIsInput, isButton],
   );
 
   return (
@@ -215,9 +221,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
 
-      <div style={WRAPPER_FILL_STYLE}>
+      <div style={designerConstants.WRAPPER_FILL_STYLE}>
         <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
-          <div style={WRAPPER_FILL_STYLE}>
+          <div style={designerConstants.WRAPPER_FILL_STYLE}>
             <FormComponent componentModel={renderComponentModel} />
           </div>
         </DragWrapper>
