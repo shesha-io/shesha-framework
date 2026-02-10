@@ -33,25 +33,26 @@ export interface DimensionConfig {
 export const getComponentDimensions = (
   typeInfo: ComponentTypeInfo,
   dimensionsStyles: CSSProperties,
+  jsStyle: CSSProperties,
 ): CSSProperties => {
   const { shouldSkip } = typeInfo;
 
   const width = shouldSkip
     ? 'auto'
-    : dimensionsStyles?.width || 'auto';
+    : jsStyle?.width || dimensionsStyles?.width || 'auto';
 
   const height = shouldSkip
     ? 'auto'
-    : dimensionsStyles?.height || 'auto';
+    : jsStyle?.height || dimensionsStyles?.height || 'auto';
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
     if (shouldSkip) return undefined;
-    return dimensionsStyles?.[dimensionType];
+    return jsStyle?.[dimensionType] || dimensionsStyles?.[dimensionType];
   };
 
   const flexBasis = shouldSkip
     ? undefined
-    : (dimensionsStyles?.maxWidth || dimensionsStyles?.width);
+    : (jsStyle?.maxWidth || dimensionsStyles?.maxWidth || dimensionsStyles?.width);
 
   return {
     width,

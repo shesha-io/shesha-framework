@@ -57,7 +57,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     () => ({ ...componentModel, ...componentModel?.[activeDevice] }),
     [componentModel, activeDevice],
   );
-  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...fullComponentModel });
+  const { dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles({ ...fullComponentModel });
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
@@ -101,8 +101,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   // Get component dimensions (handles special cases like DataTable context)
   const componentDimensions = useMemo(() =>
-    getComponentDimensions(typeInfo, dimensionsStyles),
-  [typeInfo, dimensionsStyles],
+    getComponentDimensions(typeInfo, dimensionsStyles, jsStyle),
+  [typeInfo, dimensionsStyles, jsStyle],
   );
 
   // Create the model for rendering - components receive dimensions based on their config
@@ -133,11 +133,13 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     };
 
     // Also remove margins and set dimensions for device-specific configs
+    // Preserve the base 'style' property in each device config to ensure custom styles are applied
     const desktopForDesigner = fullComponentModel.desktop
       ? {
         ...fullComponentModel.desktop,
         stylingBox: createPaddingOnlyStylingBox(fullComponentModel.desktop.stylingBox),
         dimensions: getDesignerDimensions(fullComponentModel.desktop.dimensions),
+        style: fullComponentModel.desktop.style ?? fullComponentModel.style,
       }
       : undefined;
     const tabletForDesigner = fullComponentModel.tablet
@@ -145,6 +147,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...fullComponentModel.tablet,
         stylingBox: createPaddingOnlyStylingBox(fullComponentModel.tablet.stylingBox),
         dimensions: getDesignerDimensions(fullComponentModel.tablet.dimensions),
+        style: fullComponentModel.tablet.style ?? fullComponentModel.style,
       }
       : undefined;
     const mobileForDesigner = fullComponentModel.mobile
@@ -152,6 +155,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...fullComponentModel.mobile,
         stylingBox: createPaddingOnlyStylingBox(fullComponentModel.mobile.stylingBox),
         dimensions: getDesignerDimensions(fullComponentModel.mobile.dimensions),
+        style: fullComponentModel.mobile.style ?? fullComponentModel.style,
       }
       : undefined;
 
