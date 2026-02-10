@@ -9,7 +9,7 @@ import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useStyles } from './styles';
 import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
 import { DEFAULT_FORM_ITEM_MARGINS } from '../utils/designerConstants';
-import { shouldSkipComponent } from '../utils/componentTypeUtils';
+import { shouldPreserveOriginalDimensions } from '../utils/componentTypeUtils';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -33,7 +33,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const settings = shaForm.settings;
 
   const isInDesigner = shaForm.formMode === 'designer';
-  const shouldSkip = shouldSkipComponent(model.type);
+  const preserveDimensions = shouldPreserveOriginalDimensions(model.type);
 
   const { top: MarginTop, left: MarginLeft, right: MarginRight, bottom: MarginBottom } = DEFAULT_FORM_ITEM_MARGINS;
   const {
@@ -54,7 +54,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     // - auto width should fill remaining space (100%) in designer
     const isAutoWidth = width === 'auto';
 
-    const calculatedWidth = shouldSkip
+    const calculatedWidth = preserveDimensions
       ? 'auto'
       : isInDesigner
         ? isAutoWidth
@@ -62,7 +62,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
           : getCalculatedDimension('100%', marginLeft, marginRight)
         : getCalculatedDimension(width, marginLeft, marginRight);
 
-    const calculatedHeight = shouldSkip
+    const calculatedHeight = preserveDimensions
       ? 'auto'
       : isInDesigner
         ? '100%'
@@ -102,7 +102,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
         paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
       };
-  }, [shouldSkip, isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
+  }, [preserveDimensions, isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;
   const hasLabel = !hideLabel && !!model.label;

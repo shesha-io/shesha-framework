@@ -116,7 +116,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     // - If width is 'auto' and component is button -> use 'auto' (WYSIWYG: wrapper handles sizing with max-content)
     // - Otherwise use 100% to fill the wrapper
     const getDesignerDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions | undefined => {
-      if (typeInfo.shouldSkip) return originalDims;
+      if (typeInfo.shouldPreserveDimensions) return originalDims;
 
       // Check if component explicitly has auto width and is a button
       const isAutoWidth = originalDims?.width === 'auto';

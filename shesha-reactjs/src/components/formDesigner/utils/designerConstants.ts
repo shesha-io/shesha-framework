@@ -18,8 +18,8 @@
 import { CSSProperties } from 'react';
 
 /**
- * Components that have special rendering requirements and should skip
- * standard dimension processing in the designer.
+ * Components that manage their own dimensions and should preserve their
+ * original sizing instead of filling 100% of the wrapper in designer mode.
  *
  * These components typically:
  * - Have their own internal sizing logic (checkbox, attachmentsEditor)
@@ -30,12 +30,13 @@ import { CSSProperties } from 'react';
  * wrapper pattern (100% width/height filling). Instead, the component's
  * original dimensions are preserved.
  */
-export const COMPONENTS_TO_SKIP = ['attachmentsEditor', 'checkbox', 'datatableContext'] as const;
+export const COMPONENTS_WITH_CUSTOM_DIMENSIONS = ['attachmentsEditor', 'checkbox', 'datatableContext'] as const;
 
 /**
- * Type representing component types that should skip standard dimension processing.
+ * Type representing component types that preserve their original dimensions
+ * instead of using the standard wrapper fill pattern.
  */
-export type SkipComponentType = typeof COMPONENTS_TO_SKIP[number];
+export type CustomDimensionComponentType = typeof COMPONENTS_WITH_CUSTOM_DIMENSIONS[number];
 
 /**
  * Default margin values for form items when not explicitly configured.

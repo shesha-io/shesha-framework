@@ -1,27 +1,32 @@
 import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
-import { COMPONENTS_TO_SKIP, SkipComponentType } from "./designerConstants";
+import { COMPONENTS_WITH_CUSTOM_DIMENSIONS, CustomDimensionComponentType } from "./designerConstants";
 
 export interface ComponentTypeInfo {
   isInput: boolean;
-  shouldSkip: boolean;
+  /** Whether to preserve original dimensions instead of using 100% fill in designer mode */
+  shouldPreserveDimensions: boolean;
 }
 
 /**
- * Checks if a component type should skip standard dimension processing.
+ * Checks if a component type should preserve its original dimensions.
+ *
+ * Components with custom dimensions (like checkbox, attachmentsEditor) manage
+ * their own sizing and should not be forced to fill 100% of their wrapper
+ * in designer mode.
  *
  * @param componentType - The component type to check
- * @returns true if the component should skip standard dimension processing
+ * @returns true if the component should preserve its original dimensions
  *
  * @example
  * ```tsx
- * if (shouldSkipComponent('checkbox')) {
- *   // Apply special handling for checkbox
+ * if (shouldPreserveOriginalDimensions('checkbox')) {
+ *   // Use the component's original dimensions
  * }
  * ```
  */
-export const shouldSkipComponent = (componentType: string | undefined): boolean => {
+export const shouldPreserveOriginalDimensions = (componentType: string | undefined): boolean => {
   if (!componentType) return false;
-  return COMPONENTS_TO_SKIP.includes(componentType as SkipComponentType);
+  return COMPONENTS_WITH_CUSTOM_DIMENSIONS.includes(componentType as CustomDimensionComponentType);
 };
 
 /**
@@ -29,7 +34,7 @@ export const shouldSkipComponent = (componentType: string | undefined): boolean 
  *
  * Used to determine how a component should be rendered in the designer:
  * - isInput: Whether the component is an input field (affects default margins)
- * - shouldSkip: Whether to skip standard dimension wrapper pattern
+ * - shouldPreserveDimensions: Whether to preserve original dimensions instead of 100% fill
  *
  * @param component - The toolbox component definition
  * @returns ComponentTypeInfo with classification flags
@@ -37,7 +42,7 @@ export const shouldSkipComponent = (componentType: string | undefined): boolean 
  * @example
  * ```tsx
  * const typeInfo = getComponentTypeInfo(toolboxComponent);
- * if (typeInfo.shouldSkip) {
+ * if (typeInfo.shouldPreserveDimensions) {
  *   return dimensionsStyles; // Use original dimensions
  * }
  * return { width: '100%', height: '100%' }; // Fill wrapper
@@ -45,10 +50,10 @@ export const shouldSkipComponent = (componentType: string | undefined): boolean 
  */
 export const getComponentTypeInfo = (component: IToolboxComponent<IConfigurableFormComponent>): ComponentTypeInfo => {
   const isInput = component?.isInput || component?.type === 'button';
-  const shouldSkip = shouldSkipComponent(component?.type);
+  const shouldPreserveDimensions = shouldPreserveOriginalDimensions(component?.type);
 
   return {
     isInput,
-    shouldSkip,
+    shouldPreserveDimensions,
   };
 };

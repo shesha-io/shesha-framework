@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { ComponentTypeInfo, shouldSkipComponent } from './componentTypeUtils';
+import { ComponentTypeInfo, shouldPreserveOriginalDimensions } from './componentTypeUtils';
 import { IStyleType } from '@/index';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 
@@ -35,22 +35,22 @@ export const getComponentDimensions = (
   dimensionsStyles: CSSProperties,
   jsStyle: CSSProperties,
 ): CSSProperties => {
-  const { shouldSkip } = typeInfo;
+  const { shouldPreserveDimensions } = typeInfo;
 
-  const width = shouldSkip
+  const width = shouldPreserveDimensions
     ? 'auto'
     : jsStyle?.width ?? dimensionsStyles?.width ?? 'auto';
 
-  const height = shouldSkip
+  const height = shouldPreserveDimensions
     ? 'auto'
     : jsStyle?.height ?? dimensionsStyles?.height ?? 'auto';
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
-    if (shouldSkip) return undefined;
+    if (shouldPreserveDimensions) return undefined;
     return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
   };
 
-  const flexBasis = shouldSkip
+  const flexBasis = shouldPreserveDimensions
     ? undefined
     : (jsStyle?.maxWidth ?? dimensionsStyles?.maxWidth ?? dimensionsStyles?.width);
 
@@ -127,8 +127,8 @@ export const getComponentDimensionsForMode = (
     return dimensionsStyles;
   }
 
-  // In designer mode, skipped components keep original dimensions
-  if (typeInfo.shouldSkip) {
+  // In designer mode, components with custom dimensions keep original dimensions
+  if (typeInfo.shouldPreserveDimensions) {
     return dimensionsStyles;
   }
 
@@ -150,9 +150,9 @@ export const getComponentDimensionsByType = (
   dimensionsStyles: CSSProperties,
   isDesignerMode: boolean,
 ): CSSProperties => {
-  const shouldSkip = shouldSkipComponent(componentType);
+  const preserveDimensions = shouldPreserveOriginalDimensions(componentType);
 
-  if (!isDesignerMode || shouldSkip) {
+  if (!isDesignerMode || preserveDimensions) {
     return dimensionsStyles;
   }
 
@@ -167,7 +167,7 @@ export const getComponentDimensionsByType = (
  *
  * @param baseStyle - The base CSS styles
  * @param isDesignerMode - Whether currently in designer mode
- * @param shouldSkip - Whether to skip designer dimension overrides
+ * @param preserveDimensions - Whether to preserve original dimensions instead of applying 100%
  * @returns Merged styles with designer overrides if applicable
  *
  * @example
@@ -184,9 +184,9 @@ export const getComponentDimensionsByType = (
 export const mergeWithDesignerDimensions = (
   baseStyle: CSSProperties,
   isDesignerMode: boolean,
-  shouldSkip: boolean = false,
+  preserveDimensions: boolean = false,
 ): CSSProperties => {
-  if (!isDesignerMode || shouldSkip) {
+  if (!isDesignerMode || preserveDimensions) {
     return baseStyle;
   }
 
@@ -206,11 +206,11 @@ export const mergeWithDesignerDimensions = (
  * @example
  * ```tsx
  * const mergeDimensions = useDesignerDimensionsMerger(shaForm.formMode === 'designer');
- * const style = mergeDimensions(baseStyle, shouldSkipComponent(type));
+ * const style = mergeDimensions(baseStyle, shouldPreserveOriginalDimensions(type));
  * ```
  */
 export const getDesignerDimensionsMerger = (isDesignerMode: boolean) => {
-  return (baseStyle: CSSProperties, shouldSkip: boolean = false): CSSProperties => {
-    return mergeWithDesignerDimensions(baseStyle, isDesignerMode, shouldSkip);
+  return (baseStyle: CSSProperties, preserveDimensions: boolean = false): CSSProperties => {
+    return mergeWithDesignerDimensions(baseStyle, isDesignerMode, preserveDimensions);
   };
 };
