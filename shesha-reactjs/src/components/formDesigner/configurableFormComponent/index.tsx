@@ -89,7 +89,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     ), settingsPanelRef.current, "propertiesPanel");
 
     return result;
-  }, [isSelected]);
+  }, [isSelected, fullComponentModel]);
 
   // Extract margins from component styling, with fallback to form defaults
   const margins = useMemo(() => ({
