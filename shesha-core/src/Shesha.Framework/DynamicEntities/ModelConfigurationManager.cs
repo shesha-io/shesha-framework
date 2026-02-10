@@ -371,9 +371,6 @@ namespace Shesha.DynamicEntities
         {
             Validate(input, isNew);
 
-            // ToDo: AS - Think if we allow to change name because there can be created inherited classes
-            //config.Name = config.CreatedInDb ? config.Name : dto.Name; // update only if the property is not created in DB yet
-
             if (isNew)
             {
                 entityConfig.IsCodegenPending = true;
@@ -381,7 +378,6 @@ namespace Shesha.DynamicEntities
                 entityConfig.DiscriminatorValue = input.DiscriminatorValue?.Trim();
                 entityConfig.SchemaName = input.SchemaName?.Trim();
                 entityConfig.TableName = input.TableName?.Trim();
-                entityConfig.Name = input.Name.Trim();
                 entityConfig.ClassName = input.ClassName.Trim();
                 entityConfig.Namespace = input.Namespace?.Trim();
                 entityConfig.Module = input.ModuleId != null ? await _moduleManager.GetModuleAsync(input.ModuleId.Value) : null;
@@ -391,6 +387,11 @@ namespace Shesha.DynamicEntities
 
                 await Repository.InsertAsync(entityConfig);
             }
+
+            // Update Name only if the property is not created in DB yet
+            if (!entityConfig.CreatedInDb)
+                entityConfig.Name = input.Name.Trim(); 
+
 
             entityConfig.Label = input.Label;
             entityConfig.Description = input.Description;
@@ -705,7 +706,7 @@ namespace Shesha.DynamicEntities
 
             if (updateType != ModelUpdateType.DecorProperties)
             {
-                //dbProp.Name = dbProp.CreatedInDb ? dbProp.Name : dto.Name; // update only if the property is not created in DB yet
+                dbProp.Name = dbProp.CreatedInDb ? dbProp.Name : dto.Name; // update only if the property is not created in DB yet
                 dbProp.EntityModule = dto.EntityType?.Module;
                 dbProp.EntityType = dto.EntityType?.Name;
                 dbProp.EntityFullClassName = (await Repository.FirstOrDefaultAsync(x =>
