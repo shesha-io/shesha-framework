@@ -202,11 +202,11 @@ namespace Shesha.UserManagements
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="UserFriendlyException"></exception>
         public async Task<string?> CompleteRegistrationAsync(long userId)
         {
             var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
@@ -273,7 +273,7 @@ namespace Shesha.UserManagements
         )
         {
             if (creationMode is null)
-                throw new ArgumentNullException(nameof(creationMode));
+                throw new UserFriendlyException(nameof(creationMode));
 
             var isInternalAccount = input.TypeOfAccount?.ItemValue == (long)RefListTypeOfAccount.Internal;
             var username = userName.NotNull();
@@ -531,8 +531,7 @@ namespace Shesha.UserManagements
         /// </summary>
         /// <param name="email"></param>
         /// <param name="allowedDomains"></param>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="UserFriendlyException"></exception>
         private static async Task HandleAllowedDomainsAsync(string email, string allowedDomains)
         {
             if (string.IsNullOrWhiteSpace(email))
