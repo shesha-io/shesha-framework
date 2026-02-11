@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { Pagination } from 'antd';
 import { useMedia } from 'react-use';
 
@@ -61,10 +61,6 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
 
     return null;
   };
-
-  useEffect(() => {
-    if (!isNaN(selectedPageSize)) onShowSizeChange(currentPage, selectedPageSize);
-  }, [showSizeChanger]);
 
   if (!isWider) return null;
 
