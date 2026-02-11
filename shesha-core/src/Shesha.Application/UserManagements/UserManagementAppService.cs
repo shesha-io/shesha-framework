@@ -560,7 +560,12 @@ namespace Shesha.UserManagements
             var emailDomain = email.Substring(atIndex);
 
             // Check if email domain matches any of the allowed domains
-            if (!domainList.Any(allowed => emailDomain.EndsWith(allowed)))
+            // Ensure exact domain match by normalizing allowed entries to start with "@"
+            if (!domainList.Any(allowed =>
+            {
+                var normalizedAllowed = allowed.StartsWith("@") ? allowed : "@" + allowed;
+                return emailDomain.Equals(normalizedAllowed, StringComparison.OrdinalIgnoreCase);
+            }))
             {
                 throw new UserFriendlyException(
                     $"Email domain '{emailDomain}' is not allowed. Allowed domains: {string.Join(", ", domainList)}."
