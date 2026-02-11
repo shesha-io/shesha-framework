@@ -102,7 +102,7 @@ namespace Shesha.Sessions
                             PermissionedEntity = permissionRoles.Any(x => !x.PermissionedEntities.Any())
                                 ? new List<EntityReferenceDto<string>>()
                                 : permissionRoles.SelectMany(x => x.PermissionedEntities).Distinct()
-                                    .Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
+                                    .Select(x => new EntityReferenceDto<string>(x.Id, x._className, x._displayName))
                                     .ToList()
                         }); ;
                     }
@@ -119,7 +119,7 @@ namespace Shesha.Sessions
                         var grantedPermission = new GrantedPermissionDto
                         {
                             Permission = permission.Permission,
-                            PermissionedEntity = role.PermissionedEntities.Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className)).ToList(),
+                            PermissionedEntity = role.PermissionedEntities.Select(x => new EntityReferenceDto<string>(x.Id, x._className, x._displayName)).ToList(),
                         };
                     }
                 }

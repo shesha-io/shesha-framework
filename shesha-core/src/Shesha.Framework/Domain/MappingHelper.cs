@@ -318,9 +318,15 @@ namespace Shesha.Domain
             if (config.InheritedFrom != null)
             {
                 var rootConfig = config.InheritedFrom;
-                // ToDo: AS - infinity loop should not be there but need to think how to be shure
-                while (rootConfig.InheritedFrom != null)
+                // For checking infinity loop
+                var processed = new HashSet<EntityConfig> { config };
+                while (rootConfig.InheritedFrom != null && !processed.Contains(rootConfig.InheritedFrom))
+                {
                     rootConfig = rootConfig.InheritedFrom;
+                    processed.Add(rootConfig);
+                }
+                if (rootConfig.InheritedFrom != null && processed.Contains(rootConfig.InheritedFrom))
+                    throw new EntityNotFoundException($"Infinity inheritance loop for {config.FullClassName}, closes on {rootConfig.InheritedFrom.FullClassName}");
                 
                 var configAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == config.Module.NotNull().Name)?.Assembly.FullName;
                 var rootConfigAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == rootConfig.Module.NotNull().Name)?.Assembly.FullName;

@@ -450,16 +450,6 @@ namespace Shesha
 
             if (result.HasValidationError)
                 return result;
-            
-            // ToDo: AS - V1 remove after implementation Entity Configuration
-            /*if (jObject != null)
-            {
-                await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
-            }
-            else
-            {
-                await MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
-            }*/
 
             return result;
         }
@@ -484,12 +474,6 @@ namespace Shesha
             result = result && await ValidateEntityAsync<TEntity>(entity, validationResult);
 
             return result;
-
-            // ToDo: AS - V1 remove after implementation Entity Configuration
-            /*if (!result) return false;
-             
-            return await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
-            */
         }
 
         /// <summary>
