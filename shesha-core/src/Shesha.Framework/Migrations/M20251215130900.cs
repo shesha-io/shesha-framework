@@ -12,86 +12,253 @@ namespace Shesha.Migrations
             // SQL Server migration
             // ===========================
             IfDatabase("SqlServer").Execute.Sql(@"
-            -- Update User Management settings to new structure
-                  -- Declare cursor variables
-                  DECLARE @OldUserManagementValue NVARCHAR(MAX);
-                  DECLARE @OldUserManagementId UNIQUEIDENTIFIER;
+            -- ============================================================================
+            -- Step 1: Update OTP settings and merge with Authentication settings FIRST
+            -- (This must run before UserManagement/Security transformations to preserve original fields)
+            -- ============================================================================
+            DECLARE @OldOtpValue NVARCHAR(MAX);
+            DECLARE @OldOtpId UNIQUEIDENTIFIER;
+            DECLARE @OtpApplicationId UNIQUEIDENTIFIER;
+            DECLARE @OtpUserId BIGINT;
+            DECLARE @ContextUserManagementValue NVARCHAR(MAX);
+            DECLARE @ContextSecurityValue NVARCHAR(MAX);
 
-                  -- Declare a cursor to iterate through all matching User Management setting values
-                  DECLARE user_mgmt_cursor CURSOR FOR
+            -- Declare a cursor to iterate through all matching OTP setting values
+            DECLARE otp_cursor CURSOR FOR
+            SELECT
+                sv.Id,
+                sv.Value,
+                sv.application_id,
+                sv.user_id
+            FROM
+                [frwk].[setting_values] sv
+                INNER JOIN [frwk].[setting_configurations] sc ON sv.setting_configuration_id = sc.Id
+                INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
+            WHERE
+                ci.item_type = 'setting-configuration'
+                AND (
+                    ci.Name LIKE '%Otp%'
+                    OR ci.Name LIKE '%OneTimePin%'
+                    OR sv.Value LIKE '%passwordLength%'
+                    OR sv.Value LIKE '%alphabet%'
+                )
+                AND sv.Value IS NOT NULL
+                AND ISJSON(sv.Value) = 1;
+
+            OPEN otp_cursor;
+            FETCH NEXT FROM otp_cursor INTO @OldOtpId, @OldOtpValue, @OtpApplicationId, @OtpUserId;
+
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+              -- Fetch corresponding User Management value for this context (matching application_id/user_id)
+              SELECT @ContextUserManagementValue = sv.Value
+              FROM [frwk].[setting_values] sv
+                  INNER JOIN [frwk].[setting_configurations] sc ON sv.setting_configuration_id = sc.Id
+                  INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
+              WHERE ci.item_type = 'setting-configuration'
+                  AND ci.Name = 'Shesha.UserManagement'
+                  AND sv.Value IS NOT NULL
+                  AND ISJSON(sv.Value) = 1
+                  AND ((@OtpApplicationId IS NULL AND sv.application_id IS NULL) OR sv.application_id = @OtpApplicationId)
+                  AND ((@OtpUserId IS NULL AND sv.user_id IS NULL) OR sv.user_id = @OtpUserId);
+
+              -- Fetch corresponding Security value for this context (matching application_id/user_id)
+              SELECT @ContextSecurityValue = sv.Value
+              FROM [frwk].[setting_values] sv
+                  INNER JOIN [frwk].[setting_configurations] sc ON sv.setting_configuration_id = sc.Id
+                  INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
+              WHERE ci.item_type = 'setting-configuration'
+                  AND ci.Name = 'Shesha.Security'
+                  AND sv.Value IS NOT NULL
+                  AND ISJSON(sv.Value) = 1
+                  AND ((@OtpApplicationId IS NULL AND sv.application_id IS NULL) OR sv.application_id = @OtpApplicationId)
+                  AND ((@OtpUserId IS NULL AND sv.user_id IS NULL) OR sv.user_id = @OtpUserId);
+
+              -- Now combine OTP and any other auth settings into DefaultAuthenticationSettings
+              DECLARE @NewDefaultAuthValue NVARCHAR(MAX);
+
+              -- Extract OTP values
+              DECLARE @PasswordLength INT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.passwordLength') AS INT) ELSE NULL END;
+              DECLARE @Alphabet NVARCHAR(100) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.alphabet') ELSE NULL END;
+              DECLARE @DefaultLifetime INT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.defaultLifetime') AS INT) ELSE NULL END;
+              DECLARE @IgnoreOtpValidation BIT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.ignoreOtpValidation') AS BIT) ELSE NULL END;
+              DECLARE @DefaultSubjectTemplate NVARCHAR(500) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultSubjectTemplate') ELSE NULL END;
+              DECLARE @DefaultBodyTemplate NVARCHAR(MAX) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultBodyTemplate') ELSE NULL END;
+              DECLARE @DefaultEmailSubjectTemplate NVARCHAR(500) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultEmailSubjectTemplate') ELSE NULL END;
+              DECLARE @DefaultEmailBodyTemplate NVARCHAR(MAX) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultEmailBodyTemplate') ELSE NULL END;
+
+              -- Extract User Management values that go into DefaultAuth (from context-specific value)
+              DECLARE @RequireEmailVerification BIT = CASE WHEN @ContextUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextUserManagementValue, '$.requireEmailVerification') AS BIT) ELSE NULL END;
+              DECLARE @UserEmailAsUsername BIT = CASE WHEN @ContextUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextUserManagementValue, '$.userEmailAsUsername') AS BIT) ELSE NULL END;
+              DECLARE @SupportedRegistrationMethods INT = CASE WHEN @ContextUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextUserManagementValue, '$.supportedRegistrationMethods') AS INT) ELSE NULL END;
+
+              -- Extract Security values that go into DefaultAuth (from context-specific value)
+              DECLARE @ContextAutoLogoffTimeout INT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.autoLogoffTimeout') AS INT) ELSE NULL END;
+              DECLARE @ContextUseResetPasswordViaEmailLink BIT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.useResetPasswordViaEmailLink') AS BIT) ELSE NULL END;
+              DECLARE @ContextResetPasswordEmailLinkLifetime INT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.resetPasswordEmailLinkLifetime') AS INT) ELSE NULL END;
+              DECLARE @ContextUseResetPasswordViaSmsOtp BIT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.useResetPasswordViaSmsOtp') AS BIT) ELSE NULL END;
+              DECLARE @ContextResetPasswordSmsOtpLifetime INT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.resetPasswordSmsOtpLifetime') AS INT) ELSE NULL END;
+              DECLARE @ContextUseResetPasswordViaSecurityQuestions BIT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.useResetPasswordViaSecurityQuestions') AS BIT) ELSE NULL END;
+              DECLARE @ContextResetPasswordViaSecurityQuestionsNumQuestionsAllowed INT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.resetPasswordViaSecurityQuestionsNumQuestionsAllowed') AS INT) ELSE NULL END;
+
+              SET @NewDefaultAuthValue = (
                   SELECT
-                      sv.Id,
-                      sv.Value
-                  FROM
-                      [frwk].[setting_values] sv
-                      INNER JOIN [frwk].[setting_configurations] sc ON sv.setting_configuration_id = sc.Id
-                      INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
-                  WHERE
-                      ci.item_type = 'setting-configuration'
-                      AND ci.Name = 'Shesha.UserManagement'
-                      AND sv.Value IS NOT NULL
-                      AND ISJSON(sv.Value) = 1;  -- Ensure it's valid JSON
+                      -- From old user management
+                      ISNULL(@RequireEmailVerification, 0) AS requireOtpVerification,
+                      CAST(1 AS BIT) AS allowLocalUsernamePasswordAuth,
+                      CAST(1 AS BIT) AS useDefaultRegistrationForm,
+                      ISNULL(@UserEmailAsUsername, 1) AS userEmailAsUsername,
+                      @SupportedRegistrationMethods AS supportedVerificationMethods,
 
-                  OPEN user_mgmt_cursor;
-                  FETCH NEXT FROM user_mgmt_cursor INTO @OldUserManagementId, @OldUserManagementValue;
+                      -- From old security settings (context-specific)
+                      ISNULL(@ContextUseResetPasswordViaEmailLink, 1) AS useResetPasswordViaEmailLink,
+                      ISNULL(@ContextResetPasswordEmailLinkLifetime, 360) AS resetPasswordEmailLinkLifetime,
+                      ISNULL(@ContextUseResetPasswordViaSmsOtp, 1) AS useResetPasswordViaSmsOtp,
+                      ISNULL(@ContextResetPasswordSmsOtpLifetime, 180) AS resetPasswordSmsOtpLifetime,
+                      ISNULL(@ContextUseResetPasswordViaSecurityQuestions, 0) AS useResetPasswordViaSecurityQuestions,
+                      ISNULL(@ContextResetPasswordViaSecurityQuestionsNumQuestionsAllowed, 0) AS resetPasswordViaSecurityQuestionsNumQuestionsAllowed,
 
-                  WHILE @@FETCH_STATUS = 0
+                      -- From old OTP settings
+                      ISNULL(@PasswordLength, 6) AS passwordLength,
+                      ISNULL(@Alphabet, '0123456789') AS alphabet,
+                      ISNULL(@DefaultLifetime, 360) AS defaultLifetime,
+                      ISNULL(@IgnoreOtpValidation, 0) AS ignoreOtpValidation,
+                      ISNULL(@DefaultSubjectTemplate, 'One-Time-Pin') AS defaultSubjectTemplate,
+                      ISNULL(@DefaultBodyTemplate, 'Your One-Time-Pin is {{password}}') AS defaultBodyTemplate,
+                      ISNULL(@DefaultEmailSubjectTemplate, 'One-Time-Pin') AS defaultEmailSubjectTemplate,
+                      ISNULL(@DefaultEmailBodyTemplate, '') AS defaultEmailBodyTemplate,
+
+                      -- Password Complexity (defaults - not in old structure)
+                      CAST(0 AS BIT) AS requireDigit,
+                      CAST(0 AS BIT) AS requireLowercase,
+                      CAST(0 AS BIT) AS requireNonAlphanumeric,
+                      CAST(0 AS BIT) AS requireUppercase,
+                      6 AS requiredLength,
+
+                      -- User Lockout (defaults - not in old structure)
+                      CAST(0 AS BIT) AS userLockOutEnabled,
+                      5 AS maxFailedAccessAttemptsBeforeLockout,
+                      300 AS defaultAccountLockoutSeconds
+                  FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+              );
+
+              -- Find or create DefaultAuthenticationSettings
+              DECLARE @DefaultAuthSettingsId UNIQUEIDENTIFIER;
+              DECLARE @DefaultAuthSettingsConfigId UNIQUEIDENTIFIER;
+
+              SELECT @DefaultAuthSettingsConfigId = ci.Id
+              FROM [frwk].[configuration_items] ci
+              WHERE ci.item_type = 'setting-configuration'
+                AND ci.Name = 'Shesha.DefaultAuthentication';
+
+              IF @DefaultAuthSettingsConfigId IS NOT NULL
+              BEGIN
+                  -- Find existing setting value for this specific context (application_id/user_id)
+                  SELECT @DefaultAuthSettingsId = Id
+                  FROM [frwk].[setting_values]
+                  WHERE setting_configuration_id = @DefaultAuthSettingsConfigId
+                      AND ((@OtpApplicationId IS NULL AND application_id IS NULL) OR application_id = @OtpApplicationId)
+                      AND ((@OtpUserId IS NULL AND user_id IS NULL) OR user_id = @OtpUserId);
+
+                  IF @DefaultAuthSettingsId IS NOT NULL
                   BEGIN
-                      -- Parse and transform to new structure
-                      DECLARE @NewUserManagementValue NVARCHAR(MAX);
-                  
-                      -- Extract individual values first for easier debugging
-                      DECLARE @AdditionalRegistrationInfo BIT = CAST(JSON_VALUE(@OldUserManagementValue, '$.additionalRegistrationInfo') AS BIT);
-                      DECLARE @AdditionalRegistrationInfoFormModule NVARCHAR(200) = JSON_VALUE(@OldUserManagementValue, '$.additionalRegistrationInfoFormModule');
-                      DECLARE @AdditionalRegistrationInfoFormName NVARCHAR(200) = JSON_VALUE(@OldUserManagementValue, '$.additionalRegistrationInfoFormName');
-                      DECLARE @CreationMode INT = CAST(JSON_VALUE(@OldUserManagementValue, '$.creationMode') AS INT);
-                      DECLARE @DefaultRoles NVARCHAR(MAX) = JSON_QUERY(@OldUserManagementValue, '$.defaultRoles');
-                      DECLARE @PersonEntityType NVARCHAR(200) = JSON_VALUE(@OldUserManagementValue, '$.personEntityType');
-                  
-                      -- Build the new JSON structure
-                      SET @NewUserManagementValue = (
-                          SELECT
-                              ISNULL(@AdditionalRegistrationInfo, 0) AS additionalRegistrationInfo,
-                              @AdditionalRegistrationInfoFormModule AS 'additionalRegistrationInfoForm._module',
-                              @AdditionalRegistrationInfoFormName AS 'additionalRegistrationInfoForm._name',
-                              'form-configuration' AS 'additionalRegistrationInfoForm._className',
-                              CAST(1 AS BIT) AS allowSelfRegistration,
-                              '' AS allowedEmailDomains,
-                              ISNULL(@CreationMode, 0) AS creationMode,
-                              JSON_QUERY(ISNULL(@DefaultRoles, '[]')) AS defaultRoles,
-                              @PersonEntityType AS 'personEntityType._className'
-                          FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                      );
-                  
-                      -- Update the value
+                      -- Update existing
                       UPDATE [frwk].[setting_values]
-                      SET Value = @NewUserManagementValue,
+                      SET Value = @NewDefaultAuthValue,
                           last_modification_time = GETUTCDATE()
-                      WHERE Id = @OldUserManagementId;
-
-                      FETCH NEXT FROM user_mgmt_cursor INTO @OldUserManagementId, @OldUserManagementValue;
+                      WHERE Id = @DefaultAuthSettingsId;
                   END
+                  ELSE
+                  BEGIN
+                      -- Insert new with matching application_id/user_id context
+                      INSERT INTO [frwk].[setting_values] (Id, setting_configuration_id, application_id, user_id, Value, creation_time)
+                      VALUES (NEWID(), @DefaultAuthSettingsConfigId, @OtpApplicationId, @OtpUserId, @NewDefaultAuthValue, GETUTCDATE());
+                  END
+              END
 
-                  CLOSE user_mgmt_cursor;
-                  DEALLOCATE user_mgmt_cursor;
-                  
-                  -- ============================================================================
-                  -- Step 2: Update Security settings to new structure
-                  -- ============================================================================
-                  DECLARE @OldSecurityValue NVARCHAR(MAX);
-                  DECLARE @OldSecurityId UNIQUEIDENTIFIER;
+                -- Reset context variables for next iteration
+                SET @ContextUserManagementValue = NULL;
+                SET @ContextSecurityValue = NULL;
 
-                  -- Declare variables that will be used in Step 3 (must be outside cursor loop)
-                  DECLARE @AutoLogoffTimeout INT;
-                  DECLARE @UseResetPasswordViaEmailLink BIT;
-                  DECLARE @ResetPasswordEmailLinkLifetime INT;
-                  DECLARE @UseResetPasswordViaSmsOtp BIT;
-                  DECLARE @ResetPasswordSmsOtpLifetime INT;
-                  DECLARE @UseResetPasswordViaSecurityQuestions BIT;
-                  DECLARE @ResetPasswordViaSecurityQuestionsNumQuestionsAllowed INT;
+                FETCH NEXT FROM otp_cursor INTO @OldOtpId, @OldOtpValue, @OtpApplicationId, @OtpUserId;
+            END
 
-                  -- Declare a cursor to iterate through all matching Security setting values
-                  DECLARE security_cursor CURSOR FOR
+            CLOSE otp_cursor;
+            DEALLOCATE otp_cursor;
+
+            -- ============================================================================
+            -- Step 2: Update User Management settings to new structure
+            -- ============================================================================
+            DECLARE @OldUserManagementValue NVARCHAR(MAX);
+            DECLARE @OldUserManagementId UNIQUEIDENTIFIER;
+
+            -- Declare a cursor to iterate through all matching User Management setting values
+            DECLARE user_mgmt_cursor CURSOR FOR
+            SELECT
+                sv.Id,
+                sv.Value
+            FROM
+                [frwk].[setting_values] sv
+                INNER JOIN [frwk].[setting_configurations] sc ON sv.setting_configuration_id = sc.Id
+                INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
+            WHERE
+                ci.item_type = 'setting-configuration'
+                AND ci.Name = 'Shesha.UserManagement'
+                AND sv.Value IS NOT NULL
+                AND ISJSON(sv.Value) = 1;  -- Ensure it's valid JSON
+
+            OPEN user_mgmt_cursor;
+            FETCH NEXT FROM user_mgmt_cursor INTO @OldUserManagementId, @OldUserManagementValue;
+
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+                -- Parse and transform to new structure
+                DECLARE @NewUserManagementValue NVARCHAR(MAX);
+
+                -- Extract individual values first for easier debugging
+                DECLARE @AdditionalRegistrationInfo BIT = CAST(JSON_VALUE(@OldUserManagementValue, '$.additionalRegistrationInfo') AS BIT);
+                DECLARE @AdditionalRegistrationInfoFormModule NVARCHAR(200) = JSON_VALUE(@OldUserManagementValue, '$.additionalRegistrationInfoFormModule');
+                DECLARE @AdditionalRegistrationInfoFormName NVARCHAR(200) = JSON_VALUE(@OldUserManagementValue, '$.additionalRegistrationInfoFormName');
+                DECLARE @CreationMode INT = CAST(JSON_VALUE(@OldUserManagementValue, '$.creationMode') AS INT);
+                DECLARE @DefaultRoles NVARCHAR(MAX) = JSON_QUERY(@OldUserManagementValue, '$.defaultRoles');
+                DECLARE @PersonEntityType NVARCHAR(200) = JSON_VALUE(@OldUserManagementValue, '$.personEntityType');
+
+                -- Build the new JSON structure
+                SET @NewUserManagementValue = (
+                    SELECT
+                        ISNULL(@AdditionalRegistrationInfo, 0) AS additionalRegistrationInfo,
+                        @AdditionalRegistrationInfoFormModule AS 'additionalRegistrationInfoForm._module',
+                        @AdditionalRegistrationInfoFormName AS 'additionalRegistrationInfoForm._name',
+                        'form-configuration' AS 'additionalRegistrationInfoForm._className',
+                        CAST(1 AS BIT) AS allowSelfRegistration,
+                        '' AS allowedEmailDomains,
+                        ISNULL(@CreationMode, 0) AS creationMode,
+                        JSON_QUERY(ISNULL(@DefaultRoles, '[]')) AS defaultRoles,
+                        @PersonEntityType AS 'personEntityType._className'
+                    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+                );
+
+                -- Update the value
+                UPDATE [frwk].[setting_values]
+                SET Value = @NewUserManagementValue,
+                    last_modification_time = GETUTCDATE()
+                WHERE Id = @OldUserManagementId;
+
+                FETCH NEXT FROM user_mgmt_cursor INTO @OldUserManagementId, @OldUserManagementValue;
+            END
+
+            CLOSE user_mgmt_cursor;
+            DEALLOCATE user_mgmt_cursor;
+
+            -- ============================================================================
+            -- Step 3: Update Security settings to new structure
+            -- ============================================================================
+            DECLARE @OldSecurityValue NVARCHAR(MAX);
+            DECLARE @OldSecurityId UNIQUEIDENTIFIER;
+            DECLARE @AutoLogoffTimeout INT;
+
+            -- Declare a cursor to iterate through all matching Security setting values
+            DECLARE security_cursor CURSOR FOR
                   SELECT
                       sv.Id,
                       sv.Value
@@ -112,13 +279,7 @@ namespace Shesha.Migrations
                   BEGIN
                       -- Extract values
                       SET @AutoLogoffTimeout = CAST(JSON_VALUE(@OldSecurityValue, '$.autoLogoffTimeout') AS INT);
-                      SET @UseResetPasswordViaEmailLink = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaEmailLink') AS BIT);
-                      SET @ResetPasswordEmailLinkLifetime = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordEmailLinkLifetime') AS INT);
-                      SET @UseResetPasswordViaSmsOtp = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaSmsOtp') AS BIT);
-                      SET @ResetPasswordSmsOtpLifetime = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordSmsOtpLifetime') AS INT);
-                      SET @UseResetPasswordViaSecurityQuestions = CAST(JSON_VALUE(@OldSecurityValue, '$.useResetPasswordViaSecurityQuestions') AS BIT);
-                      SET @ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = CAST(JSON_VALUE(@OldSecurityValue, '$.resetPasswordViaSecurityQuestionsNumQuestionsAllowed') AS INT);
-                  
+
                       -- Transform to GeneralFrontendSecuritySettings
                       DECLARE @NewGeneralSecurityValue NVARCHAR(MAX);
                   
@@ -140,180 +301,7 @@ namespace Shesha.Migrations
 
                   CLOSE security_cursor;
                   DEALLOCATE security_cursor;
-                  
-                  -- ============================================================================
-                  -- Step 3: Update OTP settings and merge with Authentication settings
-                  -- ============================================================================
-                  DECLARE @OldOtpValue NVARCHAR(MAX);
-                  DECLARE @OldOtpId UNIQUEIDENTIFIER;
-                  DECLARE @OtpApplicationId UNIQUEIDENTIFIER;
-                  DECLARE @OtpUserId BIGINT;
-                  DECLARE @ContextUserManagementValue NVARCHAR(MAX);
-                  DECLARE @ContextSecurityValue NVARCHAR(MAX);
-
-                  -- Declare a cursor to iterate through all matching OTP setting values
-                  DECLARE otp_cursor CURSOR FOR
-                  SELECT
-                      sv.Id,
-                      sv.Value,
-                      sv.application_id,
-                      sv.user_id
-                  FROM
-                      [frwk].[setting_values] sv
-                      INNER JOIN [frwk].[setting_configurations] sc ON sv.setting_configuration_id = sc.Id
-                      INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
-                  WHERE
-                      ci.item_type = 'setting-configuration'
-                      AND (
-                          ci.Name LIKE '%Otp%'
-                          OR ci.Name LIKE '%OneTimePin%'
-                          OR sv.Value LIKE '%passwordLength%'
-                          OR sv.Value LIKE '%alphabet%'
-                      )
-                      AND sv.Value IS NOT NULL
-                      AND ISJSON(sv.Value) = 1;
-
-                  OPEN otp_cursor;
-                  FETCH NEXT FROM otp_cursor INTO @OldOtpId, @OldOtpValue, @OtpApplicationId, @OtpUserId;
-
-                  WHILE @@FETCH_STATUS = 0
-                  BEGIN
-                    -- Fetch corresponding User Management value for this context (matching application_id/user_id)
-                    SELECT @ContextUserManagementValue = sv.Value
-                    FROM [frwk].[setting_values] sv
-                        INNER JOIN [frwk].[setting_configurations] sc ON sv.setting_configuration_id = sc.Id
-                        INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
-                    WHERE ci.item_type = 'setting-configuration'
-                        AND ci.Name = 'Shesha.UserManagement'
-                        AND sv.Value IS NOT NULL
-                        AND ISJSON(sv.Value) = 1
-                        AND ((@OtpApplicationId IS NULL AND sv.application_id IS NULL) OR sv.application_id = @OtpApplicationId)
-                        AND ((@OtpUserId IS NULL AND sv.user_id IS NULL) OR sv.user_id = @OtpUserId);
-
-                    -- Fetch corresponding Security value for this context (matching application_id/user_id)
-                    SELECT @ContextSecurityValue = sv.Value
-                    FROM [frwk].[setting_values] sv
-                        INNER JOIN [frwk].[setting_configurations] sc ON sv.setting_configuration_id = sc.Id
-                        INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
-                    WHERE ci.item_type = 'setting-configuration'
-                        AND ci.Name = 'Shesha.Security'
-                        AND sv.Value IS NOT NULL
-                        AND ISJSON(sv.Value) = 1
-                        AND ((@OtpApplicationId IS NULL AND sv.application_id IS NULL) OR sv.application_id = @OtpApplicationId)
-                        AND ((@OtpUserId IS NULL AND sv.user_id IS NULL) OR sv.user_id = @OtpUserId);
-
-                    -- Now combine OTP and any other auth settings into DefaultAuthenticationSettings
-                    DECLARE @NewDefaultAuthValue NVARCHAR(MAX);
-
-                    -- Extract OTP values
-                    DECLARE @PasswordLength INT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.passwordLength') AS INT) ELSE NULL END;
-                    DECLARE @Alphabet NVARCHAR(100) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.alphabet') ELSE NULL END;
-                    DECLARE @DefaultLifetime INT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.defaultLifetime') AS INT) ELSE NULL END;
-                    DECLARE @IgnoreOtpValidation BIT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.ignoreOtpValidation') AS BIT) ELSE NULL END;
-                    DECLARE @DefaultSubjectTemplate NVARCHAR(500) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultSubjectTemplate') ELSE NULL END;
-                    DECLARE @DefaultBodyTemplate NVARCHAR(MAX) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultBodyTemplate') ELSE NULL END;
-                    DECLARE @DefaultEmailSubjectTemplate NVARCHAR(500) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultEmailSubjectTemplate') ELSE NULL END;
-                    DECLARE @DefaultEmailBodyTemplate NVARCHAR(MAX) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultEmailBodyTemplate') ELSE NULL END;
-                    
-                    -- Extract User Management values that go into DefaultAuth (from context-specific value)
-                    DECLARE @RequireEmailVerification BIT = CASE WHEN @ContextUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextUserManagementValue, '$.requireEmailVerification') AS BIT) ELSE NULL END;
-                    DECLARE @UserEmailAsUsername BIT = CASE WHEN @ContextUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextUserManagementValue, '$.userEmailAsUsername') AS BIT) ELSE NULL END;
-                    DECLARE @SupportedRegistrationMethods INT = CASE WHEN @ContextUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextUserManagementValue, '$.supportedRegistrationMethods') AS INT) ELSE NULL END;
-
-                    -- Extract Security values that go into DefaultAuth (from context-specific value)
-                    DECLARE @ContextAutoLogoffTimeout INT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.autoLogoffTimeout') AS INT) ELSE NULL END;
-                    DECLARE @ContextUseResetPasswordViaEmailLink BIT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.useResetPasswordViaEmailLink') AS BIT) ELSE NULL END;
-                    DECLARE @ContextResetPasswordEmailLinkLifetime INT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.resetPasswordEmailLinkLifetime') AS INT) ELSE NULL END;
-                    DECLARE @ContextUseResetPasswordViaSmsOtp BIT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.useResetPasswordViaSmsOtp') AS BIT) ELSE NULL END;
-                    DECLARE @ContextResetPasswordSmsOtpLifetime INT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.resetPasswordSmsOtpLifetime') AS INT) ELSE NULL END;
-                    DECLARE @ContextUseResetPasswordViaSecurityQuestions BIT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.useResetPasswordViaSecurityQuestions') AS BIT) ELSE NULL END;
-                    DECLARE @ContextResetPasswordViaSecurityQuestionsNumQuestionsAllowed INT = CASE WHEN @ContextSecurityValue IS NOT NULL THEN CAST(JSON_VALUE(@ContextSecurityValue, '$.resetPasswordViaSecurityQuestionsNumQuestionsAllowed') AS INT) ELSE NULL END;
-                    
-                    SET @NewDefaultAuthValue = (
-                        SELECT
-                            -- From old user management
-                            ISNULL(@RequireEmailVerification, 0) AS requireOtpVerification,
-                            CAST(1 AS BIT) AS allowLocalUsernamePasswordAuth,
-                            CAST(1 AS BIT) AS useDefaultRegistrationForm,
-                            ISNULL(@UserEmailAsUsername, 1) AS userEmailAsUsername,
-                            @SupportedRegistrationMethods AS supportedVerificationMethods,
-                    
-                            -- From old security settings (context-specific)
-                            ISNULL(@ContextUseResetPasswordViaEmailLink, 1) AS useResetPasswordViaEmailLink,
-                            ISNULL(@ContextResetPasswordEmailLinkLifetime, 360) AS resetPasswordEmailLinkLifetime,
-                            ISNULL(@ContextUseResetPasswordViaSmsOtp, 1) AS useResetPasswordViaSmsOtp,
-                            ISNULL(@ContextResetPasswordSmsOtpLifetime, 180) AS resetPasswordSmsOtpLifetime,
-                            ISNULL(@ContextUseResetPasswordViaSecurityQuestions, 0) AS useResetPasswordViaSecurityQuestions,
-                            ISNULL(@ContextResetPasswordViaSecurityQuestionsNumQuestionsAllowed, 0) AS resetPasswordViaSecurityQuestionsNumQuestionsAllowed,
-                    
-                            -- From old OTP settings
-                            ISNULL(@PasswordLength, 6) AS passwordLength,
-                            ISNULL(@Alphabet, '0123456789') AS alphabet,
-                            ISNULL(@DefaultLifetime, 360) AS defaultLifetime,
-                            ISNULL(@IgnoreOtpValidation, 0) AS ignoreOtpValidation,
-                            ISNULL(@DefaultSubjectTemplate, 'One-Time-Pin') AS defaultSubjectTemplate,
-                            ISNULL(@DefaultBodyTemplate, 'Your One-Time-Pin is {{password}}') AS defaultBodyTemplate,
-                            ISNULL(@DefaultEmailSubjectTemplate, 'One-Time-Pin') AS defaultEmailSubjectTemplate,
-                            ISNULL(@DefaultEmailBodyTemplate, '') AS defaultEmailBodyTemplate,
-                    
-                            -- Password Complexity (defaults - not in old structure)
-                            CAST(0 AS BIT) AS requireDigit,
-                            CAST(0 AS BIT) AS requireLowercase,
-                            CAST(0 AS BIT) AS requireNonAlphanumeric,
-                            CAST(0 AS BIT) AS requireUppercase,
-                            6 AS requiredLength,
-                    
-                            -- User Lockout (defaults - not in old structure)
-                            CAST(0 AS BIT) AS userLockOutEnabled,
-                            5 AS maxFailedAccessAttemptsBeforeLockout,
-                            300 AS defaultAccountLockoutSeconds
-                        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                    );
-                    
-                    -- Find or create DefaultAuthenticationSettings
-                    DECLARE @DefaultAuthSettingsId UNIQUEIDENTIFIER;
-                    DECLARE @DefaultAuthSettingsConfigId UNIQUEIDENTIFIER;
-                    
-                    SELECT @DefaultAuthSettingsConfigId = ci.Id
-                    FROM [frwk].[configuration_items] ci
-                    WHERE ci.item_type = 'setting-configuration'
-                      AND ci.Name = 'Shesha.DefaultAuthentication';
-                    
-                    IF @DefaultAuthSettingsConfigId IS NOT NULL
-                    BEGIN
-                        -- Find existing setting value for this specific context (application_id/user_id)
-                        SELECT @DefaultAuthSettingsId = Id
-                        FROM [frwk].[setting_values]
-                        WHERE setting_configuration_id = @DefaultAuthSettingsConfigId
-                            AND ((@OtpApplicationId IS NULL AND application_id IS NULL) OR application_id = @OtpApplicationId)
-                            AND ((@OtpUserId IS NULL AND user_id IS NULL) OR user_id = @OtpUserId);
-
-                        IF @DefaultAuthSettingsId IS NOT NULL
-                        BEGIN
-                            -- Update existing
-                            UPDATE [frwk].[setting_values]
-                            SET Value = @NewDefaultAuthValue,
-                                last_modification_time = GETUTCDATE()
-                            WHERE Id = @DefaultAuthSettingsId;
-                        END
-                        ELSE
-                        BEGIN
-                            -- Insert new with matching application_id/user_id context
-                            INSERT INTO [frwk].[setting_values] (Id, setting_configuration_id, application_id, user_id, Value, creation_time)
-                            VALUES (NEWID(), @DefaultAuthSettingsConfigId, @OtpApplicationId, @OtpUserId, @NewDefaultAuthValue, GETUTCDATE());
-                        END
-                    END
-
-                      -- Reset context variables for next iteration
-                      SET @ContextUserManagementValue = NULL;
-                      SET @ContextSecurityValue = NULL;
-
-                      FETCH NEXT FROM otp_cursor INTO @OldOtpId, @OldOtpValue, @OtpApplicationId, @OtpUserId;
-                  END
-
-                  CLOSE otp_cursor;
-                  DEALLOCATE otp_cursor;
-                ");
+            ");
             
             // ===========================
             // PostgreSQL migration
@@ -341,83 +329,8 @@ namespace Shesha.Migrations
 
             BEGIN
                 -- ============================================================================
-                -- Step 1: Find and update User Management settings
-                -- ============================================================================
-
-                -- Iterate through all User Management settings
-                FOR v_user_mgmt_record IN
-                    SELECT
-                        sv.id,
-                        sv.""value""::JSONB as value
-                    FROM
-                        frwk.setting_values sv
-                        INNER JOIN frwk.setting_configurations sc ON sv.setting_configuration_id = sc.id
-                        INNER JOIN frwk.configuration_items ci ON sc.id = ci.id
-                    WHERE
-                        ci.item_type = 'setting-configuration'
-                        AND ci.""name"" = 'Shesha.UserManagement'
-                        AND sv.""value"" IS NOT NULL
-                LOOP
-                    -- Transform to new structure
-                    v_new_user_mgmt_value := jsonb_build_object(
-                        'additionalRegistrationInfo', COALESCE((v_user_mgmt_record.value->>'additionalRegistrationInfo')::BOOLEAN, FALSE),
-                        'additionalRegistrationInfoForm', jsonb_build_object(
-                            '_module', v_user_mgmt_record.value->>'additionalRegistrationInfoFormModule',
-                            '_name', v_user_mgmt_record.value->>'additionalRegistrationInfoFormName',
-                            '_className', 'form-configuration'
-                        ),
-                        'allowSelfRegistration', TRUE,
-                        'allowedEmailDomains', '',
-                        'creationMode', COALESCE((v_user_mgmt_record.value->>'creationMode')::INTEGER, 0),
-                        'defaultRoles', COALESCE(v_user_mgmt_record.value->'defaultRoles', '[]'::JSONB),
-                        'personEntityType', jsonb_build_object(
-                            '_className', v_user_mgmt_record.value->>'personEntityType'
-                        )
-                    );
-
-                    -- Update the value
-                    UPDATE frwk.setting_values
-                    SET ""value"" = v_new_user_mgmt_value::TEXT,
-                        last_modification_time = NOW()
-                    WHERE id = v_user_mgmt_record.id;
-
-                END LOOP;
-            
-                -- ============================================================================
-                -- Step 2: Find and update Security settings
-                -- ============================================================================
-
-                -- Iterate through all Security settings
-                FOR v_security_record IN
-                    SELECT
-                        sv.id,
-                        sv.""value""::JSONB as value
-                    FROM
-                        frwk.setting_values sv
-                        INNER JOIN frwk.setting_configurations sc ON sv.setting_configuration_id = sc.id
-                        INNER JOIN frwk.configuration_items ci ON sc.id = ci.id
-                    WHERE
-                        ci.item_type = 'setting-configuration'
-                        AND ci.""name"" = 'Shesha.Security'
-                        AND sv.""value"" IS NOT NULL
-                LOOP
-                    v_auto_logoff_timeout := COALESCE((v_security_record.value->>'autoLogoffTimeout')::INTEGER, 0);
-
-                    -- Transform to GeneralFrontendSecuritySettings
-                    v_new_general_security_value := jsonb_build_object(
-                        'autoLogoffAfterInactivity', v_auto_logoff_timeout > 0,
-                        'autoLogoffTimeout', v_auto_logoff_timeout
-                    );
-
-                    -- Update the value
-                    UPDATE frwk.setting_values
-                    SET ""value"" = v_new_general_security_value::TEXT,
-                        last_modification_time = NOW()
-                    WHERE id = v_security_record.id;
-                END LOOP;
-            
-                -- ============================================================================
-                -- Step 3: Find and process OTP settings
+                -- Step 1: Find and process OTP settings FIRST
+                -- (This must run before UserManagement/Security transformations to preserve original fields)
                 -- ============================================================================
 
                 -- Iterate through all OTP settings
@@ -544,6 +457,82 @@ namespace Shesha.Migrations
                     v_context_user_mgmt_value := NULL;
                     v_context_security_value := NULL;
 
+                END LOOP;
+
+                -- ============================================================================
+                -- Step 2: Find and update User Management settings
+                -- ============================================================================
+
+                -- Iterate through all User Management settings
+                FOR v_user_mgmt_record IN
+                    SELECT
+                        sv.id,
+                        sv.""value""::JSONB as value
+                    FROM
+                        frwk.setting_values sv
+                        INNER JOIN frwk.setting_configurations sc ON sv.setting_configuration_id = sc.id
+                        INNER JOIN frwk.configuration_items ci ON sc.id = ci.id
+                    WHERE
+                        ci.item_type = 'setting-configuration'
+                        AND ci.""name"" = 'Shesha.UserManagement'
+                        AND sv.""value"" IS NOT NULL
+                LOOP
+                    -- Transform to new structure
+                    v_new_user_mgmt_value := jsonb_build_object(
+                        'additionalRegistrationInfo', COALESCE((v_user_mgmt_record.value->>'additionalRegistrationInfo')::BOOLEAN, FALSE),
+                        'additionalRegistrationInfoForm', jsonb_build_object(
+                            '_module', v_user_mgmt_record.value->>'additionalRegistrationInfoFormModule',
+                            '_name', v_user_mgmt_record.value->>'additionalRegistrationInfoFormName',
+                            '_className', 'form-configuration'
+                        ),
+                        'allowSelfRegistration', TRUE,
+                        'allowedEmailDomains', '',
+                        'creationMode', COALESCE((v_user_mgmt_record.value->>'creationMode')::INTEGER, 0),
+                        'defaultRoles', COALESCE(v_user_mgmt_record.value->'defaultRoles', '[]'::JSONB),
+                        'personEntityType', jsonb_build_object(
+                            '_className', v_user_mgmt_record.value->>'personEntityType'
+                        )
+                    );
+
+                    -- Update the value
+                    UPDATE frwk.setting_values
+                    SET ""value"" = v_new_user_mgmt_value::TEXT,
+                        last_modification_time = NOW()
+                    WHERE id = v_user_mgmt_record.id;
+
+                END LOOP;
+
+                -- ============================================================================
+                -- Step 3: Find and update Security settings
+                -- ============================================================================
+
+                -- Iterate through all Security settings
+                FOR v_security_record IN
+                    SELECT
+                        sv.id,
+                        sv.""value""::JSONB as value
+                    FROM
+                        frwk.setting_values sv
+                        INNER JOIN frwk.setting_configurations sc ON sv.setting_configuration_id = sc.id
+                        INNER JOIN frwk.configuration_items ci ON sc.id = ci.id
+                    WHERE
+                        ci.item_type = 'setting-configuration'
+                        AND ci.""name"" = 'Shesha.Security'
+                        AND sv.""value"" IS NOT NULL
+                LOOP
+                    v_auto_logoff_timeout := COALESCE((v_security_record.value->>'autoLogoffTimeout')::INTEGER, 0);
+
+                    -- Transform to GeneralFrontendSecuritySettings
+                    v_new_general_security_value := jsonb_build_object(
+                        'autoLogoffAfterInactivity', v_auto_logoff_timeout > 0,
+                        'autoLogoffTimeout', v_auto_logoff_timeout
+                    );
+
+                    -- Update the value
+                    UPDATE frwk.setting_values
+                    SET ""value"" = v_new_general_security_value::TEXT,
+                        last_modification_time = NOW()
+                    WHERE id = v_security_record.id;
                 END LOOP;
             END $$;
 
