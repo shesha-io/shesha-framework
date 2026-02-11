@@ -27,7 +27,7 @@ namespace Shesha.Configuration
         /// <summary>
         /// Redirect path after not being authenticated
         /// </summary>
-        [Display(Name = "Not authenticated redirect path", Description = "The page the user will be redirected to if not authenticated but attempts to access a page that requires authentications")]
+        [Display(Name = "Not authenticated redirect path", Description = "The page the user will be redirected to if not authenticated but attempts to access a page that requires authentication")]
         public string NotAuthenticatedRedirectPath { get; set; }
     }
 }
