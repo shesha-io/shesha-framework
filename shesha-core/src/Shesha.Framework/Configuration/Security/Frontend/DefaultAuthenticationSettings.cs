@@ -28,7 +28,7 @@ namespace Shesha.Configuration.Security.Frontend
         public bool UseDefaultRegistrationForm { get; set; }
 
         /// <summary>
-        /// 
+        /// Specifies whether the user's email address should be used as their username.
         /// </summary>
         [Display(Name = "Use email as username")]
         public bool UserEmailAsUsername { get; set; }
