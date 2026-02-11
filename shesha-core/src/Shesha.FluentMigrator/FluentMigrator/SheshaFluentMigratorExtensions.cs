@@ -20,9 +20,9 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Insert bootstrapper force record to the bootstrapping info table
         /// </summary>
-        public static void ForceBootstrapper(this IInsertExpressionRoot insert, string bootstrapperName)
+        public static void ForceBootstrapper(this Migration migration, string bootstrapperName)
         {
-            insert.IntoTable("bootstrapper_startups").InSchema("frwk")
+            migration.Insert.IntoTable("bootstrapper_startups").InSchema("frwk")
                 .Row(new Dictionary<string, object>
                 {
                     { "id", Guid.NewGuid() },

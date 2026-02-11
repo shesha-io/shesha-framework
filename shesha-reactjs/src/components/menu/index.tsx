@@ -244,6 +244,7 @@ export const LayoutMenu: FC<IProps> = ({
           styleOnHover={styleOnHover}
           styleOnSelected={styleOnSelected}
           styleOnSubMenu={styleOnSubMenu}
+          menuItemStyle={menuItemStyle}
           menuId={menuId}
         />
       </div>
@@ -302,6 +303,7 @@ export const LayoutMenu: FC<IProps> = ({
           styles={styles}
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
+          containerStyle={style}
         />
       )}
     </div>

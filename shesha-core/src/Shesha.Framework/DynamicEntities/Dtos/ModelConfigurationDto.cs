@@ -44,7 +44,9 @@ namespace Shesha.DynamicEntities.Dtos
         public string? HardcodedPropertiesMD5 { get; set; }
         public DateTime ChangeTime { get; set; }
 
-        // ConfigurationItem        
+        // ConfigurationItem
+        public Guid? FolderId { get; set; }
+
         public Guid? ModuleId { get; set; }
         public string? Module { get; set; }
         public string Name { get; set; }

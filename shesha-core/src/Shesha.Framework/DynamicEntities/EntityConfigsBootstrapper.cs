@@ -24,7 +24,9 @@ using Shesha.Startup;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -88,9 +90,6 @@ namespace Shesha.DynamicEntities
             {
                 using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
-
-                    // ToDo: AS - need to optimize for use only latest revisions
-
                     _dbAllConfigs = await _entityConfigRepository.GetAllListAsync();
                     _dbAllProperties = await _entityPropertyRepository.GetAllListAsync();
 
@@ -302,13 +301,9 @@ namespace Shesha.DynamicEntities
                 ec.GenerateAppService = attr == null || attr.GenerateApplicationService != GenerateApplicationServiceState.DisableGenerateApplicationService;
                 ec.TypeShortAlias = config.Config.SafeTypeShortAlias;
 
-                // ToDo: AS - review                 
                 ec.Source = MetadataSourceType.ApplicationCode;
+                ec.Description = config.Config.EntityType.GetCustomAttribute<DescriptionAttribute>()?.Description;
 
-                // ToDo: AS - Get Description and Suppress
-                //ec.Description = null;
-
-                // ToDo: AS - review --------------
                 ec.Suppress = false;
                 ec.Normalize();
 
@@ -320,8 +315,36 @@ namespace Shesha.DynamicEntities
             }
         }
 
+        private void ConfigureArrayListConfiguration(EntityProperty dst, EntityPropertyListConfiguration? srcListConfiguration)
+        {
+            if (dst.DataType != DataTypes.Array)
+                return;
+
+            if (dst.DataFormat == ArrayFormats.EntityReference)
+            {
+                dst.ListConfiguration = dst.ListConfiguration ?? new EntityPropertyListConfiguration();
+                dst.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToOne;
+                dst.ListConfiguration.ForeignProperty = srcListConfiguration?.ForeignProperty;
+            }
+            else if (dst.DataFormat == ArrayFormats.ManyToManyEntities)
+            {
+                dst.CreatedInDb = true;
+                dst.ListConfiguration = dst.ListConfiguration ?? new EntityPropertyListConfiguration();
+                dst.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToMany;
+                if (srcListConfiguration?.DbMapping != null)
+                {
+                    dst.ListConfiguration.DbMapping = dst.ListConfiguration.DbMapping ?? new EntityPropertyListDbMapping();
+                    dst.ListConfiguration.DbMapping.ManyToManyTableName = srcListConfiguration.DbMapping?.ManyToManyTableName;
+                    dst.ListConfiguration.DbMapping.ManyToManyKeyColumnName = srcListConfiguration.DbMapping?.ManyToManyKeyColumnName;
+                    dst.ListConfiguration.DbMapping.ManyToManyChildColumnName = srcListConfiguration.DbMapping?.ManyToManyChildColumnName;
+                    dst.ListConfiguration.DbMapping.ManyToManyInversePropertyName = srcListConfiguration.DbMapping?.ManyToManyInversePropertyName;
+                }
+            }
+        }
+
         private void CopyPropertyData(EntityProperty src, EntityProperty dst)
         {
+
             dst.Label = src.Label;
             dst.Description = src.Description;
 
@@ -350,6 +373,7 @@ namespace Shesha.DynamicEntities
             dst.ValidationMessage = src.ValidationMessage;
             dst.IsFrameworkRelated = src.IsFrameworkRelated;
 
+            ConfigureArrayListConfiguration(dst, src.ListConfiguration);
         }
 
         private async Task<EntityProperty> OverrideChildAsync(EntityProperty property, EntityProperty parentProperty)
@@ -442,6 +466,10 @@ namespace Shesha.DynamicEntities
                         // ToDo: AS - think how to collect similar problems and show them to the Admin without throwing exceptions
                         throw new Exception($"Inheritance error from {propertyEntityConfig.FullClassName} {property.Name} ({property.DataType}): {config.FullClassName} has property ({prop.DataType})");
                     }
+
+                    CopyPropertyData(property, prop);
+
+                    await _entityPropertyRepository.UpdateAsync(prop);
                 }
 
                 if (property.Properties != null)
@@ -681,9 +709,6 @@ namespace Shesha.DynamicEntities
                 dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
             }
 
-            dst.ListConfiguration = dst.ListConfiguration ?? new EntityPropertyListConfiguration();
-            dst.ListConfiguration.ForeignProperty = src.ListConfiguration?.ForeignProperty;
-
             dst.Name = src.Path;
             dst.DataType = src.DataType;
             dst.EntityFullClassName = src.EntityFullClassName;
@@ -707,6 +732,8 @@ namespace Shesha.DynamicEntities
             {
                 dst.Label = src.Label;
             }
+
+            ConfigureArrayListConfiguration(dst, src.ListConfiguration);
         }
     }
 }
