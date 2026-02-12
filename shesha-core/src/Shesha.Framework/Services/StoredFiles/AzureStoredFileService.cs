@@ -71,7 +71,7 @@ namespace Shesha.Services.StoredFiles
 
         private async Task<Stream> GetStreamInternalAsync(string filePath)
         {
-            var blob = GetBlobClient(filePath.ToLower());
+            var blob = GetBlobClient(filePath);
             var stream = new MemoryStream();
 
             var props = await blob.GetPropertiesAsync();
