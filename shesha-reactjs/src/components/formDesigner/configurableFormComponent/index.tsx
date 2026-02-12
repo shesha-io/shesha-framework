@@ -56,22 +56,21 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Extract primitive values for stable dependencies - avoid object recreation triggering re-renders
   const { isInput: componentIsInput, preserveDimensionsInDesigner } = useMemo(() => getComponentTypeInfo(component), [component]);
 
-  // Create model with margins stripped from style for designer mode
-  // This ensures allStyles (computed by useFormComponentStyles) doesn't have margins
-  const fullComponentModel = useMemo(() => {
-    return {
-      ...componentModel, ...componentModel?.[activeDevice],
-    };
-  }, [componentModel, activeDevice]);
+  // Create model combining componentModel with device-specific settings
+  // This is the base model used for both style calculations and rendering
+  const fullComponentModel = useMemo(() => ({
+    ...componentModel, ...componentModel?.[activeDevice],
+  }), [componentModel, activeDevice]);
 
   const { dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(fullComponentModel);
 
   // Extract margins from ORIGINAL component styling (before stripping) for the wrapper
   // Custom style margins take precedence over stylingBox margins
-  const originalModel = useMemo(() => ({ ...componentModel, ...componentModel?.[activeDevice] }), [componentModel, activeDevice]);
   const originalJsStyle = useMemo(() => {
-    return componentModel.type === 'container' ? getStyle(originalModel?.wrapperStyle) : getStyle(originalModel.style);
-  }, [originalModel, componentModel.type]);
+    return componentModel.type === 'container' 
+      ? getStyle(fullComponentModel?.wrapperStyle) 
+      : getStyle(fullComponentModel.style);
+  }, [fullComponentModel, componentModel.type]);
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
