@@ -41,6 +41,7 @@ namespace Shesha.Authorization
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<MobileDevice, Guid> _mobileDeviceRepository;
         private readonly ITokenBlacklistService _tokenBlacklistService;
+        private readonly UserManager<User> _userManager;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -53,7 +54,8 @@ namespace Shesha.Authorization
             IRepository<Person, Guid> personRepository,
             IRepository<ShaUserRegistration, Guid> userRegistration,
             IRepository<MobileDevice, Guid> mobileDeviceRepository,
-            ITokenBlacklistService tokenBlacklistService)
+            ITokenBlacklistService tokenBlacklistService,
+            UserManager<User> userManager)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -66,6 +68,7 @@ namespace Shesha.Authorization
             _mobileDeviceRepository = mobileDeviceRepository;
             _userRegistration = userRegistration;
             _tokenBlacklistService = tokenBlacklistService;
+            _userManager = userManager;
         }
 
         [HttpPost]
@@ -140,6 +143,76 @@ namespace Shesha.Authorization
                 await _tokenBlacklistService.BlacklistTokenAsync(jti, User.GetTokenExpirationDate());
 
             return true;
+        }
+
+        /// <summary>
+        /// Refresh the current JWT token
+        /// </summary>
+        /// <returns>New JWT token with fresh expiration</returns>
+        [HttpPost]
+        public async Task<AuthenticateResultModel> RefreshTokenAsync()
+        {
+            // 1. Get current user from JWT claims
+            if (!AbpSession.UserId.HasValue)
+                throw new UserFriendlyException("User not authenticated");
+
+            var userId = AbpSession.UserId.Value;
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                throw new UserFriendlyException("User not found");
+
+            // 2. Check if user is still active
+            if (!user.IsActive)
+                throw new UserFriendlyException("User is not active");
+
+            // 3. Get current token JTI from claims
+            var currentJti = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+
+            // 4. Check if current token is blacklisted
+            if (!string.IsNullOrEmpty(currentJti))
+            {
+                var isBlacklisted = await _tokenBlacklistService.IsTokenBlacklistedAsync(currentJti);
+                if (isBlacklisted)
+                    throw new UserFriendlyException("Token has been revoked");
+            }
+
+            // 5. Generate new token with fresh expiration
+            // Recreate claims identity from existing claims (excluding time-sensitive claims)
+            var existingClaims = User.Claims
+                .Where(c => c.Type != JwtRegisteredClaimNames.Jti &&
+                           c.Type != JwtRegisteredClaimNames.Iat &&
+                           c.Type != JwtRegisteredClaimNames.Exp)
+                .ToList();
+
+            var identity = new ClaimsIdentity(existingClaims);
+
+            var validFrom = DateTime.UtcNow;
+            var expiresOn = validFrom.Add(_configuration.Expiration);
+            var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
+
+            var accessToken = CreateAccessToken(CreateJwtClaims(identity), validFrom, expiresOn);
+
+            var personId = await _personRepository.GetAll()
+                .Where(p => p.User == user)
+                .OrderBy(p => p.CreationTime)
+                .Select(p => p.Id)
+                .FirstOrDefaultAsync();
+
+            // 6. Log the refresh action
+            Logger.InfoFormat("Token refreshed for user: {0} (ID: {1})", user.UserName, userId);
+
+            return new AuthenticateResultModel
+            {
+                AccessToken = accessToken,
+                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                ExpireInSeconds = expireInSeconds,
+                ExpireOn = expiresOn,
+                UserId = user.Id,
+                RequireChangePassword = user.RequireChangePassword,
+                PersonId = personId,
+                ResultType = AuthenticateResultType.Success
+            };
         }
 
         #region OTP Login
