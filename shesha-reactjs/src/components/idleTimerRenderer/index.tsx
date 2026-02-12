@@ -3,7 +3,6 @@ import {
   getPercentage,
   getStatus,
   getTimeFormat,
-  MIN_TIME,
   ONE_SECOND,
   WARNING_DURATION
   } from './util';
@@ -52,14 +51,24 @@ const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security'
 export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
   const { styles } = useStyles();
   const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
-  const timeoutSeconds = securitySettings?.autoLogoffTimeout ?? 40;
+  const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
+  console.log('Auto logoff timeout (seconds):', autoLogoffTimeout);
+  // Use 40 as safe default for hook validation when timer would be disabled
+  // Timer requires timeout > WARNING_DURATION (30s) to show warning before logout
+  // Actual enable/disable is controlled by isTimeoutSet condition
+  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : 40;
 
   const { logoutUser, loginInfo } = useAuth();
 
   const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
   const { isWarningVisible, remainingTime: rt, isCountingDown } = state;
 
-  const isTimeoutSet = timeoutSeconds >= MIN_TIME && !!loginInfo;
+  // Idle timer is enabled only when:
+  // 1. Settings are loaded (autoLogoffTimeout !== undefined)
+  // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
+  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 30s warning)
+  // 4. User is logged in (loginInfo exists)
+  const isTimeoutSet = autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION && !!loginInfo;
   const timeout = getTimeFormat(timeoutSeconds);
   const visible = isWarningVisible && isTimeoutSet;
 
