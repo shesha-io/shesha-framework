@@ -67,8 +67,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Extract margins from ORIGINAL component styling (before stripping) for the wrapper
   // Custom style margins take precedence over stylingBox margins
   const originalJsStyle = useMemo(() => {
-    return componentModel.type === 'container' 
-      ? getStyle(fullComponentModel?.wrapperStyle) 
+    return componentModel.type === 'container'
+      ? getStyle(fullComponentModel?.wrapperStyle)
       : getStyle(fullComponentModel.style);
   }, [fullComponentModel, componentModel.type]);
 
