@@ -62,12 +62,8 @@ import { isPropertiesArray } from '@/interfaces/metadata';
 import { getFormApi } from '@/providers/form/formApi';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
 
-export class UserHandledError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'UserHandledError';
-  }
-}
+import { UserHandledError } from '@/utils/errors';
+export { UserHandledError };
 
 export interface IIndexTableOptions {
   omitClick?: boolean;

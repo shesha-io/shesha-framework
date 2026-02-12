@@ -30,7 +30,7 @@ import { EmptyState } from '..';
 import { ErrorDetails } from '@/utils/configurationFramework/actions';
 import axios from 'axios';
 import { isAxiosResponse } from '@/interfaces/ajaxResponse';
-import { UserHandledError } from '../dataTable';
+import { UserHandledError } from '@/utils/errors';
 
 interface IReactTableState {
   allRows: any[];

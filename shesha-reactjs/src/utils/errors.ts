@@ -19,6 +19,13 @@ export interface ISheshaErrorCause {
   errors?: IModelValidation;
 }
 
+export class UserHandledError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UserHandledError';
+  }
+}
+
 /**
  * Shesha Error class
  */
