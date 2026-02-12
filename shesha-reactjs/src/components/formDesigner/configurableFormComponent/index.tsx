@@ -132,6 +132,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const deviceDimensions = dimensionUtils.getDeviceDimensions();
     // In designer mode, component only gets padding (margins go to wrapper)
     const stylingBoxWithPaddingOnly = stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
+    const stylingBoxWithPaddingOnlyParsed = JSON.parse(stylingBoxWithPaddingOnly);
 
     // Helper to get designer dimensions based on original config
     // - Buttons with 'auto' width -> use 'max-content' (wrapper shrinks to fit), button fills 100%
@@ -187,15 +188,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
       allStyles: {
         ...fullComponentModel.allStyles,
-        fullStyle: { ...fullComponentModel.allStyles?.fullStyle, stylingBoxAsCSS: JSON.parse(stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox)) },
+        fullStyle: { ...fullComponentModel.allStyles?.fullStyle, stylingBoxAsCSS: stylingBoxWithPaddingOnlyParsed },
         ...getStyle(fullComponentModel.style),
-        stylingBoxAsCSS: JSON.parse(stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox)),
+        stylingBoxAsCSS: stylingBoxWithPaddingOnlyParsed,
         // Component dimensions: button always gets 100% to fill wrapper
         dimensionsStyles: getComponentDimensions(fullComponentModel.dimensions),
         stylingBox: stylingBoxWithPaddingOnly,
       },
     };
-  }, [fullComponentModel, activeDevice, dimensionsStyles, component.type, preserveDimensionsInDesigner]);
+  }, [fullComponentModel, component.type, preserveDimensionsInDesigner]);
 
   // Check if component is a button for WYSIWYG auto width handling
   const isButton = component.type === 'button' || component.type === 'buttonGroup';
@@ -260,8 +261,11 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const { settingsPanelRef } = useFormDesigner();
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const readOnly = useFormDesignerReadOnly();
-  const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
-  const componentEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode;
+
+  const { hidden, componentEditMode } = useMemo(() => ({
+    hidden: getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden,
+    componentEditMode: getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode,
+  }), [props.componentModel, allData]);
 
   return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
 };
