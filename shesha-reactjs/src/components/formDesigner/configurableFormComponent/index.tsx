@@ -132,7 +132,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const deviceDimensions = dimensionUtils.getDeviceDimensions();
     // In designer mode, component only gets padding (margins go to wrapper)
     const stylingBoxWithPaddingOnly = stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
-    const stylingBoxWithPaddingOnlyParsed = JSON.parse(stylingBoxWithPaddingOnly);
+    let stylingBoxWithPaddingOnlyParsed = {};
+    try {
+      stylingBoxWithPaddingOnlyParsed = stylingBoxWithPaddingOnly ? JSON.parse(stylingBoxWithPaddingOnly) : {};
+    } catch {
+      console.warn('Failed to parse stylingBox:', stylingBoxWithPaddingOnly);
+    }
 
     // Helper to get designer dimensions based on original config
     // - Buttons with 'auto' width -> use 'max-content' (wrapper shrinks to fit), button fills 100%
