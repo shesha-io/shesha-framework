@@ -42,7 +42,7 @@ const DropdownComponent: DropdownComponentDefinition = {
     // When enableStyleOnReadonly is false, apply only minimal styles (font + dimensions)
     const finalStyle = model.readOnly
       ? model.enableStyleOnReadonly
-        ? { ...model.allStyles.fullStyle, overflow: 'auto',  width: '100%' }
+        ? { ...model.allStyles.fullStyle, overflow: 'auto', width: '100%' }
         : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles, width: '100%' }
       : { ...model.allStyles.fullStyle, width: '100%', overflow: 'auto' };
 

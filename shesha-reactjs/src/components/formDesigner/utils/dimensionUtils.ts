@@ -13,7 +13,7 @@ export interface DimensionConfig {
   flexBasis?: string | number;
 }
 
-/* eslint-disable @stylistic/no-trailing-spaces */
+
 /**
  * Dimension utility functions for form designer components.
  *

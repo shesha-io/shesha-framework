@@ -106,14 +106,13 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     ), settingsPanelRef.current, "propertiesPanel");
 
     return result;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSelected, settingsPanelRef, readOnly, component]);
 
   // Extract margins from ORIGINAL component styling (both stylingBox and custom styles)
   // Custom style margins take precedence over stylingBox margins
   const margins = useMemo(
     () => stylingUtils.extractMargins(originalJsStyle, stylingBoxAsCSS),
-    [originalJsStyle, stylingBoxAsCSS]
+    [originalJsStyle, stylingBoxAsCSS],
   );
 
   // Get component dimensions (handles special cases like DataTable context)
@@ -162,14 +161,14 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       // All other cases: fill the wrapper
       return deviceDimensions;
     };
-    
+
     // Helper to get component dimensions (what the inner component receives)
     // Button always fills 100% of its wrapper in designer mode
     const getComponentDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions => {
       if (preserveDimensionsInDesigner) return { ...deviceDimensions, ...originalDims };
 
       const isButton = component.type === 'button' || component.type === 'buttonGroup';
-      
+
       if (isButton) {
         // Button always fills 100% of wrapper in designer mode
         // Wrapper handles the actual sizing

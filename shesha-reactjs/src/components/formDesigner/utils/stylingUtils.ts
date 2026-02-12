@@ -215,4 +215,4 @@ export const {
 } = stylingUtils;
 
 /** @deprecated Use MarginValues instead */
-export type StyleConfig = MarginValues & { paddingTop?: number | string; paddingBottom?: number | string; paddingLeft?: number | string; paddingRight?: number | string; };
+export type StyleConfig = MarginValues & { paddingTop?: number | string; paddingBottom?: number | string; paddingLeft?: number | string; paddingRight?: number | string };

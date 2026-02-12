@@ -101,8 +101,8 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
         <Image
           src={content}
           alt={props?.alt}
-          width={'100%'}
-          height={'100%'}
+          width="100%"
+          height="100%"
           preview={allowPreview}
           style={styles}
         />
