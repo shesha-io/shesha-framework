@@ -24,6 +24,18 @@ interface IIdleTimerState {
   readonly isCountingDown: boolean;
 }
 
+interface ISecuritySettings {
+  autoLogoffTimeout: number;
+  defaultEndpointAccess: number;
+  mobileLoginPinLifetime: number;
+  resetPasswordEmailLinkLifetime: number;
+  resetPasswordSmsOtpLifetime: number;
+  resetPasswordViaSecurityQuestionsNumQuestionsAllowed: number;
+  useResetPasswordViaEmailLink: boolean;
+  useResetPasswordViaSecurityQuestions: boolean;
+  useResetPasswordViaSmsOtp: boolean;
+}
+
 const INIT_STATE: IIdleTimerState = {
   isWarningVisible: false,
   remainingTime: WARNING_DURATION,
@@ -35,13 +47,12 @@ const STORAGE_KEYS = {
   IDLE_TIMER_WARNING_STATE: 'shesha:idleTimer:warningState'
 };
 
-const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security.AutoLogoffTimeout', module: 'Shesha' };
+const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security', module: 'Shesha' };
 
 export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
   const { styles } = useStyles();
-  const { value: autoLogoffTimeout } = useSettingValue<number>(autoLogoffTimeoutSettingId);
-  // TESTING: Use 40 seconds = 10s idle + 30s countdown (change back to 0 or use setting in production)
-  const timeoutSeconds = autoLogoffTimeout ?? 40;
+  const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
+  const timeoutSeconds = securitySettings?.autoLogoffTimeout ?? 40;
 
   const { logoutUser, loginInfo } = useAuth();
 
@@ -205,13 +216,12 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
         maskClosable={false}
       >
         <div className={styles.idleTimerContent}>
-          <span className={styles.idleTimerContentTopHint}>
-            You will be logged out in <strong>{rt} seconds</strong> due to inactivity.
-          </span>
-          <Progress type="circle" percent={getPercentage(rt)} status={getStatus(rt)} format={() => <>{rt}</>} />
-          <span className={styles.idleTimerContentBottomHint}>
-            Click <strong>Stay Logged In</strong> to continue your session.
-          </span>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+            <Progress type="circle" percent={getPercentage(rt)} status={getStatus(rt)} format={() => <>{rt}</>} />
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <p>You will be logged out in <strong>{rt} seconds</strong> due to inactivity.</p>
+          </div>
         </div>
       </Modal>
     </div>
