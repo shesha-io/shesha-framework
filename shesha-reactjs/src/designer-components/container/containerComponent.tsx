@@ -15,6 +15,7 @@ import { removeUndefinedProps } from '@/utils/object';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
 import { ContainerComponentDefinition } from './interfaces';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 const ContainerComponent: ContainerComponentDefinition = {
   type: 'container',
@@ -26,13 +27,16 @@ const ContainerComponent: ContainerComponentDefinition = {
     const { globalState } = useGlobalState();
     const { styles, cx } = useStyles();
 
+    // For containers, use wrapperStyle instead of style for margins/dimensions
+    const containerStyles = useFormComponentStyles(model, { useWrapperStyle: true });
+
     const {
       dimensionsStyles,
       borderStyles,
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
-    } = model.allStyles;
+    } = containerStyles;
 
     const wrapperStyles = removeUndefinedProps({
       ...dimensionsStyles,

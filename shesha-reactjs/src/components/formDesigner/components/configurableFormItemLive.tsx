@@ -39,18 +39,30 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const preserveDimensionsInDesigner = component?.preserveDimensionsInDesigner ?? false;
 
   const { top: MarginTop, left: MarginLeft, right: MarginRight, bottom: MarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
+
+  // In designer mode: NEVER apply margins to Form.Item (wrapper handles them)
+  // In live mode: Apply margins from allStyles.margins or use defaults
+  // Note: margins are stored separately so inner components don't get them (prevents double margins)
+  const rawMargins = isInDesigner
+    ? { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }
+    : (model?.allStyles?.margins || {});
+
   const {
-    marginTop = isInDesigner ? 0 : MarginTop,
-    marginBottom = isInDesigner ? 0 : MarginBottom,
-    marginRight = isInDesigner ? 0 : MarginRight,
-    marginLeft = isInDesigner ? 0 : MarginLeft,
+    marginTop = MarginTop,
+    marginBottom = MarginBottom,
+    marginRight = MarginRight,
+    marginLeft = MarginLeft,
+  } = rawMargins;
+
+  // Get dimension values from dimensionsStyles
+  const {
     width,
     height,
     minWidth,
     minHeight,
     maxWidth,
     maxHeight,
-  } = model?.allStyles?.fullStyle || {};
+  } = model?.allStyles?.dimensionsStyles || {};
 
   const formItemStyle = useMemo(() => {
     // Handle auto width in designer mode
@@ -105,7 +117,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
         paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
       };
-  }, [preserveDimensionsInDesigner, isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
+  }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;
   const hasLabel = !hideLabel && !!model.label;

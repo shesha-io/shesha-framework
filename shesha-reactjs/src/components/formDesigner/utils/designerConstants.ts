@@ -148,7 +148,7 @@ export const designerConstants = {
     padding2: string,
   ): string | number | undefined {
     if (!value) return undefined;
-    return `calc(${value} - ${padding1} - ${padding2})`;
+    return `calc(${value} + ${padding1} + ${padding2})`;
   },
 
   /**

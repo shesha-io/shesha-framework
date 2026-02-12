@@ -197,6 +197,8 @@ export interface IFormComponentStyles {
   appearanceStyle: CSSProperties;
   /** Styles assempled from {...appearanceStyle, ...jsStyle} */
   fullStyle: CSSProperties;
+  /** Margin styles extracted from fullStyle for wrapper use */
+  margins: CSSProperties;
 }
 
 /**

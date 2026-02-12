@@ -42,9 +42,9 @@ const DropdownComponent: DropdownComponentDefinition = {
     // When enableStyleOnReadonly is false, apply only minimal styles (font + dimensions)
     const finalStyle = model.readOnly
       ? model.enableStyleOnReadonly
-        ? { ...model.allStyles.fullStyle, overflow: 'auto' }
-        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
-      : { ...model.allStyles.fullStyle, overflow: 'auto' };
+        ? { ...model.allStyles.fullStyle, overflow: 'auto',  width: '100%' }
+        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles, width: '100%' }
+      : { ...model.allStyles.fullStyle, width: '100%', overflow: 'auto' };
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>

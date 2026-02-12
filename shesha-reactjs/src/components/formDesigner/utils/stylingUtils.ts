@@ -1,17 +1,15 @@
 import { CSSProperties } from 'react';
-import { addPx, hasNumber } from '@/utils/style';
-import { DEFAULT_MARGINS, calculateDesignerHeight, calculateAdjustedDimension } from './designerConstants';
+import { addPx } from '@/utils/style';
+import { DEFAULT_MARGINS } from './designerConstants';
 
-export interface StyleConfig {
-  marginTop?: number | string;
-  marginBottom?: number | string;
-  marginLeft?: number | string;
-  marginRight?: number | string;
-  paddingTop?: number | string;
-  paddingBottom?: number | string;
-  paddingLeft?: number | string;
-  paddingRight?: number | string;
+/** Margin values extracted from various style sources */
+export interface MarginValues {
+  marginTop: number | string;
+  marginBottom: number | string;
+  marginLeft: number | string;
+  marginRight: number | string;
 }
+
 
 interface DefaultMargins {
   vertical: string;
@@ -42,65 +40,48 @@ export const stylingUtils = {
   getDefaultMargins(isInput: boolean): DefaultMargins {
     return {
       vertical: isInput ? DEFAULT_MARGINS.vertical : '0px',
-      horizontal: isInput ? DEFAULT_MARGINS.horizontal : '0px',
+      horizontal: '0px',
     };
   },
 
   /**
    * Creates the root container style for wrapping components in designer mode.
    *
-   * The wrapper pattern works by:
-   * 1. Converting component margins to wrapper padding (prevents margin collapse)
-   * 2. Expanding wrapper dimensions to accommodate the padding
-   * 3. Setting component dimensions to 100% to fill the wrapper
+   * The wrapper applies margins directly and the inner component fills the available space.
+   * When width is 100% with margins, the wrapper handles it without overflowing.
    */
   createRootContainerStyle(
     dimensions: CSSProperties,
     margins: StyleConfig,
-    isInput: boolean,
+    _isInput: boolean,
     isButton: boolean = false,
   ): CSSProperties {
-    const defaultMargins = stylingUtils.getDefaultMargins(isInput);
-
-    // Convert margins to padding on the wrapper
-    // This prevents margin collapse issues in the designer
-    const paddingTop = addPx(margins?.marginTop || defaultMargins.vertical);
-    const paddingBottom = addPx(margins?.marginBottom || defaultMargins.vertical);
-    const paddingLeft = addPx(margins?.marginLeft || defaultMargins.horizontal);
-    const paddingRight = addPx(margins?.marginRight || defaultMargins.horizontal);
+    // Use margin values directly (preserves relative values like 50%)
+    const marginTop = addPx(margins?.marginTop ?? 0);
+    const marginBottom = addPx(margins?.marginBottom ?? 0);
+    const marginLeft = addPx(margins?.marginLeft ?? 0);
+    const marginRight = addPx(margins?.marginRight ?? 0);
 
     // Calculate wrapper dimensions to accommodate padding
     // Width is reduced because padding adds to the total size
     // When width is 'auto' for button, use 'max-content' for WYSIWYG behavior (wrapper shrinks to fit content)
     const rawWidth = (isButton && dimensions.width === 'auto') ? 'max-content' : dimensions.width;
-    const width = rawWidth && hasNumber(rawWidth)
-      ? calculateAdjustedDimension(rawWidth, paddingLeft, paddingRight)
-      : rawWidth;
+    const width = rawWidth;
 
     // Height is expanded to include padding plus border width (8px = 4px top + 4px bottom)
-    const height = dimensions.height && hasNumber(dimensions.height)
-      ? calculateDesignerHeight(dimensions.height, paddingTop, paddingBottom)
-      : dimensions.height;
+    const height = dimensions.height;
 
-    const minHeight = dimensions.minHeight && hasNumber(dimensions.minHeight)
-      ? `calc(${dimensions.minHeight} + ${paddingTop} + ${paddingBottom})`
-      : dimensions.minHeight;
+    const minHeight = dimensions.minHeight;
 
-    const maxHeight = dimensions.maxHeight && hasNumber(dimensions.maxHeight)
-      ? `calc(${dimensions.maxHeight} + ${paddingTop} + ${paddingBottom})`
-      : dimensions.maxHeight;
+    const maxHeight = dimensions.maxHeight;
 
-    const minWidth = dimensions.minWidth && hasNumber(dimensions.minWidth)
-      ? `calc(${dimensions.minWidth} + ${paddingLeft} + ${paddingRight})`
-      : dimensions.minWidth;
+    const minWidth = dimensions.minWidth;
 
-    const maxWidth = dimensions.maxWidth && hasNumber(dimensions.maxWidth)
-      ? `calc(${dimensions.maxWidth} + ${paddingLeft} + ${paddingRight})`
-      : dimensions.maxWidth;
+    const maxWidth = dimensions.maxWidth;
 
     return {
       boxSizing: 'border-box' as const,
-      // Expanded dimensions to accommodate padding
+      // Dimensions from component configuration
       width,
       height,
       minWidth,
@@ -108,11 +89,11 @@ export const stylingUtils = {
       minHeight,
       maxHeight,
       flexBasis: dimensions.flexBasis,
-      // Apply margins as padding
-      paddingTop,
-      paddingBottom,
-      paddingLeft,
-      paddingRight,
+      // Apply margins directly (not as padding) to preserve relative values
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
     };
   },
 
@@ -191,6 +172,34 @@ export const stylingUtils = {
       return stylingBox;
     }
   },
+
+  /**
+   * Extracts margin values from jsStyle and stylingBox CSS properties.
+   * jsStyle margins take precedence over stylingBox margins.
+   * Falls back to 0 if no margins are specified.
+   */
+  extractMargins(
+    jsStyle: CSSProperties | undefined,
+    stylingBoxAsCSS: CSSProperties | undefined,
+  ): MarginValues {
+    return {
+      marginTop: jsStyle?.marginTop ?? jsStyle?.margin ?? stylingBoxAsCSS?.marginTop ?? 0,
+      marginBottom: jsStyle?.marginBottom ?? jsStyle?.margin ?? stylingBoxAsCSS?.marginBottom ?? 0,
+      marginLeft: jsStyle?.marginLeft ?? jsStyle?.margin ?? stylingBoxAsCSS?.marginLeft ?? 0,
+      marginRight: jsStyle?.marginRight ?? jsStyle?.margin ?? stylingBoxAsCSS?.marginRight ?? 0,
+    };
+  },
+
+  /**
+   * Strips margin properties from a style object.
+   * Returns a new object without marginTop, marginBottom, marginLeft, marginRight, and margin.
+   */
+  stripMargins<T extends CSSProperties>(style: T | undefined): Omit<T, 'margin' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight'> {
+    if (!style) return {} as Omit<T, 'margin' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight'>;
+    
+    const { margin, marginTop, marginBottom, marginLeft, marginRight, ...rest } = style;
+    return rest as Omit<T, 'margin' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight'>;
+  },
 };
 /* eslint-enable @stylistic/no-trailing-spaces */
 
@@ -201,4 +210,9 @@ export const {
   removeMarginsFromStylingBox,
   createMarginsFromStylingBox,
   createPaddingOnlyStylingBox,
+  extractMargins,
+  stripMargins,
 } = stylingUtils;
+
+/** @deprecated Use MarginValues instead */
+export type StyleConfig = MarginValues & { paddingTop?: number | string; paddingBottom?: number | string; paddingLeft?: number | string; paddingRight?: number | string; };

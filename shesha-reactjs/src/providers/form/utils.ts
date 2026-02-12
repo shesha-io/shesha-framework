@@ -1219,10 +1219,20 @@ export const getStyle = (
   formData: any = {},
   globalState: any = {},
   defaultStyle: object = emptyStyle,
+  excludeMargin: boolean = false
 ): CSSProperties => {
   if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
-  return new Function('data, globalState', style)(formData, globalState);
+  const allStyle = new Function('data, globalState', style)(formData, globalState);
+  const { marginTop, marginBottom, marginLeft, marginRight, ...rest } = allStyle;
+  return excludeMargin ? 
+  rest : {
+    marginTop,
+    marginBottom,
+    marginLeft,
+    marginRight,
+    ...rest,
+  };
 };
 
 export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }): CSSProperties => {

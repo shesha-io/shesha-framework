@@ -9,6 +9,7 @@ import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { useStyles } from './styles/styles';
 import { FormComponentValidationProvider, useValidationErrorsActionsOrDefault, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 
@@ -36,17 +37,21 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   // Default to 'desktop' when there's no canvas context (e.g., in datatables)
   const effectiveDevice = activeDevice || 'desktop';
 
-  // In designer mode: preserve the padding-only stylingBox and 100% dimensions from wrapper
+  // In designer mode: preserve the padding-only stylingBox, dimensions, and style (margins stripped) from wrapper
   // In preview/live mode: use original device-specific stylingBox (with margins) and dimensions
   const isDesignerMode = shaForm.formMode === 'designer';
   const extendedModel = componentModel as IConfigurableFormComponent & IStyleType;
   const deviceModel = {
     ...componentModel,
     ...componentModel?.[effectiveDevice],
-    // In designer: preserve padding-only stylingBox from wrapper
+    // In designer: preserve padding-only stylingBox and stripped style (no margins) from wrapper
     // In preview: use original stylingBox with margins from device settings
     ...(isDesignerMode
-      ? { stylingBox: extendedModel.stylingBox, dimensions: extendedModel.dimensions }
+      ? {
+        stylingBox: extendedModel.stylingBox,
+        dimensions: extendedModel.dimensions,
+        style: extendedModel.style, // Keep stripped style (no margins)
+      }
       : { stylingBox: componentModel?.[effectiveDevice]?.stylingBox }
     ),
   };
@@ -70,7 +75,21 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   if (!toolboxComponent?.isInput && !toolboxComponent?.isOutput)
     actualModel.propertyName = undefined;
 
-  actualModel.allStyles = useFormComponentStyles(actualModel);
+  const allStyles = useFormComponentStyles(actualModel);
+
+  // For input components: Strip margins from fullStyle and jsStyle
+  // Margins are handled by the FormItem wrapper (via allStyles.margins), not the inner component
+  // This prevents double margins (wrapper + component) in both designer and live modes
+  if (toolboxComponent?.isInput) {
+    actualModel.allStyles = {
+      ...allStyles,
+      fullStyle: stylingUtils.stripMargins(allStyles.fullStyle),
+      jsStyle: stylingUtils.stripMargins(allStyles.jsStyle),
+      // margins are preserved for FormItem wrapper use
+    };
+  } else {
+    actualModel.allStyles = allStyles;
+  }
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 

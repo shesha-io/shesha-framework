@@ -20,7 +20,6 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel }: UseSty
             width: 100% !important;
             height: ${layout === 'vertical' && hasLabel ? `calc(100% - ${LABEL_HEIGHT})` : '100%'} !important;
             max-height: ${layout === 'vertical' && hasLabel ? `calc(100% - ${LABEL_HEIGHT})` : '100%'};
-            margin: auto;
 
             .ant-form-item-control-input {
                 min-height : 0px !important;

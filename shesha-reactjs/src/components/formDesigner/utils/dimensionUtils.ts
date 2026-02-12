@@ -132,6 +132,11 @@ export const dimensionUtils = {
 
     return {
       ...baseStyle,
+      margin: 0,
+      marginTop: 0,
+      marginBottom: 0,
+      marginLeft: 0,
+      marginRight: 0,
       ...DESIGNER_DIMENSIONS,
     };
   },
