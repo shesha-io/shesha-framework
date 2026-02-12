@@ -1,4 +1,4 @@
-import { createStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
@@ -138,6 +138,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       border-right: ${ghost ? 'none' : borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
       border-left: ${ghost ? 'none' : borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
       border-bottom: ${ghost ? 'none' : borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
+      overflow: auto;
+      ${sheshaStyles.thinScrollbars}
 
       > .ant-collapse-content-box {
         --ant-collapse-content-padding: 0px !important;
