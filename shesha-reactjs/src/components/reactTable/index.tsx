@@ -30,6 +30,7 @@ import { EmptyState } from '..';
 import { ErrorDetails } from '@/utils/configurationFramework/actions';
 import axios from 'axios';
 import { isAxiosResponse } from '@/interfaces/ajaxResponse';
+import { UserHandledError } from '@/utils/errors';
 
 interface IReactTableState {
   allRows: any[];
@@ -329,6 +330,10 @@ export const ReactTable: FC<IReactTableProps> = ({
         };
 
         onRowsReordered(payload).catch((error) => {
+          if (error instanceof UserHandledError) {
+            return;
+          }
+          
           const unwrappedError = axios.isAxiosError(error) && isAxiosResponse(error.response) && error.response.data?.error
             ? error.response.data.error
             : error;

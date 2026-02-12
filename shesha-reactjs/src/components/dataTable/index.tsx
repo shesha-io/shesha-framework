@@ -62,6 +62,9 @@ import { isPropertiesArray } from '@/interfaces/metadata';
 import { getFormApi } from '@/providers/form/formApi';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
 
+import { UserHandledError } from '@/utils/errors';
+export { UserHandledError };
+
 export interface IIndexTableOptions {
   omitClick?: boolean;
 }
@@ -783,7 +786,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             console.error('OnBeforeRowReorder event error:', error);
             payload.applyOrder(oldData);
             const errorMessage = error instanceof Error ? error.message : String(error);
-            reject(new Error(errorMessage));
+            // Use UserHandledError to indicate the error has been handled by user actions
+            // (e.g., Show Message action) and should not trigger the generic error notification
+            reject(new UserHandledError(errorMessage));
           },
         });
       });
