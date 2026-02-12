@@ -136,6 +136,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="MailKit" Version="4.7.0" />
         <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
         <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2">
