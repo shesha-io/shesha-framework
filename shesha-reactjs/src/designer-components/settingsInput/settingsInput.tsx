@@ -46,7 +46,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = (props) => {
 
   return isHidden ? null
     : (
-      <div key={label} style={unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' ? { width: 'max-content' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
+      <div key={label} style={unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' ? { width: 'auto' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
         <ConditionalWrap
           condition={!isEntityTypeIdEmpty(evaluatedModelType)}
           wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}

@@ -141,7 +141,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const getDesignerDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions | undefined => {
       if (preserveDimensionsInDesigner) return originalDims;
 
-      const isButton = component.type === 'button' || component.type === 'buttonGroup';
+      const isButton = component.type === 'button';
       const hasWidth = originalDims?.width && originalDims.width !== 'auto';
       const isAutoWidth = originalDims?.width === 'auto';
 
