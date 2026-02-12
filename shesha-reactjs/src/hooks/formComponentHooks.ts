@@ -208,7 +208,7 @@ export const useFormComponentStyles = <TModel>(
   const app = useSheshaApplication();
   const { useWrapperStyle } = options || {};
   // For container components, use wrapperStyle instead of style
-  const styleSource = useWrapperStyle ? (model as any).wrapperStyle : model.style;
+  const styleSource = useWrapperStyle && model.wrapperStyle ? (model).wrapperStyle : model.style;
   const jsStyle = useActualContextExecution(styleSource, undefined, {}); // use default style if empty or error
   const { designerWidth } = useCanvas();
 

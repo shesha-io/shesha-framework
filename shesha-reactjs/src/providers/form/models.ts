@@ -251,6 +251,8 @@ export interface IConfigurableFormComponent
   /** Default css style applied as string */
   stylingBox?: string;
 
+  wrapperStyle?: string;
+
   noDataText?: string;
 
   noDataIcon?: string;
