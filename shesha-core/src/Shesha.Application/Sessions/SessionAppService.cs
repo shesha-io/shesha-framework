@@ -104,14 +104,14 @@ namespace Shesha.Sessions
                                 : permissionRoles.SelectMany(x => x.PermissionedEntities).Distinct()
                                     .Select(x => new EntityReferenceDto<string>(x.Id, x._className, x._displayName))
                                     .ToList()
-                        }); ;
+                        });
                     }
                 }
 
                 foreach (var role in roles)
                 {
                     var permissions = role.Role?.Permissions;
-                    if (permissions == null || permissions.Any())
+                    if (permissions == null || !permissions.Any())
                         continue;
 
                     foreach (var permission in permissions.Where(x => x.IsGranted))
@@ -127,7 +127,6 @@ namespace Shesha.Sessions
 
             return grantedPermissions;
         }
-
 
         /// <summary>
         /// I am using this method to get user roles and it is being used on login of a user and also when changing work Order Type, Please contact me(Moses) before removing it

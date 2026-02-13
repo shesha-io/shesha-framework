@@ -61,7 +61,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   const meta = useMetadata(false);
   const { getContainerProperties } = useMetadataDispatcher();
   const { getByEntityType } = useEntityMetadataFetcher();
-  const [modelTypeHierarhy, setModelTypeHierarhy] = useState<IEntityTypeIdentifier[]>([]);
+  const [modelTypeHierarchy, setModelTypeHierarchy] = useState<IEntityTypeIdentifier[]>([]);
 
   const { metadata } = meta ?? {};
 
@@ -96,23 +96,44 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     return state.properties.find((p) => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
   };
 
-  // update propertyModel type hierarhy
+  // update propertyModel type hierarchy
   const propModelUid = typeof (props.propertyModelType) === 'string' ? props.propertyModelType : `${props.propertyModelType?.module}.${props.propertyModelType?.name}`;
   useEffect(() => {
+    let cancelled = false;
+
+    if (!props.propertyModelType) {
+      setModelTypeHierarchy([]);
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const typeList: IEntityTypeIdentifier[] = [];
 
     const getParentAsync = async (entityType: string | IEntityTypeIdentifier): Promise<void> => {
-      await getByEntityType(entityType).then(async (entity) => {
-        typeList.push({ name: entity.entityType, module: entity.entityModule } as IEntityTypeIdentifier);
-        if (isIHasEntityType(entity) && entity.inheritedFromEntityType) {
-          await getParentAsync({ name: entity.inheritedFromEntityType, module: entity.inheritedFromEntityModule } as IEntityTypeIdentifier);
-        }
-      });
+      const entity = await getByEntityType(entityType);
+      typeList.push({ name: entity.entityType, module: entity.entityModule } as IEntityTypeIdentifier);
+      if (isIHasEntityType(entity) && entity.inheritedFromEntityType) {
+        await getParentAsync({ name: entity.inheritedFromEntityType, module: entity.inheritedFromEntityModule } as IEntityTypeIdentifier);
+      }
     };
 
-    getParentAsync(props.propertyModelType).then(() => {
-      setModelTypeHierarhy(typeList);
-    });
+    getParentAsync(props.propertyModelType)
+      .then(() => {
+        if (!cancelled) {
+          setModelTypeHierarchy(typeList);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to fetch entity type hierarchy:', error);
+        if (!cancelled) {
+          setModelTypeHierarchy([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [propModelUid]);
 
   // TODO: move to metadata dispatcher
@@ -137,14 +158,14 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           // Filter properties by propertyModelType
           ? properties.filter((p) =>
             p.dataType === DataTypes.entityReference &&
-            Boolean(modelTypeHierarhy.find((pmt) => (p.entityModule ?? null) === (pmt.module ?? null) && p.entityType === pmt.name)))
+            modelTypeHierarchy.some((pmt) => (p.entityModule ?? null) === (pmt.module ?? null) && p.entityType === pmt.name))
           : properties;
         setProperties(preparedProperties, containerPath ?? containerPathMultiple);
       }).catch(() => {
         setProperties([], '');
       });
     }
-  }, [metadata, modelTypeHierarhy, containerPath, containerPathMultiple, props.propertyModelType, getContainerProperties, onPropertiesLoaded]);
+  }, [metadata, modelTypeHierarchy, containerPath, containerPathMultiple, props.propertyModelType, getContainerProperties, onPropertiesLoaded]);
 
   const onSelect = (data: string): void => {
     if (props.onChange) props.onChange(data);

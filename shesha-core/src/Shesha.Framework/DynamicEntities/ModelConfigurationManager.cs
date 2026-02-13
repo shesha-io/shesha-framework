@@ -566,7 +566,7 @@ namespace Shesha.DynamicEntities
                     {
                         dbProp.ListConfiguration = dbProp.ListConfiguration ?? new EntityPropertyListConfiguration();
                         dbProp.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToMany;
-                        // Other 'dbProp.ListConfiguration.DbMapping' properties will be confgiured on the Create DB Items stage on the application startup
+                        // Other 'dbProp.ListConfiguration.DbMapping' properties will be configured on the Create DB Items stage on the application startup
                     }
                 }
 

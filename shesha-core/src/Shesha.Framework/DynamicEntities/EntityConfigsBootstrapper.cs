@@ -466,8 +466,9 @@ namespace Shesha.DynamicEntities
                         prop.InitStatus = EntityInitFlags.InitializationFailed;
                         var error = $"Inheritance error from {propertyEntityConfig.FullClassName} {property.Name} ({property.DataType}): {config.FullClassName} has property ({prop.DataType})";
                         prop.InitMessage = error;
+                        await _entityPropertyRepository.UpdateAsync(prop);
                         await _errorHandler.HandleInitializationErrorAsync(
-                            new EntityDbInitializationException(config, new EntityPropertyDbInitializationException(prop, null, "DB bootstraping", error), "DB bootstraping")
+                            new EntityDbInitializationException(config, new EntityPropertyDbInitializationException(prop, null, "DB bootstrapping", error), "DB bootstrapping")
                         );
                         continue;
                     }
