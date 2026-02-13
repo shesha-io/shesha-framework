@@ -28,7 +28,10 @@ namespace Shesha.Scheduler.Logging
         internal ScheduledJobLogger(ILog log, ScheduledJobLoggerFactory? factory)
             : this(log.Logger, factory)
         {
+            Log4NetLog = log;
         }
+
+        public ILog Log4NetLog { get; private set; }
 
         public bool IsDebugEnabled => Logger.IsEnabledFor(Level.Debug);
 

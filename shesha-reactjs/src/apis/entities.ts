@@ -29,8 +29,8 @@ export const entitiesGet = (queryParams: EntitiesGetQueryParams, props: entities
   RestfulShesha.get<IDynamicDataResult, unknown, EntitiesGetQueryParams, void>(
     `/api/services/app/Entities/Get`,
     queryParams,
-    props
-  );
+    props,
+);
 
 export interface EntitiesGetAllQueryParams {
   name?: string;

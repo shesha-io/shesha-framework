@@ -169,7 +169,10 @@ export const prepareColumn = (
   columns: DataTableColumnDto[],
   userConfig: IDataTableUserConfig,
 ): ITableColumn => {
-  const userColumnId = isDataColumnProps(column) ? column.propertyName : column.id;
+  const resolvedPropertyName = isDataColumnProps(column)
+    ? (column.propertyName || column.accessor || column.id)
+    : undefined;
+  const userColumnId = isDataColumnProps(column) ? resolvedPropertyName : column.id;
   const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
 
   const baseProps: ITableColumn = {
@@ -196,17 +199,17 @@ export const prepareColumn = (
     const colVisibility =
       userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
 
-    const srvColumn = column.propertyName
-      ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(column.propertyName))
+    const srvColumn = resolvedPropertyName
+      ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
       : {};
 
     const dataCol: ITableDataColumn = {
       ...baseProps,
-      id: column.propertyName,
-      accessor: camelcaseDotNotation(column?.propertyName),
-      propertyName: column.propertyName,
+      id: resolvedPropertyName || column.id,
+      accessor: resolvedPropertyName ? camelcaseDotNotation(resolvedPropertyName) : column.accessor,
+      propertyName: resolvedPropertyName,
 
-      propertiesToFetch: column.propertyName,
+      propertiesToFetch: resolvedPropertyName,
       isEnitty: srvColumn?.dataType === 'entity',
 
       createComponent: column.createComponent,

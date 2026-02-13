@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 export type IConfigurableFormItemChildFunc = (
   value: any,
   onChange: (...args: any[]) => void,
-  propertyName?: string
+  propertyName?: string,
 ) => ReactNode;
 
 export interface IConfigurableFormItemProps {

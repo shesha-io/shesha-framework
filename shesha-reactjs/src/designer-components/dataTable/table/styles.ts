@@ -8,7 +8,6 @@ export const useStyles = createStyles(({ css, cx, token }, {
   fontSize,
   striped,
   hoverHighlight,
-  stickyHeader,
   rowBackgroundColor,
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
@@ -25,11 +24,6 @@ export const useStyles = createStyles(({ css, cx, token }, {
         color: ${color};
         text-align: ${textAlign};
       }
-
-      .ant-table-thead > tr > th {
-        ${stickyHeader ? 'position: sticky; top: 0; z-index: 1;' : ''}
-      }
-
       /* React Table specific row styling */
       .sha-react-table .sha-table .tr.tr-body {
         ${rowBackgroundColor ? `background-color: ${rowBackgroundColor} !important;` : ''}
@@ -51,7 +45,7 @@ export const useStyles = createStyles(({ css, cx, token }, {
         }
       ` : hoverHighlight ? `
         .sha-react-table .sha-table .tbody .tr.tr-body:hover {
-          background-color: ${token.colorPrimaryBg} !important;
+          background-color: ${token.colorPrimary} !important;
         }
       ` : ''}
 

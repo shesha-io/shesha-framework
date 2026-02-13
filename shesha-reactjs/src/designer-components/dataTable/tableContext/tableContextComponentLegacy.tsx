@@ -20,7 +20,6 @@ const TableContextComponentLegacy: TableContextComponentLegacyDefinition = {
   name: 'Data Context (Legacy)',
   icon: <DatabaseOutlined />,
   Factory: () => {
-    // No implementation - this is a legacy component that will be migrated
     return null;
   },
   migrator: (m) =>
@@ -34,7 +33,6 @@ const TableContextComponentLegacy: TableContextComponentLegacyDefinition = {
       .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
       .add<ITableContextComponentProps>(7, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ITableContextComponentProps>(8, (prev) => {
-        // Migration to new component type
         return {
           ...prev,
           type: 'dataContext',

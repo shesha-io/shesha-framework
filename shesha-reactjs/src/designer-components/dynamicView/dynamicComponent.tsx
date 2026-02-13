@@ -3,9 +3,9 @@ import { CustomErrorBoundary } from '@/components';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useActualContextData, useActualContextExecution, useCalculatedModel, useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { formComponentActualModelPropertyFilter } from '@/providers/form/utils';
 import { IModelValidation } from '@/utils/errors';
 import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
-import { formComponentActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import AttributeDecorator from '@/components/attributeDecorator';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 

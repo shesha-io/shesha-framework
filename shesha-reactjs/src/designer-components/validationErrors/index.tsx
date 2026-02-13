@@ -39,6 +39,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
           className={model?.className}
           style={{ ...getStyle(model?.style, formData), ...allStyles.fullStyle }}
           error="Validation Errors (visible in the runtime only)"
+          renderMode="alert"
         />
       );
 
@@ -47,6 +48,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
         className={model?.className}
         style={{ ...getStyle(model?.style, formData), ...allStyles.fullStyle }}
         error={validationErrors}
+        renderMode="alert"
       />
     );
   },

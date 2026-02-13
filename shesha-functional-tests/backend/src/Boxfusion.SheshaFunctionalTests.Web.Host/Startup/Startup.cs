@@ -30,10 +30,13 @@ using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
+using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
-using Shesha.Notifications.SMS;
 using Shesha.Notifications;
+using Shesha.Notifications.SMS;
 using Shesha.Scheduler.Extensions;
+using Shesha.Specifications;
+using Shesha.Startup;
 using Shesha.Swagger;
 using Shesha.Web;
 using Swashbuckle.AspNetCore.Swagger;
@@ -41,8 +44,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
 using System.Reflection;
-using Shesha.Specifications;
-using Shesha.Startup;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -90,7 +91,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
 
-			services.AddSignalR();
+			services.AddSignalR(options => { 
+				options.EnableDetailedErrors = true;
+			});
 
 			services.AddCors();
 			
@@ -220,6 +223,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.IgnoreObsoleteActions();
 				options.AddXmlDocuments();
 
+                options.SchemaFilter<JsonIgnoreSchemaFilter>();
+                options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
 				options.DocumentFilter<SwaggerDocumentFilter>();
@@ -240,7 +245,6 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 					In = ParameterLocation.Header,
 					Type = SecuritySchemeType.ApiKey
 				});
-				//options.SchemaFilter<DynamicDtoSchemaFilter>();
 			});
 			services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
 

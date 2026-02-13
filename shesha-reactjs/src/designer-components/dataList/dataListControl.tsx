@@ -11,50 +11,24 @@ import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { parseFetchError } from '@/designer-components/dataTable/utils';
 
-export const NotConfiguredWarning: FC<{ message?: string }> = ({ message }) => {
+// Static placeholder shown when DataList has configuration errors
+export const DataListPlaceholder: FC = () => {
   const { theme } = useStyles();
 
   // Show preview items that look like actual list items
   const previewItems = [
-    { heading: 'List Item 1', subtext: 'Configure datasource to display items' },
-    { heading: 'List Item 2', subtext: 'Configure datasource to display items' },
-    { heading: 'List Item 3', subtext: 'Configure datasource to display items' },
+    { heading: 'Heading', subtext: 'Subtext' },
+    { heading: 'Heading', subtext: 'Subtext' },
+    { heading: 'Heading', subtext: 'Subtext' },
   ];
 
   return (
-    <div
-      style={{
-        border: `2px dashed ${theme.colorWarning}`,
-        borderRadius: '8px',
-        padding: '16px',
-        backgroundColor: theme.colorWarningBg,
-      }}
-    >
-      {/* Warning header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '16px',
-          paddingBottom: '12px',
-          borderBottom: `1px solid ${theme.colorWarningBorder}`,
-        }}
-      >
-        <div style={{ fontSize: '20px', color: theme.colorWarning }}>⚠️</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 600, fontSize: '14px', color: theme.colorText, marginBottom: '2px' }}>
-            Data Source Not Configured
-          </div>
-          <div style={{ fontSize: '12px', color: theme.colorText }}>
-            {message || "Please configure a data source for this DataList component"}
-          </div>
-        </div>
-      </div>
-
-      {/* Preview list items */}
-      <div style={{ opacity: 0.6 }}>
+    <div style={{ position: 'relative' }}>
+      {/* Preview list items - clean placeholder style */}
+      <div>
         {previewItems.map((item, index) => (
           <div
             key={index}
@@ -62,11 +36,10 @@ export const NotConfiguredWarning: FC<{ message?: string }> = ({ message }) => {
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
-              padding: '12px',
-              marginBottom: index < previewItems.length - 1 ? '8px' : '0',
-              backgroundColor: theme.colorBgContainer,
-              borderRadius: '6px',
-              border: `1px solid ${theme.colorWarningBorder}`,
+              padding: '12px 16px',
+              marginBottom: index < previewItems.length - 1 ? '1px' : '0',
+              borderTop: index === 0 ? `1px solid ${theme.colorBorder}` : 'none',
+              borderBottom: `1px solid ${theme.colorBorder}`,
             }}
           >
             {/* Icon placeholder */}
@@ -75,7 +48,7 @@ export const NotConfiguredWarning: FC<{ message?: string }> = ({ message }) => {
                 width: '40px',
                 height: '40px',
                 borderRadius: '50%',
-                backgroundColor: theme.colorFillTertiary,
+                backgroundColor: theme.colorFillSecondary,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -90,10 +63,10 @@ export const NotConfiguredWarning: FC<{ message?: string }> = ({ message }) => {
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 style={{
-                  fontWeight: 600,
+                  fontWeight: 500,
                   fontSize: '14px',
                   color: theme.colorTextSecondary,
-                  marginBottom: '2px',
+                  marginBottom: '4px',
                 }}
               >
                 {item.heading}
@@ -138,6 +111,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     onListItemSelect,
     onSelectionChange,
   } = props;
+
+  // Handle null dataSource gracefully
   const {
     tableData,
     isFetchingTableData,
@@ -148,15 +123,84 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     grouping,
     groupingColumns,
     setRowData,
-  } = dataSource;
+    fetchTableDataError,
+  } = dataSource || {
+    tableData: [],
+    isFetchingTableData: false,
+    selectedIds: [],
+    changeSelectedIds: () => { /* noop */ },
+    getRepository: () => null,
+    modelType: null,
+    grouping: null,
+    groupingColumns: [],
+    setRowData: () => { /* noop */ },
+    fetchTableDataError: null,
+  };
   const { styles } = useStyles();
-  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
+  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource || { selectedRow: null, selectedRows: [], setSelectedRow: () => { /* noop */ }, setMultiSelectedRow: () => { /* noop */ } };
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
   const { executeAction } = useConfigurableActionDispatcher();
 
   const repository = getRepository();
+
+  // Check if form configuration is invalid (for placeholder display in designer mode)
+  const hasInvalidFormConfig = React.useMemo(() => {
+    if (!isDesignMode) return false;
+
+    if (props.formSelectionMode === "name") {
+      if (!props.formId) return true;
+      if (typeof props.formId === 'string' && props.formId.trim() === '') return true;
+      if (typeof props.formId === 'object' && (!props.formId.name || props.formId.name.trim() === '')) return true;
+    }
+    if (props.formSelectionMode === "view" && (!props.formType || props.formType.trim() === '')) return true;
+    if (props.formSelectionMode === "expression" && (!props.formIdExpression || props.formIdExpression.trim() === '')) return true;
+
+    return false;
+  }, [isDesignMode, props.formSelectionMode, props.formId, props.formType, props.formIdExpression]);
+
+  // CRITICAL: Register validation errors - FormComponent will display them
+  // Must be called before any conditional returns (React Hooks rules)
+  // Note: Form configuration errors are handled by validateModel in dataListComponent.tsx
+  useComponentValidation(
+    () => {
+      const errors: Array<{ propertyName: string; error: string }> = [];
+
+      // Parse fetch errors from the data source
+      if (fetchTableDataError) {
+        errors.push(...parseFetchError(fetchTableDataError));
+      }
+
+      // Check for missing context error
+      if (!dataSource) {
+        errors.push({
+          propertyName: 'Missing Required Parent Component',
+          error: 'CONFIGURATION ERROR: DataList MUST be placed inside a Data Context component.\nThis component cannot function without a data source.',
+        });
+      }
+
+      // Check for missing repository error (only if not already showing missing context error)
+      if (dataSource && !repository) {
+        errors.push({
+          propertyName: 'Missing Data Source',
+          error: 'This Data List has no data source configured.\nSelecting a Data Source tells the Data List where to fetch data from.',
+        });
+      }
+
+      // Return validation result if there are errors
+      if (errors.length > 0) {
+        return {
+          hasErrors: true,
+          validationType: 'error' as const,
+          errors,
+        };
+      }
+
+      return undefined;
+    },
+    [fetchTableDataError, dataSource, repository],
+  );
 
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
@@ -250,7 +294,12 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const data = useDeepCompareMemo(() => {
     if (isDesignMode) {
-      // Provide sample data for design mode to show a realistic preview
+      // In designer mode, show actual data if available, otherwise show sample data
+      if (tableData && tableData.length > 0) {
+        return tableData;
+      }
+
+      // Provide sample data for design mode to show a realistic preview when no real data
       const sampleData = {
         id: '1',
         name: 'Sample Item',
@@ -379,31 +428,16 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  // When there's no repository configured, don't render anything in runtime mode
-  if (!repository) {
-    // In runtime mode, don't render anything if datasource is not configured
-    if (!isDesignMode) {
-      return null;
-    }
-    // In design mode, show configuration warning
-    return <NotConfiguredWarning message="Please configure a data source for this data list" />;
+  // Show placeholder only when form config is invalid in designer mode
+  // In designer mode with valid config, show sample data even without repository
+  // In runtime mode without repository, show placeholder
+  // Validation errors will be shown by parent FormComponent via useComponentValidation and validateModel
+  if (isDesignMode && hasInvalidFormConfig) {
+    return <DataListPlaceholder />;
   }
 
-  // Form configuration validation - check for invalid configurations
-  const hasInvalidFormConfig =
-    (props.formSelectionMode === "name" && !props.formId) ||
-    (props.formSelectionMode === "view" && !props.formType) ||
-    (props.formSelectionMode === "expression" && !props.formIdExpression);
-
-  if (hasInvalidFormConfig) {
-    // In runtime mode, don't render anything if form configuration is invalid
-    if (!isDesignMode) {
-      return null;
-    }
-    // In design mode, show specific configuration warnings
-    if (props.formSelectionMode === "name" && !props.formId) return <NotConfiguredWarning message="Please select a form to display list items" />;
-    if (props.formSelectionMode === "view" && !props.formType) return <NotConfiguredWarning message="Please specify a form type" />;
-    if (props.formSelectionMode === "expression" && !props.formIdExpression) return <NotConfiguredWarning message="Please configure the form identifier expression" />;
+  if (!isDesignMode && !repository) {
+    return <DataListPlaceholder />;
   }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;

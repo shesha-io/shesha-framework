@@ -8,7 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Insert.ForceBootstrapper("EntityConfigsBootstrapper");
+            this.ForceBootstrapper("EntityConfigsBootstrapper");
 
             IfDatabase("SqlServer").Execute.Sql(@"
 insert into frwk.entity_properties (

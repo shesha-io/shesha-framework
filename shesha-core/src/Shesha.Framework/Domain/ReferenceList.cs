@@ -12,10 +12,10 @@ namespace Shesha.Domain
         GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService
     )]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-reflist-create")]
-    [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
     [JoinedProperty("reference_lists", Schema = "frwk")]
     [DiscriminatorValue(ItemTypeName)]
     [SnakeCaseNaming]
+    [Exposable(ItemTypeName)]
     public class ReferenceList : ConfigurationItem
     {
         public const string ItemTypeName = "reference-list";

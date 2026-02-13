@@ -229,7 +229,7 @@ namespace Shesha.Extensions
             catch (Exception ex)
             {
                 throw new Exception(
-                    $"An error occured whilst trying to retrieve DisplayText of property '{propertyName}' on type of '{entity.GetType().FullName}'.", ex);
+                    $"An error occurred whilst trying to retrieve DisplayText of property '{propertyName}' on type of '{entity.GetType().FullName}'.", ex);
             }
         }
 

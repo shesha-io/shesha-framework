@@ -154,9 +154,12 @@ export function useActualContextExecution<T = unknown>(code: string | undefined,
   const actualDataRef = useRef<T>(defaultValue);
 
   if (contextProxyRef.current.changed || !isEqual(prevCode.current, code)) {
-    actualDataRef.current = !isNullOrWhiteSpace(code)
+    const result = !isNullOrWhiteSpace(code)
       ? executeScriptSync(code, contextProxyRef.current) as T
       : defaultValue;
+
+    // Only update if result is not undefined, otherwise keep previous value or use default
+    actualDataRef.current = result !== undefined ? result : (actualDataRef.current ?? defaultValue);
   }
 
   prevCode.current = code;

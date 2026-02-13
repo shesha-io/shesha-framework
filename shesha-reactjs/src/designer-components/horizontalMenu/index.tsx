@@ -4,6 +4,7 @@ import { filterObjFromKeys } from "@/utils";
 import { EditOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import {
   ConfigurableComponentRenderer,
+  getShadowStyle,
   getStyle,
   IConfigurableFormComponent,
   ISidebarMenuItem,
@@ -27,6 +28,7 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   fontSize?: string;
   gap?: string;
   height?: string;
+  containerStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
   styleOnSubMenu?: string;
@@ -49,6 +51,13 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   background?: {
     type?: string;
     color?: string;
+  };
+  menuItemShadow?: {
+    color: string;
+    offsetX?: number;
+    offsetY?: number;
+    blurRadius?: number;
+    spreadRadius?: number;
   };
 }
 
@@ -85,9 +94,13 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     };
 
     const fontSize = model?.font?.size || model?.fontSize || "14";
-    const gap = model?.gap || "12";
-    const height = model?.height || "6";
-    const width = model?.dimensions?.width || model?.width || "500px";
+    const gap = Number(model?.gap || "12");
+    const height = Number(model?.height || "6");
+    const dropdownPadding = `${gap}px`;
+
+    // Normalize width: if no unit provided, append 'px'
+    const rawWidth = (model?.dimensions?.width || model?.width || "500px").toString().trim();
+    const width = /^\d+(\.\d+)?$/.test(rawWidth) ? `${rawWidth}px` : rawWidth;
 
     const colors: ILayoutColor = {
       ...filterObjFromKeys(model, [
@@ -97,20 +110,35 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "itemBackground",
         "hoverItemColor",
         "hoverItemBackground",
+        "subItemColor",
+        "subItemBackground",
       ]),
-      // Only set itemBackground for 'color' type or when no type is specified
-      // For other types (gradient, image, url, storedFile), let allStyles.backgroundStyles handle it
-      itemBackground: model.itemBackground || ((!model.background?.type || model.background?.type === 'color') ? model.background?.color : undefined),
-      itemColor: model.itemColor || model.font?.color,
+      itemBackground: model?.itemBackground || 'white',
+      itemColor: model?.itemColor || model?.font?.color,
     };
 
-    const finalStyle = useMemo(() => {
-      return {
-        ...model.allStyles?.fullStyle,
+    const finalContainerStyle = useMemo(() => {
+      const computedStyle = {
+        ...model.allStyles?.dimensionsStyles,
+        ...model.allStyles?.borderStyles,
         ...model.allStyles?.backgroundStyles,
-        ...(model.style ? getStyle(model.style, data) : {}),
+        ...model.allStyles?.shadowStyles,
+        ...model.allStyles?.overflowStyles,
+        ...(model.containerStyle ? getStyle(model.containerStyle, data) : {}),
       };
-    }, [model.allStyles, model.style, data]);
+
+      // Set default background color if not defined
+      if (!computedStyle.backgroundColor && !computedStyle.background) {
+        computedStyle.backgroundColor = 'transparent';
+      }
+
+      return computedStyle;
+    }, [model.allStyles, model.containerStyle, data]);
+
+    const finalItemStyle = useMemo(() => {
+      // Only use custom styles for items, not all computed styles
+      return model?.style ? getStyle(model.style, data) : undefined;
+    }, [model.style, data]);
 
     const finalFontStyles = useMemo(() => {
       return {
@@ -118,9 +146,13 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         fontFamily: model?.font?.type,
         fontWeight: model?.font?.weight as CSSProperties['fontWeight'],
         color: model?.font?.color,
-        textAlign: model?.font?.align as any,
+        textAlign: model?.font?.align as CSSProperties['textAlign'],
       };
     }, [model.font, fontSize]);
+
+    const menuItemShadowStyle = useMemo(() => {
+      return getShadowStyle(model?.menuItemShadow);
+    }, [model?.menuItemShadow]);
 
     if (model.hidden) return null;
 
@@ -132,7 +164,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`}>
+            <div className={`sidebar ${componentState.wrapperClassName}`} style={{ overflow: 'visible' }}>
               <BlockOverlay>
                 <EditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>
@@ -140,15 +172,18 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 colors={colors}
                 fontSize={typeof fontSize === 'string' ? fontSize : String(fontSize)}
                 padding={{ x: gap, y: height }}
+                dropdownPadding={dropdownPadding}
                 style={{
-                  ...finalStyle,
+                  ...finalContainerStyle,
                   ...finalFontStyles,
                   width: width,
                 } as React.CSSProperties}
+                itemStyle={finalItemStyle}
                 styleOnHover={getStyle(model?.styleOnHover, data)}
                 styleOnSelected={getStyle(model?.styleOnSelected, data)}
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
-                overflow={model.overflow}
+                menuItemStyle={menuItemShadowStyle}
+                overflow={model.overflow || 'dropdown'}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
                 menuId={model.id}
@@ -162,7 +197,13 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
-    .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<IMenuListProps>(0, (prev) => ({
+      ...migratePrevStyles(prev, defaultStyles()),
+    }))
+    .add<IMenuListProps>(1, (prev) => ({
+      ...prev,
+      overflow: prev.overflow ?? 'dropdown',
+    })),
 };
 
 export default MenuListComponent;

@@ -93,7 +93,8 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
         [anchored?.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
-      }, styles.shaCrudCell)}
+        [styles.shaCrudCell]: columnConfig?.columnType === 'crud-operations',
+      })}
     >
       {columnConfig && columnConfig.columnType === 'data' && (
         <div className={styles.shaCellParentFW}>

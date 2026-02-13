@@ -515,7 +515,7 @@ export const getClosestComponent = (componentId: string, context: SettingsMigrat
 };
 
 export const getClosestTableId = (context: SettingsMigrationContext): string | null => {
-  const table = getClosestComponent(context.componentId, context, 'datatableContext');
+  const table = getClosestComponent(context.componentId, context, 'dataContext');
   return table ? table['uniqueStateId'] ?? table.propertyName : null;
 };
 
@@ -1150,7 +1150,7 @@ export const createComponentModelForDataProperty = (
   propertyMetadata: IPropertyMetadata,
   migrator?: (
     componentModel: IConfigurableFormComponent,
-    toolboxComponent: IToolboxComponent
+    toolboxComponent: IToolboxComponent,
   ) => IConfigurableFormComponent,
 ): IConfigurableFormComponent => {
   let toolboxComponent = findToolboxComponent(components, (c) => c.type === propertyMetadata.formatting.defaultEditor);
@@ -1471,4 +1471,37 @@ export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSett
   upgradeComponents(designerComponents, formSettings, newFlatComponents);
 
   return newFlatComponents;
+};
+
+/**
+ * Properties to skip when filtering actual model properties.
+ * These properties are handled by the form component itself or nested components.
+ */
+const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic', 'components', 'actionConfiguration'];
+
+/**
+ * Standard filter for actual model properties.
+ * Filters out properties that should not be included in the actual model.
+ *
+ * @param name - The property name to check
+ * @returns true if the property should be included, false otherwise
+ */
+export const standardActualModelPropertyFilter = (name: string): boolean => {
+  return !propertiesToSkip.includes(name);
+};
+
+/**
+ * Form component actual model property filter.
+ * Combines the component's custom filter with the standard filter.
+ *
+ * @param component - The toolbox component
+ * @param name - The property name to check
+ * @param value - The property value
+ * @returns true if the property should be included, false otherwise
+ */
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
+  if (component?.actualModelPropertyFilter) {
+    return component.actualModelPropertyFilter(name, value) && standardActualModelPropertyFilter(name);
+  }
+  return standardActualModelPropertyFilter(name);
 };

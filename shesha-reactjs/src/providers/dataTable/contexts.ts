@@ -156,6 +156,7 @@ export interface IDataTableStateContext
 
   isFetchingTableData?: boolean;
   hasFetchTableDataError?: boolean;
+  fetchTableDataError?: any;
 
   properties?: string[];
 
@@ -255,6 +256,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   tableData: [],
   isFetchingTableData: false,
   hasFetchTableDataError: null,
+  fetchTableDataError: undefined,
   pageSizeOptions: DEFAULT_PAGE_SIZE_OPTIONS,
   selectedPageSize: DEFAULT_PAGE_SIZE_OPTIONS[1],
   currentPage: 1,

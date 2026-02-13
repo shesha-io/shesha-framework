@@ -54,13 +54,13 @@ const Comment: React.FC<CommentProps> = ({
   ) : null;
 
   const actionDom =
-        actions && actions.length ? (
-          <ul className={`${prefixCls}-actions`}>
-            {actions.map((action, index) => (
-              <li key={`action-${index}`}>{action}</li>
-            ))}
-          </ul>
-        ) : null;
+    actions && actions.length ? (
+      <ul className={`${prefixCls}-actions`}>
+        {actions.map((action, index) => (
+          <li key={`action-${index}`}>{action}</li>
+        ))}
+      </ul>
+    ) : null;
 
   const authorContent = (author || datetime) && (
     <div className={`${prefixCls}-content-author`}>

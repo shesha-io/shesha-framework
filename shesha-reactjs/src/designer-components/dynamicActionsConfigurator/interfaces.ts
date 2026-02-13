@@ -14,5 +14,5 @@ export interface ISettingsFormFactoryArgs<TModel extends object = object> {
 }
 
 export type IProviderSettingsFormFactory<TModel extends object = object> = (
-  props: ISettingsFormFactoryArgs<TModel>
+  props: ISettingsFormFactoryArgs<TModel>,
 ) => ReactNode;

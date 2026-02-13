@@ -687,9 +687,14 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
         formFlatStructure: this.flatStructure,
         formArguments: formArguments,
         expressionExecuter: this.expressionExecuter,
+        loadingCallback: (loadingState) => {
+          this.dataLoadingState = { status: loadingState.loadingState, hint: loadingState.loaderHint, error: loadingState.error };
+          this.forceRootUpdate();
+        },
       });
+      if (this.dataLoadingState.status === 'failed')
+        throw this.dataLoadingState.error;
 
-      this.dataLoadingState = { status: 'ready' };
       this.initialValues = data;
       this.formData = data;
       this.antdForm.resetFields();
@@ -758,6 +763,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       } catch (error) {
         this.log('LOG: failed to submit', error);
         this.dataSubmitState = { status: 'failed', error: error };
+        this.setValidationErrors(error);
         this.forceRootUpdate();
         throw error;
       }

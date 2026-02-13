@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Shesha.Domain
 {
     [SnakeCaseNaming]
+    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     [Table("vw_configuration_items_to_expose", Schema = "frwk")]
     [ImMutable]
     public class ConfigurationItemToExpose : Entity<Guid>

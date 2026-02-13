@@ -8,10 +8,15 @@ import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { InputComponent } from '.';
 import { getWidth } from '../settingsInput/utils';
-export const getEditor = (availableConstantsExpression: string, codeEditorProps: ICodeEditorProps, constantsAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>)): ReactElement => {
+export const getEditor = (
+  availableConstantsExpression: string,
+  codeEditorProps: ICodeEditorProps,
+  constantsAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>),
+  resultTypeAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined,
+): ReactElement => {
   return availableConstantsExpression?.trim()
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
-    : <CodeEditorWithStandardConstants {...codeEditorProps} />;
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} resultType={resultTypeAccessor} />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultTypeAccessor} />;
 };
 
 export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): ReactElement => {

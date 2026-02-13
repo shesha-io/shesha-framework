@@ -83,7 +83,36 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDoubleClickRef = useRef(false);
 
-  const handleRowClick = (): void => {
+  const handleRowClick = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const target = event.target as HTMLElement;
+
+    const isInPortal = target.closest('.ant-select-dropdown') ||
+      target.closest('.ant-picker-dropdown') ||
+      target.closest('.ant-dropdown') ||
+      target.closest('.ant-drawer') ||
+      target.closest('.ant-tooltip');
+
+    const isEditableElement = target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.tagName === 'SELECT' ||
+      target.tagName === 'BUTTON' ||
+      target.closest('.ant-select') ||
+      target.closest('.ant-picker') ||
+      target.closest('.ant-input-number') ||
+      target.closest('.ant-checkbox') ||
+      target.closest('.ant-radio') ||
+      target.closest('.ant-switch') ||
+      target.closest('.ant-slider') ||
+      target.closest('.ant-rate') ||
+      target.closest('.ant-upload') ||
+      target.closest('.sha-form-cell') ||
+      target.closest('[contenteditable="true"]');
+
+
+    if (isEditableElement || isInPortal || editMode === 'edit') {
+      return;
+    }
+
     // Reset double-click flag for a fresh click sequence
     isDoubleClickRef.current = false;
 
@@ -166,7 +195,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
           styles.tr,
           styles.trBody,
           { [styles.trOdd]: striped && index % 2 === 0 },
-          { [styles.trSelected]: selectedRowIndex === index || row?.isSelected },
+          { [styles.trSelected]: selectedRowIndex === index || row.isSelected },
         )}
         key={rowId}
       >

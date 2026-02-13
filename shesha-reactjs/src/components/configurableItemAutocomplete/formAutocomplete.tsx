@@ -8,7 +8,9 @@ export type IFormAutocompleteRuntimeProps = ConfigurableItemAutocompleteRuntimeP
 const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
 
 const baseFormFilter = {
-  "==": [{ var: "isTemplate" }, false],
+  and: [
+    { "==": [{ var: "isTemplate" }, false] },
+  ],
 };
 
 export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {

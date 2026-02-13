@@ -7,6 +7,6 @@ namespace Shesha.DynamicEntities.DbGenerator
     public interface IDynamicEntitiesDbGenerator
     {
         Task ProcessEntityConfigAsync(EntityConfig entityConfig, List<EntityProperty>? properties = null);
-        Task ProcessEntityPropertyAsync(EntityProperty entityProperty);
+        Task ProcessEntityPropertyAsync(EntityProperty entityProperty, bool force = false);
     }
 }

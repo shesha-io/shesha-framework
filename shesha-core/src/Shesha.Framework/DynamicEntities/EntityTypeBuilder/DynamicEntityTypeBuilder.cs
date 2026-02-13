@@ -201,7 +201,6 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     });
                     var assemblyAttributeBuilder = new CustomAttributeBuilder(assemblyAttribute.NotNull(), new object[] {
                         module.Name, "", module.FriendlyName ?? "", module.Publisher ?? "", module.Description ?? "",
-                        // ToDo: AS - check for Main Module
                         true,
                     });
                     assemblyBuilder.SetCustomAttribute(assemblyAttributeBuilder);
@@ -356,14 +355,12 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             if (properties != null)
             {
                 var existProperties = typeBuilderType.TypeBuilder.BaseType?.GetProperties();
-                var propertiesToAdd = properties.Where(x =>
-                    x.Name != "Id"
-                    && x.ParentProperty == null
-                );
+                var propertiesToAdd = properties.Where(x => x.ParentProperty == null);
                 foreach (var property in propertiesToAdd)
                 {
-                    if (existProperties?.Any(y => y.Name == property.Name) ?? true
-                        || property.DataType == DataTypes.Advanced)
+                    if ((existProperties?.Any(y => y.Name == property.Name) ?? false)
+                        || IsIgnorePropertyType(property)
+                        || property.Name == "Id")
                     {
                         await UpdateSuccessAsync(property);
                         continue;
@@ -478,6 +475,11 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             var attribute = attributeType.GetConstructor(argTypes);
             var attributeBuilder = new CustomAttributeBuilder(attribute.NotNull(), arguments);
             propertyBuilder.SetCustomAttribute(attributeBuilder);
+        }
+
+        public bool IsIgnorePropertyType(EntityProperty property)
+        {
+            return property.DataType == DataTypes.Advanced;
         }
 
         /// <summary>

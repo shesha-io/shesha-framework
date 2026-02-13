@@ -3,6 +3,8 @@ import { DataNode } from "antd/lib/tree";
 import { PropsWithChildren, ReactNode } from "react";
 import { isDefined } from "../utils/nullables";
 import { ModalFooterButtons } from "@/providers/dynamicModal/models";
+import { MenuItemType } from "./menu-utils";
+import { IConfigurationStudio } from "./cs/interfaces";
 
 export type ForceRenderFunc = () => void;
 
@@ -33,6 +35,7 @@ export type TreeNode = DataNode & {
 
 export type ConfigItemTreeNode = TreeNode & {
   itemType: string;
+  discriminator: string;
   flags: DocumentFlags;
   lastModifierUser?: string | undefined;
   lastModificationTime?: string | undefined;
@@ -51,6 +54,7 @@ export type FolderTreeNode = TreeNode & NodeWithChilds & {
 };
 
 export type SpecialTreeNode = TreeNode & {
+  itemType: string;
 };
 
 
@@ -62,6 +66,7 @@ export type FlatTreeNode = DocumentFlags & {
   label: string;
   nodeType: number;
   itemType?: string;
+  discriminator?: string;
   description: string | null | undefined;
   lastModifierUser: string | null;
   lastModificationTime: string | null;
@@ -113,6 +118,7 @@ export const ITEM_TYPES = {
 
 export type ItemTypeBackendDefinition = {
   itemType: string;
+  discriminator: string;
   entityClassName: string;
   friendlyName: string;
   createFormId: FormFullName | null;
@@ -139,6 +145,7 @@ export type DocumentBase = StoredDocumentInfo;
 
 export type CIDocument = DocumentBase & {
   itemType: string;
+  discriminator: string;
   definition: DocumentDefinition;
   loadingState: LoadingStatus;
   isDataModified: boolean;
@@ -181,12 +188,14 @@ export interface IDocumentInstance extends CIDocument {
 
 export type DocumentInstanceFactoryArgs = {
   itemId: string;
+  discriminator: string;
   label: string;
   moduleId: string;
   moduleName: string;
   flags?: DocumentFlags;
 };
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
+export type ContextMenuBuilder = (menuItems: MenuItemType[], configurationStudio: IConfigurationStudio) => MenuItemType[];
 
 export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
   documentType: string;
@@ -194,7 +203,9 @@ export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstanc
   Provider?: ProviderRenderer<TDoc> | undefined;
   Toolbar?: ItemEditorRenderer<TDoc> | undefined;
   documentInstanceFactory: DocumentInstanceFactory;
+  contextMenuBuilder?: ContextMenuBuilder;
   createModalFooterButtons?: ModalFooterButtons;
+  icon?: ReactNode | undefined;
 };
 
 export type DocumentDefinitions = Map<string, DocumentDefinition>;

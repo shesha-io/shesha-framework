@@ -35,7 +35,7 @@ export const HasPreviousActionResponse = (value: HasPreviousActionResult): value
  */
 export type IConfigurableActionExecuter<TArguments, TReponse> = (
   actionArguments: TArguments,
-  context: IActionExecutionContext
+  context: IActionExecutionContext,
 ) => Promise<TReponse>;
 
 export interface ISettingsFormFactoryArgs<TModel extends object = object> {
@@ -56,7 +56,7 @@ export interface FormMarkupFactoryArgs {
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
 
 export type IConfigurableActionArgumentsFormFactory<TModel extends object = object> = (
-  props: ISettingsFormFactoryArgs<TModel>
+  props: ISettingsFormFactoryArgs<TModel>,
 ) => ReactNode;
 
 export interface IHasActionOwner {
@@ -87,7 +87,7 @@ export type ConfigurableActionArgumentsMigrationContext = void;
  * Arguments migrator
  */
 export type ConfigurableActionArgumentsMigrator<TArguments> = (
-  migrator: Migrator<unknown, TArguments, ConfigurableActionArgumentsMigrationContext>
+  migrator: Migrator<unknown, TArguments, ConfigurableActionArgumentsMigrationContext>,
 ) => MigratorFluent<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>;
 
 /**
@@ -155,6 +155,12 @@ export interface IConfigurableActionConfiguration<TArguments extends ActionParam
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
 }
+
+export const isConfigurableActionConfiguration = (actionConfig: unknown): actionConfig is IConfigurableActionConfiguration => {
+  return actionConfig && typeof (actionConfig) === 'object' &&
+    'actionOwner' in actionConfig && typeof (actionConfig.actionOwner) === 'string' &&
+    'actionName' in actionConfig && typeof (actionConfig.actionName) === 'string';
+};
 
 /**
  * Make default action configuration, is used for component initialization

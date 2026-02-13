@@ -208,6 +208,9 @@ namespace Shesha
 
             if (result.Errors != null)
             {
+                if (result.Errors.Count() == 1 && result.Errors.First().InnerException is EntityNotFoundException notFoundException)
+                    throw notFoundException;
+
                 var validationResults = result.Errors.Select(e => new ValidationResult(e.FullMessage())).ToList();
                 throw new AbpValidationException(string.Join("\r\n", validationResults.Select(r => r.ErrorMessage)), validationResults);
             }
@@ -391,18 +394,6 @@ namespace Shesha
                         // EntityReference
                         sb.AppendLine($"{propertyName}: {propertyName}{nameof(IEntity.Id)}");
                     break;
-                // ToDo: AS - remove after implementation
-                /*case DataTypes.Object:
-                    {
-                        sb.Append(propertyName);
-                        sb.AppendLine("{");
-                        foreach (var subProp in property.Properties)
-                        {
-                            AppendProperty(sb, subProp);
-                        }
-                        sb.AppendLine("}");
-                        break;
-                    }*/
                 default:
                     sb.AppendLine(propertyName);
                     break;

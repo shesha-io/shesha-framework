@@ -9,7 +9,6 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
-//import { importX, createNodeResolver } from 'eslint-plugin-import-x'
 import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 

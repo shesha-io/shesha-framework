@@ -50,103 +50,106 @@ import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form
 import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 
 export class FormBuilderImplementation implements FormBuilder {
-  addKeyInformationBar = (props: FluentSettings<IKeyInformationBarProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'KeyInformationBar', meta);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: `add${Capitalize<string>}`]: (props: any, metadata?: IPropertyMetadata) => FormBuilder;
 
-  addEditModeSelector = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'editModeSelector', meta);
+  addKeyInformationBar = (props: FluentSettings<IKeyInformationBarProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'KeyInformationBar', meta);
 
-  addSettingsInput = (props: FluentSettings<SettingsInputComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'settingsInput', meta);
+  addEditModeSelector = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'editModeSelector', meta);
 
-  addTabs = (props: FluentSettings<ITabsComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'tabs', meta);
+  addSettingsInput = (props: FluentSettings<SettingsInputComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'settingsInput', meta);
 
-  addDateField = (props: FluentSettings<IDateFieldProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'dateField', meta);
+  addTabs = (props: FluentSettings<ITabsComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'tabs', meta);
 
-  addDropdown = (props: FluentSettings<IDropdownComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'dropdown', meta);
+  addDateField = (props: FluentSettings<IDateFieldProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'dateField', meta);
 
-  addEditableTagGroup = (props: FluentSettings<IEditableTagGroupComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'editableTagGroup', meta);
+  addDropdown = (props: FluentSettings<IDropdownComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'dropdown', meta);
 
-  addEndpointsAutocomplete = (props: FluentSettings<IEndpointsAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'endpointsAutocomplete', meta);
+  addEditableTagGroup = (props: FluentSettings<IEditableTagGroupComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'editableTagGroup', meta);
 
-  addFileUpload = (props: FluentSettings<IFileUploadProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'fileUpload', meta);
+  addEndpointsAutocomplete = (props: FluentSettings<IEndpointsAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'endpointsAutocomplete', meta);
 
-  addFormAutocomplete = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'formAutocomplete', meta);
+  addFileUpload = (props: FluentSettings<IFileUploadProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'fileUpload', meta);
 
-  addIconPicker = (props: FluentSettings<IIconPickerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'iconPicker', meta);
+  addFormAutocomplete = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'formAutocomplete', meta);
 
-  addLabelValueEditor = (props: FluentSettings<ILabelValueEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'labelValueEditor', meta);
+  addIconPicker = (props: FluentSettings<IIconPickerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'iconPicker', meta);
 
-  addNumberField = (props: FluentSettings<INumberFieldComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'numberField', meta);
+  addLabelValueEditor = (props: FluentSettings<ILabelValueEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'labelValueEditor', meta);
 
-  addPermissionAutocomplete = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'permissionAutocomplete', meta);
+  addNumberField = (props: FluentSettings<INumberFieldComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'numberField', meta);
 
-  addPropertyAutocomplete = (props: FluentSettings<IPropertyAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'propertyAutocomplete', meta);
+  addPermissionAutocomplete = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'permissionAutocomplete', meta);
 
-  addPropertyRouter = (props: FluentSettings<IPropertyRouterComponent>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'propertyRouter', meta);
+  addPropertyAutocomplete = (props: FluentSettings<IPropertyAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'propertyAutocomplete', meta);
 
-  addQueryBuilder = (props: FluentSettings<IQueryBuilderComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'queryBuilder', meta);
+  addPropertyRouter = (props: FluentSettings<IPropertyRouterComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'propertyRouter', meta);
 
-  addRadio = (props: FluentSettings<IEnhancedRadioProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'radio', meta);
+  addQueryBuilder = (props: FluentSettings<IQueryBuilderComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'queryBuilder', meta);
 
-  addReferenceListAutocomplete = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'referenceListAutocomplete', meta);
+  addRadio = (props: FluentSettings<IEnhancedRadioProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'radio', meta);
 
-  addSectionSeparator = (props: FluentSettings<ISectionSeparatorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'sectionSeparator', meta);
+  addReferenceListAutocomplete = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'referenceListAutocomplete', meta);
 
-  addSwitch = (props: FluentSettings<ISwitchComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'switch', meta);
+  addSectionSeparator = (props: FluentSettings<ISectionSeparatorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'sectionSeparator', meta);
 
-  addTextField = (props: FluentSettings<ITextFieldComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'textField', meta);
+  addSwitch = (props: FluentSettings<ISwitchComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'switch', meta);
 
-  addTextArea = (props: FluentSettings<ITextAreaComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'textArea', meta);
+  addTextField = (props: FluentSettings<ITextFieldComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'textField', meta);
 
-  addLink = (props: FluentSettings<ILinkProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'link', meta);
+  addTextArea = (props: FluentSettings<ITextAreaComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'textArea', meta);
 
-  addSettingsInputRow = (props: FluentSettings<ISettingsInputRowProps & IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'settingsInputRow', meta);
+  addLink = (props: FluentSettings<ILinkProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'link', meta);
 
-  addSlider = (props: FluentSettings<ISliderComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'slider', meta);
+  addSettingsInputRow = (props: FluentSettings<ISettingsInputRowProps & IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'settingsInputRow', meta);
 
-  addStyleBox = (props: FluentSettings<IStyleBoxComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'styleBox', meta);
+  addSlider = (props: FluentSettings<ISliderComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'slider', meta);
 
-  addLabelConfigurator = (props: FluentSettings<ILabelComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'labelConfigurator', meta);
+  addStyleBox = (props: FluentSettings<IStyleBoxComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'styleBox', meta);
 
-  addText = (props: FluentSettings<ITextTypographyProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'text', meta);
+  addLabelConfigurator = (props: FluentSettings<ILabelComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'labelConfigurator', meta);
 
-  addTimePicker = (props: FluentSettings<ITimePickerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'timePicker', meta);
+  addText = (props: FluentSettings<ITextTypographyProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'text', meta);
 
-  addSearchableTabs = (props: FluentSettings<IPropertiesTabsComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'searchableTabs', meta);
+  addTimePicker = (props: FluentSettings<ITimePickerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'timePicker', meta);
 
-  addAlert = (props: FluentSettings<IAlertComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'alert', meta);
+  addSearchableTabs = (props: FluentSettings<IPropertiesTabsComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'searchableTabs', meta);
 
-  addAutocomplete = (props: FluentSettings<IAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'autocomplete', meta);
+  addAlert = (props: FluentSettings<IAlertComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'alert', meta);
 
-  addButtons = (props: FluentSettings<IButtonsProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'buttons', meta);
+  addAutocomplete = (props: FluentSettings<IAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'autocomplete', meta);
 
-  addCheckbox = (props: FluentSettings<ICheckboxComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'checkbox', meta);
+  addButtons = (props: FluentSettings<IButtonsProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'buttons', meta);
 
-  addCodeEditor = (props: FluentSettings<ICodeEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'codeEditor', meta);
+  addCheckbox = (props: FluentSettings<ICheckboxComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'checkbox', meta);
 
-  addColorPicker = (props: FluentSettings<IColorPickerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'colorPicker', meta);
+  addCodeEditor = (props: FluentSettings<ICodeEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'codeEditor', meta);
 
-  addColumns = (props: FluentSettings<IColumnsComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'columns', meta);
+  addColorPicker = (props: FluentSettings<IColorPickerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'colorPicker', meta);
 
-  addConfigurableActionConfigurator = (props: FluentSettings<IConfigurableActionConfiguratorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'configurableActionConfigurator', meta);
+  addColumns = (props: FluentSettings<IColumnsComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'columns', meta);
 
-  addEntityTypeAutocomplete = (props: FluentSettings<IEntityTypeAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'entityTypeAutocomplete', meta);
+  addConfigurableActionConfigurator = (props: FluentSettings<IConfigurableActionConfiguratorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'configurableActionConfigurator', meta);
 
-  addContainer = (props: FluentSettings<IContainerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'container', meta);
+  addEntityTypeAutocomplete = (props: FluentSettings<IEntityTypeAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'entityTypeAutocomplete', meta);
 
-  addContextPropertyAutocomplete = (props: FluentSettings<IContextPropertyAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'contextPropertyAutocomplete', meta);
+  addContainer = (props: FluentSettings<IContainerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'container', meta);
 
-  addDataContext = (props: FluentSettings<IDataContextComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'dataContext', meta);
+  addContextPropertyAutocomplete = (props: FluentSettings<IContextPropertyAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'contextPropertyAutocomplete', meta);
 
-  addDatatablePager = (props: FluentSettings<IPagerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'datatable.pager', meta);
+  addDataContext = (props: FluentSettings<IDataContextComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'dataContext', meta);
 
-  addDatatableQuickSearch = (props: FluentSettings<IQuickSearchComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'datatable.quickSearch', meta);
+  addDatatablePager = (props: FluentSettings<IPagerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'datatable.pager', meta);
 
-  addDatatable = (props: FluentSettings<ITableComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'datatable', meta);
+  addDatatableQuickSearch = (props: FluentSettings<IQuickSearchComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'datatable.quickSearch', meta);
 
-  addColumnsEditorComponent = (props: FluentSettings<IColumnsEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'columnsEditorComponent', meta);
+  addDatatable = (props: FluentSettings<ITableComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'datatable', meta);
 
-  addDatatableContext = (props: FluentSettings<ITableContextComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'dataContext', meta);
+  addColumnsEditorComponent = (props: FluentSettings<IColumnsEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'columnsEditorComponent', meta);
 
-  addTableViewSelector = (props: FluentSettings<ITableViewSelectorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'tableViewSelector', meta);
+  addDatatableContext = (props: FluentSettings<ITableContextComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'dataContext', meta);
+
+  addTableViewSelector = (props: FluentSettings<ITableViewSelectorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'tableViewSelector', meta);
 
   addCollapsiblePanel = (props: FluentSettings<ICollapsiblePanelComponentProps>, meta?: IPropertyMetadata): FormBuilder => {
     const fixedProps = {
@@ -158,7 +161,7 @@ export class FormBuilderImplementation implements FormBuilder {
       },
     };
 
-    return this.addProperty(fixedProps, 'collapsiblePanel', meta);
+    return this._addProperty(fixedProps, 'collapsiblePanel', meta);
   };
 
   protected readonly form: IConfigurableFormComponent[];
@@ -174,14 +177,16 @@ export class FormBuilderImplementation implements FormBuilder {
     this.form = [];
   }
 
-  protected addProperty(props: FluentSettings<IConfigurableFormComponent>, type: ComponentTypes, meta?: IPropertyMetadata): FormBuilder {
+  private _addProperty(props: FluentSettings<IConfigurableFormComponent>, type: ComponentTypes, meta?: IPropertyMetadata): FormBuilder {
     const { id, hidden, version, ...restProps } = props;
+
 
     const componentDefinition = this.getComponentDefinition(type);
 
     let formComponent: IConfigurableFormComponent = {
       ...restProps, // use restProps for correct migrations (migrations can initialise some properties depends on other properties)
       id: id ?? nanoid(),
+
       type,
       version: typeof (version) === 'number'
         ? version

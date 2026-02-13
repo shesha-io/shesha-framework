@@ -8,7 +8,6 @@ export const GlobalTableStyles = createGlobalStyle`
     padding: ${sheshaStyles.paddingMD}px ${sheshaStyles.paddingLG}px !important;
     justify-content: space-between;
     align-items: center;
-    padding: 0px ${sheshaStyles.paddingLG}px;
     min-height: ${sheshaStyles.pageHeadingHeight} !important;
     border-bottom: ${sheshaStyles.border};
 
@@ -55,6 +54,8 @@ export const GlobalTableStyles = createGlobalStyle`
 
   .sha-datatable-wrapper {
     position: relative;
+    /* Enable horizontal scrolling when table content exceeds container width */
+    overflow-x: auto;
   }
 
   .sha-react-table {

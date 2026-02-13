@@ -55,18 +55,21 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             cursor: pointer;
             display: block;
             min-height: 100%;
+            pointer-events: none;
 
             .sha-configurable-logo-button-wrapper {
               position: absolute;
               right: -32px;
               height: 100%;
               vertical-align: middle;
+              pointer-events: auto;
             }
 
             .sha-configurable-sidemenu-button-wrapper {
               position: fixed;
               left: 14px;
               bottom: 14px;
+              pointer-events: auto;
             }
 
             .sha-configurable-view-button-wrapper {
@@ -85,6 +88,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             .sha-configurable-view-details {
               background-color: #14A38B;
               color: #ffffff;
+              pointer-events: auto;
             }
             
             .sha-configurable-view-button-wrapper > button {
@@ -98,6 +102,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
               z-index: 12;
               display: block;
               visibility: visible;
+              pointer-events: auto;
             }
 
           .lite{
@@ -108,7 +113,8 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             padding: 20px;
             padding-top: 10px;
             position: relative;
-            
+            pointer-events: auto;
+
             > button {
               color: #ffffff;
               background-color: #14A38B;
@@ -119,12 +125,13 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
               transform: translate(-50%, -50%);
               border: none;
               z-index: 12;
+              pointer-events: auto;
             }
           } 
       
           .${shaConfigurableComponentOverlay}:after {
             content: '';
-      
+
             position: absolute;
             top: 0;
             bottom: 0;
@@ -132,6 +139,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             right: 0;
             background-color: #ddd;
             opacity: 0.3;
+            pointer-events: none;
           }
       
           .${shaForm} {

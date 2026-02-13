@@ -1,12 +1,12 @@
 import { BranchesOutlined, ExportOutlined, ImportOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
 import React from "react";
-import { ConfigItemTreeNode, FolderTreeNode, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ModuleTreeNode, TreeNode, TreeNodeType } from "./models";
+import { ConfigItemTreeNode, DocumentDefinition, FolderTreeNode, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ModuleTreeNode, TreeNode, TreeNodeType } from "./models";
 import { getIcon } from "./tree-utils";
-import { IConfigurationStudio } from "./cs/configurationStudio";
+import { IConfigurationStudio } from "./cs/interfaces";
 import { isDefined } from "../utils/nullables";
 
-type MenuItemType = NonNullable<MenuProps["items"]>[number];
+export type MenuItemType = NonNullable<MenuProps["items"]>[number];
 
 const getDivider = (): MenuItemType => {
   return {
@@ -16,7 +16,8 @@ const getDivider = (): MenuItemType => {
 
 export type BuildNodeMenuArgs<TNode extends TreeNode = TreeNode> = {
   configurationStudio: IConfigurationStudio;
-  node?: TNode;
+  node?: TNode | undefined;
+  getDocumentDefinition?: (itemType: string) => DocumentDefinition | undefined;
 };
 
 const buildConfiguraitonItemActionsMenu = ({ configurationStudio, node }: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
@@ -50,10 +51,6 @@ const buildConfiguraitonItemActionsMenu = ({ configurationStudio, node }: BuildN
       onClick: async (): Promise<void> => {
         await configurationStudio.showRevisionHistoryAsync(node);
       },
-    },
-    {
-      label: "View Json Config",
-      key: "viewJsonConfig",
     },
   ];
 };
@@ -118,11 +115,11 @@ const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: Build
 const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArgs): MenuItemType[] => {
   if (!node)
     return [];
-  const buildCreateCIMenuItem = (label: string, itemType: string): MenuItemType => {
+  const buildCreateCIMenuItem = (label: string, itemType: string, discriminator: string): MenuItemType => {
     return {
       label: label,
-      key: itemType,
-      icon: getIcon(TreeNodeType.ConfigurationItem, itemType),
+      key: discriminator,
+      icon: getIcon(configurationStudio.csEnvironment, TreeNodeType.ConfigurationItem, itemType),
       onClick: async (): Promise<void> => {
         await configurationStudio.createItemAsync({
           moduleId: node.moduleId,
@@ -135,6 +132,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
             ? node.id
             : undefined,
           itemType: itemType,
+          discriminator: discriminator,
         });
       },
     };
@@ -144,7 +142,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
     {
       label: "Folder",
       key: "folder",
-      icon: getIcon(TreeNodeType.Folder),
+      icon: getIcon(configurationStudio.csEnvironment, TreeNodeType.Folder),
       onClick: (): void => {
         configurationStudio.createFolderAsync({
           moduleId: node.moduleId,
@@ -160,7 +158,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
 
   configurationStudio.itemTypes.forEach((it) => {
     if (it.createFormId)
-      result.push(buildCreateCIMenuItem(it.friendlyName, it.itemType));
+      result.push(buildCreateCIMenuItem(it.friendlyName, it.itemType, it.discriminator));
   });
 
   return result;
@@ -178,7 +176,7 @@ const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigIte
       label: "Open",
       key: "open",
       onClick: () => {
-        configurationStudio.activateDocumentById(node.id);
+        configurationStudio.selectTreeNode(node);
       },
     });
   result.push({
@@ -226,8 +224,13 @@ const buildModuleNodeContextMenu = (args: BuildNodeMenuArgs<ModuleTreeNode>): Me
 };
 
 export const buildNodeContextMenu = (args: BuildNodeMenuArgs): MenuItemType[] => {
-  if (isConfigItemTreeNode(args.node))
-    return buildConfigurationItemNodeContextMenu({ ...args, node: args.node });
+  if (isConfigItemTreeNode(args.node)) {
+    const menu = buildConfigurationItemNodeContextMenu({ ...args, node: args.node });
+    const definition = args.getDocumentDefinition?.(args.node.itemType);
+    return definition && definition.contextMenuBuilder
+      ? definition.contextMenuBuilder(menu, args.configurationStudio)
+      : menu;
+  }
 
   if (isFolderTreeNode(args.node))
     return buildFolderNodeContextMenu({ ...args, node: args.node });

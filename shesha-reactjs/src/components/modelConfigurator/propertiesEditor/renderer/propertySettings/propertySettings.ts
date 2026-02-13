@@ -1,11 +1,12 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { SimplePropertySettings } from './simplePropertySettings';
-import { DataTypes, FormMarkupWithSettings, IToolboxComponents } from '@/interfaces';
+import { FormMarkupWithSettings, IToolboxComponents } from '@/interfaces';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { EntityFormats } from '@/interfaces/dataTypes';
+import dataTypesCode from '@/interfaces/dataTypes.ts?raw';
 
 export const getSettings = (
   fbf: FormBuilderFactory,
@@ -30,29 +31,20 @@ export const getSettings = (
   const manyToManyFormatId = nanoid();
   const defaultEditorId = nanoid();
 
-  let editorsCode = `\n`;
-  editorsCode += `const components = {\n`;
-  for (const component in components) {
-    if (component.indexOf('.') > -1 || component.indexOf('-') > -1) continue;
-    editorsCode += `'${component}': '${components[component]?.name}',\n`;
-  }
-  editorsCode += '};\n';
-  editorsCode += DataTypes.allowedCompoenentsCode;
-  editorsCode += '\n';
-  editorsCode += 'const editors = allowedComponents(data.dataType, data.dataFormat) ?? [];\n';
-  editorsCode += 'return editors.filter((e) => components[e]).map((e) => ({ value: e, label: components[e] }));\n';
 
-  let editorsHiddenCode = `\n`;
-  editorsHiddenCode += `const components = {\n`;
+  let mainEditorCode = `\n`;
+  mainEditorCode += `const components = {\n`;
   for (const component in components) {
     if (component.indexOf('.') > -1 || component.indexOf('-') > -1) continue;
-    editorsHiddenCode += `'${component}': '${components[component]?.name}',\n`;
+    mainEditorCode += `${component}: "${components[component]?.name}",\n`;
   }
-  editorsHiddenCode += '};\n';
-  editorsHiddenCode += DataTypes.allowedCompoenentsCode;
-  editorsHiddenCode += '\n';
-  editorsHiddenCode += 'const editors = (allowedComponents(data.dataType, data.dataFormat) ?? []).filter((e) => components[e]);\n';
-  editorsHiddenCode += 'return !editors?.length;\n';
+  mainEditorCode += '};\n';
+  mainEditorCode += dataTypesCode.replaceAll('export ', '');
+  mainEditorCode += '\n';
+  mainEditorCode += 'const editors = (DataTypes.allowedComponents(data.dataType, data.dataFormat) ?? []).filter((e) => components[e]);\n';
+
+  const editorsCode = mainEditorCode + 'return editors.map((e) => ({ value: e, label: components[e] }));\n';
+  const editorsHiddenCode = mainEditorCode + 'return !editors?.length;\n';
 
   return {
     components: fbf()
@@ -72,7 +64,7 @@ export const getSettings = (
             components: [...fbf()
               .addSettingsInput({ parentId: commonTabId, inputType: 'switch', propertyName: 'suppress', label: 'Hidden' })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'name', label: 'Name', validate: { required: true },
-                regExp: '(?!^)[^a-zA-Z0-9_-]|^[^a-zA-Z]',
+                regExp: '^[a-zA-Z][a-zA-Z0-9]*$',
                 editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
               })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
@@ -298,7 +290,7 @@ export const getSettings = (
                   })
                   .addContainer({ id: manyToOneFormatId, parentId: dataTabId, hidden: { _code: 'return data?.listConfiguration?.mappingType !== \'many-to-one\';', _mode: 'code', _value: false },
                     components: [...fbf()
-                      .addSettingsInput({ parentId: manyToOneFormatId, inputType: 'textField', propertyName: 'listConfiguration.foreignProperty', label: 'Foreign ptoperty name', editMode: false })
+                      .addSettingsInput({ parentId: manyToOneFormatId, inputType: 'textField', propertyName: 'listConfiguration.foreignProperty', label: 'Foreign property name', editMode: false })
                       .toJson(),
                     ],
                   })

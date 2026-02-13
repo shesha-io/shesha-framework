@@ -1,6 +1,6 @@
 import { asPropertiesArray, IApiEndpoint, IModelMetadata, isPropertiesArray, StandardEntityActions } from "@/interfaces/metadata";
 import { GetGqlFieldsPayload, IFieldData, IFormDataLoader, GetFormFieldsPayload, FormDataLoadingPayload, isGqlLoaderSettings, GqlLoaderSettings } from "./interfaces";
-import { DataTypes, IToolboxComponents } from "@/interfaces";
+import { DataTypes, extractAjaxResponse, IAjaxResponse, IToolboxComponents } from "@/interfaces";
 import { HttpClientApi, useHttpClient } from "@/providers/sheshaApplication/publicApi";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
@@ -9,8 +9,8 @@ import { constructUrl } from "@/utils/fetchers";
 import { useState } from "react";
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { IFormSettings, isConfigurableFormComponent, useMetadataDispatcher } from "@/providers";
-import { EntityAjaxResponse } from "@/generic-pages/dynamic/interfaces";
-import { isDefined } from "@/utils/nullables";
+import { IEntity } from "@/generic-pages/dynamic/interfaces";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface GqlLoaderArguments {
   httpClient: HttpClientApi;
@@ -70,38 +70,42 @@ export class GqlLoader implements IFormDataLoader {
 
   loadAsync = async (payload: FormDataLoadingPayload): Promise<any> => {
     const { loadingCallback, formSettings, formArguments, formFlatStructure } = payload;
-    const dataId = formArguments?.id;
-    if (!dataId)
-      throw new Error('Data id is missing');
+    try {
+      const dataId = formArguments?.id;
+      if (!dataId)
+        throw new Error('Data id is missing');
 
-    const endpoint = await this.getEndpointAsync(payload);
+      const endpoint = await this.getEndpointAsync(payload);
 
-    // TODO: implement data loading using different http verbs
-    const getDataUrl = endpoint && endpoint.httpVerb?.toLowerCase() === 'get' // note: support get only here
-      ? endpoint.url
-      : null;
+      // TODO: implement data loading using different http verbs
+      const getDataUrl = endpoint && endpoint.httpVerb?.toLowerCase() === 'get' // note: support get only here
+        ? endpoint.url
+        : null;
+      if (isNullOrWhiteSpace(getDataUrl))
+        throw new Error('Data loading endpoint is missing');
 
-    loadingCallback?.({ loadingState: 'loading', loaderHint: 'Fetching metadata...' });
-    const gqlFieldsList = await this.#getFieldsToFetchAsync({
-      formSettings: formSettings,
-      formFlatStructure: formFlatStructure,
-    });
-    var gqlFields = gqlFieldsToString(gqlFieldsList);
+      loadingCallback?.({ loadingState: 'loading', loaderHint: 'Fetching metadata...' });
+      const gqlFieldsList = await this.#getFieldsToFetchAsync({
+        formSettings: formSettings,
+        formFlatStructure: formFlatStructure,
+      });
+      var gqlFields = gqlFieldsToString(gqlFieldsList);
 
-    const queryParams = { properties: gqlFields };
-    if (dataId) queryParams['id'] = dataId;
-    const finalUrl = constructUrl(null, getDataUrl, queryParams);
+      const queryParams = { properties: gqlFields };
+      if (dataId) queryParams['id'] = dataId;
+      const finalUrl = constructUrl(null, getDataUrl, queryParams);
 
-    loadingCallback?.({ loadingState: 'loading', loaderHint: 'Fetching data...' });
+      loadingCallback?.({ loadingState: 'loading', loaderHint: 'Fetching data...' });
 
-    const response = await this.#httpClient.get<EntityAjaxResponse>(finalUrl);
+      const response = await this.#httpClient.get<IAjaxResponse<IEntity>>(finalUrl);
 
-    if (response.data.success) {
-      loadingCallback?.({ loadingState: 'ready', loaderHint: null });
+      const responseData = extractAjaxResponse(response.data, 'Failed to load data');
 
-      return response.data.result;
-    } else {
-      loadingCallback?.({ loadingState: 'failed', error: response.data.error });
+      loadingCallback?.({ loadingState: 'ready', loaderHint: undefined });
+
+      return responseData;
+    } catch (error) {
+      loadingCallback?.({ loadingState: 'failed', error: error });
       return undefined;
     }
   };

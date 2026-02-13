@@ -13,7 +13,7 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
     try {
       return new RegExp(regExp, 'g');
     } catch (error) {
-      console.warn('Invalid regExp pattern:', regExp, error);
+      console.warn(`Invalid regExp pattern for '${props.propertyName}':`, regExp, error);
       return null;
     }
   }, [regExp]);
@@ -23,10 +23,18 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
       size={size}
       onChange={(e) => {
         const inputValue: string | undefined = e.target.value?.toString();
-        if (regExpObj && inputValue)
-          onChange(inputValue.replace(regExpObj, ''));
-        else
+        const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
+        const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
+        if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
           onChange(inputValue);
+        } else {
+          // Workaround because if the value is undefined, input component leave the inputed value
+          // Rendering of the component is not called
+          // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
+          if (Boolean(regExpObj) && value === undefined && typeof onChange === 'function') {
+            onChange('');
+          }
+        }
       }}
       readOnly={readOnly}
       variant={variant}

@@ -102,7 +102,17 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           return dropdownDisplayMode === 'raw'
             ? <InputField style={style} value={values?.join(', ')} />
             : (
-              <div className={styles.wrapper} style={{ ...style }}>
+              <div
+                className={styles.wrapper}
+                data-tag-wrapper="true"
+                style={{
+                  ...style,
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  boxSizing: 'border-box',
+                }}
+              >
                 {value?.map(({ label, color, icon, value, description }) => {
                   return (
                     <ReflistTag
@@ -163,10 +173,20 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showItemName,
     solidColor,
     tagStyle,
+    style,
+    styles.wrapper,
   ]);
 
+  // Only apply layout-related styles to outer container, not appearance styles
+  // Appearance styles (border, background, etc.) are applied by InputField to avoid double borders
+  const containerStyle: React.CSSProperties = {
+    width: style?.width,
+    minWidth: style?.minWidth,
+    maxWidth: style?.maxWidth,
+  };
+
   return (
-    <span className={styles.readOnlyDisplayFormItem} style={style}>
+    <span className={styles.readOnlyDisplayFormItem} style={containerStyle}>
       {renderValue}
     </span>
   );
