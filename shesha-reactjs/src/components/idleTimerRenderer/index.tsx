@@ -150,49 +150,55 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     logout();
   }, [logout]);
 
-  const onAction = useCallback(() => {
-    if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
-      refreshTokenHttp({ url: '/api/TokenAuth/RefreshToken', httpVerb: 'post' })
-        .then((response) => {
-          if (response?.result) {
-            // Save the new token to localStorage
-            saveUserToken(
-              {
-                accessToken: response.result.accessToken,
-                expireInSeconds: response.result.expireInSeconds,
-                expireOn: response.result.expireOn
-              },
-              DEFAULT_ACCESS_TOKEN_NAME
-            );
+  const refreshToken = useCallback(() => {
+    // Refresh the token and update all timers
+    return refreshTokenHttp({ url: '/api/TokenAuth/RefreshToken', httpVerb: 'post' })
+      .then((response) => {
+        if (response?.result) {
+          // Save the new token to localStorage
+          saveUserToken(
+            {
+              accessToken: response.result.accessToken,
+              expireInSeconds: response.result.expireInSeconds,
+              expireOn: response.result.expireOn
+            },
+            DEFAULT_ACCESS_TOKEN_NAME
+          );
 
-            // CRITICAL FIX: Update Authenticator's expiration timer
-            // This ensures the user won't be logged out at the old token's expiration time
-            if (response.result.expireOn) {
-              authenticator.updateTokenExpiration(response.result.expireOn);
+          // Update Authenticator's expiration timer
+          // This ensures the user won't be logged out at the old token's expiration time
+          if (response.result.expireOn) {
+            authenticator.updateTokenExpiration(response.result.expireOn);
 
-              // Broadcast token refresh to other tabs
-              broadcastTokenRefresh(response.result.expireOn);
-            }
-
-            // Reset the idle timer countdown to prevent unnecessary warning
-            // This is safe because we just refreshed the token
-            activateRef.current?.();
-
-            // Clear warning modal if it was open
-            // User activity triggered token refresh, so they're actively using the app
-            if (state.isWarningVisible) {
-              setState(INIT_STATE);
-              broadcastWarningState(false);
-            }
+            // Broadcast token refresh to other tabs
+            broadcastTokenRefresh(response.result.expireOn);
           }
-        })
-        .catch((error) => {
-          console.error('Failed to refresh token:', error);
-          // On refresh failure, do NOT update timers
-          // Let the existing expiration flow handle the logout
-        });
+
+          // Reset the idle timer countdown
+          activateRef.current?.();
+
+          return true;
+        }
+        return false;
+      })
+      .catch((error) => {
+        console.error('Failed to refresh token:', error);
+        return false;
+      });
+  }, [refreshTokenHttp, authenticator, broadcastTokenRefresh]);
+
+  const onAction = useCallback(() => {
+    // Don't auto-refresh if warning modal is showing
+    // Let the user explicitly choose via "Stay Logged In" button
+    if (state.isWarningVisible) {
+      return;
     }
-  }, [refreshTokenHttp, authenticator, state.isWarningVisible, broadcastWarningState, broadcastTokenRefresh]);
+
+    // Auto-refresh token on user activity if it's about to expire
+    if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
+      refreshToken();
+    }
+  }, [state.isWarningVisible, refreshToken]);
 
   // Configure idle timer hook
   const { activate } = useIdleTimer({
@@ -287,12 +293,21 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     logout();
   }, [logout]);
 
-  const onCancel = useCallback(() => {
+  const onCancel = useCallback(async () => {
     // User chose "Stay Logged In"
-    activate(); // Reset timer
+
+    // Refresh token if it's about to expire
+    if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
+      await refreshToken();
+    }
+
+    // Reset idle timer
+    activate();
+
+    // Close warning modal
     setState(INIT_STATE);
     broadcastWarningState(false);
-  }, [activate, broadcastWarningState]);
+  }, [activate, broadcastWarningState, refreshToken]);
 
   if (!isTimeoutSet) {
     return <>{children}</>;
