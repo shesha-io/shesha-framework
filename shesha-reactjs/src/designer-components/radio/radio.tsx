@@ -34,7 +34,7 @@ const RadioComponent: RadioComponentDefinition = {
     const { style, ...restProps } = model;
 
     return (
-      <ConfigurableFormItem model={restProps}>
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (e: any): void => {

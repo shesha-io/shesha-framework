@@ -197,6 +197,8 @@ export interface IFormComponentStyles {
   appearanceStyle: CSSProperties;
   /** Styles assempled from {...appearanceStyle, ...jsStyle} */
   fullStyle: CSSProperties;
+  /** Margin styles extracted from fullStyle for wrapper use */
+  margins: CSSProperties;
 }
 
 /**
@@ -248,6 +250,8 @@ export interface IConfigurableFormComponent
 
   /** Default css style applied as string */
   stylingBox?: string;
+
+  wrapperStyle?: string;
 
   noDataText?: string;
 

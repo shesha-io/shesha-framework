@@ -6,6 +6,10 @@ import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
+import { useStyles } from './styles';
+import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
+import { designerConstants } from '../utils/designerConstants';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -19,14 +23,105 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const { getPublicFormApi } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
+  const shaForm = useShaFormInstance();
+  const getToolboxComponent = useFormDesignerComponentGetter();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
-  const layout = useMemo(() => {
+  const colLayout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
-  }, [formItemlabelCol, formItemWrapperCol]);
+  }, [formItemlabelCol, formItemWrapperCol, labelCol, wrapperCol]);
+  const settings = shaForm.settings;
+
+  const isInDesigner = shaForm.formMode === 'designer';
+  // Get component definition to check if it preserves its own dimensions
+  const component = getToolboxComponent(model.type);
+  const preserveDimensionsInDesigner = component?.preserveDimensionsInDesigner ?? false;
+
+  const { top: MarginTop, left: MarginLeft, right: MarginRight, bottom: MarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
+
+  // In designer mode: NEVER apply margins to Form.Item (wrapper handles them)
+  // In live mode: Apply margins from allStyles.margins or use defaults
+  // Note: margins are stored separately so inner components don't get them (prevents double margins)
+  const rawMargins = isInDesigner
+    ? { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }
+    : (model?.allStyles?.margins || {});
+
+  const {
+    marginTop = MarginTop,
+    marginBottom = MarginBottom,
+    marginRight = MarginRight,
+    marginLeft = MarginLeft,
+  } = rawMargins;
+
+  // Get dimension values from dimensionsStyles
+  const {
+    width,
+    height,
+    minWidth,
+    minHeight,
+    maxWidth,
+    maxHeight,
+  } = model?.allStyles?.dimensionsStyles || {};
+
+  const formItemStyle = useMemo(() => {
+    // Handle auto width in designer mode
+    // - auto width should fill remaining space (100%) in designer
+    const isAutoWidth = width === 'auto';
+
+    const calculatedWidth = preserveDimensionsInDesigner
+      ? 'auto'
+      : isInDesigner
+        ? isAutoWidth
+          ? '100%' // Auto width fills wrapper in designer
+          : getCalculatedDimension('100%', marginLeft, marginRight)
+        : getCalculatedDimension(width, marginLeft, marginRight);
+
+    const calculatedHeight = preserveDimensionsInDesigner
+      ? 'auto'
+      : isInDesigner
+        ? '100%'
+        : height;
+
+    // In designer mode: ONLY apply padding from stylebox, margins are handled by wrapper
+    // In live mode: Apply both margins and padding from stylebox
+    return isInDesigner
+      ? {
+        // No margins in designer mode - wrapper handles them as padding
+        width: calculatedWidth,
+        height: calculatedHeight,
+        minHeight,
+        minWidth,
+        maxHeight,
+        maxWidth,
+        // Only padding from stylebox (if any)
+        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
+        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
+        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
+        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
+      }
+      : {
+        // Live mode: apply both margins and padding
+        marginTop,
+        marginBottom,
+        marginLeft,
+        marginRight,
+        width: calculatedWidth,
+        height: calculatedHeight,
+        minHeight,
+        minWidth,
+        maxHeight,
+        maxWidth,
+        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
+        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
+        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
+        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
+      };
+  }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;
+  const hasLabel = !hideLabel && !!model.label;
+  const { styles } = useStyles({ layout: settings?.layout, hasLabel });
   if (hidden) return null;
 
   const propName = namePrefix && !model.initialContext
@@ -34,7 +129,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className),
+    className: classNames(className, styles.formItem, settings?.layout),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
@@ -42,10 +137,11 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     initialValue: initialValue,
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
-    labelCol: layout?.labelCol,
-    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
+    labelCol: colLayout?.labelCol,
+    wrapperCol: hideLabel ? { span: 24 } : colLayout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
+    style: formItemStyle,
   };
 
   if (typeof children === 'function') {

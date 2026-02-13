@@ -164,6 +164,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
   isInput: true,
   name: 'File list',
+  // File list manages its own layout and should not be forced to fill wrapper
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.advanced && dataFormat === AdvancedFormats.fileList,
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
