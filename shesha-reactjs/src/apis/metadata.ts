@@ -97,6 +97,12 @@ export interface MetadataDto extends ConfigurationDto {
   aliases?: string[];
 
   md5?: string;
+
+  inheritedFromModule?: string | null | undefined;
+
+  inheritedFromName?: string | null | undefined;
+
+  inheritedFromFullClassName?: string | null | undefined;
 }
 
 export type MetadataDtoAjaxResponse = IAjaxResponse<MetadataDto>;

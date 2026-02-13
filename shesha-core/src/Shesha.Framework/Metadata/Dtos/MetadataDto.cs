@@ -76,5 +76,11 @@ namespace Shesha.Metadata.Dtos
         /// Full class name (for backward compatibility)
         /// </summary>
         public List<string> Aliases { get; set; } = new List<string>();
+
+        public string? InheritedFromModule { get; set; }
+
+        public string? InheritedFromName { get; set; }
+
+        public string? InheritedFromFullClassName { get; set; }
     }
 }

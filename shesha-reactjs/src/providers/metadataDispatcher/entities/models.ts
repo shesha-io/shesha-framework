@@ -96,6 +96,7 @@ export interface IEntityMetadataFetcher {
   syncAll: () => Promise<void>;
   getByTypeId: (typeId: IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
   getByClassName: (className: string) => Promise<IEntityMetadata | null>;
+  getByEntityType: (entityType: string | IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
   isEntity: (modelType: string | IEntityTypeIdentifier) => Promise<boolean>;
 }
 
