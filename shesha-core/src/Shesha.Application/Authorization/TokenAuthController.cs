@@ -150,6 +150,7 @@ namespace Shesha.Authorization
         /// </summary>
         /// <returns>New JWT token with fresh expiration</returns>
         [HttpPost]
+        [Authorize]
         public async Task<AuthenticateResultModel> RefreshTokenAsync()
         {
             // 1. Get current user from JWT claims
@@ -166,8 +167,9 @@ namespace Shesha.Authorization
             if (!user.IsActive)
                 throw new UserFriendlyException("User is not active");
 
-            // 3. Get current token JTI from claims
+            // 3. Get current token JTI and expiration from claims
             var currentJti = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+            var currentTokenExpiration = User.GetTokenExpirationDate();
 
             // 4. Check if current token is blacklisted
             if (!string.IsNullOrEmpty(currentJti))
@@ -182,7 +184,8 @@ namespace Shesha.Authorization
             var existingClaims = User.Claims
                 .Where(c => c.Type != JwtRegisteredClaimNames.Jti &&
                            c.Type != JwtRegisteredClaimNames.Iat &&
-                           c.Type != JwtRegisteredClaimNames.Exp)
+                           c.Type != JwtRegisteredClaimNames.Exp &&
+                           c.Type != JwtRegisteredClaimNames.Sub)
                 .ToList();
 
             var identity = new ClaimsIdentity(existingClaims);
@@ -193,14 +196,20 @@ namespace Shesha.Authorization
 
             var accessToken = CreateAccessToken(CreateJwtClaims(identity), validFrom, expiresOn);
 
+            // 6. Blacklist the old token now that we've issued a new one
+            if (!string.IsNullOrEmpty(currentJti))
+            {
+                await _tokenBlacklistService.BlacklistTokenAsync(currentJti, currentTokenExpiration);
+            }
+
             var personId = await _personRepository.GetAll()
                 .Where(p => p.User == user)
                 .OrderBy(p => p.CreationTime)
                 .Select(p => p.Id)
                 .FirstOrDefaultAsync();
 
-            // 6. Log the refresh action
-            Logger.InfoFormat("Token refreshed for user: {0} (ID: {1})", user.UserName, userId);
+            // 7. Log the refresh action
+            Logger.InfoFormat("Token refreshed for user ID: {0}", userId);
 
             return new AuthenticateResultModel
             {

@@ -5,7 +5,7 @@ import {
   getTimeFormat,
   ONE_SECOND,
   WARNING_DURATION
-  } from './util';
+} from './util';
 import { useIdleTimer } from 'react-idle-timer';
 import { ISettingIdentifier } from '@/providers/settings/models';
 import { Modal, Progress } from 'antd';
@@ -16,6 +16,8 @@ import { useStyles } from './styles/styles';
 import { getLocalStorage } from '@/utils/storage';
 import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
 import { useMutate } from '@/hooks';
+import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
+import { AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 
 export interface IIdleTimerRendererProps { }
 
@@ -54,7 +56,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const { styles } = useStyles();
   const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
   const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
-  const { mutate: refreshTokenHttp } = useMutate();
+  const { mutate: refreshTokenHttp } = useMutate<any, AuthenticateResultModelAjaxResponse>();
   // Use 40 as safe default for hook validation when timer would be disabled
   // Timer requires timeout > WARNING_DURATION (30s) to show warning before logout
   // Actual enable/disable is controlled by isTimeoutSet condition
@@ -130,21 +132,25 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   }, [logout]);
 
   const onAction = useCallback(() => {
-    const tokenName = 'xDFcxiooPQxazdndDsdRSerWQPlincytLDCarcxVxv';
-    if (isTokenAboutToExpire(tokenName)) {
+    if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
       refreshTokenHttp({ url: '/api/TokenAuth/RefreshToken', httpVerb: 'post' })
         .then((response) => {
-          saveUserToken(
-            {
-              accessToken: response.result.accessToken,
-              expireInSeconds: response.result.expireInSeconds,
-              expireOn: response.result.expireOn
-            }
-            , tokenName);
-        }
-        );
+          if (response?.result) {
+            saveUserToken(
+              {
+                accessToken: response.result.accessToken,
+                expireInSeconds: response.result.expireInSeconds,
+                expireOn: response.result.expireOn
+              },
+              DEFAULT_ACCESS_TOKEN_NAME
+            );
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to refresh token:', error);
+        });
     }
-  }, []);
+  }, [refreshTokenHttp]);
 
   // Configure idle timer hook
   const { activate } = useIdleTimer({
