@@ -9,22 +9,40 @@ import { IAccessToken } from '@/interfaces';
 export const AUTHORIZATION_HEADER_NAME = 'Authorization';
 
 export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAccessToken, tokenName?: string) => {
-  const token = {
+  // Add client-side nonce for absolute uniqueness guarantee
+  // Use crypto.randomUUID() if available (modern browsers), fallback to timestamp + random
+  const nonce = typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+
+  const tokenWithNonce = {
+    accessToken,
+    expireInSeconds,
+    expireOn,
+    nonce, // Ensures unique encoded value every time
+  };
+
+  const encodedToken = jseu.encoder.encodeBase64(JSON.stringify(tokenWithNonce));
+
+  getLocalStorage()?.setItem(tokenName, encodedToken);
+
+  // Return clean token without nonce (nonce is only for storage uniqueness)
+  return {
     accessToken,
     expireInSeconds,
     expireOn,
   };
-
-  const encodedToken = jseu.encoder.encodeBase64(JSON.stringify(token));
-
-  getLocalStorage()?.setItem(tokenName, encodedToken);
-
-  return token;
 };
 
 const parseToken = (token: string): IAccessToken => {
   try {
-    return JSON.parse(jseu.encoder.decodeBase64(token) as string) as IAccessToken;
+    const parsed = JSON.parse(jseu.encoder.decodeBase64(token) as string) as IAccessToken;
+
+    // Remove client-side nonce field before returning
+    // The nonce is only for encoding uniqueness, not part of the actual token data
+    const { nonce, ...tokenWithoutNonce } = parsed;
+
+    return tokenWithoutNonce as IAccessToken;
   } catch (error) {
     console.error('failed to parse token', error);
     return null;
