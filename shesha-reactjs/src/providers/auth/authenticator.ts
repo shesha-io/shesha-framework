@@ -340,6 +340,12 @@ export class Authenticator implements IAuthenticator {
             )
         );
     };
+
+    updateTokenExpiration = (expireOn: string): void => {
+        // Update the token expiration timer
+        // This is called when a token is refreshed externally (e.g., from idle timer)
+        this.#startTokenExpirationTimer(expireOn);
+    };
 }
 
 export const useAuthenticatorInstance = (args: AuthenticatorArgs): IAuthenticator[] => {

@@ -2,6 +2,8 @@ import axios, { AxiosError } from 'axios';
 import { useState } from 'react';
 import { IApiEndpoint } from '@/interfaces/metadata';
 import { useSheshaApplication } from '@/providers';
+import { getAccessToken } from '@/utils/auth';
+import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 
 type MutateHttpVerb = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -17,7 +19,7 @@ export interface IUseMutateResponse<TData = any, TResponse = any> extends IMutat
 const ENDPOINT_NOT_SPECIFIED_ERROR = 'Endpoint is not specified';
 
 export const useMutate = <TData = any, TResponse = any>(): IUseMutateResponse<TData, TResponse> => {
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+  const app = useSheshaApplication();
   const [state, setState] = useState<IMutateState>({ error: null, loading: false });
 
   const mutate = (endpoint: IApiEndpoint, data?: TData) => {
@@ -28,12 +30,26 @@ export const useMutate = <TData = any, TResponse = any>(): IUseMutateResponse<TD
 
     setState((prev) => ({ ...prev, loading: true }));
 
+    // Get fresh token from localStorage on each request to ensure we always use the latest token
+    const currentToken = getAccessToken(DEFAULT_ACCESS_TOKEN_NAME);
+
+    // Build fresh headers with the current token
+    const freshHeaders = {
+      ...app.httpHeaders,
+      ...app.buildHttpRequestHeaders?.()
+    };
+
+    // Override Authorization header with fresh token if available
+    if (currentToken?.accessToken) {
+      freshHeaders['Authorization'] = `Bearer ${currentToken.accessToken}`;
+    }
+
     return new Promise<TResponse>((resolve, reject) => {
       axios({
-        baseURL: backendUrl,
+        baseURL: app.backendUrl,
         url: endpoint.url,
         method: endpoint.httpVerb?.toUpperCase() as MutateHttpVerb,
-        headers: httpHeaders,
+        headers: freshHeaders,
         data: data,
       })
         .then((data) => {

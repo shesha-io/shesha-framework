@@ -43,4 +43,7 @@ export interface IAuthenticator {
   anyOfPermissionsGranted: (permissions: string[], permissionedEntities?: IEntityReferenceDto[]) => boolean;
 
   state: AuthenticationState;
+
+  // Update token expiration timer without full re-authentication
+  updateTokenExpiration: (expireOn: string) => void;
 }

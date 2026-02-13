@@ -1,77 +1,343 @@
-import React, { FC, PropsWithChildren, useState } from 'react';
+import React, { FC, PropsWithChildren, useState, useEffect, useCallback, useRef } from 'react';
 import {
   getPercentage,
   getStatus,
   getTimeFormat,
-  MIN_TIME,
   ONE_SECOND,
-  SIXTY
-  } from './util';
-import { IdleTimerComponent } from 'react-idle-timer';
+  WARNING_DURATION
+} from './util';
+import { useIdleTimer } from 'react-idle-timer';
 import { ISettingIdentifier } from '@/providers/settings/models';
 import { Modal, Progress } from 'antd';
 import { useAuth } from '@/providers/auth';
 import { useInterval } from 'react-use';
 import { useSettingValue } from '@/providers/settings';
 import { useStyles } from './styles/styles';
+import { getLocalStorage } from '@/utils/storage';
+import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
+import { useMutate } from '@/hooks';
+import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
+import { AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 
 export interface IIdleTimerRendererProps { }
 
 interface IIdleTimerState {
-  readonly isIdle: boolean;
+  readonly isWarningVisible: boolean;
   readonly remainingTime: number;
+  readonly isCountingDown: boolean;
+}
+
+interface ISecuritySettings {
+  autoLogoffTimeout: number;
+  defaultEndpointAccess: number;
+  mobileLoginPinLifetime: number;
+  resetPasswordEmailLinkLifetime: number;
+  resetPasswordSmsOtpLifetime: number;
+  resetPasswordViaSecurityQuestionsNumQuestionsAllowed: number;
+  useResetPasswordViaEmailLink: boolean;
+  useResetPasswordViaSecurityQuestions: boolean;
+  useResetPasswordViaSmsOtp: boolean;
 }
 
 const INIT_STATE: IIdleTimerState = {
-  isIdle: false,
-  remainingTime: SIXTY,
+  isWarningVisible: false,
+  remainingTime: WARNING_DURATION,
+  isCountingDown: false,
 };
 
-const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security.AutoLogoffTimeout', module: 'Shesha' };
+const STORAGE_KEYS = {
+  IDLE_TIMER_LOGOUT: 'shesha:idleTimer:logout',
+  IDLE_TIMER_WARNING_STATE: 'shesha:idleTimer:warningState',
+  IDLE_TIMER_TOKEN_REFRESH: 'shesha:idleTimer:tokenRefresh'
+};
+
+const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security', module: 'Shesha' };
 
 export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
   const { styles } = useStyles();
-  const { value: autoLogoffTimeout } = useSettingValue<number>(autoLogoffTimeoutSettingId);
-  const timeoutSeconds = autoLogoffTimeout ?? 0;
+  const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
+  const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
+  const { mutate: refreshTokenHttp } = useMutate<any, AuthenticateResultModelAjaxResponse>();
+  // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
+  // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
+  // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
+  // timeout > promptBeforeIdle (WARNING_DURATION = 30s).
+  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 300;
 
-  const { logoutUser, loginInfo } = useAuth();
+  const authenticator = useAuth(); // Get full authenticator instance
+  const { logoutUser, loginInfo } = authenticator; // Destructure for backward compatibility
 
   const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
-  const { isIdle, remainingTime: rt } = state;
+  const { isWarningVisible, remainingTime: rt, isCountingDown } = state;
 
-  const isTimeoutSet = timeoutSeconds >= MIN_TIME && !!loginInfo;
+  // Ref to store activate function to avoid circular dependency
+  const activateRef = useRef<(() => void) | null>(null);
+
+  // Stable ref for authenticator to prevent callback recreation
+  const authRef = useRef(authenticator);
+
+  // Keep authRef in sync with authenticator
+  useEffect(() => {
+    authRef.current = authenticator;
+  }, [authenticator]);
+
+  // Ref to track warning visibility without causing re-renders in callbacks
+  const isWarningVisibleRef = useRef<boolean>(false);
+
+  // Idle timer is enabled only when:
+  // 1. Settings are loaded (autoLogoffTimeout !== undefined)
+  // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
+  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 30s warning)
+  // 4. User is logged in (loginInfo exists)
+  const isTimeoutSet = autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION && !!loginInfo;
   const timeout = getTimeFormat(timeoutSeconds);
-  const visible = isIdle && isTimeoutSet;
+  const visible = isWarningVisible && isTimeoutSet;
 
-  const onAction = (_event: Event) => {
-    /*nop*/
-  };
-
-  const onActive = (_event: Event) => {
-    /*nop*/
-  };
-
-  const onIdle = (_event: Event) => setState(s => ({ ...s, isIdle: true }));
-
-  const logout = () => logoutUser().then(() => setState(INIT_STATE));
-
-  const doCountdown = () => {
-    if (!rt) {
-      logout();
-    } else {
-      setState(({ remainingTime: r, ...s }) => ({ ...s, remainingTime: r - 1 }));
+  // Broadcast functions for multi-tab sync
+  const broadcastLogout = useCallback(() => {
+    try {
+      const storage = getLocalStorage();
+      if (storage) {
+        storage.setItem(STORAGE_KEYS.IDLE_TIMER_LOGOUT, Date.now().toString());
+      }
+    } catch (err) {
+      console.error('Failed to broadcast logout', err);
     }
+  }, []);
+
+  const broadcastWarningState = useCallback((isVisible: boolean) => {
+    try {
+      const storage = getLocalStorage();
+      if (storage) {
+        storage.setItem(
+          STORAGE_KEYS.IDLE_TIMER_WARNING_STATE,
+          JSON.stringify({ isVisible, timestamp: Date.now() })
+        );
+      }
+    } catch (err) {
+      console.error('Failed to broadcast warning state', err);
+    }
+  }, []);
+
+  const broadcastTokenRefresh = useCallback((expireOn: string) => {
+    try {
+      const storage = getLocalStorage();
+      if (storage) {
+        storage.setItem(
+          STORAGE_KEYS.IDLE_TIMER_TOKEN_REFRESH,
+          JSON.stringify({ expireOn, timestamp: Date.now() })
+        );
+      }
+    } catch (err) {
+      console.error('Failed to broadcast token refresh', err);
+    }
+  }, []);
+
+  const logout = useCallback(() => {
+    broadcastLogout();
+    logoutUser()
+      .then(() => {
+        isWarningVisibleRef.current = false;
+        setState(INIT_STATE);
+      })
+      .catch((error) => {
+        console.error('Failed to logout user:', error);
+        // Always perform cleanup even on error
+        isWarningVisibleRef.current = false;
+        setState(INIT_STATE);
+      });
+  }, [broadcastLogout, logoutUser]);
+
+  // Event handlers for react-idle-timer
+  const handlePrompt = useCallback(() => {
+    // Called 30 seconds before timeout
+    isWarningVisibleRef.current = true;
+    setState({
+      isWarningVisible: true,
+      remainingTime: WARNING_DURATION,
+      isCountingDown: true
+    });
+    broadcastWarningState(true);
+  }, [broadcastWarningState]);
+
+  const handleActive = useCallback(() => {
+    // User became active - close modal if open
+    if (isWarningVisibleRef.current) {
+      isWarningVisibleRef.current = false;
+      setState(INIT_STATE);
+      broadcastWarningState(false);
+    }
+  }, [broadcastWarningState]);
+
+  const handleIdle = useCallback(() => {
+    // Timeout reached - auto logout
+    logout();
+  }, [logout]);
+
+  const refreshToken = useCallback(() => {
+    // Refresh the token and update all timers
+    return refreshTokenHttp({ url: '/api/TokenAuth/RefreshToken', httpVerb: 'post' })
+      .then((response) => {
+        if (response?.result) {
+          // Save the new token to localStorage
+          saveUserToken(
+            {
+              accessToken: response.result.accessToken,
+              expireInSeconds: response.result.expireInSeconds,
+              expireOn: response.result.expireOn
+            },
+            DEFAULT_ACCESS_TOKEN_NAME
+          );
+
+          // Update Authenticator's expiration timer
+          // This ensures the user won't be logged out at the old token's expiration time
+          if (response.result.expireOn) {
+            authRef.current.updateTokenExpiration(response.result.expireOn);
+
+            // Broadcast token refresh to other tabs
+            broadcastTokenRefresh(response.result.expireOn);
+          }
+
+          // Reset the idle timer countdown
+          activateRef.current?.();
+
+          return true;
+        }
+        return false;
+      })
+      .catch((error) => {
+        console.error('Failed to refresh token:', error);
+        return false;
+      });
+  }, [refreshTokenHttp, broadcastTokenRefresh]);
+
+  const onAction = useCallback(() => {
+    // Don't auto-refresh if warning modal is showing
+    // Let the user explicitly choose via "Stay Logged In" button
+    if (isWarningVisibleRef.current) {
+      return;
+    }
+
+    // Auto-refresh token on user activity if it's about to expire
+    if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
+      refreshToken();
+    }
+  }, [refreshToken]);
+
+  // Configure idle timer hook
+  const { activate } = useIdleTimer({
+    timeout,
+    promptBeforeIdle: WARNING_DURATION * ONE_SECOND,
+    crossTab: true,
+    onPrompt: handlePrompt,
+    onIdle: handleIdle,
+    onActive: handleActive,
+    onAction: onAction,
+    stopOnIdle: false,
+    startOnMount: true,
+    disabled: !isTimeoutSet
+  });
+
+  // Store activate function in ref for use in onAction callback
+  activateRef.current = activate;
+
+  // Countdown logic
+  const doCountdown = () => {
+    setState(prev => {
+      if (prev.remainingTime <= 1) {
+        logout();
+        return prev;
+      }
+      return { ...prev, remainingTime: prev.remainingTime - 1 };
+    });
   };
 
   useInterval(() => {
-    if (isIdle) {
+    if (isCountingDown && isWarningVisible) {
       doCountdown();
     }
   }, ONE_SECOND);
 
-  const onOk = () => logout();
+  // Storage event listener for cross-tab sync
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      // Handle logout broadcast
+      if (e.key === STORAGE_KEYS.IDLE_TIMER_LOGOUT) {
+        logout();
+      }
 
-  const onCancel = () => setState(s => ({ ...s, isIdle: false, remainingTime: SIXTY }));
+      // Handle warning state sync
+      if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue) {
+        try {
+          const warningState = JSON.parse(e.newValue);
+          if (warningState.isVisible && !isWarningVisibleRef.current) {
+            isWarningVisibleRef.current = true;
+            setState({
+              isWarningVisible: true,
+              remainingTime: WARNING_DURATION,
+              isCountingDown: true
+            });
+          } else if (!warningState.isVisible && isWarningVisibleRef.current) {
+            isWarningVisibleRef.current = false;
+            setState(INIT_STATE);
+          }
+        } catch (err) {
+          console.error('Failed to parse warning state', err);
+        }
+      }
+
+      // Handle token refresh broadcast
+      if (e.key === STORAGE_KEYS.IDLE_TIMER_TOKEN_REFRESH && e.newValue) {
+        try {
+          const refreshData = JSON.parse(e.newValue);
+          if (refreshData.expireOn) {
+            // Another tab refreshed the token, update our timer too
+            authRef.current.updateTokenExpiration(refreshData.expireOn);
+
+            // Reset our idle timer as well
+            activateRef.current?.();
+
+            // Clear warning modal if it was open
+            if (isWarningVisibleRef.current) {
+              isWarningVisibleRef.current = false;
+              setState(INIT_STATE);
+            }
+          }
+        } catch (err) {
+          console.error('Failed to parse token refresh data', err);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [logout]);
+
+  // Modal handlers
+  const onOk = useCallback(() => {
+    // User chose "Log Out Now"
+    logout();
+  }, [logout]);
+
+  const onCancel = useCallback(async () => {
+    // User chose "Stay Logged In"
+
+    // Refresh token if it's about to expire
+    if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
+      await refreshToken();
+    }
+
+    // Reset idle timer
+    activate();
+
+    // Close warning modal
+    isWarningVisibleRef.current = false;
+    setState(INIT_STATE);
+    broadcastWarningState(false);
+  }, [activate, broadcastWarningState, refreshToken]);
 
   if (!isTimeoutSet) {
     return <>{children}</>;
@@ -79,28 +345,26 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   return (
     <div className={styles.shaIdleTimerRenderer}>
-      <IdleTimerComponent onAction={onAction} onActive={onActive} onIdle={onIdle} timeout={timeout}>
-        {children}
-        <Modal
-          title="You have been idle"
-          open={visible}
-          cancelText="Keep me signed in"
-          okText="Logoff"
-          onOk={onOk}
-          onCancel={onCancel}
-        >
-          <div className={styles.idleTimerContent}>
-            <span className={styles.idleTimerContentTopHint}>
-              You have not been using the application for sometime. Please click on the
-              <strong>Keep me signed in</strong> button, else you'll be automatically signed out in
-            </span>
+      {children}
+      <Modal
+        title="Session Expiring"
+        open={visible}
+        okText="Log Out Now"
+        cancelText="Stay Logged In"
+        onOk={onOk}
+        onCancel={onCancel}
+        closable={false}
+        maskClosable={false}
+      >
+        <div className={styles.idleTimerContent}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
             <Progress type="circle" percent={getPercentage(rt)} status={getStatus(rt)} format={() => <>{rt}</>} />
-            <span className={styles.idleTimerContentBottomHint}>
-              <strong>seconds</strong>
-            </span>
           </div>
-        </Modal>
-      </IdleTimerComponent>
+          <div style={{ textAlign: 'center' }}>
+            <p>You will be logged out in <strong>{rt} seconds</strong> due to inactivity.</p>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

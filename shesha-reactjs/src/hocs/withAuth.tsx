@@ -2,6 +2,7 @@ import React, { ComponentType, FC, Fragment, useEffect } from 'react';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import SheshaLoader from '@/components/sheshaLoader';
+import { IdleTimerRenderer } from '@/components/idleTimerRenderer';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
@@ -41,9 +42,9 @@ export const withAuth =
       return (
         <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
           {(query) => (
-            // <IdleTimerRenderer>
-            <Component {...propsObj} id={query?.id} />
-            // </IdleTimerRenderer>
+            <IdleTimerRenderer>
+              <Component {...propsObj} id={query?.id} />
+            </IdleTimerRenderer>
           )}
         </ComponentWithAuth>
       );
