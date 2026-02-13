@@ -112,7 +112,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
 
                   inheritedFromEntityType: e.metadata.inheritedFromName,
                   inheritedFromEntityModule: e.metadata.inheritedFromModule,
-                  inheritedFromEntityFullClassName: e.metadata.inheritedFromFullClassName,
+                  inheritedFromFullClassName: e.metadata.inheritedFromFullClassName,
                 },
               };
 
