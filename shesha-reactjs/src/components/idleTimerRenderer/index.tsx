@@ -25,6 +25,7 @@ interface IIdleTimerState {
   readonly isWarningVisible: boolean;
   readonly remainingTime: number;
   readonly isCountingDown: boolean;
+  readonly pendingLogout: boolean;
 }
 
 interface ISecuritySettings {
@@ -43,6 +44,7 @@ const INIT_STATE: IIdleTimerState = {
   isWarningVisible: false,
   remainingTime: WARNING_DURATION,
   isCountingDown: false,
+  pendingLogout: false,
 };
 
 const STORAGE_KEYS = {
@@ -57,7 +59,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const { styles } = useStyles();
   const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
   const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
-  const { mutate: refreshTokenHttp } = useMutate<any, AuthenticateResultModelAjaxResponse>();
+  const { mutate: refreshTokenHttp } = useMutate<void, AuthenticateResultModelAjaxResponse>();
   // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
   // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
   // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
@@ -155,7 +157,8 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     setState({
       isWarningVisible: true,
       remainingTime: WARNING_DURATION,
-      isCountingDown: true
+      isCountingDown: true,
+      pendingLogout: false
     });
     broadcastWarningState(true);
   }, [broadcastWarningState]);
@@ -241,12 +244,13 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   // Store activate function in ref for use in onAction callback
   activateRef.current = activate;
 
-  // Countdown logic
+  // Countdown logic - pure state updater without side effects
   const doCountdown = () => {
     setState(prev => {
       if (prev.remainingTime <= 1) {
-        logout();
-        return prev;
+        // Set pendingLogout flag instead of calling logout directly
+        // The logout side effect will be handled by useEffect
+        return { ...prev, remainingTime: 0, pendingLogout: true };
       }
       return { ...prev, remainingTime: prev.remainingTime - 1 };
     });
@@ -275,7 +279,8 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
             setState({
               isWarningVisible: true,
               remainingTime: WARNING_DURATION,
-              isCountingDown: true
+              isCountingDown: true,
+              pendingLogout: false
             });
           } else if (!warningState.isVisible && isWarningVisibleRef.current) {
             isWarningVisibleRef.current = false;
@@ -315,6 +320,14 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [logout]);
+
+  // Effect to handle logout when pendingLogout flag is set
+  // This separates the side effect from the state updater
+  useEffect(() => {
+    if (state.pendingLogout) {
+      logout();
+    }
+  }, [state.pendingLogout, logout]);
 
   // Modal handlers
   const onOk = useCallback(() => {

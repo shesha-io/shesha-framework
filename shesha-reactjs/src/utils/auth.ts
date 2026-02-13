@@ -1,7 +1,8 @@
 import jseu from 'js-encoding-utils';
 import { getLocalizationOrDefault } from './localization';
 import { getLocalStorage } from './storage';
-import { IAccessToken, IStoredToken } from '@/interfaces';
+import { IAccessToken } from '@/interfaces';
+import { IStoredToken } from '@/interfaces/accessToken';
 
 /**
  * Standard Authorization header name
