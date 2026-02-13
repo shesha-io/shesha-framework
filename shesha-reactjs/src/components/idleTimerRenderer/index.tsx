@@ -58,10 +58,11 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
   const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
   const { mutate: refreshTokenHttp } = useMutate<any, AuthenticateResultModelAjaxResponse>();
-  // Use 40 as safe default for hook validation when timer would be disabled
-  // Timer requires timeout > WARNING_DURATION (30s) to show warning before logout
-  // Actual enable/disable is controlled by isTimeoutSet condition
-  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : 40;
+  // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
+  // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
+  // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
+  // timeout > promptBeforeIdle (WARNING_DURATION = 30s).
+  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 300;
 
   const authenticator = useAuth(); // Get full authenticator instance
   const { logoutUser, loginInfo } = authenticator; // Destructure for backward compatibility
@@ -71,6 +72,14 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   // Ref to store activate function to avoid circular dependency
   const activateRef = useRef<(() => void) | null>(null);
+
+  // Stable ref for authenticator to prevent callback recreation
+  const authRef = useRef(authenticator);
+
+  // Keep authRef in sync with authenticator
+  useEffect(() => {
+    authRef.current = authenticator;
+  }, [authenticator]);
 
   // Ref to track warning visibility without causing re-renders in callbacks
   const isWarningVisibleRef = useRef<boolean>(false);
@@ -126,10 +135,17 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   const logout = useCallback(() => {
     broadcastLogout();
-    logoutUser().then(() => {
-      isWarningVisibleRef.current = false;
-      setState(INIT_STATE);
-    });
+    logoutUser()
+      .then(() => {
+        isWarningVisibleRef.current = false;
+        setState(INIT_STATE);
+      })
+      .catch((error) => {
+        console.error('Failed to logout user:', error);
+        // Always perform cleanup even on error
+        isWarningVisibleRef.current = false;
+        setState(INIT_STATE);
+      });
   }, [broadcastLogout, logoutUser]);
 
   // Event handlers for react-idle-timer
@@ -176,7 +192,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
           // Update Authenticator's expiration timer
           // This ensures the user won't be logged out at the old token's expiration time
           if (response.result.expireOn) {
-            authenticator.updateTokenExpiration(response.result.expireOn);
+            authRef.current.updateTokenExpiration(response.result.expireOn);
 
             // Broadcast token refresh to other tabs
             broadcastTokenRefresh(response.result.expireOn);
@@ -193,7 +209,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
         console.error('Failed to refresh token:', error);
         return false;
       });
-  }, [refreshTokenHttp, authenticator, broadcastTokenRefresh]);
+  }, [refreshTokenHttp, broadcastTokenRefresh]);
 
   const onAction = useCallback(() => {
     // Don't auto-refresh if warning modal is showing
@@ -227,11 +243,13 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   // Countdown logic
   const doCountdown = () => {
-    if (rt <= 1) {
-      logout();
-    } else {
-      setState(s => ({ ...s, remainingTime: s.remainingTime - 1 }));
-    }
+    setState(prev => {
+      if (prev.remainingTime <= 1) {
+        logout();
+        return prev;
+      }
+      return { ...prev, remainingTime: prev.remainingTime - 1 };
+    });
   };
 
   useInterval(() => {
@@ -274,7 +292,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
           const refreshData = JSON.parse(e.newValue);
           if (refreshData.expireOn) {
             // Another tab refreshed the token, update our timer too
-            authenticator.updateTokenExpiration(refreshData.expireOn);
+            authRef.current.updateTokenExpiration(refreshData.expireOn);
 
             // Reset our idle timer as well
             activateRef.current?.();
@@ -296,7 +314,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [logout, authenticator]);
+  }, [logout]);
 
   // Modal handlers
   const onOk = useCallback(() => {

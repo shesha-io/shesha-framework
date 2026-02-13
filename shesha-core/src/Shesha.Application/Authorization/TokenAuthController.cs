@@ -173,12 +173,13 @@ namespace Shesha.Authorization
 
             // 4. Atomically blacklist the current token (prevents TOCTOU race condition)
             // This must happen BEFORE generating a new token to prevent concurrent refreshes
-            if (!string.IsNullOrEmpty(currentJti))
-            {
-                var wasBlacklisted = await _tokenBlacklistService.TryBlacklistTokenAsync(currentJti, currentTokenExpiration);
-                if (!wasBlacklisted)
-                    throw new UserFriendlyException("Token has been revoked or already used");
-            }
+            // Validate that JTI is present - missing JTI means token cannot be tracked/revoked
+            if (string.IsNullOrEmpty(currentJti))
+                throw new UserFriendlyException("Invalid token: missing JTI claim. Token cannot be securely refreshed.");
+
+            var wasBlacklisted = await _tokenBlacklistService.TryBlacklistTokenAsync(currentJti, currentTokenExpiration);
+            if (!wasBlacklisted)
+                throw new UserFriendlyException("Token has been revoked or already used");
 
             // 5. Generate new token with fresh expiration
             // Recreate claims identity from existing claims (excluding time-sensitive claims and subject claims)
