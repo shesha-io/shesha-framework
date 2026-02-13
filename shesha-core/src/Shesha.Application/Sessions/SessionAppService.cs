@@ -107,22 +107,6 @@ namespace Shesha.Sessions
                         });
                     }
                 }
-
-                foreach (var role in roles)
-                {
-                    var permissions = role.Role?.Permissions;
-                    if (permissions == null || !permissions.Any())
-                        continue;
-
-                    foreach (var permission in permissions.Where(x => x.IsGranted))
-                    {
-                        var grantedPermission = new GrantedPermissionDto
-                        {
-                            Permission = permission.Permission,
-                            PermissionedEntity = role.PermissionedEntities.Select(x => new EntityReferenceDto<string>(x.Id, x._className, x._displayName)).ToList(),
-                        };
-                    }
-                }
             }
 
             return grantedPermissions;

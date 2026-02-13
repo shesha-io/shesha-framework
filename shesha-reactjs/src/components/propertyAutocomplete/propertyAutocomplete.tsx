@@ -112,6 +112,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
     const getParentAsync = async (entityType: string | IEntityTypeIdentifier): Promise<void> => {
       const entity = await getByEntityType(entityType);
+      if (!entity) return;
       typeList.push({ name: entity.entityType, module: entity.entityModule } as IEntityTypeIdentifier);
       if (isIHasEntityType(entity) && entity.inheritedFromEntityType) {
         await getParentAsync({ name: entity.inheritedFromEntityType, module: entity.inheritedFromEntityModule } as IEntityTypeIdentifier);

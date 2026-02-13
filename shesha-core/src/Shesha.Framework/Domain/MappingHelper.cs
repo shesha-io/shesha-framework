@@ -339,10 +339,10 @@ namespace Shesha.Domain
                     configAssemblyName.NotNull("Entity config assembly name can not be null");
                     rootConfigAssemblyName.NotNull("Root Entity config assembly name can not be null");
                     // This column extends a table created in another module - we should add a prefix
-                    if (Prefixes.ContainsKey(configAssemblyName)
-                        && (!Prefixes.ContainsKey(rootConfigAssemblyName) 
-                            || Prefixes[rootConfigAssemblyName] != Prefixes[configAssemblyName]))
-                        return Prefixes[configAssemblyName];
+                    if (Prefixes.TryGetValue(configAssemblyName, out var configAssemblyNamePrefix)
+                        && (!Prefixes.TryGetValue(rootConfigAssemblyName, out var rootConfigAssemblyNamePrefix)
+                            || rootConfigAssemblyNamePrefix != configAssemblyNamePrefix))
+                        return configAssemblyNamePrefix;
                 }
             }
             return "";
