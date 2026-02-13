@@ -72,6 +72,9 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   // Ref to store activate function to avoid circular dependency
   const activateRef = useRef<(() => void) | null>(null);
 
+  // Ref to track warning visibility without causing re-renders in callbacks
+  const isWarningVisibleRef = useRef<boolean>(false);
+
   // Idle timer is enabled only when:
   // 1. Settings are loaded (autoLogoffTimeout !== undefined)
   // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
@@ -123,12 +126,16 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   const logout = useCallback(() => {
     broadcastLogout();
-    logoutUser().then(() => setState(INIT_STATE));
+    logoutUser().then(() => {
+      isWarningVisibleRef.current = false;
+      setState(INIT_STATE);
+    });
   }, [broadcastLogout, logoutUser]);
 
   // Event handlers for react-idle-timer
   const handlePrompt = useCallback(() => {
     // Called 30 seconds before timeout
+    isWarningVisibleRef.current = true;
     setState({
       isWarningVisible: true,
       remainingTime: WARNING_DURATION,
@@ -139,11 +146,12 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   const handleActive = useCallback(() => {
     // User became active - close modal if open
-    if (state.isWarningVisible) {
+    if (isWarningVisibleRef.current) {
+      isWarningVisibleRef.current = false;
       setState(INIT_STATE);
       broadcastWarningState(false);
     }
-  }, [state.isWarningVisible, broadcastWarningState]);
+  }, [broadcastWarningState]);
 
   const handleIdle = useCallback(() => {
     // Timeout reached - auto logout
@@ -190,7 +198,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const onAction = useCallback(() => {
     // Don't auto-refresh if warning modal is showing
     // Let the user explicitly choose via "Stay Logged In" button
-    if (state.isWarningVisible) {
+    if (isWarningVisibleRef.current) {
       return;
     }
 
@@ -198,7 +206,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
       refreshToken();
     }
-  }, [state.isWarningVisible, refreshToken]);
+  }, [refreshToken]);
 
   // Configure idle timer hook
   const { activate } = useIdleTimer({
@@ -244,13 +252,15 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
       if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue) {
         try {
           const warningState = JSON.parse(e.newValue);
-          if (warningState.isVisible && !state.isWarningVisible) {
+          if (warningState.isVisible && !isWarningVisibleRef.current) {
+            isWarningVisibleRef.current = true;
             setState({
               isWarningVisible: true,
               remainingTime: WARNING_DURATION,
               isCountingDown: true
             });
-          } else if (!warningState.isVisible && state.isWarningVisible) {
+          } else if (!warningState.isVisible && isWarningVisibleRef.current) {
+            isWarningVisibleRef.current = false;
             setState(INIT_STATE);
           }
         } catch (err) {
@@ -270,7 +280,8 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
             activateRef.current?.();
 
             // Clear warning modal if it was open
-            if (state.isWarningVisible) {
+            if (isWarningVisibleRef.current) {
+              isWarningVisibleRef.current = false;
               setState(INIT_STATE);
             }
           }
@@ -285,7 +296,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [state.isWarningVisible, logout, authenticator]);
+  }, [logout, authenticator]);
 
   // Modal handlers
   const onOk = useCallback(() => {
@@ -305,6 +316,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     activate();
 
     // Close warning modal
+    isWarningVisibleRef.current = false;
     setState(INIT_STATE);
     broadcastWarningState(false);
   }, [activate, broadcastWarningState, refreshToken]);

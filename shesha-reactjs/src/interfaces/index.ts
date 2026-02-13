@@ -7,7 +7,7 @@ export { type ITokenData } from './tokenData';
 export { type IDesktopNotificationResult } from './desktopNotificationResult';
 export { type ILoginPayload } from './loginPayload';
 export { type IDesktopNotificationOptions } from './desktopNotificationOptions';
-export { type IAccessToken } from './accessToken';
+export { type IAccessToken, type IStoredToken } from './accessToken';
 export { type IOverlayLoaderPayload } from './overlayLoaderPayload';
 export { type ICancelIncidentPayload } from './cancelIncidentPayload';
 export { type IDesktopNotificationAction } from './desktopNotificationAction';

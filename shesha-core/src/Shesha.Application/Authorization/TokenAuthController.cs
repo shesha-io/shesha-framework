@@ -171,24 +171,33 @@ namespace Shesha.Authorization
             var currentJti = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
             var currentTokenExpiration = User.GetTokenExpirationDate();
 
-            // 4. Check if current token is blacklisted
+            // 4. Atomically blacklist the current token (prevents TOCTOU race condition)
+            // This must happen BEFORE generating a new token to prevent concurrent refreshes
             if (!string.IsNullOrEmpty(currentJti))
             {
-                var isBlacklisted = await _tokenBlacklistService.IsTokenBlacklistedAsync(currentJti);
-                if (isBlacklisted)
-                    throw new UserFriendlyException("Token has been revoked");
+                var wasBlacklisted = await _tokenBlacklistService.TryBlacklistTokenAsync(currentJti, currentTokenExpiration);
+                if (!wasBlacklisted)
+                    throw new UserFriendlyException("Token has been revoked or already used");
             }
 
             // 5. Generate new token with fresh expiration
-            // Recreate claims identity from existing claims (excluding time-sensitive claims)
+            // Recreate claims identity from existing claims (excluding time-sensitive claims and subject claims)
             var existingClaims = User.Claims
                 .Where(c => c.Type != JwtRegisteredClaimNames.Jti &&
                            c.Type != JwtRegisteredClaimNames.Iat &&
                            c.Type != JwtRegisteredClaimNames.Exp &&
-                           c.Type != JwtRegisteredClaimNames.Sub)
+                           c.Type != JwtRegisteredClaimNames.Sub &&
+                           c.Type != ClaimTypes.NameIdentifier)
                 .ToList();
 
+            // Get the subject value to re-add as a normalized claim
+            var subjectValue = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value
+                ?? User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value
+                ?? userId.ToString();
+
             var identity = new ClaimsIdentity(existingClaims);
+            // Re-add a single NameIdentifier claim so CreateJwtClaims can find it
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, subjectValue));
 
             var validFrom = DateTime.UtcNow;
             var expiresOn = validFrom.Add(_configuration.Expiration);
@@ -196,19 +205,13 @@ namespace Shesha.Authorization
 
             var accessToken = CreateAccessToken(CreateJwtClaims(identity), validFrom, expiresOn);
 
-            // 6. Blacklist the old token now that we've issued a new one
-            if (!string.IsNullOrEmpty(currentJti))
-            {
-                await _tokenBlacklistService.BlacklistTokenAsync(currentJti, currentTokenExpiration);
-            }
-
             var personId = await _personRepository.GetAll()
                 .Where(p => p.User == user)
                 .OrderBy(p => p.CreationTime)
                 .Select(p => p.Id)
                 .FirstOrDefaultAsync();
 
-            // 7. Log the refresh action
+            // 6. Log the refresh action
             Logger.InfoFormat("Token refreshed for user ID: {0}", userId);
 
             return new AuthenticateResultModel
