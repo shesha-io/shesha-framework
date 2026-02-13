@@ -36,8 +36,6 @@ using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {
-    // ToDo: AS - V1, V2 merge ModelConfigurationManager and EntityConfigManager
-
     /// inheritedDoc
     public class ModelConfigurationManager : EntityConfigManager, IModelConfigurationManager, ITransientDependency
     {
@@ -196,8 +194,6 @@ namespace Shesha.DynamicEntities
         [UnitOfWork]
         public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input)
         {
-            // todo: add validation
-
             var inheritedFrom = input.InheritedFromId != null
                 ? await Repository.GetAll().FirstOrDefaultAsync(x => 
                     x.Name == input.InheritedFromId.Name 
@@ -295,8 +291,6 @@ namespace Shesha.DynamicEntities
             var entityConfig = await Repository.GetAll().Where(m => m.Id == input.Id).FirstOrDefaultAsync();
             if (entityConfig == null)
                 throw new ModelConfigurationNotFoundException(input.Namespace, input.Name);
-
-            // todo: add validation
 
             var res = await CreateOrUpdateAsync(entityConfig, input, false);
             await RemoveCacheItemAsync(res.Module, res.Namespace, res.ClassName);
@@ -572,6 +566,7 @@ namespace Shesha.DynamicEntities
                     {
                         dbProp.ListConfiguration = dbProp.ListConfiguration ?? new EntityPropertyListConfiguration();
                         dbProp.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToMany;
+                        // Other 'dbProp.ListConfiguration.DbMapping' properties will be configured on the Create DB Items stage on the application startup
                     }
                 }
 

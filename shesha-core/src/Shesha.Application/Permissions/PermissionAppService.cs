@@ -198,7 +198,7 @@ namespace Shesha.Permissions
 
             return _permissionChecker.IsGrantedAsync(
                 input.PermissionName,
-                new EntityReferenceDto<string>(input.PermissionedEntityId, "", input.PermissionedEntityClass)
+                new EntityReferenceDto<string>(input.PermissionedEntityId, input.PermissionedEntityClass, "")
             );
         }
     }

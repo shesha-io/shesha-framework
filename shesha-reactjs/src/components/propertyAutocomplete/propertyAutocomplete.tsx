@@ -1,15 +1,14 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { AutoComplete, Button, Select, Space, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useForm, useMetadata, useMetadataDispatcher } from '@/providers';
+import { useEntityMetadataFetcher, useForm, useMetadata, useMetadataDispatcher } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { camelCase } from 'lodash';
-import { IPropertyMetadata, asPropertiesArray } from '@/interfaces/metadata';
+import { IPropertyMetadata, asPropertiesArray, isIHasEntityType } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { useConfigurableFormActions } from '@/providers/form/actions';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-import { isEntityTypeIdentifier } from '@/providers/metadataDispatcher/entities/utils';
 import { DataTypes } from '@/interfaces';
 
 export interface IPropertyAutocompleteProps {
@@ -61,6 +60,9 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   const meta = useMetadata(false);
   const { getContainerProperties } = useMetadataDispatcher();
+  const { getByEntityType } = useEntityMetadataFetcher();
+  const [modelTypeHierarchy, setModelTypeHierarchy] = useState<IEntityTypeIdentifier[]>([]);
+
   const { metadata } = meta ?? {};
 
   const initialProperties = asPropertiesArray(metadata?.properties, []);
@@ -94,6 +96,47 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     return state.properties.find((p) => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
   };
 
+  // update propertyModel type hierarchy
+  const propModelUid = typeof (props.propertyModelType) === 'string' ? props.propertyModelType : `${props.propertyModelType?.module}.${props.propertyModelType?.name}`;
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!props.propertyModelType) {
+      setModelTypeHierarchy([]);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const typeList: IEntityTypeIdentifier[] = [];
+
+    const getParentAsync = async (entityType: string | IEntityTypeIdentifier): Promise<void> => {
+      const entity = await getByEntityType(entityType);
+      if (!entity) return;
+      typeList.push({ name: entity.entityType, module: entity.entityModule } as IEntityTypeIdentifier);
+      if (isIHasEntityType(entity) && entity.inheritedFromEntityType) {
+        await getParentAsync({ name: entity.inheritedFromEntityType, module: entity.inheritedFromEntityModule } as IEntityTypeIdentifier);
+      }
+    };
+
+    getParentAsync(props.propertyModelType)
+      .then(() => {
+        if (!cancelled) {
+          setModelTypeHierarchy(typeList);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to fetch entity type hierarchy:', error);
+        if (!cancelled) {
+          setModelTypeHierarchy([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [propModelUid]);
+
   // TODO: move to metadata dispatcher
   // TODO: add `loadProperties` method with callback:
   //    modelType, properties[] (dot notation props list)
@@ -114,19 +157,16 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
         const propertyModeltype = props.propertyModelType;
         const preparedProperties = Boolean(propertyModeltype)
           // Filter properties by propertyModelType
-          ? isEntityTypeIdentifier(propertyModeltype)
-            ? (() => {
-              const normalizedModule = propertyModeltype.module ?? null;
-              return properties.filter((p) => p.dataType === DataTypes.entityReference && (p.entityModule ?? null) === normalizedModule && p.entityType === propertyModeltype.name);
-            })()
-            : properties.filter((p) => p.dataType === DataTypes.entityReference && (('fullClassName' in p && p.fullClassName === propertyModeltype) || !('fullClassName' in p)))
+          ? properties.filter((p) =>
+            p.dataType === DataTypes.entityReference &&
+            modelTypeHierarchy.some((pmt) => (p.entityModule ?? null) === (pmt.module ?? null) && p.entityType === pmt.name))
           : properties;
         setProperties(preparedProperties, containerPath ?? containerPathMultiple);
       }).catch(() => {
         setProperties([], '');
       });
     }
-  }, [metadata, metadata?.properties, containerPath, containerPathMultiple, props.propertyModelType, getContainerProperties, onPropertiesLoaded]);
+  }, [metadata, modelTypeHierarchy, containerPath, containerPathMultiple, props.propertyModelType, getContainerProperties, onPropertiesLoaded]);
 
   const onSelect = (data: string): void => {
     if (props.onChange) props.onChange(data);

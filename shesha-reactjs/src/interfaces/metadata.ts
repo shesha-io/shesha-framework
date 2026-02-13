@@ -103,6 +103,7 @@ export interface ModelTypeIdentifier {
 }
 
 export interface IHasEntityType {
+  fullClassName?: string;
   entityType?: string;
   entityModule?: string | null;
 }
@@ -116,6 +117,18 @@ export interface IHasFullEntityType {
   typeAccessor?: string;
   moduleAccessor: string | null;
 }
+
+export interface IHasInheritedFromEntityType {
+  inheritedFromFullClassName?: string | null | undefined;
+  inheritedFromEntityType?: string | null | undefined;
+  inheritedFromEntityModule?: string | null | undefined;
+}
+
+export const isIHasInheritedFromEntityType = (value: unknown): value is IHasInheritedFromEntityType => {
+  const typed = value as IHasInheritedFromEntityType;
+  return typed && typeof typed.inheritedFromEntityType === 'string';
+};
+
 
 export interface IEntityProperty extends IPropertyMetadata, IHasEntityType {
 }
@@ -309,13 +322,13 @@ export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperti
 
 }
 
-export interface IJsonEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType {
+export interface IJsonEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType, IHasInheritedFromEntityType {
   md5?: string;
   changeTime?: Date;
   aliases?: string[];
 }
 
-export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType {
+export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType, IHasInheritedFromEntityType {
   md5?: string;
   changeTime?: Date;
   aliases?: string[];

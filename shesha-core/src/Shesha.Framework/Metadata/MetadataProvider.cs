@@ -94,6 +94,10 @@ namespace Shesha.Metadata
                 Name = entityConfig?.Name ?? containerType.Name,
                 Label = entityConfig?.Label,
                 Description = entityConfig?.Description,
+
+                InheritedFromModule = entityConfig?.InheritedFrom?.Module?.Name,
+                InheritedFromName = entityConfig?.InheritedFrom?.Name,
+                InheritedFromFullClassName = entityConfig?.InheritedFrom?.FullClassName,
             };
 
             UpdateMd5(dto);

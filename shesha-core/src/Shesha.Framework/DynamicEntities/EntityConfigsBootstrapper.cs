@@ -1,12 +1,9 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Reflection;
 using Castle.Core.Logging;
-using Microsoft.AspNetCore.Components.Forms;
-using Newtonsoft.Json;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
@@ -16,6 +13,7 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Enums;
+using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.Extensions;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
@@ -27,7 +25,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Module = Shesha.Domain.Module;
@@ -43,6 +40,7 @@ namespace Shesha.DynamicEntities
         private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IAssemblyFinder _assembleFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
+        private readonly IDynamicEntitiesErrorHandler _errorHandler;
 
         private List<EntityConfig> _dbAllConfigs;
         private List<EntityProperty> _dbAllProperties;
@@ -57,6 +55,7 @@ namespace Shesha.DynamicEntities
             IUnitOfWorkManager unitOfWorkManager,
             IApplicationStartupSession startupSession,
             IBootstrapperStartupService bootstrapperStartupService,
+            IDynamicEntitiesErrorHandler errorHandler,
             ILogger logger
         ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
@@ -66,6 +65,7 @@ namespace Shesha.DynamicEntities
             _entityPropertyRepository = entityPropertyRepository;
             _metadataProvider = metadataProvider;
             _moduleManager = moduleManager;
+            _errorHandler = errorHandler;
         }
 
         [UnitOfWork(IsDisabled = true)]
@@ -463,8 +463,14 @@ namespace Shesha.DynamicEntities
                 {
                     if (prop.DataType != property.DataType)
                     {
-                        // ToDo: AS - think how to collect similar problems and show them to the Admin without throwing exceptions
-                        throw new Exception($"Inheritance error from {propertyEntityConfig.FullClassName} {property.Name} ({property.DataType}): {config.FullClassName} has property ({prop.DataType})");
+                        prop.InitStatus = EntityInitFlags.InitializationFailed;
+                        var error = $"Inheritance error from {propertyEntityConfig.FullClassName} {property.Name} ({property.DataType}): {config.FullClassName} has property ({prop.DataType})";
+                        prop.InitMessage = error;
+                        await _entityPropertyRepository.UpdateAsync(prop);
+                        await _errorHandler.HandleInitializationErrorAsync(
+                            new EntityDbInitializationException(config, new EntityPropertyDbInitializationException(prop, null, "DB bootstrapping", error), "DB bootstrapping")
+                        );
+                        continue;
                     }
 
                     CopyPropertyData(property, prop);
@@ -492,7 +498,6 @@ namespace Shesha.DynamicEntities
 
             }
         }
-
 
         private async Task UpdatePropertiesAsync(
             Type entityType,
