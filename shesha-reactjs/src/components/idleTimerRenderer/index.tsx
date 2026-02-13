@@ -14,6 +14,8 @@ import { useInterval } from 'react-use';
 import { useSettingValue } from '@/providers/settings';
 import { useStyles } from './styles/styles';
 import { getLocalStorage } from '@/utils/storage';
+import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
+import { useMutate } from '@/hooks';
 
 export interface IIdleTimerRendererProps { }
 
@@ -52,7 +54,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const { styles } = useStyles();
   const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
   const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
-  console.log('Auto logoff timeout (seconds):', autoLogoffTimeout);
+  const { mutate: refreshTokenHttp } = useMutate();
   // Use 40 as safe default for hook validation when timer would be disabled
   // Timer requires timeout > WARNING_DURATION (30s) to show warning before logout
   // Actual enable/disable is controlled by isTimeoutSet condition
@@ -128,7 +130,20 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   }, [logout]);
 
   const onAction = useCallback(() => {
-    // Keep for compatibility, can remain empty
+    const tokenName = 'xDFcxiooPQxazdndDsdRSerWQPlincytLDCarcxVxv';
+    if (isTokenAboutToExpire(tokenName)) {
+      refreshTokenHttp({ url: '/api/TokenAuth/RefreshToken', httpVerb: 'post' })
+        .then((response) => {
+          saveUserToken(
+            {
+              accessToken: response.result.accessToken,
+              expireInSeconds: response.result.expireInSeconds,
+              expireOn: response.result.expireOn
+            }
+            , tokenName);
+        }
+        );
+    }
   }, []);
 
   // Configure idle timer hook

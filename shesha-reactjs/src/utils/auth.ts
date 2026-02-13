@@ -45,6 +45,19 @@ export const removeAccessToken = (tokenName: string) => {
   }
 };
 
+export const isTokenAboutToExpire = (tokenName: string, bufferSeconds = 60): boolean => {
+  const token = getLocalStorage()?.getItem(tokenName);
+  const deserializedToken = parseToken(token);
+
+  if (!deserializedToken?.expireOn) return true;
+
+  const expiresInSeconds = Math.floor(
+    (new Date(deserializedToken.expireOn).getTime() - Date.now()) / 1000
+  );
+
+  return expiresInSeconds <= bufferSeconds;
+};
+
 export const getAccessToken = (tokenName: string): IAccessToken | null => {
   const token = getLocalStorage()?.getItem(tokenName);
 
