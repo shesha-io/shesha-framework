@@ -1,11 +1,9 @@
-using Shesha.Testing.Fixtures;
 using Xunit;
 
-namespace Shesha.Tests.Fixtures
+namespace Shesha.Testing.Fixtures
 {
     /// <summary>
-    /// xUnit collection definition for Testcontainers-based PostgreSQL fixture.
-    /// Must be in the same assembly as the tests that use it.
+    /// Shared PostgreSql fixture (Testcontainers).
     /// </summary>
     [CollectionDefinition(Name)]
     public class PostgreSqlCollection : ICollectionFixture<PostgreSqlFixture>

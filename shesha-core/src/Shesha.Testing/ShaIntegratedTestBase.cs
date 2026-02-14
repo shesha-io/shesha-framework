@@ -1,4 +1,4 @@
-﻿using Abp;
+using Abp;
 using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Modules;
@@ -6,12 +6,12 @@ using Abp.Runtime.Session;
 using Abp.TestBase.Runtime.Session;
 using Castle.MicroKernel.Registration;
 using Shesha.Services;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Shesha.Tests
+namespace Shesha.Testing
 {
     /// <summary>
     /// This is the base class for all tests integrated to ABP.
@@ -74,7 +74,6 @@ namespace Shesha.Tests
         /// </summary>
         protected virtual void PreInitialize()
         {
-
         }
 
         /// <summary>
@@ -82,7 +81,6 @@ namespace Shesha.Tests
         /// </summary>
         protected virtual void PostInitialize()
         {
-
         }
 
         public virtual void Dispose()
@@ -96,8 +94,6 @@ namespace Shesha.Tests
         /// A shortcut to resolve an object from <see cref="LocalIocManager"/>.
         /// Also registers <typeparamref name="T"/> as transient if it's not registered before.
         /// </summary>
-        /// <typeparam name="T">Type of the object to get</typeparam>
-        /// <returns>The object instance</returns>
         protected T Resolve<T>()
         {
             EnsureClassRegistered(typeof(T));
@@ -108,9 +104,6 @@ namespace Shesha.Tests
         /// A shortcut to resolve an object from <see cref="LocalIocManager"/>.
         /// Also registers <typeparamref name="T"/> as transient if it's not registered before.
         /// </summary>
-        /// <typeparam name="T">Type of the object to get</typeparam>
-        /// <param name="argumentsAsAnonymousType">Constructor arguments</param>
-        /// <returns>The object instance</returns>
         protected T Resolve<T>(object argumentsAsAnonymousType)
         {
             EnsureClassRegistered(typeof(T));
@@ -121,8 +114,6 @@ namespace Shesha.Tests
         /// A shortcut to resolve an object from <see cref="LocalIocManager"/>.
         /// Also registers <paramref name="type"/> as transient if it's not registered before.
         /// </summary>
-        /// <param name="type">Type of the object to get</param>
-        /// <returns>The object instance</returns>
         protected object Resolve(Type type)
         {
             EnsureClassRegistered(type);
@@ -133,9 +124,6 @@ namespace Shesha.Tests
         /// A shortcut to resolve an object from <see cref="LocalIocManager"/>.
         /// Also registers <paramref name="type"/> as transient if it's not registered before.
         /// </summary>
-        /// <param name="type">Type of the object to get</param>
-        /// <param name="argumentsAsAnonymousType">Constructor arguments</param>
-        /// <returns>The object instance</returns>
         protected object Resolve(Type type, object argumentsAsAnonymousType)
         {
             EnsureClassRegistered(type);
@@ -145,8 +133,6 @@ namespace Shesha.Tests
         /// <summary>
         /// Registers given type if it's not registered before.
         /// </summary>
-        /// <param name="type">Type to check and register</param>
-        /// <param name="lifeStyle">Lifestyle</param>
         protected void EnsureClassRegistered(Type type, DependencyLifeStyle lifeStyle = DependencyLifeStyle.Transient)
         {
             if (!LocalIocManager.IsRegistered(type))

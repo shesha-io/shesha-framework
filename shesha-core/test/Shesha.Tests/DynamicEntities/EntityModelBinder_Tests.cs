@@ -7,7 +7,7 @@ using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.Reflection;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

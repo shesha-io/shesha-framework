@@ -44,6 +44,7 @@
     <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels.json" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Shesha.Testing\Shesha.Testing.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Application\Shesha.Application.csproj" />
 	<ProjectReference Include="..\..\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Scheduler\Shesha.Scheduler.csproj" />

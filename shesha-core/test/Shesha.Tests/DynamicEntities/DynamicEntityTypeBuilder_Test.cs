@@ -1,7 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using Shesha.Domain;
 using Shesha.DynamicEntities.EntityTypeBuilder;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using System;
 using Xunit;
 

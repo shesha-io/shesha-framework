@@ -1,4 +1,4 @@
-﻿using Shesha.Tests.Fixtures;
+﻿using Shesha.Testing.Fixtures;
 using Xunit;
 
 namespace Shesha.Tests.DomainModel

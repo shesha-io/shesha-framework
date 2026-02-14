@@ -1,7 +1,7 @@
-﻿namespace Shesha.Tests.Fixtures
+namespace Shesha.Testing.Fixtures
 {
     /// <summary>
-    /// Database fixture
+    /// Database fixture providing connection configuration for integration tests.
     /// </summary>
     public interface IDatabaseFixture
     {
