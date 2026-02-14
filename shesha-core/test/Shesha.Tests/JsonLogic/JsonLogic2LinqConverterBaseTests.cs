@@ -6,7 +6,7 @@ using Abp.Timing;
 using Newtonsoft.Json.Linq;
 using Shesha.JsonLogic;
 using Shesha.Reflection;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Tests.TestingUtils;
 using System;
 using System.Collections.Generic;

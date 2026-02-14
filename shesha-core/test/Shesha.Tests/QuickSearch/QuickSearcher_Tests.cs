@@ -13,7 +13,7 @@ using Shesha.Domain.Enums;
 using Shesha.QuickSearch;
 using Shesha.QuickSearch.Cache;
 using Shesha.Services;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;

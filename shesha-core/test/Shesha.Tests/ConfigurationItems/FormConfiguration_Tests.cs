@@ -15,7 +15,7 @@ using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Services;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Services.Distribution;
 using Shouldly;

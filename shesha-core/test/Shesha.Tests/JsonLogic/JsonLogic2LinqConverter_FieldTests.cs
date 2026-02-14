@@ -1,6 +1,6 @@
 ﻿using Shesha.Domain;
 using Shesha.JsonLogic;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;
