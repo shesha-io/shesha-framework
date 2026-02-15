@@ -76,5 +76,20 @@ namespace Shesha.Metadata.Dtos
         /// Full class name (for backward compatibility)
         /// </summary>
         public List<string> Aliases { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Module name parent model belongs to
+        /// </summary>
+        public string? InheritedFromModule { get; set; }
+
+        /// <summary>
+        /// Name of parent model
+        /// </summary>
+        public string? InheritedFromName { get; set; }
+
+        /// <summary>
+        /// Full class name of parent model
+        /// </summary>
+        public string? InheritedFromFullClassName { get; set; }
     }
 }

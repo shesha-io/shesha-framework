@@ -95,7 +95,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                     }
                     catch (Exception e)
                     {
-                        throw new EntityPropertyDbInitializationException(property, e, "initialize DB");
+                        throw new EntityPropertyDbInitializationException(property, e, "DB initialization");
                     }
                 }
 
@@ -103,7 +103,7 @@ namespace Shesha.DynamicEntities.DbGenerator
             }
             catch (Exception e)
             {
-                throw new EntityDbInitializationException(entityConfig, e, "initialize DB");
+                throw new EntityDbInitializationException(entityConfig, e, "DB initialization");
             }
         }
 

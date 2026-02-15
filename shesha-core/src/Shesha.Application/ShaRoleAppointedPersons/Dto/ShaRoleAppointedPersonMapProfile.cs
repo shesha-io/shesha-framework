@@ -19,8 +19,7 @@ namespace Shesha.ShaRoleAppointedPersons.Dto
                         )
                     : null
                 ))
-            .ForMember(u => u.RoleId, options => options.MapFrom(e => e.Role != null 
-                ? e.Role.Id : (Guid?)null));
+                .ForMember(u => u.RoleId, options => options.MapFrom(e => e.Role.Id));
         }
     }
 }
