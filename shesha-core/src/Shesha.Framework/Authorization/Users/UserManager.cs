@@ -288,7 +288,7 @@ namespace Shesha.Authorization.Users
             {
                 var message = $"User with the provided username or email does not exist";
                 validationResults.Add(new ValidationResult(message));
-                validationResults.ThrowValidationExceptionIfAny(L);
+                validationResults.ThrowValidationException(L);
             }
 
             // Update user details if new values are provided

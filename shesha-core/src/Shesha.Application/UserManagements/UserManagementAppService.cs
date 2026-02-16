@@ -76,7 +76,6 @@ namespace Shesha.UserManagements
 
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
         {
-            // CheckCreatePermission();
             var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
             var defaultAuthenticationSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
             var applicationRedirects = await _frontendSettings.FrontendApplicationRedirectsSettings.GetValueAsync();
@@ -88,35 +87,38 @@ namespace Shesha.UserManagements
 
             // Get person entity type from settings
             Type personEntityType;
-            var personEntityReference = registrationSettings.PersonEntityType;
+            var personEntityIdentifier = registrationSettings.PersonEntityType;
 
-            if (personEntityReference == null || string.IsNullOrWhiteSpace(personEntityReference.Id))
+            if (personEntityIdentifier == null || string.IsNullOrWhiteSpace(personEntityIdentifier.Name))
             {
                 personEntityType = typeof(Person);
             }
             else
             {
-                // First, resolve the EntityConfig by GUID to get the TypeShortAlias
-                if (Guid.TryParse(personEntityReference.Id, out var entityConfigId))
+                // First try to resolve by FullClassName if provided
+                if (!string.IsNullOrWhiteSpace(personEntityIdentifier.FullClassName))
                 {
-                    var entityConfigRecord = await _entityConfigRepository.FirstOrDefaultAsync(e => e.Id == entityConfigId);
-                    if (entityConfigRecord == null)
-                        throw new UserFriendlyException($"Person entity configuration with ID '{personEntityReference}' not found.");
-
-                    // Now get the actual entity configuration using TypeShortAlias
-                    var fullClassName = entityConfigRecord.FullClassName ?? throw new UserFriendlyException("EntityConfig FullClassName is null");
-                    var entityConfig = _entityConfigurationStore.Get(fullClassName);
+                    var entityConfig = _entityConfigurationStore.Get(personEntityIdentifier.FullClassName);
                     if (entityConfig == null)
-                        throw new UserFriendlyException($"Person entity type '{fullClassName}' not found in configuration store.");
+                        throw new UserFriendlyException($"Person entity type '{personEntityIdentifier.FullClassName}' not found in configuration store.");
 
                     personEntityType = entityConfig.EntityType;
                 }
                 else
                 {
-                    // Fallback: assume it's already a TypeShortAlias
-                    var entityConfig = _entityConfigurationStore.Get(personEntityReference.Id);
+                    // Resolve the EntityConfig by module+name
+                    var entityConfigRecord = await _entityConfigRepository.FirstOrDefaultAsync(e =>
+                        e.Name == personEntityIdentifier.Name &&
+                        (personEntityIdentifier.Module == null || e.Module!.Name == personEntityIdentifier.Module.Name));
+
+                    if (entityConfigRecord == null)
+                        throw new UserFriendlyException($"Person entity configuration with module '{personEntityIdentifier.Module}' and name '{personEntityIdentifier.Name}' not found.");
+
+                    // Get the actual entity configuration using FullClassName
+                    var fullClassName = entityConfigRecord.FullClassName ?? throw new UserFriendlyException("EntityConfig FullClassName is null");
+                    var entityConfig = _entityConfigurationStore.Get(fullClassName);
                     if (entityConfig == null)
-                        throw new UserFriendlyException($"Person entity type '{personEntityReference}' not found.");
+                        throw new UserFriendlyException($"Person entity type '{fullClassName}' not found in configuration store.");
 
                     personEntityType = entityConfig.EntityType;
                 }
@@ -460,11 +462,8 @@ namespace Shesha.UserManagements
 
             // Resolve the form identifier from the entity reference (ID only)
             FormIdentifier? formIdentifier = null;
-            if (additionalRegistrationFormRef != null && !string.IsNullOrWhiteSpace(additionalRegistrationFormRef.Id) && Guid.TryParse(additionalRegistrationFormRef.Id, out var formId))
+            if (additionalRegistrationFormRef != null && Guid.TryParse(additionalRegistrationFormRef.Id.ToString(), out var formId))
             {
-                // Parse the ID and get the form configuration to extract module and name
-                //if (Guid.TryParse(additionalRegistrationFormRef.Id, out var formId))
-                //{
                     var formConfig = await _configurationItemRepository.FirstOrDefaultAsync(config => config.Id == formId && config.ItemType == "form");
                     if (formConfig != null)
                     {
@@ -472,7 +471,6 @@ namespace Shesha.UserManagements
                         var moduleName = formConfig.Module?.Name;
                         formIdentifier = FormIdentifier.New(moduleName, formConfig.Name);
                     }
-                //}
             }
 
             var userRegistration = new ShaUserRegistration
@@ -560,12 +558,7 @@ namespace Shesha.UserManagements
             var emailDomain = email.Substring(atIndex);
 
             // Check if email domain matches any of the allowed domains
-            // Ensure exact domain match by normalizing allowed entries to start with "@"
-            if (!domainList.Any(allowed =>
-            {
-                var normalizedAllowed = allowed.StartsWith("@") ? allowed : "@" + allowed;
-                return emailDomain.Equals(normalizedAllowed, StringComparison.OrdinalIgnoreCase);
-            }))
+            if (!domainList.Any(allowed => emailDomain.EndsWith(allowed)))
             {
                 throw new UserFriendlyException(
                     $"Email domain '{emailDomain}' is not allowed. Allowed domains: {string.Join(", ", domainList)}."

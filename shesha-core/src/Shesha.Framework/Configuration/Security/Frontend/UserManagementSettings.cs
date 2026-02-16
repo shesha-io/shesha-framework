@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Shesha.Domain;
-using Shesha.EntityReferences;
 
 namespace Shesha.Configuration.Security.Frontend
 {
@@ -13,9 +12,10 @@ namespace Shesha.Configuration.Security.Frontend
         /// </summary>
         public bool AdditionalRegistrationInfo { get; set; }
         /// <summary>
-        /// Additional Registration Info Form (stores only the form ID reference)
+        /// Additional Registration Info Form (stores module+name reference)
         /// </summary>
-        public GenericEntityReference? AdditionalRegistrationInfoForm { get; set; }
+        //public FormIdentifier? AdditionalRegistrationInfoForm { get; set; }
+        public FormConfiguration? AdditionalRegistrationInfoForm { get; set; }
 
         /// <summary>
         /// Allow self-registration
@@ -44,6 +44,6 @@ namespace Shesha.Configuration.Security.Frontend
         /// <summary>
         /// The type of Person entity that will be created upon creation of the account
         /// </summary>
-        public GenericEntityReference? PersonEntityType { get; set; }
+        public EntityConfig? PersonEntityType { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Shesha.Validations
@@ -41,7 +42,8 @@ namespace Shesha.Validations
         /// <param name="validationResults"></param>
         /// <param name="localizer"></param>
         /// <exception cref="AbpValidationException"></exception>
-        public static void ForceThrowValidationException(this IList<ValidationResult>? validationResults, Func<string, string> localizer)
+        [DoesNotReturn]
+        public static void ThrowValidationException(this IList<ValidationResult>? validationResults, Func<string, string> localizer)
         {
             if (validationResults != null && validationResults.Any())
                 throw new AbpValidationException(localizer(AppMessages.ValidationCorrectErrorsAndTryAgain), validationResults);
