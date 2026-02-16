@@ -40,6 +40,16 @@ interface ISecuritySettings {
   useResetPasswordViaSmsOtp: boolean;
 }
 
+interface IWarningState {
+  isVisible: boolean;
+  timestamp: number;
+}
+
+interface ITokenRefreshData {
+  expireOn: string;
+  timestamp: number;
+}
+
 const INIT_STATE: IIdleTimerState = {
   isWarningVisible: false,
   remainingTime: WARNING_DURATION,
@@ -51,6 +61,25 @@ const STORAGE_KEYS = {
   IDLE_TIMER_LOGOUT: 'shesha:idleTimer:logout',
   IDLE_TIMER_WARNING_STATE: 'shesha:idleTimer:warningState',
   IDLE_TIMER_TOKEN_REFRESH: 'shesha:idleTimer:tokenRefresh'
+};
+
+// Type guards for storage event data
+const isWarningState = (value: unknown): value is IWarningState => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'isVisible' in value &&
+    typeof (value as any).isVisible === 'boolean'
+  );
+};
+
+const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'expireOn' in value &&
+    typeof (value as any).expireOn === 'string'
+  );
 };
 
 const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security', module: 'Shesha' };
@@ -273,7 +302,13 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
       // Handle warning state sync
       if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue) {
         try {
-          const warningState = JSON.parse(e.newValue);
+          const parsed: unknown = JSON.parse(e.newValue);
+          if (!isWarningState(parsed)) {
+            console.error('Invalid warning state data', parsed);
+            return;
+          }
+
+          const warningState = parsed;
           if (warningState.isVisible && !isWarningVisibleRef.current) {
             isWarningVisibleRef.current = true;
             setState({
@@ -294,7 +329,13 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
       // Handle token refresh broadcast
       if (e.key === STORAGE_KEYS.IDLE_TIMER_TOKEN_REFRESH && e.newValue) {
         try {
-          const refreshData = JSON.parse(e.newValue);
+          const parsed: unknown = JSON.parse(e.newValue);
+          if (!isTokenRefreshData(parsed)) {
+            console.error('Invalid token refresh data', parsed);
+            return;
+          }
+
+          const refreshData = parsed;
           if (refreshData.expireOn) {
             // Another tab refreshed the token, update our timer too
             authRef.current.updateTokenExpiration(refreshData.expireOn);
@@ -340,7 +381,12 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
     // Refresh token if it's about to expire
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
-      await refreshToken();
+      const refreshed = await refreshToken();
+      if (!refreshed) {
+        // Token refresh failed — force logout instead of leaving user with expired token
+        logout();
+        return;
+      }
     }
 
     // Reset idle timer
@@ -350,7 +396,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     isWarningVisibleRef.current = false;
     setState(INIT_STATE);
     broadcastWarningState(false);
-  }, [activate, broadcastWarningState, refreshToken]);
+  }, [activate, broadcastWarningState, refreshToken, logout]);
 
   if (!isTimeoutSet) {
     return <>{children}</>;
