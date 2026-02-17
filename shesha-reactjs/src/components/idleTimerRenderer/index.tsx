@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useState, useEffect, useCallback, useRef } from 'react';
+import React, { FC, PropsWithChildren, useState, useEffect, useCallback } from 'react';
 import {
   getPercentage,
   getStatus,
@@ -84,48 +84,39 @@ const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
 
 const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security', module: 'Shesha' };
 
-export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
-  const { styles } = useStyles();
-  const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
-  const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
-  const httpClient = useHttpClient();
-  // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
-  // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
-  // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
-  // timeout > promptBeforeIdle (WARNING_DURATION = 30s).
-  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 300;
+interface IIdleHandler {
+  setActivate: (activate: () => void) => void;
+  setStateUpdater: (updater: (state: IIdleTimerState | ((prev: IIdleTimerState) => IIdleTimerState)) => void) => void;
+  logout: () => void;
+  refreshToken: () => Promise<boolean>;
+  handlePrompt: () => void;
+  handleActive: () => void;
+  handleIdle: () => void;
+  onAction: () => void;
+  handleStorageChange: (e: StorageEvent) => void;
+  isWarningVisible: () => boolean;
+}
 
-  const authenticator = useAuth(); // Get full authenticator instance
-  const { logoutUser, loginInfo } = authenticator; // Destructure for backward compatibility
+class IdleHandler implements IIdleHandler {
+  private activateFn: (() => void) | null = null;
+  private setStateFn: ((state: IIdleTimerState | ((prev: IIdleTimerState) => IIdleTimerState)) => void) | null = null;
+  private warningVisible: boolean = false;
 
-  const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
-  const { isWarningVisible, remainingTime: rt, isCountingDown } = state;
+  constructor(
+    private authenticator: ReturnType<typeof useAuth>,
+    private httpClient: ReturnType<typeof useHttpClient>,
+    private logoutUser: () => Promise<void>
+  ) {}
 
-  // Ref to store activate function to avoid circular dependency
-  const activateRef = useRef<(() => void) | null>(null);
+  setActivate = (activate: () => void) => {
+    this.activateFn = activate;
+  };
 
-  // Stable ref for authenticator to prevent callback recreation
-  const authRef = useRef(authenticator);
+  setStateUpdater = (updater: (state: IIdleTimerState | ((prev: IIdleTimerState) => IIdleTimerState)) => void) => {
+    this.setStateFn = updater;
+  };
 
-  // Keep authRef in sync with authenticator
-  useEffect(() => {
-    authRef.current = authenticator;
-  }, [authenticator]);
-
-  // Ref to track warning visibility without causing re-renders in callbacks
-  const isWarningVisibleRef = useRef<boolean>(false);
-
-  // Idle timer is enabled only when:
-  // 1. Settings are loaded (autoLogoffTimeout !== undefined)
-  // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
-  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 30s warning)
-  // 4. User is logged in (loginInfo exists)
-  const isTimeoutSet = autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION && !!loginInfo;
-  const timeout = getTimeFormat(timeoutSeconds);
-  const visible = isWarningVisible && isTimeoutSet;
-
-  // Broadcast functions for multi-tab sync
-  const broadcastLogout = useCallback(() => {
+  private broadcastLogout = () => {
     try {
       const storage = getLocalStorage();
       if (storage) {
@@ -134,9 +125,9 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     } catch (err) {
       console.error('Failed to broadcast logout', err);
     }
-  }, []);
+  };
 
-  const broadcastWarningState = useCallback((isVisible: boolean) => {
+  private broadcastWarningState = (isVisible: boolean) => {
     try {
       const storage = getLocalStorage();
       if (storage) {
@@ -148,9 +139,9 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     } catch (err) {
       console.error('Failed to broadcast warning state', err);
     }
-  }, []);
+  };
 
-  const broadcastTokenRefresh = useCallback((expireOn: string) => {
+  private broadcastTokenRefresh = (expireOn: string) => {
     try {
       const storage = getLocalStorage();
       if (storage) {
@@ -162,56 +153,26 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     } catch (err) {
       console.error('Failed to broadcast token refresh', err);
     }
-  }, []);
+  };
 
-  const logout = useCallback(() => {
-    broadcastLogout();
-    logoutUser()
+  logout = () => {
+    this.broadcastLogout();
+    this.logoutUser()
       .then(() => {
-        isWarningVisibleRef.current = false;
-        setState(INIT_STATE);
+        this.warningVisible = false;
+        this.setStateFn?.(INIT_STATE);
       })
       .catch((error) => {
         console.error('Failed to logout user:', error);
-        // Always perform cleanup even on error
-        isWarningVisibleRef.current = false;
-        setState(INIT_STATE);
+        this.warningVisible = false;
+        this.setStateFn?.(INIT_STATE);
       });
-  }, [broadcastLogout, logoutUser]);
+  };
 
-  // Event handlers for react-idle-timer
-  const handlePrompt = useCallback(() => {
-    // Called 30 seconds before timeout
-    isWarningVisibleRef.current = true;
-    setState({
-      isWarningVisible: true,
-      remainingTime: WARNING_DURATION,
-      isCountingDown: true,
-      pendingLogout: false
-    });
-    broadcastWarningState(true);
-  }, [broadcastWarningState]);
-
-  const handleActive = useCallback(() => {
-    // User became active - close modal if open
-    if (isWarningVisibleRef.current) {
-      isWarningVisibleRef.current = false;
-      setState(INIT_STATE);
-      broadcastWarningState(false);
-    }
-  }, [broadcastWarningState]);
-
-  const handleIdle = useCallback(() => {
-    // Timeout reached - auto logout
-    logout();
-  }, [logout]);
-
-  const refreshToken = useCallback(() => {
-    // Refresh the token and update all timers
-    return httpClient.post<RefreshTokenResultModelAjaxResponse>('/api/TokenAuth/RefreshToken')
+  refreshToken = (): Promise<boolean> => {
+    return this.httpClient.post<RefreshTokenResultModelAjaxResponse>('/api/TokenAuth/RefreshToken')
       .then(({ data: response }) => {
         if (response?.result) {
-          // Save the new token to localStorage
           saveUserToken(
             {
               accessToken: response.result.accessToken,
@@ -221,18 +182,12 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
             DEFAULT_ACCESS_TOKEN_NAME
           );
 
-          // Update Authenticator's expiration timer
-          // This ensures the user won't be logged out at the old token's expiration time
           if (response.result.expireOn) {
-            authRef.current.updateTokenExpiration(response.result.expireOn);
-
-            // Broadcast token refresh to other tabs
-            broadcastTokenRefresh(response.result.expireOn);
+            this.authenticator.updateTokenExpiration(response.result.expireOn);
+            this.broadcastTokenRefresh(response.result.expireOn);
           }
 
-          // Reset the idle timer countdown
-          activateRef.current?.();
-
+          this.activateFn?.();
           return true;
         }
         return false;
@@ -241,37 +196,151 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
         console.error('Failed to refresh token:', error);
         return false;
       });
-  }, [httpClient, broadcastTokenRefresh]);
+  };
 
-  const onAction = useCallback(() => {
-    // Don't auto-refresh if warning modal is showing
-    // Let the user explicitly choose via "Stay Logged In" button
-    if (isWarningVisibleRef.current) {
+  handlePrompt = () => {
+    this.warningVisible = true;
+    this.setStateFn?.({
+      isWarningVisible: true,
+      remainingTime: WARNING_DURATION,
+      isCountingDown: true,
+      pendingLogout: false
+    });
+    this.broadcastWarningState(true);
+  };
+
+  handleActive = () => {
+    if (this.warningVisible) {
+      this.warningVisible = false;
+      this.setStateFn?.(INIT_STATE);
+      this.broadcastWarningState(false);
+    }
+  };
+
+  handleIdle = () => {
+    this.logout();
+  };
+
+  onAction = () => {
+    if (this.warningVisible) {
       return;
     }
 
-    // Auto-refresh token on user activity if it's about to expire
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
-      refreshToken();
+      this.refreshToken();
     }
-  }, [refreshToken]);
+  };
+
+  handleStorageChange = (e: StorageEvent) => {
+    if (e.key === STORAGE_KEYS.IDLE_TIMER_LOGOUT) {
+      this.logout();
+    }
+
+    if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue) {
+      try {
+        const parsed: unknown = JSON.parse(e.newValue);
+        if (!isWarningState(parsed)) {
+          console.error('Invalid warning state data', parsed);
+          return;
+        }
+
+        const warningState = parsed;
+        if (warningState.isVisible && !this.warningVisible) {
+          this.warningVisible = true;
+          this.setStateFn?.({
+            isWarningVisible: true,
+            remainingTime: WARNING_DURATION,
+            isCountingDown: true,
+            pendingLogout: false
+          });
+        } else if (!warningState.isVisible && this.warningVisible) {
+          this.warningVisible = false;
+          this.setStateFn?.(INIT_STATE);
+        }
+      } catch (err) {
+        console.error('Failed to parse warning state', err);
+      }
+    }
+
+    if (e.key === STORAGE_KEYS.IDLE_TIMER_TOKEN_REFRESH && e.newValue) {
+      try {
+        const parsed: unknown = JSON.parse(e.newValue);
+        if (!isTokenRefreshData(parsed)) {
+          console.error('Invalid token refresh data', parsed);
+          return;
+        }
+
+        const refreshData = parsed;
+        if (refreshData.expireOn) {
+          this.authenticator.updateTokenExpiration(refreshData.expireOn);
+          this.activateFn?.();
+
+          if (this.warningVisible) {
+            this.warningVisible = false;
+            this.setStateFn?.(INIT_STATE);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to parse token refresh data', err);
+      }
+    }
+  };
+
+  isWarningVisible = () => this.warningVisible;
+}
+
+export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
+  const { styles } = useStyles();
+  const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
+  const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
+  const httpClient = useHttpClient();
+  const authenticator = useAuth();
+  const { logoutUser, loginInfo } = authenticator;
+
+  // Initialize IdleHandler once on mount
+  const [idleHandler] = useState<IIdleHandler>(() => new IdleHandler(authenticator, httpClient, logoutUser));
+
+  const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
+  const { isWarningVisible, remainingTime: rt, isCountingDown } = state;
+
+  // Provide setState to the handler
+  useEffect(() => {
+    idleHandler.setStateUpdater(setState);
+  }, [idleHandler]);
+
+  // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
+  // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
+  // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
+  // timeout > promptBeforeIdle (WARNING_DURATION = 30s).
+  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 300;
+
+  // Idle timer is enabled only when:
+  // 1. Settings are loaded (autoLogoffTimeout !== undefined)
+  // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
+  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 30s warning)
+  // 4. User is logged in (loginInfo exists)
+  const isTimeoutSet = autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION && !!loginInfo;
+  const timeout = getTimeFormat(timeoutSeconds);
+  const visible = isWarningVisible && isTimeoutSet;
 
   // Configure idle timer hook
   const { activate } = useIdleTimer({
     timeout,
     promptBeforeIdle: WARNING_DURATION * ONE_SECOND,
     crossTab: true,
-    onPrompt: handlePrompt,
-    onIdle: handleIdle,
-    onActive: handleActive,
-    onAction: onAction,
+    onPrompt: idleHandler.handlePrompt,
+    onIdle: idleHandler.handleIdle,
+    onActive: idleHandler.handleActive,
+    onAction: idleHandler.onAction,
     stopOnIdle: false,
     startOnMount: true,
     disabled: !isTimeoutSet
   });
 
-  // Store activate function in ref for use in onAction callback
-  activateRef.current = activate;
+  // Provide activate function to the handler
+  useEffect(() => {
+    idleHandler.setActivate(activate);
+  }, [idleHandler, activate]);
 
   // Countdown logic - pure state updater without side effects
   const doCountdown = () => {
@@ -293,98 +362,36 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   // Storage event listener for cross-tab sync
   useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      // Handle logout broadcast
-      if (e.key === STORAGE_KEYS.IDLE_TIMER_LOGOUT) {
-        logout();
-      }
-
-      // Handle warning state sync
-      if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue) {
-        try {
-          const parsed: unknown = JSON.parse(e.newValue);
-          if (!isWarningState(parsed)) {
-            console.error('Invalid warning state data', parsed);
-            return;
-          }
-
-          const warningState = parsed;
-          if (warningState.isVisible && !isWarningVisibleRef.current) {
-            isWarningVisibleRef.current = true;
-            setState({
-              isWarningVisible: true,
-              remainingTime: WARNING_DURATION,
-              isCountingDown: true,
-              pendingLogout: false
-            });
-          } else if (!warningState.isVisible && isWarningVisibleRef.current) {
-            isWarningVisibleRef.current = false;
-            setState(INIT_STATE);
-          }
-        } catch (err) {
-          console.error('Failed to parse warning state', err);
-        }
-      }
-
-      // Handle token refresh broadcast
-      if (e.key === STORAGE_KEYS.IDLE_TIMER_TOKEN_REFRESH && e.newValue) {
-        try {
-          const parsed: unknown = JSON.parse(e.newValue);
-          if (!isTokenRefreshData(parsed)) {
-            console.error('Invalid token refresh data', parsed);
-            return;
-          }
-
-          const refreshData = parsed;
-          if (refreshData.expireOn) {
-            // Another tab refreshed the token, update our timer too
-            authRef.current.updateTokenExpiration(refreshData.expireOn);
-
-            // Reset our idle timer as well
-            activateRef.current?.();
-
-            // Clear warning modal if it was open
-            if (isWarningVisibleRef.current) {
-              isWarningVisibleRef.current = false;
-              setState(INIT_STATE);
-            }
-          }
-        } catch (err) {
-          console.error('Failed to parse token refresh data', err);
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('storage', idleHandler.handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('storage', idleHandler.handleStorageChange);
     };
-  }, [logout]);
+  }, [idleHandler]);
 
   // Effect to handle logout when pendingLogout flag is set
   // This separates the side effect from the state updater
   useEffect(() => {
     if (state.pendingLogout) {
-      logout();
+      idleHandler.logout();
     }
-  }, [state.pendingLogout, logout]);
+  }, [state.pendingLogout, idleHandler]);
 
   // Modal handlers
   const onOk = useCallback(() => {
     // User chose "Log Out Now"
-    logout();
-  }, [logout]);
+    idleHandler.logout();
+  }, [idleHandler]);
 
   const onCancel = useCallback(async () => {
     // User chose "Stay Logged In"
 
     // Refresh token if it's about to expire
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
-      const refreshed = await refreshToken();
+      const refreshed = await idleHandler.refreshToken();
       if (!refreshed) {
         // Token refresh failed — force logout instead of leaving user with expired token
-        logout();
+        idleHandler.logout();
         return;
       }
     }
@@ -393,10 +400,8 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     activate();
 
     // Close warning modal
-    isWarningVisibleRef.current = false;
     setState(INIT_STATE);
-    broadcastWarningState(false);
-  }, [activate, broadcastWarningState, refreshToken, logout]);
+  }, [idleHandler, activate]);
 
   if (!isTimeoutSet) {
     return <>{children}</>;
