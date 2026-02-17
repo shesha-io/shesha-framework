@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useMemo } from 'react';
+import { FolderOutlined } from '@ant-design/icons';
 import { config as InitialConfig } from './config';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { extractVars } from '@/utils/jsonLogic';
@@ -37,6 +38,14 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
 
   const qbSettings: Settings = {
     ...InitialConfig.settings,
+    addSubRuleLabel: 'Add Rule',
+    addSubGroupLabel: 'Add Group',
+    renderIcon: (iconProps, ctx) => {
+      if (iconProps.type === 'addGroup' || iconProps.type === 'addSubGroup')
+        return <FolderOutlined />;
+
+      return InitialConfig.settings.renderIcon(iconProps, ctx);
+    },
     removeIncompleteRulesOnLoad: false,
     removeEmptyGroupsOnLoad: false,
     removeEmptyRulesOnLoad: false,

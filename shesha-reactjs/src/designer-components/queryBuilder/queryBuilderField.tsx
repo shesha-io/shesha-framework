@@ -1,6 +1,6 @@
-import { CaretRightOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, FilterOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { JsonLogicResult } from '@react-awesome-query-builder/antd';
-import { Button, Collapse, Modal, Space } from 'antd';
+import { Button, Collapse, Modal, Space, Tooltip } from 'antd';
 import React, { FC, useState } from 'react';
 import { useMedia } from 'react-use';
 import { QueryBuilder, Show } from '@/components';
@@ -9,6 +9,7 @@ import { IQueryBuilderFieldProps } from './models';
 import { useStyles } from './styles/styles';
 
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
+  const queryBuilderDocUrl = 'https://docs.shesha.io/docs/category/form-components';
   const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
   const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult>(undefined);
@@ -97,16 +98,37 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
       <Modal
         open={modalVisible}
         width={isSmall ? '90%' : '60%'}
-        title="Query Builder"
+        title={(
+          <Space size={10} className={styles.shaQueryBuilderModalTitle}>
+            <span className={styles.shaQueryBuilderModalTitleIcon}>
+              <FilterOutlined />
+            </span>
+            <span>Query Builder</span>
+          </Space>
+        )}
         onOk={onOkClick}
         okButtonProps={{ hidden: readOnly }}
         onCancel={() => setModalVisible(false)}
         cancelText={readOnly ? 'Close' : undefined}
         destroyOnHidden
       >
-        <h4>Here you can create your own filter using the query builder below</h4>
-
-        <QueryBuilder value={props.value} onChange={onChange} readOnly={readOnly} />
+        <div className={styles.shaQueryBuilderModalBody}>
+          <Space size={6} className={styles.shaQueryBuilderModalHelpWrap}>
+            <span className={styles.shaQueryBuilderModalHelpText}>Create your own filter using the query builder below.</span>
+            <Tooltip title={<a href={queryBuilderDocUrl} target="_blank" rel="noopener noreferrer">Open documentation</a>}>
+              <a
+                href={queryBuilderDocUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.shaQueryBuilderModalHelpIcon}
+                aria-label="Open Query Builder documentation"
+              >
+                <QuestionCircleOutlined />
+              </a>
+            </Tooltip>
+          </Space>
+          <QueryBuilder value={props.value} onChange={onChange} readOnly={readOnly} />
+        </div>
       </Modal>
     </div>
   );
