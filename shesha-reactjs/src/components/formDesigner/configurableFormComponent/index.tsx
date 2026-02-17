@@ -38,7 +38,7 @@ export interface IContainerConfig {
   style?: string;
 }
 interface IComponentModelProps extends IConfigurableFormComponent {
-  container?: IContainerConfig
+  container?: IContainerConfig;
 }
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IComponentModelProps;
