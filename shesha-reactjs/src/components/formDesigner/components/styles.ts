@@ -4,8 +4,8 @@ import { FormLayout } from 'antd/es/form/Form';
 export interface UseStylesProps {
   layout: FormLayout;
   hasLabel: boolean;
-  noLabelAutoMargin: boolean;
-  preserveDimensionsInDesigner: boolean;
+  noLabelAutoMargin?: boolean;
+  preserveDimensionsInDesigner?: boolean;
 }
 
 export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelAutoMargin, preserveDimensionsInDesigner }: UseStylesProps) => {
@@ -17,7 +17,7 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelA
             height: 100%;
             width: 100%;
 
-          >.ant-form-item-label  { 
+          >.ant-form-item-label  {
             ${noLabelAutoMargin ? 'margin: unset;' : 'margin: auto 0;'};
           }
         }
