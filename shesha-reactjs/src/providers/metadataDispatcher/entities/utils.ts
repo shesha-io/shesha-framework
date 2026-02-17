@@ -109,6 +109,10 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                   entityType: e.metadata.name,
                   entityModule: e.metadata.module,
                   properties: e.metadata.properties.map((p) => ({ ...p, entityType: p.entityType ?? undefined } as IPropertyMetadata)),
+
+                  inheritedFromEntityType: e.metadata.inheritedFromName,
+                  inheritedFromEntityModule: e.metadata.inheritedFromModule,
+                  inheritedFromFullClassName: e.metadata.inheritedFromFullClassName,
                 },
               };
 

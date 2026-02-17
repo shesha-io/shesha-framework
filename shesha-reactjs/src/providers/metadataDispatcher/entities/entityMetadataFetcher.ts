@@ -9,6 +9,7 @@ import { IConfigurationLoader } from "@/providers/configurationItemsLoader/confi
 
 type EntityMetadataByClassNameFetcher = (className: string) => Promise<IEntityMetadata | null>;
 type EntityMetadataByIdFetcher = (etityIdentifier: IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
+type EntityMetadataByEntityTypeFetcher = (entityType: string | IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
 
 export class EntityMetadataFetcher implements IEntityMetadataFetcher {
   #syncPromise: Promise<void> | undefined;
@@ -76,20 +77,20 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
     return this.#syncPromise;
   };
 
-  getByTypeId: EntityMetadataByIdFetcher = async (typeId: IEntityTypeIdentifier): Promise<IEntityMetadata | null> => {
+  getByEntityType: EntityMetadataByEntityTypeFetcher = async (entityType: string | IEntityTypeIdentifier): Promise<IEntityMetadata | null> => {
     await this.#ensureSynchronized();
-    const metadata = await this.#configurationItemsLoader.getCachedConfigAsync<IEntityMetadata>({ type: 'entity', id: typeId, skipCache: false });
+    const metadata = await this.#configurationItemsLoader.getCachedConfigAsync<IEntityMetadata>({ type: 'entity', id: entityType, skipCache: false });
     return metadata
       ? this.#convertMetadata(metadata.configuration, this.getByTypeId)
       : null;
   };
 
+  getByTypeId: EntityMetadataByIdFetcher = async (typeId: IEntityTypeIdentifier): Promise<IEntityMetadata | null> => {
+    return await this.getByEntityType(typeId);
+  };
+
   getByClassName: EntityMetadataByClassNameFetcher = async (className: string): Promise<IEntityMetadata | null> => {
-    await this.#ensureSynchronized();
-    const metadata = await this.#configurationItemsLoader.getCachedConfigAsync<IEntityMetadata>({ type: 'entity', id: className, skipCache: false });
-    return metadata
-      ? this.#convertMetadata(metadata.configuration, this.getByTypeId)
-      : null;
+    return await this.getByEntityType(className);
   };
 
   isEntity = (modelType: string | IEntityTypeIdentifier): Promise<boolean> => {

@@ -69,7 +69,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         public async Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
         {
             return await _rolePersonRepository.GetAll()
-                .Where(e => e.Role != null && roles.Contains(e.Role.Name) && e.Person == person).AnyAsync();
+                .Where(e => roles.Contains(e.Role.Name) && e.Person == person).AnyAsync();
         }
 
         /// <summary>

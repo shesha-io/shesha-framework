@@ -124,15 +124,15 @@ namespace Shesha.Domain
             var parentType = property.DeclaringType.NotNull();
             var parentIdType = parentType.GetProperty("Id")?.PropertyType;
             if (parentIdType == null)
-                throw new NullReferenceException($"'Id' property not found for '{parentType.FullName}'");
+                throw new ArgumentException($"'Id' property not found for '{parentType.FullName}'");
 
             if (!property.GetPropertyOrFieldType().IsGenericType)
-                throw new NullReferenceException($"'{property.Name}' of '{parentType.FullName}' is not a generic list");
+                throw new ArgumentException($"'{property.Name}' of '{parentType.FullName}' is not a generic list");
 
             var childType = property.GetPropertyOrFieldType().GetGenericArguments()[0];
             var childIdType = childType.GetProperty("Id")?.PropertyType;
             if (childIdType == null)
-                throw new NullReferenceException($"'Id' property not found for '{childType.FullName}'");
+                throw new ArgumentException($"'Id' property not found for '{childType.FullName}'");
             return (parentType, parentIdType, childType, childIdType);
         }
 
@@ -297,8 +297,9 @@ namespace Shesha.Domain
                     if (rootTypeAssemblyName != typeAssemblyName) 
                     {
                         // This column extends a table created in another module - we should add a prefix
-                        if (!Prefixes.ContainsKey(rootTypeAssemblyName)
-                            || Prefixes[rootTypeAssemblyName] != Prefixes[typeAssemblyName])
+                        if (Prefixes.TryGetValue(typeAssemblyName, out var typePrefix) 
+                            && (!Prefixes.TryGetValue(rootTypeAssemblyName, out var rootPrefix) 
+                            || rootPrefix != typePrefix))
                             return GetTablePrefix(type);
                     }                    
                 }
@@ -318,19 +319,30 @@ namespace Shesha.Domain
             if (config.InheritedFrom != null)
             {
                 var rootConfig = config.InheritedFrom;
-                // ToDo: AS - infinity loop should not be there but need to think how to be shure
-                while (rootConfig.InheritedFrom != null)
+                // For checking infinite loop
+                var processed = new HashSet<EntityConfig> { config };
+                while (rootConfig.InheritedFrom != null && !processed.Contains(rootConfig.InheritedFrom))
+                {
                     rootConfig = rootConfig.InheritedFrom;
-                
-                var configAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == config.Module.NotNull().Name)?.Assembly.FullName;
-                var rootConfigAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == rootConfig.Module.NotNull().Name)?.Assembly.FullName;
+                    processed.Add(rootConfig);
+                }
+                if (rootConfig.InheritedFrom != null && processed.Contains(rootConfig.InheritedFrom))
+                    throw new InvalidOperationException($"Infinite inheritance loop detected for {config.FullClassName}, closes on {rootConfig.InheritedFrom.FullClassName}");
+
+                config.Module.NotNull("Module of Entity config can not be null");
+                rootConfig.Module.NotNull("Module of Root Entity config can not be null");
+                var configAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == config.Module.Name)?.Assembly.FullName;
+                var rootConfigAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == rootConfig.Module.Name)?.Assembly.FullName;
+
                 if (rootConfigAssemblyName != configAssemblyName)
                 {
+                    configAssemblyName.NotNull("Entity config assembly name can not be null");
+                    rootConfigAssemblyName.NotNull("Root Entity config assembly name can not be null");
                     // This column extends a table created in another module - we should add a prefix
-                    if (Prefixes.ContainsKey(configAssemblyName.NotNull())
-                        && (!Prefixes.ContainsKey(rootConfigAssemblyName.NotNull()) 
-                            || Prefixes[rootConfigAssemblyName] != Prefixes[configAssemblyName.NotNull()]))
-                        return Prefixes[configAssemblyName.NotNull()];
+                    if (Prefixes.TryGetValue(configAssemblyName, out var configAssemblyNamePrefix)
+                        && (!Prefixes.TryGetValue(rootConfigAssemblyName, out var rootConfigAssemblyNamePrefix)
+                            || rootConfigAssemblyNamePrefix != configAssemblyNamePrefix))
+                        return configAssemblyNamePrefix;
                 }
             }
             return "";

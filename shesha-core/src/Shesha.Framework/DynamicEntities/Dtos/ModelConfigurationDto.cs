@@ -25,7 +25,6 @@ namespace Shesha.DynamicEntities.Dtos
         public string? SchemaName { get; set; }
         public string? TableName { get; set; }
 
-        // ToDo: AS - review if InheritedFrom can be nullable
         public Guid? InheritedFromId { get; set; }
         public string? InheritedFromClassName { get; set; }
         public string? InheritedFromNamespace { get; set; }

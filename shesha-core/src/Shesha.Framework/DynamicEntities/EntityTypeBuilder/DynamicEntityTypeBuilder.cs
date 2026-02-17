@@ -201,7 +201,6 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     });
                     var assemblyAttributeBuilder = new CustomAttributeBuilder(assemblyAttribute.NotNull(), new object[] {
                         module.Name, "", module.FriendlyName ?? "", module.Publisher ?? "", module.Description ?? "",
-                        // ToDo: AS - check for Main Module
                         true,
                     });
                     assemblyBuilder.SetCustomAttribute(assemblyAttributeBuilder);

@@ -152,9 +152,7 @@ namespace Shesha.Validations
                 return false;
             }
 
-
             if (propConfig == null)
-                // ToDo: AS - may be need to create validation error
                 return true;
 
             var prevValue = innerObj;

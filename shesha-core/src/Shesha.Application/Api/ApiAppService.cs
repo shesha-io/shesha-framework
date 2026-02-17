@@ -42,8 +42,6 @@ namespace Shesha.Api
         {
             var actionDescriptors = _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectMany(g => g.Items.Select(gi => gi.ActionDescriptor)).ToList();
 
-            // ToDo: AS - make endpoints list cachable
-
             var permissioned = new List<ActionDescriptor>();
             foreach (var actionDescriptor in actionDescriptors)
                 if (await _permissionedObjectManager.IsActionDescriptorEnabledAsync(actionDescriptor))

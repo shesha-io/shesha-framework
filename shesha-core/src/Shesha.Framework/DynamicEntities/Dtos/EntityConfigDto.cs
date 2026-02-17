@@ -57,7 +57,6 @@ namespace Shesha.DynamicEntities.Dtos
             Source != MetadataSourceType.UserDefined
             && StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>().GetOrNull(FullClassName) == null;
 
-        // ToDo: AS - review getting FullClassName
         [JsonIgnore]
         public virtual string FullClassName => $"{Namespace}.{ClassName}";
 
