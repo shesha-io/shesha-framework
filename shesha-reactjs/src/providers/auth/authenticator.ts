@@ -346,6 +346,13 @@ export class Authenticator implements IAuthenticator {
         // This is called when a token is refreshed externally (e.g., from idle timer)
         this.#startTokenExpirationTimer(expireOn);
     };
+
+    refreshAuthHeaders = (): void => {
+        // Get fresh headers including the updated token from localStorage
+        const headers = this.#getHttpHeaders();
+        // Notify the application to update the httpClient's cached headers
+        this.#onSetRequestHeaders?.(headers);
+    };
 }
 
 export const useAuthenticatorInstance = (args: AuthenticatorArgs): IAuthenticator[] => {

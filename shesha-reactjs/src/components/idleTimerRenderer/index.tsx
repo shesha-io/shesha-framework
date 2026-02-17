@@ -184,6 +184,8 @@ class IdleHandler implements IIdleHandler {
 
           if (response.result.expireOn) {
             this.authenticator.updateTokenExpiration(response.result.expireOn);
+            // Refresh authorization headers so httpClient uses the new token
+            this.authenticator.refreshAuthHeaders();
             this.broadcastTokenRefresh(response.result.expireOn);
           }
 
@@ -273,6 +275,8 @@ class IdleHandler implements IIdleHandler {
         const refreshData = parsed;
         if (refreshData.expireOn) {
           this.authenticator.updateTokenExpiration(refreshData.expireOn);
+          // Refresh authorization headers when another tab refreshes the token
+          this.authenticator.refreshAuthHeaders();
           this.activateFn?.();
 
           if (this.warningVisible) {

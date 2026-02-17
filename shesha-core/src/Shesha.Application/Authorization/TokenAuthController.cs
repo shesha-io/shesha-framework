@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authentication.External;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization.Models;
+using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
 using Shesha.Controllers;
 using Shesha.Domain;

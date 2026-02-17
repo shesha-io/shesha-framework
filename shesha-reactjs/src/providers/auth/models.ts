@@ -46,4 +46,7 @@ export interface IAuthenticator {
 
   // Update token expiration timer without full re-authentication
   updateTokenExpiration: (expireOn: string) => void;
+
+  // Refresh HTTP authorization headers after token refresh
+  refreshAuthHeaders: () => void;
 }
