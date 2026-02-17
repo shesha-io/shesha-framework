@@ -98,7 +98,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
 
     return (
       <ConfigurableFormItem
-        model={model}
+        model={{ ...model, noLabelAutoMargin: true }}
         initialValue={calculatedModel.defaultValue}
       >
         {(value, onChange) => {

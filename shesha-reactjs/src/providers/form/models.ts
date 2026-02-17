@@ -201,6 +201,12 @@ export interface IFormComponentStyles {
   margins: CSSProperties;
 }
 
+export interface IContainerConfig {
+  dimensions?: IDimensionsValue;
+  stylingBox?: string;
+  style?: string;
+}
+
 /**
  * Base model of the configurable component
  */
@@ -211,7 +217,8 @@ export interface IConfigurableFormComponent
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
-  IComponentMetadata {
+  IComponentMetadata,
+  IStyleType {
   /** Type of the component */
   type: string;
 
@@ -278,6 +285,10 @@ export interface IConfigurableFormComponent
   enableStyleOnReadonly?: boolean;
 
   listType?: 'text' | 'thumbnail';
+
+  noLabelAutoMargin?: boolean;
+
+  container?: IContainerConfig;
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>

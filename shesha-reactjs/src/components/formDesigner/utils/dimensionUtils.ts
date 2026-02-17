@@ -33,7 +33,7 @@ export const dimensionUtils = {
   /**
    * Gets component dimensions based on component type.
    *
-   * For components that preserve their dimensions, returns 'auto'.
+   * For components that preserve their dimensions, returns original dimensions from the model.
    * For other components, returns the calculated dimensions from styles.
    */
   getComponentDimensions(
@@ -43,16 +43,21 @@ export const dimensionUtils = {
   ): CSSProperties {
     const { preserveDimensionsInDesigner } = typeInfo;
 
+    // When preserveDimensionsInDesigner is true, use original dimensions from the model
+    // Otherwise, use designer dimensions (fill wrapper)
     const width = preserveDimensionsInDesigner
-      ? 'auto'
-      : jsStyle?.width ?? dimensionsStyles?.width ?? 'auto';
+      ? (dimensionsStyles?.width ?? 'auto')
+      : (jsStyle?.width ?? dimensionsStyles?.width ?? 'auto');
 
     const height = preserveDimensionsInDesigner
-      ? 'auto'
-      : jsStyle?.height ?? dimensionsStyles?.height ?? 'auto';
+      ? (dimensionsStyles?.height ?? 'auto')
+      : (jsStyle?.height ?? dimensionsStyles?.height ?? 'auto');
 
     const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
-      if (preserveDimensionsInDesigner) return undefined;
+      if (preserveDimensionsInDesigner) {
+        // Return original dimension value when preserving dimensions
+        return dimensionsStyles?.[dimensionType];
+      }
       return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
     };
 
@@ -84,7 +89,7 @@ export const dimensionUtils = {
    * Uses maxWidth if available, otherwise falls back to width.
    */
   getDeviceFlexBasis(dimensionsStyles: CSSProperties): string | number | undefined {
-    return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
+    return dimensionsStyles?.maxWidth ?? dimensionsStyles?.width;
   },
 
   /**
@@ -118,25 +123,39 @@ export const dimensionUtils = {
   /**
    * Merges base styles with designer mode overrides.
    *
-   * In designer mode, applies 100% width and height to ensure components
-   * fill their wrapper containers. In live mode, returns base styles unchanged.
+   * In designer mode:
+   * - Margins are always stripped (applied to wrapper only)
+   * - If preserveDimensions is false, applies 100% width/height to fill wrapper
+   *
+   * In live mode, returns base styles unchanged.
    */
   mergeWithDesignerDimensions(
     baseStyle: CSSProperties,
     isDesignerMode: boolean,
     preserveDimensions: boolean = false,
   ): CSSProperties {
-    if (!isDesignerMode || preserveDimensions) {
+    if (!isDesignerMode) {
       return baseStyle;
     }
 
-    return {
+    // In designer mode, always strip margins (they go to wrapper only)
+    const marginsStripped = {
       ...baseStyle,
       margin: 0,
       marginTop: 0,
       marginBottom: 0,
       marginLeft: 0,
       marginRight: 0,
+    };
+
+    if (preserveDimensions) {
+      // Preserve original dimensions, but margins still go to wrapper
+      return marginsStripped;
+    }
+
+    // Standard components fill wrapper in designer mode
+    return {
+      ...marginsStripped,
       ...DESIGNER_DIMENSIONS,
     };
   },

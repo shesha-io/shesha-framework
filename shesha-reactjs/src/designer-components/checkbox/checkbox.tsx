@@ -77,7 +77,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles()))),
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles(prev)))),
 };
 
 export default CheckboxComponent;

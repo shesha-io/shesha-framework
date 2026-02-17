@@ -1,19 +1,7 @@
-import { IStyleType } from '@/index';
+import { IInputStyles, IStyleType } from '@/index';
+import { ICheckboxComponentProps } from './interfaces';
 
-export const boxDefaultStyles = (prev: IStyleType): IStyleType => {
-  return {
-    dimensions: {
-      width: '16px',
-      height: prev?.dimensions?.height ?? '16px',
-      minHeight: '0px',
-      maxHeight: 'auto',
-      minWidth: '0px',
-      maxWidth: 'auto',
-    },
-  };
-};
-
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (prev: ICheckboxComponentProps & IInputStyles): IStyleType => {
   return {
     border: {
       radiusType: 'all',
@@ -22,8 +10,8 @@ export const defaultStyles = (): IStyleType => {
       radius: { all: 4 },
     },
     dimensions: {
-      width: 'auto',
-      height: 'auto',
+      width: prev.width === 'auto' ? '14px' : prev.width,
+      height: prev.height === 'auto' ? '14px' : prev.height,
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',

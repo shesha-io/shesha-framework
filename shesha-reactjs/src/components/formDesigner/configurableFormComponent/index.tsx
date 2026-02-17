@@ -58,11 +58,33 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   // Create model combining componentModel with device-specific settings
   // This is the base model used for both style calculations and rendering
-  const fullComponentModel = useMemo(() => ({
-    ...componentModel, ...componentModel?.[activeDevice],
-  }), [componentModel, activeDevice]);
+  const fullComponentModel = useMemo(() => {
+    // Check if this is a component with separate thumbnail and container dimensions
+    // (e.g., attachmentsEditor has thumbnail dimensions at root and container dimensions in container)
+    const deviceModel = componentModel?.[activeDevice];
+    const hasRootDimensions = !!deviceModel?.dimensions || !!componentModel?.dimensions;
+    const hasContainerDimensions = !!deviceModel?.container?.dimensions || !!componentModel?.container?.dimensions;
+    const hasSeparateContainerStyles = hasRootDimensions && hasContainerDimensions;
 
-  const { dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(fullComponentModel);
+    return {
+      ...componentModel,
+      ...deviceModel,
+      // For components with separate container styles (like attachmentsEditor), don't spread container to root
+      // For other components, spread container properties to root for backward compatibility
+      ...(hasSeparateContainerStyles ? {} : { ...componentModel?.container, ...deviceModel?.container }),
+      // Always preserve the container object for components that need it
+      container: {
+        ...componentModel?.container,
+        ...deviceModel?.container,
+      },
+    };
+  }, [componentModel, activeDevice]);
+
+  // For wrapper styles: use container dimensions if available, otherwise use root level dimensions
+  const styleModelForWrapper = fullComponentModel.container?.dimensions
+    ? { ...fullComponentModel, ...fullComponentModel.container }
+    : fullComponentModel;
+  const { dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(styleModelForWrapper);
 
   // Extract margins from ORIGINAL component styling (before stripping) for the wrapper
   // Custom style margins take precedence over stylingBox margins
@@ -116,14 +138,17 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   // Get component dimensions (handles special cases like DataTable context)
   // Memoized because getComponentDimensions creates new objects and computes flexBasis logic
-  const componentDimensions = useMemo(() =>
-    dimensionUtils.getComponentDimensions(
+  const componentDimensions = useMemo(() => {
+    // For components where dimensions apply to inner elements, wrapper uses auto dimensions
+    if (preserveDimensionsInDesigner) {
+      return { width: 'auto', height: 'auto' };
+    }
+    return dimensionUtils.getComponentDimensions(
       { isInput: componentIsInput, preserveDimensionsInDesigner },
       dimensionsStyles,
       jsStyle,
-    ),
-  [preserveDimensionsInDesigner, componentIsInput, dimensionsStyles, jsStyle],
-  );
+    );
+  }, [preserveDimensionsInDesigner, componentIsInput, dimensionsStyles, jsStyle]);
 
   // Create the model for rendering - components receive dimensions based on their config
   // and no margins (since wrapper handles margins directly)
@@ -140,47 +165,33 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     }
 
     // Helper to get designer dimensions based on original config
-    // - Buttons with 'auto' width -> use 'max-content' (wrapper shrinks to fit), button fills 100%
-    // - Buttons with absolute width (e.g., '300px') -> wrapper gets that width, button fills 100%
-    // - Buttons with relative width (e.g., '50%') -> wrapper gets that width, button fills 100%
-    // - All other cases: use 100% to fill the wrapper
+    // If preserveDimensionsInDesigner is true, use original dimensions; otherwise fill wrapper
     const getDesignerDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions | undefined => {
       if (preserveDimensionsInDesigner) return originalDims;
 
-      const isButton = component.type === 'button';
-      const hasWidth = originalDims?.width && originalDims.width !== 'auto';
-      const isAutoWidth = originalDims?.width === 'auto';
+      // If component has container dimensions, preserve original thumbnail dimensions
+      // The wrapper will use container dimensions instead
+      if (fullComponentModel.container?.dimensions) return originalDims;
 
-      if (isButton) {
-        if (isAutoWidth) {
-          // WYSIWYG: Wrapper shrinks to fit content, button fills wrapper
-          return { ...deviceDimensions, width: 'max-content' as const };
-        }
-        if (hasWidth) {
-          // Wrapper gets the specified width (absolute or relative)
-          // Button fills 100% of wrapper to match the intended size
-          return { ...deviceDimensions, width: originalDims.width };
-        }
+      // If component has custom dimension calculation, use it
+      if (component.getDesignerDimensions) {
+        return component.getDesignerDimensions(originalDims, deviceDimensions);
       }
 
-      // All other cases: fill the wrapper
+      // Default: fill the wrapper
       return deviceDimensions;
     };
 
     // Helper to get component dimensions (what the inner component receives)
-    // Button always fills 100% of its wrapper in designer mode
+    // Components always fill 100% of their wrapper in designer mode (wrapper handles sizing)
     const getComponentDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions => {
       if (preserveDimensionsInDesigner) return { ...deviceDimensions, ...originalDims };
 
-      const isButton = component.type === 'button' || component.type === 'buttonGroup';
+      // If component has container dimensions, preserve original thumbnail dimensions for the component
+      // The wrapper will use container dimensions instead
+      if (fullComponentModel.container?.dimensions) return originalDims ?? deviceDimensions;
 
-      if (isButton) {
-        // Button always fills 100% of wrapper in designer mode
-        // Wrapper handles the actual sizing
-        return deviceDimensions;
-      }
-
-      // All other cases: fill the wrapper
+      // All components fill the wrapper in designer mode
       return deviceDimensions;
     };
 
@@ -196,20 +207,17 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         fullStyle: { ...fullComponentModel.allStyles?.fullStyle, stylingBoxAsCSS: stylingBoxWithPaddingOnlyParsed },
         ...getStyle(fullComponentModel.style),
         stylingBoxAsCSS: stylingBoxWithPaddingOnlyParsed,
-        // Component dimensions: button always gets 100% to fill wrapper
+        // Component dimensions: components with preserveDimensionsInDesigner get original dims, others fill wrapper
         dimensionsStyles: getComponentDimensions(fullComponentModel.dimensions),
         stylingBox: stylingBoxWithPaddingOnly,
       },
     };
-  }, [fullComponentModel, component.type, preserveDimensionsInDesigner]);
-
-  // Check if component is a button for WYSIWYG auto width handling
-  const isButton = component.type === 'button' || component.type === 'buttonGroup';
+  }, [fullComponentModel, component, preserveDimensionsInDesigner]);
 
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() => {
-    return stylingUtils.createRootContainerStyle(componentDimensions, margins, componentIsInput, isButton);
-  }, [componentDimensions, margins, componentIsInput, isButton]);
+    return stylingUtils.createRootContainerStyle(componentDimensions, margins);
+  }, [componentDimensions, margins, componentIsInput]);
 
   return (
     <div

@@ -23,6 +23,21 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'button',
   isInput: false,
   name: 'Button',
+  /**
+   * Custom dimension calculation for designer mode.
+   * - Buttons with 'auto' width -> wrapper uses 'max-content' (shrinks to fit), button fills 100%
+   * - Buttons with absolute/relative width -> wrapper gets that width, button fills 100%
+   */
+  getDesignerDimensions: (originalDims, deviceDims) => {
+    const isAutoWidth = originalDims?.width === 'auto';
+    if (isAutoWidth) {
+      // WYSIWYG: Wrapper shrinks to fit content, button fills wrapper
+      return { ...deviceDims, width: 'max-content' };
+    }
+
+    // Default: fill the wrapper
+    return deviceDims;
+  },
   icon: <BorderOutlined />,
   Factory: ({ model, form }) => {
     const shaForm = useShaFormInstance();
@@ -30,7 +45,8 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
 
     const isDesignerMode = shaForm.formMode === 'designer';
 
-    // Merge base styles with designer dimensions (100% width/height in designer mode)
+    // Merge base styles with designer dimensions
+    // Button preserves its original dimensions in designer mode
     const finalStyle = dimensionUtils.mergeWithDesignerDimensions(
       {
         ...model.allStyles.dimensionsStyles,
@@ -43,7 +59,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
         justifyContent: model.font?.align,
       },
       isDesignerMode,
-      false, // Button should not skip designer dimensions
+      true, // Preserve original dimensions in designer mode
     );
 
     return model.hidden ? null : (

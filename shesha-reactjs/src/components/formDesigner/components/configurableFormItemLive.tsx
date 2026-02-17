@@ -54,7 +54,23 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     marginLeft = MarginLeft,
   } = rawMargins;
 
-  // Get dimension values from dimensionsStyles
+  // Get dimension values for Form.Item wrapper
+  // For components with container styles (e.g., attachmentsEditor), use container dimensions for the wrapper
+  // Thumbnail/root dimensions should pass through unchanged to the component
+  const containerDimensions = model?.container?.dimensions;
+  const hasContainerDimensions = !!containerDimensions;
+
+  // Use container dimensions for the Form.Item wrapper (if available)
+  const {
+    width: containerWidth,
+    height: containerHeight,
+    minWidth: containerMinWidth,
+    minHeight: containerMinHeight,
+    maxWidth: containerMaxWidth,
+    maxHeight: containerMaxHeight,
+  } = containerDimensions || {};
+
+  // Get thumbnail/root dimensions from allStyles - these pass through unchanged to the component
   const {
     width,
     height,
@@ -65,9 +81,17 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   } = model?.allStyles?.dimensionsStyles || {};
 
   const formItemStyle = useMemo(() => {
+    // Use container dimensions for the Form.Item wrapper (if available), otherwise use thumbnail dimensions
+    const wrapperWidth = hasContainerDimensions ? containerWidth : width;
+    const wrapperHeight = hasContainerDimensions ? containerHeight : height;
+    const wrapperMinWidth = hasContainerDimensions ? containerMinWidth : minWidth;
+    const wrapperMinHeight = hasContainerDimensions ? containerMinHeight : minHeight;
+    const wrapperMaxWidth = hasContainerDimensions ? containerMaxWidth : maxWidth;
+    const wrapperMaxHeight = hasContainerDimensions ? containerMaxHeight : maxHeight;
+
     // Handle auto width in designer mode
     // - auto width should fill remaining space (100%) in designer
-    const isAutoWidth = width === 'auto';
+    const isAutoWidth = wrapperWidth === 'auto';
 
     const calculatedWidth = preserveDimensionsInDesigner
       ? 'auto'
@@ -75,13 +99,13 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         ? isAutoWidth
           ? '100%' // Auto width fills wrapper in designer
           : getCalculatedDimension('100%', marginLeft, marginRight)
-        : getCalculatedDimension(width, marginLeft, marginRight);
+        : getCalculatedDimension(wrapperWidth, marginLeft, marginRight);
 
     const calculatedHeight = preserveDimensionsInDesigner
       ? 'auto'
       : isInDesigner
         ? '100%'
-        : height;
+        : wrapperHeight;
 
     // In designer mode: ONLY apply padding from stylebox, margins are handled by wrapper
     // In live mode: Apply both margins and padding from stylebox
@@ -90,10 +114,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         // No margins in designer mode - wrapper handles them as padding
         width: calculatedWidth,
         height: calculatedHeight,
-        minHeight,
-        minWidth,
-        maxHeight,
-        maxWidth,
+        minHeight: wrapperMinHeight,
+        minWidth: wrapperMinWidth,
+        maxHeight: wrapperMaxHeight,
+        maxWidth: wrapperMaxWidth,
         // Only padding from stylebox (if any)
         paddingTop: model?.allStyles?.fullStyle?.paddingTop,
         paddingRight: model?.allStyles?.fullStyle?.paddingRight,
@@ -108,20 +132,23 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         marginRight,
         width: calculatedWidth,
         height: calculatedHeight,
-        minHeight,
-        minWidth,
-        maxHeight,
-        maxWidth,
+        minHeight: wrapperMinHeight,
+        minWidth: wrapperMinWidth,
+        maxHeight: wrapperMaxHeight,
+        maxWidth: wrapperMaxWidth,
         paddingTop: model?.allStyles?.fullStyle?.paddingTop,
         paddingRight: model?.allStyles?.fullStyle?.paddingRight,
         paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
         paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
       };
-  }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, width, height, minHeight, minWidth, maxHeight, maxWidth, model?.allStyles?.fullStyle]);
+  }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight,
+    width, height, minWidth, minHeight, maxWidth, maxHeight,
+    containerWidth, containerHeight, containerMinWidth, containerMinHeight, containerMaxWidth, containerMaxHeight, hasContainerDimensions,
+    model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;
   const hasLabel = !hideLabel && !!model.label;
-  const { styles } = useStyles({ layout: settings?.layout, hasLabel });
+  const { styles } = useStyles({ layout: settings?.layout, hasLabel, noLabelAutoMargin: model.noLabelAutoMargin, preserveDimensionsInDesigner });
   if (hidden) return null;
 
   const propName = namePrefix && !model.initialContext

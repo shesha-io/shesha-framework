@@ -77,13 +77,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
   .${(p) => p.theme.prefixCls}-form-item-label  {
     white-space: normal;
     font-weight: bold;
-    margin: auto 0;
-  }
-
-  [data-sha-c-type="textArea"], [data-sha-c-type="attachmentsEditor"]  {
-    .${(p) => p.theme.prefixCls}-form-item-label  { 
-      margin: unset;
-    }
   }
 
   .sha-form-settings-editor .ant-form-item .ant-row.ant-form-item-row {

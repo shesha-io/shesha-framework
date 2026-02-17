@@ -16,6 +16,15 @@ interface DefaultMargins {
   horizontal: string;
 }
 
+const getExpandedDimensions = (value?: string | number): string | undefined => {
+  if (value === undefined || value === null || value === '') {
+    // When no explicit dimension is provided, don't set a CSS value at all.
+    // This avoids producing invalid CSS like `calc(undefined + ...)`.
+    return undefined;
+  }
+
+  return `calc(${value} + (2 * ${DEFAULT_MARGINS.vertical}))`;
+};
 /* eslint-disable @stylistic/no-trailing-spaces */
 /**
  * Styling utility functions for form designer components.
@@ -43,6 +52,7 @@ export const stylingUtils = {
       horizontal: '0px',
     };
   },
+  
 
   /**
    * Creates the root container style for wrapping components in designer mode.
@@ -52,9 +62,7 @@ export const stylingUtils = {
    */
   createRootContainerStyle(
     dimensions: CSSProperties,
-    margins: StyleConfig,
-    _isInput: boolean,
-    isButton: boolean = false,
+    margins: MarginValues,
   ): CSSProperties {
     // Use margin values directly (preserves relative values like 50%)
     const marginTop = addPx(margins?.marginTop ?? 0);
@@ -64,16 +72,14 @@ export const stylingUtils = {
 
     // Calculate wrapper dimensions to accommodate padding
     // Width is reduced because padding adds to the total size
-    // When width is 'auto' for button, use 'max-content' for WYSIWYG behavior (wrapper shrinks to fit content)
-    const rawWidth = (isButton && dimensions.width === 'auto') ? 'max-content' : dimensions.width;
-    const width = rawWidth;
+    const width = dimensions.width;
 
-    // Height is expanded to include padding plus border width (8px = 4px top + 4px bottom)
-    const height = dimensions.height;
+    // Height is expanded to include padding to allow gap for component selecting e.g in button
+    const height = getExpandedDimensions(dimensions.height);
 
-    const minHeight = dimensions.minHeight;
+    const minHeight = getExpandedDimensions(dimensions.minHeight);
 
-    const maxHeight = dimensions.maxHeight;
+    const maxHeight = getExpandedDimensions(dimensions.maxHeight);
 
     const minWidth = dimensions.minWidth;
 
@@ -130,10 +136,10 @@ export const stylingUtils = {
    * @returns StyleConfig with margin values
    */
   createMarginsFromStylingBox(
-    stylingBoxAsCSS: StyleConfig | undefined,
+    stylingBoxAsCSS: MarginValues | undefined,
     isInDesigner: boolean,
     defaultMargins = { top: '5px', bottom: '5px', left: '3px', right: '3px' },
-  ): StyleConfig {
+  ): MarginValues {
     if (isInDesigner) {
       return {
         marginTop: 0,
@@ -213,6 +219,3 @@ export const {
   extractMargins,
   stripMargins,
 } = stylingUtils;
-
-/** @deprecated Use MarginValues instead */
-export type StyleConfig = MarginValues & { paddingTop?: number | string; paddingBottom?: number | string; paddingLeft?: number | string; paddingRight?: number | string };
