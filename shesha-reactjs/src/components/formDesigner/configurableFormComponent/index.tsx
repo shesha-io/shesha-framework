@@ -30,9 +30,18 @@ import { getComponentTypeInfo } from '../utils/componentTypeUtils';
 import { dimensionUtils } from '../utils/dimensionUtils';
 import { stylingUtils } from '../utils/stylingUtils';
 import { designerConstants } from '../utils/designerConstants';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/index';
 
+export interface IContainerConfig {
+  dimensions?: IDimensionsValue;
+  stylingBox?: string;
+  style?: string;
+}
+interface IComponentModelProps extends IConfigurableFormComponent {
+  container?: IContainerConfig
+}
 export interface IConfigurableFormComponentDesignerProps {
-  componentModel: IConfigurableFormComponent;
+  componentModel: IComponentModelProps;
   selectedComponentId?: string;
   readOnly?: boolean;
   settingsPanelRef?: MutableRefObject<HTMLElement>;

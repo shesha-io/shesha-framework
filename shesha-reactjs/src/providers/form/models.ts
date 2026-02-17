@@ -201,12 +201,6 @@ export interface IFormComponentStyles {
   margins: CSSProperties;
 }
 
-export interface IContainerConfig {
-  dimensions?: IDimensionsValue;
-  stylingBox?: string;
-  style?: string;
-}
-
 /**
  * Base model of the configurable component
  */
@@ -287,8 +281,6 @@ export interface IConfigurableFormComponent
   listType?: 'text' | 'thumbnail';
 
   noLabelAutoMargin?: boolean;
-
-  container?: IContainerConfig;
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
