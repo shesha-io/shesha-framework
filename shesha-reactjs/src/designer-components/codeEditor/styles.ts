@@ -32,6 +32,12 @@ export const useStyles = createStyles(({ css, cx }) => {
         height: 100%;
         display: flex;
         flex-direction: column;
+        > div {
+          min-height: 300px;
+          section {
+            min-height: 300px; 
+          }
+        }
     `);
 
   const button = cx("sha-code-btn",
