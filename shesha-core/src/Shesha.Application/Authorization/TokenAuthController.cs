@@ -151,7 +151,7 @@ namespace Shesha.Authorization
         /// <returns>New JWT token with fresh expiration</returns>
         [HttpPost]
         [Authorize]
-        public async Task<AuthenticateResultModel> RefreshTokenAsync()
+        public async Task<RefreshTokenResultModel> RefreshTokenAsync()
         {
             // 1. Get current user from JWT claims
             if (!AbpSession.UserId.HasValue)
@@ -206,25 +206,14 @@ namespace Shesha.Authorization
 
             var accessToken = CreateAccessToken(CreateJwtClaims(identity), validFrom, expiresOn);
 
-            var personId = await _personRepository.GetAll()
-                .Where(p => p.User == user)
-                .OrderBy(p => p.CreationTime)
-                .Select(p => p.Id)
-                .FirstOrDefaultAsync();
-
             // 6. Log the refresh action
             Logger.InfoFormat("Token refreshed for user ID: {0}", userId);
 
-            return new AuthenticateResultModel
+            return new RefreshTokenResultModel
             {
                 AccessToken = accessToken,
-                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = expireInSeconds,
-                ExpireOn = expiresOn,
-                UserId = user.Id,
-                RequireChangePassword = user.RequireChangePassword,
-                PersonId = personId,
-                ResultType = AuthenticateResultType.Success
+                ExpireOn = expiresOn
             };
         }
 

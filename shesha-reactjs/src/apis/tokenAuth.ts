@@ -21,6 +21,14 @@ export interface AuthenticateResultModel {
 
 export interface AuthenticateResultModelAjaxResponse extends IAjaxResponse<AuthenticateResultModel> {}
 
+export interface RefreshTokenResultModel {
+  accessToken?: string;
+  expireInSeconds?: number;
+  expireOn?: string;
+}
+
+export interface RefreshTokenResultModelAjaxResponse extends IAjaxResponse<RefreshTokenResultModel> {}
+
 export interface AuthenticateModel {
   userNameOrEmailAddress: string;
   password: string;

@@ -17,7 +17,7 @@ import { getLocalStorage } from '@/utils/storage';
 import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
 import { useMutate } from '@/hooks';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
-import { AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
 
 export interface IIdleTimerRendererProps { }
 
@@ -88,7 +88,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const { styles } = useStyles();
   const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
   const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
-  const { mutate: refreshTokenHttp } = useMutate<void, AuthenticateResultModelAjaxResponse>();
+  const { mutate: refreshTokenHttp } = useMutate<void, RefreshTokenResultModelAjaxResponse>();
   // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
   // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
   // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
