@@ -42,6 +42,7 @@ namespace Shesha.Authorization
         private readonly IRepository<MobileDevice, Guid> _mobileDeviceRepository;
         private readonly ITokenBlacklistService _tokenBlacklistService;
         private readonly UserManager<User> _userManager;
+        private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -55,7 +56,8 @@ namespace Shesha.Authorization
             IRepository<ShaUserRegistration, Guid> userRegistration,
             IRepository<MobileDevice, Guid> mobileDeviceRepository,
             ITokenBlacklistService tokenBlacklistService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -69,6 +71,7 @@ namespace Shesha.Authorization
             _userRegistration = userRegistration;
             _tokenBlacklistService = tokenBlacklistService;
             _userManager = userManager;
+            _claimsPrincipalFactory = claimsPrincipalFactory;
         }
 
         [HttpPost]
@@ -182,23 +185,9 @@ namespace Shesha.Authorization
                 throw new UserFriendlyException("Token has been revoked or already used");
 
             // 5. Generate new token with fresh expiration
-            // Recreate claims identity from existing claims (excluding time-sensitive claims and subject claims)
-            var existingClaims = User.Claims
-                .Where(c => c.Type != JwtRegisteredClaimNames.Jti &&
-                           c.Type != JwtRegisteredClaimNames.Iat &&
-                           c.Type != JwtRegisteredClaimNames.Exp &&
-                           c.Type != JwtRegisteredClaimNames.Sub &&
-                           c.Type != ClaimTypes.NameIdentifier)
-                .ToList();
-
-            // Get the subject value to re-add as a normalized claim
-            var subjectValue = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value
-                ?? User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value
-                ?? userId.ToString();
-
-            var identity = new ClaimsIdentity(existingClaims);
-            // Re-add a single NameIdentifier claim so CreateJwtClaims can find it
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, subjectValue));
+            // Use the same claims principal factory as login to ensure consistent claims handling
+            var principal = await _claimsPrincipalFactory.CreateAsync(user);
+            var identity = principal.Identity as ClaimsIdentity;
 
             var validFrom = DateTime.UtcNow;
             var expiresOn = validFrom.Add(_configuration.Expiration);
