@@ -15,7 +15,7 @@ import { useSettingValue } from '@/providers/settings';
 import { useStyles } from './styles/styles';
 import { getLocalStorage } from '@/utils/storage';
 import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
-import { useMutate } from '@/hooks';
+import { useHttpClient } from '@/providers';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
 
@@ -88,7 +88,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const { styles } = useStyles();
   const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
   const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
-  const { mutate: refreshTokenHttp } = useMutate<void, RefreshTokenResultModelAjaxResponse>();
+  const httpClient = useHttpClient();
   // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
   // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
   // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
@@ -208,8 +208,8 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   const refreshToken = useCallback(() => {
     // Refresh the token and update all timers
-    return refreshTokenHttp({ url: '/api/TokenAuth/RefreshToken', httpVerb: 'post' })
-      .then((response) => {
+    return httpClient.post<RefreshTokenResultModelAjaxResponse>('/api/TokenAuth/RefreshToken')
+      .then(({ data: response }) => {
         if (response?.result) {
           // Save the new token to localStorage
           saveUserToken(
@@ -241,7 +241,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
         console.error('Failed to refresh token:', error);
         return false;
       });
-  }, [refreshTokenHttp, broadcastTokenRefresh]);
+  }, [httpClient, broadcastTokenRefresh]);
 
   const onAction = useCallback(() => {
     // Don't auto-refresh if warning modal is showing
