@@ -70,9 +70,15 @@ export const stylingUtils = {
     const marginLeft = addPx(margins?.marginLeft ?? 0);
     const marginRight = addPx(margins?.marginRight ?? 0);
 
-    // Calculate wrapper dimensions to accommodate padding
-    // Width is reduced because padding adds to the total size
-    const width = dimensions.width;
+    // Check if there are horizontal margins
+    const hasHorizontalMargins = !!(margins?.marginLeft || margins?.marginRight || margins?.margin);
+
+    // When width is 100% and there are margins, use 'auto' to prevent overflow
+    // CSS will calculate: auto width = parent width - margins
+    const originalWidth = dimensions.width;
+    const width = originalWidth === '100%' && hasHorizontalMargins
+      ? 'auto'
+      : originalWidth;
 
     // Height is expanded to include padding to allow gap for component selecting e.g in button
     const height = getExpandedDimensions(dimensions.height);

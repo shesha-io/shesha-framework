@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { DataContextTopLevels, EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
+import { DataContextTopLevels, EditMode, IComponentModelProps, IConfigurableFormComponent, useCanvas } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -30,16 +30,7 @@ import { getComponentTypeInfo } from '../utils/componentTypeUtils';
 import { dimensionUtils } from '../utils/dimensionUtils';
 import { stylingUtils } from '../utils/stylingUtils';
 import { designerConstants } from '../utils/designerConstants';
-import { IDimensionsValue } from '@/designer-components/_settings/utils/index';
 
-export interface IContainerConfig {
-  dimensions?: IDimensionsValue;
-  stylingBox?: string;
-  style?: string;
-}
-interface IComponentModelProps extends IConfigurableFormComponent {
-  container?: IContainerConfig;
-}
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IComponentModelProps;
   selectedComponentId?: string;

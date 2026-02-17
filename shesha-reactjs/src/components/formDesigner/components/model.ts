@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from "@/index";
+import { IComponentModelProps } from "@/index";
 import { ColProps } from "antd";
 import { ReactNode } from "react";
 
@@ -9,7 +9,7 @@ export type IConfigurableFormItemChildFunc = (
 ) => ReactNode;
 
 export interface IConfigurableFormItemProps {
-  model: IConfigurableFormComponent;
+  model: IComponentModelProps;
   readonly children?: ReactNode | IConfigurableFormItemChildFunc;
   className?: string;
   valuePropName?: string;
