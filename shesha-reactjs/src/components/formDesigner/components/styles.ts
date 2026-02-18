@@ -31,6 +31,7 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelA
                 min-height : 0px !important;
                 flex: 1;
                 width: 100%;
+                height: 100%;
 
                 .ant-form-item-control-input-content {
                     ${preserveDimensionsInDesigner ? 'height: auto' : 'height: 100%'};
