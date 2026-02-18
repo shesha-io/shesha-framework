@@ -86,7 +86,6 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   const { styles } = useStyles({ bodyStyle, headerStyle, ghost, isSimpleDesign, noContentPadding, hideWhenEmpty, hideCollapseContent, accentStyle, overflow: overflowStyle });
   const shaCollapsiblePanelStyle = isSimpleDesign ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;
 
-  console.log("Body styles :: ", bodyStyle);
   return (
     <Collapse
       defaultActiveKey={collapsedByDefault ? [] : ['1']}
