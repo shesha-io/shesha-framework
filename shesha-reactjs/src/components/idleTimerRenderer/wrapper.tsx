@@ -1,20 +1,7 @@
 import React, { FC, PropsWithChildren } from 'react';
 import { useSettingValue } from '@/providers/settings';
 import { ISettingIdentifier } from '@/providers/settings/models';
-import { IdleTimerRenderer } from './index';
-
-interface ISecuritySettings {
-  autoLogoffTimeout: number;
-  useAutoLogoff: boolean;
-  defaultEndpointAccess: number;
-  mobileLoginPinLifetime: number;
-  resetPasswordEmailLinkLifetime: number;
-  resetPasswordSmsOtpLifetime: number;
-  resetPasswordViaSecurityQuestionsNumQuestionsAllowed: number;
-  useResetPasswordViaEmailLink: boolean;
-  useResetPasswordViaSecurityQuestions: boolean;
-  useResetPasswordViaSmsOtp: boolean;
-}
+import { IdleTimerRenderer, ISecuritySettings } from './index';
 
 const securitySettingsId: ISettingIdentifier = {
   name: 'Shesha.Security',
@@ -23,8 +10,9 @@ const securitySettingsId: ISettingIdentifier = {
 
 /**
  * Wrapper component that checks if auto-logoff is enabled before rendering IdleTimerRenderer.
+ * Loads security settings once and passes them to IdleTimerRenderer to avoid duplicate fetches.
  * When useAutoLogoff is false, children render directly without any idle timer overhead.
- * When useAutoLogoff is true, renders IdleTimerRenderer which loads full security settings.
+ * When useAutoLogoff is true, renders IdleTimerRenderer with pre-loaded security settings.
  */
 export const IdleTimerWrapper: FC<PropsWithChildren> = ({ children }) => {
   const { value: securitySettings, loadingState } = useSettingValue<ISecuritySettings>(
@@ -44,7 +32,7 @@ export const IdleTimerWrapper: FC<PropsWithChildren> = ({ children }) => {
   }
 
   // Auto-logoff is enabled, render with idle timer monitoring
-  return <IdleTimerRenderer>{children}</IdleTimerRenderer>;
+  return <IdleTimerRenderer securitySettings={securitySettings}>{children}</IdleTimerRenderer>;
 };
 
 export default IdleTimerWrapper;

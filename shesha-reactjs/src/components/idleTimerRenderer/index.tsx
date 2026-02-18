@@ -7,11 +7,9 @@ import {
   WARNING_DURATION
 } from './util';
 import { useIdleTimer } from 'react-idle-timer';
-import { ISettingIdentifier } from '@/providers/settings/models';
 import { Modal, Progress } from 'antd';
 import { useAuth } from '@/providers/auth';
 import { useInterval } from 'react-use';
-import { useSettingValue } from '@/providers/settings';
 import { useStyles } from './styles/styles';
 import { getLocalStorage } from '@/utils/storage';
 import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
@@ -19,16 +17,7 @@ import { useHttpClient } from '@/providers';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
 
-export interface IIdleTimerRendererProps { }
-
-interface IIdleTimerState {
-  readonly isWarningVisible: boolean;
-  readonly remainingTime: number;
-  readonly isCountingDown: boolean;
-  readonly pendingLogout: boolean;
-}
-
-interface ISecuritySettings {
+export interface ISecuritySettings {
   autoLogoffTimeout: number;
   useAutoLogoff: boolean;
   defaultEndpointAccess: number;
@@ -39,6 +28,17 @@ interface ISecuritySettings {
   useResetPasswordViaEmailLink: boolean;
   useResetPasswordViaSecurityQuestions: boolean;
   useResetPasswordViaSmsOtp: boolean;
+}
+
+export interface IIdleTimerRendererProps {
+  securitySettings?: ISecuritySettings;
+}
+
+interface IIdleTimerState {
+  readonly isWarningVisible: boolean;
+  readonly remainingTime: number;
+  readonly isCountingDown: boolean;
+  readonly pendingLogout: boolean;
 }
 
 interface IWarningState {
@@ -82,8 +82,6 @@ const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
     typeof (value as any).expireOn === 'string'
   );
 };
-
-const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security', module: 'Shesha' };
 
 interface IIdleHandler {
   setActivate: (activate: () => void) => void;
@@ -289,9 +287,8 @@ class IdleHandler implements IIdleHandler {
   isWarningVisible = () => this.warningVisible;
 }
 
-export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
+export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children, securitySettings }) => {
   const { styles } = useStyles();
-  const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
   const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
   const httpClient = useHttpClient();
   const authenticator = useAuth();
