@@ -87,7 +87,6 @@ const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security'
 
 interface IIdleHandler {
   setActivate: (activate: () => void) => void;
-  setStateUpdater: (updater: (state: IIdleTimerState | ((prev: IIdleTimerState) => IIdleTimerState)) => void) => void;
   logout: () => void;
   refreshToken: () => Promise<boolean>;
   handlePrompt: () => void;
@@ -100,21 +99,17 @@ interface IIdleHandler {
 
 class IdleHandler implements IIdleHandler {
   private activateFn: (() => void) | null = null;
-  private setStateFn: ((state: IIdleTimerState | ((prev: IIdleTimerState) => IIdleTimerState)) => void) | null = null;
   private warningVisible: boolean = false;
 
   constructor(
     private authenticator: ReturnType<typeof useAuth>,
     private httpClient: ReturnType<typeof useHttpClient>,
-    private logoutUser: () => Promise<void>
+    private logoutUser: () => Promise<void>,
+    private setStateFn: (state: IIdleTimerState | ((prev: IIdleTimerState) => IIdleTimerState)) => void
   ) { }
 
   setActivate = (activate: () => void) => {
     this.activateFn = activate;
-  };
-
-  setStateUpdater = (updater: (state: IIdleTimerState | ((prev: IIdleTimerState) => IIdleTimerState)) => void) => {
-    this.setStateFn = updater;
   };
 
   private broadcastLogout = () => {
@@ -302,16 +297,14 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const authenticator = useAuth();
   const { logoutUser, loginInfo } = authenticator;
 
-  // Initialize IdleHandler once on mount
-  const [idleHandler] = useState<IIdleHandler>(() => new IdleHandler(authenticator, httpClient, logoutUser));
-
   const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
   const { isWarningVisible, remainingTime: rt, isCountingDown } = state;
 
-  // Provide setState to the handler
-  useEffect(() => {
-    idleHandler.setStateUpdater(setState);
-  }, [idleHandler]);
+  // Initialize IdleHandler once on mount with setState passed to constructor
+  // setState identity is stable across re-renders, so this is safe
+  const [idleHandler] = useState<IIdleHandler>(() =>
+    new IdleHandler(authenticator, httpClient, logoutUser, setState)
+  );
 
   // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
   // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
