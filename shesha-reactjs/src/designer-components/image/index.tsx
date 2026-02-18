@@ -48,7 +48,6 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       borderStyle: model.borderType || 'solid',
       borderColor: model.borderColor || theme.colorBorder,
       opacity: model.opacity,
-      ...model.allStyles.dimensionsStyles,
       ...model.allStyles.borderStyles,
       ...model.allStyles.shadowStyles,
       ...model.allStyles.stylingBoxAsCSS,

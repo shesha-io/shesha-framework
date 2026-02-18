@@ -109,16 +109,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       height: ${height};
       min-height: ${minHeight};
       max-height: ${maxHeight};
+      margin-bottom: ${marginBottom};
+      margin-top: ${marginTop};
+      margin-left: ${marginLeft};
+      margin-right: ${marginRight};
 
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
       box-shadow: ${boxShadow};
       border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
-      margin-bottom: ${marginBottom};
-      margin-top: ${marginTop};
-      margin-left: ${marginLeft};
-      margin-right: ${marginRight};
       height: 100%;
     }
    
