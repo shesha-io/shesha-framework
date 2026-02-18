@@ -46,9 +46,14 @@
         public int RequiredLength { get; set; }
 
         /// <summary>
-        /// Auto logoff timeout (in case of user inactivity). Set to 0 to disable
+        /// Auto logoff timeout in seconds (must be greater than 30 to allow warning period)
         /// </summary>
         public int AutoLogoffTimeout { get; set; }
+
+        /// <summary>
+        /// Enable auto logoff feature (use this to enable/disable auto-logoff)
+        /// </summary>
+        public bool UseAutoLogoff { get; set; }
 
         /// <summary>
         /// Allow users to reset passwords with reset link sent to their emails.

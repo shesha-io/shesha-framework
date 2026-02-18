@@ -25,9 +25,10 @@ namespace Shesha.Authorization.Settings
             await _securitySettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
             await _securitySettings.DefaultAccountLockoutSeconds.SetValueAsync(dto.DefaultAccountLockoutSeconds);
             await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.SetValueAsync(dto.MaxFailedAccessAttemptsBeforeLockout);
-            await _securitySettings.SecuritySettings.SetValueAsync(new SecuritySettings 
-            { 
+            await _securitySettings.SecuritySettings.SetValueAsync(new SecuritySettings
+            {
                 AutoLogoffTimeout = dto.AutoLogoffTimeout,
+                UseAutoLogoff = dto.UseAutoLogoff,
 
                 // Password reset
                 UseResetPasswordViaEmailLink = dto.ResetPasswordWithEmailLinkIsSupported,
@@ -58,6 +59,7 @@ namespace Shesha.Authorization.Settings
             dto.DefaultAccountLockoutSeconds = await _securitySettings.DefaultAccountLockoutSeconds.GetValueAsync();
             dto.MaxFailedAccessAttemptsBeforeLockout = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
             dto.AutoLogoffTimeout = settings.AutoLogoffTimeout;
+            dto.UseAutoLogoff = settings.UseAutoLogoff;
 
             //Password complexity
             dto.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueAsync();

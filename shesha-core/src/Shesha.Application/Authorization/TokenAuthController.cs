@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authentication.External;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization.Models;
+using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
 using Shesha.Controllers;
 using Shesha.Domain;
@@ -41,6 +42,8 @@ namespace Shesha.Authorization
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<MobileDevice, Guid> _mobileDeviceRepository;
         private readonly ITokenBlacklistService _tokenBlacklistService;
+        private readonly UserManager<User> _userManager;
+        private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -53,7 +56,9 @@ namespace Shesha.Authorization
             IRepository<Person, Guid> personRepository,
             IRepository<ShaUserRegistration, Guid> userRegistration,
             IRepository<MobileDevice, Guid> mobileDeviceRepository,
-            ITokenBlacklistService tokenBlacklistService)
+            ITokenBlacklistService tokenBlacklistService,
+            UserManager<User> userManager,
+            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -66,6 +71,8 @@ namespace Shesha.Authorization
             _mobileDeviceRepository = mobileDeviceRepository;
             _userRegistration = userRegistration;
             _tokenBlacklistService = tokenBlacklistService;
+            _userManager = userManager;
+            _claimsPrincipalFactory = claimsPrincipalFactory;
         }
 
         [HttpPost]
@@ -140,6 +147,64 @@ namespace Shesha.Authorization
                 await _tokenBlacklistService.BlacklistTokenAsync(jti, User.GetTokenExpirationDate());
 
             return true;
+        }
+
+        /// <summary>
+        /// Refresh the current JWT token
+        /// </summary>
+        /// <returns>New JWT token with fresh expiration</returns>
+        [HttpPost]
+        [Authorize]
+        public async Task<RefreshTokenResultModel> RefreshTokenAsync()
+        {
+            // 1. Get current user from JWT claims
+            if (!AbpSession.UserId.HasValue)
+                throw new UserFriendlyException("User not authenticated");
+
+            var userId = AbpSession.UserId.Value;
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                throw new UserFriendlyException("User not found");
+
+            // 2. Check if user is still active
+            if (!user.IsActive)
+                throw new UserFriendlyException("User is not active");
+
+            // 3. Get current token JTI and expiration from claims
+            var currentJti = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+            var currentTokenExpiration = User.GetTokenExpirationDate();
+
+            // 4. Atomically blacklist the current token (prevents TOCTOU race condition)
+            // This must happen BEFORE generating a new token to prevent concurrent refreshes
+            // Validate that JTI is present - missing JTI means token cannot be tracked/revoked
+            if (string.IsNullOrEmpty(currentJti))
+                throw new UserFriendlyException("Invalid token: missing JTI claim. Token cannot be securely refreshed.");
+
+            var wasBlacklisted = await _tokenBlacklistService.TryBlacklistTokenAsync(currentJti, currentTokenExpiration);
+            if (!wasBlacklisted)
+                throw new UserFriendlyException("Token has been revoked or already used");
+
+            // 5. Generate new token with fresh expiration
+            // Use the same claims principal factory as login to ensure consistent claims handling
+            var principal = await _claimsPrincipalFactory.CreateAsync(user);
+            var identity = principal.Identity as ClaimsIdentity;
+
+            var validFrom = DateTime.UtcNow;
+            var expiresOn = validFrom.Add(_configuration.Expiration);
+            var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
+
+            var accessToken = CreateAccessToken(CreateJwtClaims(identity), validFrom, expiresOn);
+
+            // 6. Log the refresh action
+            Logger.InfoFormat("Token refreshed for user ID: {0}", userId);
+
+            return new RefreshTokenResultModel
+            {
+                AccessToken = accessToken,
+                ExpireInSeconds = expireInSeconds,
+                ExpireOn = expiresOn
+            };
         }
 
         #region OTP Login

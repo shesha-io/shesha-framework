@@ -47,14 +47,53 @@ namespace Shesha.Authentication.JwtBearer
             return isBlacklisted;
         }
 
-        private async Task BlacklistTokenInCacheAsync(string tokenId, bool isBlacklisted) 
+        public async Task<bool> TryBlacklistTokenAsync(string tokenId, DateTime? expirationDate)
+        {
+            // First check cache - if already blacklisted, return false immediately
+            var cacheItem = await _cacheHolder.Cache.TryGetValueAsync(tokenId);
+            if (cacheItem.HasValue && cacheItem.Value)
+                return false;
+
+            // Attempt to insert into database
+            // If rowsAffected is 1, the token was newly inserted (first refresh)
+            // If rowsAffected is 0, the token already existed (concurrent refresh)
+            var rowsAffected = await ExecuteBlacklistInsertAsync(tokenId, expirationDate);
+            var wasInserted = rowsAffected > 0;
+
+            // Update cache to reflect blacklisted status
+            await BlacklistTokenInCacheAsync(tokenId, true);
+
+            return wasInserted;
+        }
+
+        private async Task BlacklistTokenInCacheAsync(string tokenId, bool isBlacklisted)
         {
             await _cacheHolder.Cache.SetAsync(tokenId, isBlacklisted, TimeSpan.FromMinutes(30));
         }
 
         private async Task BlacklistTokenInDbAsync(string tokenId, DateTime? expirationDate)
         {
-            using (var session = _sessionFactory.OpenSession()) 
+            await ExecuteBlacklistInsertAsync(tokenId, expirationDate);
+        }
+
+        private async Task<bool> IsTokenBlacklistedInDbAsync(string tokenId)
+        {
+            using (var session = _sessionFactory.OpenSession())
+            {
+                var query = session.CreateSQLQuery("select 1 from frwk.blacklist_tokens where token = :token");
+                query.SetString("token", tokenId);
+                var result = await query.UniqueResultAsync();
+                return result != null;
+            }
+        }
+
+        /// <summary>
+        /// Executes the SQL INSERT to blacklist a token in the database.
+        /// Returns the number of rows affected (1 if inserted, 0 if already exists).
+        /// </summary>
+        private async Task<int> ExecuteBlacklistInsertAsync(string tokenId, DateTime? expirationDate)
+        {
+            using (var session = _sessionFactory.OpenSession())
             {
                 var query = session.CreateSQLQuery(@"INSERT INTO frwk.blacklist_tokens (token, blacklisted_on, expires_on)
 SELECT :token, :blacklisted_on, :expires_on
@@ -67,18 +106,8 @@ WHERE NOT EXISTS (
                     query.SetDateTime("expires_on", expirationDate.Value);
                 else
                     query.SetParameter("expires_on", null);
-                await query.ExecuteUpdateAsync();
-            }
-        }
 
-        private async Task<bool> IsTokenBlacklistedInDbAsync(string tokenId)
-        {
-            using (var session = _sessionFactory.OpenSession()) 
-            {
-                var query = session.CreateSQLQuery("select 1 from frwk.blacklist_tokens where token = :token");
-                query.SetString("token", tokenId);
-                var result = await query.UniqueResultAsync();
-                return result != null;
+                return await query.ExecuteUpdateAsync();
             }
         }
     }

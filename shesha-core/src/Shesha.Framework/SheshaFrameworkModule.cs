@@ -130,6 +130,7 @@ namespace Shesha
                 s.SecuritySettings.WithDefaultValue(new SecuritySettings
                 {
                     AutoLogoffTimeout = 0,
+                    UseAutoLogoff = false,
                     UseResetPasswordViaEmailLink = true,
                     ResetPasswordEmailLinkLifetime = 60,
                     UseResetPasswordViaSmsOtp = true,
