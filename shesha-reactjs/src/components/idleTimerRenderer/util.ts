@@ -8,12 +8,6 @@ export const getPercentage = (rt: number) => (rt / WARNING_DURATION) * 100;
 export const getStatus = (rt: number): 'normal' | 'success' | 'exception' =>
   getPercentage(rt) >= 75 ? 'success' : getPercentage(rt) >= 45 ? 'normal' : 'exception';
 
-export const getTimeFormat = (s: number): number => {
-  const time = !!s && typeof s === 'number' ? s : 0;
-
-  if (time >= ONE_SECOND * MIN_TIME) {
-    return time;
-  }
-
-  return time * ONE_SECOND;
+export const secondsToMilliseconds = (seconds: number): number => {
+  return seconds * ONE_SECOND;
 };

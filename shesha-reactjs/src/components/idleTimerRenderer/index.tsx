@@ -2,7 +2,7 @@ import React, { FC, PropsWithChildren, useState, useEffect, useCallback } from '
 import {
   getPercentage,
   getStatus,
-  getTimeFormat,
+  secondsToMilliseconds,
   ONE_SECOND,
   WARNING_DURATION
 } from './util';
@@ -322,7 +322,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     autoLogoffTimeout !== undefined &&
     autoLogoffTimeout > WARNING_DURATION &&
     !!loginInfo;
-  const timeout = getTimeFormat(timeoutSeconds);
+  const timeout = secondsToMilliseconds(timeoutSeconds);
   const visible = isWarningVisible && isTimeoutSet;
 
   // Configure idle timer hook
