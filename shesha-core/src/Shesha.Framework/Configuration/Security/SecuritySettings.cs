@@ -17,6 +17,11 @@ namespace Shesha.Configuration.Security
         public int AutoLogoffTimeout { get; set; }
 
         /// <summary>
+        /// Use auto logoff
+        /// </summary>
+        public bool UseAutoLogoff { get; set; }
+
+        /// <summary>
         /// Use reset password via email
         /// </summary>
         public bool UseResetPasswordViaEmailLink { get; set; }

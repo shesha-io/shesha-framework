@@ -30,6 +30,7 @@ interface IIdleTimerState {
 
 interface ISecuritySettings {
   autoLogoffTimeout: number;
+  useAutoLogoff: boolean;
   defaultEndpointAccess: number;
   mobileLoginPinLifetime: number;
   resetPasswordEmailLinkLifetime: number;
@@ -106,7 +107,7 @@ class IdleHandler implements IIdleHandler {
     private authenticator: ReturnType<typeof useAuth>,
     private httpClient: ReturnType<typeof useHttpClient>,
     private logoutUser: () => Promise<void>
-  ) {}
+  ) { }
 
   setActivate = (activate: () => void) => {
     this.activateFn = activate;
@@ -297,6 +298,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const { styles } = useStyles();
   const { value: securitySettings } = useSettingValue<ISecuritySettings>(autoLogoffTimeoutSettingId);
   const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
+  const useAutoLogoff = securitySettings?.useAutoLogoff ?? false;
   const httpClient = useHttpClient();
   const authenticator = useAuth();
   const { logoutUser, loginInfo } = authenticator;
@@ -316,14 +318,19 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
   // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
   // timeout > promptBeforeIdle (WARNING_DURATION = 30s).
-  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 300;
+  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 5;
 
   // Idle timer is enabled only when:
-  // 1. Settings are loaded (autoLogoffTimeout !== undefined)
-  // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
-  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 30s warning)
-  // 4. User is logged in (loginInfo exists)
-  const isTimeoutSet = autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION && !!loginInfo;
+  // 1. Feature is explicitly enabled (useAutoLogoff === true)
+  // 2. Settings are loaded (autoLogoffTimeout !== undefined)
+  // 3. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
+  // 4. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 30s warning)
+  // 5. User is logged in (loginInfo exists)
+  const isTimeoutSet =
+    useAutoLogoff === true &&
+    autoLogoffTimeout !== undefined &&
+    autoLogoffTimeout > WARNING_DURATION &&
+    !!loginInfo;
   const timeout = getTimeFormat(timeoutSeconds);
   const visible = isWarningVisible && isTimeoutSet;
 
