@@ -81,7 +81,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
 
   .sha-form-settings-editor .${(p) => p.theme.prefixCls}-form-item .${(p) => p.theme.prefixCls}-row.${(p) => p.theme.prefixCls}-form-item-row {
    margin-bottom: 0px !important;
-   .ant-form-item-control-input{
+   .${(p) => p.theme.prefixCls}-form-item-control-input {
      display: inline !important;
     }
   }

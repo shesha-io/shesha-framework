@@ -62,7 +62,7 @@ export const canAddToCalc = (dimensionValue: string | number | null | undefined)
   if (!parsed) {
     // Allow calc(...) and var(...) tokens
     if (typeof dimensionValue === 'string') {
-      const v = dimensionValue.trim();
+      const v = dimensionValue.trim().toLowerCase();
       if (v.startsWith('calc(') || v.startsWith('var(')) return true;
     }
     return false;

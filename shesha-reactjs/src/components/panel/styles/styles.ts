@@ -146,8 +146,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         padding: 0px !important;
         width: 100%;
         height: 100%;
-        overflow: ${overflow?.overflow ?? 'auto'};
-        ${overflow};
+      > .ant-collapse-content-box {
+        --ant-collapse-content-padding: 0px !important;
+        padding: 0px !important;
+        width: 100%;
+        height: 100%;
+        overflow: ${typeof overflow === 'object' ? (overflow?.overflow ?? 'auto') : (overflow ?? 'auto')};
+      }
       }
     }
 

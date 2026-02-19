@@ -11,6 +11,7 @@ import { getCalculatedDimension } from '@/designer-components/_settings/utils/in
 import { designerConstants } from '../utils/designerConstants';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useValidationHeight } from './useValidationHeight';
+import { addPx } from '@/utils/style';
 
 // Extract primitive padding values to prevent object reference changes from triggering re-computation
 interface PaddingValues {
@@ -162,7 +163,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       : {
         // Live mode: apply margins, padding, and validation height
         marginTop,
-        marginBottom: validationHeight ? `calc(${marginBottom} + ${validationHeight}px)` : marginBottom,
+        marginBottom: validationHeight ? `calc(${addPx(marginBottom || 0)} + ${validationHeight}px)` : marginBottom,
         marginLeft,
         marginRight,
         width: calculatedWidth,

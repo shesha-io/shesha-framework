@@ -50,7 +50,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const { activeDevice, zoom } = useCanvas();
+  const { activeDevice, zoom = 100 } = useCanvas();
   const [formItemRef, validationHeight] = useValidationHeight(zoom / 100);
 
   // Memoize component lookup to prevent unnecessary re-renders
