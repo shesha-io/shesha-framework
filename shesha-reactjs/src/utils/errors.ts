@@ -27,7 +27,7 @@ export class RowReorderValidationError extends Error {
     this.name = 'RowReorderValidationError';
   }
 
-  static isRowReorderValidationError(error: Error): error is RowReorderValidationError {
+  static isRowReorderValidationError(error: unknown): error is RowReorderValidationError {
     return error instanceof RowReorderValidationError;
   }
 }
