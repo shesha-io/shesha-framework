@@ -1,5 +1,5 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ICommonContainerProps, IContainerComponentProps } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
@@ -22,6 +22,8 @@ const ContainerComponent: ContainerComponentDefinition = {
   isInput: false,
   name: 'Container',
   icon: <GroupOutlined />,
+  // Static empty array to prevent unnecessary re-renders when isDynamic is false
+  emptyComponents: [],
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
@@ -38,17 +40,17 @@ const ContainerComponent: ContainerComponentDefinition = {
       stylingBoxAsCSS,
     } = containerStyles;
 
-    const wrapperStyles = removeUndefinedProps({
+    const wrapperStyles = useMemo(() => removeUndefinedProps({
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
       ...stylingBoxAsCSS,
-    });
+    }), [dimensionsStyles, borderStyles, backgroundStyles, shadowStyles, stylingBoxAsCSS]);
 
     if (model.hidden) return null;
 
-    const flexAndGridStyles = {
+    const flexAndGridStyles = useMemo(() => ({
       display: model.display,
       flexDirection: model.flexDirection,
       direction: model.direction,
@@ -62,25 +64,39 @@ const ContainerComponent: ContainerComponentDefinition = {
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
       gap: addPx(model.gap),
-    };
+    }), [
+      model.display,
+      model.flexDirection,
+      model.direction,
+      model.justifyContent,
+      model.alignItems,
+      model.alignSelf,
+      model.justifyItems,
+      model.textJustify,
+      model.justifySelf,
+      model.noDefaultStyling,
+      model.gridColumnsCount,
+      model.flexWrap,
+      model.gap,
+    ]);
 
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
           containerId={model.id}
-          wrapperStyle={{
+          wrapperStyle={useMemo(() => ({
             ...wrapperStyles,
             alignSelf: model.alignSelf,
             justifySelf: model.justifySelf,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
-          }}
-          style={{
+          }), [wrapperStyles, model, formData, globalState])}
+          style={useMemo(() => ({
             ...getStyle(model?.style, formData),
             height: '100%',
-          }}
+          }), [model?.style, formData])}
           noDefaultStyling={model.noDefaultStyling}
           className={cx(model.className, styles.container)}
-          dynamicComponents={model?.isDynamic ? model?.components : []}
+          dynamicComponents={model?.isDynamic ? model?.components : ContainerComponent.emptyComponents}
           {...flexAndGridStyles}
         />
       </ParentProvider>

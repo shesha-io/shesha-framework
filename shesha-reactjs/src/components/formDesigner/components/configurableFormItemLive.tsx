@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { CSSProperties, FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
@@ -11,6 +11,28 @@ import { getCalculatedDimension } from '@/designer-components/_settings/utils/in
 import { designerConstants } from '../utils/designerConstants';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useValidationHeight } from './useValidationHeight';
+
+// Extract primitive padding values to prevent object reference changes from triggering re-computation
+interface PaddingValues {
+  paddingTop: string | number | undefined;
+  paddingRight: string | number | undefined;
+  paddingBottom: string | number | undefined;
+  paddingLeft: string | number | undefined;
+}
+
+const usePaddingValues = (fullStyle: CSSProperties | undefined): PaddingValues => {
+  return useMemo(() => ({
+    paddingTop: fullStyle?.paddingTop as string | number | undefined,
+    paddingRight: fullStyle?.paddingRight as string | number | undefined,
+    paddingBottom: fullStyle?.paddingBottom as string | number | undefined,
+    paddingLeft: fullStyle?.paddingLeft as string | number | undefined,
+  }), [
+    fullStyle?.paddingTop,
+    fullStyle?.paddingRight,
+    fullStyle?.paddingBottom,
+    fullStyle?.paddingLeft,
+  ]);
+};
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -88,6 +110,9 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     maxHeight,
   } = model?.allStyles?.dimensionsStyles || {};
 
+  // Extract padding values using custom hook to prevent object reference changes from triggering re-computation
+  const paddingValues = usePaddingValues(model?.allStyles?.fullStyle);
+
   const formItemStyle = useMemo(() => {
     // Use container dimensions for the Form.Item wrapper (if available), otherwise use thumbnail dimensions
     const wrapperWidth = hasContainerDimensions ? containerWidth : width;
@@ -129,10 +154,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         maxHeight: wrapperMaxHeight,
         maxWidth: wrapperMaxWidth,
         // Only padding from stylebox (if any)
-        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
-        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
-        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
-        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
+        paddingTop: paddingValues.paddingTop,
+        paddingRight: paddingValues.paddingRight,
+        paddingBottom: paddingValues.paddingBottom,
+        paddingLeft: paddingValues.paddingLeft,
       }
       : {
         // Live mode: apply margins, padding, and validation height
@@ -150,7 +175,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, validationHeight,
     width, height, minWidth, minHeight, maxWidth, maxHeight,
     containerWidth, containerHeight, containerMaxWidth, containerMinWidth, containerMinHeight, containerMaxHeight, hasContainerDimensions,
-    model?.allStyles?.fullStyle]);
+    paddingValues]);
 
   const { hideLabel, hidden } = model;
   const hasLabel = !hideLabel && !!model.label;

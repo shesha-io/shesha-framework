@@ -83,9 +83,13 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   }, [componentModel, activeDevice]);
 
   // For wrapper styles: use container dimensions if available, otherwise use root level dimensions
-  const styleModelForWrapper = fullComponentModel.container?.dimensions
-    ? { ...fullComponentModel, ...fullComponentModel.container }
-    : fullComponentModel;
+  // Memoize to prevent unnecessary re-renders when fullComponentModel reference is stable
+  const styleModelForWrapper = useMemo(() =>
+    fullComponentModel.container?.dimensions
+      ? { ...fullComponentModel, ...fullComponentModel.container }
+      : fullComponentModel,
+  [fullComponentModel],
+  );
   const { dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(styleModelForWrapper);
 
   // Extract margins from ORIGINAL component styling (before stripping) for the wrapper

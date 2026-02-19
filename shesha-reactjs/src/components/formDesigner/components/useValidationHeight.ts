@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, useCallback } from 'react';
 
 /**
  * Hook to measure the height of validation messages (.ant-form-item-explain)
@@ -8,102 +8,122 @@ import { useLayoutEffect, useRef, useState } from 'react';
  * @param zoomScale - Optional zoom scale factor (e.g., 0.5 for 50%, 1 for 100%, 2 for 200%)
  * @returns [containerRef, validationHeight] - Attach containerRef to the parent element
  */
-export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTMLDivElement>, number] => {
+export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTMLDivElement | null>, number] => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [validationHeight, setValidationHeight] = useState(0);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const mutationObserverRef = useRef<MutationObserver | null>(null);
   const rafIdRef = useRef<number | null>(null);
+  const lastHeightRef = useRef<number>(0);
 
+  // Stable callback for measuring height - uses ref to avoid recreating observers
+  const measureHeight = useCallback((): void => {
+    const currentContainer = containerRef.current;
+
+    if (!currentContainer) {
+      if (lastHeightRef.current !== 0) {
+        lastHeightRef.current = 0;
+        setValidationHeight(0);
+      }
+      return;
+    }
+
+    // Cancel any pending RAF to prevent queue buildup
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
+
+    rafIdRef.current = requestAnimationFrame(() => {
+      // Double-check container still exists after RAF
+      const container = containerRef.current;
+      if (!container) {
+        if (lastHeightRef.current !== 0) {
+          lastHeightRef.current = 0;
+          setValidationHeight(0);
+        }
+        return;
+      }
+
+      const explainElement = container.querySelector('.ant-form-item-explain') as HTMLElement | null;
+
+      if (explainElement) {
+        // Ensure ResizeObserver is observing this element
+        if (resizeObserverRef.current) {
+          resizeObserverRef.current.disconnect();
+          resizeObserverRef.current.observe(explainElement);
+        }
+
+        const scaledHeight = explainElement.getBoundingClientRect().height;
+        const height = scaledHeight / (zoomScale || 1);
+
+        if (lastHeightRef.current !== height) {
+          lastHeightRef.current = height;
+          setValidationHeight(height);
+        }
+      } else {
+        if (lastHeightRef.current !== 0) {
+          lastHeightRef.current = 0;
+          setValidationHeight(0);
+        }
+      }
+    });
+  }, [zoomScale]);
+
+  // Use useLayoutEffect to measure before paint and avoid visual flicker
   useLayoutEffect(() => {
     const containerElement = containerRef.current;
     if (!containerElement) {
       setValidationHeight(0);
-      return () => {};
+      return undefined;
     }
 
-    const clearRaf = (): void => {
+    // Create ResizeObserver once and reuse
+    if (!resizeObserverRef.current) {
+      resizeObserverRef.current = new ResizeObserver(() => {
+        measureHeight();
+      });
+    }
+
+    // Create MutationObserver once
+    if (!mutationObserverRef.current) {
+      // Use a micro-task to batch mutation callbacks
+      let pendingMutations = false;
+      mutationObserverRef.current = new MutationObserver(() => {
+        if (!pendingMutations) {
+          pendingMutations = true;
+          queueMicrotask(() => {
+            pendingMutations = false;
+            measureHeight();
+          });
+        }
+      });
+    }
+
+    // Start observing mutations
+    // Only observe childList and subtree - characterData is too expensive
+    mutationObserverRef.current.observe(containerElement, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Initial measurement
+    measureHeight();
+
+    return () => {
+      if (mutationObserverRef.current) {
+        mutationObserverRef.current.disconnect();
+        mutationObserverRef.current = null;
+      }
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
       }
     };
-
-    const scheduleMeasureHeight = (): void => {
-      clearRaf();
-
-      rafIdRef.current = requestAnimationFrame(() => {
-        const currentContainer = containerRef.current;
-        if (!currentContainer) {
-          setValidationHeight((prevHeight) => (prevHeight !== 0 ? 0 : prevHeight));
-          return;
-        }
-
-        const explainElement = currentContainer.querySelector(".ant-form-item-explain") as HTMLElement | null;
-
-        if (explainElement) {
-          const scaledHeight = explainElement.getBoundingClientRect().height;
-          const height = scaledHeight / (zoomScale || 1);
-          setValidationHeight((prevHeight) => (prevHeight !== height ? height : prevHeight));        } else {
-          setValidationHeight((prevHeight) => (prevHeight !== 0 ? 0 : prevHeight));
-        }
-      });
-    };
-
-    const measureHeight = (): void => {
-      const currentContainer = containerRef.current;
-
-      if (!currentContainer) {
-        setValidationHeight((prevHeight) => (prevHeight !== 0 ? 0 : prevHeight));
-        if (resizeObserverRef.current) {
-          resizeObserverRef.current.disconnect();
-          resizeObserverRef.current = null;
-        }
-        clearRaf();
-        return;
-      }
-
-      if (!resizeObserverRef.current) {
-        resizeObserverRef.current = new ResizeObserver(() => {
-          // When ResizeObserver fires, schedule measurement after layout.
-          scheduleMeasureHeight();
-        });
-      }
-      // Disconnect before re-observing to prevent stale observations
-      resizeObserverRef.current.disconnect();
-      const explainElement = currentContainer.querySelector(".ant-form-item-explain") as HTMLElement | null;
-
-      if (explainElement) {
-        resizeObserverRef.current.observe(explainElement);
-      } else if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
-      }
-
-      // Ensure measurement happens after layout is complete.
-      scheduleMeasureHeight();
-    };
-
-    // Initial measurement
-    measureHeight();
-
-    // Use MutationObserver to detect when validation element is added/removed/changed
-    const mutationObserver = new MutationObserver(() => {
-      measureHeight();
-    });
-    mutationObserver.observe(containerElement, {
-      childList: true,
-      subtree: true,
-      characterData: true, // Also watch for text changes within validation messages
-    });
-
-    return () => {
-      mutationObserver.disconnect();
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
-        resizeObserverRef.current = null;
-      }
-      clearRaf();
-    };
-  }, [zoomScale]); // Re-measure when zoom scale changes
+  }, [zoomScale, measureHeight]);
 
   return [containerRef, validationHeight];
 };

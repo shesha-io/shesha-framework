@@ -1,5 +1,5 @@
 import ConfigurableButton from './configurableButton';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -47,7 +47,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
 
     // Merge base styles with designer dimensions
     // Button preserves its original dimensions in designer mode
-    const finalStyle = dimensionUtils.mergeWithDesignerDimensions(
+    const finalStyle = useMemo(() => dimensionUtils.mergeWithDesignerDimensions(
       {
         ...model.allStyles?.dimensionsStyles,
         ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles?.borderStyles),
@@ -60,7 +60,19 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       },
       isDesignerMode,
       true, // Preserve original dimensions in designer mode
-    );
+    ), [
+      model.allStyles?.dimensionsStyles,
+      model.allStyles?.borderStyles,
+      model.allStyles?.fontStyles,
+      model.allStyles?.backgroundStyles,
+      model.allStyles?.shadowStyles,
+      model.allStyles?.stylingBoxAsCSS,
+      model.allStyles?.jsStyle,
+      model.buttonType,
+      model.readOnly,
+      model.font?.align,
+      isDesignerMode,
+    ]);
 
     return model.hidden ? null : (
       <ConfigurableButton

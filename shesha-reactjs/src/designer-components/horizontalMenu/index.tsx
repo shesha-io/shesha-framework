@@ -8,7 +8,6 @@ import {
   getStyle,
   IConfigurableFormComponent,
   ISidebarMenuItem,
-  IStyleType,
   IToolboxComponent,
   migratePrevStyles,
   useFormData,
@@ -195,7 +194,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     }))
     .add<IMenuListProps>(1, (prev) => ({
       ...prev,
-      menuOverflow: prev.menuOverflow ?? resolveMenuOverflow(prev.overflow),
+      menuOverflow: prev.menuOverflow ?? resolveMenuOverflow(prev.overflow as MenuOverflowValue | string | undefined),
     })),
 };
 

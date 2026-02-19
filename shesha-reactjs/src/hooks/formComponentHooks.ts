@@ -115,24 +115,33 @@ export function useCalculatedModel<T extends object = object>(
   const prevModel = useRef<T>();
   const calculatedModelRef = useRef<T>();
   const useCalculatedModelRef = useRef<T>();
+  const prevCalculatedModelResultRef = useRef<T>();
 
-  const useCalculatedModel = useCalculateModel(model, allData);
+  // Memoize the useCalculateModel call to prevent expensive recalculations
+  const useCalculatedModel = useMemo(() => useCalculateModel(model, allData), [useCalculateModel, model, allData]);
 
   const modelChanged = !isEqual(prevModel.current, model);
   const useCalculatedModelChanged = !isEqual(useCalculatedModelRef.current, useCalculatedModel);
-  if (contextProxyRef.current.changed || modelChanged || useCalculatedModelChanged) {
-    calculatedModelRef.current = calculateModel
-      ? calculateModel(model, allData, useCalculatedModel)
-      : undefined;
-  }
+  const shouldRecalculate = contextProxyRef.current.changed || modelChanged || useCalculatedModelChanged;
 
+  // Use useMemo to ensure stable return value and proper memoization
+  const result = useMemo(() => {
+    if (shouldRecalculate) {
+      prevCalculatedModelResultRef.current = calculateModel
+        ? calculateModel(model, allData, useCalculatedModel)
+        : undefined;
+    }
+    return prevCalculatedModelResultRef.current;
+  }, [shouldRecalculate, calculateModel, model, allData, useCalculatedModel]);
+
+  // Update refs after render
   if (useCalculatedModelChanged)
     useCalculatedModelRef.current = useCalculatedModel;
   if (modelChanged)
     prevModel.current = model;
 
   // TODO: Alex, please review this code. calculatedModelRef.current may be undefined
-  return calculatedModelRef.current as T;
+  return (result ?? calculatedModelRef.current) as T;
 }
 
 export function useActualContextExecution<T = unknown>(code: string | undefined, additionalData: object | undefined, defaultValue: T): T {
@@ -266,12 +275,14 @@ export const useFormComponentStyles = <TModel>(
   const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, ...jsStyle }), [appearanceStyle, jsStyle]);
 
   // Extract margin styles for wrapper use
+  // Use primitive values as dependencies to avoid unnecessary re-renders when fullStyle reference changes
+  const { marginTop, marginBottom, marginLeft, marginRight } = fullStyle;
   const margins = useMemo(() => ({
-    marginTop: fullStyle.marginTop,
-    marginBottom: fullStyle.marginBottom,
-    marginLeft: fullStyle.marginLeft,
-    marginRight: fullStyle.marginRight,
-  }), [fullStyle.marginTop, fullStyle.marginBottom, fullStyle.marginLeft, fullStyle.marginRight]);
+    marginTop,
+    marginBottom,
+    marginLeft,
+    marginRight,
+  }), [marginTop, marginBottom, marginLeft, marginRight]);
 
   const allStyles: IFormComponentStyles = useMemo(() => ({
     stylingBoxAsCSS,

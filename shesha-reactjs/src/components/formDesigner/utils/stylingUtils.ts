@@ -10,11 +10,25 @@ export interface MarginValues {
   marginRight: number | string;
 }
 
-
 interface DefaultMargins {
   vertical: string;
   horizontal: string;
 }
+
+// Cached constants to avoid repeated object/string creation
+const EMPTY_STYLING_BOX = '{}';
+const ZERO_MARGINS: MarginValues = {
+  marginTop: 0,
+  marginBottom: 0,
+  marginLeft: 0,
+  marginRight: 0,
+};
+const DEFAULT_MARGIN_VALUES = {
+  top: '5px',
+  bottom: '5px',
+  left: '3px',
+  right: '3px',
+};
 
 const getExpandedDimensions = (value?: string | number): string | undefined => {
   if (value === undefined || value === null || value === '') {
@@ -121,7 +135,7 @@ export const stylingUtils = {
    * component should have no margins since they're applied to the wrapper.
    */
   removeMarginsFromStylingBox(stylingBox: string | undefined): string {
-    if (!stylingBox) return JSON.stringify({});
+    if (!stylingBox) return EMPTY_STYLING_BOX;
 
     try {
       const parsed = JSON.parse(stylingBox);
@@ -133,7 +147,7 @@ export const stylingUtils = {
         marginRight: 0,
       });
     } catch {
-      return JSON.stringify({});
+      return EMPTY_STYLING_BOX;
     }
   },
 
@@ -148,15 +162,10 @@ export const stylingUtils = {
   createMarginsFromStylingBox(
     stylingBoxAsCSS: MarginValues | undefined,
     isInDesigner: boolean,
-    defaultMargins = { top: '5px', bottom: '5px', left: '3px', right: '3px' },
+    defaultMargins = DEFAULT_MARGIN_VALUES,
   ): MarginValues {
     if (isInDesigner) {
-      return {
-        marginTop: 0,
-        marginBottom: 0,
-        marginLeft: 0,
-        marginRight: 0,
-      };
+      return ZERO_MARGINS;
     }
 
     return {
@@ -174,7 +183,7 @@ export const stylingUtils = {
    * applies padding to the component, while margins are handled by the wrapper.
    */
   createPaddingOnlyStylingBox(stylingBox: string | undefined): string {
-    if (!stylingBox) return JSON.stringify({});
+    if (!stylingBox) return EMPTY_STYLING_BOX;
 
     try {
       const parsed = JSON.parse(stylingBox);
@@ -185,7 +194,7 @@ export const stylingUtils = {
         paddingLeft: parsed.paddingLeft,
       });
     } catch {
-      return JSON.stringify({});
+      return EMPTY_STYLING_BOX;
     }
   },
 

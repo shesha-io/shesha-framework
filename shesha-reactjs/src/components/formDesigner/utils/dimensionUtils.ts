@@ -81,7 +81,7 @@ export const dimensionUtils = {
    * The wrapper handles actual sizing, so components fill 100% of the wrapper.
    */
   getDeviceDimensions(): IStyleType['dimensions'] {
-    return { ...DESIGNER_DIMENSIONS };
+    return DESIGNER_DIMENSIONS;
   },
 
   /**
@@ -117,7 +117,7 @@ export const dimensionUtils = {
     }
 
     // Standard components fill wrapper in designer mode
-    return { ...DESIGNER_DIMENSIONS };
+    return DESIGNER_DIMENSIONS;
   },
 
   /**
