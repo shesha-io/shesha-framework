@@ -8,7 +8,7 @@ import { mainMenuMigration } from './migrations/migration';
 import { getActualModel, useAvailableConstantsData } from '../form/utils';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
-import { FormIdFullNameDto } from '@/apis/entityConfig';
+import { isFormIdFullNameDto } from '@/apis/entityConfig';
 import { settingsUpdateValue } from '@/apis/settings';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
@@ -83,12 +83,30 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
   };
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
-    // Don't check permissions if user is not logged in
-    if (!auth?.isLoggedIn || itemsToCheck.length === 0) {
+    // If user is not logged in, still render items that don't require form permission checks
+    if (!auth?.isLoggedIn) {
+      formPermissionedItems.current = [...items];
+      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
       return;
     }
 
-    const request = itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
+    // No items to check permissions for - render all items
+    if (itemsToCheck.length === 0) {
+      formPermissionedItems.current = [...items];
+      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+      return;
+    }
+
+    const request = itemsToCheck
+      .map(x => x.actionConfiguration?.actionArguments?.formId)
+      .filter(isFormIdFullNameDto);
+
+    if (request.length === 0) {
+      formPermissionedItems.current = [...items];
+      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+      return;
+    }
+
     formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders })
       .then((result) => {
         if (result.success) {

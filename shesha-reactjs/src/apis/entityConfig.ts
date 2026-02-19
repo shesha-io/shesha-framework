@@ -47,6 +47,15 @@ export interface FormIdFullNameDto {
   module?: string | null;
 }
 
+// Type guard to ensure FormIdFullNameDto has required properties
+export const isFormIdFullNameDto = (value: any): value is FormIdFullNameDto => {
+  return value !== null &&
+         value !== undefined &&
+         typeof value === 'object' &&
+         typeof value.name === 'string' &&
+         typeof value.module === 'string';
+};
+
 export type FormIdFullNameDtoAjaxResponse = IAjaxResponse<FormIdFullNameDto>;
 
 export interface EntityConfigGetEntityConfigFormQueryParams {

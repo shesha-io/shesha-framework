@@ -151,6 +151,9 @@ class IdleHandler implements IIdleHandler {
   };
 
   logout = () => {
+    // Guard against concurrent/re-entrant calls
+    if (this.logoutInProgress) return;
+
     this.logoutInProgress = true;
     this.broadcastLogout();
     this.logoutUser()
