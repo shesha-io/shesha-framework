@@ -20,6 +20,18 @@ export interface ISheshaErrorCause {
   errors?: IModelValidation;
 }
 
+
+export class RowReorderValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RowReorderValidationError';
+  }
+
+  static isRowReorderValidationError(error: Error): error is RowReorderValidationError {
+    return error instanceof RowReorderValidationError;
+  }
+}
+
 /**
  * Shesha Error class
  */
