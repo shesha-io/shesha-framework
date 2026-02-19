@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
+using Castle.Core.Logging;
 using Hangfire.Server;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -140,12 +141,7 @@ namespace Shesha.Scheduler
         /// <summary>
         /// Reference to the logger to write logs.
         /// </summary>
-        protected ILogger Logger => _defaultLogger ??= IocManager.Resolve<ILogger>();
-
-        /// <summary>
-        /// Default logger, it used when instance logger is not set
-        /// </summary>
-        private ILogger _defaultLogger;
+        protected ILogger Logger => Log ?? NullLogger.Instance;
 
         public ILogger Log { get; set; }
 

@@ -1,5 +1,4 @@
-﻿using Abp.Collections.Extensions;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
@@ -149,7 +148,8 @@ namespace Shesha.ConfigurationItems
                     var submodulesInitialized = false;
                     foreach (var submodule in submodules)
                     {
-                        submodulesInitialized = submodulesInitialized || await submodule.InitializeConfigurationAsync();
+                        if (await submodule.InitializeConfigurationAsync())
+                            submodulesInitialized = true;
                     }
 
                     if (mainModuleInitialized || submodulesInitialized)
