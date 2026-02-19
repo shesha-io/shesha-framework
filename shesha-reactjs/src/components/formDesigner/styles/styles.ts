@@ -254,10 +254,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     margin: 0;
                     display: flex;
                     white-space: normal;
-                    overflow: hidden;
                     max-width: 100%;
                     overflow: auto;
-        
                     .${shaComponentTitle} {
                         margin-right: 10px;
                     }

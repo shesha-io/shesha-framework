@@ -43,8 +43,10 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   };
 }
 
+type MenuOverflowValue = "dropdown" | "menu" | "scroll";
+
 const resolveMenuOverflow = (
-  value: IStyleType["overflow"],
+  value: MenuOverflowValue | string | undefined,
 ): "dropdown" | "menu" | "scroll" => {
   if (value === "dropdown" || value === "menu" || value === "scroll") {
     return value;

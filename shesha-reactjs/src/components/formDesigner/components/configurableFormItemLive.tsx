@@ -206,7 +206,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   } else {
     // Use standard Form.Item for components without binding support
     return (
-      <div ref={formItemRef}>
+      <div ref={formItemRef} style={formItemStyle}>
         <Form.Item {...formItemProps}>{children}</Form.Item>
       </div>
     );

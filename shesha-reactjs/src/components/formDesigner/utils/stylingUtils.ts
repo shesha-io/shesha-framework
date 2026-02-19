@@ -84,7 +84,7 @@ export const stylingUtils = {
     // Height is expanded to include padding to allow gap for component selecting e.g in button
     const expandedHeight = getExpandedDimensions(dimensions.height);
     const height = expandedHeight 
-      ? `calc(${expandedHeight} + ${addPx(validationHeight)})`
+      ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
       : validationHeight ? addPx(validationHeight) : undefined;
 
     const minHeight = getExpandedDimensions(dimensions.minHeight);
@@ -93,7 +93,7 @@ export const stylingUtils = {
 
     const minWidth = dimensions.minWidth;
 
-    const maxWidth = dimensions.maxWidth;
+    const maxWidth = dimensions.maxWidth; 
 
     return {
       boxSizing: 'border-box' as const,

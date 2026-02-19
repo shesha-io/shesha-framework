@@ -42,9 +42,8 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
 
         if (explainElement) {
           const scaledHeight = explainElement.getBoundingClientRect().height;
-          const height = scaledHeight / zoomScale;
-          setValidationHeight((prevHeight) => (prevHeight !== height ? height : prevHeight));
-        } else {
+          const height = scaledHeight / (zoomScale || 1);
+          setValidationHeight((prevHeight) => (prevHeight !== height ? height : prevHeight));        } else {
           setValidationHeight((prevHeight) => (prevHeight !== 0 ? 0 : prevHeight));
         }
       });
@@ -69,7 +68,7 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
           scheduleMeasureHeight();
         });
       }
-// Disconnect before re-observing to prevent stale observations
+      // Disconnect before re-observing to prevent stale observations
       resizeObserverRef.current.disconnect();
       const explainElement = currentContainer.querySelector(".ant-form-item-explain") as HTMLElement | null;
 
