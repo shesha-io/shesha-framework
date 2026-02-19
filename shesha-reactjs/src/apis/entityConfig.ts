@@ -48,12 +48,12 @@ export interface FormIdFullNameDto {
 }
 
 // Type guard to ensure FormIdFullNameDto has required properties
-export const isFormIdFullNameDto = (value: any): value is FormIdFullNameDto => {
+export const isFormIdFullNameDto = (value: unknown): value is FormIdFullNameDto => {
   return value !== null &&
          value !== undefined &&
          typeof value === 'object' &&
-         typeof value.name === 'string' &&
-         typeof value.module === 'string';
+         typeof (value as Record<string, unknown>).name === 'string' &&
+         typeof (value as Record<string, unknown>).module === 'string';
 };
 
 export type FormIdFullNameDtoAjaxResponse = IAjaxResponse<FormIdFullNameDto>;
