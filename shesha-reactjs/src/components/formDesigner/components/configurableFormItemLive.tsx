@@ -173,7 +173,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         maxWidth: wrapperMaxWidth,
       };
   }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, validationHeight,
-    width, height, minWidth, minHeight, maxWidth, maxHeight,
+    width, height, minWidth, minHeight, maxWidth, maxHeight, preserveDimensionsInDesigner,
     containerWidth, containerHeight, containerMaxWidth, containerMinWidth, containerMinHeight, containerMaxHeight, hasContainerDimensions,
     paddingValues]);
 

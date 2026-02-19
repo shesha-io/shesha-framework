@@ -56,12 +56,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       width,
       hidden,
       gapDegree,
-      style,
+      allStyles,
     } = model;
 
     if (hidden) return null;
 
-    const styles = getStyle(style);
+    const finalStyle = {...allStyles?.fullStyle };
 
 
     const getEvaluatedSuccessColor = (): SuccessProps => {
@@ -115,7 +115,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               strokeLinecap={strokeLinecap}
               success={getEvaluatedSuccessColor()}
               gapDegree={gapDegree}
-              style={{ ...styles, width: '100%' }}
+              style={{ ...finalStyle, width: '100%' }}
             />
           );
         }}

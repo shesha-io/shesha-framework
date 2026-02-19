@@ -26,7 +26,7 @@ const getHeightDimension = (main: string | number, canvasHeight?: string): strin
 };
 
 export const getCalculatedDimension = (main: string | number, firstMargin?: string | number, secondMargin?: string | number): string => {
-  return `calc(${addPx(main)} - ${firstMargin ?? 0} - ${secondMargin ?? 0})`;
+  return `calc(${addPx(main ?? '100%')} - ${addPx(firstMargin ?? 0)} - ${addPx(secondMargin ?? 0)})`;
 };
 
 export const getDimensionsStyle = (

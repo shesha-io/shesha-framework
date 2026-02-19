@@ -86,7 +86,7 @@ export const stylingUtils = {
     const marginRight = addPx(margins?.marginRight ?? 0);
 
     // Check if there are horizontal margins
-    const hasHorizontalMargins = !!(margins?.marginLeft || margins?.marginRight);
+    const hasHorizontalMargins = margins?.marginLeft !== undefined || margins?.marginRight !== undefined;
 
     // When width is 100% and there are margins, use 'auto' to prevent overflow
     // CSS will calculate: auto width = parent width - margins
