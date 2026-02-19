@@ -33,6 +33,7 @@ import { ErrorDetails } from '@/utils/configurationFramework/actions';
 import axios from 'axios';
 import { isAxiosResponse } from '@/interfaces/ajaxResponse';
 import { useCanvasStateOrUndefined } from '@/providers/canvas';
+import { RowReorderValidationError } from '@/utils/errors';
 
 interface IReactTableState {
   allRows: any[];
@@ -466,6 +467,11 @@ export const ReactTable: FC<IReactTableProps> = ({
         };
 
         onRowsReordered(payload).catch((error) => {
+          if (error instanceof RowReorderValidationError) {
+            console.warn('Row reorder validation failed:', error.message);
+            return;
+          }
+
           const unwrappedError = axios.isAxiosError(error) && isAxiosResponse(error.response) && error.response.data?.error
             ? error.response.data.error
             : error;
