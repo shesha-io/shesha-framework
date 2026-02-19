@@ -8,7 +8,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { ProgressProps } from 'antd';
 import { ProgressType, SuccessProps } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
@@ -61,7 +61,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
 
     if (hidden) return null;
 
-    const finalStyle = {...allStyles?.fullStyle };
+    const finalStyle = { ...allStyles?.fullStyle };
 
 
     const getEvaluatedSuccessColor = (): SuccessProps => {
