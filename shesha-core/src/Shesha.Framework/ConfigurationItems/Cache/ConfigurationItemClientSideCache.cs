@@ -5,6 +5,7 @@ using Abp.Runtime.Caching;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,13 +16,13 @@ namespace Shesha.ConfigurationItems.Cache
     {
         private readonly ICacheManager _cacheManager;
         private bool _disposed;
-        private readonly Dictionary<string, ITypedCache<string, ConfigurationItemCacheItem>> _caches;
+        private readonly ConcurrentDictionary<string, ITypedCache<string, ConfigurationItemCacheItem>> _caches;
         private string CachePrefix => $"{this.GetType().Name}:";
 
         public ConfigurationItemClientSideCache(ICacheManager cacheManager)
         {
             _cacheManager = cacheManager;
-            _caches = new Dictionary<string, ITypedCache<string, ConfigurationItemCacheItem>>();
+            _caches = new ConcurrentDictionary<string, ITypedCache<string, ConfigurationItemCacheItem>>();
         }
 
         public void Dispose()
