@@ -43,10 +43,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
             :after {
                 inset-inline-start: unset;
             }
-            input {
-              width: 100%;
-              height: 100%;
-            }
         }
       }
 

@@ -109,7 +109,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // when typing in the properties panel. The portal is created once and the component
   // receives updates through its own internal state management.
   const settingsEditor = useMemo(() => {
-    const renderRequired = isSelected && settingsPanelRef.current;
+    const renderRequired = isSelected && settingsPanelRef?.current;
 
     if (!renderRequired)
       return null;
@@ -176,7 +176,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       if (fullComponentModel.container?.dimensions) return originalDims;
 
       // If component has custom dimension calculation, use it
-      if (component.getDesignerDimensions) {
+      if (component?.getDesignerDimensions) {
         return component.getDesignerDimensions(originalDims, deviceDimensions);
       }
 

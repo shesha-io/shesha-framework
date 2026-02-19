@@ -234,7 +234,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: nanoid(),
+                            parentId: styleRouterId,
                             inline: true,
                             label: 'Width',
                             inputs: [

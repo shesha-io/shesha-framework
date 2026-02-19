@@ -25,7 +25,8 @@ const RadioComponent: RadioComponentDefinition = {
   isOutput: true,
   canBeJsSetting: true,
   // Radio has its own intrinsic size and should not be forced to fill wrapper
-  preserveDimensionsInDesigner: true,  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
+  preserveDimensionsInDesigner: true,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
   calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
     dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,

@@ -55,8 +55,8 @@ export const addPx = (value: number | string | null | undefined): string | undef
  * @param dimensionValue - The dimension value to check
  * @returns true if the value can be used in calc() with additions
  */
-export const canAddToCalc = (dimensionValue: string | number | undefined): boolean => {
-  if (!dimensionValue) return false;
+export const canAddToCalc = (dimensionValue: string | number | null | undefined): boolean => {
+  if (dimensionValue === undefined || dimensionValue === null) return false;
 
   const parsed = parseDimension(dimensionValue);
   if (!parsed) {

@@ -193,7 +193,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     }))
     .add<IMenuListProps>(1, (prev) => ({
       ...prev,
-      menuOverflow: resolveMenuOverflow(prev.overflow) ?? prev.menuOverflow ?? 'dropdown',
+      menuOverflow: prev.menuOverflow ?? resolveMenuOverflow(prev.overflow),
     })),
 };
 

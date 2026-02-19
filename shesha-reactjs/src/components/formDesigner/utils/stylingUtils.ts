@@ -185,7 +185,7 @@ export const stylingUtils = {
         paddingLeft: parsed.paddingLeft,
       });
     } catch {
-      return stylingBox;
+      return JSON.stringify({});
     }
   },
 

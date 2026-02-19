@@ -25,7 +25,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const shaForm = useShaFormInstance();
-  const { zoom } = useCanvas()
+  const { zoom } = useCanvas();
   const isInDesigner = shaForm.formMode === 'designer';
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
@@ -34,7 +34,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
 
   // Use custom hook to measure validation message height dynamically
   // Convert zoom percentage (e.g., 50) to scale factor (e.g., 0.5)
-  const [formItemRef, validationHeight] = useValidationHeight(isInDesigner ? zoom/100 : 1);
+  const [formItemRef, validationHeight] = useValidationHeight(isInDesigner ? zoom / 100 : 1);
 
   const colLayout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -149,7 +149,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       };
   }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, validationHeight,
     width, height, minWidth, minHeight, maxWidth, maxHeight,
-    containerWidth, containerHeight, containerMinWidth, containerMinHeight, containerMaxHeight, hasContainerDimensions,
+    containerWidth, containerHeight, containerMaxWidth, containerMinWidth, containerMinHeight, containerMaxHeight, hasContainerDimensions,
     model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;

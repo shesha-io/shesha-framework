@@ -69,7 +69,8 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
           scheduleMeasureHeight();
         });
       }
-
+// Disconnect before re-observing to prevent stale observations
+      resizeObserverRef.current.disconnect();
       const explainElement = currentContainer.querySelector(".ant-form-item-explain") as HTMLElement | null;
 
       if (explainElement) {

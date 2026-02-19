@@ -43,7 +43,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const shaForm = useShaFormInstance();
     const { style, ...restProps } = model;
 
-    const isDesignerMode = shaForm.formMode === 'designer';
+    const isDesignerMode = shaForm?.formMode === 'designer';
 
     // Merge base styles with designer dimensions
     // Button preserves its original dimensions in designer mode
