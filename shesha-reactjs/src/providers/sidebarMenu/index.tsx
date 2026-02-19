@@ -146,13 +146,11 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
 
   // Re-run permission checks when auth state changes (e.g., user logs in/out)
   useEffect(() => {
-    if (auth?.isLoggedIn) {
-      const itemsToCheck = [];
-      const localItems = actualItems.map((item) => requestItemVisible(item, itemsToCheck));
+    const itemsToCheck = [];
+    const localItems = actualItems.map((item) => requestItemVisible(item, itemsToCheck));
 
-      if (itemsToCheck.length > 0) {
-        getFormPermissions(localItems, itemsToCheck);
-      }
+    if (itemsToCheck.length > 0) {
+      getFormPermissions(localItems, itemsToCheck);
     }
   }, [auth?.isLoggedIn]);
 
