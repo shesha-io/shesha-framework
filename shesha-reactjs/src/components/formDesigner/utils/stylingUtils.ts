@@ -1,7 +1,6 @@
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
-import { validationError } from '@/designer-components/dataTable/utils';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
