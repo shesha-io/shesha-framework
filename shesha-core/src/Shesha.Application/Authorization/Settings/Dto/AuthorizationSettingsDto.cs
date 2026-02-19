@@ -46,7 +46,7 @@
         public int RequiredLength { get; set; }
 
         /// <summary>
-        /// Auto logoff timeout in seconds (must be greater than 30 to allow warning period)
+        /// Auto logoff timeout in seconds (must be greater than 60 to allow warning period)
         /// </summary>
         public int AutoLogoffTimeout { get; set; }
 

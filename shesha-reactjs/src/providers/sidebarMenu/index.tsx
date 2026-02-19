@@ -9,7 +9,7 @@ import { getFlagSetters } from '../utils/flagsSetters';
 import { IHeaderAction } from './models';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { setItemsAction, toggleSidebarAction } from './actions';
-import { FormFullName, isNavigationActionConfiguration, useSheshaApplication } from '@/providers';
+import { FormFullName, isNavigationActionConfiguration, useSheshaApplication, useAuth } from '@/providers';
 import {
   SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
   SidebarMenuActionsContext,
@@ -34,6 +34,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   children,
 }) => {
   const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
+  const { isLoggedIn } = useAuth();
 
   const [state, dispatch] = useReducer(SidebarMenuReducer, {
     ...SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
@@ -89,22 +90,25 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   };
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
-    if (itemsToCheck.length > 0) {
-      formConfigurationCheckPermissions(
-        itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
-        { base: backendUrl, headers: httpHeaders }
-      )
-        .then((result) => {
-          if (result.success) {
-            itemsToCheck.forEach((item) => {
-              return updatetItemVisible(item, result.result);
-            });
-            dispatch(setItemsAction([...items]));
-          } else {
-            console.error(result.error);
-          }
-        });
+    // Don't check permissions if user is not logged in
+    if (!isLoggedIn || itemsToCheck.length === 0) {
+      return;
     }
+
+    formConfigurationCheckPermissions(
+      itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
+      { base: backendUrl, headers: httpHeaders }
+    )
+      .then((result) => {
+        if (result.success) {
+          itemsToCheck.forEach((item) => {
+            return updatetItemVisible(item, result.result);
+          });
+          dispatch(setItemsAction([...items]));
+        } else {
+          console.error(result.error);
+        }
+      });
   };
 
   useDeepCompareEffect(() => {

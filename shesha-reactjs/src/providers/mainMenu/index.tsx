@@ -83,21 +83,24 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
   };
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
-    if (itemsToCheck.length > 0) {
-      const request = itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
-      formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders })
-        .then((result) => {
-          if (result.success) {
-            itemsToCheck.forEach((item) => {
-              return updatetFormNamigationVisible(item, result.result);
-            });
-            formPermissionedItems.current = [...items];
-            dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
-          } else {
-            console.error(result.error);
-          }
-        });
+    // Don't check permissions if user is not logged in
+    if (!auth?.isLoggedIn || itemsToCheck.length === 0) {
+      return;
     }
+
+    const request = itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
+    formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders })
+      .then((result) => {
+        if (result.success) {
+          itemsToCheck.forEach((item) => {
+            return updatetFormNamigationVisible(item, result.result);
+          });
+          formPermissionedItems.current = [...items];
+          dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+        } else {
+          console.error(result.error);
+        }
+      });
   };
 
   const updateMainMenu = (value: IConfigurableMainMenu) => {

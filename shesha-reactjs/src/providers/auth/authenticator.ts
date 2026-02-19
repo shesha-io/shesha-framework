@@ -234,13 +234,35 @@ export class Authenticator implements IAuthenticator {
         }
     };
 
-    #logoutUserHttp = async (): Promise<void> => {
-        await this.#httpClient.post<void, void>(URLS.LOGOFF, {});
-    };
-
     logoutUser = async (): Promise<void> => {
-        await this.#logoutUserHttp();
+        // Get the current token before clearing (needed for logout API call)
+        const currentToken = this.#getToken();
+
+        // Clear token from localStorage FIRST - this ensures any component that tries
+        // to read it after this point will not find it
         this.#clearAccessToken();
+
+        // Clear login info to ensure anyOfPermissionsGranted returns false
+        this.#loginInfo = null;
+
+        // Immediately refresh auth headers to clear Authorization header
+        // This propagates the cleared state to all components before logout API call
+        this.refreshAuthHeaders();
+
+        // Now make the logout API call with the token we saved earlier
+        // We pass the token explicitly in headers since it's no longer in localStorage
+        try {
+            if (currentToken?.accessToken) {
+                await this.#httpClient.post<void, void>(
+                    URLS.LOGOFF,
+                    {},
+                    { headers: { 'Authorization': `Bearer ${currentToken.accessToken}` } }
+                );
+            }
+        } catch (error) {
+            // Ignore logout API errors - we've already cleared everything locally
+            console.warn('Logout API call failed, but local session is cleared:', error);
+        }
 
         this.#updateState('waiting', null, null);
 
