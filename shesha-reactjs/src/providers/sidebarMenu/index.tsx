@@ -34,7 +34,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   children,
 }) => {
   const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
-  const { isLoggedIn } = useAuth();
+  const auth = useAuth(false);
 
   const [state, dispatch] = useReducer(SidebarMenuReducer, {
     ...SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
@@ -91,7 +91,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
     // Don't check permissions if user is not logged in
-    if (!isLoggedIn || itemsToCheck.length === 0) {
+    if (!auth?.isLoggedIn || itemsToCheck.length === 0) {
       return;
     }
 
@@ -108,6 +108,9 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
         } else {
           console.error(result.error);
         }
+      })
+      .catch((error) => {
+        console.error('Failed to check form permissions:', error);
       });
   };
 

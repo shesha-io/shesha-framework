@@ -100,6 +100,9 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
         } else {
           console.error(result.error);
         }
+      })
+      .catch((error) => {
+        console.error('Failed to check form permissions:', error);
       });
   };
 

@@ -307,10 +307,11 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     new IdleHandler(authenticator, httpClient, logoutUser, setState)
   );
 
-  // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
+  // Fallback value (WARNING_DURATION + 5 = 65s) is only used to satisfy hook validation
   // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
-  // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
-  // timeout > promptBeforeIdle (WARNING_DURATION = 60s).
+  // by the isTimeoutSet condition below. The timeoutSeconds variable uses autoLogoffTimeout
+  // when valid, otherwise defaults to WARNING_DURATION + 5. Small margin prevents validation
+  // failure since hook requires timeout > promptBeforeIdle (WARNING_DURATION = 60s).
   const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 5;
 
   // Idle timer is enabled only when:
