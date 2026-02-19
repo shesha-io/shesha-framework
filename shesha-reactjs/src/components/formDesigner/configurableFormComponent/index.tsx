@@ -30,6 +30,7 @@ import { getComponentTypeInfo } from '../utils/componentTypeUtils';
 import { dimensionUtils } from '../utils/dimensionUtils';
 import { stylingUtils } from '../utils/stylingUtils';
 import { designerConstants } from '../utils/designerConstants';
+import { useValidationHeight } from '../components/useValidationHeight';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IComponentModelProps;
@@ -49,7 +50,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const { activeDevice } = useCanvas();
+  const { activeDevice, zoom } = useCanvas();
+  const [formItemRef, validationHeight] = useValidationHeight(zoom / 100);
 
   // Memoize component lookup to prevent unnecessary re-renders
   const component = useMemo(() => getToolboxComponent(componentModel?.type), [getToolboxComponent, componentModel?.type]);
@@ -216,8 +218,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() => {
-    return stylingUtils.createRootContainerStyle(componentDimensions, margins);
-  }, [componentDimensions, margins]);
+    return stylingUtils.createRootContainerStyle(componentDimensions, margins, validationHeight);
+  }, [componentDimensions, margins, validationHeight]);
+
 
   return (
     <div
@@ -226,6 +229,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         "selected": isSelected,
         'has-config-errors': invalidConfiguration,
       })}
+      ref={formItemRef}
     >
       <span className={styles.shaComponentIndicator}>
         <Show when={hiddenFx || componentEditModeFx}>

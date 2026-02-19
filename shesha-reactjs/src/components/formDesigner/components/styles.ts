@@ -13,6 +13,9 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelA
 
   const formItem = cx(css`
         --ant-form-item-margin-bottom: 0px !important;
+        position: relative;
+        height: auto;
+        
         .ant-form-item-row {
             height: 100%;
             width: 100%;
@@ -41,6 +44,15 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelA
                      width: 100%;
                     }
                 }
+            }
+
+            .ant-form-item-additional {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                transform: translateY(100%);
+                z-index: 1;
             }
         }
   `);

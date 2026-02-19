@@ -1,6 +1,7 @@
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
+import { validationError } from '@/designer-components/dataTable/utils';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -63,6 +64,7 @@ export const stylingUtils = {
   createRootContainerStyle(
     dimensions: CSSProperties,
     margins: MarginValues,
+    validationHeight?: number,
   ): CSSProperties {
     // Use margin values directly (preserves relative values like 50%)
     const marginTop = addPx(margins?.marginTop ?? 0);
@@ -81,7 +83,7 @@ export const stylingUtils = {
       : originalWidth;
 
     // Height is expanded to include padding to allow gap for component selecting e.g in button
-    const height = getExpandedDimensions(dimensions.height);
+    const height = `calc(${getExpandedDimensions(dimensions.height)} + ${addPx(validationHeight)})`;
 
     const minHeight = getExpandedDimensions(dimensions.minHeight);
 

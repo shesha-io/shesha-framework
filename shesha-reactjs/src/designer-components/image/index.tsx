@@ -138,7 +138,12 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IImageProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
+    .add<IImageProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
+    .add<IImageProps>(7, (prev) => ({
+      ...prev,
+      objectFit: prev.objectFit || 'contain',
+      objectPosition: prev.objectPosition || 'left',
+    })),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

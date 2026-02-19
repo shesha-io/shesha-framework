@@ -10,6 +10,7 @@ import { useStyles } from './styles';
 import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
 import { designerConstants } from '../utils/designerConstants';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { useValidationHeight } from './useValidationHeight';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -26,6 +27,12 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const shaForm = useShaFormInstance();
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
+
+  // Get canvas zoom for designer mode (defaults to 100% in live/preview mode)
+
+  // Use custom hook to measure validation message height dynamically
+  // Convert zoom percentage (e.g., 50) to scale factor (e.g., 0.5)
+  const [formItemRef, validationHeight] = useValidationHeight();
 
   const colLayout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -108,10 +115,13 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         : wrapperHeight;
 
     // In designer mode: ONLY apply padding from stylebox, margins are handled by wrapper
-    // In live mode: Apply both margins and padding from stylebox
+    // Exception: validation height is added as marginBottom to create space for absolutely positioned validation
+    // In live mode: Apply both margins and padding from stylebox, plus validation height
     return isInDesigner
       ? {
         // No margins in designer mode - wrapper handles them as padding
+        // Exception: add validation height as marginBottom to create space for absolutely positioned validation element
+        marginBottom: validationHeight > 0 ? `${validationHeight}px` : undefined,
         width: calculatedWidth,
         height: calculatedHeight,
         minHeight: wrapperMinHeight,
@@ -125,9 +135,9 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
       }
       : {
-        // Live mode: apply both margins and padding
+        // Live mode: apply margins, padding, and validation height
         marginTop,
-        marginBottom,
+        marginBottom: validationHeight ? `calc(${marginBottom} + ${validationHeight}px)` : marginBottom,
         marginLeft,
         marginRight,
         width: calculatedWidth,
@@ -136,14 +146,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         minWidth: wrapperMinWidth,
         maxHeight: wrapperMaxHeight,
         maxWidth: wrapperMaxWidth,
-        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
-        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
-        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
-        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
       };
-  }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight,
+  }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, validationHeight,
     width, height, minWidth, minHeight, maxWidth, maxHeight,
-    containerWidth, containerHeight, containerMinWidth, containerMinHeight, containerMaxWidth, containerMaxHeight, hasContainerDimensions,
+    containerWidth, containerHeight, containerMinWidth, containerMinHeight, containerMaxHeight, containerMaxHeight, hasContainerDimensions,
     model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;
@@ -168,36 +174,41 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : colLayout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
-    style: formItemStyle,
   };
 
   if (typeof children === 'function') {
     if (model.context) {
       return (
-        <ConfigurableFormItemContext
-          componentId={model.id}
-          formItemProps={formItemProps}
-          valuePropName={valuePropName}
-          propertyName={propName}
-          contextName={model.context}
-        >
-          {children}
-        </ConfigurableFormItemContext>
+        <div ref={formItemRef} style={formItemStyle}>
+          <ConfigurableFormItemContext
+            componentId={model.id}
+            formItemProps={formItemProps}
+            valuePropName={valuePropName}
+            propertyName={propName}
+            contextName={model.context}
+          >
+            {children}
+          </ConfigurableFormItemContext>
+        </div>
       );
     } else {
       return (
-        <ConfigurableFormItemForm
-          formItemProps={formItemProps}
-          valuePropName={valuePropName}
-        >
-          {children}
-        </ConfigurableFormItemForm>
+        <div ref={formItemRef} style={formItemStyle}>
+          <ConfigurableFormItemForm
+            formItemProps={formItemProps}
+            valuePropName={valuePropName}
+          >
+            {children}
+          </ConfigurableFormItemForm>
+        </div>
       );
     }
   } else {
     // Use standard Form.Item for components without binding support
     return (
-      <Form.Item {...formItemProps}>{children}</Form.Item>
+      <div ref={formItemRef}>
+        <Form.Item {...formItemProps}>{children}</Form.Item>
+      </div>
     );
   }
 };
