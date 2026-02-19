@@ -10,8 +10,8 @@ export const defaultStyles = (prev: ICheckboxComponentProps & IInputStyles): ISt
       radius: { all: 4 },
     },
     dimensions: {
-      width: prev.width === 'auto' ? '14px' : prev.width,
-      height: prev.height === 'auto' ? '14px' : prev.height,
+      width: !prev.width || prev.width === 'auto' ? '14px' : prev.width,
+      height: !prev.height || prev.height === 'auto' ? '14px' : prev.height,
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',

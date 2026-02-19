@@ -8,6 +8,7 @@ import {
   getStyle,
   IConfigurableFormComponent,
   ISidebarMenuItem,
+  IStyleType,
   IToolboxComponent,
   migratePrevStyles,
   useFormData,
@@ -41,6 +42,16 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
     spreadRadius?: number;
   };
 }
+
+const resolveMenuOverflow = (
+  value: IStyleType["overflow"],
+): "dropdown" | "menu" | "scroll" => {
+  if (value === "dropdown" || value === "menu" || value === "scroll") {
+    return value;
+  }
+
+  return "dropdown";
+};
 
 interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
@@ -163,7 +174,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 styleOnSelected={getStyle(model?.styleOnSelected, data)}
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
                 menuItemStyle={menuItemShadowStyle}
-                overflow={model.menuOverflow || 'dropdown'}
+                overflow={resolveMenuOverflow(model.menuOverflow)}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
                 menuId={model.id}
@@ -182,7 +193,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     }))
     .add<IMenuListProps>(1, (prev) => ({
       ...prev,
-      menuOverflow: prev.menuOverflow ?? 'dropdown',
+      menuOverflow: resolveMenuOverflow(prev.overflow) ?? prev.menuOverflow ?? 'dropdown',
     })),
 };
 

@@ -139,7 +139,7 @@ export const designerConstants = {
    * @example
    * ```tsx
    * width: designerConstants.calculateAdjustedDimension('100%', '3px', '3px');
-   * // Returns: 'calc(100% - 3px - 3px)'
+   * // Returns: 'calc(100% + 3px + 3px)'
    * ```
    */
   calculateAdjustedDimension(

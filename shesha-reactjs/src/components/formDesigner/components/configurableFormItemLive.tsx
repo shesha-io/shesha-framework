@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { useFormItem, useShaFormInstance } from '@/providers';
+import { useCanvas, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
@@ -25,6 +25,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const shaForm = useShaFormInstance();
+  const { zoom } = useCanvas()
+  const isInDesigner = shaForm.formMode === 'designer';
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
@@ -32,7 +34,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
 
   // Use custom hook to measure validation message height dynamically
   // Convert zoom percentage (e.g., 50) to scale factor (e.g., 0.5)
-  const [formItemRef, validationHeight] = useValidationHeight();
+  const [formItemRef, validationHeight] = useValidationHeight(isInDesigner ? zoom/100 : 1);
 
   const colLayout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -40,7 +42,6 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   }, [formItemlabelCol, formItemWrapperCol, labelCol, wrapperCol]);
   const settings = shaForm.settings;
 
-  const isInDesigner = shaForm.formMode === 'designer';
   // Get component definition to check if it preserves its own dimensions
   const component = getToolboxComponent(model.type);
   const preserveDimensionsInDesigner = component?.preserveDimensionsInDesigner ?? false;
@@ -121,9 +122,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       ? {
         // No margins in designer mode - wrapper handles them as padding
         // Exception: add validation height as marginBottom to create space for absolutely positioned validation element
-        marginBottom: validationHeight > 0 ? `${validationHeight}px` : undefined,
         width: calculatedWidth,
-        height: calculatedHeight,
+        height: validationHeight > 0 ? `calc(${calculatedHeight} - ${validationHeight}px )` : calculatedHeight,
         minHeight: wrapperMinHeight,
         minWidth: wrapperMinWidth,
         maxHeight: wrapperMaxHeight,
@@ -149,7 +149,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       };
   }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, validationHeight,
     width, height, minWidth, minHeight, maxWidth, maxHeight,
-    containerWidth, containerHeight, containerMinWidth, containerMinHeight, containerMaxHeight, containerMaxHeight, hasContainerDimensions,
+    containerWidth, containerHeight, containerMinWidth, containerMinHeight, containerMaxHeight, hasContainerDimensions,
     model?.allStyles?.fullStyle]);
 
   const { hideLabel, hidden } = model;

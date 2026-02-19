@@ -49,7 +49,11 @@ export const getBackgroundStyle = (input: IBackgroundValue | undefined, jsStyle:
       const isConic = direction === 'conic';
       const colors = input.gradient?.colors || [];
       const colorsString = Object.values(colors).filter((color) => color && color.trim() !== '').join(', ');
-      style.backgroundImage = isRadial || isConic ? `${direction}-gradient(${colorsString})` : `linear-gradient(${input.gradient?.direction || 'to right'}, ${colorsString})`;
+      if (colorsString) {
+        style.backgroundImage = isRadial || isConic
+          ? `${direction}-gradient(${colorsString})`
+          : `linear-gradient(${direction || 'to right'}, ${colorsString})`;
+      }
       break;
     }
     case 'url': {

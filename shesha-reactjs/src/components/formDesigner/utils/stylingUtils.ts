@@ -82,7 +82,10 @@ export const stylingUtils = {
       : originalWidth;
 
     // Height is expanded to include padding to allow gap for component selecting e.g in button
-    const height = `calc(${getExpandedDimensions(dimensions.height)} + ${addPx(validationHeight)})`;
+    const expandedHeight = getExpandedDimensions(dimensions.height);
+    const height = expandedHeight 
+      ? `calc(${expandedHeight} + ${addPx(validationHeight)})`
+      : validationHeight ? addPx(validationHeight) : undefined;
 
     const minHeight = getExpandedDimensions(dimensions.minHeight);
 

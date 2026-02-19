@@ -103,16 +103,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
-    width: ${width};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
-      height: ${height};
-      min-height: ${minHeight};
-      max-height: ${maxHeight};
-      margin-bottom: ${marginBottom};
-      margin-top: ${marginTop};
-      margin-left: ${marginLeft};
-      margin-right: ${marginRight};
+    ${width ? `width: ${width};` : ''}
+      ${minWidth ? `min-width: ${minWidth};` : ''}
+      ${maxWidth ? `max-width: ${maxWidth};` : ''}
+      ${height ? `height: ${height};` : ''}
+      ${minHeight ? `min-height: ${minHeight};` : ''}
+      ${maxHeight ? `max-height: ${maxHeight};` : ''}
+      ${marginBottom ? `margin-bottom: ${marginBottom};` : ''}
+      ${marginTop ? `margin-top: ${marginTop};` : ''}
+      ${marginLeft ? `margin-left: ${marginLeft};` : ''}
+      ${marginRight ? `margin-right: ${marginRight};` : ''}
 
     > .ant-collapse-item {
       display: flex;

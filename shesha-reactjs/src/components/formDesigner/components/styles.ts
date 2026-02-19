@@ -14,7 +14,7 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelA
   const formItem = cx(css`
         --ant-form-item-margin-bottom: 0px !important;
         position: relative;
-        height: auto;
+        height: 100%;
         
         .ant-form-item-row {
             height: 100%;

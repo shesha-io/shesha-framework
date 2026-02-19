@@ -49,13 +49,13 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     // Button preserves its original dimensions in designer mode
     const finalStyle = dimensionUtils.mergeWithDesignerDimensions(
       {
-        ...model.allStyles.dimensionsStyles,
-        ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.borderStyles),
-        ...model.allStyles.fontStyles,
-        ...(['dashed', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.backgroundStyles),
-        ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
-        ...model.allStyles.stylingBoxAsCSS,
-        ...model.allStyles.jsStyle,
+        ...model.allStyles?.dimensionsStyles,
+        ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles?.borderStyles),
+        ...model.allStyles?.fontStyles,
+        ...(['dashed', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles?.backgroundStyles),
+        ...(['primary', 'default'].includes(model.buttonType) && model.allStyles?.shadowStyles),
+        ...model.allStyles?.stylingBoxAsCSS,
+        ...model.allStyles?.jsStyle,
         justifyContent: model.font?.align,
       },
       isDesignerMode,

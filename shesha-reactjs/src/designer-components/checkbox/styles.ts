@@ -26,6 +26,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
         height: 100%;
       }
       .${prefixCls}-checkbox {
+        input {
+          width: 100%;
+          height: 100%;
+        }
         .${prefixCls}-checkbox-inner {
             --ant-control-interactive-size: ${style?.fontSize};
             --ant-line-width-bold: ${borderWidthFromWeight(style?.fontWeight)} !important;
