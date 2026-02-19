@@ -876,7 +876,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             console.error('OnBeforeRowReorder event error:', error);
             payload.applyOrder(oldData);
             const errorMessage = error instanceof Error ? error.message : String(error);
-            // Throw specific error type to help ReactTable distinguish validation errors from other errors (GitHub issue #4512)
             reject(new RowReorderValidationError(errorMessage));
           },
         });
