@@ -1,7 +1,6 @@
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
-import { getDesignerCalculatedDimension } from '@/designer-components/_settings/utils/index';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -40,7 +39,7 @@ const getExpandedDimensions = (value: string | number, marginTop: string | numbe
 
   return `calc(${value} + (${marginTop} + ${marginBottom}))`;
 };
-/* eslint-disable @stylistic/no-trailing-spaces */
+
 /**
  * Styling utility functions for form designer components.
  *
@@ -93,8 +92,8 @@ export const stylingUtils = {
 
     // When width is 100% and there are margins, use getDesignerCalculatedDimension to prevent overflow
     // Use getDesignerCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
-    const width = getDesignerCalculatedDimension(dimensions.width ?? '100%', margins?.marginLeft, margins?.marginRight);
-
+    const width = dimensions.width ? getExpandedDimensions(dimensions.width, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right)
+      : '100%';
     // Height is expanded to include padding to allow gap for component selecting e.g in button
     const expandedHeight = dimensions.height
       ? getExpandedDimensions(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)

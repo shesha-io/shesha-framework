@@ -137,7 +137,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         : getCalculatedDimension('100%', marginLeft, marginRight);
     } else {
       // In live mode: use wrapper width and account for margins
-      calculatedWidth = getCalculatedDimension(wrapperWidth, marginLeft, marginRight);
+      calculatedWidth = wrapperWidth;
     }
 
     // Step 3: Calculate height based on context

@@ -34,51 +34,6 @@ export const getSmallerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes
       : 'desktop';
 };
 
-
-export function widthRelativeToCanvas(width: string | number, canvasWidth: string = '100vw'): string {
-  if (typeof width === 'number') {
-    return `${width}px`;
-  }
-
-  const trimmed = String(width).trim();
-  const vwRegex = /^([\d.]+)\s*vw$/i;
-  const vwMatch = vwRegex.exec(trimmed);
-
-  if (vwMatch && vwMatch[1] !== undefined) {
-    const percentageOfCanvas = parseFloat(vwMatch[1]);
-    if (!Number.isNaN(percentageOfCanvas)) {
-      return `calc((${percentageOfCanvas} * ${canvasWidth}) / 100)`;
-    }
-  }
-
-  return trimmed;
-}
-
-/**
- * Converts vh units to be relative to a specific canvas height
- * @param height - The height value (e.g., "50vh", "100px", 300)
- * @param canvasHeight - The canvas height to calculate relative to (default: '100vh')
- * @returns The converted height string
- */
-export function heightRelativeToCanvas(height: string | number, canvasHeight: string = '100vh'): string {
-  if (typeof height === 'number') {
-    return `${height}px`;
-  }
-
-  const trimmed = String(height).trim();
-  const vhRegex = /^([\d.]+)\s*vh$/i;
-  const vhMatch = vhRegex.exec(trimmed);
-
-  if (vhMatch && vhMatch[1] !== undefined) {
-    const percentageOfCanvas = parseFloat(vhMatch[1]);
-    if (!Number.isNaN(percentageOfCanvas)) {
-      return `calc((${percentageOfCanvas} * ${canvasHeight}) / 100)`;
-    }
-  }
-
-  return trimmed;
-}
-
 export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
 
 export interface IAutoZoomParams {

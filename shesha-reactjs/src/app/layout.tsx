@@ -11,8 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }): JSX.Element {
   noStore();
-  // const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
-  const backendUrl = 'https://linux-functional-api-test.azurewebsites.net';
+  const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
 
   return (
     <html lang="en">
