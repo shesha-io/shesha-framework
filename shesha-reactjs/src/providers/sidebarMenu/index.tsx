@@ -119,7 +119,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       .then((result) => {
         if (result.success) {
           itemsToCheck.forEach((item) => {
-            return updatetItemVisible(item, result.result);
+            updatetItemVisible(item, result.result);
           });
           dispatch(setItemsAction([...items]));
         } else {
@@ -151,7 +151,11 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
 
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
-    }
+    } else
+      if (localItems.length > 0) {
+        // no forms to check set items as is
+        dispatch(setItemsAction([...localItems]));
+      }
   }, [auth?.isLoggedIn]);
 
   const collapse = () => {
