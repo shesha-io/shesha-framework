@@ -12,7 +12,6 @@ import {
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useAvailableConstantsContextsNoRefresh,
-  useCanvas,
   useDeepCompareMemo,
   useSheshaApplication,
   wrapConstantsData,
