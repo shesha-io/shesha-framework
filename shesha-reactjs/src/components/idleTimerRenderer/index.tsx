@@ -98,6 +98,7 @@ interface IIdleHandler {
 class IdleHandler implements IIdleHandler {
   private activateFn: (() => void) | null = null;
   private warningVisible: boolean = false;
+  private logoutInProgress: boolean = false;
 
   constructor(
     private authenticator: ReturnType<typeof useAuth>,
@@ -150,15 +151,21 @@ class IdleHandler implements IIdleHandler {
   };
 
   logout = () => {
+    // Guard against concurrent/re-entrant calls
+    if (this.logoutInProgress) return;
+
+    this.logoutInProgress = true;
     this.broadcastLogout();
     this.logoutUser()
       .then(() => {
         this.warningVisible = false;
+        this.logoutInProgress = false;
         this.setStateFn?.(INIT_STATE);
       })
       .catch((error) => {
         console.error('Failed to logout user:', error);
         this.warningVisible = false;
+        this.logoutInProgress = false;
         this.setStateFn?.(INIT_STATE);
       });
   };
@@ -218,7 +225,7 @@ class IdleHandler implements IIdleHandler {
   };
 
   onAction = () => {
-    if (this.warningVisible) {
+    if (this.warningVisible || this.logoutInProgress) {
       return;
     }
 
@@ -303,16 +310,17 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     new IdleHandler(authenticator, httpClient, logoutUser, setState)
   );
 
-  // Fallback value (WARNING_DURATION + 300 = 330s) is only used to satisfy hook validation
+  // Fallback value (WARNING_DURATION + 5 = 65s) is only used to satisfy hook validation
   // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
-  // by isTimeoutSet condition. Large margin prevents validation failure since hook requires
-  // timeout > promptBeforeIdle (WARNING_DURATION = 30s).
+  // by the isTimeoutSet condition below. The timeoutSeconds variable uses autoLogoffTimeout
+  // when valid, otherwise defaults to WARNING_DURATION + 5. Small margin prevents validation
+  // failure since hook requires timeout > promptBeforeIdle (WARNING_DURATION = 60s).
   const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 5;
 
   // Idle timer is enabled only when:
   // 1. Settings are loaded (autoLogoffTimeout !== undefined)
   // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
-  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 30s warning)
+  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 60s warning)
   // 4. User is logged in (loginInfo exists)
   // Note: useAutoLogoff check is now handled by IdleTimerWrapper
   const isTimeoutSet =
