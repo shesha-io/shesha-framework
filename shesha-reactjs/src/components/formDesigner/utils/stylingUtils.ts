@@ -31,7 +31,16 @@ const DEFAULT_MARGIN_VALUES = {
   right: DEFAULT_MARGINS.horizontal,
 };
 
+const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
+  if (value === undefined || value === null || value === '') {
+    // When no explicit dimension is provided, don't set a CSS value at all.
+    // This avoids producing invalid CSS like `calc(undefined + ...)`.
+    return undefined;
+  }
 
+  return `calc(${value} + (${marginTop} + ${marginBottom}))`;
+};
+/* eslint-disable @stylistic/no-trailing-spaces */
 /**
  * Styling utility functions for form designer components.
  *
@@ -88,18 +97,18 @@ export const stylingUtils = {
 
     // Height is expanded to include padding to allow gap for component selecting e.g in button
     const expandedHeight = dimensions.height
-      ? `calc(${addPx(dimensions.height)} + (${DEFAULT_MARGINS.vertical} + ${DEFAULT_MARGINS.vertical}))`
+      ? getExpandedDimensions(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
     const height = expandedHeight
       ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
       : validationHeight ? addPx(validationHeight) : undefined;
 
     const minHeight = dimensions.minHeight
-      ? `calc(${addPx(dimensions.minHeight)} + (${DEFAULT_MARGINS.vertical} + ${DEFAULT_MARGINS.vertical}))`
+      ? getExpandedDimensions(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
 
     const maxHeight = dimensions.maxHeight
-      ? `calc(${addPx(dimensions.maxHeight)} + (${DEFAULT_MARGINS.vertical} + ${DEFAULT_MARGINS.vertical}))`
+      ? getExpandedDimensions(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
 
     const minWidth = dimensions.minWidth;
