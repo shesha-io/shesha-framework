@@ -38,7 +38,7 @@ const getExpandedDimensions = (value?: string | number): string | undefined => {
     return undefined;
   }
 
-  return `calc(${value} + (${DEFAULT_MARGIN_VALUES.top} + ${DEFAULT_MARGIN_VALUES.top}))`;
+  return `calc(${value} + (${DEFAULT_MARGIN_VALUES.top} + ${DEFAULT_MARGIN_VALUES.bottom}))`;
 };
 /* eslint-disable @stylistic/no-trailing-spaces */
 /**
