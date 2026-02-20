@@ -103,14 +103,19 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       return;
     }
 
-    const request = itemsToCheck
-      .map(x => x.actionConfiguration?.actionArguments?.formId)
-      .filter(isFormIdFullNameDto);
+    // Filter to only items with valid formId DTOs
+    const validItemsToCheck = itemsToCheck.filter(x =>
+      isFormIdFullNameDto(x.actionConfiguration?.actionArguments?.formId)
+    );
 
-    if (request.length === 0) {
+    if (validItemsToCheck.length === 0) {
       dispatch(setItemsAction([...items]));
       return;
     }
+
+    const request = validItemsToCheck
+      .map(x => x.actionConfiguration?.actionArguments?.formId)
+      .filter(isFormIdFullNameDto);
 
     formConfigurationCheckPermissions(
       request,
@@ -118,7 +123,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     )
       .then((result) => {
         if (result.success) {
-          itemsToCheck.forEach((item) => {
+          validItemsToCheck.forEach((item) => {
             updatetItemVisible(item, result.result);
           });
           dispatch(setItemsAction([...items]));
