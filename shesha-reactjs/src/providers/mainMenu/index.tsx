@@ -83,17 +83,8 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
   };
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
-    // If user is not logged in, still render items that don't require form permission checks
-    if (!auth?.isLoggedIn) {
-      formPermissionedItems.current = [...items];
-      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
-      return;
-    }
-
-    // No items to check permissions for - render all items
-    if (itemsToCheck.length === 0) {
-      formPermissionedItems.current = [...items];
-      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+    // Don't check permissions if user is not logged in
+    if (!auth?.isLoggedIn || itemsToCheck.length === 0) {
       return;
     }
 
@@ -102,8 +93,6 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
       .filter(isFormIdFullNameDto);
 
     if (request.length === 0) {
-      formPermissionedItems.current = [...items];
-      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
       return;
     }
 
