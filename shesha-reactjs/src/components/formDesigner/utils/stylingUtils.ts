@@ -240,6 +240,6 @@ export const {
   removeMarginsFromStylingBox,
   createMarginsFromStylingBox,
   createPaddingOnlyStylingBox,
-  extractMargins,
   stripMargins,
+  extractMargins,
 } = stylingUtils;

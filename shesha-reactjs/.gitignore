@@ -21,3 +21,4 @@ next-example/.out-storybook/*
 
 *.playground.stories.tsx
 *.tgz
+AGENTS.md
