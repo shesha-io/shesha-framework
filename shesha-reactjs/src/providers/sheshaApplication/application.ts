@@ -177,12 +177,25 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
   };
 
   setRequestHeaders = (headers: IRequestHeaders) => {
-    this.#httpHeaders = {
-      ...this.#httpHeaders,
-      ...this.#buildHttpRequestHeaders?.(),
-      ...headers,
-      [FRONT_END_APP_HEADER_NAME]: this.#applicationKey,
-    };
+    // Start with existing headers
+    const newHeaders = { ...this.#httpHeaders };
+
+    // Apply built headers
+    const builtHeaders = this.#buildHttpRequestHeaders?.() || {};
+    Object.assign(newHeaders, builtHeaders);
+
+    // Apply incoming headers
+    Object.assign(newHeaders, headers);
+
+    // If Authorization was in old headers but not in new ones, remove it
+    if ('Authorization' in this.#httpHeaders && !('Authorization' in headers) && !('Authorization' in builtHeaders)) {
+      delete newHeaders.Authorization;
+    }
+
+    // Always set the app key
+    newHeaders[FRONT_END_APP_HEADER_NAME] = this.#applicationKey;
+
+    this.#httpHeaders = newHeaders;
     this.#rerender();
   };
 
