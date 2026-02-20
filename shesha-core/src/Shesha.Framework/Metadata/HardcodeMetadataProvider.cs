@@ -9,9 +9,8 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.DynamicEntities;
-using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
+using Shesha.Generators;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using Shesha.Utilities;
@@ -31,12 +30,15 @@ namespace Shesha.Metadata
     public class HardcodeMetadataProvider : IHardcodeMetadataProvider, ITransientDependency
     {
         private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
+        private readonly INameGenerator _nameGenerator;
 
         public HardcodeMetadataProvider(
-            IEntityTypeConfigurationStore entityConfigurationStore
+            IEntityTypeConfigurationStore entityConfigurationStore,
+            INameGenerator nameGenerator
         )
         {
             _entityConfigurationStore = entityConfigurationStore;
+            _nameGenerator = nameGenerator;
         }
 
         /// inheritedDoc
@@ -168,8 +170,44 @@ namespace Shesha.Metadata
                 result.EntityType = entityType?.EntityType;
                 result.EntityModule = entityType?.EntityModule;
 
-                result.ListConfiguration = entityType?.ListConfiguration ?? new EntityPropertyListConfiguration();
-                result.ListConfiguration.ForeignProperty = dataType.ListForeignProperty;
+                if (result.DataFormat == ArrayFormats.EntityReference)
+                {
+                    result.ListConfiguration = entityType?.ListConfiguration ?? new EntityPropertyListConfiguration();
+                    result.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToOne;
+                    result.ListConfiguration.ForeignProperty = dataType.ListForeignProperty;
+                }
+                if (result.DataFormat == ArrayFormats.ManyToManyEntities)
+                {
+                    var manyToManyAttribute = property.GetAttributeOrNull<ManyToManyAttribute>();
+                    if (manyToManyAttribute != null)
+                    {
+                        result.ListConfiguration = entityType?.ListConfiguration ?? new EntityPropertyListConfiguration();
+                        result.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToMany;
+                        result.ListConfiguration.DbMapping = entityType?.ListConfiguration?.DbMapping ?? new EntityPropertyListDbMapping();
+
+                        string? tableName;
+                        string? parentColumnName;
+                        string? childColumnName;
+
+                        if (manyToManyAttribute.AutoGeneration)
+                        {
+                            (tableName, _, _, parentColumnName, childColumnName) = _nameGenerator.GetAutoManyToManyTableNames(property);
+                            tableName = string.IsNullOrEmpty(_nameGenerator.AutoGeneratorDbSchema)
+                                ? tableName
+                                : $"{_nameGenerator.AutoGeneratorDbSchema}.{tableName}";
+                        }
+                        else
+                        {
+                            tableName = manyToManyAttribute.Table;
+                            parentColumnName = manyToManyAttribute.KeyColumn;
+                            childColumnName = manyToManyAttribute.ChildColumn;
+                        }
+
+                        result.ListConfiguration.DbMapping.ManyToManyTableName = tableName;
+                        result.ListConfiguration.DbMapping.ManyToManyKeyColumnName = parentColumnName;
+                        result.ListConfiguration.DbMapping.ManyToManyChildColumnName = childColumnName;
+                    }
+                }
             }
             else if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
             {

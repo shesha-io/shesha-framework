@@ -54,7 +54,6 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     [AllowAnonymous]
     public async Task<FormIdentifier?> GetEntityConfigFormAsync(EntityTypeIdInput entityTypeId, string typeName)
     {
-        // ToDo: AS - merge EntityTypeIdInput with EntityTypeIdentifier
         var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(new EntityTypeIdentifier(entityTypeId.Module, entityTypeId.Name ?? "", entityTypeId.EntityType));
 
         if (entityConfig == null)
@@ -310,7 +309,6 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                 response.Modules.Add(responseModule);
 
                 var moduleInfo = !string.IsNullOrWhiteSpace(module.Module)
-                    //? moduleInfos.First(m => m.GetModuleAccessor() == module.Module) // ToDo: AS - remove after implementation
                     ? moduleInfos.First(m => m.Name == module.Module)
                     : null;
 

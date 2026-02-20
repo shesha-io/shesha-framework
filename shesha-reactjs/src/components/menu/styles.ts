@@ -52,10 +52,12 @@ export const useStyles = createStyles(
       display: flex;
       flex-direction: row;
       white-space: nowrap;
-      align-items: center;
-      height: 100%;
+      align-items: stretch;
+      height: auto;
+      min-height: 100%;
       width: ${width};
-      overflow: hidden;
+      overflow: visible;
+      padding: 4px 0;
     `;
 
     const menuWrapper = css`
@@ -64,6 +66,9 @@ export const useStyles = createStyles(
       align-items: center;
       scroll-behavior: smooth;
       scrollbar-width: none;
+      overflow-y: visible;
+      margin: 0;
+      padding: 0;
 
       ::-webkit-scrollbar {
         display: none;
@@ -71,18 +76,20 @@ export const useStyles = createStyles(
     `;
 
     const menuWrapperScroll = isScrolling
-      ? {
-        display: "flex",
-        width: `calc(${width} + 80px)`,
-        overflow: "scroll",
-      }
+      ? css`
+        display: flex;
+        width: calc(${width} - 80px);
+        overflow-x: scroll;
+        overflow-y: visible;
+      `
       : undefined;
 
     const shaMenu = cx(
       `.${prefixCls}-menu`,
       css`
         border: none;
-        width: ${width};
+        width: ${isScrolling ? 'auto' : width};
+        min-width: ${isScrolling ? width : 'auto'};
         ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
         font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
         font-weight: ${fontStyles?.fontWeight};
@@ -162,6 +169,7 @@ export const useStyles = createStyles(
               display: inline-block !important;
               inset: unset !important;
               transform: none !important;
+              color: ${colors?.itemColor ?? BLACK_CLR} !important;
             }
           }
 
@@ -265,23 +273,29 @@ export const useStyles = createStyles(
     const scrollButtons = css`
       width: 80px;
       display: flex;
-      height: 60px;
+      height: 100%;
       color: ${colors?.itemColor};
+      ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      padding-left: 5px;
+      margin: 0;
+      padding: 0;
+      gap: 0;
     `;
 
     const scrollButton = css`
       cursor: pointer;
       padding: 0 5px;
+      margin: 0;
       transition: background 0.3s;
       width: 45%;
       align-items: center;
       height: 100%;
       justify-content: center;
       display: flex;
+      ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
+      ${menuItemStyle || ''}
 
       &:hover {
         background: ${colors?.hoverItemBackground
@@ -477,13 +491,69 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
   }
 
-  /* Drawer menu items - override itemStyle with styleOnSubMenu for submenu items */
+  /* Drawer submenu items - use subItem colors */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+    color: ${(p: GlobalMenuType) => p?.colors?.subItemColor || BLACK_CLR} !important;
+    ${(p: GlobalMenuType) => p?.colors?.subItemBackground ? `background: ${p?.colors?.subItemBackground} !important;` : ''}
     ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
+
+    .anticon {
+      color: ${(p: GlobalMenuType) => p?.colors?.subItemColor || BLACK_CLR} !important;
+    }
+
+    &:hover {
+      color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
+      background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'white'} !important;
+      ${(p: GlobalMenuType) => p?.styleOnHover || ''};
+
+      .anticon {
+        ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
+      }
+    }
+
+    &.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item-selected {
+      color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
+      background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'white'} !important;
+      ${(p: GlobalMenuType) => p?.styleOnSelected || ''};
+    }
   }
 
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+    color: ${(p: GlobalMenuType) => p?.colors?.subItemColor || BLACK_CLR} !important;
+    ${(p: GlobalMenuType) => p?.colors?.subItemBackground ? `background: ${p?.colors?.subItemBackground} !important;` : ''}
     ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
+
+    .anticon {
+      color: ${(p: GlobalMenuType) => p?.colors?.subItemColor || BLACK_CLR} !important;
+    }
+
+    .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-arrow {
+      color: ${(p: GlobalMenuType) => p?.colors?.subItemColor || BLACK_CLR} !important;
+    }
+
+    &:hover {
+      color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
+      background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'white'} !important;
+      ${(p: GlobalMenuType) => p?.styleOnHover || ''};
+
+      .anticon {
+        ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
+      }
+
+      .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-arrow {
+        ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
+      }
+    }
+  }
+
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}
+    .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub
+    .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu.${(p: GlobalMenuType) =>
+      p?.theme.prefixCls}-menu-submenu-selected
+    .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+    color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
+    background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'white'} !important;
+    ${(p: GlobalMenuType) => p?.styleOnSelected || ''};
   }
 `;
 
@@ -545,7 +615,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
   /* Override Ant Design's default grey background on inline submenus */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline {
-    background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'white'} !important;
+    background: ${(p: GlobalMenuType) => p?.colors?.subItemBackground || 'white'} !important;
   }
 
   /* Submenu container styles for horizontal menu dropdowns */
@@ -719,12 +789,16 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
   }
 
-  /* Drawer menu items - override itemStyle with styleOnSubMenu for submenu items */
+  /* Drawer submenu items - use subItem colors */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+    color: ${(p: GlobalMenuType) => p?.colors?.subItemColor || BLACK_CLR} !important;
+    ${(p: GlobalMenuType) => p?.colors?.subItemBackground ? `background: ${p?.colors?.subItemBackground} !important;` : ''}
     ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
   }
 
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+    color: ${(p: GlobalMenuType) => p?.colors?.subItemColor || BLACK_CLR} !important;
+    ${(p: GlobalMenuType) => p?.colors?.subItemBackground ? `background: ${p?.colors?.subItemBackground} !important;` : ''}
     ${(p: GlobalMenuType) => p?.styleOnSubMenu || ''};
   }
 `;

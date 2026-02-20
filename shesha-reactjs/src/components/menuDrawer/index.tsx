@@ -20,6 +20,7 @@ interface IProps {
   styleOnHover?: React.CSSProperties;
   styleOnSelected?: React.CSSProperties;
   styleOnSubMenu?: React.CSSProperties;
+  menuItemStyle?: React.CSSProperties;
   menuId?: string;
 }
 
@@ -34,6 +35,7 @@ const ShaMenuDrawer: FC<IProps> = ({
   styleOnHover,
   styleOnSelected,
   styleOnSubMenu,
+  menuItemStyle,
   menuId,
 }) => {
   const backgroundColor = itemStyle?.backgroundColor || colors?.itemBackground || 'transparent';
@@ -73,6 +75,7 @@ const ShaMenuDrawer: FC<IProps> = ({
           styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
           styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
           styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
+          menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
           menuId={menuId}
         />

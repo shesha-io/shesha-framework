@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
-import { ConfigurableItemFullName, extractAjaxResponse, GetAllResponse, IAjaxResponse } from '@/interfaces';
-import { FormFullName, IConfigurableMainMenu, useFormManager, useHttpClient, useSettings, useSheshaApplication } from '@/providers';
+import { ILinkProps } from '@/designer-components/link/interfaces';
+import { ConfigurableItemFullName, extractAjaxResponse, GetAllResponse, IAjaxResponse, IGenericGetAllPayload } from '@/interfaces';
+import { isConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { FormFullName, HttpClientApi, IComponentsDictionary, IConfigurableFormComponent, IConfigurableMainMenu, isNavigationActionConfiguration, isScriptActionConfiguration, useFormManager, useHttpClient, useSettings, useSheshaApplication } from '@/providers';
 import { ItemReferenceFinder } from '@/utils/dependencies/item-reference-utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormOutlined, SettingOutlined } from '@ant-design/icons';
 import { Space, Spin, Typography } from 'antd';
 import qs from 'qs';
@@ -43,6 +46,118 @@ type ItemsState = {
 
 const getNormalizedName = (id: ConfigurableItemFullName): string => `${id.module}.${id.name}`.toLowerCase();
 
+const isComponent = (component: unknown): component is IConfigurableFormComponent => isDefined(component) && "id" in component && "type" in component;
+
+interface ParsedUrl {
+  module: string;
+  form: string;
+  queryParams?: Record<string, string>;
+}
+
+// Alternative: Pure regex approach without URL constructor
+function parseUrlPureRegex(url: string): ParsedUrl | null {
+  // Match both path and query string in one go
+  const fullPattern = /(?:dynamic|no-auth)\/([^\/\?]+)\/([^\/\?]+)(?:\?(.*))?$/;
+  const match = url.match(fullPattern);
+
+  if (!match) {
+    return null;
+  }
+
+  const result: ParsedUrl = {
+    module: match[1],
+    form: match[2],
+  };
+
+  // Parse query string if present
+  if (match[3]) {
+    result.queryParams = {};
+    const queryString = match[3];
+    queryString.split('&').forEach((param) => {
+      const [key, value] = param.split('=');
+      result.queryParams![decodeURIComponent(key)] = decodeURIComponent(value || '');
+    });
+  }
+
+  return result;
+}
+
+export function extractPathsSimple(jsCode: string): string[] {
+  const pattern = /\b(?<url>(dynamic|no-auth)\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)(?:\?[a-zA-Z0-9_=&%-]*)?\b/g;
+  const paths: string[] = [];
+  let match: RegExpExecArray | null = null;
+
+  while ((match = pattern.exec(jsCode)) !== null) {
+    const url = match.groups?.["url"];
+    if (url)
+      paths.push(url);
+  }
+
+  return paths;
+}
+
+
+const findSpecificRefs = (components: IComponentsDictionary, callback: (ref: ConfigurableItemFullName, path?: string) => void): void => {
+  const tryAddFormByLink = (url: string | undefined | null): void => {
+    // callback
+    if (!isNullOrWhiteSpace(url)) {
+      const parsedUrl = parseUrlPureRegex(url);
+      if (parsedUrl) {
+        console.log('LOG: analyze href - url found', url);
+        callback({ name: parsedUrl.form, module: parsedUrl.module }, "raw url");
+      } else
+        console.log('LOG: analyze href - not found', url);
+    }
+  };
+
+  for (const key in components) {
+    if (components.hasOwnProperty(key)) {
+      const component = components[key];
+      if (isComponent(component)) {
+        if (component.type === 'link') {
+          tryAddFormByLink((component as ILinkProps).href);
+        }
+        // tryAddFormsFromJs;
+      }
+    }
+  }
+};
+
+type SettingDefinitionDto = {
+  name: string;
+  module: { name: string };
+  label: string | null;
+  editorFormModule: string;
+  editorFormName: string;
+};
+
+type SettingDefinition = {
+  settingId: ConfigurableItemFullName;
+  label: string | null;
+  formId: FormFullName;
+};
+
+const getSettingsAsync = async (httpClient: HttpClientApi): Promise<SettingDefinition[]> => {
+  const payload: IGenericGetAllPayload = {
+    maxResultCount: -1,
+    skipCount: 0,
+    entityType: 'Shesha.Domain.SettingConfiguration',
+    // filter: JSON.stringify({ '==': [{ var: 'module.name' }, 'Shesha'] }),
+    filter: JSON.stringify({ "==": [{ var: "editorFormModule" }, "Shesha"] }),
+    properties: 'name, module { id name }, label editorFormModule editorFormName',
+  };
+  const url = `/api/services/app/Entities/GetAll?${qs.stringify(payload)}`;
+
+  const response = await httpClient.get<IAjaxResponse<GetAllResponse<SettingDefinitionDto>>>(url);
+  const data = extractAjaxResponse(response.data);
+
+  return data.items.map<SettingDefinition>((s) => ({
+    settingId: { name: s.name, module: s.module.name },
+    label: s.label,
+    formId: { name: s.editorFormName, module: s.editorFormModule },
+  }));
+};
+
 export const FormAnalyzer: FC = () => {
   const httpClient = useHttpClient();
   const { backendUrl } = useSheshaApplication();
@@ -53,6 +168,7 @@ export const FormAnalyzer: FC = () => {
   const fetchFormsAsync = async (): Promise<void> => {
     const query = {
       maxResultCount: -1,
+      filter: { "==": [{ var: "module.name" }, "Shesha"] },
     };
     const url = `/api/services/Shesha/FormConfiguration/GetAll?${qs.stringify(query)}`;
     const response = await httpClient.get<IAjaxResponse<GetAllResponse<FormDto>>>(url);
@@ -60,42 +176,105 @@ export const FormAnalyzer: FC = () => {
 
     const allItems: ItemState[] = [];
     for (const item of data.items) {
-      const form = await formManager.getFormById({ formId: item.id, skipCache: true });
-      console.log(`LOG: loaded form "${form.module}/${form.name}"`);
-      const uniqueRefs = ItemReferenceFinder.findAll(form.flatStructure.allComponents, { unique: true });
+      try {
+        const form = await formManager.getFormById({ formId: item.id, skipCache: true });
+        console.log(`LOG: loaded form "${form.module}/${form.name}"`);
+        const uniqueRefs = ItemReferenceFinder.findAll(form.flatStructure.allComponents, { unique: true });
 
-      const allRefs = ItemReferenceFinder.findAndMap<unknown, DependencyInfo>(form.flatStructure.allComponents, (ref, path) => {
-        return {
-          itemId: ref,
-          path,
-          isSatisfied: false,
+        if (item.name === "email-link-verification") {
+          console.log('LOG: email-link-verification');
+        }
+
+        const allRefs = ItemReferenceFinder.findAndMap<unknown, DependencyInfo>({ allComponents: form.flatStructure.allComponents, settings: form.settings }, (ref, path) => {
+          return {
+            itemId: ref,
+            path,
+            isSatisfied: false,
+          };
+        }, {
+          onAnalyze: (current, addRef, path) => {
+            const tryAddFormByLink = (url: string | undefined | null, customPath?: string): void => {
+              // callback
+              if (!isNullOrWhiteSpace(url)) {
+                const parsedUrl = parseUrlPureRegex(url);
+                if (parsedUrl) {
+                  console.log('LOG: analyze href - url found', url);
+                  addRef({
+                    module: parsedUrl.module,
+                    name: parsedUrl.form,
+                  }, customPath);
+                } else
+                  console.log('LOG: analyze href - not found', url);
+              }
+            };
+
+            const tryAddFormsFromJs = (jsCode: string | undefined | null): void => {
+              if (!isNullOrWhiteSpace(jsCode)) {
+                const urls = extractPathsSimple(jsCode);
+                urls.forEach((url) => tryAddFormByLink(url, "JavaScript code"));
+              }
+            };
+            if (path.startsWith('settings') && typeof (current) === "string") {
+              tryAddFormsFromJs(current);
+            }
+            if (isConfigurableActionConfiguration(current)) {
+              if (isScriptActionConfiguration(current)) {
+                tryAddFormsFromJs(current.actionArguments?.expression);
+              }
+              if (isNavigationActionConfiguration(current) && current.actionArguments) {
+                if (current.actionArguments.navigationType === "url") {
+                  tryAddFormByLink(current.actionArguments.url, "navigate action");
+                }
+              }
+            }
+          },
+        });
+
+        findSpecificRefs(form.flatStructure.allComponents, (ref, path) => {
+          allRefs.push({
+            itemId: ref,
+            path,
+            isSatisfied: false,
+          });
+        });
+
+        console.log(`LOG: refs: ${JSON.stringify(uniqueRefs)}`);
+
+        const formState: FormState = {
+          type: 'form',
+          id: {
+            name: form.name,
+            module: form.module,
+          },
+          rawId: form.id,
+          dependencies: allRefs,
         };
-      });
-
-      console.log(`LOG: refs: ${JSON.stringify(uniqueRefs)}`);
-
-      const formState: FormState = {
-        type: 'form',
-        id: {
-          name: form.name,
-          module: form.module,
-        },
-        rawId: form.id,
-        dependencies: allRefs,
-        /*
-        dependencies: uniqueRefs.map((ref) => ({
-          itemId: ref,
-          isSatisfied: false,
-        })),
-        */
-      };
-      allItems.push(formState);
+        allItems.push(formState);
+      } catch (error) {
+        console.error(`Failed to process form '${item.module}/${item.name}'`, error);
+      }
     }
+
+    /**/
+    const allSettings = await getSettingsAsync(httpClient);
+    for (const setting of allSettings) {
+      const settingItem: SettingState = {
+        type: 'setting',
+        id: setting.settingId,
+        dependencies: [{
+          itemId: setting.formId,
+          path: "editorForm",
+          isSatisfied: false,
+        }],
+      };
+      allItems.push(settingItem);
+    }
+    /**/
 
     const settingId: ConfigurableItemFullName = { name: 'Shesha.MainMenuSettings', module: 'Shesha' };
     const mainMenu = await settings.getSetting<IConfigurableMainMenu>(settingId);
     console.log('LOG: fetched main menu: ', mainMenu);
-    // const uniqueRefs = ItemReferenceFinder.findAll(mainMenu, { unique: true });
+
     const allRefs = ItemReferenceFinder.findAndMap<unknown, DependencyInfo>(mainMenu, (ref, path) => {
       return {
         itemId: ref,
@@ -107,12 +286,6 @@ export const FormAnalyzer: FC = () => {
       type: 'setting',
       id: settingId,
       dependencies: allRefs,
-      /*
-      dependencies: uniqueRefs.map((ref) => ({
-        itemId: ref,
-        isSatisfied: false,
-      })),
-      */
     };
     allItems.push(settingItem);
 
@@ -142,8 +315,8 @@ export const FormAnalyzer: FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {state.items.map((item) => (
-                  <tr key={item.id.module + item.id.name}>
+                {state.items.map((item, index) => (
+                  <tr key={index}>
                     <td>
                       <Space>
                         {item.type === 'form' && <FormOutlined />}
@@ -154,8 +327,8 @@ export const FormAnalyzer: FC = () => {
                     </td>
                     <td>
                       <ul>
-                        {item.dependencies.map((dep) => (
-                          <li key={dep.itemId.module + dep.itemId.name} style={{ color: dep.isSatisfied ? 'green' : 'red' }}>
+                        {item.dependencies.map((dep, index) => (
+                          <li key={index} style={{ color: dep.isSatisfied ? 'green' : 'red' }}>
                             <Space>
                               <Text type={dep.isSatisfied ? 'success' : 'danger'}>{dep.itemId.module}/{dep.itemId.name}</Text>
                               <Text type="secondary">{dep.path}</Text>

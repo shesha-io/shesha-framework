@@ -36,8 +36,6 @@ using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {
-    // ToDo: AS - V1, V2 merge ModelConfigurationManager and EntityConfigManager
-
     /// inheritedDoc
     public class ModelConfigurationManager : EntityConfigManager, IModelConfigurationManager, ITransientDependency
     {
@@ -73,6 +71,7 @@ namespace Shesha.DynamicEntities
         private readonly IShaTypeFinder _typeFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IRepository<Domain.Module, Guid> _moduleRepository;
+        private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;
         private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
         private readonly IModuleList _moduleList;
         private readonly IModuleManager _moduleManager;
@@ -89,6 +88,7 @@ namespace Shesha.DynamicEntities
             IShaTypeFinder typeFinder,
             IHardcodeMetadataProvider metadataProvider,
             IRepository<Domain.Module, Guid> moduleRepository,
+            IRepository<ConfigurationItemFolder, Guid> folderRepository,
             IModelConfigsCacheHolder modelConfigsCacheHolder,
             IUnitOfWorkManager unitOfWorkManager,
             IModuleList moduleList,
@@ -101,6 +101,7 @@ namespace Shesha.DynamicEntities
             _typeFinder = typeFinder;
             _metadataProvider = metadataProvider;
             _moduleRepository = moduleRepository;
+            _folderRepository = folderRepository;
             _modelConfigsCache = modelConfigsCacheHolder.Cache;
             _unitOfWorkManager = unitOfWorkManager;
             _moduleList = moduleList;
@@ -193,8 +194,6 @@ namespace Shesha.DynamicEntities
         [UnitOfWork]
         public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input)
         {
-            // todo: add validation
-
             var inheritedFrom = input.InheritedFromId != null
                 ? await Repository.GetAll().FirstOrDefaultAsync(x => 
                     x.Name == input.InheritedFromId.Name 
@@ -264,6 +263,8 @@ namespace Shesha.DynamicEntities
                 TableName = inheritedFrom != null ? inheritedFrom.TableName : tableName,
                 DiscriminatorValue = discriminatorValue,
 
+                FolderId = input.FolderId,
+
                 ClassName = entityName,
                 Namespace = dynamicNamespace,
                 GenerateAppService = true,
@@ -290,8 +291,6 @@ namespace Shesha.DynamicEntities
             var entityConfig = await Repository.GetAll().Where(m => m.Id == input.Id).FirstOrDefaultAsync();
             if (entityConfig == null)
                 throw new ModelConfigurationNotFoundException(input.Namespace, input.Name);
-
-            // todo: add validation
 
             var res = await CreateOrUpdateAsync(entityConfig, input, false);
             await RemoveCacheItemAsync(res.Module, res.Namespace, res.ClassName);
@@ -366,9 +365,6 @@ namespace Shesha.DynamicEntities
         {
             Validate(input, isNew);
 
-            // ToDo: AS - Think if we allow to change name because there can be created inherited classes
-            //config.Name = config.CreatedInDb ? config.Name : dto.Name; // update only if the property is not created in DB yet
-
             if (isNew)
             {
                 entityConfig.IsCodegenPending = true;
@@ -376,15 +372,20 @@ namespace Shesha.DynamicEntities
                 entityConfig.DiscriminatorValue = input.DiscriminatorValue?.Trim();
                 entityConfig.SchemaName = input.SchemaName?.Trim();
                 entityConfig.TableName = input.TableName?.Trim();
-                entityConfig.Name = input.Name.Trim();
                 entityConfig.ClassName = input.ClassName.Trim();
                 entityConfig.Namespace = input.Namespace?.Trim();
                 entityConfig.Module = input.ModuleId != null ? await _moduleManager.GetModuleAsync(input.ModuleId.Value) : null;
+                entityConfig.Folder = input.FolderId != null ? await _folderRepository.GetAsync(input.FolderId.Value) : null;
                 entityConfig.EntityConfigType = input.EntityConfigType;
                 entityConfig.Normalize();
 
                 await Repository.InsertAsync(entityConfig);
             }
+
+            // Update Name only if the property is not created in DB yet
+            if (!entityConfig.CreatedInDb)
+                entityConfig.Name = input.Name.Trim(); 
+
 
             entityConfig.Label = input.Label;
             entityConfig.Description = input.Description;
@@ -565,6 +566,7 @@ namespace Shesha.DynamicEntities
                     {
                         dbProp.ListConfiguration = dbProp.ListConfiguration ?? new EntityPropertyListConfiguration();
                         dbProp.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToMany;
+                        // Other 'dbProp.ListConfiguration.DbMapping' properties will be configured on the Create DB Items stage on the application startup
                     }
                 }
 
@@ -699,7 +701,7 @@ namespace Shesha.DynamicEntities
 
             if (updateType != ModelUpdateType.DecorProperties)
             {
-                //dbProp.Name = dbProp.CreatedInDb ? dbProp.Name : dto.Name; // update only if the property is not created in DB yet
+                dbProp.Name = dbProp.CreatedInDb ? dbProp.Name : dto.Name; // update only if the property is not created in DB yet
                 dbProp.EntityModule = dto.EntityType?.Module;
                 dbProp.EntityType = dto.EntityType?.Name;
                 dbProp.EntityFullClassName = (await Repository.FirstOrDefaultAsync(x =>

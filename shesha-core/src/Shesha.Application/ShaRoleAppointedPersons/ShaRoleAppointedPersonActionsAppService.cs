@@ -4,6 +4,7 @@ using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.ShaRoleAppointedPersons.Dto;
 using Shesha.Validations;
 using System;
@@ -54,24 +55,27 @@ namespace Shesha.ShaRoleAppointedPersons
                 ? await Repository.GetAsync(withId.Id)
                 : new ShaRoleAppointedPerson();
 
-            entity.Role = input.RoleId != Guid.Empty
+            var role = input.RoleId != Guid.Empty
                 ? await _roleRepository.GetAsync(input.RoleId)
                 : null;
-            entity.Person = input.Person != null && input.Person.Id != null && input.Person.Id != Guid.Empty
+            var person = input.Person != null && input.Person.Id != null && input.Person.Id != Guid.Empty
                 ? await _personRepository.GetAsync(input.Person.Id.Value)
                 : null;
 
             var validationResults = new List<ValidationResult>();
-            if (entity.Role == null)
+            if (role == null)
                 validationResults.Add(new ValidationResult("Role is mandatory"));
-            if (entity.Person == null)
+            if (person == null)
                 validationResults.Add(new ValidationResult("Person is mandatory"));
 
-            if (entity.Role != null && entity.Person != null &&
-                await Repository.GetAll().AnyAsync(a => a.Role == entity.Role && a.Person == entity.Person && a.Id != entity.Id))
+            if (role != null && person != null &&
+                await Repository.GetAll().AnyAsync(a => a.Role == role && a.Person == person && a.Id != entity.Id))
                 validationResults.Add(new ValidationResult("Selected person already in the list"));
 
             validationResults.ThrowValidationExceptionIfAny(L);
+
+            entity.Role = role.NotNull();
+            entity.Person = person;
 
             await Repository.InsertOrUpdateAsync(entity);
 

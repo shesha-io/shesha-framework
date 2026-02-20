@@ -156,6 +156,12 @@ export interface IConfigurableActionConfiguration<TArguments extends ActionParam
   onFail?: IConfigurableActionConfiguration;
 }
 
+export const isConfigurableActionConfiguration = (actionConfig: unknown): actionConfig is IConfigurableActionConfiguration => {
+  return actionConfig && typeof (actionConfig) === 'object' &&
+    'actionOwner' in actionConfig && typeof (actionConfig.actionOwner) === 'string' &&
+    'actionName' in actionConfig && typeof (actionConfig.actionName) === 'string';
+};
+
 /**
  * Make default action configuration, is used for component initialization
  */

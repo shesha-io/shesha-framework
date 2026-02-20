@@ -47,7 +47,7 @@ namespace Boxfusion.Authorization
         public Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
         {
             return _rolePersonRepository.GetAll()
-                .Where(e => e.Role != null && roles.Contains(e.Role.Name) && e.Person == person)
+                .Where(e => roles.Contains(e.Role.Name) && e.Person == person)
                 .AnyAsync();
         }
 
