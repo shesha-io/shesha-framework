@@ -23,10 +23,10 @@ interface PaddingValues {
 
 const usePaddingValues = (fullStyle: CSSProperties | undefined): PaddingValues => {
   return useMemo(() => ({
-    paddingTop: fullStyle?.paddingTop as string | number | undefined,
-    paddingRight: fullStyle?.paddingRight as string | number | undefined,
-    paddingBottom: fullStyle?.paddingBottom as string | number | undefined,
-    paddingLeft: fullStyle?.paddingLeft as string | number | undefined,
+    paddingTop: fullStyle?.paddingTop,
+    paddingRight: fullStyle?.paddingRight,
+    paddingBottom: fullStyle?.paddingBottom,
+    paddingLeft: fullStyle?.paddingLeft,
   }), [
     fullStyle?.paddingTop,
     fullStyle?.paddingRight,
@@ -115,7 +115,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const paddingValues = usePaddingValues(model?.allStyles?.fullStyle);
 
   const formItemStyle = useMemo(() => {
-    // Use container dimensions for the Form.Item wrapper (if available), otherwise use thumbnail dimensions
+    // Step 1: Select which dimensions to use (container takes precedence over regular dimensions)
     const wrapperWidth = hasContainerDimensions ? containerWidth : width;
     const wrapperHeight = hasContainerDimensions ? containerHeight : height;
     const wrapperMinWidth = hasContainerDimensions ? containerMinWidth : minWidth;
@@ -123,47 +123,64 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     const wrapperMaxWidth = hasContainerDimensions ? containerMaxWidth : maxWidth;
     const wrapperMaxHeight = hasContainerDimensions ? containerMaxHeight : maxHeight;
 
-    // Handle auto width in designer mode
-    // - auto width should fill remaining space (100%) in designer
-    const isAutoWidth = wrapperWidth === 'auto';
+    // Step 2: Calculate width based on context
+    let calculatedWidth: string | number | undefined;
 
-    const calculatedWidth = preserveDimensionsInDesigner
-      ? 'auto'
-      : isInDesigner
-        ? isAutoWidth
-          ? '100%' // Auto width fills wrapper in designer
-          : getCalculatedDimension('100%', marginLeft, marginRight)
-        : getCalculatedDimension(wrapperWidth, marginLeft, marginRight);
-
-    const calculatedHeight = preserveDimensionsInDesigner
-      ? 'auto'
-      : isInDesigner
+    if (preserveDimensionsInDesigner) {
+      // Component manages its own dimensions
+      calculatedWidth = 'auto';
+    } else if (isInDesigner) {
+      // In designer: auto width fills container, otherwise calculate with margins
+      const isAutoWidth = wrapperWidth === 'auto';
+      calculatedWidth = isAutoWidth
         ? '100%'
-        : wrapperHeight;
+        : getCalculatedDimension('100%', marginLeft, marginRight);
+    } else {
+      // In live mode: use wrapper width and account for margins
+      calculatedWidth = getCalculatedDimension(wrapperWidth, marginLeft, marginRight);
+    }
 
-    // In designer mode: ONLY apply padding from stylebox, margins are handled by wrapper
-    // Exception: validation height is added as marginBottom to create space for absolutely positioned validation
-    // In live mode: Apply both margins and padding from stylebox, plus validation height
-    return isInDesigner
-      ? {
-        // No margins in designer mode - wrapper handles them as padding
-        // Exception: add validation height as marginBottom to create space for absolutely positioned validation element
+    // Step 3: Calculate height based on context
+    let calculatedHeight: string | number | undefined;
+
+    if (preserveDimensionsInDesigner) {
+      // Component manages its own dimensions
+      calculatedHeight = 'auto';
+    } else if (isInDesigner) {
+      // In designer: height fills container, adjusted for validation message space
+      const baseHeight = '100%';
+      calculatedHeight = validationHeight > 0
+        ? `calc(${baseHeight} - ${validationHeight}px)`
+        : baseHeight;
+    } else {
+      // In live mode: use wrapper height as-is
+      calculatedHeight = wrapperHeight;
+    }
+
+    // Step 4: Assemble final style object based on mode
+    if (isInDesigner) {
+      // Designer mode: no margins (wrapper handles them), only padding from stylebox
+      return {
         width: calculatedWidth,
-        height: validationHeight > 0 ? `calc(${calculatedHeight} - ${validationHeight}px )` : calculatedHeight,
+        height: calculatedHeight,
         minHeight: wrapperMinHeight,
         minWidth: wrapperMinWidth,
         maxHeight: wrapperMaxHeight,
         maxWidth: wrapperMaxWidth,
-        // Only padding from stylebox (if any)
         paddingTop: paddingValues.paddingTop,
         paddingRight: paddingValues.paddingRight,
         paddingBottom: paddingValues.paddingBottom,
         paddingLeft: paddingValues.paddingLeft,
-      }
-      : {
-        // Live mode: apply margins, padding, and validation height
+      };
+    } else {
+      // Live mode: apply margins and adjust bottom margin for validation height
+      const adjustedMarginBottom = validationHeight
+        ? `calc(${addPx(marginBottom || 0)} + ${validationHeight}px)`
+        : marginBottom;
+
+      return {
         marginTop,
-        marginBottom: validationHeight ? `calc(${addPx(marginBottom || 0)} + ${validationHeight}px)` : marginBottom,
+        marginBottom: adjustedMarginBottom,
         marginLeft,
         marginRight,
         width: calculatedWidth,
@@ -173,6 +190,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         maxHeight: wrapperMaxHeight,
         maxWidth: wrapperMaxWidth,
       };
+    }
   }, [isInDesigner, marginTop, marginBottom, marginLeft, marginRight, validationHeight,
     width, height, minWidth, minHeight, maxWidth, maxHeight, preserveDimensionsInDesigner,
     containerWidth, containerHeight, containerMaxWidth, containerMinWidth, containerMinHeight, containerMaxHeight, hasContainerDimensions,

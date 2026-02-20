@@ -1,5 +1,4 @@
 import { CSSProperties } from 'react';
-import { ComponentTypeInfo } from './componentTypeUtils';
 import { IStyleType } from '@/index';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 
@@ -37,11 +36,10 @@ export const dimensionUtils = {
    * For other components, returns the calculated dimensions from styles.
    */
   getComponentDimensions(
-    typeInfo: ComponentTypeInfo,
+    preserveDimensionsInDesigner: boolean,
     dimensionsStyles: CSSProperties,
     jsStyle: CSSProperties,
   ): CSSProperties {
-    const { preserveDimensionsInDesigner } = typeInfo;
 
     // When preserveDimensionsInDesigner is true, use original dimensions from the model
     // Otherwise, use designer dimensions (fill wrapper)
@@ -102,7 +100,7 @@ export const dimensionUtils = {
    * In live/edit mode: returns original dimensions
    */
   getComponentDimensionsForMode(
-    typeInfo: ComponentTypeInfo,
+    preserveDimensionsInDesigner: boolean,
     dimensionsStyles: CSSProperties,
     isDesignerMode: boolean,
   ): CSSProperties {
@@ -112,7 +110,7 @@ export const dimensionUtils = {
     }
 
     // In designer mode, components preserving dimensions keep original dimensions
-    if (typeInfo.preserveDimensionsInDesigner) {
+    if (preserveDimensionsInDesigner) {
       return dimensionsStyles;
     }
 

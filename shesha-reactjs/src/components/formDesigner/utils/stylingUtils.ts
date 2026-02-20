@@ -1,6 +1,7 @@
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
+import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -24,10 +25,10 @@ const ZERO_MARGINS: MarginValues = {
   marginRight: 0,
 };
 const DEFAULT_MARGIN_VALUES = {
-  top: '5px',
-  bottom: '5px',
-  left: '3px',
-  right: '3px',
+  top: DEFAULT_MARGINS.vertical,
+  bottom: DEFAULT_MARGINS.vertical,
+  left: DEFAULT_MARGINS.horizontal,
+  right: DEFAULT_MARGINS.horizontal,
 };
 
 const getExpandedDimensions = (value?: string | number): string | undefined => {
@@ -37,7 +38,7 @@ const getExpandedDimensions = (value?: string | number): string | undefined => {
     return undefined;
   }
 
-  return `calc(${value} + (2 * ${DEFAULT_MARGINS.vertical}))`;
+  return `calc(${value} + (${DEFAULT_MARGIN_VALUES.top} + ${DEFAULT_MARGIN_VALUES.top}))`;
 };
 /* eslint-disable @stylistic/no-trailing-spaces */
 /**
@@ -85,15 +86,8 @@ export const stylingUtils = {
     const marginLeft = addPx(margins?.marginLeft ?? 0);
     const marginRight = addPx(margins?.marginRight ?? 0);
 
-    // Check if there are horizontal margins
-    const hasHorizontalMargins = margins?.marginLeft !== undefined || margins?.marginRight !== undefined;
-
-    // When width is 100% and there are margins, use 'auto' to prevent overflow
-    // CSS will calculate: auto width = parent width - margins
-    const originalWidth = dimensions.width;
-    const width = originalWidth === '100%' && hasHorizontalMargins
-      ? 'auto'
-      : originalWidth;
+    // When width is 100% and there are margins, use getCalculatedDimension to prevent overflow
+    const width = getCalculatedDimension(dimensions.width, margins?.marginLeft, margins?.marginRight);
 
     // Height is expanded to include padding to allow gap for component selecting e.g in button
     const expandedHeight = getExpandedDimensions(dimensions.height);

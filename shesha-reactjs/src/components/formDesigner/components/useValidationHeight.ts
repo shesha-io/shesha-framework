@@ -54,7 +54,7 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
         }
 
         const scaledHeight = explainElement.getBoundingClientRect().height;
-        const height = scaledHeight / (zoomScale || 1);
+        const height = scaledHeight / zoomScale;
 
         if (lastHeightRef.current !== height) {
           lastHeightRef.current = height;

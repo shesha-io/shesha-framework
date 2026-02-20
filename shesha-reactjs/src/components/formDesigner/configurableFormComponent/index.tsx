@@ -26,7 +26,6 @@ import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { getComponentTypeInfo } from '../utils/componentTypeUtils';
 import { dimensionUtils } from '../utils/dimensionUtils';
 import { stylingUtils } from '../utils/stylingUtils';
 import { designerConstants } from '../utils/designerConstants';
@@ -56,7 +55,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Memoize component lookup to prevent unnecessary re-renders
   const component = useMemo(() => getToolboxComponent(componentModel?.type), [getToolboxComponent, componentModel?.type]);
   // Extract primitive values for stable dependencies - avoid object recreation triggering re-renders
-  const { isInput: componentIsInput, preserveDimensionsInDesigner } = useMemo(() => getComponentTypeInfo(component), [component]);
+  const preserveDimensionsInDesigner = useMemo(() => component?.preserveDimensionsInDesigner, [component]);
 
   // Create model combining componentModel with device-specific settings
   // This is the base model used for both style calculations and rendering
@@ -150,11 +149,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       return { width: 'auto', height: 'auto' };
     }
     return dimensionUtils.getComponentDimensions(
-      { isInput: componentIsInput, preserveDimensionsInDesigner },
+      preserveDimensionsInDesigner,
       dimensionsStyles,
       jsStyle,
     );
-  }, [preserveDimensionsInDesigner, componentIsInput, dimensionsStyles, jsStyle]);
+  }, [preserveDimensionsInDesigner, dimensionsStyles, jsStyle]);
 
   // Create the model for rendering - components receive dimensions based on their config
   // and no margins (since wrapper handles margins directly)

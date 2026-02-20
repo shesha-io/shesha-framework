@@ -48,8 +48,6 @@ const ContainerComponent: ContainerComponentDefinition = {
       ...stylingBoxAsCSS,
     }), [dimensionsStyles, borderStyles, backgroundStyles, shadowStyles, stylingBoxAsCSS]);
 
-    if (model.hidden) return null;
-
     const flexAndGridStyles = useMemo(() => ({
       display: model.display,
       flexDirection: model.flexDirection,
@@ -80,20 +78,26 @@ const ContainerComponent: ContainerComponentDefinition = {
       model.gap,
     ]);
 
+    const wrapperStyle = useMemo(() => ({
+      ...wrapperStyles,
+      alignSelf: model.alignSelf,
+      justifySelf: model.justifySelf,
+      ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
+    }), [wrapperStyles, model, formData, globalState]);
+
+    const style = useMemo(() => ({
+      ...getStyle(model?.style, formData),
+      height: '100%',
+    }), [model?.style, formData]);
+
+    if (model.hidden) return null;
+
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
           containerId={model.id}
-          wrapperStyle={useMemo(() => ({
-            ...wrapperStyles,
-            alignSelf: model.alignSelf,
-            justifySelf: model.justifySelf,
-            ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
-          }), [wrapperStyles, model, formData, globalState])}
-          style={useMemo(() => ({
-            ...getStyle(model?.style, formData),
-            height: '100%',
-          }), [model?.style, formData])}
+          wrapperStyle={wrapperStyle}
+          style={style}
           noDefaultStyling={model.noDefaultStyling}
           className={cx(model.className, styles.container)}
           dynamicComponents={model?.isDynamic ? model?.components : ContainerComponent.emptyComponents}
