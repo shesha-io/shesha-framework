@@ -9,14 +9,14 @@ import { getFlagSetters } from '../utils/flagsSetters';
 import { IHeaderAction } from './models';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { setItemsAction, toggleSidebarAction } from './actions';
-import { FormFullName, isNavigationActionConfiguration, useSheshaApplication, useAuth } from '@/providers';
+import { FormFullName, isNavigationActionConfiguration, useSheshaApplication } from '@/providers';
 import {
   SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
   SidebarMenuActionsContext,
   SidebarMenuDefaultsContext,
   SidebarMenuStateContext,
 } from './contexts';
-import { isFormIdFullNameDto } from '@/apis/entityConfig';
+import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useActualContextData } from '@/hooks/useActualContextData';
@@ -34,7 +34,6 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   children,
 }) => {
   const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
-  const auth = useAuth(false);
 
   const [state, dispatch] = useReducer(SidebarMenuReducer, {
     ...SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
@@ -90,42 +89,28 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   };
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
-    // Don't check permissions if user is not logged in
-    if (!auth?.isLoggedIn || itemsToCheck.length === 0) {
-      return;
+    if (itemsToCheck.length > 0) {
+      formConfigurationCheckPermissions(
+        itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
+        { base: backendUrl, headers: httpHeaders }
+      )
+        .then((result) => {
+          if (result.success) {
+            itemsToCheck.forEach((item) => {
+              return updatetItemVisible(item, result.result);
+            });
+            dispatch(setItemsAction([...items]));
+          } else {
+            console.error(result.error);
+          }
+        });
     }
-
-    const request = itemsToCheck
-      .map(x => x.actionConfiguration?.actionArguments?.formId)
-      .filter(isFormIdFullNameDto);
-
-    if (request.length === 0) {
-      return;
-    }
-
-    formConfigurationCheckPermissions(
-      request,
-      { base: backendUrl, headers: httpHeaders }
-    )
-      .then((result) => {
-        if (result.success) {
-          itemsToCheck.forEach((item) => {
-            return updatetItemVisible(item, result.result);
-          });
-          dispatch(setItemsAction([...items]));
-        } else {
-          console.error(result.error);
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to check form permissions:', error);
-      });
   };
 
   useDeepCompareEffect(() => {
     const itemsToCheck = [];
     const localItems = actualItems.map((item) => requestItemVisible(item, itemsToCheck));
-
+    
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
     } else

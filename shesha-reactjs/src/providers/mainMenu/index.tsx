@@ -8,7 +8,7 @@ import { mainMenuMigration } from './migrations/migration';
 import { getActualModel, useAvailableConstantsData } from '../form/utils';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
-import { isFormIdFullNameDto } from '@/apis/entityConfig';
+import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { settingsUpdateValue } from '@/apis/settings';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
@@ -83,34 +83,21 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
   };
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
-    // Don't check permissions if user is not logged in
-    if (!auth?.isLoggedIn || itemsToCheck.length === 0) {
-      return;
+    if (itemsToCheck.length > 0) {
+      const request = itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
+      formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders })
+        .then((result) => {
+          if (result.success) {
+            itemsToCheck.forEach((item) => {
+              return updatetFormNamigationVisible(item, result.result);
+            });
+            formPermissionedItems.current = [...items];
+            dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+          } else {
+            console.error(result.error);
+          }
+        });
     }
-
-    const request = itemsToCheck
-      .map(x => x.actionConfiguration?.actionArguments?.formId)
-      .filter(isFormIdFullNameDto);
-
-    if (request.length === 0) {
-      return;
-    }
-
-    formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders })
-      .then((result) => {
-        if (result.success) {
-          itemsToCheck.forEach((item) => {
-            return updatetFormNamigationVisible(item, result.result);
-          });
-          formPermissionedItems.current = [...items];
-          dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
-        } else {
-          console.error(result.error);
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to check form permissions:', error);
-      });
   };
 
   const updateMainMenu = (value: IConfigurableMainMenu) => {
