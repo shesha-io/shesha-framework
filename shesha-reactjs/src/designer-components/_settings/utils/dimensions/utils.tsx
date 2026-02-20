@@ -36,10 +36,23 @@ const isCalcExpression = (value: string | number | undefined): boolean => {
 };
 
 export const getCalculatedDimension = (main: string | number, firstMargin?: string | number, secondMargin?: string | number): string => {
-  if (isCalcExpression(main)) {
-    return `calc(${main} - ${addPx(firstMargin ?? 0)} - ${addPx(secondMargin ?? 0)})`;
+  const mainValue = main ?? '100%';
+  const margin1 = addPx(firstMargin ?? 0);
+  const margin2 = addPx(secondMargin ?? 0);
+
+  // For calc() expressions (converted vw/vh), nest the calc to preserve the original calculation
+  if (isCalcExpression(mainValue)) {
+    return `calc(${mainValue} - ${margin1} - ${margin2})`;
   }
-  return `calc(${addPx(main ?? '100%')} - ${addPx(firstMargin ?? 0)} - ${addPx(secondMargin ?? 0)})`;
+
+  // For non-numeric values (auto, max-content, min-content, etc.), return as-is
+  // These CSS keywords can't be used in calc() expressions
+  if (!hasNumber(mainValue)) {
+    return typeof mainValue === 'string' ? mainValue : String(mainValue);
+  }
+
+  // For regular numeric values, use the standard calc format
+  return `calc(${addPx(mainValue)} - ${margin1} - ${margin2})`;
 };
 
 /**
@@ -74,6 +87,8 @@ export const getDesignerCalculatedDimension = (
   const margin1 = addPx(firstMargin ?? 0);
   const margin2 = addPx(secondMargin ?? 0);
 
+  console.log("Vars >>> ", mainValue, margin1, margin2)
+
   // For calc() expressions (converted vw/vh), nest the calc to preserve the original calculation
   if (isCalcExpression(mainValue)) {
     return `calc(${mainValue} - ${margin1} - ${margin2})`;
@@ -93,25 +108,37 @@ export const getDimensionsStyle = (
   dimensions: IDimensionsValue | undefined,
   canvasWidth?: string,
   canvasHeight?: string,
+  isInDesigner?: boolean,
+  margins?: CSSProperties,
 ): CSSProperties => {
+  const { width, minWidth, maxWidth, height, minHeight, maxHeight } = dimensions || {};
+  const { marginTop: top, marginLeft: left, marginRight: right, marginBottom: bottom } = margins;
+
+  console.log("BEFORE :: ", getDesignerCalculatedDimension(width, left, right), width, left, right)
   return {
-    width: dimensions?.width
-      ? getWidthDimension(dimensions.width, canvasWidth)
+    width: width
+      ? isInDesigner ? getWidthDimension(width, canvasWidth) :
+      getDesignerCalculatedDimension(width, left, right)
       : undefined,
-    height: dimensions?.height
-      ? getHeightDimension(dimensions.height, canvasHeight)
+    height: height
+      ? isInDesigner ? getHeightDimension(height, canvasHeight) :
+      getDesignerCalculatedDimension(height, top, bottom)
       : undefined,
-    minWidth: dimensions?.minWidth
-      ? getWidthDimension(dimensions.minWidth, canvasWidth)
+    minWidth: minWidth
+      ? isInDesigner ? getWidthDimension(minWidth, canvasWidth) :
+      getDesignerCalculatedDimension(minWidth, left, right)
       : undefined,
-    minHeight: dimensions?.minHeight
-      ? getHeightDimension(dimensions.minHeight, canvasHeight)
+    minHeight: minHeight
+      ? isInDesigner ? getHeightDimension(minHeight, canvasHeight) :
+      getDesignerCalculatedDimension(minHeight, top, bottom)
       : undefined,
-    maxWidth: dimensions?.maxWidth
-      ? getWidthDimension(dimensions.maxWidth, canvasWidth)
+    maxWidth: maxWidth
+      ? isInDesigner ? getWidthDimension(maxWidth, canvasWidth):
+      getDesignerCalculatedDimension(maxWidth, left, right)
       : undefined,
-    maxHeight: dimensions?.maxHeight
-      ? getHeightDimension(dimensions.maxHeight, canvasHeight)
+    maxHeight: maxHeight
+      ? isInDesigner ? getHeightDimension(maxHeight, canvasHeight) :
+      getDesignerCalculatedDimension(maxHeight, top, bottom)
       : undefined,
   };
 };
