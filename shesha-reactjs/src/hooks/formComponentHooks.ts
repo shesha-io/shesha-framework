@@ -234,7 +234,7 @@ export const useFormComponentStyles = <TModel>(
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(stylingBoxParsed), [stylingBoxParsed]);
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth, undefined, isInDesigner, {...stylingBoxAsCSS, ...jsStyle}), [dimensions, designerWidth]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth, undefined, isInDesigner, { ...stylingBoxAsCSS, ...jsStyle }), [dimensions, designerWidth]);
   const overflowStyles = useMemo(() => overflow ? getOverflowStyle(overflow, false) : {}, [overflow]);
 
   useDeepCompareEffect(() => {

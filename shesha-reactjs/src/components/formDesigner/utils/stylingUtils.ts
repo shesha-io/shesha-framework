@@ -40,7 +40,7 @@ const getExpandedDimensions = (value: string | number, marginTop: string | numbe
 
   return `calc(${value} + (${marginTop} + ${marginBottom}))`;
 };
-/* eslint-disable @stylistic/no-trailing-spaces */
+
 /**
  * Styling utility functions for form designer components.
  *

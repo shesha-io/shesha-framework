@@ -87,7 +87,7 @@ export const getDesignerCalculatedDimension = (
   const margin1 = addPx(firstMargin ?? 0);
   const margin2 = addPx(secondMargin ?? 0);
 
-  console.log("Vars >>> ", mainValue, margin1, margin2)
+  console.log("Vars >>> ", mainValue, margin1, margin2);
 
   // For calc() expressions (converted vw/vh), nest the calc to preserve the original calculation
   if (isCalcExpression(mainValue)) {
@@ -114,31 +114,31 @@ export const getDimensionsStyle = (
   const { width, minWidth, maxWidth, height, minHeight, maxHeight } = dimensions || {};
   const { marginTop: top, marginLeft: left, marginRight: right, marginBottom: bottom } = margins;
 
-  console.log("BEFORE :: ", getDesignerCalculatedDimension(width, left, right), width, left, right)
+  console.log("BEFORE :: ", getDesignerCalculatedDimension(width, left, right), width, left, right);
   return {
     width: width
-      ? isInDesigner ? getWidthDimension(width, canvasWidth) :
-      getDesignerCalculatedDimension(width, left, right)
+      ? isInDesigner ? getWidthDimension(width, canvasWidth)
+        : getDesignerCalculatedDimension(width, left, right)
       : undefined,
     height: height
-      ? isInDesigner ? getHeightDimension(height, canvasHeight) :
-      getDesignerCalculatedDimension(height, top, bottom)
+      ? isInDesigner ? getHeightDimension(height, canvasHeight)
+        : getDesignerCalculatedDimension(height, top, bottom)
       : undefined,
     minWidth: minWidth
-      ? isInDesigner ? getWidthDimension(minWidth, canvasWidth) :
-      getDesignerCalculatedDimension(minWidth, left, right)
+      ? isInDesigner ? getWidthDimension(minWidth, canvasWidth)
+        : getDesignerCalculatedDimension(minWidth, left, right)
       : undefined,
     minHeight: minHeight
-      ? isInDesigner ? getHeightDimension(minHeight, canvasHeight) :
-      getDesignerCalculatedDimension(minHeight, top, bottom)
+      ? isInDesigner ? getHeightDimension(minHeight, canvasHeight)
+        : getDesignerCalculatedDimension(minHeight, top, bottom)
       : undefined,
     maxWidth: maxWidth
-      ? isInDesigner ? getWidthDimension(maxWidth, canvasWidth):
-      getDesignerCalculatedDimension(maxWidth, left, right)
+      ? isInDesigner ? getWidthDimension(maxWidth, canvasWidth)
+        : getDesignerCalculatedDimension(maxWidth, left, right)
       : undefined,
     maxHeight: maxHeight
-      ? isInDesigner ? getHeightDimension(maxHeight, canvasHeight) :
-      getDesignerCalculatedDimension(maxHeight, top, bottom)
+      ? isInDesigner ? getHeightDimension(maxHeight, canvasHeight)
+        : getDesignerCalculatedDimension(maxHeight, top, bottom)
       : undefined,
   };
 };
