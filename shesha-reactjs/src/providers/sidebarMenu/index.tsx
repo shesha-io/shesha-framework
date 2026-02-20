@@ -2,7 +2,6 @@ import React, {
   FC,
   PropsWithChildren,
   useContext,
-  useEffect,
   useReducer
 } from 'react';
 import SidebarMenuReducer from './reducer';
@@ -91,31 +90,18 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   };
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
-    // If user is not logged in, still render items that don't require form permission checks
-    if (!auth?.isLoggedIn) {
-      dispatch(setItemsAction([...items]));
+    // Don't check permissions if user is not logged in
+    if (!auth?.isLoggedIn || itemsToCheck.length === 0) {
       return;
     }
 
-    // No items to check permissions for - render all items
-    if (itemsToCheck.length === 0) {
-      dispatch(setItemsAction([...items]));
-      return;
-    }
-
-    // Filter to only items with valid formId DTOs
-    const validItemsToCheck = itemsToCheck.filter(x =>
-      isFormIdFullNameDto(x.actionConfiguration?.actionArguments?.formId)
-    );
-
-    if (validItemsToCheck.length === 0) {
-      dispatch(setItemsAction([...items]));
-      return;
-    }
-
-    const request = validItemsToCheck
+    const request = itemsToCheck
       .map(x => x.actionConfiguration?.actionArguments?.formId)
       .filter(isFormIdFullNameDto);
+
+    if (request.length === 0) {
+      return;
+    }
 
     formConfigurationCheckPermissions(
       request,
@@ -123,8 +109,8 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     )
       .then((result) => {
         if (result.success) {
-          validItemsToCheck.forEach((item) => {
-            updatetItemVisible(item, result.result);
+          itemsToCheck.forEach((item) => {
+            return updatetItemVisible(item, result.result);
           });
           dispatch(setItemsAction([...items]));
         } else {
@@ -148,20 +134,6 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
         dispatch(setItemsAction([...localItems]));
       }
   }, [actualItems]);
-
-  // Re-run permission checks when auth state changes (e.g., user logs in/out)
-  useEffect(() => {
-    const itemsToCheck = [];
-    const localItems = actualItems.map((item) => requestItemVisible(item, itemsToCheck));
-
-    if (itemsToCheck.length > 0) {
-      getFormPermissions(localItems, itemsToCheck);
-    } else
-      if (localItems.length > 0) {
-        // no forms to check set items as is
-        dispatch(setItemsAction([...localItems]));
-      }
-  }, [auth?.isLoggedIn]);
 
   const collapse = () => {
     dispatch(toggleSidebarAction(false));
