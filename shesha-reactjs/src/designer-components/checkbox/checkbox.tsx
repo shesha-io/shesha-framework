@@ -33,6 +33,8 @@ const CheckboxComponent: CheckboxComponentDefinition = {
   canBeJsSetting: true,
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
+  // Checkbox has its own intrinsic size and should not be forced to fill wrapper
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
@@ -75,7 +77,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles()))),
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles(prev)))),
 };
 
 export default CheckboxComponent;

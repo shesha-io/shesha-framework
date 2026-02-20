@@ -254,10 +254,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     margin: 0;
                     display: flex;
                     white-space: normal;
-                    overflow: hidden;
                     max-width: 100%;
                     overflow: auto;
-        
                     .${shaComponentTitle} {
                         margin-right: 10px;
                     }
@@ -501,6 +499,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               cursor: grab;
               border: 1px dashed ${token.colorPrimary};
               box-sizing: border-box;
+              display: flex;
+              padding: 5px 3px;
             }
             &:not(:hover) {
                 .${shaComponentControls} {

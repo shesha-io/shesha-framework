@@ -24,7 +24,7 @@ import { defaultStyles } from "./utils";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
-  overflow?: "dropdown" | "menu" | "scroll";
+  menuOverflow?: "dropdown" | "menu" | "scroll";
   fontSize?: string;
   gap?: string;
   height?: string;
@@ -33,25 +33,6 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   styleOnSelected?: string;
   styleOnSubMenu?: string;
   width?: string;
-  dimensions?: {
-    width?: string;
-    height?: string;
-    minWidth?: string;
-    maxWidth?: string;
-    minHeight?: string;
-    maxHeight?: string;
-  };
-  font?: {
-    type?: string;
-    size?: number;
-    weight?: string;
-    color?: string;
-    align?: string;
-  };
-  background?: {
-    type?: string;
-    color?: string;
-  };
   menuItemShadow?: {
     color: string;
     offsetX?: number;
@@ -60,6 +41,18 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
     spreadRadius?: number;
   };
 }
+
+type MenuOverflowValue = "dropdown" | "menu" | "scroll";
+
+const resolveMenuOverflow = (
+  value: MenuOverflowValue | string | undefined,
+): "dropdown" | "menu" | "scroll" => {
+  if (value === "dropdown" || value === "menu" || value === "scroll") {
+    return value;
+  }
+
+  return "dropdown";
+};
 
 interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
@@ -123,7 +116,6 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         ...model.allStyles?.borderStyles,
         ...model.allStyles?.backgroundStyles,
         ...model.allStyles?.shadowStyles,
-        ...model.allStyles?.overflowStyles,
         ...(model.containerStyle ? getStyle(model.containerStyle, data) : {}),
       };
 
@@ -183,7 +175,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 styleOnSelected={getStyle(model?.styleOnSelected, data)}
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
                 menuItemStyle={menuItemShadowStyle}
-                overflow={model.overflow || 'dropdown'}
+                overflow={resolveMenuOverflow(model.menuOverflow)}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
                 menuId={model.id}
@@ -202,7 +194,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     }))
     .add<IMenuListProps>(1, (prev) => ({
       ...prev,
-      overflow: prev.overflow ?? 'dropdown',
+      menuOverflow: prev.menuOverflow ?? resolveMenuOverflow(prev.overflow as MenuOverflowValue | string | undefined),
     })),
 };
 

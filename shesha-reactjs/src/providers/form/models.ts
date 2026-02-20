@@ -197,6 +197,8 @@ export interface IFormComponentStyles {
   appearanceStyle: CSSProperties;
   /** Styles assempled from {...appearanceStyle, ...jsStyle} */
   fullStyle: CSSProperties;
+  /** Margin styles extracted from fullStyle for wrapper use */
+  margins: CSSProperties;
 }
 
 /**
@@ -209,7 +211,8 @@ export interface IConfigurableFormComponent
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
-  IComponentMetadata {
+  IComponentMetadata,
+  IStyleType {
   /** Type of the component */
   type: string;
 
@@ -249,6 +252,8 @@ export interface IConfigurableFormComponent
   /** Default css style applied as string */
   stylingBox?: string;
 
+  wrapperStyle?: string;
+
   noDataText?: string;
 
   noDataIcon?: string;
@@ -274,6 +279,8 @@ export interface IConfigurableFormComponent
   enableStyleOnReadonly?: boolean;
 
   listType?: 'text' | 'thumbnail';
+
+  noLabelAutoMargin?: boolean;
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
@@ -502,3 +509,12 @@ export type GenericDictionary = { [key: string]: any };
 export const STYLE_BOX_CSS_POPERTIES = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
 export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];
 export type StyleBoxValue = Pick<CSSProperties, StyleBoxCssProperties>;
+
+export interface IContainerConfig {
+  dimensions?: IDimensionsValue;
+  stylingBox?: string;
+  style?: string;
+}
+export interface IComponentModelProps extends IConfigurableFormComponent {
+  container?: IContainerConfig;
+}
