@@ -211,7 +211,6 @@ export const useFormComponentStyles = <TModel>(
   // For container components, use wrapperStyle instead of style
   const styleSource = useWrapperStyle && model.wrapperStyle ? (model).wrapperStyle : model.style;
   const jsStyle = useActualContextExecution(styleSource, undefined, {}); // use default style if empty or error
-  const { designerWidth } = useCanvas();
 
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
