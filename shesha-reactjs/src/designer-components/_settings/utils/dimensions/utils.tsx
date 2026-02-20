@@ -3,27 +3,6 @@ import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTable
 import { IDimensionsValue } from "./interfaces";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
-import { widthRelativeToCanvas, heightRelativeToCanvas } from "@/providers/canvas/utils";
-
-const getWidthDimension = (main: string | number, canvasWidth?: string): string | number => {
-  // If canvasWidth is provided and main contains vw, convert to calc
-  if (canvasWidth && typeof main === 'string' && /vw/i.test(main)) {
-    return widthRelativeToCanvas(main, canvasWidth);
-  }
-
-  // For simple numeric values or values without vw, use addPx
-  return !hasNumber(main) ? main : addPx(main);
-};
-
-const getHeightDimension = (main: string | number, canvasHeight?: string): string | number => {
-  // If canvasHeight is provided and main contains vh, convert to calc
-  if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
-    return heightRelativeToCanvas(main, canvasHeight);
-  }
-
-  // For simple numeric values or values without vh, use addPx
-  return !hasNumber(main) ? main : addPx(main);
-};
 
 /**
  * Checks if a value is a calc() expression (e.g., from converted vw/vh units).
@@ -55,90 +34,32 @@ export const getCalculatedDimension = (main: string | number, firstMargin?: stri
   return `calc(${addPx(mainValue)} - ${margin1} - ${margin2})`;
 };
 
-/**
- * Calculates a dimension value adjusted for margins, with special handling for calc() expressions.
- * This is used in designer mode to account for margins while preserving canvas-relative calculations.
- *
- * For regular values: returns `calc(main - margin1 - margin2)`
- * For calc() expressions (e.g., converted vw/vh): nests the calc to preserve the original calculation
- *
- * @param main - The main dimension value (can be a calc() expression from vw/vh conversion)
- * @param firstMargin - First margin value (e.g., left or top margin)
- * @param secondMargin - Second margin value (e.g., right or bottom margin)
- * @returns A calc() string that subtracts margins from the main dimension
- *
- * @example
- * ```tsx
- * // Regular value
- * getDesignerCalculatedDimension('100%', '5px', '5px')
- * // Returns: 'calc(100% - 5px - 5px)'
- *
- * // Converted vw value (canvas-relative)
- * getDesignerCalculatedDimension('calc((50 * 1024px) / 100)', '5px', '5px')
- * // Returns: 'calc(calc((50 * 1024px) / 100) - 5px - 5px)'
- * ```
- */
-export const getDesignerCalculatedDimension = (
-  main: string | number,
-  firstMargin?: string | number,
-  secondMargin?: string | number,
-): string => {
-  const mainValue = main ?? '100%';
-  const margin1 = addPx(firstMargin ?? 0);
-  const margin2 = addPx(secondMargin ?? 0);
-
-  console.log("Vars >>> ", mainValue, margin1, margin2);
-
-  // For calc() expressions (converted vw/vh), nest the calc to preserve the original calculation
-  if (isCalcExpression(mainValue)) {
-    return `calc(${mainValue} - ${margin1} - ${margin2})`;
-  }
-
-  // For non-numeric values (auto, max-content, min-content, etc.), return as-is
-  // These CSS keywords can't be used in calc() expressions
-  if (!hasNumber(mainValue)) {
-    return typeof mainValue === 'string' ? mainValue : String(mainValue);
-  }
-
-  // For regular numeric values, use the standard calc format
-  return `calc(${addPx(mainValue)} - ${margin1} - ${margin2})`;
-};
 
 export const getDimensionsStyle = (
   dimensions: IDimensionsValue | undefined,
-  canvasWidth?: string,
-  canvasHeight?: string,
-  isInDesigner?: boolean,
   margins?: CSSProperties,
 ): CSSProperties => {
   const { width, minWidth, maxWidth, height, minHeight, maxHeight } = dimensions || {};
-  const { marginTop: top, marginLeft: left, marginRight: right, marginBottom: bottom } = margins;
+  const { marginTop: top, marginLeft: left, marginRight: right, marginBottom: bottom } = margins || {};
 
-  console.log("BEFORE :: ", getDesignerCalculatedDimension(width, left, right), width, left, right);
   return {
     width: width
-      ? isInDesigner ? getWidthDimension(width, canvasWidth)
-        : getDesignerCalculatedDimension(width, left, right)
+      ? getCalculatedDimension(width, left, right)
       : undefined,
     height: height
-      ? isInDesigner ? getHeightDimension(height, canvasHeight)
-        : getDesignerCalculatedDimension(height, top, bottom)
+      ? getCalculatedDimension(height, top, bottom)
       : undefined,
     minWidth: minWidth
-      ? isInDesigner ? getWidthDimension(minWidth, canvasWidth)
-        : getDesignerCalculatedDimension(minWidth, left, right)
+      ? getCalculatedDimension(minWidth, left, right)
       : undefined,
     minHeight: minHeight
-      ? isInDesigner ? getHeightDimension(minHeight, canvasHeight)
-        : getDesignerCalculatedDimension(minHeight, top, bottom)
+      ? getCalculatedDimension(minHeight, top, bottom)
       : undefined,
     maxWidth: maxWidth
-      ? isInDesigner ? getWidthDimension(maxWidth, canvasWidth)
-        : getDesignerCalculatedDimension(maxWidth, left, right)
+      ? getCalculatedDimension(maxWidth, left, right)
       : undefined,
     maxHeight: maxHeight
-      ? isInDesigner ? getHeightDimension(maxHeight, canvasHeight)
-        : getDesignerCalculatedDimension(maxHeight, top, bottom)
+      ? getCalculatedDimension(maxHeight, top, bottom)
       : undefined,
   };
 };
