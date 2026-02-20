@@ -81,7 +81,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     ...shadowStyles,
   });
 
-  const dimensionStyles = getDimensionsStyle(dimensions, additionalStyles);
+  const dimensionStyles = getDimensionsStyle(dimensions);
 
   const { styles } = useStyles({ dimensions: dimensionStyles });
 

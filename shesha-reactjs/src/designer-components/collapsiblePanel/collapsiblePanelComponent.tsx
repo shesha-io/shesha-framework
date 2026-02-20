@@ -25,7 +25,6 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const { data } = useFormData();
-
     const {
       label,
       expandIconPosition,
@@ -43,7 +42,6 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       className,
       hidden,
     } = model;
-
 
     const evaluatedLabel = useMemo(() => (
       typeof label === 'string' ? evaluateString(label, data) : label
@@ -77,8 +75,8 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           extra={extra}
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           ghost={ghost}
-          bodyStyle={model.allStyles.fullStyle}
-          headerStyle={headerStyles}
+          bodyStyle={{ ...model.allStyles.fullStyle }}
+          headerStyle={{ ...headerStyles, width: '100%' }}
           className={className}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}

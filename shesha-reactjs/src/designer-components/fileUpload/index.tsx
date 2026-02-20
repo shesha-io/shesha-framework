@@ -28,6 +28,8 @@ const FileUploadComponent: FileUploadComponentDefinition = {
   icon: <FileAddOutlined />,
   isInput: true,
   isOutput: true,
+  // FileUpload has its own intrinsic size and should not be forced to fill wrapper
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();

@@ -42,7 +42,7 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
       ...getStyle(model?.containerStyle, formData),
     };
 
-    const dimensions = getDimensionsStyle(extractedDimensions, containerAdditionalStyles);
+    const dimensions = getDimensionsStyle(extractedDimensions);
 
     const inputProps = {
       ...model,

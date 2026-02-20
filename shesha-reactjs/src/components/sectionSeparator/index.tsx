@@ -105,7 +105,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   return vertical ? (
     <div
       className={styles.vertical}
-      style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em'), marginRight: 1 }}
+      style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em') }}
     >
     </div>
   ) : (

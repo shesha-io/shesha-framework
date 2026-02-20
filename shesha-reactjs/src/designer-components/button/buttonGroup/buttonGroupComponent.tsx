@@ -23,6 +23,8 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
+  // Button Group preserves its original dimensions in designer mode (like image component)
+  preserveDimensionsInDesigner: true,
   Factory: ({ model, form }) => {
     const { styles } = useStyles();
     return model.hidden ? null

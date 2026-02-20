@@ -117,7 +117,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               {
                                 type: 'dropdown',
                                 id: nanoid(),
-                                propertyName: 'overflow',
+                                propertyName: 'menuOverflow',
                                 label: 'Overflow',
                                 size: 'small',
                                 jsSetting: true,

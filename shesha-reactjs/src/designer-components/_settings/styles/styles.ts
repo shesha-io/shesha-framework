@@ -33,6 +33,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             font-weight: 500;
             position: relative;
             
+            
             +.ant-form-item-tooltip {
             align-self: end !important;
             position: relative;
@@ -40,9 +41,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             }
     `);
 
-  const bindingOptionsBtn = cx(css`
-        top: -8px;
-        `);
   const jsSwitch = cx(css`
             position: absolute;
             right: 0;
@@ -81,7 +79,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     contentCode,
     jsContent,
     label,
-    bindingOptionsBtn,
     jsSwitch,
   };
 });

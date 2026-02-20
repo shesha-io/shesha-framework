@@ -3,44 +3,55 @@ import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTable
 import { IDimensionsValue } from "./interfaces";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
-import { widthRelativeToCanvas } from "@/providers/canvas/utils";
+import { widthRelativeToCanvas, heightRelativeToCanvas } from "@/providers/canvas/utils";
 
-const getDimension = (main: string | number, left: any, right: any, canvasWidth?: string): string => {
-  const value = canvasWidth !== null ? widthRelativeToCanvas(main, canvasWidth) : main;
-  return `calc(${addPx(value)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
+const getWidthDimension = (main: string | number, canvasWidth?: string): string | number => {
+  // If canvasWidth is provided and main contains vw, convert to calc
+  if (canvasWidth && typeof main === 'string' && /vw/i.test(main)) {
+    return widthRelativeToCanvas(main, canvasWidth);
+  }
+
+  // For simple numeric values or values without vw, use addPx
+  return !hasNumber(main) ? main : addPx(main);
 };
 
-export const getDimensionsStyle = (dimensions: IDimensionsValue | undefined, additionalStyles?: CSSProperties, canvasWidth?: string): CSSProperties => {
+const getHeightDimension = (main: string | number, canvasHeight?: string): string | number => {
+  // If canvasHeight is provided and main contains vh, convert to calc
+  if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
+    return heightRelativeToCanvas(main, canvasHeight);
+  }
+
+  // For simple numeric values or values without vh, use addPx
+  return !hasNumber(main) ? main : addPx(main);
+};
+
+export const getCalculatedDimension = (main: string | number, firstMargin?: string | number, secondMargin?: string | number): string => {
+  return `calc(${addPx(main ?? '100%')} - ${addPx(firstMargin ?? 0)} - ${addPx(secondMargin ?? 0)})`;
+};
+
+export const getDimensionsStyle = (
+  dimensions: IDimensionsValue | undefined,
+  canvasWidth?: string,
+  canvasHeight?: string,
+): CSSProperties => {
   return {
     width: dimensions?.width
-      ? hasNumber(dimensions.width)
-        ? getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
-        : dimensions.width
+      ? getWidthDimension(dimensions.width, canvasWidth)
       : undefined,
     height: dimensions?.height
-      ? hasNumber(dimensions.height)
-        ? getDimension(dimensions.height, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-        : dimensions.height
+      ? getHeightDimension(dimensions.height, canvasHeight)
       : undefined,
     minWidth: dimensions?.minWidth
-      ? hasNumber(dimensions.minWidth)
-        ? getDimension(dimensions.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
-        : dimensions.minWidth
+      ? getWidthDimension(dimensions.minWidth, canvasWidth)
       : undefined,
     minHeight: dimensions?.minHeight
-      ? hasNumber(dimensions.minHeight)
-        ? getDimension(dimensions.minHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-        : dimensions.minHeight
+      ? getHeightDimension(dimensions.minHeight, canvasHeight)
       : undefined,
     maxWidth: dimensions?.maxWidth
-      ? hasNumber(dimensions.maxWidth)
-        ? getDimension(dimensions.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
-        : dimensions.maxWidth
+      ? getWidthDimension(dimensions.maxWidth, canvasWidth)
       : undefined,
     maxHeight: dimensions?.maxHeight
-      ? hasNumber(dimensions.maxHeight)
-        ? getDimension(dimensions.maxHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-        : dimensions.maxHeight
+      ? getHeightDimension(dimensions.maxHeight, canvasHeight)
       : undefined,
   };
 };
