@@ -40,7 +40,6 @@ export const dimensionUtils = {
     dimensionsStyles: CSSProperties,
     jsStyle: CSSProperties,
   ): CSSProperties {
-
     // When preserveDimensionsInDesigner is true, use original dimensions from the model
     // Otherwise, use designer dimensions (fill wrapper)
     const width = preserveDimensionsInDesigner

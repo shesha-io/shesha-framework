@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
-import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
+import { getDesignerCalculatedDimension } from '@/designer-components/_settings/utils/index';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -31,16 +31,7 @@ const DEFAULT_MARGIN_VALUES = {
   right: DEFAULT_MARGINS.horizontal,
 };
 
-const getExpandedDimensions = (value?: string | number): string | undefined => {
-  if (value === undefined || value === null || value === '') {
-    // When no explicit dimension is provided, don't set a CSS value at all.
-    // This avoids producing invalid CSS like `calc(undefined + ...)`.
-    return undefined;
-  }
 
-  return `calc(${value} + (${DEFAULT_MARGIN_VALUES.top} + ${DEFAULT_MARGIN_VALUES.bottom}))`;
-};
-/* eslint-disable @stylistic/no-trailing-spaces */
 /**
  * Styling utility functions for form designer components.
  *
@@ -67,13 +58,18 @@ export const stylingUtils = {
       horizontal: '0px',
     };
   },
-  
+
 
   /**
    * Creates the root container style for wrapping components in designer mode.
    *
    * The wrapper applies margins directly and the inner component fills the available space.
    * When width is 100% with margins, the wrapper handles it without overflowing.
+   *
+   * @param dimensions - The component dimensions
+   * @param margins - The margin values to apply
+   * @param validationHeight - Optional validation message height to account for
+   * @returns CSSProperties for the root container
    */
   createRootContainerStyle(
     dimensions: CSSProperties,
@@ -86,22 +82,29 @@ export const stylingUtils = {
     const marginLeft = addPx(margins?.marginLeft ?? 0);
     const marginRight = addPx(margins?.marginRight ?? 0);
 
-    // When width is 100% and there are margins, use getCalculatedDimension to prevent overflow
-    const width = getCalculatedDimension(dimensions.width, margins?.marginLeft, margins?.marginRight);
+    // When width is 100% and there are margins, use getDesignerCalculatedDimension to prevent overflow
+    // Use getDesignerCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
+    const width = getDesignerCalculatedDimension(dimensions.width ?? '100%', margins?.marginLeft, margins?.marginRight);
 
     // Height is expanded to include padding to allow gap for component selecting e.g in button
-    const expandedHeight = getExpandedDimensions(dimensions.height);
-    const height = expandedHeight 
+    const expandedHeight = dimensions.height
+      ? `calc(${addPx(dimensions.height)} + (${DEFAULT_MARGINS.vertical} + ${DEFAULT_MARGINS.vertical}))`
+      : undefined;
+    const height = expandedHeight
       ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
       : validationHeight ? addPx(validationHeight) : undefined;
 
-    const minHeight = getExpandedDimensions(dimensions.minHeight);
+    const minHeight = dimensions.minHeight
+      ? `calc(${addPx(dimensions.minHeight)} + (${DEFAULT_MARGINS.vertical} + ${DEFAULT_MARGINS.vertical}))`
+      : undefined;
 
-    const maxHeight = getExpandedDimensions(dimensions.maxHeight);
+    const maxHeight = dimensions.maxHeight
+      ? `calc(${addPx(dimensions.maxHeight)} + (${DEFAULT_MARGINS.vertical} + ${DEFAULT_MARGINS.vertical}))`
+      : undefined;
 
     const minWidth = dimensions.minWidth;
 
-    const maxWidth = dimensions.maxWidth; 
+    const maxWidth = dimensions.maxWidth;
 
     return {
       boxSizing: 'border-box' as const,
@@ -215,12 +218,12 @@ export const stylingUtils = {
    */
   stripMargins<T extends CSSProperties>(style: T | undefined): Omit<T, 'margin' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight'> {
     if (!style) return {} as Omit<T, 'margin' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight'>;
-    
+
     const { margin, marginTop, marginBottom, marginLeft, marginRight, ...rest } = style;
     return rest as Omit<T, 'margin' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight'>;
   },
 };
-/* eslint-enable @stylistic/no-trailing-spaces */
+
 
 // Re-export individual functions for backward compatibility and tree-shaking
 export const {
