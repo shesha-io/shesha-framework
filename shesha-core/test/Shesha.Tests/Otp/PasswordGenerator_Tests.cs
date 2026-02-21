@@ -17,15 +17,15 @@ namespace Shesha.Tests.Otp
         {
             var settings = new Mock<IUserManagementSettings>();
 
-            var otpSettings = new DefaultAuthenticationSettings {
+            var otpSettings = new SqlAuthenticationSettings {
                 Alphabet = alphabet,
                 PasswordLength = length,
             };
-            var otpSettingsMock = new Mock<ISettingAccessor<DefaultAuthenticationSettings>>();
+            var otpSettingsMock = new Mock<ISettingAccessor<SqlAuthenticationSettings>>();
             otpSettingsMock.Setup(s => s.GetValueOrNull(null)).Returns(otpSettings);
             otpSettingsMock.Setup(s => s.GetValue(null)).Returns(otpSettings);
 
-            settings.SetupGet(s => s.DefaultAuthentication).Returns(otpSettingsMock.Object);
+            settings.SetupGet(s => s.SqlAuthentication).Returns(otpSettingsMock.Object);
 
             var generator = new Shesha.Otp.OtpGenerator(settings.Object);
 

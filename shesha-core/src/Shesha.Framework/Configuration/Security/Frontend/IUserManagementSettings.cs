@@ -25,7 +25,7 @@ namespace Shesha.Configuration.Security.Frontend
         /// Default authentication settings
         /// </summary>
         [Display(Name = "Default Authentication")]
-        [Setting(UserManagementSettingNames.DefaultAuthentication, EditorFormName = "default-authentication-settings", IsClientSpecific = true)]
-        ISettingAccessor<DefaultAuthenticationSettings> DefaultAuthentication { get; }
+        [Setting(UserManagementSettingNames.SqlAuthentication, EditorFormName = "default-authentication-settings", IsClientSpecific = true)]
+        ISettingAccessor<SqlAuthenticationSettings> SqlAuthentication { get; }
     }
 }

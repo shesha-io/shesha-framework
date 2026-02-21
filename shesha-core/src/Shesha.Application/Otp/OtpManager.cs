@@ -37,7 +37,7 @@ namespace Shesha.Otp
 
         public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
-            var settings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var settings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
             var otp = await _otpStorage.GetOrNullAsync(input.OperationId);
             if (otp == null)
                 throw new UserFriendlyException("OTP not found, try to request a new one");
@@ -90,7 +90,7 @@ namespace Shesha.Otp
 
         public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
         {
-            var settings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var settings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
             if (string.IsNullOrWhiteSpace(input.SendTo))
                 throw new Exception($"{input.SendTo} must be specified");
 
@@ -162,7 +162,7 @@ namespace Shesha.Otp
 
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
-            var settings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var settings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
             if (!settings.IgnoreOtpValidation)
             {
                 var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
@@ -186,7 +186,7 @@ namespace Shesha.Otp
 
         private async Task SendInternalAsync(OtpDto otp)
         {
-            var settings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var settings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
             switch (otp.SendType)
             {
                 case OtpSendType.Sms:

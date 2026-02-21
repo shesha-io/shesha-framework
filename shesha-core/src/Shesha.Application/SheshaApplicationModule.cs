@@ -129,8 +129,10 @@ namespace Shesha
         {
             IocManager.RegisterSettingAccessor<IUserManagementSettings>(s =>
             {
-                s.DefaultAuthentication.WithDefaultValue(new DefaultAuthenticationSettings
+                s.SqlAuthentication.WithDefaultValue(new SqlAuthenticationSettings
                 {
+                    AllowLocalUsernamePasswordAuth = true,
+
                     // Account Creation
                     RequireOtpVerification = true,
                     UseDefaultRegistrationForm = true,

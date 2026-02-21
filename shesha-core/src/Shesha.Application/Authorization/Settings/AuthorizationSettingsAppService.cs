@@ -18,14 +18,14 @@ namespace Shesha.Authorization.Settings
 
         public async Task UpdateSettingsAsync(AuthorizationSettingsDto dto)
         {
-            var existingSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var existingSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
             if (existingSettings == null)
             {
-                existingSettings = new DefaultAuthenticationSettings();
+                existingSettings = new SqlAuthenticationSettings();
             }
 
             // Default Authentication
-            await _userManagementSettings.DefaultAuthentication.SetValueAsync(new DefaultAuthenticationSettings
+            await _userManagementSettings.SqlAuthentication.SetValueAsync(new SqlAuthenticationSettings
             {
                 // Preserve existing OTP and registration settings
                 RequireOtpVerification = existingSettings.RequireOtpVerification,
@@ -76,7 +76,7 @@ namespace Shesha.Authorization.Settings
 
         public async Task<AuthorizationSettingsDto> GetSettingsAsync()
         {
-            var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
             var generalFrontendSettings = await _userManagementSettings.GeneralFrontendSecuritySettings.GetValueAsync();
             var dto = new AuthorizationSettingsDto();
             

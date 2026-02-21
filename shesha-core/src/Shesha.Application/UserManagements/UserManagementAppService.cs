@@ -77,7 +77,7 @@ namespace Shesha.UserManagements
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
         {
             var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
-            var defaultAuthenticationSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var defaultAuthenticationSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
             var applicationRedirects = await _frontendSettings.FrontendApplicationRedirectsSettings.GetValueAsync();
 
             if (!registrationSettings.AllowSelfRegistration)
@@ -109,7 +109,7 @@ namespace Shesha.UserManagements
                     // Resolve the EntityConfig by module+name
                     var entityConfigRecord = await _entityConfigRepository.FirstOrDefaultAsync(e =>
                         e.Name == personEntityIdentifier.Name &&
-                        (personEntityIdentifier.Module == null || e.Module!.Name == personEntityIdentifier.Module.Name));
+                        (string.IsNullOrWhiteSpace(personEntityIdentifier.Module) || e.Module!.Name == personEntityIdentifier.Module));
 
                     if (entityConfigRecord == null)
                         throw new UserFriendlyException($"Person entity configuration with module '{personEntityIdentifier.Module}' and name '{personEntityIdentifier.Name}' not found.");
@@ -190,12 +190,13 @@ namespace Shesha.UserManagements
 
             await AssignDefaultRolesAsync(registrationSettings, personEntityType, personEntity);
 
-            await SaveUserRegistrationAuditAsync(registrationSettings, applicationRedirects, user);
+            var goToUrlAfterRegistration = await SaveUserRegistrationAuditAsync(registrationSettings, applicationRedirects, user);
 
             // Map dynamic person entity to PersonAccountDto
             var entityToDtoMapper = await _dynamicDtoMappingHelper.GetEntityToDtoMapperAsync(personEntityType, typeof(PersonAccountDto));
-            var response = entityToDtoMapper.Map(personEntity, new PersonAccountDto());
-            response.GoToUrlAfterRegistration = applicationRedirects.BaseUrl + applicationRedirects.SuccessLoginRedirectPath;
+            var response = entityToDtoMapper.Map(personEntity, new PersonAccountDto())
+                ?? throw new InvalidOperationException("Failed to map person entity to PersonAccountDto");
+            response.GoToUrlAfterRegistration = goToUrlAfterRegistration;
             response.UserId = user.Id;
 
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -456,39 +457,43 @@ namespace Shesha.UserManagements
             }
         }
 
-        private async Task SaveUserRegistrationAuditAsync(UserManagementSettings? registrationSettings, FrontendApplicationRedirectsSettings applicationRedirects, User user)
+        private async Task<string?> SaveUserRegistrationAuditAsync(UserManagementSettings? registrationSettings, FrontendApplicationRedirectsSettings applicationRedirects, User user)
         {
             var additionalRegistrationFormRef = registrationSettings!.AdditionalRegistrationInfoForm;
+            var additionalRegistrationInfo = registrationSettings.AdditionalRegistrationInfo;
 
-            // Resolve the form identifier from the entity reference (ID only)
             FormIdentifier? formIdentifier = null;
-            if (additionalRegistrationFormRef != null && Guid.TryParse(additionalRegistrationFormRef.Id.ToString(), out var formId))
+            string goToUrlAfterRegistration = applicationRedirects.SuccessLoginRedirectPath ?? "/";
+
+            if (additionalRegistrationInfo && additionalRegistrationFormRef != null)
             {
-                    var formConfig = await _configurationItemRepository.FirstOrDefaultAsync(config => config.Id == formId && config.ItemType == "form");
-                    if (formConfig != null)
-                    {
-                        // Create the FormIdentifier using the module name and form name from the configuration
-                        var moduleName = formConfig.Module?.Name;
-                        formIdentifier = FormIdentifier.New(moduleName, formConfig.Name);
-                    }
+                var formConfig = await _configurationItemRepository.FirstOrDefaultAsync(config =>
+                    config.Module!.Name == additionalRegistrationFormRef.Module && config.Name == additionalRegistrationFormRef.Name && config.ItemType == "form");
+                if (formConfig != null)
+                {
+                    formIdentifier = FormIdentifier.New(formConfig.Module?.Name, formConfig.Name);
+                    goToUrlAfterRegistration = $"{formConfig.Module?.Name}/{formConfig.Name}";
+                }
             }
 
             var userRegistration = new ShaUserRegistration
             {
                 UserId = user.Id,
                 UserNameOrEmailAddress = user.UserName,
-                GoToUrlAfterRegistration = applicationRedirects.SuccessLoginRedirectPath,
+                GoToUrlAfterRegistration = goToUrlAfterRegistration,
                 AdditionalRegistrationInfoForm = formIdentifier,
-                IsComplete = !registrationSettings.AdditionalRegistrationInfo
+                IsComplete = !additionalRegistrationInfo
             };
 
             await _userRegistration.InsertAsync(userRegistration);
+
+            return goToUrlAfterRegistration;
         }
 
         private async Task AssignDefaultRolesAsync(UserManagementSettings? registrationSettings, Type personEntityType, object? personEntity)
         {
-            // Assign default role if specified in the settings
-            if (registrationSettings?.DefaultRoles != null && personEntity != null)
+            // Assign default roles if specified in the settings
+            if (registrationSettings?.DefaultRoles != null && registrationSettings.DefaultRoles.Count > 0 && personEntity != null)
             {
                 // Get the Id property dynamically from the person entity
                 var personIdProperty = personEntityType.GetProperty("Id");
@@ -496,21 +501,32 @@ namespace Shesha.UserManagements
 
                 if (personId.HasValue)
                 {
-                    foreach (var roleId in registrationSettings.DefaultRoles)
+                    foreach (var roleReference in registrationSettings.DefaultRoles)
                     {
-                        if (roleId == null || roleId == Guid.Empty)
+                        if (roleReference == null || string.IsNullOrWhiteSpace(roleReference.Name))
                             continue;
+
+                        // Look up the role by module+name (ShaRole is a ConfigurationItem)
+                        var role = await _configurationItemRepository.FirstOrDefaultAsync(r =>
+                            r.Name == roleReference.Name &&
+                            r.ItemType == "role" &&
+                            (string.IsNullOrWhiteSpace(roleReference.Module) || r.Module!.Name == roleReference.Module));
+
+                        if (role == null)
+                        {
+                            continue;
+                        }
 
                         // Check if the person already has this role assigned
                         var existingAppointment = await _roleAppointedPersonRepository.GetAll()
-                            .FirstOrDefaultAsync(a => a.Role!.Id == roleId.Value && a.Person!.Id == personId.Value);
+                            .FirstOrDefaultAsync(a => a.Role!.Id == role.Id && a.Person!.Id == personId.Value);
 
                         // Only create the role appointment if it doesn't already exist
                         if (existingAppointment == null)
                         {
                             var roleDto = new CreateShaRoleAppointedPersonDto
                             {
-                                RoleId = roleId.Value,
+                                RoleId = role.Id,
                                 Person = new EntityReferenceDto<Guid?>
                                 {
                                     Id = personId.Value

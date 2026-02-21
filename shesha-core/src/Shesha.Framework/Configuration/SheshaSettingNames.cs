@@ -26,6 +26,6 @@
         
         public const string ApplicationRedirects = "Shesha.ApplicationRedirects";
         
-        public const string DefaultAuthenticationSettings = "Shesha.DefaultAuthenticationSettings";
+        public const string SqlAuthenticationSettings = "Shesha.SqlAuthenticationSettings";
     }
 }

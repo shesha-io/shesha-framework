@@ -35,7 +35,7 @@ namespace Shesha.SecurityQuestions
 
             var user = await _userRepository.GetAsync(currentUserId.Value);
 
-            var settings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var settings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
 
             var numberOfQuestionsAllowed = settings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed;
 

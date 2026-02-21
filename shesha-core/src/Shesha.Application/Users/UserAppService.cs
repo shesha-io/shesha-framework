@@ -286,7 +286,7 @@ namespace Shesha.Users
         [AbpAllowAnonymous]
         public async Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptionsAsync(string username)
         {
-            var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
 
             var person = await _userRepository.GetAll().Where(p => p.UserName == username).FirstOrDefaultAsync();
 
@@ -358,7 +358,7 @@ namespace Shesha.Users
         [HttpPost]
         public async Task<bool> SendSmsOtpAsync(string username)
         {
-            var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
             await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.SmsOtp);
@@ -504,7 +504,7 @@ namespace Shesha.Users
         [HttpPost]
         public async Task<bool> SendEmailLinkAsync(string username)
         {
-            var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
 
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
@@ -598,7 +598,7 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         private async Task ValidateUserPasswordResetMethodAsync(User user, long resetMethod)
         {
-            var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
 
             var isEmailLinkEnabled = defaultAuthSettings.UseResetPasswordViaEmailLink;
             var isSmsOtpEnabled = defaultAuthSettings.UseResetPasswordViaSmsOtp;

@@ -142,37 +142,37 @@ namespace Shesha.Migrations
                   FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
               );
 
-              -- Find or create DefaultAuthenticationSettings
-              DECLARE @DefaultAuthSettingsId UNIQUEIDENTIFIER;
-              DECLARE @DefaultAuthSettingsConfigId UNIQUEIDENTIFIER;
+              -- Find or create SqlAuthenticationSettings
+              DECLARE @SqlAuthenticationSettingsId UNIQUEIDENTIFIER;
+              DECLARE @SqlAuthenticationSettingsConfigId UNIQUEIDENTIFIER;
 
-              SELECT @DefaultAuthSettingsConfigId = ci.Id
+              SELECT @SqlAuthenticationSettingsConfigId = ci.Id
               FROM [frwk].[configuration_items] ci
               WHERE ci.item_type = 'setting-configuration'
-                AND ci.Name = 'Shesha.DefaultAuthentication';
+                AND ci.Name = 'Shesha.SqlAuthentication';
 
-              IF @DefaultAuthSettingsConfigId IS NOT NULL
+              IF @SqlAuthenticationSettingsConfigId IS NOT NULL
               BEGIN
                   -- Find existing setting value for this specific context (application_id/user_id)
-                  SELECT @DefaultAuthSettingsId = Id
+                  SELECT @SqlAuthenticationSettingsId = Id
                   FROM [frwk].[setting_values]
-                  WHERE setting_configuration_id = @DefaultAuthSettingsConfigId
+                  WHERE setting_configuration_id = @SqlAuthenticationSettingsConfigId
                       AND ((@OtpApplicationId IS NULL AND application_id IS NULL) OR application_id = @OtpApplicationId)
                       AND ((@OtpUserId IS NULL AND user_id IS NULL) OR user_id = @OtpUserId);
 
-                  IF @DefaultAuthSettingsId IS NOT NULL
+                  IF @SqlAuthenticationSettingsId IS NOT NULL
                   BEGIN
                       -- Update existing
                       UPDATE [frwk].[setting_values]
                       SET Value = @NewDefaultAuthValue,
                           last_modification_time = GETUTCDATE()
-                      WHERE Id = @DefaultAuthSettingsId;
+                      WHERE Id = @SqlAuthenticationSettingsId;
                   END
                   ELSE
                   BEGIN
                       -- Insert new with matching application_id/user_id context
                       INSERT INTO [frwk].[setting_values] (Id, setting_configuration_id, application_id, user_id, Value, creation_time)
-                      VALUES (NEWID(), @DefaultAuthSettingsConfigId, @OtpApplicationId, @OtpUserId, @NewDefaultAuthValue, GETUTCDATE());
+                      VALUES (NEWID(), @SqlAuthenticationSettingsConfigId, @OtpApplicationId, @OtpUserId, @NewDefaultAuthValue, GETUTCDATE());
                   END
               END
 
@@ -381,7 +381,7 @@ namespace Shesha.Migrations
                     LIMIT 1;
 
                     -- ============================================================================
-                    -- Step 4: Combine all into DefaultAuthenticationSettings
+                    -- Step 4: Combine all into SqlAuthenticationSettings
                     -- ============================================================================
                     v_new_default_auth_value := jsonb_build_object(
                         -- From old user management (context-specific)
@@ -422,11 +422,11 @@ namespace Shesha.Migrations
                         'defaultAccountLockoutSeconds', 300
                     );
             
-                    -- Find or create DefaultAuthenticationSettings
+                    -- Find or create SqlAuthenticationSettings
                     SELECT ci.id INTO v_default_auth_settings_config_id
                     FROM frwk.configuration_items ci
                     WHERE ci.item_type = 'setting-configuration'
-                      AND ci.""name"" = 'Shesha.DefaultAuthentication'
+                      AND ci.""name"" = 'Shesha.SqlAuthentication'
                     LIMIT 1;
 
                     IF v_default_auth_settings_config_id IS NOT NULL THEN

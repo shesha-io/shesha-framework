@@ -332,7 +332,7 @@ namespace Shesha.Authorization.Users
         public override void InitializeOptions(int? tenantId)
         {
             Options = GetOptionsCopy();
-            var defaultAuthSettings = _userManagementSettings.DefaultAuthentication.GetValueOrNull();
+            var defaultAuthSettings = _userManagementSettings.SqlAuthentication.GetValueOrNull();
 
             //Lockout
             Options.Lockout.AllowedForNewUsers = defaultAuthSettings?.UserLockOutEnabled ?? false;
@@ -351,7 +351,7 @@ namespace Shesha.Authorization.Users
         public override async Task InitializeOptionsAsync(int? tenantId)
         {
             Options = GetOptionsCopy();
-            var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueOrNullAsync();
+            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueOrNullAsync();
 
             //Lockout
             Options.Lockout.AllowedForNewUsers = defaultAuthSettings?.UserLockOutEnabled ?? false;

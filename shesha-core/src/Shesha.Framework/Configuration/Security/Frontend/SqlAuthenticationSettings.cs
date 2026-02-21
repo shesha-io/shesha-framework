@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
 
 namespace Shesha.Configuration.Security.Frontend
 {
-    public class DefaultAuthenticationSettings
+    public class SqlAuthenticationSettings
     {
         /// <summary>
         /// Require OTP Verification on registration
@@ -38,7 +39,8 @@ namespace Shesha.Configuration.Security.Frontend
         /// </summary>
         [Display(Name = "Custom registration form")]
         [Description("The form the user will be redirected to when clicking 'Register' link from the login page.")]
-        public GenericEntityReference? CustomRegistrationForm { get; set; }
+        public FormIdentifier? CustomRegistrationForm { get; set; }
+        //public GenericEntityReference? CustomRegistrationForm { get; set; }
 
         public SupportedRegistrationMethods? SupportedVerificationMethods { get; set; }
 

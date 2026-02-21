@@ -48,7 +48,7 @@ namespace Shesha.Otp
         [HttpPost]
         public async Task<bool> UpdateSettingsAsync(OtpSettingsDto input)
         {
-            await _userManagementSettings.DefaultAuthentication.SetValueAsync(new DefaultAuthenticationSettings
+            await _userManagementSettings.SqlAuthentication.SetValueAsync(new SqlAuthenticationSettings
             {
                 PasswordLength = input.PasswordLength,
                 Alphabet = input.Alphabet,
@@ -65,7 +65,7 @@ namespace Shesha.Otp
         [HttpGet]
         public async Task<OtpSettingsDto> GetSettingsAsync()
         {
-            var emailSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var emailSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
 
             var settings = new OtpSettingsDto
             {

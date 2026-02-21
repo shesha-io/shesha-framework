@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Shesha.Domain;
 
@@ -14,8 +13,7 @@ namespace Shesha.Configuration.Security.Frontend
         /// <summary>
         /// Additional Registration Info Form (stores module+name reference)
         /// </summary>
-        //public FormIdentifier? AdditionalRegistrationInfoForm { get; set; }
-        public FormConfiguration? AdditionalRegistrationInfoForm { get; set; }
+        public FormIdentifier? AdditionalRegistrationInfoForm { get; set; }
 
         /// <summary>
         /// Allow self-registration
@@ -30,10 +28,10 @@ namespace Shesha.Configuration.Security.Frontend
         public string? AllowedEmailDomains { get; set; } = string.Empty;
 
         /// <summary>
-        /// Default role assigned to newly registered users
+        /// Default roles assigned to newly registered users (stored as module+name references)
         /// </summary>
-        [Display(Name = "Default role")]
-        public List<Guid?> DefaultRoles { get; set; } = new();
+        [Display(Name = "Default roles")]
+        public List<RoleIdentifier> DefaultRoles { get; set; } = new();
 
         /// <summary>
         /// Creation mode (Always, Must already exist, Create new but link if exist)
@@ -42,8 +40,8 @@ namespace Shesha.Configuration.Security.Frontend
         public RefListCreationMode? CreationMode { get; set; }
 
         /// <summary>
-        /// The type of Person entity that will be created upon creation of the account
+        /// The type of Person entity that will be created upon creation of the account (stored as module+name reference)
         /// </summary>
-        public EntityConfig? PersonEntityType { get; set; }
+        public EntityTypeIdentifier? PersonEntityType { get; set; }
     }
 }

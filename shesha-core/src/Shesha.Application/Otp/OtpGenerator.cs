@@ -19,7 +19,7 @@ namespace Shesha.Otp
             var random = new Random();
             var password = new StringBuilder();
 
-            var authSettings = _userManagementSettings.DefaultAuthentication.GetValue();
+            var authSettings = _userManagementSettings.SqlAuthentication.GetValue();
             var alphabet = authSettings.Alphabet;
             var passwordLength = authSettings.PasswordLength;
 
