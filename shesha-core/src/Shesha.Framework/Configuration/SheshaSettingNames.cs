@@ -16,10 +16,16 @@
 
         public const string MainMenuSettings = "Shesha.MainMenuSettings";
 
-        public const string DefaultUrl = "Shesha.DefaultUrl";
+        public const string BaseUrl = "Shesha.BaseUrl";
 
-        public const string PublicUrl = "Shesha.PublicUrl";
+        public const string DefaultPath = "Shesha.DefaultPath";
 
         public const string DefaultEndpointAccess = "Shesha.DefaultEndpointAccess";
+
+        public const string SuccessLoginRedirectPath = "Shesha.SuccessLoginRedirectPath";
+        
+        public const string ApplicationRedirects = "Shesha.ApplicationRedirects";
+        
+        public const string SqlAuthenticationSettings = "Shesha.SqlAuthenticationSettings";
     }
 }
