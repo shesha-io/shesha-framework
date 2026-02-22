@@ -6,6 +6,9 @@
     <PackageId>Shesha.Testing</PackageId>
     <Title>Shesha.Testing</Title>
     <Authors>Shesha</Authors>
+    <Version>1.0.0</Version>
+    <Description>Reusable integration test infrastructure for Shesha applications.</Description>
+    <IsTestProject>false</IsTestProject>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <DocumentationFile>.\Shesha.Testing.xml</DocumentationFile>
