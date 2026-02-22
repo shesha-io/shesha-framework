@@ -40,7 +40,6 @@ namespace Shesha.Configuration.Security.Frontend
         [Display(Name = "Custom registration form")]
         [Description("The form the user will be redirected to when clicking 'Register' link from the login page.")]
         public FormIdentifier? CustomRegistrationForm { get; set; }
-        //public GenericEntityReference? CustomRegistrationForm { get; set; }
 
         public SupportedRegistrationMethods? SupportedVerificationMethods { get; set; }
 
