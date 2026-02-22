@@ -34,6 +34,9 @@ namespace Shesha.Testing
         /// </summary>
         public static void RegisterFakeService<TService>(this IIocManager iocManager) where TService : class
         {
+            if (iocManager.IsRegistered<TService>())
+                return;
+
             iocManager.IocContainer.Register(
                 Component.For<TService>()
                     .UsingFactoryMethod(() => Substitute.For<TService>())
