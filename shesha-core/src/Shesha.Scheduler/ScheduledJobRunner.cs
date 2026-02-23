@@ -52,7 +52,7 @@ namespace Shesha.Scheduler
         {
             Guid jobId;
             string? jobType = null;
-            string parametersJson = null;
+            string? parametersJson = null;
             var executionId = Guid.NewGuid();
 
             using (var uow = UnitOfWorkManager.Begin())
