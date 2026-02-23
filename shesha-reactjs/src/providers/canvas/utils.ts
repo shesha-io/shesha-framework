@@ -45,7 +45,7 @@ export const getSmallerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes
 export const dimensionRelativeToCanvas = (
   dimension: string | number,
   canvasDimension: string,
-  unit: 'vw' | 'vh'
+  unit: 'vw' | 'vh',
 ): string => {
   if (typeof dimension === 'number') {
     return `${dimension}px`;
@@ -63,7 +63,7 @@ export const dimensionRelativeToCanvas = (
   }
 
   return trimmed;
-}
+};
 
 export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
 

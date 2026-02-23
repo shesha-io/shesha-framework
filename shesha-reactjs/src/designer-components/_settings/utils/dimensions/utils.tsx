@@ -106,37 +106,27 @@ export const getDimensionsStyle = (
   dimensions: IDimensionsValue | undefined,
   canvasWidth?: string,
   canvasHeight?: string,
-  isInDesigner?: boolean,
-  margins?: CSSProperties,
 ): CSSProperties => {
   const { width, minWidth, maxWidth, height, minHeight, maxHeight } = dimensions || {};
-  const { marginTop: top, marginLeft: left, marginRight: right, marginBottom: bottom } = margins || {};
 
   return {
     width: width
-      ? isInDesigner ? getWidthDimension(width, canvasWidth) :
-      getDesignerCalculatedDimension(width, left, right)
+      ? getWidthDimension(width, canvasWidth)
       : undefined,
     height: height
-      ? isInDesigner ? getHeightDimension(height, canvasHeight) :
-      getDesignerCalculatedDimension(height, top, bottom)
+      ? getHeightDimension(height, canvasHeight)
       : undefined,
     minWidth: minWidth
-      ? isInDesigner ? getWidthDimension(minWidth, canvasWidth) :
-      getDesignerCalculatedDimension(minWidth, left, right)
+      ? getWidthDimension(minWidth, canvasWidth)
       : undefined,
     minHeight: minHeight
-      ? isInDesigner ? getHeightDimension(minHeight, canvasHeight) :
-      getDesignerCalculatedDimension(minHeight, top, bottom)
+      ? getHeightDimension(minHeight, canvasHeight)
       : undefined,
     maxWidth: maxWidth
-      ? isInDesigner ? getWidthDimension(maxWidth, canvasWidth):
-      getDesignerCalculatedDimension(maxWidth, left, right)
+      ? getWidthDimension(maxWidth, canvasWidth)
       : undefined,
     maxHeight: maxHeight
-      ? isInDesigner ? getHeightDimension(maxHeight, canvasHeight) :
-      getDesignerCalculatedDimension(maxHeight, top, bottom)
-      : undefined,
+      ? getHeightDimension(maxHeight, canvasHeight) : undefined,
   };
 };
 
