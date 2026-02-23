@@ -16,6 +16,7 @@ import {
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
 import { removeUndefinedProperties } from '@/utils/array';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
+import { RowReorderValidationError } from '@/utils/errors';
 import { ReactTable } from '@/components/reactTable';
 import {
   IColumnResizing,
@@ -875,7 +876,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             console.error('OnBeforeRowReorder event error:', error);
             payload.applyOrder(oldData);
             const errorMessage = error instanceof Error ? error.message : String(error);
-            reject(new Error(errorMessage));
+            reject(new RowReorderValidationError(errorMessage));
           },
         });
       });
