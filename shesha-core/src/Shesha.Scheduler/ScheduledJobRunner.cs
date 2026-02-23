@@ -52,6 +52,8 @@ namespace Shesha.Scheduler
         {
             Guid jobId;
             string? jobType = null;
+            string parametersJson = null;
+            var executionId = Guid.NewGuid();
 
             using (var uow = UnitOfWorkManager.Begin())
             {
@@ -73,22 +75,20 @@ namespace Shesha.Scheduler
 
                     jobId = trigger.Job.Id;
                     jobType = trigger.Job.JobType;
+                    parametersJson = trigger.ParametersJson;
                 }
+                await PreCreateExecutionRecordAsync(executionId, jobId, triggerId, null);
 
                 await uow.CompleteAsync();
             }
 
-            var executionId = Guid.NewGuid();
+            var envelope = new JobEnvelope(jobId)
+            {
+                ExecutionId = executionId,
+                ParametersJson = parametersJson,
+            };
 
-            // save jobId and executionId for monitoring purposes
-            context?.SetJobId(jobId);
-            context?.SetExecutionId(executionId);
-
-            var job = GetJobInstanceById(jobId);
-            job.TriggerId = triggerId;
-            await job.CreateExecutionRecordAsync(executionId, AbpSession.UserId);
-
-            await job.ExecuteAsync(executionId, AbpSession.UserId, cancellationToken, context);
+            await RunJobAsync(jobName, envelope, cancellationToken, context);
         }
 
         const string defaultPattern = "%-5level %utcdate %message%newline";
@@ -280,6 +280,7 @@ namespace Shesha.Scheduler
         public async Task PreCreateExecutionRecordAsync(Guid executionId, Guid jobId, Guid? triggerId, Int64? startedById)
         {
             var job = GetJobInstanceById(jobId);
+            job.TriggerId = triggerId;
             await job.CreateExecutionRecordAsync(executionId, startedById);
         }
 
