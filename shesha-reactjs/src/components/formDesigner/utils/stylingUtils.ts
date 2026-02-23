@@ -31,6 +31,16 @@ const DEFAULT_MARGIN_VALUES = {
   right: DEFAULT_MARGINS.horizontal,
 };
 
+const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
+  if (value === undefined || value === null || value === '') {
+    // When no explicit dimension is provided, don't set a CSS value at all.
+    // This avoids producing invalid CSS like `calc(undefined + ...)`.
+    return undefined;
+  }
+
+  return `calc(${value} + (${marginTop} + ${marginBottom}))`;
+};
+
 /**
  * Styling utility functions for form designer components.
  *
@@ -87,22 +97,23 @@ export const stylingUtils = {
       : '100%';
     // Height is expanded to include padding to allow gap for component selecting e.g in button
     const expandedHeight = dimensions.height
-      ? getCalculatedDimension(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
+      ? getExpandedDimensions(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
     const height = expandedHeight
       ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
       : validationHeight ? addPx(validationHeight) : undefined;
 
     const minHeight = dimensions.minHeight
-      ? getCalculatedDimension(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
+      ? getExpandedDimensions(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
 
     const maxHeight = dimensions.maxHeight
-      ? getCalculatedDimension(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
+      ? getExpandedDimensions(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
-    const minWidth = dimensions.minWidth;
 
-    const maxWidth = dimensions.maxWidth;
+    const minWidth = getCalculatedDimension(dimensions.minWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
+
+    const maxWidth = getCalculatedDimension(dimensions.maxWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
 
     return {
       boxSizing: 'border-box' as const,

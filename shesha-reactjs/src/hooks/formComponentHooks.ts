@@ -12,7 +12,9 @@ import {
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useAvailableConstantsContextsNoRefresh,
+  useCanvas,
   useDeepCompareMemo,
+  useShaFormInstance,
   useSheshaApplication,
   wrapConstantsData,
 } from "..";
@@ -28,7 +30,6 @@ import { jsonSafeParse, removeUndefinedProps } from "@/utils/object";
 import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
 import { isNullOrWhiteSpace } from "@/utils/nullables";
-import { stylingUtils } from "@/components/formDesigner/utils/stylingUtils";
 
 type MayHaveEditMode<T> = T & {
   editMode?: unknown | undefined;
@@ -206,10 +207,13 @@ export const useFormComponentStyles = <TModel>(
   options?: IUseFormComponentStylesOptions,
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
+  const shaForm = useShaFormInstance();
   const { useWrapperStyle } = options || {};
   // For container components, use wrapperStyle instead of style
   const styleSource = useWrapperStyle && model.wrapperStyle ? (model).wrapperStyle : model.style;
   const jsStyle = useActualContextExecution(styleSource, undefined, {}); // use default style if empty or error
+  const { designerWidth } = useCanvas();
+  const isInDesigner = shaForm.formMode === 'designer';
 
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
@@ -230,7 +234,7 @@ export const useFormComponentStyles = <TModel>(
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(stylingBoxParsed), [stylingBoxParsed]);
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, stylingUtils.extractMargins(jsStyle, stylingBoxAsCSS)), [dimensions, stylingBoxAsCSS, jsStyle]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth, undefined, isInDesigner, { ...stylingBoxAsCSS, ...jsStyle }), [dimensions, designerWidth]);
   const overflowStyles = useMemo(() => overflow ? getOverflowStyle(overflow, false) : {}, [overflow]);
 
   useDeepCompareEffect(() => {
