@@ -1,6 +1,7 @@
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
+import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -28,16 +29,6 @@ const DEFAULT_MARGIN_VALUES = {
   bottom: DEFAULT_MARGINS.vertical,
   left: DEFAULT_MARGINS.horizontal,
   right: DEFAULT_MARGINS.horizontal,
-};
-
-const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
-  if (value === undefined || value === null || value === '') {
-    // When no explicit dimension is provided, don't set a CSS value at all.
-    // This avoids producing invalid CSS like `calc(undefined + ...)`.
-    return undefined;
-  }
-
-  return `calc(${value} + (${marginTop} + ${marginBottom}))`;
 };
 
 /**
@@ -92,24 +83,23 @@ export const stylingUtils = {
 
     // When width is 100% and there are margins, use getDesignerCalculatedDimension to prevent overflow
     // Use getDesignerCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
-    const width = dimensions.width ? getExpandedDimensions(dimensions.width, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right)
+    const width = dimensions.width ? getCalculatedDimension(dimensions.width, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right)
       : '100%';
     // Height is expanded to include padding to allow gap for component selecting e.g in button
     const expandedHeight = dimensions.height
-      ? getExpandedDimensions(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
+      ? getCalculatedDimension(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
     const height = expandedHeight
       ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
       : validationHeight ? addPx(validationHeight) : undefined;
 
     const minHeight = dimensions.minHeight
-      ? getExpandedDimensions(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
+      ? getCalculatedDimension(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
 
     const maxHeight = dimensions.maxHeight
-      ? getExpandedDimensions(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
+      ? getCalculatedDimension(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
-
     const minWidth = dimensions.minWidth;
 
     const maxWidth = dimensions.maxWidth;
