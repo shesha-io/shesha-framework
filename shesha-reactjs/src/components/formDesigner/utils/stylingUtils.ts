@@ -91,8 +91,8 @@ export const stylingUtils = {
     const marginLeft = addPx(margins?.marginLeft ?? 0);
     const marginRight = addPx(margins?.marginRight ?? 0);
 
-    // When width is 100% and there are margins, use getDesignerCalculatedDimension to prevent overflow
-    // Use getDesignerCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
+    // When width is 100% and there are margins, use getCalculatedDimension to prevent overflow
+    // Use getCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
     const width = dimensions.width ? getCalculatedDimension(dimensions.width, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right)
       : '100%';
     // Height is expanded to include padding to allow gap for component selecting e.g in button
