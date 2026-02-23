@@ -78,7 +78,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
           return {
             id: item,
             _displayName: String(item ?? ''),
-            _className: entityMetadata?.fullClassName
+            _className: entityMetadata?.fullClassName,
           };
         }
 
@@ -122,7 +122,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (value: unknown, option?: unknown): void => {
-            customEvent.onChange(value, option);
+            customEvent.onChange(value as any, option);
             if (typeof onChange === 'function')
               onChange(value);
           };

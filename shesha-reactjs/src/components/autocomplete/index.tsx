@@ -75,18 +75,18 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     // --- For backward compatibility
     (props.dataSourceType === 'entitiesList' && !props.keyPropName
       ? (value: unknown) => {
-          if (!isRecord(value)) return value;
-          return {
-            id: value.id,
-            _displayName: getValueByPropertyName(value, displayPropName),
-            _className: value._className
-          };
-        }
+        if (!isRecord(value)) return value;
+        return {
+          id: value.id,
+          _displayName: getValueByPropertyName(value, displayPropName),
+          _className: value._className,
+        };
+      }
       // ---
       : (value: unknown) => {
-          if (!isRecord(value)) return value;
-          return getValueByPropertyName(value, keyPropName) ?? value;
-        }), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
+        if (!isRecord(value)) return value;
+        return getValueByPropertyName(value, keyPropName) ?? value;
+      }), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
 
   // register columns
   useDeepCompareEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
@@ -103,14 +103,14 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   // Extract entity type from value as fallback when not explicitly configured
   const effectiveEntityType = useMemo(
     () => props.entityType || (props.dataSourceType === 'entitiesList' ? extractEntityTypeFromValue(props.value) : null),
-    [props.entityType, props.dataSourceType, props.value]
+    [props.entityType, props.dataSourceType, props.value],
   );
 
-  const keys = useMemo(() => {
+  const keys = useMemo<string[]>(() => {
     const res = props.value
       ? Array.isArray(props.value)
-        ? props.value.map((x) => keyValueFunc(x, allData))
-        : [keyValueFunc(props.value, allData)]
+        ? props.value.map((x) => String(keyValueFunc(x, allData)))
+        : [String(keyValueFunc(props.value, allData))]
       : [];
     return res;
   }, [props.value]);
@@ -175,7 +175,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         // Check if keys have changed
         const keysChanged = !isEqual(
           [...keys].sort(),
-          [...lastLoadedKeys.current].sort()
+          [...lastLoadedKeys.current].sort(),
         );
 
         // Only reload if values don't exist in current selection AND
@@ -434,7 +434,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
   // Extract entity type from value as fallback when not explicitly configured
   const effectiveEntityType = useMemo(
     () => props.entityType || (props.dataSourceType === 'entitiesList' ? extractEntityTypeFromValue(props.value) : null),
-    [props.entityType, props.dataSourceType, props.value]
+    [props.entityType, props.dataSourceType, props.value],
   );
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(effectiveEntityType);
