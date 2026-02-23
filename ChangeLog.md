@@ -2,9 +2,10 @@
 
 ## 💪 Enhancements
 
-- Enforce password update on first login
-- Custom footer for Wizard
-- New Accent property for Panel, which applies an accent border to visually emphasize the panel
+- Support for system auto logout
+- Back navigation to preserve and restore full table state when returning from details view
 
 ## 🐞 Bug Fixes
-- File with uppercase extension not downloadable
+
+- Fixed OnBeforeRowReorder validation logic to properly display custom validation messages
+- User details form fixes
