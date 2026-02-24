@@ -124,14 +124,13 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     });
   };
 
+  const isDataColumn = (col: IConfigurableColumnsProps): col is IDataColumnsProps => col.columnType === 'data';
+
   const getPropertyNames = (columns: IConfigurableColumnsProps[]): string[] => {
     const result: string[] = [];
     columns.forEach(col => {
-      const dataCol = col.columnType === 'data'
-        ? col as IDataColumnsProps
-        : null;
-      if (dataCol && dataCol.propertyName)
-        result.push(dataCol.propertyName);
+      if (isDataColumn(col) && col.propertyName)
+        result.push(col.propertyName);
     });
     return result;
   };
@@ -174,15 +173,13 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     }
 
     const dataColumns = configurableColumns
-      .filter(col => col.columnType === 'data')
-      .map(col => {
-        const dataCol = col as IDataColumnsProps;
-
+      .filter(isDataColumn)
+      .map(dataCol => {
         const result: DataTableColumnDto = {
-          propertyName: dataCol.propertyName || col.id,
-          name: dataCol.propertyName || col.id,
-          caption: col.caption || dataCol.propertyName || col.id,
-          description: col.description || null,
+          propertyName: dataCol.propertyName || dataCol.id,
+          name: dataCol.propertyName || dataCol.id,
+          caption: dataCol.caption || dataCol.propertyName || dataCol.id,
+          description: dataCol.description || null,
           dataType: 'string',
           dataFormat: null,
           referenceListName: null,
