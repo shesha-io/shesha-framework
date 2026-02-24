@@ -141,7 +141,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
       .map<DataTableColumnDto>(dataCol => ({
         propertyName: dataCol.propertyName || dataCol.id,
         name: dataCol.propertyName || dataCol.id,
-        caption: dataCol.caption || dataCol.propertyName || dataCol.id,
+        caption: dataCol.caption || null,
         description: dataCol.description || null,
         dataType: 'string',
         dataFormat: null,
@@ -165,11 +165,11 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
           return baseColumns.map(col => {
             const propMeta = response[col.propertyName];
             if (!propMeta)
-              return col;
+              return { ...col, caption: col.caption || col.propertyName };
 
             return {
               ...col,
-              caption: col.caption || propMeta.label,
+              caption: col.caption || propMeta.label || col.propertyName,
               description: col.description || propMeta.description,
               dataType: propMeta.dataType,
               dataFormat: propMeta.dataFormat,
@@ -178,17 +178,17 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
               entityReferenceTypeShortAlias: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityType : undefined,
               allowInherited: false,
               isFilterable: true,
-              isSortable: true,
+              isSortable: col.isSortable,
               metadata: propMeta,
             };
           });
         }).catch(e => {
           console.error('Failed to fetch table columns metadata', e);
-          return baseColumns;
+          return baseColumns.map(col => ({ ...col, caption: col.caption || col.propertyName }));
         });
     }
 
-    return Promise.resolve(baseColumns);
+    return Promise.resolve(baseColumns.map(col => ({ ...col, caption: col.caption || col.propertyName })));
   };
 
   const performUpdate = (_rowIndex: number, _: any): Promise<any> => {
