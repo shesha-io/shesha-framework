@@ -16,7 +16,7 @@ import {
 } from '../interfaces';
 import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
-import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IConfigurableColumnsProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
@@ -121,8 +121,33 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     });
   };
 
-  const prepareColumns = (_: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
-    return Promise.resolve([]);
+  const prepareColumns = (configurableColumns: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
+
+    const dataColumns = configurableColumns
+      .filter(col => col.columnType === 'data')
+      .map(col => {
+        const dataCol = col as IDataColumnsProps;
+        
+        const result: DataTableColumnDto = {
+          propertyName: dataCol.propertyName || col.id,
+          name: dataCol.propertyName || col.id,
+          caption: col.caption || dataCol.propertyName || col.id,
+          description: col.description || null,
+          dataType: 'string',
+          dataFormat: null,
+          referenceListName: null,
+          referenceListModule: null,
+          entityReferenceTypeShortAlias: null,
+          allowInherited: false,
+          isFilterable: true,
+          isSortable: dataCol.allowSorting !== false, // Respect explicit allowSorting: false
+          metadata: null,
+        };
+        
+        return result;
+      });
+
+    return Promise.resolve(dataColumns);
   };
 
   const performUpdate = (_rowIndex: number, _: any): Promise<any> => {
