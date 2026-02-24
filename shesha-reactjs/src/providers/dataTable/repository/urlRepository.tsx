@@ -239,7 +239,7 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
       apiHelper,
       mutator,
     });
-  }, [args.getListUrl, args.entityType, backendUrl, httpHeaders]);
+  }, [args.getListUrl, args.entityType, backendUrl, httpHeaders, apiHelper, mutator]);
 
   return repository;
 };
