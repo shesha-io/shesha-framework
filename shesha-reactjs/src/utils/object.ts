@@ -8,7 +8,7 @@ import { TouchableProxy } from "@/providers/form/touchableProxy";
 import { ShaArrayAccessProxy, ShaObjectAccessProxy } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
 
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T | undefined => {
   try {

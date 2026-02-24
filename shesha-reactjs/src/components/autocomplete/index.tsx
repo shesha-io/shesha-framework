@@ -67,9 +67,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }, [filterKeysFunc]);
   const displayValueFunc: DisplayValueFunc = useMemo(() => props.displayValueFunc ??
     ((value: unknown) => {
-      if (!Boolean(value)) return '';
-      if (!isRecord(value)) return String(value?.toString() ?? '');
-      return String(getValueByPropertyName(value, displayPropName) ?? value?.toString());
+      if (!value) return '';
+      if (!isRecord(value)) return String(value);
+      return String(getValueByPropertyName(value, displayPropName) ?? value.toString());
     }), [props.displayValueFunc, displayPropName]);
   const outcomeValueFunc: OutcomeValueFunc = useMemo(() => props.outcomeValueFunc ??
     // --- For backward compatibility
@@ -100,11 +100,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const [autocompleteText, setAutocompleteText] = useState(null);
   const lastLoadedKeys = useRef<string[]>([]);
 
-  // Extract entity type from value as fallback when not explicitly configured
-  const effectiveEntityType = useMemo(
-    () => props.entityType || (props.dataSourceType === 'entitiesList' ? extractEntityTypeFromValue(props.value) : null),
-    [props.entityType, props.dataSourceType, props.value],
-  );
+  // Use effectiveEntityType from props (computed in parent)
+  const effectiveEntityType = props.effectiveEntityType;
 
   const keys = useMemo<string[]>(() => {
     const res = props.value
@@ -113,7 +110,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         : [String(keyValueFunc(props.value, allData))]
       : [];
     return res;
-  }, [props.value]);
+  }, [props.value, keyValueFunc, allData]);
 
   // reset loading state on error
   useEffect(() => {
@@ -516,6 +513,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       <AutocompleteInner
         {...props}
         uid={uid}
+        effectiveEntityType={effectiveEntityType}
         disableRefresh={setDisableRefresh}
         fields={fields}
         onSearch={handleSearch}

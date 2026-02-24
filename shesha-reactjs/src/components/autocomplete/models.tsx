@@ -58,6 +58,8 @@ export interface IAutocompleteBaseProps {
 
   /** Type of entity */
   entityType?: string | IEntityTypeIdentifier;
+  /** Effective entity type (computed from entityType or extracted from value) */
+  effectiveEntityType?: string | IEntityTypeIdentifier | null;
   /** Data source type */
   dataSourceType: AutocompleteDataSourceType;
   /** Data source URL (required for dataSourceType === 'url', alternative for dataSourceType === 'entitiesList') */

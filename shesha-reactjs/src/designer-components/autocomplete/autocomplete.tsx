@@ -82,10 +82,15 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
           };
         }
 
+        // Return arrays unchanged
+        if (Array.isArray(item)) {
+          return item;
+        }
+
         // Build entity reference from object (item is a non-null object given the guards above)
         if (isRecord(item)) {
           return {
-            id: item.id || getValueByPropertyName(item, 'id'),
+            id: getValueByPropertyName(item, 'id') ?? item.id,
             _displayName: getValueByPropertyName(item, displayPropName) || item._displayName,
             _className: item._className || entityMetadata?.fullClassName,
           };
@@ -122,7 +127,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (value: unknown, option?: unknown): void => {
-            customEvent.onChange(value as any, option);
+            customEvent.onChange(value as object, option);
             if (typeof onChange === 'function')
               onChange(value);
           };
