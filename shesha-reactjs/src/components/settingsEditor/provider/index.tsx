@@ -189,6 +189,11 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     )
       .then((response) => {
         dispatch(setSaveStatusAction('success'));
+        window.dispatchEvent(
+          new CustomEvent<ISettingIdentifier>('shesha:settingChanged', {
+            detail: { name: settingId.name, module: settingId.module, appKey: settingId.appKey },
+          })
+        );
         return response;
       })
       .catch((error) => {
