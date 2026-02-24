@@ -136,65 +136,59 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
   };
 
   const prepareColumns = (configurableColumns: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
-    const dataProperties = getPropertyNames(configurableColumns ?? []);
-    if (dataProperties.length === 0)
+    const baseColumns = (configurableColumns ?? [])
+      .filter(isDataColumn)
+      .map<DataTableColumnDto>(dataCol => ({
+        propertyName: dataCol.propertyName || dataCol.id,
+        name: dataCol.propertyName || dataCol.id,
+        caption: dataCol.caption || dataCol.propertyName || dataCol.id,
+        description: dataCol.description || null,
+        dataType: 'string',
+        dataFormat: null,
+        referenceListName: null,
+        referenceListModule: null,
+        entityReferenceTypeShortAlias: null,
+        allowInherited: false,
+        isFilterable: true,
+        isSortable: dataCol.allowSorting !== false,
+        metadata: null,
+      }));
+
+    if (baseColumns.length === 0)
       return Promise.resolve([]);
 
-    if (entityType) {
+    const dataProperties = getPropertyNames(configurableColumns ?? []);
+
+    if (entityType && dataProperties.length > 0) {
       return metadataDispatcher.getPropertiesMetadata({ dataType: DataTypes.entityReference, modelType: entityType, properties: dataProperties })
         .then(response => {
-          return dataProperties.map<DataTableColumnDto>(p => {
-            const baseProps = {
-              propertyName: p,
-              name: p,
+          return baseColumns.map(col => {
+            const propMeta = response[col.propertyName];
+            if (!propMeta)
+              return col;
+
+            return {
+              ...col,
+              caption: col.caption || propMeta.label,
+              description: col.description || propMeta.description,
+              dataType: propMeta.dataType,
+              dataFormat: propMeta.dataFormat,
+              referenceListName: propMeta.referenceListName,
+              referenceListModule: propMeta.referenceListModule,
+              entityReferenceTypeShortAlias: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityType : undefined,
+              allowInherited: false,
+              isFilterable: true,
+              isSortable: true,
+              metadata: propMeta,
             };
-            const propMeta = response[p];
-            return propMeta
-              ? {
-                  ...baseProps,
-                  caption: propMeta.label,
-                  description: propMeta.description,
-                  dataType: propMeta.dataType,
-                  dataFormat: propMeta.dataFormat,
-                  referenceListName: propMeta.referenceListName,
-                  referenceListModule: propMeta.referenceListModule,
-                  entityReferenceTypeShortAlias: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityType : undefined,
-                  allowInherited: false,
-                  isFilterable: true,
-                  isSortable: true,
-                  metadata: propMeta,
-                }
-              : baseProps;
           });
         }).catch(e => {
-          console.error('Failed to fetch table columns', e);
-          return [];
+          console.error('Failed to fetch table columns metadata', e);
+          return baseColumns;
         });
     }
 
-    const dataColumns = configurableColumns
-      .filter(isDataColumn)
-      .map(dataCol => {
-        const result: DataTableColumnDto = {
-          propertyName: dataCol.propertyName || dataCol.id,
-          name: dataCol.propertyName || dataCol.id,
-          caption: dataCol.caption || dataCol.propertyName || dataCol.id,
-          description: dataCol.description || null,
-          dataType: 'string',
-          dataFormat: null,
-          referenceListName: null,
-          referenceListModule: null,
-          entityReferenceTypeShortAlias: null,
-          allowInherited: false,
-          isFilterable: true,
-          isSortable: dataCol.allowSorting !== false,
-          metadata: null,
-        };
-
-        return result;
-      });
-
-    return Promise.resolve(dataColumns);
+    return Promise.resolve(baseColumns);
   };
 
   const performUpdate = (_rowIndex: number, _: any): Promise<any> => {
