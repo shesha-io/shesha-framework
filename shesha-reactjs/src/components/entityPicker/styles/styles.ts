@@ -74,6 +74,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
   const entitySelect = cx("entity-select", css`
         --ant-color-text: ${style?.color || '#000'} !important;
         width: calc(100% - 32px) !important;
+        flex-basis: unset !important;
         &:hover {
                 border-color: ${token.colorPrimary} !important;
               }

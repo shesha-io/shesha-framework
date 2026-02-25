@@ -64,7 +64,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       disabled: model.readOnly,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
-      style: model.allStyles.fullStyle,
+      style: { ...model.allStyles.fullStyle, width: '100%', height: "100%" },
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
       minLength: model.validate?.minLength,

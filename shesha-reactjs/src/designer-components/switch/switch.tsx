@@ -7,7 +7,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { SwitchChangeEventHandler, SwitchSize } from 'antd/lib/switch';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps, SwitchComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
@@ -21,12 +21,6 @@ const SwitchComponent: SwitchComponentDefinition = {
   canBeJsSetting: true,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
-
-
     return (
       <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
@@ -41,7 +35,7 @@ const SwitchComponent: SwitchComponentDefinition = {
             <Switch
               className="sha-switch"
               disabled={model.readOnly}
-              style={finalStyle}
+              style={model.allStyles.jsStyle}
               size={model.size as SwitchSize}
               checked={value}
               onChange={onChangeInternal}

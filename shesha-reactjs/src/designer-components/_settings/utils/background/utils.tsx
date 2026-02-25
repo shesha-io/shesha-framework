@@ -1,6 +1,6 @@
 import React from "react";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
-import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined } from "@/utils/nullables";
 
 export const getBackgroundImageUrl = async (propertyName: IBackgroundValue | undefined, backendUrl: string, httpHeaders: object): Promise<string> => {
   return (
@@ -44,9 +44,16 @@ export const getBackgroundStyle = (input: IBackgroundValue | undefined, jsStyle:
       break;
     }
     case 'gradient': {
+      const direction = input.gradient?.direction;
+      const isRadial = direction === 'radial';
+      const isConic = direction === 'conic';
       const colors = input.gradient?.colors || [];
-      const colorsString = Object.values(colors).filter((color) => !isNullOrWhiteSpace(color)).join(', ');
-      style.backgroundImage = input.gradient?.direction === 'radial' ? `radial-gradient(${colorsString})` : `linear-gradient(${input.gradient?.direction || 'to right'}, ${colorsString})`;
+      const colorsString = Object.values(colors).filter((color) => color && color.trim() !== '').join(', ');
+      if (colorsString) {
+        style.backgroundImage = isRadial || isConic
+          ? `${direction}-gradient(${colorsString})`
+          : `linear-gradient(${direction || 'to right'}, ${colorsString})`;
+      }
       break;
     }
     case 'url': {
@@ -77,6 +84,7 @@ export const gradientDirectionOptions: IDropdownOption[] = [
   { value: 'to bottom right', label: 'To bottom right' },
   { value: 'to bottom left', label: 'To bottom left' },
   { value: 'radial', label: 'Radial' },
+  { value: 'conic', label: 'Conic' },
 ];
 
 export const backgroundTypeOptions: IRadioOption[] = [

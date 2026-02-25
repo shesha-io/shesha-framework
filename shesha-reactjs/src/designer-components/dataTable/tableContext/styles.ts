@@ -192,6 +192,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         margin: 0;
         padding-top: 0 !important;
         padding-bottom: 0 !important;
+        height: 100%;
     `);
 
   const tablePagerMockup = cx("sha-table-pager-mockup", css`

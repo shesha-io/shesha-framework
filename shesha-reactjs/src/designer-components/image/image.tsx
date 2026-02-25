@@ -95,16 +95,18 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
     fileList: [],
   };
 
+  const { width: w, height: h, ...stylesWithoutDimensions } = styles || {};
+
   return (
     <div style={{ position: 'relative', float: 'left' }}>
       {content && (
         <Image
           src={content}
           alt={props?.alt}
-          width={styles.width}
-          height={styles.height}
+          width="100%"
+          height="100%"
           preview={allowPreview}
-          style={styles}
+          style={stylesWithoutDimensions}
         />
       )}
       {!readOnly && (

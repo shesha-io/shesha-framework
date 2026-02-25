@@ -43,7 +43,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   );
   const metadataProperties = useMemo(
     () => (metadata && isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
-    [metadata, metadata?.metadata],
+    [metadata],
   );
   const metadataPropertyNameSet = useMemo(
     () => new Set(collectMetadataPropertyPaths(metadataProperties)),
@@ -80,6 +80,13 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     [dataColumns.length, metadataPropertyNameSet.size, invalidDataColumns.length, isEntitySource],
   );
 
+  // Extract specific values to avoid including the entire store object in dependencies
+  // (store is recreated on every render, which would cause infinite loops)
+  const hasStore = !!store;
+  const fetchTableDataError = store?.fetchTableDataError;
+  const exportToExcelError = store?.exportToExcelError;
+  const nestedExportError = store?.error?.exportToExcel;
+
   // CRITICAL: Register validation errors - FormComponent will display them
   // Must be called before any conditional returns (React Hooks rules)
   useComponentValidation(
@@ -87,17 +94,17 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
       const errors: Array<{ propertyName: string; error: string }> = [];
 
       // Parse fetch errors from the store
-      if (store?.fetchTableDataError) {
-        errors.push(...parseFetchError(store.fetchTableDataError));
+      if (fetchTableDataError) {
+        errors.push(...parseFetchError(fetchTableDataError));
       }
 
-      const exportError = store?.exportToExcelError ?? store?.error?.exportToExcel;
+      const exportError = exportToExcelError ?? nestedExportError;
       if (exportError) {
         errors.push(...parseFetchError(exportError));
       }
 
       // Check for missing context error
-      if (!store) {
+      if (!hasStore) {
         errors.push({
           propertyName: 'Missing Required Parent Component',
           error: 'CONFIGURATION ERROR: DataTable MUST be placed inside a Data Context component.\nThis component cannot function without a data source.',
@@ -122,7 +129,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
 
       return undefined;
     },
-    [store, store?.fetchTableDataError, store?.exportToExcelError, store?.error?.exportToExcel, columnsMismatch],
+    [hasStore, fetchTableDataError, exportToExcelError, nestedExportError, columnsMismatch],
   );
 
   if (model.hidden) return null;

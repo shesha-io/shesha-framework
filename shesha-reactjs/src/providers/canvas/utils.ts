@@ -35,24 +35,35 @@ export const getSmallerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes
 };
 
 
-export function widthRelativeToCanvas(width: string | number, canvasWidth: string = '100vw'): string {
-  if (typeof width === 'number') {
-    return `${width}px`;
+/**
+ * Converts viewport units (vw/vh) to be relative to a specific canvas dimension
+ * @param dimension - The dimension value (e.g., "50vw", "100vh", "100px", 300)
+ * @param canvasDimension - The canvas dimension to calculate relative to (e.g., '100vw', '1024px')
+ * @param unit - The unit type to convert ('vw' or 'vh')
+ * @returns The converted dimension string
+ */
+export const dimensionRelativeToCanvas = (
+  dimension: string | number,
+  canvasDimension: string,
+  unit: 'vw' | 'vh',
+): string => {
+  if (typeof dimension === 'number') {
+    return `${dimension}px`;
   }
 
-  const trimmed = String(width).trim();
-  const vwRegex = /^([\d.]+)\s*vw$/i;
-  const vwMatch = vwRegex.exec(trimmed);
+  const trimmed = String(dimension).trim();
+  const unitRegex = new RegExp(`^([\\d.]+)\\s*${unit}$`, 'i');
+  const unitMatch = unitRegex.exec(trimmed);
 
-  if (vwMatch && vwMatch[1] !== undefined) {
-    const percentageOfCanvas = parseFloat(vwMatch[1]);
+  if (unitMatch && unitMatch[1] !== undefined) {
+    const percentageOfCanvas = parseFloat(unitMatch[1]);
     if (!Number.isNaN(percentageOfCanvas)) {
-      return `calc((${percentageOfCanvas} * ${canvasWidth}) / 100)`;
+      return `calc((${percentageOfCanvas} * ${canvasDimension}) / 100)`;
     }
   }
 
   return trimmed;
-}
+};
 
 export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
 

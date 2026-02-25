@@ -6,12 +6,14 @@ export const useStyles = createStyles(({ css, cx }) => {
         display: flex;
         flex-wrap: wrap;
         gap: 0px 8px;
+        // margin-top: 5px;
     `);
 
   const rowInputs = cx(css`
         display: flex;
         flex-wrap: wrap;
         gap: 0px 8px;
+        // margin-top: 5px;
         `);
 
   const icon = cx(css`
