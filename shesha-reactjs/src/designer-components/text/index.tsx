@@ -7,7 +7,7 @@ import { LineHeightOutlined } from '@ant-design/icons';
 import React, { CSSProperties } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { FONT_SIZES, ITextTypographyProps, TextComponentDefinition } from './models';
+import { FONT_SIZES, ITextComponentProps, TextComponentDefinition } from './models';
 import { getSettings } from './settingsForm';
 import TypographyComponent from './typography';
 import { defaultStyles, remToPx } from './utils';
@@ -70,16 +70,16 @@ const TextComponent: TextComponentDefinition = {
   }),
   migrator: (m) =>
     m
-      .add<ITextTypographyProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ITextTypographyProps)
-      .add<ITextTypographyProps>(1, (prev) => ({
+      .add<ITextComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ITextComponentProps)
+      .add<ITextComponentProps>(1, (prev) => ({
         ...prev,
         color: legacyColor2Hex(prev.color),
         backgroundColor: legacyColor2Hex(prev.backgroundColor),
       }))
-      .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) }))
-      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: prev.contentType }))
-      .add<ITextTypographyProps>(5, (prev) => {
+      .add<ITextComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ITextComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) }))
+      .add<ITextComponentProps>(4, (prev) => ({ ...prev, contentType: prev.contentType }))
+      .add<ITextComponentProps>(5, (prev) => {
         const fontSizeEntry = FONT_SIZES[prev.fontSize as keyof typeof FONT_SIZES];
         const rem = fontSizeEntry ? fontSizeEntry.fontSize : prev.fontSize;
         const px = remToPx(rem);

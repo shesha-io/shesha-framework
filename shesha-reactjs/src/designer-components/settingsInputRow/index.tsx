@@ -7,6 +7,7 @@ import { useStyles } from '../inputComponent/styles';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
 import { IInputRowProps, ISettingsInputRowProps, SettingsInputRowDefinition } from './interfaces';
+import { nanoid } from '@/utils/uuid';
 
 export const isSettingsInputRow = (component: IConfigurableFormComponent): component is ISettingsInputRowProps => isDefined(component) && component.type === 'settingsInputRow';
 
@@ -18,7 +19,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
   return isHidden ? null : (
     <div className={inline ? styles.inlineInputs : styles.rowInputs}>
       {inputs?.map((props, i) => {
-        const { type } = props;
+        const { type, id } = props;
         const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: formData }) : props.hidden;
 
         const width = getWidth(type, props.width);
@@ -27,6 +28,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
           <SettingInput
             key={i + props.label}
             {...props}
+            id={id ?? nanoid()}
             hidden={isHidden as boolean}
             readOnly={props.readOnly || readOnly}
             inline={inline}

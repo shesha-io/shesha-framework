@@ -2,7 +2,7 @@ import { ISwitchSettingsInputProps } from '@/designer-components/settingsInput/i
 import { Switch } from 'antd';
 import React, { FC } from 'react';
 
-export const SwithcWrapper: FC<ISwitchSettingsInputProps> = (props) => {
+export const SwitchWrapper: FC<ISwitchSettingsInputProps> = (props) => {
   const { value, onChange, readOnly } = props;
   return (
     <Switch

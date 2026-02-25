@@ -9,6 +9,8 @@ export interface ILabelComponentProps extends IConfigurableFormComponent {
   labelPropName?: string;
   hideLabelPropName?: string;
   labelAlignOptions?: IRadioOption[];
+  placeholder?: string;
+  metadataValue?: string;
 }
 
 export type LabelConfiguratorDefinition = ComponentDefinition<"labelConfigurator", ILabelComponentProps>;

@@ -3,10 +3,9 @@ import React, { FC } from 'react';
 import { useStyles } from '../styles';
 import ThreeStateSwitch from '@/components/threeStateSwitch';
 
-export const ThreeStateSwitchWrapper: FC<IThreeStateSwitchSettingsInputProps> = (props) => {
+export const ThreeStateSwitchWrapper: FC<IThreeStateSwitchSettingsInputProps> = ({ value, onChange, readOnly, size, metadataValue }) => {
   const { styles } = useStyles();
 
-  const { value, onChange, readOnly, size } = props;
   return (
     <ThreeStateSwitch
       readOnly={readOnly}
@@ -14,6 +13,7 @@ export const ThreeStateSwitchWrapper: FC<IThreeStateSwitchSettingsInputProps> = 
       onChange={onChange}
       size={size}
       className={styles.radioBtns}
+      defaultValue={metadataValue as boolean | undefined}
     />
   );
 };

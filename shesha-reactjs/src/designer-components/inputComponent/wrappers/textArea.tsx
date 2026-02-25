@@ -3,16 +3,22 @@ import React, { FC } from 'react';
 import { Input } from 'antd';
 
 export const TextAreaWrapper: FC<ITextAreaSettingsInputProps> = (props) => {
-  const { placeholder, value, onChange, readOnly, size } = props;
+  const { metadataValue, placeholder, value, onChange, readOnly, size } = props;
+
+  const [focused, setFocused] = React.useState(false);
+  const localValue = !focused && !value ? metadataValue : value;
+
   return (
     <Input.TextArea
-      value={value}
+      value={localValue}
       onChange={onChange}
       readOnly={readOnly}
       rows={2}
-      placeholder={placeholder}
+      placeholder={placeholder ?? metadataValue?.toString()}
       size={size}
       style={{ top: '4px' }}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
     />
   );
 };

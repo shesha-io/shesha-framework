@@ -8,7 +8,7 @@ import { LinkOutlined } from '@ant-design/icons';
 import React, { CSSProperties, ReactNode } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { ILinkProps, LinkComponentDefinition } from './interfaces';
+import { ILinkComponentProps, LinkComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
@@ -86,8 +86,8 @@ const LinkComponent: LinkComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
-  initModel: (model: ILinkProps) => {
-    const customProps: ILinkProps = {
+  initModel: (model: ILinkComponentProps) => {
+    const customProps: ILinkComponentProps = {
       ...model,
       direction: 'vertical',
       target: '_self',
@@ -99,8 +99,8 @@ const LinkComponent: LinkComponentDefinition = {
   },
   migrator: (m) =>
     m
-      .add<ILinkProps>(0, (prev) => ({ ...prev }) as ILinkProps)
-      .add<ILinkProps>(1, (prev) => {
+      .add<ILinkComponentProps>(0, (prev) => ({ ...prev }) as ILinkComponentProps)
+      .add<ILinkComponentProps>(1, (prev) => {
         return {
           ...prev,
           label: prev.label ?? prev['name'],
@@ -108,16 +108,16 @@ const LinkComponent: LinkComponentDefinition = {
           content: prev['name'],
         };
       })
-      .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ILinkProps>(4, (prev) => {
+      .add<ILinkComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ILinkComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ILinkComponentProps>(4, (prev) => {
         const styles: IInputStyles = {
           style: prev.style,
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<ILinkComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default LinkComponent;

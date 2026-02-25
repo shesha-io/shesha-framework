@@ -15,7 +15,7 @@ const LabelConfigurator: LabelConfiguratorDefinition = {
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>
-        <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} />
+        <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} placeholder={model.placeholder} metadataValue={model.metadataValue} />
       </ConfigurableFormItem>
     );
   },

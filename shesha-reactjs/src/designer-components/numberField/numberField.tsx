@@ -3,10 +3,10 @@ import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IInputStyles, useMetadata } from '@/providers';
+import { IComponentValidationRules, IInputStyles, useMetadata } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { INumberFieldComponentProps, NumberFieldComponentDefinition } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -59,8 +59,8 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
     const inputProps: InputNumberProps = {
       disabled: model.readOnly,
       variant: model.hideBorder ? 'borderless' : undefined,
-      min: model.min !== undefined ? model.min : null,
-      max: model.max !== undefined ? model.max : Number.MAX_SAFE_INTEGER,
+      min: model.validate?.minValue !== undefined ? model.validate?.minValue : null,
+      max: model.validate?.maxValue !== undefined ? model.validate?.maxValue : Number.MAX_SAFE_INTEGER,
       placeholder: model?.placeholder,
       size: model?.size,
       step: model?.highPrecision ? model?.stepString : model?.stepNumeric,
@@ -123,15 +123,26 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      .add<INumberFieldComponentProps>(6, (prev) => {
+        const model = { ...migrateHiddenToVisible(prev) };
+        if (prev.min !== undefined || prev.max !== undefined) {
+          model.validate = prev.validate ?? {} as IComponentValidationRules;
+          model.validate.minValue = prev.min;
+          model.validate.maxValue = prev.max;
+        }
+        return model;
+      }),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,
-      label: metadata.label,
-      description: metadata.description,
-      min: metadata.min,
-      max: metadata.max,
+      editMode: undefined,
+      label: '', // metadata.label,
+      description: '', // metadata.description,
+      validate: undefined,
+      // min: metadata.min,
+      // max: metadata.max,
       // TODO: add decimal points and format
     };
   },

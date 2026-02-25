@@ -4,7 +4,7 @@ import {
   ContentDisplay,
   FONT_SIZES,
   FontSizeProps,
-  ITextTypographyProps,
+  ITextComponentProps,
   PADDING_SIZES,
   PaddingProps,
   TypographyFontSize,
@@ -33,9 +33,9 @@ export const DEFAULT_CONTENT_DISPLAY: ContentDisplay = 'content';
 export const DEFAULT_PADDING_SIZE: TypographyPaddingSize = 'none';
 
 export interface IContent {
-  dataType?: ITextTypographyProps['dataType'] | undefined;
-  dateFormat?: ITextTypographyProps['dateFormat'] | undefined;
-  numberFormat?: ITextTypographyProps['numberFormat'] | undefined;
+  dataType?: ITextComponentProps['dataType'] | undefined;
+  dateFormat?: ITextComponentProps['dateFormat'] | undefined;
+  numberFormat?: ITextComponentProps['numberFormat'] | undefined;
   dataFormat?: string | undefined;
 }
 

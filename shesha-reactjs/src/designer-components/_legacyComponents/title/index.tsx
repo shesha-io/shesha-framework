@@ -1,10 +1,10 @@
 import { LineHeightOutlined } from '@ant-design/icons';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
-import { ITextTypographyProps } from '@/designer-components/text/models';
+import { ITextComponentProps } from '@/designer-components/text/models';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 
-const TitleComponent: IToolboxComponent<ITextTypographyProps> = {
+const TitleComponent: IToolboxComponent<ITextComponentProps> = {
   type: 'title',
   isInput: false,
   name: 'Title',
@@ -14,7 +14,7 @@ const TitleComponent: IToolboxComponent<ITextTypographyProps> = {
     throw new Error('`title` component is deprecated');
   },
   migrator: (m) =>
-    m.add<ITextTypographyProps>(0, (prev) => {
+    m.add<ITextComponentProps>(0, (prev) => {
       const props = {
         ...prev,
         content: prev['content'] ?? '',
@@ -23,7 +23,7 @@ const TitleComponent: IToolboxComponent<ITextTypographyProps> = {
         type: 'text',
         textType: 'title',
       };
-      return migratePropertyName(migrateCustomFunctions(props)) as ITextTypographyProps;
+      return migratePropertyName(migrateCustomFunctions(props)) as ITextComponentProps;
     }),
 };
 

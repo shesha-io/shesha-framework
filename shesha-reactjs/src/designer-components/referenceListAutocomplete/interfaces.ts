@@ -1,6 +1,6 @@
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
-export type IReferenceListAutocompleteProps = IConfigurableFormComponent;
+export type IReferenceListAutocompleteComponentProps = IConfigurableFormComponent;
 
-export type ReferenceListAutocompleteComponentDefinition = ComponentDefinition<"referenceListAutocomplete", IReferenceListAutocompleteProps>;
+export type ReferenceListAutocompleteComponentDefinition = ComponentDefinition<"referenceListAutocomplete", IReferenceListAutocompleteComponentProps>;

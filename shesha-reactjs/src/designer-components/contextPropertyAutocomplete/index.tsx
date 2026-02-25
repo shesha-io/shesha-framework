@@ -1,11 +1,11 @@
-import React, { CSSProperties, FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import settingsFormJson from './settingsForm.json';
 import { Button, Input } from 'antd';
 import { DataContextSelector } from '@/designer-components/dataContextSelector';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { MetadataProvider } from '@/providers';
+import { MetadataProvider, useMetadataDispatcher } from '@/providers';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { useFormDesignerSettings } from '@/providers/formDesigner';
@@ -15,6 +15,8 @@ import { useStyles } from '../_settings/styles/styles';
 import { ConfigurableFormItem } from '@/components';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocompleteComponentProps } from './interfaces';
+import { IModelMetadata, isPropertiesArray } from '@/interfaces';
+import { toCamelCase } from '@/utils/string';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -183,13 +185,42 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
       dropdownStyle: model?.dropdownStyle ? getStyle(model?.dropdownStyle, allData.data, allData.globalState) : emptyObj,
       modelType: allData.form.formSettings.modelType,
       setFieldsValue: allData.form.setFieldsValue,
+      getPropertyName: () => allData.form.getFormData()?.['propertyName'],
+      setPropertyMetadata: (value: any) => allData.contexts?.formContext?.['setFieldValue']?.('propMetadata', value),
     };
   },
   Factory: ({ model, calculatedModel }) => {
     const formSettings = useFormDesignerSettings();
     const designerModelType = formSettings?.modelType;
     const validate = useMemo(() => ({ ...model.validate, required: false }), [model.validate]);
-    const onValuesChange = useCallback((values) => calculatedModel.setFieldsValue(values), [calculatedModel.setFieldsValue]);
+
+    const [metadata, setMetadata] = useState<IModelMetadata>();
+    const metaDispatcher = useMetadataDispatcher();
+    useEffect(() => {
+      metaDispatcher.getMetadata({ modelType: designerModelType ?? calculatedModel.modelType, dataType: 'entity' })
+        .then((meta) => {
+          setMetadata(meta);
+          if (calculatedModel.setPropertyMetadata) {
+            const propertyName = toCamelCase(calculatedModel.getPropertyName());
+            const propertyMetadata = isPropertiesArray(meta?.properties)
+              ? meta?.properties?.find((p) => toCamelCase(p.path) === propertyName)
+              : null;
+            calculatedModel.setPropertyMetadata(propertyMetadata);
+          }
+        });
+    }, []);
+
+    const onValuesChange = useCallback((values) => {
+      calculatedModel.setFieldsValue(values);
+
+      if (calculatedModel.setPropertyMetadata) {
+        const propertyName = toCamelCase(values.propertyName);
+        const propertyMetadata = isPropertiesArray(metadata?.properties)
+          ? metadata?.properties.find((p) => toCamelCase(p.path) === propertyName)
+          : null;
+        calculatedModel.setPropertyMetadata(propertyMetadata);
+      }
+    }, [calculatedModel.setFieldsValue, calculatedModel.setPropertyMetadata, metadata]);
 
     return model.hidden
       ? null

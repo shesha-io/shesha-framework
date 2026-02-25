@@ -6,6 +6,7 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
 import { sheshaStyles } from '@/styles';
+import { DataContextProvider } from '@/providers';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -65,26 +66,28 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     };
 
   return (
-    <ConfigurableForm
-      formName={isInModal ? 'modalSettings' : 'componentSettings'}
-      labelCol={layoutSettings?.labelCol}
-      wrapperCol={layoutSettings?.wrapperCol}
-      layout={layoutSettings?.layout}
-      className={sheshaStyles.verticalSettingsClass}
-      mode={readOnly ? "readonly" : "edit"}
-      form={form}
-      onFinish={onSave}
-      markup={markup}
-      cacheKey={`form-designer:${toolboxComponent.type}`}
-      initialValues={model}
-      onValuesChange={onValuesChange}
-      actions={{
-        linkToModelMetadata,
-      }}
-      onFinishFailed={onFinishFailed}
-      propertyFilter={propertyFilter}
-      isSettingsForm={true}
-    />
+    <DataContextProvider id="settings" name="settings" type="settings" initialData={Promise.resolve({ test: "Shurik" })}>
+      <ConfigurableForm
+        formName={isInModal ? 'modalSettings' : 'componentSettings'}
+        labelCol={layoutSettings?.labelCol}
+        wrapperCol={layoutSettings?.wrapperCol}
+        layout={layoutSettings?.layout}
+        className={sheshaStyles.verticalSettingsClass}
+        mode={readOnly ? "readonly" : "edit"}
+        form={form}
+        onFinish={onSave}
+        markup={markup}
+        cacheKey={`form-designer:${toolboxComponent.type}`}
+        initialValues={model}
+        onValuesChange={onValuesChange}
+        actions={{
+          linkToModelMetadata,
+        }}
+        onFinishFailed={onFinishFailed}
+        propertyFilter={propertyFilter}
+        isSettingsForm={true}
+      />
+    </DataContextProvider>
   );
 }
 

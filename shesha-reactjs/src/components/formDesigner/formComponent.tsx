@@ -52,7 +52,9 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
 
   actualModel.hidden = shaForm.formMode !== 'designer' &&
     (
+      // ToDo: AS - remove hidden from this check
       actualModel.hidden ||
+      actualModel.visible === false ||
       !anyOfPermissionsGranted(actualModel?.permissions || []) ||
       !isComponentFiltered(actualModel));
 

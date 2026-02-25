@@ -11,7 +11,7 @@ export interface KeyInfomationBarItemProps {
   padding?: string;
 }
 
-export interface IKeyInformationBarProps extends IConfigurableFormComponent, IInputStyles {
+export interface IKeyInformationBarComponentProps extends IConfigurableFormComponent, IInputStyles {
   width?: string;
   height?: string;
   dividerHeight?: string;
@@ -29,4 +29,4 @@ export interface IKeyInformationBarProps extends IConfigurableFormComponent, IIn
   backgroundColor?: string;
 }
 
-export type KeyInformationBarComponentDefinition = ComponentDefinition<"KeyInformationBar", IKeyInformationBarProps>;
+export type KeyInformationBarComponentDefinition = ComponentDefinition<"KeyInformationBar", IKeyInformationBarComponentProps>;

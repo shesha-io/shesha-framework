@@ -14,9 +14,9 @@ export interface IPropertyRouterProps extends IConfigurableFormComponent {
   propertyRouteName?: any;
 }
 
-export interface IPropertyRouterComponent extends IConfigurableFormComponent {
+export interface IPropertyRouterComponentProps extends IConfigurableFormComponent {
   propertyRouteName?: string;
   components?: IConfigurableFormComponent[];
 }
 
-export type PropertyRouterComponentDefinition = ComponentDefinition<"propertyRouter", IPropertyRouterComponent>;
+export type PropertyRouterComponentDefinition = ComponentDefinition<"propertyRouter", IPropertyRouterComponentProps>;

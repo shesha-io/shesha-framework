@@ -51,6 +51,41 @@ export const migratePropertyName = <T extends IConfigurableFormComponent>(prev: 
     return { ...prev } as T;
 };
 
+export const migratePropToInverseProp = <T>(prev: T, fromProp: string, toProp: string, inverseFunc?: (value: unknown) => unknown, defaultValue?: EditMode): T => {
+  const from = prev[fromProp];
+  const model = {
+    ...prev,
+    [toProp]:
+      isPropertySettings(from)
+        ? { ...from }
+        : typeof from === 'boolean'
+          ? !from
+          : typeof inverseFunc === 'function'
+            ? inverseFunc(from)
+            : from,
+  } as T;
+
+  if (isPropertySettings(model[toProp])) {
+    const func = `// Automatically updated from 'disabled' property, please review\n\n` +
+      'return !(() => {\n    // Source code\n\n' +
+      model[toProp]['_code'] +
+      '\n\n})();';
+
+    model[toProp] = { ...model[toProp] as any, _code: func };
+  }
+
+  if (model[toProp] === undefined && Boolean(defaultValue))
+    model[toProp] = defaultValue;
+
+  return model;
+};
+
+export const migrateHiddenToVisible = <T>(prev: T): T => {
+  const newModel = migratePropToInverseProp(prev, 'hidden', 'visible');
+  delete newModel['hidden'];
+  return newModel;
+};
+
 export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
   const disabled = prev['disabled'];
   const readOnly = prev['readOnly'];
@@ -67,17 +102,7 @@ export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
             : undefined,
   } as T;
 
-  if (isPropertySettings(model['editMode'])) {
-    const func = `// Automatically updated from 'disabled' property, please review\n\n` +
-      'return !(() => {\n    // Source code\n\n' +
-      model['editMode']['_code'] +
-      '\n\n})();';
-
-    model['editMode'] = { ...model['editMode'] as any, _code: func };
-  }
-
-  if (!model['editMode'] && !!defaultValue)
-    model['editMode'] = defaultValue;
+  migratePropToInverseProp(model, 'editMode', 'editMode', undefined, defaultValue);
 
   // delete model.disabled;
   return model;

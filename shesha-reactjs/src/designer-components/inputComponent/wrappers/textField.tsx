@@ -5,8 +5,11 @@ import { useStyles } from '../styles';
 import { Input } from 'antd';
 
 export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
-  const { value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
+  const { value, readOnly, size, variant, placeholder, metadataValue, icon, textType, tooltip, label, width, onChange, regExp } = props;
   const { styles } = useStyles();
+
+  const [focused, setFocused] = React.useState(false);
+  const localValue = !focused && !value ? metadataValue : value;
 
   const regExpObj = useMemo(() => {
     if (!regExp) return null;
@@ -38,11 +41,13 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
       }}
       readOnly={readOnly}
       variant={variant}
-      placeholder={placeholder}
+      placeholder={placeholder ?? metadataValue?.toString()}
       style={{ width: width ?? "100%" }}
       suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? label} className={styles.icon} /></span>}
-      value={value}
+      value={localValue}
       type={textType}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
     />
   );
 };

@@ -15,7 +15,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
-import { IEnhancedRadioProps, RadioComponentDefinition } from './interfaces';
+import { IRadioComponentProps, RadioComponentDefinition } from './interfaces';
 
 const RadioComponent: RadioComponentDefinition = {
   type: 'radio',
@@ -61,29 +61,29 @@ const RadioComponent: RadioComponentDefinition = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
-      .add<IEnhancedRadioProps>(0, (prev) => ({
+      .add<IRadioComponentProps>(0, (prev) => ({
         ...prev,
         dataSourceType: prev['dataSourceType'] ?? 'values',
         direction: prev['direction'] ?? 'horizontal',
       }))
-      .add<IEnhancedRadioProps>(1, (prev) => {
+      .add<IRadioComponentProps>(1, (prev) => {
         return {
           ...prev,
           referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
         };
       })
-      .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
-      .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
-      .add<IEnhancedRadioProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IEnhancedRadioProps>(6, (prev) => {
+      .add<IRadioComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IRadioComponentProps>(3, (prev) => migrateVisibility(prev))
+      .add<IRadioComponentProps>(4, (prev) => migrateReadOnly(prev))
+      .add<IRadioComponentProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+      .add<IRadioComponentProps>(6, (prev) => {
         const styles: IInputStyles = {
           style: prev.style,
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       }),
-  linkToModelMetadata: (model, metadata): IEnhancedRadioProps => {
+  linkToModelMetadata: (model, metadata): IRadioComponentProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
 
     return {

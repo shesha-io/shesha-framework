@@ -30,7 +30,7 @@ export interface IRadioProps {
   enableStyleOnReadonly?: boolean;
 }
 
-export interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent { }
+export interface IRadioComponentProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent { }
 
 interface IRadioComopnentCalulatedValues {
   eventHandlers: IEventHandlers;
@@ -38,4 +38,4 @@ interface IRadioComopnentCalulatedValues {
   defaultValue?: any;
 }
 
-export type RadioComponentDefinition = ComponentDefinition<"radio", IEnhancedRadioProps, IRadioComopnentCalulatedValues>;
+export type RadioComponentDefinition = ComponentDefinition<"radio", IRadioComponentProps, IRadioComopnentCalulatedValues>;

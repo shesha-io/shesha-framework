@@ -13,7 +13,7 @@ const ThreeStateSwitchComponent: ThreeStateSwitchComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  name: 'Edit mode Selector',
+  name: 'Three State Switch',
   icon: <CodeOutlined />,
   Factory: ({ model }) => {
     return <ConfigurableFormItem model={model}><ThreeStateSwitch readOnly={model.readOnly} /></ConfigurableFormItem>;

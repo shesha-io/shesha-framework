@@ -7,7 +7,7 @@ import { ColorPickerWrapper } from "./colorPicker";
 import { DropDownWrapper } from "./dropDown";
 import { CustomDropdownWrapper } from "./customDropdown";
 import { RadioWrapper } from "./radio";
-import { SwithcWrapper } from "./switch";
+import { SwitchWrapper } from "./switch";
 import { NumberFieldWrapper } from "./numberField";
 import { TextFieldWrapper } from "./textField";
 import { TextAreaWrapper } from "./textArea";
@@ -62,7 +62,7 @@ export const editorRegistry: EditorDictionary = {
   dropdown: DropDownWrapper,
   customDropdown: CustomDropdownWrapper,
   radio: RadioWrapper,
-  switch: SwithcWrapper,
+  switch: SwitchWrapper,
   numberField: NumberFieldWrapper,
   textField: TextFieldWrapper,
   textArea: TextAreaWrapper,

@@ -4,7 +4,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { ComponentType } from '@/components/formComponentSelector';
-import { ComponentDefinition, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting } from '@/interfaces';
+import { ComponentDefinition, EditMode, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting } from '@/interfaces';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
@@ -12,6 +12,7 @@ import { GetResultTypeFunc } from '../codeEditor/interfaces';
 import { CodeLanguages } from '../codeEditor/types';
 import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
+import { IFontValue } from '../_settings/utils/font/interfaces';
 
 export interface IRadioOption {
   value: string | number;
@@ -48,10 +49,18 @@ export interface ISettingsInputBase extends IComponentLabelProps,
   style?: string;
   placeholder?: string;
   className?: string;
-  hidden?: boolean | IPropertySetting;
+
+  /** @deprecated Use `visible` instead (inverson of `hidden`) */
+  hidden?: boolean | IPropertySetting<boolean>;
+  visible?: boolean;
+  visibleJs?: string;
 
   width?: string | number;
   inline?: boolean;
+
+  fromMetadata?: string;
+  fromMetadataToProperty?: string;
+  metadataValue?: string | number | boolean | EditMode | IPropertySetting<unknown>;
 }
 
 // Color Picker
@@ -99,8 +108,23 @@ export const isRadioProps = (value: ISettingsInputBase): value is IRadioSettings
 // Switch
 export interface ISwitchSettingsInputProps extends ISettingsInputBase {
   type: 'switch';
+  defaultChecked?: boolean;
 }
 export const isSwitchProps = (value: ISettingsInputBase): value is ISwitchSettingsInputProps => value.type === 'switch';
+
+export interface ISectionSeparatorSettingsInputProps extends ISettingsInputBase {
+  type: 'sectionSeparator';
+  containerStyle?: string;
+  titleStyle?: string;
+  lineFont?: IFontValue;
+  font?: IFontValue;
+  titleStylingBox?: string;
+  containerStylingBox?: string;
+  dashed?: boolean;
+  lineWidth?: string;
+  lineHeight?: string;
+}
+export const isSectionSeparatorProps = (value: ISettingsInputBase): value is ISectionSeparatorSettingsInputProps => value.type === 'sectionSeparator';
 
 // Number Field
 export interface INumberFieldSettingsInputProps extends ISettingsInputBase {

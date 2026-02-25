@@ -2,14 +2,14 @@ import React, { FC } from 'react';
 import { Alert } from 'antd';
 import { evaluateString } from '@/providers/form/utils';
 import { GenericText } from './genericText';
-import { ITextTypographyProps } from './models';
+import { ITextComponentProps } from './models';
 import { useForm, useFormData } from '@/providers';
 import {
   getContent,
 } from './utils';
 import { isMoment } from 'moment';
 
-const TypographyComponent: FC<ITextTypographyProps> = ({
+const TypographyComponent: FC<ITextComponentProps> = ({
   contentDisplay,
   dataType,
   dateFormat,

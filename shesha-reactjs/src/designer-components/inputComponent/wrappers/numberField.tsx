@@ -6,20 +6,27 @@ import { InputNumber } from 'antd';
 
 export const NumberFieldWrapper: FC<INumberFieldSettingsInputProps> = (props) => {
   const { styles } = useStyles();
-  const { value, onChange, readOnly, size, icon, variant, placeholder, tooltip, label, min } = props;
+  const { value, onChange, readOnly, size, icon, variant, placeholder, tooltip, label, min, max, metadataValue } = props;
+
+  const [focused, setFocused] = React.useState(false);
+  const localValue = !focused && (value === undefined || value === null || value === '') ? metadataValue : value;
+
   return (
     <InputNumber
-      value={value}
+      value={localValue}
       onChange={onChange}
       readOnly={readOnly}
 
-      placeholder={placeholder}
+      placeholder={placeholder ?? metadataValue?.toString()}
       variant={variant}
       size={size}
       style={{ width: "100%" }}
       min={min}
+      max={max}
       controls={!icon}
       addonAfter={icon ? <Icon icon={icon} hint={tooltip || label} className={styles.icon} /> : null}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
     />
   );
 };

@@ -56,7 +56,7 @@ export interface IComponentValidationRules {
   validator?: string;
 }
 
-export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type EditMode = 'editable' | 'readOnly' | 'inherited' | 'default' | boolean;
 export type PositionType = 'relative' | 'fixed';
 export interface IStyleType {
   border?: IBorderValue;
@@ -171,6 +171,12 @@ export interface IComponentBindingProps {
 export interface IComponentVisibilityProps {
   /** Hidden field is still a part of the form but not visible on it */
   hidden?: boolean | undefined;
+
+  /** Visible field contains only the value from the component settings (set explicitly or calculated),
+   * but does not reflect the actual visibility of the component.
+   * It may also depend on the permissions and/or state of the parent container/form
+   * Use `hidden` to get actual visible/hidden state of the component */
+  visible?: boolean | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */

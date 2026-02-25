@@ -65,7 +65,7 @@ export interface ITypographyProps {
   style?: CSSProperties;
 }
 
-export interface ITextTypographyProps extends IConfigurableFormComponent {
+export interface ITextComponentProps extends IConfigurableFormComponent {
   textType: 'span' | 'paragraph' | 'title';
   content: string;
   contentType?: ContentType;
@@ -93,4 +93,4 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   shadow?: IShadowValue;
 }
 
-export type TextComponentDefinition = ComponentDefinition<"text", ITextTypographyProps>;
+export type TextComponentDefinition = ComponentDefinition<"text", ITextComponentProps>;

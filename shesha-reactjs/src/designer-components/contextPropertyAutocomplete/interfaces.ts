@@ -19,6 +19,8 @@ interface IContextPropertyAutocompleteCalculatedModel {
   dropdownStyle: CSSProperties;
   modelType: string | IEntityTypeIdentifier;
   setFieldsValue: (values: any) => void;
+  setPropertyMetadata: (value: any) => void;
+  getPropertyName: () => string;
 }
 
 export type ContextPropertyAutocompleteComponentDefinition = ComponentDefinition<"contextPropertyAutocomplete", IContextPropertyAutocompleteComponentProps, IContextPropertyAutocompleteCalculatedModel>;
