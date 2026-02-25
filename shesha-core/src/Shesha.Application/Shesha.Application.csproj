@@ -124,8 +124,6 @@
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="ConfigMigrations\package20260225_1631.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20260202_1055.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20260209_2056.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20260225_1554.shaconfig" />
         <EmbeddedResource Include="Excel\template.xlsx" />
     </ItemGroup>
