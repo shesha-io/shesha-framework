@@ -1,4 +1,9 @@
-﻿using Abp.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Configuration;
 using Abp.Domain.Repositories;
@@ -13,72 +18,63 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Shesha.Authorization.Roles;
-using Shesha.Configuration;
-using Shesha.Configuration.Security;
+using Shesha.Configuration.Security.Frontend;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Settings;
 using Shesha.Validations;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Shesha.Authorization.Users
 {
     public class UserManager : AbpUserManager<Role, User>
     {
         private readonly IOptions<IdentityOptions> _optionsAccessor;
-        
-        private readonly IPasswordComplexitySettings _passwordComplexitySettings;
-        private readonly ISecuritySettings _securitySettings;
+
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
 
         public UserManager(
             RoleManager roleManager,
-            UserStore store, 
-            IOptions<IdentityOptions> optionsAccessor, 
-            IPasswordHasher<User> passwordHasher, 
-            IEnumerable<IUserValidator<User>> userValidators, 
+            UserStore store,
+            IOptions<IdentityOptions> optionsAccessor,
+            IPasswordHasher<User> passwordHasher,
+            IEnumerable<IUserValidator<User>> userValidators,
             IEnumerable<IPasswordValidator<User>> passwordValidators,
-            ILookupNormalizer keyNormalizer, 
-            IdentityErrorDescriber errors, 
-            IServiceProvider services, 
-            ILogger<UserManager<User>> logger, 
-            IPermissionManager permissionManager, 
-            IUnitOfWorkManager unitOfWorkManager, 
-            ICacheManager cacheManager, 
-            IRepository<OrganizationUnit, long> organizationUnitRepository, 
-            IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository, 
-            IOrganizationUnitSettings organizationUnitSettings, 
+            ILookupNormalizer keyNormalizer,
+            IdentityErrorDescriber errors,
+            IServiceProvider services,
+            ILogger<UserManager<User>> logger,
+            IPermissionManager permissionManager,
+            IUnitOfWorkManager unitOfWorkManager,
+            ICacheManager cacheManager,
+            IRepository<OrganizationUnit, long> organizationUnitRepository,
+            IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
+            IOrganizationUnitSettings organizationUnitSettings,
             ISettingManager settingManager,
             IShaSettingManager settingProvider,
-            IPasswordComplexitySettings passwordComplexitySettings,
-            ISecuritySettings securitySettings,
-            IRepository<UserLogin, Int64> loginRepository)
+            IRepository<UserLogin, Int64> loginRepository,
+            ISqlAuthenticationSettings sqlAuthenticationSettings)
             : base(
-                roleManager, 
-                store, 
-                optionsAccessor, 
-                passwordHasher, 
-                userValidators, 
-                passwordValidators, 
-                keyNormalizer, 
-                errors, 
-                services, 
-                logger, 
-                permissionManager, 
-                unitOfWorkManager, 
+                roleManager,
+                store,
+                optionsAccessor,
+                passwordHasher,
+                userValidators,
+                passwordValidators,
+                keyNormalizer,
+                errors,
+                services,
+                logger,
+                permissionManager,
+                unitOfWorkManager,
                 cacheManager,
-                organizationUnitRepository, 
-                userOrganizationUnitRepository, 
-                organizationUnitSettings, 
+                organizationUnitRepository,
+                userOrganizationUnitRepository,
+                organizationUnitSettings,
                 settingManager,
                 loginRepository)
         {
             _optionsAccessor = optionsAccessor;
-            _passwordComplexitySettings = passwordComplexitySettings;
-            _securitySettings = securitySettings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
         }
 
         protected override void Dispose(bool disposing)
@@ -258,7 +254,6 @@ namespace Shesha.Authorization.Users
                 SupportedPasswordResetMethods = supportedPasswordResetMethods
             };
 
-
             user.SetNormalizedNames();
             await this.InitializeOptionsAsync(AbpSession.TenantId);
 
@@ -268,6 +263,47 @@ namespace Shesha.Authorization.Users
             CheckErrors(await CreateAsync(user, newPassword));
 
             return user;
+        }
+
+        public async Task<User> LinkUserAsync(
+            string username,
+            bool createLocalPassword,
+            string? password,
+            string? passwordConfirmation,
+            string? firstname,
+            string? lastname,
+            string? mobileNumber,
+            string? emailAddress,
+            long? supportedPasswordResetMethods = null
+        )
+        {
+            var validationResults = new List<ValidationResult>();
+
+            // Try to find existing user by username first, then by email if not found
+            var existingUser = await FindByNameAsync(username);
+            if (existingUser == null && !string.IsNullOrWhiteSpace(emailAddress))
+                existingUser = await FindByEmailAsync(emailAddress);
+
+            if (existingUser == null)
+            {
+                var message = $"User with the provided username or email does not exist";
+                validationResults.Add(new ValidationResult(message));
+                validationResults.ThrowValidationException(L);
+            }
+
+            // Update user details if new values are provided
+            existingUser.EmailAddress = emailAddress ?? existingUser.EmailAddress;
+            existingUser.PhoneNumber = mobileNumber ?? existingUser.PhoneNumber;
+            existingUser.Name = firstname ?? existingUser.Name;
+            existingUser.Surname = lastname ?? existingUser.Surname;
+            existingUser.SupportedPasswordResetMethods = supportedPasswordResetMethods ?? existingUser.SupportedPasswordResetMethods;
+
+            existingUser.SetNormalizedNames();
+
+            await this.InitializeOptionsAsync(AbpSession.TenantId);
+            CheckErrors(await UpdateAsync(existingUser));
+
+            return existingUser;
         }
 
         protected virtual void CheckErrors(IdentityResult identityResult)
@@ -296,37 +332,39 @@ namespace Shesha.Authorization.Users
         public override void InitializeOptions(int? tenantId)
         {
             Options = GetOptionsCopy();
+            var defaultAuthSettings = _sqlAuthenticationSettings.SqlAuthentication.GetValueOrNull();
 
             //Lockout
-            Options.Lockout.AllowedForNewUsers = _securitySettings.UserLockOutEnabled.GetValueOrNull();
-            var lockoutSecs = _securitySettings.DefaultAccountLockoutSeconds.GetValueOrNull();
+            Options.Lockout.AllowedForNewUsers = defaultAuthSettings?.UserLockOutEnabled ?? false;
+            var lockoutSecs = defaultAuthSettings?.DefaultAccountLockoutSeconds ?? 0;
             Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(lockoutSecs);
-            Options.Lockout.MaxFailedAccessAttempts = _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueOrNull();
+            Options.Lockout.MaxFailedAccessAttempts = defaultAuthSettings?.MaxFailedAccessAttemptsBeforeLockout ?? 3;
 
             //Password complexity
-            Options.Password.RequireDigit = _passwordComplexitySettings.RequireDigit.GetValueOrNull();
-            Options.Password.RequireLowercase = _passwordComplexitySettings.RequireLowercase.GetValueOrNull();
-            Options.Password.RequireNonAlphanumeric = _passwordComplexitySettings.RequireNonAlphanumeric.GetValueOrNull();
-            Options.Password.RequireUppercase = _passwordComplexitySettings.RequireUppercase.GetValueOrNull();
-            Options.Password.RequiredLength = _passwordComplexitySettings.RequiredLength.GetValueOrNull();
+            Options.Password.RequireDigit = defaultAuthSettings?.RequireDigit ?? true;
+            Options.Password.RequireLowercase = defaultAuthSettings?.RequireLowercase ?? true;
+            Options.Password.RequireNonAlphanumeric = defaultAuthSettings?.RequireNonAlphanumeric ?? false;
+            Options.Password.RequireUppercase = defaultAuthSettings?.RequireUppercase ?? false;
+            Options.Password.RequiredLength = defaultAuthSettings?.RequiredLength ?? 3;
         }
 
         public override async Task InitializeOptionsAsync(int? tenantId)
         {
             Options = GetOptionsCopy();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueOrNullAsync();
 
             //Lockout
-            Options.Lockout.AllowedForNewUsers = await _securitySettings.UserLockOutEnabled.GetValueOrNullAsync();
-            var lockoutSecs = await _securitySettings.DefaultAccountLockoutSeconds.GetValueOrNullAsync();
+            Options.Lockout.AllowedForNewUsers = defaultAuthSettings?.UserLockOutEnabled ?? false;
+            var lockoutSecs = defaultAuthSettings?.DefaultAccountLockoutSeconds ?? 0;
             Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(lockoutSecs);
-            Options.Lockout.MaxFailedAccessAttempts = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueOrNullAsync();
+            Options.Lockout.MaxFailedAccessAttempts = defaultAuthSettings?.MaxFailedAccessAttemptsBeforeLockout ?? 3;
 
             //Password complexity
-            Options.Password.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueOrNullAsync();
-            Options.Password.RequireLowercase = await _passwordComplexitySettings.RequireLowercase.GetValueOrNullAsync();
-            Options.Password.RequireNonAlphanumeric = await _passwordComplexitySettings.RequireNonAlphanumeric.GetValueOrNullAsync();
-            Options.Password.RequireUppercase = await _passwordComplexitySettings.RequireUppercase.GetValueOrNullAsync();
-            Options.Password.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync();
+            Options.Password.RequireDigit = defaultAuthSettings?.RequireDigit ?? true;
+            Options.Password.RequireLowercase = defaultAuthSettings?.RequireLowercase ?? true;
+            Options.Password.RequireNonAlphanumeric = defaultAuthSettings?.RequireNonAlphanumeric ?? false;
+            Options.Password.RequireUppercase = defaultAuthSettings?.RequireUppercase ?? false;
+            Options.Password.RequiredLength = defaultAuthSettings?.RequiredLength ?? 3;
         }
     }
 }

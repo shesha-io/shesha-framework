@@ -33,8 +33,6 @@ namespace Shesha.Persons
         [Required]
         public string? EmailAddress { get; set; }
 
-        public bool isContractor { get; set; }
-
         public EntityReferenceDto<Guid?> PrimaryOrganisation { get; set; }
 
         public ReferenceListItemValueDto? TypeOfAccount { get; set; }

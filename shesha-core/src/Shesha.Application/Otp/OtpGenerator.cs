@@ -1,32 +1,34 @@
-﻿using Abp.Dependency;
-using Shesha.Otp.Configuration;
-using System;
+﻿using System;
+using System.Text;
+using Abp.Dependency;
+using Shesha.Configuration.Security.Frontend;
 
 namespace Shesha.Otp
 {
     public class OtpGenerator: IOtpGenerator, ITransientDependency
     {
-        private readonly IOtpSettings _settings;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
 
-        public OtpGenerator(IOtpSettings settings)
+        public OtpGenerator(ISqlAuthenticationSettings sqlAuthenticationSettings)
         {
-            _settings = settings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
         }
 
         public string GeneratePin()
         {
             var random = new Random();
-            var password = string.Empty;
+            var password = new StringBuilder();
 
-            var alphabet = _settings.OneTimePins.GetValue().Alphabet;
-            var passwordLength = _settings.OneTimePins.GetValue().PasswordLength;
+            var authSettings = _sqlAuthenticationSettings.SqlAuthentication.GetValue();
+            var alphabet = authSettings.Alphabet;
+            var passwordLength = authSettings.PasswordLength;
 
             for (int i = 0; i < passwordLength; i++)
             {
-                password += alphabet[random.Next(alphabet.Length)];
+                password.Append(alphabet[random.Next(alphabet.Length)]);
             }
 
-            return password;
+            return password.ToString();
         }
     }
 }

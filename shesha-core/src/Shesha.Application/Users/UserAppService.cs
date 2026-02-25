@@ -1,4 +1,10 @@
-﻿using Abp.Application.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Entities;
@@ -15,7 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
-using Shesha.Configuration.Security;
+using Shesha.Configuration.Security.Frontend;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
@@ -26,12 +32,6 @@ using Shesha.Roles.Dto;
 using Shesha.SecurityQuestions.Dto;
 using Shesha.Users.Dto;
 using Shesha.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using EntityExtensions = Shesha.Extensions.EntityExtensions;
 
 namespace Shesha.Users
@@ -52,8 +52,8 @@ namespace Shesha.Users
         private readonly LogInManager _logInManager;
         private readonly IOtpManager _otpManager;
         private readonly IRepository<User, long> _userRepository;
-        private readonly ISecuritySettings _securitySettings;
         private readonly IRepository<QuestionAssignment, Guid> _questionRepository;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -65,9 +65,9 @@ namespace Shesha.Users
             IAbpSession abpSession,
             LogInManager logInManager,
             IOtpManager otpManager,
-            ISecuritySettings securitySettings,
             IRepository<User, long> userRepository,
-            IRepository<QuestionAssignment, Guid> questionRepository)
+            IRepository<QuestionAssignment, Guid> questionRepository,
+            ISqlAuthenticationSettings sqlAuthenticationSettings)
             : base(repository)
         {
             _userManager = userManager;
@@ -79,8 +79,8 @@ namespace Shesha.Users
             _logInManager = logInManager;
             _otpManager = otpManager;
             _userRepository = userRepository;
-            _securitySettings = securitySettings;
             _questionRepository = questionRepository;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
         }
 
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
@@ -286,7 +286,7 @@ namespace Shesha.Users
         [AbpAllowAnonymous]
         public async Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptionsAsync(string username)
         {
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
 
             var person = await _userRepository.GetAll().Where(p => p.UserName == username).FirstOrDefaultAsync();
 
@@ -299,9 +299,9 @@ namespace Shesha.Users
             var result = new List<ResetPasswordOptionDto>();
 
             var supportedResetOptions = EntityExtensions.DecomposeIntoBitFlagComponents(resetOptions);
-            var isEmailLinkEnabled = securitySettings.UseResetPasswordViaEmailLink;
-            var isSMSOTPEnabled = securitySettings.UseResetPasswordViaSmsOtp;
-            var isSecurityQuestionsEnabled = securitySettings.UseResetPasswordViaSecurityQuestions;
+            var isEmailLinkEnabled = defaultAuthSettings.UseResetPasswordViaEmailLink;
+            var isSMSOTPEnabled = defaultAuthSettings.UseResetPasswordViaSmsOtp;
+            var isSecurityQuestionsEnabled = defaultAuthSettings.UseResetPasswordViaSecurityQuestions;
             
             var hasPhoneNumber = !string.IsNullOrEmpty(person.PhoneNumber);
             var hasEmail = !string.IsNullOrEmpty(person.EmailAddress);
@@ -358,12 +358,12 @@ namespace Shesha.Users
         [HttpPost]
         public async Task<bool> SendSmsOtpAsync(string username)
         {
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
+            await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.SmsOtp);
 
-            var lifetime = securitySettings.ResetPasswordSmsOtpLifetime;
+            var lifetime = defaultAuthSettings.ResetPasswordSmsOtpLifetime;
 
             var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime });
 
@@ -384,7 +384,7 @@ namespace Shesha.Users
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SecurityQuestions);
+            await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.SecurityQuestions);
 
             var questions = await _questionRepository.GetAllIncluding(q => q.User, q => q.SelectedQuestion).Where(q => q.User == user).Select(q => q.SelectedQuestion).ToListAsync();
 
@@ -409,7 +409,7 @@ namespace Shesha.Users
 
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, input.Method);
+            await ValidateUserPasswordResetMethodAsync(user, input.Method);
 
             if (String.IsNullOrEmpty(user.PasswordResetCode) || String.IsNullOrWhiteSpace(user.PasswordResetCode))
             {
@@ -455,7 +455,7 @@ namespace Shesha.Users
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == input.Username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SecurityQuestions);
+            await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.SecurityQuestions);
 
             var validationErrors = 0;
             var validationResult = new VerifyPinResponse();
@@ -504,16 +504,16 @@ namespace Shesha.Users
         [HttpPost]
         public async Task<bool> SendEmailLinkAsync(string username)
         {
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
 
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
-            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.EmailLink);
+            await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.EmailLink);
 
             if (string.IsNullOrWhiteSpace(user.EmailAddress))
                 throw new UserFriendlyException("User has no email address");
 
-            var lifetime = securitySettings.ResetPasswordEmailLinkLifetime;
+            var lifetime = defaultAuthSettings.ResetPasswordEmailLinkLifetime;
 
             var encodedUserName = Convert.ToBase64String(Encoding.UTF8.GetBytes(username));
 
@@ -596,13 +596,13 @@ namespace Shesha.Users
         /// <param name="user"></param>
         /// <param name="resetMethod"></param>
         /// <exception cref="UserFriendlyException"></exception>
-        private void ValidateUserPasswordResetMethod(User user, long resetMethod)
+        private async Task ValidateUserPasswordResetMethodAsync(User user, long resetMethod)
         {
-            var securitySettings = _securitySettings.SecuritySettings.GetValue();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
 
-            var isEmailLinkEnabled = securitySettings.UseResetPasswordViaEmailLink;
-            var isSmsOtpEnabled = securitySettings.UseResetPasswordViaSmsOtp;
-            var isSecurityQuestionsEnabled = securitySettings.UseResetPasswordViaSecurityQuestions;
+            var isEmailLinkEnabled = defaultAuthSettings.UseResetPasswordViaEmailLink;
+            var isSmsOtpEnabled = defaultAuthSettings.UseResetPasswordViaSmsOtp;
+            var isSecurityQuestionsEnabled = defaultAuthSettings.UseResetPasswordViaSecurityQuestions;
 
             if (user == null)
                 throw new UserFriendlyException("Your username is not recognised");

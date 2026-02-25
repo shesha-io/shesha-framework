@@ -1,4 +1,5 @@
 ﻿using Moq;
+using Shesha.Configuration.Security.Frontend;
 using Shesha.Otp.Configuration;
 using Shesha.Settings;
 using Shouldly;
@@ -14,17 +15,17 @@ namespace Shesha.Tests.Otp
         [InlineData("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6)]
         public void GeneratePassword_Test(string alphabet, int length)
         {
-            var settings = new Mock<IOtpSettings>();
+            var settings = new Mock<ISqlAuthenticationSettings>();
 
-            var otpSettings = new OtpSettings {
+            var otpSettings = new SqlAuthenticationSettings {
                 Alphabet = alphabet,
                 PasswordLength = length,
             };
-            var otpSettingsMock = new Mock<ISettingAccessor<OtpSettings>>();
+            var otpSettingsMock = new Mock<ISettingAccessor<SqlAuthenticationSettings>>();
             otpSettingsMock.Setup(s => s.GetValueOrNull(null)).Returns(otpSettings);
             otpSettingsMock.Setup(s => s.GetValue(null)).Returns(otpSettings);
 
-            settings.SetupGet(s => s.OneTimePins).Returns(otpSettingsMock.Object);
+            settings.SetupGet(s => s.SqlAuthentication).Returns(otpSettingsMock.Object);
 
             var generator = new Shesha.Otp.OtpGenerator(settings.Object);
 

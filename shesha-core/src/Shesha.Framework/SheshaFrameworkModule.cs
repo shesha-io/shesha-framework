@@ -1,4 +1,5 @@
-﻿using Abp.Authorization;
+﻿using System.Reflection;
+using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Dependency;
 using Abp.Modules;
@@ -11,6 +12,7 @@ using Shesha.Configuration;
 using Shesha.Configuration.Email;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Security;
+using Shesha.Configuration.Security.Frontend;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution;
@@ -28,7 +30,6 @@ using Shesha.Services.StoredFiles;
 using Shesha.Settings;
 using Shesha.Settings.Ioc;
 using Shesha.Validations;
-using System.Reflection;
 
 namespace Shesha
 {
@@ -128,33 +129,24 @@ namespace Shesha
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
             IocManager.RegisterSettingAccessor<ISecuritySettings>(s => {
-                s.UserLockOutEnabled.WithDefaultValue(true);
-                s.MaxFailedAccessAttemptsBeforeLockout.WithDefaultValue(5);
-                s.DefaultAccountLockoutSeconds.WithDefaultValue(300 /* 5 minutes */);
                 s.SecuritySettings.WithDefaultValue(new SecuritySettings
                 {
-                    AutoLogoffTimeout = 0,
-                    UseResetPasswordViaEmailLink = true,
-                    ResetPasswordEmailLinkLifetime = 60,
-                    UseResetPasswordViaSmsOtp = true,
-                    ResetPasswordSmsOtpLifetime = 60,
-                    MobileLoginPinLifetime = 60,
-                    UseResetPasswordViaSecurityQuestions = true,
-                    ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = 3,
                     DefaultEndpointAccess = Domain.Enums.RefListPermissionedAccess.AllowAnonymous
                 });
             });
 
-            IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
-                s.RequiredLength.WithDefaultValue(3);
-            });
             IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
                 s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
             });
             IocManager.RegisterSettingAccessor<IFrontendSettings>(s => {
                 s.Theme.WithDefaultValue(ThemeSettings.Default);
                 s.MainMenu.WithDefaultValue(MainMenuSettings.Default);
-                s.PublicUrl.WithDefaultValue("http://localhost:3000");
+                s.FrontendApplicationRedirectsSettings.WithDefaultValue(new FrontendApplicationRedirectsSettings
+                {
+                    BaseUrl = "http://localhost:3000",
+                    NotAuthenticatedRedirectPath = "/login",
+                    SuccessLoginRedirectPath = "/",
+                });
             });
 
             IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
