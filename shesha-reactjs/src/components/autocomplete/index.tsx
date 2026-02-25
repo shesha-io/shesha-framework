@@ -6,7 +6,7 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 import { isDataColumn } from '@/providers/dataTable/interfaces';
 import { evaluateString } from '@/providers/form/utils';
 import { getUrlKeyParam } from '@/utils';
-import { getValueByPropertyName, unsafeGetValueByPropertyName } from '@/utils/object';
+import { getValueByPropertyName, isRecord, unsafeGetValueByPropertyName } from '@/utils/object';
 import { Select, Spin, Typography } from 'antd';
 import { isEqual, uniqWith } from 'lodash';
 import QueryString from 'qs';
@@ -22,6 +22,22 @@ const getNormalizedValues = (value: unknown): unknown[] => {
   const values = Array.isArray(value) ? value : [value];
   return values.filter((v) => v != null);
 };
+
+const extractEntityTypeFromValue = (value: unknown): string | null => {
+  if (!value) return null;
+
+  const normalized = Array.isArray(value) ? value[0] : value;
+  if (isRecord(normalized)) {
+    const className = normalized['_className'];
+    if (typeof className === 'string' && className.length > 0) {
+      return className;
+    }
+  }
+  return null;
+};
+
+const isSelectOption = (value: unknown): value is ISelectOption =>
+  isRecord(value) && 'data' in value;
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
   const { allowClear = true, style = {} } = props;
@@ -39,7 +55,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
   // ---
   const keyValueFunc: KayValueFunc = useMemo(() => props.keyValueFunc ??
-    ((value: unknown) => String(getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value)), [props.keyValueFunc, keyPropName]);
+    ((value: unknown) => {
+      if (!isRecord(value)) return String(value);
+      return String(getValueByPropertyName(value, keyPropName) ?? value);
+    }), [props.keyValueFunc, keyPropName]);
   const filterKeysFunc: FilterSelectedFunc = useMemo(() => props.filterKeysFunc ??
     ((value: unknown) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map((x) => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] })), [props.filterKeysFunc, keyPropName, keyValueFunc, allData]);
   const filterNotKeysFunc: FilterSelectedFunc = useMemo(() => (value: unknown) => {
@@ -47,13 +66,27 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     return filter ? { "!": filter } : null;
   }, [filterKeysFunc]);
   const displayValueFunc: DisplayValueFunc = useMemo(() => props.displayValueFunc ??
-    ((value: unknown) => (Boolean(value) ? String(getValueByPropertyName(value as Record<string, unknown>, displayPropName) ?? value?.toString()) : '')), [props.displayValueFunc, displayPropName]);
+    ((value: unknown) => {
+      if (!value) return '';
+      if (!isRecord(value)) return String(value);
+      return String(getValueByPropertyName(value, displayPropName) ?? value.toString());
+    }), [props.displayValueFunc, displayPropName]);
   const outcomeValueFunc: OutcomeValueFunc = useMemo(() => props.outcomeValueFunc ??
     // --- For backward compatibility
     (props.dataSourceType === 'entitiesList' && !props.keyPropName
-      ? (value: unknown) => ({ id: (value as Record<string, unknown>).id, _displayName: getValueByPropertyName(value as Record<string, unknown>, displayPropName), _className: (value as Record<string, unknown>)._className })
+      ? (value: unknown) => {
+        if (!isRecord(value)) return value;
+        return {
+          id: value.id,
+          _displayName: getValueByPropertyName(value, displayPropName),
+          _className: value._className,
+        };
+      }
       // ---
-      : (value: unknown) => getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
+      : (value: unknown) => {
+        if (!isRecord(value)) return value;
+        return getValueByPropertyName(value, keyPropName) ?? value;
+      }), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
 
   // register columns
   useDeepCompareEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
@@ -65,15 +98,19 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const selected = useRef<Array<unknown>>([]);
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
+  const lastLoadedKeys = useRef<string[]>([]);
 
-  const keys = useMemo(() => {
+  // Use effectiveEntityType from props (computed in parent)
+  const effectiveEntityType = props.effectiveEntityType;
+
+  const keys = useMemo<string[]>(() => {
     const res = props.value
       ? Array.isArray(props.value)
-        ? props.value.map((x) => keyValueFunc(x, allData))
-        : [keyValueFunc(props.value, allData)]
+        ? props.value.map((x) => String(keyValueFunc(x, allData)))
+        : [String(keyValueFunc(props.value, allData))]
       : [];
     return res;
-  }, [props.value]);
+  }, [props.value, keyValueFunc, allData]);
 
   // reset loading state on error
   useEffect(() => {
@@ -105,11 +142,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // update local store of values details
   useDeepCompareEffect(() => {
-    if ((props.dataSourceType === 'entitiesList' && !isEntityTypeIdEmpty(props.entityType)) ||
+    if ((props.dataSourceType === 'entitiesList' && !isEntityTypeIdEmpty(effectiveEntityType)) ||
       (props.dataSourceType === 'url' && props.dataSourceUrl)
     ) {
       if (keys.length) {
-        const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
+        const normalizedValue = Array.isArray(props.value) ? props.value[0] : props.value;
+        const displayNameValue = isRecord(normalizedValue) ? normalizedValue['_displayName'] : undefined;
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
         // Check if we have a valid data source for loading
@@ -126,9 +164,23 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         props.disableRefresh(false);
         const allExist = keys.every((x) => selected.current?.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
 
-        // Attempt to load if we don't have all the values resolved from the data source
-        if (!loadingValues && !allExist) {
+        // Check if values exist in current dropdown data (from table)
+        const allExistInTable = source?.tableData?.length > 0
+          ? keys.every((x) => source.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x))
+          : false;
+
+        // Check if keys have changed
+        const keysChanged = !isEqual(
+          [...keys].sort(),
+          [...lastLoadedKeys.current].sort(),
+        );
+
+        // Only reload if values don't exist in current selection AND
+        // values don't exist in current dropdown data
+        // This prevents reload when selecting from dropdown while still allowing external value loads
+        if (!loadingValues && (!allExist || keysChanged) && !allExistInTable) {
           setLoadingValues(true);
+          lastLoadedKeys.current = keys; // Track loaded keys
           const selectedFilter = filterKeysFunc(props.value);
 
           // Check if the source is ready for filtering
@@ -163,7 +215,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         setLoadingValues(false);
       }
     }
-  }, [props.value, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
+  }, [props.value, props.dataSourceType, effectiveEntityType, props.dataSourceUrl, props.readOnly]);
 
   useEffect(() => {
     if (open) {
@@ -204,14 +256,14 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const handleChange = (_value: unknown, option: unknown): void => {
     selected.current = Boolean(option)
       ? Array.isArray(option)
-        ? (option as ISelectOption[]).map((o) => o.data)
-        : [(option as ISelectOption).data]
+        ? option.filter(isSelectOption).map((o) => o.data)
+        : isSelectOption(option) ? [option.data] : []
       : [];
 
     const selectedValue = Boolean(option)
       ? Array.isArray(option)
-        ? (option as ISelectOption[]).map((o) => outcomeValueFunc(o.data, allData))
-        : outcomeValueFunc((option as ISelectOption).data, allData)
+        ? option.filter(isSelectOption).map((o) => outcomeValueFunc(o.data, allData))
+        : isSelectOption(option) ? outcomeValueFunc(option.data, allData) : null
       : null;
 
     const selectedFilter = selectedValue && (!Array.isArray(selectedValue) || selectedValue.length)
@@ -312,13 +364,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       return null;
     const readonlyValue = props.mode === 'multiple'
       ? selected.current?.map((x) => ({
-        label: loadingValues ? (x as Record<string, unknown>)?._displayName : displayValueFunc(x, allData),
+        label: loadingValues && isRecord(x) ? x._displayName : displayValueFunc(x, allData),
         value: keyValueFunc(outcomeValueFunc(x, allData), allData),
       }))
       : {
         id: keyValueFunc(outcomeValueFunc(selected.current[0], allData), allData),
-        _displayName: loadingValues ? (selected.current[0] as Record<string, unknown>)?._displayName : displayValueFunc(selected.current[0], allData),
-        _className: (selected.current[0] as Record<string, unknown>)?._className,
+        _displayName: loadingValues && isRecord(selected.current[0]) ? selected.current[0]._displayName : displayValueFunc(selected.current[0], allData),
+        _className: isRecord(selected.current[0]) ? selected.current[0]._className : undefined,
       };
 
     return (
@@ -376,7 +428,13 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();
 
-  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
+  // Extract entity type from value as fallback when not explicitly configured
+  const effectiveEntityType = useMemo(
+    () => props.entityType || (props.dataSourceType === 'entitiesList' ? extractEntityTypeFromValue(props.value) : null),
+    [props.entityType, props.dataSourceType, props.value],
+  );
+
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(effectiveEntityType);
   const permanentFilter = useFormEvaluatedFilter({ filter: props.filter, metadataAccessor: propertyMetadataAccessor });
 
   const fields = [...(props.fields ?? [])];
@@ -404,9 +462,8 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       if (queryParams && queryParams !== null && typeof (queryParams) === 'object') {
         if (Array.isArray(queryParams)) {
           queryParams.forEach(({ param, value }) => {
-            const valueAsString = value as string;
-            if (param?.length && valueAsString.length) {
-              queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data: formData }) : value;
+            if (typeof value === 'string' && param?.length && value.length) {
+              queryParamObj[param] = /{.*}/i.test(value) ? evaluateString(value, { data: formData }) : value;
             }
           });
         } else
@@ -437,7 +494,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
   return (
     <DataTableProvider
       userConfigId={uid}
-      entityType={props.entityType || props.typeShortAlias}
+      entityType={effectiveEntityType || props.typeShortAlias}
       getDataPath={url}
       propertyName=""
       actionOwnerId={uid}
@@ -456,6 +513,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       <AutocompleteInner
         {...props}
         uid={uid}
+        effectiveEntityType={effectiveEntityType}
         disableRefresh={setDisableRefresh}
         fields={fields}
         onSearch={handleSearch}

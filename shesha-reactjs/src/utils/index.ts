@@ -233,3 +233,4 @@ export * from './metadata/index';
 export * from './datatable';
 export * from './url';
 export { isEntityReferenceId } from './entity';
+export { isRecord } from './object';

@@ -15,7 +15,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
-import { getValueByPropertyName } from '@/utils/object';
+import { getValueByPropertyName, isRecord } from '@/utils/object';
 import { DisplayValueFunc, FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { Autocomplete } from '@/components/autocomplete';
 import { getSettings } from './settingsForm';
@@ -62,16 +62,42 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
 
     const outcomeValueFunc: OutcomeValueFunc = useCallback((item: unknown, args: object) => {
       if (!isDefined(item)) return item;
-      if (model.valueFormat === 'entityReference')
-        return isEntityReferenceId(item)
-          ? {
+
+      if (model.valueFormat === 'entityReference') {
+        // If already a valid entity reference, preserve it
+        if (isEntityReferenceId(item)) {
+          return {
             id: item.id,
             _displayName: getValueByPropertyName(item as Record<string, unknown>, displayPropName) || item._displayName,
-            _className: (item._className || entityMetadata?.fullClassName) ?? undefined,
-          }
-          : typeof (item) !== 'object'
-            ? { id: item, _displayName: item?.toString(), _className: undefined }
-            : item;
+            _className: item._className || entityMetadata?.fullClassName, // Preserve existing _className first
+          };
+        }
+
+        // If plain value (not object)
+        if (typeof item !== 'object') {
+          return {
+            id: item,
+            _displayName: String(item ?? ''),
+            _className: entityMetadata?.fullClassName,
+          };
+        }
+
+        // Return arrays unchanged
+        if (Array.isArray(item)) {
+          return item;
+        }
+
+        // Build entity reference from object (item is a non-null object given the guards above)
+        if (isRecord(item)) {
+          return {
+            id: getValueByPropertyName(item, 'id') ?? item.id,
+            _displayName: getValueByPropertyName(item, displayPropName) || item._displayName,
+            _className: item._className || entityMetadata?.fullClassName,
+          };
+        }
+        return item;
+      }
+
       if (model.valueFormat === 'custom' && model.outcomeValueFunc)
         return executeExpression(model.outcomeValueFunc, { ...args, item: item }, null, null);
       return typeof (item) === 'object' ? getValueByPropertyName(item as Record<string, unknown>, keyPropName) : item;
@@ -100,10 +126,12 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
       <ConfigurableFormItem {...{ model }}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]): void => {
-            customEvent.onChange(args[0], args[1]);
+          const onChangeInternal = (value: unknown, option?: unknown): void => {
+            if (typeof value === 'object' && value !== null) {
+              customEvent.onChange(value, option);
+            }
             if (typeof onChange === 'function')
-              onChange(...args);
+              onChange(value);
           };
 
 
