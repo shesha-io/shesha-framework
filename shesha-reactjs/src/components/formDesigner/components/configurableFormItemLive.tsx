@@ -69,7 +69,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const component = getToolboxComponent(model.type);
   const preserveDimensionsInDesigner = component?.preserveDimensionsInDesigner ?? false;
 
-  const { top: MarginTop, left: MarginLeft, right: MarginRight, bottom: MarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
+  const { top: MarginTop, bottom: MarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 
   // In designer mode: NEVER apply margins to Form.Item (wrapper handles them)
   // In live mode: Apply margins from allStyles.margins or use defaults
@@ -81,8 +81,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const {
     marginTop = MarginTop,
     marginBottom = MarginBottom,
-    marginRight = MarginRight,
-    marginLeft = MarginLeft,
+    marginRight,
+    marginLeft,
   } = rawMargins;
 
   // Get dimension values for Form.Item wrapper

@@ -162,9 +162,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             margin-bottom: 16px;
           }
     
-          .${prefixCls}-form-item-label {
-            padding-bottom: 4px;
-          }
         }
 
         .${sidebarContainerMainArea} {
