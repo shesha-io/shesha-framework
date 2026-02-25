@@ -9,18 +9,18 @@ import reducer from './reducer';
 
 export interface ISettingsProviderProps {}
 
+const makeFormLoadingKey = (payload: ISettingIdentifier): string => {
+  const { module, name } = payload;
+  return `${module}:${name}`.toLowerCase();
+};
+
 const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ children }) => {
   const [state] = useThunkReducer(reducer, SETTINGS_CONTEXT_INITIAL_STATE);
   const settings = useRef<ISettingsDictionary>({});
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const makeFormLoadingKey = (payload: ISettingIdentifier): string => {
-    const { module, name } = payload;
-    return `${module}:${name}`.toLowerCase();
-  };
-
-  const getSetting = (settingId: ISettingIdentifier): Promise<any> => {
+  const getSetting = useCallback((settingId: ISettingIdentifier): Promise<any> => {
     if (!settingId || !settingId.name) return Promise.reject('settingId is not specified');
 
     // create a key
@@ -39,13 +39,13 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
     settings.current[key] = settingPromise;
 
     return settingPromise;
-  };
+  }, [backendUrl, httpHeaders]);
 
-  const clearSetting = (settingId: ISettingIdentifier): void => {
+  const clearSetting = useCallback((settingId: ISettingIdentifier): void => {
     if (!settingId?.name) return;
     const key = makeFormLoadingKey(settingId);
     delete settings.current[key];
-  };
+  }, []);
 
   const contextValue: ISettingsContext = {
     ...state,
@@ -74,45 +74,42 @@ export interface SettingValueLoadingState<TValue = any> {
   error?: IErrorInfo;
 }
 
-const SETTING_CHANGED_EVENT = 'shesha:settingChanged';
-
-const isISettingIdentifier = (value: unknown): value is ISettingIdentifier =>
-  typeof value === 'object' &&
-  value !== null &&
-  typeof (value as ISettingIdentifier).name === 'string' &&
-  typeof (value as ISettingIdentifier).module === 'string';
+export const SETTING_CHANGED_EVENT = 'shesha:settingChanged';
 
 const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
-  const settings = useSettings();
+  const { clearSetting, getSetting } = useSettings();
   const [state, setState] = useState<SettingValueLoadingState<TValue>>({ loadingState: 'waiting' });
   const [fetchCounter, setFetchCounter] = useState(0);
+
+  // Extract primitives so object identity changes on the caller side don't trigger re-runs.
+  const settingName = settingId.name;
+  const settingModule = settingId.module;
 
   // When a setting is saved elsewhere in the app (e.g. admin portal),
   // clear the cache and re-fetch so the caller reacts without a page refresh.
   const handleSettingChanged = useCallback(
-    (e: Event) => {
-      const detail = (e as CustomEvent<unknown>).detail;
-      if (!isISettingIdentifier(detail)) return;
+    (e: CustomEvent<ISettingIdentifier>) => {
+      const { name, module } = e.detail;
       if (
-        detail.name.toLowerCase() === settingId?.name?.toLowerCase() &&
-        detail.module.toLowerCase() === settingId?.module?.toLowerCase()
+        name.toLowerCase() === settingName.toLowerCase() &&
+        module.toLowerCase() === settingModule.toLowerCase()
       ) {
-        settings.clearSetting(settingId);
+        clearSetting({ name: settingName, module: settingModule });
         setFetchCounter((c) => c + 1);
       }
     },
-    [settingId?.module, settingId?.name]
+    [settingName, settingModule, clearSetting]
   );
 
   useEffect(() => {
-    window.addEventListener(SETTING_CHANGED_EVENT, handleSettingChanged);
-    return () => window.removeEventListener(SETTING_CHANGED_EVENT, handleSettingChanged);
+    window.addEventListener(SETTING_CHANGED_EVENT, handleSettingChanged as EventListener);
+    return () => window.removeEventListener(SETTING_CHANGED_EVENT, handleSettingChanged as EventListener);
   }, [handleSettingChanged]);
 
   useEffect(() => {
     let stale = false;
     setState((prev) => ({ ...prev, loadingState: 'loading', error: undefined }));
-    settings.getSetting(settingId)
+    getSetting({ name: settingName, module: settingModule })
       .then((response) => {
         if (!stale) setState((prev) => ({ ...prev, error: undefined, value: response as TValue, loadingState: 'ready' }));
       })
@@ -125,7 +122,7 @@ const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingV
     return () => {
       stale = true;
     };
-  }, [settingId?.module, settingId?.name, fetchCounter]);
+  }, [settingName, settingModule, fetchCounter, getSetting]);
 
   return state;
 };
