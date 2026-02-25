@@ -129,6 +129,15 @@ namespace Shesha
         {
             IocManager.RegisterSettingAccessor<IUserManagementSettings>(s =>
             {
+                s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
+                {
+                    AllowSelfRegistration = true,
+                    CreationMode = RefListCreationMode.CreateNewButLinkIfExist
+                });
+            });
+
+            IocManager.RegisterSettingAccessor<ISqlAuthenticationSettings>(s =>
+            {
                 s.SqlAuthentication.WithDefaultValue(new SqlAuthenticationSettings
                 {
                     AllowLocalUsernamePasswordAuth = true,
@@ -156,12 +165,9 @@ namespace Shesha
                     UseResetPasswordViaEmailLink = true,
                     ResetPasswordEmailLinkLifetime = 300
                 });
-                s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
-                {
-                    AllowSelfRegistration = true,
-                    CreationMode = RefListCreationMode.CreateNewButLinkIfExist
-                });
             });
+
+            IocManager.RegisterSettingAccessor<ISessionSettings>();
 
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);
             IocManager.Register<ISheshaAuthorizationHelper, EntityCrudAuthorizationHelper>(DependencyLifeStyle.Transient);

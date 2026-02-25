@@ -32,7 +32,8 @@ namespace Shesha.UserManagements
         private readonly UserManager _userManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<ShaUserRegistration, Guid> _userRegistration;
-        private readonly IUserManagementSettings _userManagementSettings;
+        private readonly IUserManagementSettings _userRegistrationSettings;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
         private readonly IRepository<User, long> _userRepository;
         private readonly IShaRoleAppointedPersonAppService _roleAppointedPersonService;
         private readonly IFrontendSettings _frontendSettings;
@@ -46,7 +47,8 @@ namespace Shesha.UserManagements
         public UserManagementAppService(
             IRepository<Person, Guid> personRepository,
             UserManager userManager,
-            IUserManagementSettings userManagementSettings,
+            IUserManagementSettings userRegistrationSettings,
+            ISqlAuthenticationSettings sqlAuthenticationSettings,
             IRepository<ShaUserRegistration, Guid> userRegistration,
             IRepository<User, long> userRepository,
             IShaRoleAppointedPersonAppService roleAppointedPersonAppService,
@@ -60,7 +62,8 @@ namespace Shesha.UserManagements
         {
             _userManager = userManager;
             _personRepository = personRepository;
-            _userManagementSettings = userManagementSettings;
+            _userRegistrationSettings = userRegistrationSettings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
             _userRegistration = userRegistration;
             _userRepository = userRepository;
             _roleAppointedPersonService = roleAppointedPersonAppService;
@@ -76,8 +79,8 @@ namespace Shesha.UserManagements
 
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
         {
-            var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
-            var defaultAuthenticationSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
+            var registrationSettings = await _userRegistrationSettings.UserManagementSettings.GetValueAsync();
+            var defaultAuthenticationSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
             var applicationRedirects = await _frontendSettings.FrontendApplicationRedirectsSettings.GetValueAsync();
 
             if (!registrationSettings.AllowSelfRegistration)

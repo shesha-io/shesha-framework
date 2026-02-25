@@ -53,7 +53,7 @@ namespace Shesha.Users
         private readonly IOtpManager _otpManager;
         private readonly IRepository<User, long> _userRepository;
         private readonly IRepository<QuestionAssignment, Guid> _questionRepository;
-        private readonly IUserManagementSettings _userManagementSettings;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -67,7 +67,7 @@ namespace Shesha.Users
             IOtpManager otpManager,
             IRepository<User, long> userRepository,
             IRepository<QuestionAssignment, Guid> questionRepository,
-            IUserManagementSettings userManagementSettings)
+            ISqlAuthenticationSettings sqlAuthenticationSettings)
             : base(repository)
         {
             _userManager = userManager;
@@ -80,7 +80,7 @@ namespace Shesha.Users
             _otpManager = otpManager;
             _userRepository = userRepository;
             _questionRepository = questionRepository;
-            _userManagementSettings = userManagementSettings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
         }
 
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
@@ -286,7 +286,7 @@ namespace Shesha.Users
         [AbpAllowAnonymous]
         public async Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptionsAsync(string username)
         {
-            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
 
             var person = await _userRepository.GetAll().Where(p => p.UserName == username).FirstOrDefaultAsync();
 
@@ -358,7 +358,7 @@ namespace Shesha.Users
         [HttpPost]
         public async Task<bool> SendSmsOtpAsync(string username)
         {
-            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
             await ValidateUserPasswordResetMethodAsync(user, (long)RefListPasswordResetMethods.SmsOtp);
@@ -504,7 +504,7 @@ namespace Shesha.Users
         [HttpPost]
         public async Task<bool> SendEmailLinkAsync(string username)
         {
-            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
 
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
@@ -598,7 +598,7 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         private async Task ValidateUserPasswordResetMethodAsync(User user, long resetMethod)
         {
-            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
 
             var isEmailLinkEnabled = defaultAuthSettings.UseResetPasswordViaEmailLink;
             var isSmsOtpEnabled = defaultAuthSettings.UseResetPasswordViaSmsOtp;

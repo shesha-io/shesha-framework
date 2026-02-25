@@ -15,7 +15,7 @@ namespace Shesha.Tests.Otp
         [InlineData("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6)]
         public void GeneratePassword_Test(string alphabet, int length)
         {
-            var settings = new Mock<IUserManagementSettings>();
+            var settings = new Mock<ISqlAuthenticationSettings>();
 
             var otpSettings = new SqlAuthenticationSettings {
                 Alphabet = alphabet,

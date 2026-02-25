@@ -7,11 +7,11 @@ namespace Shesha.Otp
 {
     public class OtpGenerator: IOtpGenerator, ITransientDependency
     {
-        private readonly IUserManagementSettings _userManagementSettings;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
 
-        public OtpGenerator(IUserManagementSettings userManagementSettings)
+        public OtpGenerator(ISqlAuthenticationSettings sqlAuthenticationSettings)
         {
-            _userManagementSettings = userManagementSettings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
         }
 
         public string GeneratePin()
@@ -19,7 +19,7 @@ namespace Shesha.Otp
             var random = new Random();
             var password = new StringBuilder();
 
-            var authSettings = _userManagementSettings.SqlAuthentication.GetValue();
+            var authSettings = _sqlAuthenticationSettings.SqlAuthentication.GetValue();
             var alphabet = authSettings.Alphabet;
             var passwordLength = authSettings.PasswordLength;
 

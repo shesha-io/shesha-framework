@@ -9,14 +9,14 @@ namespace Shesha.Otp
 {
     public class OtpAppService : SheshaAppServiceBase, IOtpAppService, ITransientDependency
     {
-        private readonly IUserManagementSettings _userManagementSettings;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
         private readonly IOtpManager _otpManager;
-        
 
-        public OtpAppService(IOtpManager otpManager, IUserManagementSettings userManagementSettings)
+
+        public OtpAppService(IOtpManager otpManager, ISqlAuthenticationSettings sqlAuthenticationSettings)
         {
             _otpManager = otpManager;
-            _userManagementSettings = userManagementSettings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Shesha.Otp
         [HttpPost]
         public async Task<bool> UpdateSettingsAsync(OtpSettingsDto input)
         {
-            await _userManagementSettings.SqlAuthentication.SetValueAsync(new SqlAuthenticationSettings
+            await _sqlAuthenticationSettings.SqlAuthentication.SetValueAsync(new SqlAuthenticationSettings
             {
                 PasswordLength = input.PasswordLength,
                 Alphabet = input.Alphabet,
@@ -65,7 +65,7 @@ namespace Shesha.Otp
         [HttpGet]
         public async Task<OtpSettingsDto> GetSettingsAsync()
         {
-            var emailSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
+            var emailSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
 
             var settings = new OtpSettingsDto
             {

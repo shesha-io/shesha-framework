@@ -58,7 +58,7 @@ namespace Shesha.Tests.Otp
             settings.SetupGet(s => s.PasswordLength).Returns(6);
             settings.SetupGet(s => s.Alphabet).Returns("0123456789");
             */
-            var settings = LocalIocManager.Resolve<IUserManagementSettings>();
+            var settings = LocalIocManager.Resolve<ISqlAuthenticationSettings>();
 
             var currentPin = string.Empty;
             var storage = new Dictionary<Guid, string>();
@@ -104,7 +104,7 @@ namespace Shesha.Tests.Otp
     
         private async Task<IVerifyPinResponse> CheckEmailLinkAsync(Action<VerifyPinInput>? action)
         {
-            var settings = LocalIocManager.Resolve<IUserManagementSettings>();
+            var settings = LocalIocManager.Resolve<ISqlAuthenticationSettings>();
 
             var currentEmailToken = string.Empty;
             var storage = new Dictionary<Guid, string>();

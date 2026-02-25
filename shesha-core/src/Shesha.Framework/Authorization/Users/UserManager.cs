@@ -30,51 +30,51 @@ namespace Shesha.Authorization.Users
     {
         private readonly IOptions<IdentityOptions> _optionsAccessor;
 
-        private readonly IUserManagementSettings _userManagementSettings;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
 
         public UserManager(
             RoleManager roleManager,
-            UserStore store, 
-            IOptions<IdentityOptions> optionsAccessor, 
-            IPasswordHasher<User> passwordHasher, 
-            IEnumerable<IUserValidator<User>> userValidators, 
+            UserStore store,
+            IOptions<IdentityOptions> optionsAccessor,
+            IPasswordHasher<User> passwordHasher,
+            IEnumerable<IUserValidator<User>> userValidators,
             IEnumerable<IPasswordValidator<User>> passwordValidators,
-            ILookupNormalizer keyNormalizer, 
-            IdentityErrorDescriber errors, 
-            IServiceProvider services, 
-            ILogger<UserManager<User>> logger, 
-            IPermissionManager permissionManager, 
-            IUnitOfWorkManager unitOfWorkManager, 
-            ICacheManager cacheManager, 
-            IRepository<OrganizationUnit, long> organizationUnitRepository, 
-            IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository, 
-            IOrganizationUnitSettings organizationUnitSettings, 
+            ILookupNormalizer keyNormalizer,
+            IdentityErrorDescriber errors,
+            IServiceProvider services,
+            ILogger<UserManager<User>> logger,
+            IPermissionManager permissionManager,
+            IUnitOfWorkManager unitOfWorkManager,
+            ICacheManager cacheManager,
+            IRepository<OrganizationUnit, long> organizationUnitRepository,
+            IRepository<UserOrganizationUnit, long> userOrganizationUnitRepository,
+            IOrganizationUnitSettings organizationUnitSettings,
             ISettingManager settingManager,
             IShaSettingManager settingProvider,
             IRepository<UserLogin, Int64> loginRepository,
-            IUserManagementSettings userManagementSettings)
+            ISqlAuthenticationSettings sqlAuthenticationSettings)
             : base(
-                roleManager, 
-                store, 
-                optionsAccessor, 
-                passwordHasher, 
-                userValidators, 
-                passwordValidators, 
-                keyNormalizer, 
-                errors, 
-                services, 
-                logger, 
-                permissionManager, 
-                unitOfWorkManager, 
+                roleManager,
+                store,
+                optionsAccessor,
+                passwordHasher,
+                userValidators,
+                passwordValidators,
+                keyNormalizer,
+                errors,
+                services,
+                logger,
+                permissionManager,
+                unitOfWorkManager,
                 cacheManager,
-                organizationUnitRepository, 
-                userOrganizationUnitRepository, 
-                organizationUnitSettings, 
+                organizationUnitRepository,
+                userOrganizationUnitRepository,
+                organizationUnitSettings,
                 settingManager,
                 loginRepository)
         {
             _optionsAccessor = optionsAccessor;
-            _userManagementSettings = userManagementSettings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
         }
 
         protected override void Dispose(bool disposing)
@@ -332,7 +332,7 @@ namespace Shesha.Authorization.Users
         public override void InitializeOptions(int? tenantId)
         {
             Options = GetOptionsCopy();
-            var defaultAuthSettings = _userManagementSettings.SqlAuthentication.GetValueOrNull();
+            var defaultAuthSettings = _sqlAuthenticationSettings.SqlAuthentication.GetValueOrNull();
 
             //Lockout
             Options.Lockout.AllowedForNewUsers = defaultAuthSettings?.UserLockOutEnabled ?? false;
@@ -351,7 +351,7 @@ namespace Shesha.Authorization.Users
         public override async Task InitializeOptionsAsync(int? tenantId)
         {
             Options = GetOptionsCopy();
-            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueOrNullAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueOrNullAsync();
 
             //Lockout
             Options.Lockout.AllowedForNewUsers = defaultAuthSettings?.UserLockOutEnabled ?? false;

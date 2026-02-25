@@ -9,23 +9,25 @@ namespace Shesha.Authorization.Settings
     [Obsolete("To be removed, is used for backward compatibility only")]
     public class AuthorizationSettingsAppService: ApplicationService
     {
-        private readonly IUserManagementSettings _userManagementSettings;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
+        private readonly ISessionSettings _sessionSettings;
 
-        public AuthorizationSettingsAppService(IUserManagementSettings userManagementSettings)
+        public AuthorizationSettingsAppService(ISqlAuthenticationSettings sqlAuthenticationSettings, ISessionSettings sessionSettings)
         {
-            _userManagementSettings = userManagementSettings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
+            _sessionSettings = sessionSettings;
         }
 
         public async Task UpdateSettingsAsync(AuthorizationSettingsDto dto)
         {
-            var existingSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
+            var existingSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
             if (existingSettings == null)
             {
                 existingSettings = new SqlAuthenticationSettings();
             }
 
             // Default Authentication
-            await _userManagementSettings.SqlAuthentication.SetValueAsync(new SqlAuthenticationSettings
+            await _sqlAuthenticationSettings.SqlAuthentication.SetValueAsync(new SqlAuthenticationSettings
             {
                 // Preserve existing OTP and registration settings
                 RequireOtpVerification = existingSettings.RequireOtpVerification,
@@ -65,19 +67,19 @@ namespace Shesha.Authorization.Settings
             });
 
             // General Frontend Security Settings
-            var generalSettings = await _userManagementSettings.GeneralFrontendSecuritySettings.GetValueAsync()
+            var generalSettings = await _sessionSettings.GeneralFrontendSecuritySettings.GetValueAsync()
                                 ?? new GeneralFrontendSecuritySettings();
 
             generalSettings.AutoLogoffAfterInactivity = dto.AutoLogoffAfterInactivity;
             generalSettings.AutoLogoffTimeout = dto.AutoLogoffTimeout;
 
-            await _userManagementSettings.GeneralFrontendSecuritySettings.SetValueAsync(generalSettings);
+            await _sessionSettings.GeneralFrontendSecuritySettings.SetValueAsync(generalSettings);
         }
 
         public async Task<AuthorizationSettingsDto> GetSettingsAsync()
         {
-            var defaultAuthSettings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
-            var generalFrontendSettings = await _userManagementSettings.GeneralFrontendSecuritySettings.GetValueAsync();
+            var defaultAuthSettings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
+            var generalFrontendSettings = await _sessionSettings.GeneralFrontendSecuritySettings.GetValueAsync();
             var dto = new AuthorizationSettingsDto();
             
             //Lockout

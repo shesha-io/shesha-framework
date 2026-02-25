@@ -15,14 +15,14 @@ namespace Shesha.SecurityQuestions
     public class QuestionAnswersAppService : SheshaCrudServiceBase<QuestionAssignment, UserAnswerDto, Guid>
     {
         private readonly IRepository<User, long> _userRepository;
-        private readonly IUserManagementSettings _userManagementSettings;
+        private readonly ISqlAuthenticationSettings _sqlAuthenticationSettings;
 
         public QuestionAnswersAppService(IRepository<QuestionAssignment, Guid> repository,
             IRepository<User, long> userRepository,
-            IUserManagementSettings userManagementSettings) : base(repository)
+            ISqlAuthenticationSettings sqlAuthenticationSettings) : base(repository)
         {
             _userRepository = userRepository;
-            _userManagementSettings = userManagementSettings;
+            _sqlAuthenticationSettings = sqlAuthenticationSettings;
         }
 
         [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
@@ -35,7 +35,7 @@ namespace Shesha.SecurityQuestions
 
             var user = await _userRepository.GetAsync(currentUserId.Value);
 
-            var settings = await _userManagementSettings.SqlAuthentication.GetValueAsync();
+            var settings = await _sqlAuthenticationSettings.SqlAuthentication.GetValueAsync();
 
             var numberOfQuestionsAllowed = settings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed;
 
