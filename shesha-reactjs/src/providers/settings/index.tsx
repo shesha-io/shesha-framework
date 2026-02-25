@@ -76,19 +76,26 @@ export interface SettingValueLoadingState<TValue = any> {
 
 const SETTING_CHANGED_EVENT = 'shesha:settingChanged';
 
+const isISettingIdentifier = (value: unknown): value is ISettingIdentifier =>
+  typeof value === 'object' &&
+  value !== null &&
+  typeof (value as ISettingIdentifier).name === 'string' &&
+  typeof (value as ISettingIdentifier).module === 'string';
+
 const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
   const settings = useSettings();
-  const [state, setState] = useState<SettingValueLoadingState>({ loadingState: 'waiting' });
+  const [state, setState] = useState<SettingValueLoadingState<TValue>>({ loadingState: 'waiting' });
   const [fetchCounter, setFetchCounter] = useState(0);
 
   // When a setting is saved elsewhere in the app (e.g. admin portal),
   // clear the cache and re-fetch so the caller reacts without a page refresh.
   const handleSettingChanged = useCallback(
     (e: Event) => {
-      const saved = (e as CustomEvent<ISettingIdentifier>).detail;
+      const detail = (e as CustomEvent<unknown>).detail;
+      if (!isISettingIdentifier(detail)) return;
       if (
-        saved?.name?.toLowerCase() === settingId?.name?.toLowerCase() &&
-        saved?.module?.toLowerCase() === settingId?.module?.toLowerCase()
+        detail.name.toLowerCase() === settingId?.name?.toLowerCase() &&
+        detail.module.toLowerCase() === settingId?.module?.toLowerCase()
       ) {
         settings.clearSetting(settingId);
         setFetchCounter((c) => c + 1);
@@ -103,9 +110,21 @@ const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingV
   }, [handleSettingChanged]);
 
   useEffect(() => {
-    settings.getSetting(settingId).then((response) => {
-      setState((prev) => ({ ...prev, error: null, value: response as TValue, loadingState: 'ready' }));
-    });
+    let stale = false;
+    setState((prev) => ({ ...prev, loadingState: 'loading', error: undefined }));
+    settings.getSetting(settingId)
+      .then((response) => {
+        if (!stale) setState((prev) => ({ ...prev, error: undefined, value: response as TValue, loadingState: 'ready' }));
+      })
+      .catch((err) => {
+        if (!stale) {
+          const error: IErrorInfo = typeof err === 'object' && err !== null ? err : { message: String(err) };
+          setState((prev) => ({ ...prev, loadingState: 'failed', error }));
+        }
+      });
+    return () => {
+      stale = true;
+    };
   }, [settingId?.module, settingId?.name, fetchCounter]);
 
   return state;
