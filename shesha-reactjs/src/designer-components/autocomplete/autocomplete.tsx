@@ -127,7 +127,9 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (value: unknown, option?: unknown): void => {
-            customEvent.onChange(value as object, option);
+            if (typeof value === 'object' && value !== null) {
+              customEvent.onChange(value, option);
+            }
             if (typeof onChange === 'function')
               onChange(value);
           };
