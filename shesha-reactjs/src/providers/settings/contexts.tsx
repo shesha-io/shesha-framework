@@ -10,6 +10,7 @@ export interface ISettingsStateContext {}
 
 export interface ISettingsActionsContext {
   getSetting: (settingId: ISettingIdentifier) => Promise<any>;
+  clearSetting: (settingId: ISettingIdentifier) => void;
 }
 
 export interface ISettingsContext extends ISettingsStateContext, ISettingsActionsContext {}

@@ -214,11 +214,12 @@ namespace Shesha.Settings
             };
         }
 
-        private TValue Deserialize<TValue>(string value) 
+        private TValue Deserialize<TValue>(string value)
         {
             if (typeof(TValue).IsClass)
             {
-                return JsonConvert.DeserializeObject<TValue>(value);
+                // note: NullToDefaultConverter is used to convert null values to defaults for non nullable types
+                return JsonConvert.DeserializeObject<TValue>(value, new NullToDefaultConverter());
             }
             else
                 return To<TValue>(value);

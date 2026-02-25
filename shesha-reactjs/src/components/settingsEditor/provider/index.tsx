@@ -2,6 +2,7 @@ import { settingsGetValue, settingsUpdateValue } from '@/apis/settings';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { useSheshaApplication } from '@/providers';
+import { SETTING_CHANGED_EVENT } from '@/providers/settings';
 import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
 import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import * as RestfulShesha from '@/utils/fetchers';
@@ -189,6 +190,11 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     )
       .then((response) => {
         dispatch(setSaveStatusAction('success'));
+        window.dispatchEvent(
+          new CustomEvent<ISettingIdentifier>(SETTING_CHANGED_EVENT, {
+            detail: { name: settingId.name, module: settingId.module, appKey: settingId.appKey },
+          })
+        );
         return response;
       })
       .catch((error) => {

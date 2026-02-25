@@ -1,5 +1,5 @@
 import { useSheshaApplication } from '@/providers';
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { settingsGetValue } from '@/apis/settings';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
@@ -9,18 +9,18 @@ import reducer from './reducer';
 
 export interface ISettingsProviderProps {}
 
+const makeFormLoadingKey = (payload: ISettingIdentifier): string => {
+  const { module, name } = payload;
+  return `${module}:${name}`.toLowerCase();
+};
+
 const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ children }) => {
   const [state] = useThunkReducer(reducer, SETTINGS_CONTEXT_INITIAL_STATE);
   const settings = useRef<ISettingsDictionary>({});
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const makeFormLoadingKey = (payload: ISettingIdentifier): string => {
-    const { module, name } = payload;
-    return `${module}:${name}`.toLowerCase();
-  };
-
-  const getSetting = (settingId: ISettingIdentifier): Promise<any> => {
+  const getSetting = useCallback((settingId: ISettingIdentifier): Promise<any> => {
     if (!settingId || !settingId.name) return Promise.reject('settingId is not specified');
 
     // create a key
@@ -39,11 +39,18 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
     settings.current[key] = settingPromise;
 
     return settingPromise;
-  };
+  }, [backendUrl, httpHeaders]);
+
+  const clearSetting = useCallback((settingId: ISettingIdentifier): void => {
+    if (!settingId?.name) return;
+    const key = makeFormLoadingKey(settingId);
+    delete settings.current[key];
+  }, []);
 
   const contextValue: ISettingsContext = {
     ...state,
     getSetting,
+    clearSetting,
   };
 
   return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
@@ -67,15 +74,55 @@ export interface SettingValueLoadingState<TValue = any> {
   error?: IErrorInfo;
 }
 
+export const SETTING_CHANGED_EVENT = 'shesha:settingChanged';
+
 const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
-  const settings = useSettings();
-  const [state, setState] = useState<SettingValueLoadingState>({ loadingState: 'waiting' });
+  const { clearSetting, getSetting } = useSettings();
+  const [state, setState] = useState<SettingValueLoadingState<TValue>>({ loadingState: 'waiting' });
+  const [fetchCounter, setFetchCounter] = useState(0);
+
+  // Extract primitives so object identity changes on the caller side don't trigger re-runs.
+  const settingName = settingId.name;
+  const settingModule = settingId.module;
+
+  // When a setting is saved elsewhere in the app (e.g. admin portal),
+  // clear the cache and re-fetch so the caller reacts without a page refresh.
+  const handleSettingChanged = useCallback(
+    (e: CustomEvent<ISettingIdentifier>) => {
+      const { name, module } = e.detail;
+      if (
+        name.toLowerCase() === settingName.toLowerCase() &&
+        module.toLowerCase() === settingModule.toLowerCase()
+      ) {
+        clearSetting({ name: settingName, module: settingModule });
+        setFetchCounter((c) => c + 1);
+      }
+    },
+    [settingName, settingModule, clearSetting]
+  );
 
   useEffect(() => {
-    settings.getSetting(settingId).then((response) => {
-      setState((prev) => ({ ...prev, error: null, value: response as TValue, loadingState: 'ready' }));
-    });
-  }, [settingId?.module, settingId?.name]);
+    window.addEventListener(SETTING_CHANGED_EVENT, handleSettingChanged as EventListener);
+    return () => window.removeEventListener(SETTING_CHANGED_EVENT, handleSettingChanged as EventListener);
+  }, [handleSettingChanged]);
+
+  useEffect(() => {
+    let stale = false;
+    setState((prev) => ({ ...prev, loadingState: 'loading', error: undefined }));
+    getSetting({ name: settingName, module: settingModule })
+      .then((response) => {
+        if (!stale) setState((prev) => ({ ...prev, error: undefined, value: response as TValue, loadingState: 'ready' }));
+      })
+      .catch((err) => {
+        if (!stale) {
+          const error: IErrorInfo = typeof err === 'object' && err !== null ? err : { message: String(err) };
+          setState((prev) => ({ ...prev, loadingState: 'failed', error }));
+        }
+      });
+    return () => {
+      stale = true;
+    };
+  }, [settingName, settingModule, fetchCounter, getSetting]);
 
   return state;
 };
