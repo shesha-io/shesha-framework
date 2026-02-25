@@ -26,6 +26,7 @@ export interface ISettingsControlProps<Value = any> {
   availableConstantsExpression?: string | GetAvailableConstantsFunc;
   resultTypeExpression?: string | GetResultTypeFunc;
   useAsyncEvaluation?: boolean;
+  lazy?: boolean;
 }
 
 export const defaultExposedVariables: ICodeExposedVariable[] = [
@@ -64,7 +65,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   }, [mode]);
 
   const codeOnChange = (val: any): void => {
-    const newValue = { ...setting, _code: val };
+    const newValue: IPropertySetting = { ...setting, _code: val, _lazy: props.lazy };
     onInternalChange(newValue);
   };
 

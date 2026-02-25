@@ -1,16 +1,16 @@
 import { createNamedContext } from '@/utils/react';
 import { defaultDesignerWidth } from './utils';
 
-export type IDeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
+export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
 export type IViewType = 'configStudio' | 'page' | 'modal';
 
 export interface ICanvasStateContext {
   zoom?: number;
   autoZoom?: boolean;
   designerWidth?: string;
-  designerDevice?: IDeviceTypes;
-  physicalDevice?: IDeviceTypes;
-  activeDevice?: IDeviceTypes;
+  designerDevice?: DeviceTypes;
+  physicalDevice?: DeviceTypes;
+  activeDevice?: DeviceTypes;
   configTreePanelSize?: number;
   viewType?: IViewType;
 }
@@ -20,8 +20,8 @@ export interface ICanvasWidthProps {
   deviceType: IDeviceTypes;
 }
 export interface ICanvasActionsContext {
-  setDesignerDevice: (deviceType: IDeviceTypes) => void;
-  setCanvasWidth: (width: number | string, deviceType: IDeviceTypes) => void;
+  setDesignerDevice: (deviceType: DeviceTypes) => void;
+  setCanvasWidth: (width: number | string, deviceType: DeviceTypes) => void;
   setCanvasZoom: (zoom: number) => void;
   setCanvasAutoZoom: () => void;
   setConfigTreePanelSize: (size: number) => void;

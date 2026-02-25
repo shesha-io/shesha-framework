@@ -10,6 +10,15 @@ import {
 import { ObservableProxy } from '../observableProxy';
 import { TouchableProxy } from '../touchableProxy';
 import { executeScriptSync } from './scripts';
+import { IConfigurableFormComponent, IPropertyMetadata, isApplicationContext } from '@/index';
+import { ICanvasStateContext, DeviceTypes } from '@/providers/canvas/contexts';
+import { getDeviceStyle } from '@/providers/canvas/utils';
+
+export interface ISettingsFormContext {
+  setFieldValue: (name: string, value: unknown) => void;
+  inheritedConfig: IConfigurableFormComponent;
+  propMetadata: IPropertyMetadata;
+}
 
 const getSettingValue = <TValue = unknown>(
   propertyName: string,
@@ -24,10 +33,11 @@ const getSettingValue = <TValue = unknown>(
 
   const unproxiedValue = unproxyValue(value);
 
-  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
-    return value;
+  let result: TValue = value;
 
-  if (typeof unproxiedValue === 'object' &&
+  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
+    result = value;
+  else if (typeof unproxiedValue === 'object' &&
     processed.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
   ) {
     // If array - update all items
@@ -39,50 +49,58 @@ const getSettingValue = <TValue = unknown>(
           return getActualModel(x, allData, parentReadOnly, propertyFilter, processed);
         });
       processed.push(v);
-      return v as TValue;
-    }
+      result = v as TValue;
+    } else
+      // update setting value to actual but only if not lazy
+      if (isPropertySettings(unproxiedValue) && unproxiedValue._lazy !== true) {
+        const v = unproxiedValue._mode === 'code'
+          ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
+          : unproxiedValue._value;
+        const upv = unproxyValue(v);
+        processed.push(upv);
+        result = upv as TValue;
+      } else {
+        // update nested objects
 
-    // update setting value to actual
-    if (isPropertySettings(unproxiedValue)) {
-      const v = unproxiedValue._mode === 'code'
-        ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
-        : unproxiedValue._value;
-      const upv = unproxyValue(v);
-      processed.push(upv);
-      return upv as TValue;
-    }
+        // TODO: review and enable rule
 
-    // update nested objects
-
-    // TODO: review and enable rule
-
-    const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processed);
-    processed.push(v);
-    return v;
+        const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processed);
+        processed.push(v);
+        result = v;
+      }
   }
-  return value;
+
+  return result;
 };
 
 const getValue = <TValue>(val: TValue, allData: object, calcValue: (setting: IPropertySetting, allData: object) => unknown): unknown => {
   return getSettingValue('', val, allData, calcValue);
 };
 
-type AllDataWrapper<TValue> = {
+interface IJsSettingsConstants<TValue> {
   staticValue: unknown;
   getSettingValue: (val: TValue) => unknown;
+  getDeviceStyle: (device?: DeviceTypes, defaultStyle?: DeviceTypes) => unknown;
 };
 
 const calcValue = <TValue>(setting: IPropertySetting, allData: object): TValue | undefined => {
   const getSettingValueInScript = (val: TValue): unknown => getValue(val, allData, calcValue);
+  const getDesignerDeviceStyleInScript = (device?: DeviceTypes, defaultStyle: DeviceTypes = 'desktop'): object =>
+    isApplicationContext(allData) && allData.data
+      ? getDeviceStyle(allData.data, device || (allData.contexts?.['canvasContext'] as ICanvasStateContext).designerDevice as DeviceTypes, defaultStyle)
+      : {};
+
   try {
     if (allData instanceof TouchableProxy || allData instanceof ObservableProxy) {
       allData.addAccessor('staticValue', () => setting._value);
       allData.addAccessor('getSettingValue', () => getSettingValueInScript);
+      allData.addAccessor('getDeviceStyle', () => getDesignerDeviceStyleInScript);
     } else {
       // TODO: Alex, please review. I've added type just to make linter happy
-      const casted = allData as AllDataWrapper<TValue>;
+      const casted = allData as IJsSettingsConstants<TValue>;
       casted.staticValue = setting._value;
       casted.getSettingValue = getSettingValueInScript;
+      casted.getDeviceStyle = getDesignerDeviceStyleInScript;
     }
     return setting._code
       ? executeScriptSync(setting._code, allData)

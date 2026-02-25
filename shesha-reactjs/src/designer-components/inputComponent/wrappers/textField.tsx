@@ -6,7 +6,7 @@ import { Input } from 'antd';
 import { FCUnwrapped } from '@/providers/form/models';
 
 export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (props) => {
-  const { value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
+  const { value, readOnly, size, variant, placeholder, metadataValue, icon, textType, tooltip, label, onChange, regExp } = props;
   const { styles } = useStyles();
 
   const regExpObj = useMemo(() => {
@@ -39,8 +39,7 @@ export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (prop
       }}
       readOnly={readOnly}
       variant={variant}
-      placeholder={placeholder}
-      style={{ width: width ?? "100%" }}
+      placeholder={placeholder ?? metadataValue?.toString()}
       suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? label} className={styles.icon} /></span>}
       value={value}
       type={textType}

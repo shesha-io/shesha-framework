@@ -1,8 +1,9 @@
-import { IDeviceTypes, IViewType } from "./contexts";
+import { deepMergeValues } from "@/utils/object";
+import { DeviceTypes, IViewType } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 
-export const getDeviceTypeByWidth = (width: number): IDeviceTypes => {
+export const getDeviceTypeByWidth = (width: number): DeviceTypes => {
   return width > 724
     ? 'desktop'
     : width > 599
@@ -10,7 +11,7 @@ export const getDeviceTypeByWidth = (width: number): IDeviceTypes => {
       : 'mobile';
 };
 
-export const getWidthByDeviceType = (deviceType: IDeviceTypes): string => {
+export const getWidthByDeviceType = (deviceType: DeviceTypes): string => {
   return deviceType === 'desktop'
     ? '1024px'
     : deviceType === 'tablet'
@@ -18,7 +19,7 @@ export const getWidthByDeviceType = (deviceType: IDeviceTypes): string => {
       : '599px';
 };
 
-export const getBiggerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes => {
+export const getBiggerDevice = (a: DeviceTypes, b: DeviceTypes): DeviceTypes => {
   return a === 'desktop' || b === 'desktop'
     ? 'desktop'
     : a === 'tablet' || b === 'tablet'
@@ -26,7 +27,7 @@ export const getBiggerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes 
       : 'mobile';
 };
 
-export const getSmallerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes => {
+export const getSmallerDevice = (a: DeviceTypes, b: DeviceTypes): DeviceTypes => {
   return a === 'mobile' || b === 'mobile'
     ? 'mobile'
     : a === 'tablet' || b === 'tablet'
@@ -264,3 +265,9 @@ export const screenSizeOptions = [
     label: 'Default', value: defaultDesignerWidth, icon: DesktopOutlined,
   },
 ];
+
+export const getDeviceStyle = (data: object, device: DeviceTypes, defaultDevice: DeviceTypes = 'desktop'): object => {
+  if (!data) return {};
+  if (!device) return data[defaultDevice];
+  return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
+};

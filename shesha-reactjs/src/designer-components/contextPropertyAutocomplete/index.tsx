@@ -1,11 +1,11 @@
-import React, { CSSProperties, FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import settingsFormJson from './settingsForm.json';
 import { Button, Input } from 'antd';
 import { DataContextSelector } from '@/designer-components/dataContextSelector';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { MetadataProvider, UnwrapCodeEvaluators } from '@/providers';
+import { getStyle, linkComponentToModelMetadata, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IConfigurableFormComponent, MetadataProvider, useFormDesignerComponents, useMetadataDispatcher, useShaFormInstanceOrUndefined } from '@/providers';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { useFormDesignerSettings } from '@/providers/formDesigner';
@@ -15,6 +15,10 @@ import { useStyles } from '../_settings/styles/styles';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocompleteComponentProps } from './interfaces';
+import { IModelMetadata, isEntityMetadata, isPropertiesArray, IToolboxComponentBase } from '@/interfaces';
+import { toCamelCase, truncateMiddle } from '@/utils/string';
+import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultValuesProvider/defaultModelProvider';
+import { isJsonEntityMetadata } from '@/interfaces/metadata';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -175,22 +179,72 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
   isOutput: true,
   preserveDimensionsInDesigner: true,
   calculateModel(model, allData) {
-    const initialValues = (allData.form?.initialValues ?? {}) as IContextPropertyAutocompleteState;
+    const initialValues = (allData.form?.initialValues ?? {}) as IConfigurableFormComponent;
     return {
+      componentid: initialValues.id,
+      commponentType: initialValues.type,
       componentName: initialValues.componentName,
       propertyName: initialValues.propertyName,
       contextName: initialValues.context,
       style: model.style ? getStyle(model?.style, allData.data, allData.globalState) : emptyObj,
       dropdownStyle: model.dropdownStyle ? getStyle(model?.dropdownStyle, allData.data, allData.globalState) : emptyObj,
       modelType: allData.form.formSettings.modelType,
+      clearFieldsValue: allData.form.clearFieldsValue,
+      getFieldsValue: allData.form.formInstance.getFieldsValue,
       setFieldsValue: allData.form.setFieldsValue,
+      getPropertyName: () => allData.form.getFormData()?.['propertyName'],
     };
   },
   Factory: ({ model, calculatedModel }) => {
+    const defaultValue = useDefaultModelProviderStateOrUndefined();
+    const formComponent = useFormDesignerComponents()?.[calculatedModel.commponentType];
     const formSettings = useFormDesignerSettings();
+    const inst = useShaFormInstanceOrUndefined();
     const designerModelType = formSettings?.modelType;
     const validate = useMemo(() => ({ ...model.validate, required: false }), [model.validate]);
-    const onValuesChange = useCallback((values) => calculatedModel.setFieldsValue(values), [calculatedModel.setFieldsValue]);
+
+    const [metadata, setMetadata] = useState<IModelMetadata>();
+    const metaDispatcher = useMetadataDispatcher();
+
+    const resetFormToUndefined = (resetedModel: IConfigurableFormComponent, values: object): void => {
+      const undefinedFields = Object.keys(resetedModel).reduce((acc, fieldName) => {
+        acc[fieldName] = undefined;
+        return acc;
+      }, {} as Record<string, undefined>);
+      calculatedModel.setFieldsValue({ ...undefinedFields, ...values });
+    };
+
+    const setContextMetadata = (meta: IModelMetadata, propName: string, component: IToolboxComponentBase): IConfigurableFormComponent | undefined => {
+      const propertyName = toCamelCase(propName);
+      const propertyMetadata = isPropertiesArray(meta?.properties)
+        ? meta?.properties?.find((p) => toCamelCase(p.path) === propertyName)
+        : null;
+      if (!propertyMetadata) return undefined;
+      const metadataConfig = linkComponentToModelMetadata(component, { id: '', type: '' }, propertyMetadata);
+      const metaName = isEntityMetadata(meta) || isJsonEntityMetadata(meta) ? `${meta.entityType} (${truncateMiddle(meta.entityModule, 25)})` : meta.name;
+      defaultValue?.setDefaultModel(metaName, metadataConfig);
+      inst.updateData();
+      return metadataConfig;
+    };
+
+    useEffect(() => {
+      metaDispatcher.getMetadata({ modelType: designerModelType ?? calculatedModel.modelType, dataType: 'entity' })
+        .then((meta) => {
+          setMetadata(meta);
+          setContextMetadata(meta, calculatedModel.propertyName, formComponent);
+        });
+    }, []);
+
+    const onValuesChange = useCallback((values) => {
+      if (formComponent.allowInherite) {
+        // update default model
+        const metadataConfig = setContextMetadata(metadata, values.propertyName, formComponent);
+        // reset inherited values if inherited
+        resetFormToUndefined(metadataConfig, { ...values, id: calculatedModel.componentid, type: calculatedModel.commponentType });
+      } else
+        // update propertyName and componentName (all other values will be updated by nested propertyAutocomplete)
+        calculatedModel.setFieldsValue(values);
+    }, [calculatedModel.setFieldsValue, metadata]);
 
     return model.hidden
       ? null
@@ -207,6 +261,8 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
           styledLabel={model.styledLabel}
           defaultModelType={designerModelType ?? calculatedModel.modelType}
           onValuesChange={onValuesChange}
+
+          autoFillProps={!formComponent.allowInherite}
         />
       )
     ;

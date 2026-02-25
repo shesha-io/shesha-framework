@@ -7,6 +7,8 @@ import { TouchableArrayProperty, TouchableProperty } from "@/providers/form/touc
 import { TouchableProxy } from "@/providers/form/touchableProxy";
 import { ShaArrayAccessProxy, ShaObjectAccessProxy } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
 import { WritableDraft } from "@reduxjs/toolkit";
+import { StorageArrayProperty, StorageProperty } from "@/providers/dataContextProvider/contexts/storageProxy";
+import { ObservableProxy } from "@/providers/form/observableProxy";
 
 export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T | undefined => {
   try {
@@ -26,7 +28,10 @@ export const isProxy = <TValue>(value: TValue): boolean => {
     value instanceof TouchableArrayProperty ||
     value instanceof TouchableProxy ||
     value instanceof ShaArrayAccessProxy ||
-    value instanceof ShaObjectAccessProxy
+    value instanceof ShaObjectAccessProxy ||
+    value instanceof StorageProperty ||
+    value instanceof StorageArrayProperty ||
+    value instanceof ObservableProxy
   );
 };
 
@@ -34,19 +39,32 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   const result = isDefined(value)
     ? value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
-    value instanceof TouchableProxy
+    value instanceof TouchableProxy ||
+    value instanceof StorageProperty ||
+    value instanceof StorageArrayProperty
       ? value.getData() as TValue
       : value instanceof ShaArrayAccessProxy ||
         value instanceof ShaObjectAccessProxy
         ? value.getAccessorValue() as TValue
-        : value
+        : value instanceof ObservableProxy
+          ? { ...value }
+          : value
     : value;
 
   return isProxy(result) ? unproxyValue<TValue>(result) : result;
 };
 
-export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSource): TObject & TSource => {
+export const deepMergeValues = <TObject, TSource>(
+  target: TObject,
+  source: TSource,
+  skipProp: ((target: TObject, source: TSource, key: string) => boolean) | undefined = undefined):
+TObject & TSource => {
   return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
+    // Check if the property should be skipped
+    const skip = skipProp && typeof skipProp === 'function' ? skipProp(target, source, key) : false;
+    // if skip is true, return original value
+    if (skip) return objValue;
+
     // handle null
     if (srcValue === null) {
       // reset field to null
@@ -78,7 +96,7 @@ export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSour
     // handle objects
     if (typeof objValue === "object" && typeof srcValue === "object") {
       // make a copy of merged objects
-      return deepMergeValues(objValue, srcValue);
+      return deepMergeValues(objValue, srcValue, skipProp);
     }
 
     return undefined;

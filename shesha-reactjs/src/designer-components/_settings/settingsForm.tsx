@@ -35,6 +35,7 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
     propertyFilter,
     formRef,
     layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
+    toolboxComponent,
   } = props;
 
   const [form] = Form.useForm();
@@ -71,19 +72,13 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
   };
 
   const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
-    const currentModel = form.getFieldValue([]) as TModel;
-
-    const wrapper = props.toolboxComponent.linkToModelMetadata
-      ? (m) => linkComponentToModelMetadata(props.toolboxComponent, m, metadata)
-      : (m) => m;
-
-    const newModel: TModel = wrapper({
-      ...currentModel,
-      label: metadata.label || metadata.path,
-      description: metadata.description,
-    });
-
+    const currentModel = form.getFieldValue([]);
+    const newModel = linkComponentToModelMetadata(toolboxComponent, currentModel, metadata);
     valuesChange(newModel);
+
+    if (toolboxComponent.initModelFromMetadata) {
+      toolboxComponent.initModelFromMetadata(currentModel, newModel, metadata).then((r) => valuesChange(r));
+    }
   };
 
   return (

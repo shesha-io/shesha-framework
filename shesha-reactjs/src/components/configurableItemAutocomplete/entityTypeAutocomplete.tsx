@@ -54,9 +54,12 @@ export type EntityTypeAutocompleteType = 'All' | 'Entity' | 'JsonEntity';
 
 interface IEntityTypeAutocompleteProps {
   value?: EntityIdentifier;
+  placeholder?: string;
   baseModel?: EntityIdentifier;
   readOnly?: boolean;
   onChange?: (value: EntityIdentifier | null) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
   type?: EntityTypeAutocompleteType;
   size?: SizeType;
 }
@@ -108,9 +111,12 @@ const getListFetcherQueryParams = (
 export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) => {
   const {
     value,
+    placeholder,
     readOnly,
     size,
     onChange,
+    onFocus,
+    onBlur,
     type = 'All',
     baseModel,
   } = props;
@@ -176,8 +182,9 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
     }
   };
 
-  const onFocus = (): void => {
+  const onFocusHandler = (): void => {
     debouncedFetchItems();
+    onFocus?.();
   };
 
   const fetchedOptions = useMemo<IOption[]>(() => {
@@ -231,9 +238,10 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
       showSearch={true}
       onSearch={onSearch}
       onChange={onSelect}
-      onFocus={onFocus}
+      onFocus={onFocusHandler}
+      onBlur={onBlur}
       onClear={onClear}
-      placeholder={loadingInitialItem ? 'Loading...' : 'Type to search'}
+      placeholder={loadingInitialItem ? 'Loading...' : placeholder ?? 'Type to search'}
       disabled={loadingInitialItem || readOnly}
       value={selectedItem?.key ??
         (typeof value === 'string'

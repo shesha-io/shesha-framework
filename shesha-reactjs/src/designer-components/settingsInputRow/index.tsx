@@ -8,6 +8,7 @@ import { getWidth } from '../settingsInput/utils';
 import { IInputRowProps, ISettingsInputRowProps, SettingsInputRowDefinition } from './interfaces';
 import { evaluateString } from "@/providers/form/utils";
 import { useShaFormInstance } from "@/providers/form/providers/shaFormProvider";
+import { nanoid } from '@/utils/uuid';
 
 export const isSettingsInputRow = (component: IConfigurableFormComponent): component is ISettingsInputRowProps => isDefined(component) && component.type === 'settingsInputRow';
 
@@ -21,7 +22,7 @@ export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, childre
   return isHidden ? null : (
     <div className={inline ? styles.inlineInputs : styles.rowInputs}>
       {inputs?.map((props, i) => {
-        const { type } = props;
+        const { type, id } = props;
         const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: formData }) : props.hidden;
 
         const width = getWidth(type, props.width);
@@ -30,6 +31,7 @@ export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, childre
           <SettingInput
             key={i + props.label}
             {...props}
+            id={id ?? nanoid()}
             hidden={isHidden as boolean}
             readOnly={Boolean(props.readOnly) || readOnly}
             inline={inline}

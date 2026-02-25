@@ -5,6 +5,7 @@ import LabelConfiguratorComponent from './labelConfigurator';
 import { LabelConfiguratorDefinition } from './interfaces';
 import { getSettings } from './settings';
 import { useStyles } from './styles';
+import { IConfigurableFormComponent } from '@/providers';
 
 const LabelConfigurator: LabelConfiguratorDefinition = {
   type: 'labelConfigurator',
@@ -13,14 +14,23 @@ const LabelConfigurator: LabelConfiguratorDefinition = {
   isOutput: true,
   canBeJsSetting: true,
   icon: <ColumnWidthOutlined />,
-  Factory: ({ model }) => {
+  calculateModel: (_, allData) => ({ hideLabel: (allData.data as IConfigurableFormComponent).hideLabel }),
+  Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles();
 
     return (
-
       <div className={styles.formItem}>
         <ConfigurableFormItem model={model}>
-          <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} />
+          {() => (
+            <LabelConfiguratorComponent
+              value={Boolean(calculatedModel.hideLabel)}
+              labelAlignOptions={model.labelAlignOptions}
+              readOnly={model.readOnly}
+              label={model.label}
+              placeholder={model.placeholder}
+              metadataValue={model.metadataValue}
+            />
+          )}
         </ConfigurableFormItem>
       </div>
     );

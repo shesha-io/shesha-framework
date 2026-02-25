@@ -15,7 +15,7 @@ import { IShaFormInstance } from '@/providers/form/store/interfaces';
 import ParentProvider from '@/providers/parentProvider';
 import { ShaSpin } from '..';
 import { DataLoadingError } from './dataLoadingError';
-import { IFormActionsContext } from '@/providers/form/contexts';
+import { IFormActionsContext, ISetFormDataPayload } from '@/providers/form/contexts';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
@@ -24,6 +24,9 @@ export type ConfigurableFormProps<Values extends object = object> = Omit<IConfig
   shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
   isSettingsForm?: boolean;
   externalShaForm?: IShaFormInstance<Values> | undefined;
+  formDataGetter?: () => any;
+  formDataSetter?: (data: any) => void;
+  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => any;
 } & SheshaFormProps;
 
 export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
@@ -49,6 +52,9 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
     sections,
     isActionsOwner,
     externalShaForm,
+    formDataGetter,
+    formDataSetter,
+    setFormDataNewDataAction,
   } = props;
   const { switchApplicationMode } = useAppConfigurator();
   const app = useSheshaApplication();
@@ -62,6 +68,9 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
       instance.setFormMode(props.mode);
       instance.setParentFormValues(parentFormValues);
     },
+    formDataGetter,
+    formDataSetter,
+    setFormDataNewDataAction,
   });
   shaForm.setOnMarkupLoaded(onMarkupLoaded);
 

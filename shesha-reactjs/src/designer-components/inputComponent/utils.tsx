@@ -9,6 +9,25 @@ import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { InputComponent } from '.';
 import { getWidth } from '../settingsInput/utils';
+
+export interface IUseDefaultValueState {
+  value: any;
+  setFocused: (focused: boolean) => void;
+  isDefault: boolean;
+  hasDefaultValue: boolean;
+  hasValue: boolean;
+};
+
+const stringToFriendlyMap = new Map<string, string>([['true', 'On'], ['false', 'Off'], ['editable', 'Editable'], ['readOnly', 'Read only'], ['inherited', 'Inherited']]);
+
+export const convertValueToFriendlyString = (value: unknown): string => {
+  if (typeof value === 'string') {
+    return stringToFriendlyMap.has(value) ? stringToFriendlyMap.get(value) : value;
+  }
+
+  return String(value);
+};
+
 export const getEditor = (
   availableConstantsExpression: string,
   codeEditorProps: ICodeEditorProps,

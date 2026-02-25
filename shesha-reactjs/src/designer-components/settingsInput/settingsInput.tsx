@@ -1,4 +1,4 @@
-import React, { ComponentType } from 'react';
+import React, { ComponentType, useMemo } from 'react';
 import FormItem from "../_settings/components/formItem";
 import { BaseInputProps, hasModelType, ISettingsInputProps, isSettingsInputProps } from './interfaces';
 import ConditionalWrap from '@/components/conditionalWrapper';
@@ -19,7 +19,7 @@ export interface ISettingsComponentGroup {
 }
 
 export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
-  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, size, validate, inline, width, ...rest } = props;
+  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, inline, width, availableConstantsExpression, ...rest } = props;
 
   const { formData } = useShaFormInstance();
   const settingsComponents = useSettingsComponents();
@@ -33,7 +33,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
       : props.modelType
     : undefined;
 
-  const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
+  const isHidden = (typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden) === true || visible === false;
 
   const unwrappedType = isSettingsInputProps(props) ? props.inputType : props.type;
 
@@ -45,9 +45,15 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
     width: undefined, // backward compatibility
   } as BaseInputProps;
 
+  const style = useMemo(() => {
+    return unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker'
+      ? { width: 'auto' }
+      : { flex: `1 1 ${inline ? width : '120px'}`, width };
+  }, [unwrappedType, inline, width]);
+
   return isHidden ? null
     : (
-      <div key={label} style={unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker' ? { width: 'auto' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
+      <div key={label} style={style}>
         <ConditionalWrap
           condition={!isEntityTypeIdEmpty(evaluatedModelType)}
           wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}
@@ -61,6 +67,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
             layout="vertical"
             jsSetting={unwrappedType === 'codeEditor' ? false : jsSetting}
             readOnly={readOnly}
+            availableConstantsExpression={availableConstantsExpression}
           >
             {CustomComponent ? <CustomComponent{...rest} /> : (
               <InputComponent

@@ -1,6 +1,6 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useRef } from 'react';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { FormMarkup } from '@/providers/form/models';
 import { Alert, App } from 'antd';
@@ -9,7 +9,7 @@ import { PropertiesEditorComponent } from '../propertiesEditor';
 import { useModelConfigurator } from '@/providers';
 import { ViewsEditorComponent } from '../viewsEditor';
 import { useStyles } from '../styles/styles';
-import { filter, isEqual, keys, union } from 'lodash';
+import { clone, filter, isEqual, keys, union } from 'lodash';
 import { isDefined } from '@/utils/nullables';
 import { IPropertyErrors } from '@/providers/modelConfigurator/contexts';
 import { ModelConfigurationDto } from '@/apis/modelConfigurations';
@@ -20,6 +20,9 @@ export const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles({ height: 180 });
   const { message } = App.useApp();
   const { showErrors, errors, modelConfiguration, initialConfiguration, getForm, saveForm, setModified, validateModel } = useModelConfigurator();
+
+  const initialModel = useRef(clone(initialConfiguration));
+  if (initialModel.current === undefined) initialModel.current = clone(initialConfiguration);
 
   const errorsText = useMemo((): React.ReactNode => {
     return (
@@ -66,7 +69,7 @@ export const ModelConfiguratorRenderer: FC = () => {
     let newChanged: string[] = [];
     // Return only latest keys
     for (const key of filtered) {
-      if (isDefined(o1) && isDefined(o2) && (typeof o1[key] === 'object' || typeof o2[key] === 'object'))
+      if (isDefined(o1) && isDefined(o2) && ((typeof o1[key] === 'object' && o1[key] !== null) || (typeof o2[key] === 'object' && o2[key] !== null)))
         newChanged = newChanged.concat(changedKeys(o1[key], o2[key], name ? name + '.' + key : key));
       // Exclude some framework keys
       else if (['chosen', 'selected', 'dependency'].indexOf(key) === -1)
@@ -97,7 +100,7 @@ export const ModelConfiguratorRenderer: FC = () => {
           onValuesChange={onValuesChange}
           onFinish={onSettingsSave}
           form={getForm()}
-          initialValues={initialConfiguration}
+          initialValues={initialModel.current}
           sections={{
             properties: () => <PropertiesEditorComponent />,
             permission: () => <PermissionEditorComponent name="permission" />,

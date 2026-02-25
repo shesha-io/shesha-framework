@@ -43,6 +43,9 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractErrorInfo, throwError } from "@/utils/errors";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
+  formDataGetter?: () => any;
+  formDataSetter?: (data: any) => void;
+  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => any;
   forceRootUpdate: ForceUpdateTrigger;
   formManager: IFormManagerActionsContext;
   metadataDispatcher: IMetadataDispatcher;
@@ -151,7 +154,15 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   private dataSubmitContext: IDataSubmitContext | undefined;
 
-  updateData: (() => void) | undefined;
+  private _formData: Values | undefined;
+
+  formDataSetter: (data: Values | undefined) => void;
+
+  formDataGetter: () => Values | undefined;
+
+  setFormDataNewDataAction: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined;
+
+  updateData: () => void;
 
   modelMetadata?: IModelMetadata | undefined;
 
@@ -159,7 +170,18 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   formMode: FormMode;
 
-  formData?: Values | undefined;
+  get formData(): Values | undefined {
+    if (typeof this.formDataGetter === 'function')
+      return this.formDataGetter();
+    return this._formData;
+  };
+
+  set formData(data: object) {
+    if (typeof this.formDataSetter === 'function')
+      this.formDataSetter(data);
+    else
+      this._formData = data;
+  };
 
   isDataModified: boolean;
 
@@ -229,9 +251,13 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
     this.forceRootUpdate = args.forceRootUpdate;
     this.events = {};
-    this.formData = {} as Values;
+    this._formData = {} as Values;
     this.isDataModified = false;
     this.subscriptions = new Map<ShaFormSubscriptionType, Set<ShaFormSubscription<Values>>>();
+
+    this.formDataGetter = args.formDataGetter;
+    this.formDataSetter = args.formDataSetter;
+    this.setFormDataNewDataAction = args.setFormDataNewDataAction;
   }
 
   //#region subscriptions
@@ -289,11 +315,11 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.notifySubscribers('data-modified');
   };
 
-  #setInternalFormData = (values: Values): void => {
+  #setInternalFormData = (changedValues: Partial<Values>, values: Values): void => {
     this.formData = values;
     this.#setIsDataModified(true);
     if (this.onValuesChange)
-      this.onValuesChange(values, values);
+      this.onValuesChange(changedValues, values);
     this.events.onValuesUpdate?.({ data: removeGhostKeys({ ...values }) });
   };
 
@@ -302,9 +328,11 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     if (isEmpty(values) && mergeValues)
       return;
 
-    const newData = payload.mergeValues && this.formData
-      ? deepMergeValues(this.formData, values)
-      : values;
+    const newData = typeof this.setFormDataNewDataAction === "function"
+      ? this.setFormDataNewDataAction(payload, this)
+      : payload.mergeValues && this.formData
+        ? deepMergeValues(this.formData, values)
+        : values;
 
     if (mergeValues) {
       this.antdForm.setFieldsValue(values);
@@ -313,7 +341,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       this.antdForm.setFieldsValue(values);
     }
 
-    this.#setInternalFormData(newData as Values);
+    this.#setInternalFormData(values as Partial<Values>, newData as Values);
 
     this.updateData?.();
   };
@@ -347,7 +375,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   resetFields = (): void => {
     this.antdForm.resetFields();
     const values = this.antdForm.getFieldsValue();
-    this.#setInternalFormData(values);
+    this.#setInternalFormData(values, values);
     this.#setIsDataModified(false);
     this.updateData?.();
   };
@@ -748,6 +776,9 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFormInstance<Values> | undefined };
 
 type UseShaFormArgsNewForm<Values extends object = object> = {
+  formDataGetter?: () => Values;
+  formDataSetter?: (data: Values) => void;
+  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => any;
   antdForm?: FormInstance<Values>;
   init?: (shaForm: IShaFormInstance<Values>) => void;
 };
@@ -774,6 +805,9 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
       };
 
       const instance = new ShaFormInstance<Values>({
+        formDataGetter: args.formDataGetter,
+        formDataSetter: args.formDataSetter,
+        setFormDataNewDataAction: args.setFormDataNewDataAction,
         forceRootUpdate: forceReRender,
         formManager: formManager,
         dataLoaders: dataLoaders,

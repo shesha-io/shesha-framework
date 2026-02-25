@@ -5,7 +5,7 @@ import { ConfigurableFormItemLive } from './configurableFormItemLive';
 
 const ConfigurableFormItemInner: FC<IConfigurableFormItemProps> = (props) => {
   return props.model.jsSetting
-    ? <ConfigurableFormItemSetting {...props} />
+    ? <ConfigurableFormItemSetting {...props} lazy={props.model.jsSetting === 'lazy'} />
     : <ConfigurableFormItemLive {...props} />;
 };
 

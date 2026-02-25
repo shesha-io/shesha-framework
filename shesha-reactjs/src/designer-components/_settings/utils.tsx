@@ -71,15 +71,15 @@ export const updateSettingsComponents = (
     const componentRegistration = toolboxComponents[component.type];
 
     const newComponent: IConfigurableFormComponent = { ...component, jsSetting: false };
-    if ((componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true) {
+    if ((componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting) {
       const oldComponent: IConfigurableFormComponent = { ...newComponent };
 
       // If should be wrapped as Setting
       newComponent.type = 'setting';
       newComponent.id = oldComponent.id + '_setting';
 
-      // copy `exposedVariables`. NOTE: it's a temporary solution, will be removed later
-      if (oldComponent['exposedVariables']) newComponent['exposedVariables'] = oldComponent['exposedVariables'];
+      if (component.jsSetting === 'lazy') newComponent['lazy'] = true;
+      if (oldComponent['availableConstantsExpression']) newComponent['availableConstantsExpression'] = oldComponent['availableConstantsExpression'];
 
       // Add source component as a child of Setting component
       if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {
@@ -135,7 +135,9 @@ export const updateJsSettingsForComponents = (
     const componentRegistration = toolboxComponents[component.type];
     const newComponent: IConfigurableFormComponent = {
       ...component,
-      jsSetting: (componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true,
+      jsSetting: component.jsSetting === 'lazy'
+        ? 'lazy'
+        : (componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true,
     };
 
     // Check all child containers

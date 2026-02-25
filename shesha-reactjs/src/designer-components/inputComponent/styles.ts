@@ -24,6 +24,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       }
       
       `);
+
   return {
     inlineInputs,
     rowInputs,

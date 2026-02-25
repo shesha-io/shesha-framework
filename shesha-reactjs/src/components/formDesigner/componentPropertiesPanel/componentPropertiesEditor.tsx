@@ -8,6 +8,7 @@ import { useFormDesigner } from '@/providers/formDesigner';
 import { wrapDisplayName } from '@/utils/react';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
+import DefaultModelProvider from '@/designer-components/_settings/defaultValuesProvider/defaultModelProvider';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponentBase;
@@ -26,21 +27,23 @@ const getDefaultFactory = (fbf: FormBuilderFactory, markup: FormMarkup | Setting
     ? markup({ fbf })
     : markup;
 
-  return wrapDisplayName(({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
+  return wrapDisplayName(({ readOnly, model, defaultConfig, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
     return (
-      <GenericSettingsForm
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        markup={evaluatedMarkup}
-        onValuesChange={onValuesChange}
-        toolboxComponent={toolboxComponent}
-        formRef={formRef}
-        propertyFilter={propertyFilter}
-        layoutSettings={layoutSettings}
-        isInModal={isInModal}
-      />
+      <DefaultModelProvider name="Basic component settings" model={model} defaultModel={defaultConfig}>
+        <GenericSettingsForm
+          readOnly={readOnly}
+          model={model}
+          onSave={onSave}
+          onCancel={onCancel}
+          markup={evaluatedMarkup}
+          onValuesChange={onValuesChange}
+          toolboxComponent={toolboxComponent}
+          formRef={formRef}
+          propertyFilter={propertyFilter}
+          layoutSettings={layoutSettings}
+          isInModal={isInModal}
+        />
+      </DefaultModelProvider>
     );
   }, "ComponentDefaultSettings");
 };
@@ -51,6 +54,27 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const { getCachedComponentEditor } = useFormDesigner();
   const fbf = useFormBuilderFactory();
 
+  /*
+  const formSettings = useFormDesignerSettings();
+  const metaDispatcher = useMetadataDispatcher();
+  const designerModelType = formSettings?.modelType;
+
+  const [metadataConfig, setMetadataConfig] = useState<IConfigurableFormComponent>(undefined);
+
+  if (designerModelType)
+    metaDispatcher.getMetadata({ modelType: designerModelType, dataType: 'entity' })
+      .then((meta) => {
+        const propertyName = toCamelCase(componentModel.propertyName);
+        const propertyMetadata = isPropertiesArray(meta?.properties)
+          ? meta?.properties?.find((p) => toCamelCase(p.path) === propertyName)
+          : null;
+        if (!propertyMetadata) return;
+        setMetadataConfig(linkComponentToModelMetadata(toolboxComponent, { id: '', type: '' }, propertyMetadata));
+      });
+  else
+    setMetadataConfig(linkComponentToModelMetadata(toolboxComponent, { id: '', type: '' }, { path: '', dataType: '' }));
+  */
+
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
     return toolboxComponent.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
@@ -58,6 +82,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         ? getDefaultFactory(fbf, toolboxComponent.settingsFormMarkup, isInModal)
         : null;
   });
+
 
   const { autoSave, onSave, formRef, propertyFilter, layoutSettings } = props;
 
@@ -78,11 +103,12 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     // not used
   };
 
-  return SettingsForm
+  return SettingsForm // && metadataConfig
     ? (
       <SettingsForm
         readOnly={readOnly}
         model={componentModel}
+        // defaultConfig={metadataConfig}
         onSave={onSave}
         onCancel={onCancel}
         onValuesChange={onValuesChange}

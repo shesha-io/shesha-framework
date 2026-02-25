@@ -12,13 +12,18 @@ export interface IContextPropertyAutocompleteComponentProps extends IConfigurabl
 }
 
 interface IContextPropertyAutocompleteCalculatedModel {
+  componentid: string;
+  commponentType: string;
   componentName: string;
   propertyName: string;
   contextName: string;
   style: CSSProperties;
   dropdownStyle: CSSProperties;
   modelType: string | IEntityTypeIdentifier;
+  getFieldsValue: () => any;
   setFieldsValue: (values: any) => void;
+  clearFieldsValue: () => void;
+  getPropertyName: () => string;
 }
 
 export type ContextPropertyAutocompleteComponentDefinition = ComponentDefinition<"contextPropertyAutocomplete", IContextPropertyAutocompleteComponentProps, IContextPropertyAutocompleteCalculatedModel>;
