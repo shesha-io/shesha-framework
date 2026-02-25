@@ -42,6 +42,7 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
   };
 
   const clearSetting = (settingId: ISettingIdentifier): void => {
+    if (!settingId?.name) return;
     const key = makeFormLoadingKey(settingId);
     delete settings.current[key];
   };
