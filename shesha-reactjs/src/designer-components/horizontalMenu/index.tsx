@@ -164,7 +164,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`} style={{ overflow: 'visible' }}>
+            <div className={`sidebar ${componentState.wrapperClassName}`}>
               <BlockOverlay>
                 <EditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>
