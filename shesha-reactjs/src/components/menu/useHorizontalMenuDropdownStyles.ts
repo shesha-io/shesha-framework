@@ -65,13 +65,13 @@ export const useHorizontalMenuDropdownStyles = ({
         color: ${colors?.subItemColor || BLACK_CLR};
         ${colors?.subItemBackground ? `background: ${colors?.subItemBackground};` : ''}
         ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : 'currentColor'};
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover,
@@ -99,17 +99,17 @@ export const useHorizontalMenuDropdownStyles = ({
         color: ${colors?.subItemColor || BLACK_CLR};
         ${colors?.subItemBackground ? `background: ${colors?.subItemBackground};` : ''}
         ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : 'currentColor'};
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .ant-menu-submenu-arrow {
-        color: ${colors?.subItemColor || BLACK_CLR} !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : `${colors?.subItemColor || BLACK_CLR}`} !important;
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
@@ -176,13 +176,13 @@ export const useHorizontalMenuDropdownStyles = ({
       /* Leaf items (without children) in submenu popups */
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item {
         ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : 'currentColor'};
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item:hover {
@@ -198,17 +198,17 @@ export const useHorizontalMenuDropdownStyles = ({
       /* Submenu items (with children) in submenu popups */
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title {
         ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : 'currentColor'};
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .ant-menu-submenu-arrow {
-        color: ${colors?.subItemColor || BLACK_CLR} !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : `${colors?.subItemColor || BLACK_CLR}`} !important;
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {
