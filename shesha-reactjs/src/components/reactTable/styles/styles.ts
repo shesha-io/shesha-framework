@@ -229,7 +229,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       .${shaTable} {
         border-spacing: 0;
         display: inline-block;
-        min-width: 100%;
+        min-width: calc(100% - 2px);
         /* Background applied to table ensures it covers all rows when scrolling with freezeHeaders */
         ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}
 
