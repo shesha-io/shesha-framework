@@ -20,7 +20,7 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { SIDEBAR_COLLAPSE } from './constant';
 import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
 import { useLocalStorage } from '@/hooks';
-import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
+import { FormFullName, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
@@ -94,8 +94,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const { styles } = useStyles();
   const sidebarDefaults = useSidebarMenuDefaults();
 
-  const { setGlobalVariables } = useSheshaApplication();
-
   const sideMenuTheme = themeFromStorage?.sidebar;
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
@@ -113,7 +111,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   }, [heading, title, showHeading, fixHeading]);
 
   const onCollapse = (value: boolean) => {
-    setGlobalVariables({ isSideBarExpanded: !value });
     setCollapsed(value);
   };
 
