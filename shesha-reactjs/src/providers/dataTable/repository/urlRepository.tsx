@@ -16,14 +16,17 @@ import {
 } from '../interfaces';
 import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
-import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IConfigurableColumnsProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
+import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { getUrlKeyParam } from '@/utils';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
+  entityType?: string;
 }
 
 export const UrlRepositoryType = 'url-repository';
@@ -39,7 +42,7 @@ interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
 }
 
 const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
-  const { backendUrl, httpHeaders, getListUrl } = args;
+  const { backendUrl, httpHeaders, getListUrl, entityType, metadataDispatcher } = args;
 
   const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
     const result: string[] = [];
@@ -121,8 +124,71 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     });
   };
 
-  const prepareColumns = (_: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
-    return Promise.resolve([]);
+  const isDataColumn = (col: IConfigurableColumnsProps): col is IDataColumnsProps => col.columnType === 'data';
+
+  const getPropertyNames = (columns: IConfigurableColumnsProps[]): string[] => {
+    const result: string[] = [];
+    columns.forEach(col => {
+      if (isDataColumn(col) && col.propertyName)
+        result.push(col.propertyName);
+    });
+    return result;
+  };
+
+  const prepareColumns = (configurableColumns: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
+    const baseColumns = (configurableColumns ?? [])
+      .filter(isDataColumn)
+      .map<DataTableColumnDto>(dataCol => ({
+        propertyName: dataCol.propertyName || dataCol.id,
+        name: dataCol.propertyName || dataCol.id,
+        caption: dataCol.caption || null,
+        description: dataCol.description || null,
+        dataType: 'string',
+        dataFormat: null,
+        referenceListName: null,
+        referenceListModule: null,
+        entityReferenceTypeShortAlias: null,
+        allowInherited: false,
+        isFilterable: true,
+        isSortable: dataCol.allowSorting !== false,
+        metadata: null,
+      }));
+
+    if (baseColumns.length === 0)
+      return Promise.resolve([]);
+
+    const dataProperties = getPropertyNames(configurableColumns ?? []);
+
+    if (entityType && dataProperties.length > 0) {
+      return metadataDispatcher.getPropertiesMetadata({ dataType: DataTypes.entityReference, modelType: entityType, properties: dataProperties })
+        .then(response => {
+          return baseColumns.map(col => {
+            const propMeta = response[col.propertyName];
+            if (!propMeta)
+              return { ...col, caption: col.caption || col.propertyName };
+
+            return {
+              ...col,
+              caption: col.caption || propMeta.label || col.propertyName,
+              description: col.description || propMeta.description,
+              dataType: propMeta.dataType,
+              dataFormat: propMeta.dataFormat,
+              referenceListName: propMeta.referenceListName,
+              referenceListModule: propMeta.referenceListModule,
+              entityReferenceTypeShortAlias: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityType : undefined,
+              allowInherited: false,
+              isFilterable: true,
+              isSortable: col.isSortable,
+              metadata: propMeta,
+            };
+          });
+        }).catch(e => {
+          console.error('Failed to fetch table columns metadata', e);
+          return baseColumns.map(col => ({ ...col, caption: col.caption || col.propertyName }));
+        });
+    }
+
+    return Promise.resolve(baseColumns.map(col => ({ ...col, caption: col.caption || col.propertyName })));
   };
 
   const performUpdate = (_rowIndex: number, _: any): Promise<any> => {
@@ -173,7 +239,7 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
       apiHelper,
       mutator,
     });
-  }, [args.getListUrl, backendUrl, httpHeaders]);
+  }, [args.getListUrl, args.entityType, backendUrl, httpHeaders, apiHelper, mutator]);
 
   return repository;
 };
@@ -182,8 +248,8 @@ export function withUrlRepository<WrappedProps>(
   WrappedComponent: ComponentType<WrappedProps & IHasRepository>
 ): FC<WrappedProps> {
   return (props) => {
-    const { getDataPath } = props as IHasEntityDataSourceConfig;
-    const repository = useUrlRepository({ getListUrl: getDataPath });
+    const { getDataPath, entityType } = props as IHasEntityDataSourceConfig;
+    const repository = useUrlRepository({ getListUrl: getDataPath, entityType });
 
     return <WrappedComponent {...props} repository={repository} />;
   };
