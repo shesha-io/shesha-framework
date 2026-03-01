@@ -3,6 +3,10 @@
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<NoWarn>$(NoWarn);CS1591;612;618;809;AsyncFixer01;8618;</NoWarn>
+		<PackageLicenseExpression>APACHE-2.0</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/shesha-io/shesha-framework</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://www.shesha.io/</PackageProjectUrl>
 	</PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release' ">
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
