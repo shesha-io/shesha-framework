@@ -256,11 +256,8 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
 
     const exportToExcel = (payload: IGetListDataPayload): Promise<void> => {
         let excelColumns = payload.columns
+            .filter(c => c.isVisible)
             .map<IExcelColumn>(c => ({ propertyName: c.propertyName, label: c.caption }));
-
-        if (excelColumns.findIndex(c => c.propertyName === 'id') === -1) {
-            excelColumns = [{ propertyName: 'id', label: 'Id' }, ...excelColumns];
-        }
 
         const getDataPayload = convertPayload(payload);
 
