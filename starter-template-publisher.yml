@@ -32,8 +32,47 @@ steps:
        # $Jsonfile = Get-Content $filePath -raw | ConvertFrom-Json
        # $Jsonfile.dependencies.'@shesha-io/reactjs' = "latest"
        # ConvertTo-Json $Jsonfile -Depth 5 | Set-Content $filePath
-      Write-Host "Completed"      
+      Write-Host "Completed"
     workingDirectory: '$(System.DefaultWorkingDirectory)/shesha-starter/'
+
+- task: PowerShell@2
+  displayName: Generate and Replace SecurityKey
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Generate cryptographically secure 86-character alphanumeric key
+      $key = -join (1..86 | ForEach-Object { [char](Get-Random -InputObject ((65..90) + (48..57))) })
+      Write-Host "Generated new 86-character SecurityKey for this template build"
+      Write-Host "Key Length: $($key.Length) characters"
+
+      # Find and replace in all appsettings.json files within shesha-starter
+      $appsettingsFiles = Get-ChildItem -Path "shesha-starter" -Filter "appsettings.json" -Recurse -ErrorAction SilentlyContinue
+      Write-Host "Found $($appsettingsFiles.Count) appsettings.json file(s)"
+
+      foreach ($file in $appsettingsFiles) {
+        $content = Get-Content $file.FullName -Raw
+        if ($content -match '#{securityKey}#') {
+          $newContent = $content -replace '#{securityKey}#', $key
+          Set-Content -Path $file.FullName -Value $newContent -NoNewline
+          Write-Host "Updated: $($file.FullName)"
+        }
+      }
+
+      # Find and replace in all app.config.json.pipeline files within shesha-starter
+      $pipelineConfigFiles = Get-ChildItem -Path "shesha-starter" -Filter "app.config.json.pipeline" -Recurse -ErrorAction SilentlyContinue
+      Write-Host "Found $($pipelineConfigFiles.Count) app.config.json.pipeline file(s)"
+
+      foreach ($file in $pipelineConfigFiles) {
+        $content = Get-Content $file.FullName -Raw
+        if ($content -match '#{securityKey}#') {
+          $newContent = $content -replace '#{securityKey}#', $key
+          Set-Content -Path $file.FullName -Value $newContent -NoNewline
+          Write-Host "Updated: $($file.FullName)"
+        }
+      }
+
+      Write-Host "SecurityKey replacement completed successfully"
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
 - task: ArchiveFiles@2
   displayName: Zip Starter Directory
