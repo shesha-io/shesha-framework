@@ -19,11 +19,11 @@ interface DefaultMargins {
 // Cached constants to avoid repeated object/string creation
 const EMPTY_STYLING_BOX = '{}';
 const ZERO_MARGINS: Readonly<MarginValues> = Object.freeze({
-     marginTop: 0,
-     marginBottom: 0,
-     marginLeft: 0,
-     marginRight: 0,
-  });
+  marginTop: 0,
+  marginBottom: 0,
+  marginLeft: 0,
+  marginRight: 0,
+});
 
 const DEFAULT_MARGIN_VALUES = {
   top: DEFAULT_MARGINS.vertical,
