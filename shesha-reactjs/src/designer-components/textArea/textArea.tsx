@@ -116,6 +116,9 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                 color: maxLength && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
                 marginTop: '0px',
                 marginBottom: '0px',
+                width: model.allStyles.dimensionsStyles?.width,
+                minWidth: model.allStyles.dimensionsStyles?.minWidth,
+                maxWidth: model.allStyles.dimensionsStyles?.maxWidth,
               }}
               >
                 {currentLength}

@@ -113,21 +113,32 @@ export const stylingUtils = {
         ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
         : validationHeight ? addPx(validationHeight) : undefined;
 
-    const minHeight = dimensions.minHeight && dimensions.minHeight !== 'auto'
-      ? getExpandedDimensions(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
-      : dimensions.minHeight === 'auto' ? 'auto' : undefined;
+    // For min/max dimensions, subtract the default wrapper margins like we do for width/height
+    // This ensures constrained dimensions account for the wrapper's default margins (5px 3px)
+    // The wrapper always has these default margins applied, so min/max must subtract them
+    const minHeight = !dimensions.minHeight
+      ? undefined
+      : dimensions.minHeight === 'auto'
+        ? 'auto'
+        : getCalculatedDimension(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom);
 
-    const maxHeight = dimensions.maxHeight && dimensions.maxHeight !== 'auto'
-      ? getExpandedDimensions(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
-      : dimensions.maxHeight === 'auto' ? 'auto' : undefined;
+    const maxHeight = !dimensions.maxHeight
+      ? undefined
+      : dimensions.maxHeight === 'auto'
+        ? 'auto'
+        : getCalculatedDimension(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom);
 
-    const minWidth = dimensions.minWidth === 'auto'
-      ? 'auto'
-      : getCalculatedDimension(dimensions.minWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
+    const minWidth = !dimensions.minWidth
+      ? undefined
+      : dimensions.minWidth === 'auto'
+        ? 'auto'
+        : getCalculatedDimension(dimensions.minWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
 
-    const maxWidth = dimensions.maxWidth === 'auto'
-      ? 'auto'
-      : getCalculatedDimension(dimensions.maxWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
+    const maxWidth = !dimensions.maxWidth
+      ? undefined
+      : dimensions.maxWidth === 'auto'
+        ? 'auto'
+        : getCalculatedDimension(dimensions.maxWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
 
     return {
       boxSizing: 'border-box' as const,

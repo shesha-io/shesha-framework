@@ -214,7 +214,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...getStyle(fullComponentModel.style),
         stylingBoxAsCSS: stylingBoxWithPaddingOnlyParsed,
         // Component dimensions: components with preserveDimensionsInDesigner get original dims, others fill wrapper
-        dimensionsStyles: getComponentDimensions(fullComponentModel.dimensions),
+        // Use dimensionsStyles (includes min/max) instead of fullComponentModel.dimensions (only width/height)
+        dimensionsStyles: getComponentDimensions(dimensionsStyles),
         stylingBox: stylingBoxWithPaddingOnly,
       },
     };
