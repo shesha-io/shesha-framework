@@ -193,8 +193,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * filling 100% of its wrapper. Use this for components that manage their own sizing.
    */
   preserveDimensionsInDesigner?: boolean;
-
-  /**
+    /**
    * Optional function to customize how component dimensions are calculated in designer mode.
    * This allows components to define their own sizing behavior instead of relying on generic logic.
    *
@@ -202,11 +201,11 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * @param deviceDims - The default device dimensions (usually 100% width/height)
    * @returns The calculated dimensions for designer mode, or undefined to use default behavior
    */
-  getDesignerDimensions?: (
-    originalDims: IDimensionsValue | undefined,
-    deviceDims: IDimensionsValue | undefined,
-  ) => IDimensionsValue | undefined;
-} & ToolboxComponentAsTemplate;
+    getDesignerDimensions?: (
+      originalDims: IDimensionsValue | undefined,
+      deviceDims: IDimensionsValue | undefined,
+    ) => IDimensionsValue | undefined;
+  } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =
   Omit<IToolboxComponent<TModel, TCalculatedModel>, 'type'> & {

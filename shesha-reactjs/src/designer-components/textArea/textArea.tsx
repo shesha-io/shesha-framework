@@ -42,6 +42,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  preserveDimensionsInDesigner: true,
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
@@ -88,7 +89,6 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       style: {
         ...finalStyle,
         ...getOverflowStyle(true, false),
-        width: '100%',
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
           ? { marginBottom: model?.showCount ? '4px' : '0px' }
           : {}),

@@ -148,8 +148,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     if (preserveDimensionsInDesigner) {
       return { width: 'auto', height: 'auto' };
     }
+
     return dimensionUtils.getComponentDimensions(
-      preserveDimensionsInDesigner,
+      false,
       dimensionsStyles,
       jsStyle,
     );
@@ -220,10 +221,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   }, [fullComponentModel, component, preserveDimensionsInDesigner]);
 
   // Create wrapper style - owns dimensions and margins
+  // Pass combined autoHeight flag (from autoHeight property or textArea autoSize)
   const rootContainerStyle = useMemo(() => {
     return stylingUtils.createRootContainerStyle(componentDimensions, margins, validationHeight);
   }, [componentDimensions, margins, validationHeight]);
-
 
   return (
     <div

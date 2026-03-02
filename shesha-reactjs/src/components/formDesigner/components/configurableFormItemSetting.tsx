@@ -6,6 +6,7 @@ import { SettingsControl, useShaFormInstance } from '@/index';
 import { IConfigurableFormItemChildFunc, IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
 import { useStyles } from './styles';
+import classNames from 'classnames';
 
 export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   children,
@@ -26,7 +27,8 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
     required: model.validate?.required,
     tooltip: model.description || undefined,
     hidden: model.hidden,
-    className: styles.formItem,
+    className: classNames((styles.formItem, styles.formItem)),
+    style: { margin: '5px 3px' },
   };
 
   if (typeof children === 'function') {

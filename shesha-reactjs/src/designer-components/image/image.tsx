@@ -98,7 +98,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   const { width: w, height: h, ...stylesWithoutDimensions } = styles || {};
 
   return (
-    <div style={{ position: 'relative', float: 'left' }}>
+    <div style={{ position: 'relative', float: 'left', width: '100%', height: '100%' }}>
       {content && (
         <Image
           src={content}

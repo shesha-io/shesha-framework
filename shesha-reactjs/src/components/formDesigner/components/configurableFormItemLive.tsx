@@ -69,7 +69,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const component = getToolboxComponent(model.type);
   const preserveDimensionsInDesigner = component?.preserveDimensionsInDesigner ?? false;
 
-  const { top: MarginTop, bottom: MarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
+  const { top: defaultMarginTop, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 
   // In designer mode: NEVER apply margins to Form.Item (wrapper handles them)
   // In live mode: Apply margins from allStyles.margins or use defaults
@@ -79,8 +79,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : (model?.allStyles?.margins || {});
 
   const {
-    marginTop = MarginTop,
-    marginBottom = MarginBottom,
+    marginTop = defaultMarginTop,
+    marginBottom = defaultMarginBottom,
     marginRight,
     marginLeft,
   } = rawMargins;
@@ -137,7 +137,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         : getCalculatedDimension('100%', marginLeft, marginRight);
     } else {
       // In live mode: use wrapper width and account for margins
-      calculatedWidth = wrapperWidth;
+      calculatedWidth = model?.autoWidth ? 'auto' : wrapperWidth;
     }
 
     // Step 3: Calculate height based on context
@@ -154,7 +154,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         : baseHeight;
     } else {
       // In live mode: use wrapper height as-is
-      calculatedHeight = wrapperHeight;
+      calculatedHeight = model?.autoHeight ? 'auto' : wrapperHeight;
     }
 
     // Step 4: Assemble final style object based on mode

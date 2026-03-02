@@ -40,16 +40,7 @@ export const dimensionUtils = {
     dimensionsStyles: CSSProperties,
     jsStyle: CSSProperties,
   ): CSSProperties {
-    // When preserveDimensionsInDesigner is true, use original dimensions from the model
-    // Otherwise, use designer dimensions (fill wrapper)
-    const width = preserveDimensionsInDesigner
-      ? (dimensionsStyles?.width ?? 'auto')
-      : (jsStyle?.width ?? dimensionsStyles?.width ?? 'auto');
-
-    const height = preserveDimensionsInDesigner
-      ? (dimensionsStyles?.height ?? 'auto')
-      : (jsStyle?.height ?? dimensionsStyles?.height ?? 'auto');
-
+    // Helper to get dimension values consistently
     const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
       if (preserveDimensionsInDesigner) {
         // Return original dimension value when preserving dimensions
@@ -57,6 +48,11 @@ export const dimensionUtils = {
       }
       return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
     };
+
+    // Use getDimensionValue for width and height to maintain consistency with other dimensions
+    // Returns undefined when no value is provided (rather than defaulting to 'auto')
+    const width = getDimensionValue('width');
+    const height = getDimensionValue('height');
 
     const flexBasis = preserveDimensionsInDesigner
       ? undefined

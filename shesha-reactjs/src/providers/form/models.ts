@@ -74,6 +74,8 @@ export interface IStyleType {
   secondaryTextColor?: ColorValueType;
   overflow?: boolean | "dropdown" | "menu" | "scroll";
   hideScrollBar?: boolean;
+  autoWidth?: boolean;
+  autoHeight?: boolean;
 }
 
 export interface IInputStyles extends IStyleType {

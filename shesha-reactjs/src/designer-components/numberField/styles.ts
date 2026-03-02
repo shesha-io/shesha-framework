@@ -16,7 +16,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       .ant-input-number-input {
         --ant-color-text: ${color} !important;
         --ant-font-size: ${fontSize} !important;
-        font-size: ${addPx(fontSize)} !important;
+        font-size: ${addPx(fontSize) ?? 'inherit'} !important;
         font-weight: ${fontWeight} !important;
         font-family: ${fontFamily};
         text-align: ${textAlign};

@@ -192,8 +192,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     downloadedFileStyles: downloadedFileStyles,
     containerStyles: {
       ...(containerDimensionsStyles ?? {}),
-      width: layout === 'vertical' && listType === 'thumbnail' ? undefined : addPx(containerDimensionsStyles?.width),
-      height: layout === 'horizontal' && listType === 'thumbnail' ? undefined : addPx(containerDimensionsStyles?.height),
+      width: layout === 'vertical' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles?.width) ?? undefined),
+      height: layout === 'horizontal' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles?.height) ?? undefined),
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
@@ -201,7 +201,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
       : { ...(model?.allStyles?.fullStyle ?? {}) },
     model: {
-      gap: addPx(gap),
+      gap: addPx(gap) ?? '0px',
       layout: listType === 'thumbnail' && !isDragger,
       hideFileName: hideFileName && listType === 'thumbnail',
       isDragger,
