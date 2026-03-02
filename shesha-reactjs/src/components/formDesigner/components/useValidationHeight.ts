@@ -83,7 +83,9 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
     const containerElement = containerRef.current;
     if (!containerElement) {
       setValidationHeight(0);
-      return undefined;
+      return () => {
+        // No cleanup needed when container is not available
+      };
     }
 
     // Create ResizeObserver once and reuse
