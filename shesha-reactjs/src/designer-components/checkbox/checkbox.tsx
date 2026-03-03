@@ -45,6 +45,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
 
     const { styles } = useStyles({ style: finalStyle });
 
+    console.log("Checkbox :: ", model);
     return (
       <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
