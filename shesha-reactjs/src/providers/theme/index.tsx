@@ -146,4 +146,19 @@ function useTheme(): IThemeStateContext & IThemeActionsContext | undefined {
   return { ...useThemeState(), ...useThemeActions() };
 }
 
-export { ThemeProvider, useTheme, useThemeActions, useThemeState, type IConfigurableTheme };
+export {
+  type IConfigurableTheme,
+  type IApplicationTheme,
+  type ITextTheme,
+  type IMarginPaddingTheme,
+  type IBorderStyle,
+  type IRadiusConfig,
+  type IBorderTheme,
+  type IShadowTheme,
+  type ILayoutComponents,
+  type IInputComponents,
+  type IStandardComponents,
+  type IInlineComponents,
+} from './contexts';
+
+export { ThemeProvider, useTheme, useThemeActions, useThemeState };
