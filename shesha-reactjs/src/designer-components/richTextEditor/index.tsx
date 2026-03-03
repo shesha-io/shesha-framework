@@ -73,7 +73,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     const rerenderKey = `${model?.placeholder || ''}-${model?.placeholder || false}`;
 
     return (
-      <ConfigurableFormItem model={model} key={rerenderKey}>
+      <ConfigurableFormItem model={{ ...model, noLabelAutoMargin: true }} key={rerenderKey}>
         {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );

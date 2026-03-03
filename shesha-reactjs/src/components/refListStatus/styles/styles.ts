@@ -12,6 +12,9 @@ export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyl
 
       > span {
         ${dimensionsStyles};
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .${shaStatusTag} {
@@ -23,6 +26,9 @@ export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyl
         text-align: center;
         align-self: center;
         ${fontStyles}
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
 
         .sha-help-icon {

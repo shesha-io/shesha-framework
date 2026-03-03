@@ -189,11 +189,22 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   editorAdapter?: IEditorAdapter;
 
   /**
-   * If true, the component will preserve its original dimensions in designer mode instead of
-   * filling 100% of its wrapper. Use this for components that manage their own sizing.
+   * Controls dimension preservation in designer mode.
+   * - `true`: Preserve all original dimensions (width, height, min/max)
+   * - `false` or `undefined`: Fill 100% of wrapper (default behavior)
+   * - Array of dimension names: Preserve only specified dimensions (e.g., ['height'] preserves only height)
+   *
+   * Use this for components that need to preserve specific dimensions in designer mode,
+   * such as textArea which typically needs to preserve height while filling width.
+   *
+   * @example
+   * ```typescript
+   * preserveDimensionsInDesigner: true,        // Preserve all dimensions
+   * preserveDimensionsInDesigner: ['height'],  // Preserve only height
+   * preserveDimensionsInDesigner: ['width', 'height'], // Preserve width and height
+   * ```
    */
-  preserveDimensionsInDesigner?: boolean;
-
+  preserveDimensionsInDesigner?: boolean | Array<'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight'>;
   /**
    * Optional function to customize how component dimensions are calculated in designer mode.
    * This allows components to define their own sizing behavior instead of relying on generic logic.

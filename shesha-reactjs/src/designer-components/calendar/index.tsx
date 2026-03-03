@@ -14,6 +14,7 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   type: 'calendar',
   isInput: true,
   name: 'Calendar',
+  preserveDimensionsInDesigner: true,
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
     const { allStyles } = model;

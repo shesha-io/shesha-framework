@@ -15,6 +15,7 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
   const mutationObserverRef = useRef<MutationObserver | null>(null);
   const rafIdRef = useRef<number | null>(null);
   const lastHeightRef = useRef<number>(0);
+  const observedExplainElementRef = useRef<HTMLElement | null>(null);
 
   // Stable callback for measuring height - uses ref to avoid recreating observers
   const measureHeight = useCallback((): void => {
@@ -47,10 +48,11 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
       const explainElement = container.querySelector('.ant-form-item-explain') as HTMLElement | null;
 
       if (explainElement) {
-        // Ensure ResizeObserver is observing this element
-        if (resizeObserverRef.current) {
+        // Only disconnect and re-observe if the element has changed
+        if (resizeObserverRef.current && explainElement !== observedExplainElementRef.current) {
           resizeObserverRef.current.disconnect();
           resizeObserverRef.current.observe(explainElement);
+          observedExplainElementRef.current = explainElement;
         }
 
         const scaledHeight = explainElement.getBoundingClientRect().height;
@@ -61,6 +63,13 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
           setValidationHeight(height);
         }
       } else {
+        // Clear the observed element ref when no explain element exists
+        if (observedExplainElementRef.current !== null) {
+          observedExplainElementRef.current = null;
+          if (resizeObserverRef.current) {
+            resizeObserverRef.current.disconnect();
+          }
+        }
         if (lastHeightRef.current !== 0) {
           lastHeightRef.current = 0;
           setValidationHeight(0);
@@ -74,7 +83,9 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
     const containerElement = containerRef.current;
     if (!containerElement) {
       setValidationHeight(0);
-      return undefined;
+      return () => {
+        // No cleanup needed when container is not available
+      };
     }
 
     // Create ResizeObserver once and reuse
@@ -122,6 +133,7 @@ export const useValidationHeight = (zoomScale: number = 1): [React.RefObject<HTM
         cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
       }
+      observedExplainElementRef.current = null;
     };
   }, [zoomScale, measureHeight]);
 

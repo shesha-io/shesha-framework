@@ -30,6 +30,7 @@ import { dimensionUtils } from '../utils/dimensionUtils';
 import { stylingUtils } from '../utils/stylingUtils';
 import { designerConstants } from '../utils/designerConstants';
 import { useValidationHeight } from '../components/useValidationHeight';
+import { jsonSafeParse } from '@/utils/object';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IComponentModelProps;
@@ -57,38 +58,49 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Extract primitive values for stable dependencies - avoid object recreation triggering re-renders
   const preserveDimensionsInDesigner = useMemo(() => component?.preserveDimensionsInDesigner, [component]);
 
-  // Create model combining componentModel with device-specific settings
-  // This is the base model used for both style calculations and rendering
+  /**
+   * Merges component model with device-specific settings.
+   * Handles the complexity of components with separate container configurations
+   * (e.g., attachmentsEditor with thumbnail dimensions at root and container dimensions in container property).
+   */
   const fullComponentModel = useMemo(() => {
-    // Check if this is a component with separate thumbnail and container dimensions
-    // (e.g., attachmentsEditor has thumbnail dimensions at root and container dimensions in container)
     const deviceModel = componentModel?.[activeDevice];
-    const hasRootDimensions = !!deviceModel?.dimensions || !!componentModel?.dimensions;
-    const hasContainerDimensions = !!deviceModel?.container?.dimensions || !!componentModel?.container?.dimensions;
+
+    // Determine if component has separate container-level styling
+    // This is true when both root-level and container-level dimensions exist
+    const hasRootDimensions = !!(deviceModel?.dimensions || componentModel?.dimensions);
+    const hasContainerDimensions = !!(deviceModel?.container?.dimensions || componentModel?.container?.dimensions);
     const hasSeparateContainerStyles = hasRootDimensions && hasContainerDimensions;
+
+    // For backward compatibility: spread container props to root UNLESS component has explicit separate styles
+    const containerPropsToSpread = hasSeparateContainerStyles
+      ? {}
+      : { ...componentModel?.container, ...deviceModel?.container };
+
+    // Always merge container objects to preserve container-level configuration
+    const mergedContainer = {
+      ...componentModel?.container,
+      ...deviceModel?.container,
+    };
 
     return {
       ...componentModel,
       ...deviceModel,
-      // For components with separate container styles (like attachmentsEditor), don't spread container to root
-      // For other components, spread container properties to root for backward compatibility
-      ...(hasSeparateContainerStyles ? {} : { ...componentModel?.container, ...deviceModel?.container }),
-      // Always preserve the container object for components that need it
-      container: {
-        ...componentModel?.container,
-        ...deviceModel?.container,
-      },
+      ...containerPropsToSpread,
+      container: mergedContainer,
     };
   }, [componentModel, activeDevice]);
 
-  // For wrapper styles: use container dimensions if available, otherwise use root level dimensions
-  // Memoize to prevent unnecessary re-renders when fullComponentModel reference is stable
-  const styleModelForWrapper = useMemo(() =>
-    fullComponentModel.container?.dimensions
+  /**
+   * Determines which model to use for calculating wrapper styles.
+   * When container has its own dimensions, those take precedence for wrapper sizing.
+   */
+  const styleModelForWrapper = useMemo(() => {
+    const hasContainerDimensions = !!fullComponentModel.container?.dimensions;
+    return hasContainerDimensions
       ? { ...fullComponentModel, ...fullComponentModel.container }
-      : fullComponentModel,
-  [fullComponentModel],
-  );
+      : fullComponentModel;
+  }, [fullComponentModel]);
   const { dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(styleModelForWrapper);
 
   // Extract margins from ORIGINAL component styling (before stripping) for the wrapper
@@ -145,9 +157,13 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Memoized because getComponentDimensions creates new objects and computes flexBasis logic
   const componentDimensions = useMemo(() => {
     // For components where dimensions apply to inner elements, wrapper uses auto dimensions
-    if (preserveDimensionsInDesigner) {
+    // Check if all dimensions are being preserved (true) vs partial preservation
+    const preservingAllDimensions = preserveDimensionsInDesigner === true;
+    if (preservingAllDimensions) {
       return { width: 'auto', height: 'auto' };
     }
+
+    // Use dimensionUtils which handles partial preservation (array case)
     return dimensionUtils.getComponentDimensions(
       preserveDimensionsInDesigner,
       dimensionsStyles,
@@ -162,17 +178,17 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const deviceDimensions = dimensionUtils.getDeviceDimensions();
     // In designer mode, component only gets padding (margins go to wrapper)
     const stylingBoxWithPaddingOnly = stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
-    let stylingBoxWithPaddingOnlyParsed = {};
-    try {
-      stylingBoxWithPaddingOnlyParsed = stylingBoxWithPaddingOnly ? JSON.parse(stylingBoxWithPaddingOnly) : {};
-    } catch {
-      console.warn('Failed to parse stylingBox:', stylingBoxWithPaddingOnly);
-    }
+    const stylingBoxWithPaddingOnlyParsed = jsonSafeParse<Record<string, unknown>>(stylingBoxWithPaddingOnly, {});
+
+    // Determine preservation mode
+    const preservingAll = preserveDimensionsInDesigner === true;
+    const preservingSome = Array.isArray(preserveDimensionsInDesigner) && preserveDimensionsInDesigner.length > 0;
 
     // Helper to get designer dimensions based on original config
     // If preserveDimensionsInDesigner is true, use original dimensions; otherwise fill wrapper
     const getDesignerDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions | undefined => {
-      if (preserveDimensionsInDesigner) return originalDims;
+      // If all dimensions are preserved, return original
+      if (preservingAll) return originalDims;
 
       // If component has container dimensions, preserve original thumbnail dimensions
       // The wrapper will use container dimensions instead
@@ -190,11 +206,21 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     // Helper to get component dimensions (what the inner component receives)
     // Components always fill 100% of their wrapper in designer mode (wrapper handles sizing)
     const getComponentDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions => {
-      if (preserveDimensionsInDesigner) return { ...deviceDimensions, ...originalDims };
+      // If all dimensions are preserved, merge with device dimensions
+      if (preservingAll) return { ...deviceDimensions, ...originalDims };
 
       // If component has container dimensions, preserve original thumbnail dimensions for the component
       // The wrapper will use container dimensions instead
       if (fullComponentModel.container?.dimensions) return originalDims ?? deviceDimensions;
+
+      // For partial preservation, use the dimensionUtils to handle the logic
+      if (preservingSome) {
+        return dimensionUtils.getComponentDimensionsForMode(
+          preserveDimensionsInDesigner,
+          originalDims || {},
+          true, // isDesignerMode
+        ) as typeof deviceDimensions;
+      }
 
       // All components fill the wrapper in designer mode
       return deviceDimensions;
@@ -213,17 +239,18 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...getStyle(fullComponentModel.style),
         stylingBoxAsCSS: stylingBoxWithPaddingOnlyParsed,
         // Component dimensions: components with preserveDimensionsInDesigner get original dims, others fill wrapper
-        dimensionsStyles: getComponentDimensions(fullComponentModel.dimensions),
+        // Use dimensionsStyles (includes min/max) instead of fullComponentModel.dimensions (only width/height)
+        dimensionsStyles: getComponentDimensions(dimensionsStyles),
         stylingBox: stylingBoxWithPaddingOnly,
       },
     };
   }, [fullComponentModel, component, preserveDimensionsInDesigner]);
 
   // Create wrapper style - owns dimensions and margins
+  // Pass combined autoHeight flag (from autoHeight property or textArea autoSize)
   const rootContainerStyle = useMemo(() => {
     return stylingUtils.createRootContainerStyle(componentDimensions, margins, validationHeight);
   }, [componentDimensions, margins, validationHeight]);
-
 
   return (
     <div

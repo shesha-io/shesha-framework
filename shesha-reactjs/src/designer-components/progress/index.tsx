@@ -61,7 +61,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
 
     if (hidden) return null;
 
-    const finalStyle = { ...allStyles?.fullStyle };
+    const finalStyle = { ...allStyles?.fullStyle, width: '100%', display: 'flex', alignItems: 'center' };
 
 
     const getEvaluatedSuccessColor = (): SuccessProps => {

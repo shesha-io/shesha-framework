@@ -113,7 +113,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       style={{
         ...containerStyle,
         height: 'max-content',
-        width: addPx(lineWidth),
+        width: addPx(lineWidth) ?? '100%',
         marginRight: 1,
       }}
       key={id}

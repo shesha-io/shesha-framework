@@ -42,6 +42,12 @@ const TextAreaComponent: TextAreaComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  /**
+   * Preserve only height in designer mode.
+   * TextArea typically has a specific height (rows) that should be maintained,
+   * while width should fill the container for WYSIWYG behavior.
+   */
+  preserveDimensionsInDesigner: ['height'],
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
@@ -88,7 +94,6 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       style: {
         ...finalStyle,
         ...getOverflowStyle(true, false),
-        width: '100%',
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
           ? { marginBottom: model?.showCount ? '4px' : '0px' }
           : {}),
@@ -116,6 +121,9 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                 color: maxLength && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
                 marginTop: '0px',
                 marginBottom: '0px',
+                width: model.allStyles.dimensionsStyles?.width,
+                minWidth: model.allStyles.dimensionsStyles?.minWidth,
+                maxWidth: model.allStyles.dimensionsStyles?.maxWidth,
               }}
               >
                 {currentLength}

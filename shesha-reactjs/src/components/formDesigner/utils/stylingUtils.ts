@@ -18,12 +18,13 @@ interface DefaultMargins {
 
 // Cached constants to avoid repeated object/string creation
 const EMPTY_STYLING_BOX = '{}';
-const ZERO_MARGINS: MarginValues = {
+const ZERO_MARGINS: Readonly<MarginValues> = Object.freeze({
   marginTop: 0,
   marginBottom: 0,
   marginLeft: 0,
   marginRight: 0,
-};
+});
+
 const DEFAULT_MARGIN_VALUES = {
   top: DEFAULT_MARGINS.vertical,
   bottom: DEFAULT_MARGINS.vertical,
@@ -38,7 +39,7 @@ const getExpandedDimensions = (value: string | number, marginTop: string | numbe
     return undefined;
   }
 
-  return `calc(${value} + (${marginTop} + ${marginBottom}))`;
+  return `calc(${addPx(value)} + (${addPx(marginTop)} + ${addPx(marginBottom)}))`;
 };
 
 /**
@@ -84,6 +85,8 @@ export const stylingUtils = {
     dimensions: CSSProperties,
     margins: MarginValues,
     validationHeight?: number,
+    hasAutoHeight?: boolean,
+    hasAutoWidth?: boolean,
   ): CSSProperties {
     // Use margin values directly (preserves relative values like 50%)
     const marginTop = addPx(margins?.marginTop ?? 0);
@@ -93,27 +96,49 @@ export const stylingUtils = {
 
     // When width is 100% and there are margins, use getCalculatedDimension to prevent overflow
     // Use getCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
-    const width = dimensions.width ? getCalculatedDimension(dimensions.width, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right)
-      : '100%';
+    // Handle explicit 'auto' values in dimensions
+    const width = hasAutoWidth || dimensions.width === 'auto'
+      ? 'auto'
+      : dimensions.width
+        ? getCalculatedDimension(dimensions.width, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right)
+        : '100%';
+
     // Height is expanded to include padding to allow gap for component selecting e.g in button
-    const expandedHeight = dimensions.height
+    const expandedHeight = dimensions.height && dimensions.height !== 'auto'
       ? getExpandedDimensions(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
-    const height = expandedHeight
-      ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
-      : validationHeight ? addPx(validationHeight) : undefined;
+    const height = hasAutoHeight || dimensions.height === 'auto'
+      ? 'auto'
+      : expandedHeight
+        ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
+        : validationHeight ? addPx(validationHeight) : undefined;
 
-    const minHeight = dimensions.minHeight
-      ? getExpandedDimensions(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
-      : undefined;
+    // For min/max dimensions, subtract the default wrapper margins like we do for width/height
+    // This ensures constrained dimensions account for the wrapper's default margins (5px 3px)
+    // The wrapper always has these default margins applied, so min/max must subtract them
+    const minHeight = !dimensions.minHeight
+      ? undefined
+      : dimensions.minHeight === 'auto'
+        ? 'auto'
+        : getCalculatedDimension(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom);
 
-    const maxHeight = dimensions.maxHeight
-      ? getExpandedDimensions(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
-      : undefined;
+    const maxHeight = !dimensions.maxHeight
+      ? undefined
+      : dimensions.maxHeight === 'auto'
+        ? 'auto'
+        : getCalculatedDimension(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom);
 
-    const minWidth = getCalculatedDimension(dimensions.minWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
+    const minWidth = !dimensions.minWidth
+      ? undefined
+      : dimensions.minWidth === 'auto'
+        ? 'auto'
+        : getCalculatedDimension(dimensions.minWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
 
-    const maxWidth = getCalculatedDimension(dimensions.maxWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
+    const maxWidth = !dimensions.maxWidth
+      ? undefined
+      : dimensions.maxWidth === 'auto'
+        ? 'auto'
+        : getCalculatedDimension(dimensions.maxWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
 
     return {
       boxSizing: 'border-box' as const,
@@ -171,7 +196,8 @@ export const stylingUtils = {
     defaultMargins = DEFAULT_MARGIN_VALUES,
   ): MarginValues {
     if (isInDesigner) {
-      return ZERO_MARGINS;
+      // Return a fresh copy to prevent accidental mutation
+      return { ...ZERO_MARGINS };
     }
 
     return {

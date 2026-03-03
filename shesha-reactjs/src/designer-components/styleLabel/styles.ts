@@ -6,9 +6,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         display: flex;
         flex-direction: row;
         gap: 8px;
-        position: absolute;
+        position: relative;
         justify-content: flex-end;
-        top: 0px;
+        top: 38px;
         right: 30px;
     `);
 

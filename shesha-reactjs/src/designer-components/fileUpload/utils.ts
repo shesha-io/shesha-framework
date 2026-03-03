@@ -2,6 +2,12 @@ import { IStyleType } from '@/index';
 
 export const defaultStyles = (): IStyleType => {
   return {
+    font: {
+      type: 'Segoe UI',
+      align: 'left',
+      size: 14,
+      weight: '400',
+    },
     border: {
       hideBorder: false,
       radiusType: 'all',

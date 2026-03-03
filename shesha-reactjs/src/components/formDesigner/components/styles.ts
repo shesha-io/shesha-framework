@@ -1,15 +1,27 @@
 import { createStyles } from '@/styles';
 import { FormLayout } from 'antd/es/form/Form';
+import { IToolboxComponent } from '@/interfaces';
 
 export interface UseStylesProps {
   layout: FormLayout;
   hasLabel: boolean;
   noLabelAutoMargin?: boolean;
-  preserveDimensionsInDesigner?: boolean;
+  preserveDimensionsInDesigner?: IToolboxComponent['preserveDimensionsInDesigner'];
 }
+
+/**
+ * Checks if height should be preserved based on preserveDimensionsInDesigner.
+ * Returns true if all dimensions are preserved (true) or height is in the array.
+ */
+const shouldPreserveHeight = (preserve: IToolboxComponent['preserveDimensionsInDesigner']): boolean => {
+  if (preserve === true) return true;
+  if (Array.isArray(preserve)) return preserve.includes('height');
+  return false;
+};
 
 export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelAutoMargin, preserveDimensionsInDesigner }: UseStylesProps) => {
   const LABEL_HEIGHT = '32px';
+  const preserveHeight = shouldPreserveHeight(preserveDimensionsInDesigner);
 
   const formItem = cx(css`
         --ant-form-item-margin-bottom: 0px !important;
@@ -37,11 +49,12 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelA
                 height: 100%;
 
                 .ant-form-item-control-input-content {
-                    ${preserveDimensionsInDesigner ? 'height: auto' : 'height: 100%'};
+                    ${preserveHeight ? 'height: auto' : 'height: 100%'};
                     width: 100%;
-                    > div:not(.sha-style-box) {
-                     height: 100%;
-                     width: 100%;
+                    > div {
+                     &:empty {
+                       display: none;
+                     }
                     }
                 }
             }

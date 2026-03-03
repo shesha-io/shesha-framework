@@ -24,7 +24,7 @@ export const parseDimension = (value: string | number | null | undefined): Dimen
 
   // Match number with optional unit
   const match = /^(-?\d+(?:\.\d+)?)(px|%|vw|vh|em|rem)?$/.exec(value.trim());
-  if (match) {
+  if (match && match[1] !== undefined) {
     return {
       value: parseFloat(match[1]),
       unit: (match[2] || 'px') as DimensionValue['unit'],

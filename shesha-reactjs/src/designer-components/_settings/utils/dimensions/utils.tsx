@@ -12,6 +12,7 @@ const getWidthDimension = (main: string | number, canvasWidth?: string): string 
   }
 
   // For simple numeric values or values without vw, use addPx
+  if (typeof main === 'string' && /^calc\(/i.test(main.trim())) return main;
   return !hasNumber(main) ? main : addPx(main);
 };
 
@@ -22,6 +23,7 @@ const getHeightDimension = (main: string | number, canvasHeight?: string): strin
   }
 
   // For simple numeric values or values without vh, use addPx
+  if (typeof main === 'string' && /^calc\(/i.test(main.trim())) return main;
   return !hasNumber(main) ? main : addPx(main);
 };
 
@@ -35,8 +37,25 @@ const isCalcExpression = (value: string | number | undefined): boolean => {
   return value.trim().toLowerCase().startsWith('calc(');
 };
 
-export const getCalculatedDimension = (main: string | number, firstMargin?: string | number, secondMargin?: string | number): string => {
-  const mainValue = main ?? 'auto';
+/**
+ * Internal helper that computes dimension calculation with margins.
+ * Shared logic for getCalculatedDimension and getDesignerCalculatedDimension.
+ *
+ * @param main - The main dimension value
+ * @param firstMargin - First margin value
+ * @param secondMargin - Second margin value
+ * @param defaultMain - Default value to use when main is null/undefined
+ * @param fallbackForAddPx - Fallback value when addPx returns undefined
+ * @returns A calc() string that subtracts margins from the main dimension
+ */
+const computeDimension = (
+  main: string | number,
+  firstMargin: string | number | undefined,
+  secondMargin: string | number | undefined,
+  defaultMain: string,
+  fallbackForAddPx: string,
+): string => {
+  const mainValue = main ?? defaultMain;
   const margin1 = addPx(firstMargin ?? 0);
   const margin2 = addPx(secondMargin ?? 0);
 
@@ -52,7 +71,11 @@ export const getCalculatedDimension = (main: string | number, firstMargin?: stri
   }
 
   // For regular numeric values, use the standard calc format
-  return `calc(${addPx(mainValue)} - ${margin1} - ${margin2})`;
+  return `calc(${addPx(mainValue) ?? fallbackForAddPx} - ${margin1} - ${margin2})`;
+};
+
+export const getCalculatedDimension = (main: string | number, firstMargin?: string | number, secondMargin?: string | number): string => {
+  return computeDimension(main, firstMargin, secondMargin, 'auto', '0px');
 };
 
 /**
@@ -83,23 +106,7 @@ export const getDesignerCalculatedDimension = (
   firstMargin?: string | number,
   secondMargin?: string | number,
 ): string => {
-  const mainValue = main ?? '100%';
-  const margin1 = addPx(firstMargin ?? 0);
-  const margin2 = addPx(secondMargin ?? 0);
-
-  // For calc() expressions (converted vw/vh), nest the calc to preserve the original calculation
-  if (isCalcExpression(mainValue)) {
-    return `calc(${mainValue} - ${margin1} - ${margin2})`;
-  }
-
-  // For non-numeric values (auto, max-content, min-content, etc.), return as-is
-  // These CSS keywords can't be used in calc() expressions
-  if (!hasNumber(mainValue)) {
-    return typeof mainValue === 'string' ? mainValue : String(mainValue);
-  }
-
-  // For regular numeric values, use the standard calc format
-  return `calc(${addPx(mainValue)} - ${margin1} - ${margin2})`;
+  return computeDimension(main, firstMargin, secondMargin, '100%', '100%');
 };
 
 export const getDimensionsStyle = (

@@ -12,6 +12,7 @@ import { designerConstants } from '../utils/designerConstants';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useValidationHeight } from './useValidationHeight';
 import { addPx } from '@/utils/style';
+import { dimensionUtils } from '../utils/dimensionUtils';
 
 // Extract primitive padding values to prevent object reference changes from triggering re-computation
 interface PaddingValues {
@@ -69,7 +70,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const component = getToolboxComponent(model.type);
   const preserveDimensionsInDesigner = component?.preserveDimensionsInDesigner ?? false;
 
-  const { top: MarginTop, bottom: MarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
+  const { top: defaultMarginTop, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 
   // In designer mode: NEVER apply margins to Form.Item (wrapper handles them)
   // In live mode: Apply margins from allStyles.margins or use defaults
@@ -79,8 +80,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : (model?.allStyles?.margins || {});
 
   const {
-    marginTop = MarginTop,
-    marginBottom = MarginBottom,
+    marginTop = defaultMarginTop,
+    marginBottom = defaultMarginBottom,
     marginRight,
     marginLeft,
   } = rawMargins;
@@ -123,12 +124,16 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     const wrapperMaxWidth = hasContainerDimensions ? containerMaxWidth : maxWidth;
     const wrapperMaxHeight = hasContainerDimensions ? containerMaxHeight : maxHeight;
 
+    // Check which dimensions should be preserved
+    const preserveWidth = dimensionUtils.shouldPreserveDimension('width', preserveDimensionsInDesigner);
+    const preserveHeight = dimensionUtils.shouldPreserveDimension('height', preserveDimensionsInDesigner);
+
     // Step 2: Calculate width based on context
     let calculatedWidth: string | number | undefined;
 
-    if (preserveDimensionsInDesigner) {
-      // Component manages its own dimensions
-      calculatedWidth = 'auto';
+    if (preserveWidth) {
+      // Width is preserved - component manages its own width
+      calculatedWidth = wrapperWidth ?? 'auto';
     } else if (isInDesigner) {
       // In designer: auto width fills container, otherwise calculate with margins
       const isAutoWidth = wrapperWidth === 'auto';
@@ -137,15 +142,15 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         : getCalculatedDimension('100%', marginLeft, marginRight);
     } else {
       // In live mode: use wrapper width and account for margins
-      calculatedWidth = wrapperWidth;
+      calculatedWidth = model?.autoWidth ? 'auto' : wrapperWidth;
     }
 
     // Step 3: Calculate height based on context
     let calculatedHeight: string | number | undefined;
 
-    if (preserveDimensionsInDesigner) {
-      // Component manages its own dimensions
-      calculatedHeight = 'auto';
+    if (preserveHeight) {
+      // Height is preserved - component manages its own height
+      calculatedHeight = wrapperHeight ?? 'auto';
     } else if (isInDesigner) {
       // In designer: height fills container, adjusted for validation message space
       const baseHeight = '100%';
@@ -154,7 +159,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         : baseHeight;
     } else {
       // In live mode: use wrapper height as-is
-      calculatedHeight = wrapperHeight;
+      calculatedHeight = model?.autoHeight ? 'auto' : wrapperHeight;
     }
 
     // Step 4: Assemble final style object based on mode

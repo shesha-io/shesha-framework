@@ -17,6 +17,7 @@
  * ```
  */
 
+import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 
 /**
@@ -124,7 +125,7 @@ export const designerConstants = {
   ): string | number | undefined {
     if (!height) return undefined;
     // Add 8px to account for border width in designer (4px top + 4px bottom)
-    return `calc(${height} + ${paddingTop} + ${paddingBottom} + 8px)`;
+    return `calc(${addPx(height)} + ${paddingTop} + ${paddingBottom} + 8px)`;
   },
 
   /**
@@ -148,7 +149,7 @@ export const designerConstants = {
     padding2: string,
   ): string | number | undefined {
     if (!value) return undefined;
-    return `calc(${value} + ${padding1} + ${padding2})`;
+    return `calc(${addPx(value)} + ${padding1} + ${padding2})`;
   },
 
   /**

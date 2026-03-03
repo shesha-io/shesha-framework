@@ -16,7 +16,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         id: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
         components: [...fbf()
           .addContextPropertyAutocomplete({
-            id: nanoid(),
+            id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
             propertyName: 'propertyName',
             label: 'Property Name',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
