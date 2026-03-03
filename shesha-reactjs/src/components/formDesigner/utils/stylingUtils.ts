@@ -101,7 +101,7 @@ export const stylingUtils = {
       ? 'auto'
       : dimensions.width
         ? getCalculatedDimension(dimensions.width, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right)
-        : '100%';
+        : 'auto';
 
     // Height is expanded to include padding to allow gap for component selecting e.g in button
     const expandedHeight = dimensions.height && dimensions.height !== 'auto'
