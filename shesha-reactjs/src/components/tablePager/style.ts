@@ -61,6 +61,7 @@ export const useStyles = createStyles(({ css, cx }, { style }) => {
         flex-wrap: nowrap;
         justify-content: center;
         height: 100%;
+        align-self: center;
     `);
 
   return {
