@@ -13,6 +13,7 @@ export interface IApplicationTheme {
   warningColor?: string;
   successColor?: string;
   infoColor?: string;
+  processingColor?: string;
 }
 
 export interface IMarginPaddingTheme {
