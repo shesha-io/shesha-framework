@@ -157,12 +157,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Memoized because getComponentDimensions creates new objects and computes flexBasis logic
   const componentDimensions = useMemo(() => {
     // For components where dimensions apply to inner elements, wrapper uses auto dimensions
-    if (preserveDimensionsInDesigner) {
+    // Check if all dimensions are being preserved (true) vs partial preservation
+    const preservingAllDimensions = preserveDimensionsInDesigner === true;
+    if (preservingAllDimensions) {
       return { width: 'auto', height: 'auto' };
     }
 
+    // Use dimensionUtils which handles partial preservation (array case)
     return dimensionUtils.getComponentDimensions(
-      false,
+      preserveDimensionsInDesigner,
       dimensionsStyles,
       jsStyle,
     );
@@ -177,10 +180,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     const stylingBoxWithPaddingOnly = stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
     const stylingBoxWithPaddingOnlyParsed = jsonSafeParse<Record<string, unknown>>(stylingBoxWithPaddingOnly, {});
 
+    // Determine preservation mode
+    const preservingAll = preserveDimensionsInDesigner === true;
+    const preservingSome = Array.isArray(preserveDimensionsInDesigner) && preserveDimensionsInDesigner.length > 0;
+
     // Helper to get designer dimensions based on original config
     // If preserveDimensionsInDesigner is true, use original dimensions; otherwise fill wrapper
     const getDesignerDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions | undefined => {
-      if (preserveDimensionsInDesigner) return originalDims;
+      // If all dimensions are preserved, return original
+      if (preservingAll) return originalDims;
 
       // If component has container dimensions, preserve original thumbnail dimensions
       // The wrapper will use container dimensions instead
@@ -198,11 +206,21 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     // Helper to get component dimensions (what the inner component receives)
     // Components always fill 100% of their wrapper in designer mode (wrapper handles sizing)
     const getComponentDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions => {
-      if (preserveDimensionsInDesigner) return { ...deviceDimensions, ...originalDims };
+      // If all dimensions are preserved, merge with device dimensions
+      if (preservingAll) return { ...deviceDimensions, ...originalDims };
 
       // If component has container dimensions, preserve original thumbnail dimensions for the component
       // The wrapper will use container dimensions instead
       if (fullComponentModel.container?.dimensions) return originalDims ?? deviceDimensions;
+
+      // For partial preservation, use the dimensionUtils to handle the logic
+      if (preservingSome) {
+        return dimensionUtils.getComponentDimensionsForMode(
+          preserveDimensionsInDesigner,
+          originalDims || {},
+          true, // isDesignerMode
+        ) as typeof deviceDimensions;
+      }
 
       // All components fill the wrapper in designer mode
       return deviceDimensions;

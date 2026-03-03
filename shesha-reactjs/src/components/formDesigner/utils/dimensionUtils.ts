@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { IStyleType } from '@/index';
+import { IStyleType, IToolboxComponent } from '@/index';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 
 export interface DimensionConfig {
@@ -11,6 +11,39 @@ export interface DimensionConfig {
   minHeight?: string | number;
   flexBasis?: string | number;
 }
+
+/**
+ * Dimension keys that can be selectively preserved in designer mode.
+ * Matches the array values allowed in preserveDimensionsInDesigner.
+ */
+export type PreservableDimension = 'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight';
+
+/**
+ * Normalized form of preserveDimensionsInDesigner for easier consumption.
+ * Always returns a Set of dimension names that should be preserved.
+ */
+const normalizePreserveDimensions = (
+  preserve: IToolboxComponent['preserveDimensionsInDesigner'],
+): Set<PreservableDimension> => {
+  if (preserve === true) {
+    return new Set(['width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight']);
+  }
+  if (Array.isArray(preserve)) {
+    return new Set(preserve);
+  }
+  return new Set(); // false or undefined - don't preserve any
+};
+
+/**
+ * Checks if a specific dimension should be preserved based on the preserveDimensionsInDesigner setting.
+ */
+const shouldPreserveDimension = (
+  dimension: PreservableDimension,
+  preserve: IToolboxComponent['preserveDimensionsInDesigner'],
+): boolean => {
+  const preservedSet = normalizePreserveDimensions(preserve);
+  return preservedSet.has(dimension);
+};
 
 
 /**
@@ -30,37 +63,56 @@ export interface DimensionConfig {
  */
 export const dimensionUtils = {
   /**
+   * Normalizes preserveDimensionsInDesigner to a Set of preserved dimensions.
+   * @param preserve - The preserve setting (boolean, array, or undefined)
+   * @returns Set of dimension names that should be preserved
+   */
+  normalizePreserveDimensions,
+
+  /**
+   * Checks if a specific dimension should be preserved.
+   * @param dimension - The dimension to check
+   * @param preserve - The preserve setting
+   * @returns true if the dimension should be preserved
+   */
+  shouldPreserveDimension,
+
+  /**
    * Gets component dimensions based on component type.
    *
    * For components that preserve their dimensions, returns original dimensions from the model.
    * For other components, returns the calculated dimensions from styles.
+   * Supports partial dimension preservation via preserveDimensionsInDesigner array.
    */
   getComponentDimensions(
-    preserveDimensionsInDesigner: boolean,
+    preserveDimensionsInDesigner: IToolboxComponent['preserveDimensionsInDesigner'],
     dimensionsStyles: CSSProperties,
     jsStyle: CSSProperties,
   ): CSSProperties {
-    // Helper to get dimension values consistently
-    const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
-      if (preserveDimensionsInDesigner) {
-        // Return original dimension value when preserving dimensions
+    // Helper to get dimension value with partial preservation support
+    const getDimensionValue = (dimensionType: PreservableDimension): string | number | undefined => {
+      if (shouldPreserveDimension(dimensionType, preserveDimensionsInDesigner)) {
+        // Return original dimension value when preserving this specific dimension
         return dimensionsStyles?.[dimensionType];
       }
+      // Not preserved - use jsStyle or fall back to dimensionsStyles
       return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
     };
 
-    // Use getDimensionValue for width and height to maintain consistency with other dimensions
-    // Returns undefined when no value is provided (rather than defaulting to 'auto')
-    const width = getDimensionValue('width');
-    const height = getDimensionValue('height');
+    // Check if any dimensions are being preserved
+    const hasPreservedDimensions = preserveDimensionsInDesigner === true ||
+      (Array.isArray(preserveDimensionsInDesigner) && preserveDimensionsInDesigner.length > 0);
 
-    const flexBasis = preserveDimensionsInDesigner
+    // Calculate flexBasis only when NOT preserving width/maxWidth
+    const preserveWidth = shouldPreserveDimension('width', preserveDimensionsInDesigner);
+    const preserveMaxWidth = shouldPreserveDimension('maxWidth', preserveDimensionsInDesigner);
+    const flexBasis = hasPreservedDimensions && (preserveWidth || preserveMaxWidth)
       ? undefined
       : (jsStyle?.maxWidth ?? dimensionsStyles?.maxWidth ?? dimensionsStyles?.width);
 
     return {
-      width,
-      height,
+      width: getDimensionValue('width'),
+      height: getDimensionValue('height'),
       maxWidth: getDimensionValue('maxWidth'),
       minWidth: getDimensionValue('minWidth'),
       maxHeight: getDimensionValue('maxHeight'),
@@ -89,13 +141,14 @@ export const dimensionUtils = {
    * Gets component dimensions based on current form mode.
    *
    * In designer mode:
-   * - If component preserves dimensions: returns original dimensions
+   * - If component preserves all dimensions (true): returns original dimensions
+   * - If component preserves some dimensions (array): returns merged dimensions
    * - Otherwise: returns 100% width/height to fill wrapper
    *
    * In live/edit mode: returns original dimensions
    */
   getComponentDimensionsForMode(
-    preserveDimensionsInDesigner: boolean,
+    preserveDimensionsInDesigner: IToolboxComponent['preserveDimensionsInDesigner'],
     dimensionsStyles: CSSProperties,
     isDesignerMode: boolean,
   ): CSSProperties {
@@ -104,13 +157,28 @@ export const dimensionUtils = {
       return dimensionsStyles;
     }
 
-    // In designer mode, components preserving dimensions keep original dimensions
-    if (preserveDimensionsInDesigner) {
+    // In designer mode, check what dimensions to preserve
+    const preservedSet = normalizePreserveDimensions(preserveDimensionsInDesigner);
+
+    // No dimensions preserved - fill wrapper completely
+    if (preservedSet.size === 0) {
+      return DESIGNER_DIMENSIONS;
+    }
+
+    // All dimensions preserved - return original
+    if (preservedSet.size === 6) { // All 6 dimension properties
       return dimensionsStyles;
     }
 
-    // Standard components fill wrapper in designer mode
-    return DESIGNER_DIMENSIONS;
+    // Partial preservation - merge preserved dimensions with 100% defaults
+    return {
+      width: preservedSet.has('width') ? dimensionsStyles?.width : DESIGNER_DIMENSIONS.width,
+      height: preservedSet.has('height') ? dimensionsStyles?.height : DESIGNER_DIMENSIONS.height,
+      minWidth: preservedSet.has('minWidth') ? dimensionsStyles?.minWidth : undefined,
+      maxWidth: preservedSet.has('maxWidth') ? dimensionsStyles?.maxWidth : undefined,
+      minHeight: preservedSet.has('minHeight') ? dimensionsStyles?.minHeight : undefined,
+      maxHeight: preservedSet.has('maxHeight') ? dimensionsStyles?.maxHeight : undefined,
+    };
   },
 
   /**
@@ -118,14 +186,16 @@ export const dimensionUtils = {
    *
    * In designer mode:
    * - Margins are always stripped (applied to wrapper only)
-   * - If preserveDimensions is false, applies 100% width/height to fill wrapper
+   * - If preserveDimensions is false/undefined, applies 100% width/height to fill wrapper
+   * - If preserveDimensions is true, preserves all dimensions
+   * - If preserveDimensions is an array, preserves only specified dimensions
    *
    * In live mode, returns base styles unchanged.
    */
   mergeWithDesignerDimensions(
     baseStyle: CSSProperties,
     isDesignerMode: boolean,
-    preserveDimensions: boolean = false,
+    preserveDimensions: IToolboxComponent['preserveDimensionsInDesigner'] = false,
   ): CSSProperties {
     if (!isDesignerMode) {
       return baseStyle;
@@ -141,15 +211,30 @@ export const dimensionUtils = {
       marginRight: 0,
     };
 
-    if (preserveDimensions) {
-      // Preserve original dimensions, but margins still go to wrapper
+    const preservedSet = normalizePreserveDimensions(preserveDimensions);
+
+    // No dimensions preserved - fill wrapper completely
+    if (preservedSet.size === 0) {
+      return {
+        ...marginsStripped,
+        ...DESIGNER_DIMENSIONS,
+      };
+    }
+
+    // All dimensions preserved - return margins stripped only
+    if (preservedSet.size === 6) {
       return marginsStripped;
     }
 
-    // Standard components fill wrapper in designer mode
+    // Partial preservation - merge preserved dimensions with 100% defaults
     return {
       ...marginsStripped,
-      ...DESIGNER_DIMENSIONS,
+      width: preservedSet.has('width') ? baseStyle?.width : DESIGNER_DIMENSIONS.width,
+      height: preservedSet.has('height') ? baseStyle?.height : DESIGNER_DIMENSIONS.height,
+      minWidth: preservedSet.has('minWidth') ? baseStyle?.minWidth : undefined,
+      maxWidth: preservedSet.has('maxWidth') ? baseStyle?.maxWidth : undefined,
+      minHeight: preservedSet.has('minHeight') ? baseStyle?.minHeight : undefined,
+      maxHeight: preservedSet.has('maxHeight') ? baseStyle?.maxHeight : undefined,
     };
   },
 
@@ -158,7 +243,7 @@ export const dimensionUtils = {
    * Returns a function that can be used in components.
    */
   getDesignerDimensionsMerger(isDesignerMode: boolean) {
-    return (baseStyle: CSSProperties, preserveDimensions: boolean = false): CSSProperties => {
+    return (baseStyle: CSSProperties, preserveDimensions: IToolboxComponent['preserveDimensionsInDesigner'] = false): CSSProperties => {
       return dimensionUtils.mergeWithDesignerDimensions(baseStyle, isDesignerMode, preserveDimensions);
     };
   },
