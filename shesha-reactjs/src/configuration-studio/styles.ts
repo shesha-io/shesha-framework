@@ -20,7 +20,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csDocEditor = 'sha-cs-doc-editor';
 
   const headerHeight = 60;
-  const tabCardHeight = 4;
+  const tabCardHeight = 40;
 
   const configStudio = cx("sha-config-studio", css`
 
