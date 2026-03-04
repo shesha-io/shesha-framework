@@ -452,22 +452,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               },
                             ],
                           })
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: styleRouterId,
-                            inline: true,
-                            inputs: [
-                              {
-                                type: 'textField',
-                                id: nanoid(),
-                                label: "Input  Width",
-                                width: 85,
-                                propertyName: "inputWidth",
-                                icon: "widthIcon",
-                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                              },
-                            ],
-                          })
                           .toJson(),
                         ],
                       },
