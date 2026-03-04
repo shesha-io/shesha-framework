@@ -250,7 +250,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       height: max-content;
       min-height: ${minHeight};
       max-height: ${maxHeight};
-      overflow: ${overflow ?? 'auto'};
+      overflow: ${typeof overflow === 'object' ? (overflow?.overflow ?? 'auto') : (overflow ?? 'auto')};
       padding-top: ${paddingTop} !important;
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;

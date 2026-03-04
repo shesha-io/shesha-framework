@@ -35,7 +35,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { allStyles } = model;
-    const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles;
+    const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles ?? {};
 
     const { formMode } = useForm();
 
