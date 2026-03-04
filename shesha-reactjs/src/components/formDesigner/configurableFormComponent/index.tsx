@@ -308,11 +308,18 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const { settingsPanelRef } = useFormDesigner();
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const readOnly = useFormDesignerReadOnly();
+  const isEditMode = (value: unknown): value is EditMode =>
+      value === 'editable' || value === 'readOnly' || value === 'inherited' || typeof value === 'boolean';
+    
+    const { hidden, componentEditMode } = useMemo(() => {
+      const resolvedHidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
+      const resolvedEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode;
 
-  const { hidden, componentEditMode } = useMemo(() => ({
-    hidden: getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden,
-    componentEditMode: getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode,
-  }), [props.componentModel, allData]);
+      return {
+        hidden: resolvedHidden,
+        componentEditMode: isEditMode(resolvedEditMode) ? resolvedEditMode : undefined,
+      };
+    }, [props.componentModel, allData]);
 
   return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
 };

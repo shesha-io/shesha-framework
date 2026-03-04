@@ -89,24 +89,22 @@ export const dimensionUtils = {
     dimensionsStyles: CSSProperties,
     jsStyle: CSSProperties,
   ): CSSProperties {
-    // Helper to get dimension value with partial preservation support
-    const getDimensionValue = (dimensionType: PreservableDimension): string | number | undefined => {
-      if (shouldPreserveDimension(dimensionType, preserveDimensionsInDesigner)) {
-        // Return original dimension value when preserving this specific dimension
-        return dimensionsStyles?.[dimensionType];
-      }
-      // Not preserved - use jsStyle or fall back to dimensionsStyles
-      return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
-    };
+      const preservedSet = normalizePreserveDimensions(preserveDimensionsInDesigner);
+      const isPreserved = (dimensionType: PreservableDimension): boolean => preservedSet.has(dimensionType);
 
-    // Check if any dimensions are being preserved
-    const hasPreservedDimensions = preserveDimensionsInDesigner === true ||
-      (Array.isArray(preserveDimensionsInDesigner) && preserveDimensionsInDesigner.length > 0);
+      // Helper to get dimension value with partial preservation support
+      const getDimensionValue = (dimensionType: PreservableDimension): string | number | undefined => {
+        if (isPreserved(dimensionType)) {
+          // Return original dimension value when preserving this specific dimension
+          return dimensionsStyles?.[dimensionType];
+        }
+        // Not preserved - use jsStyle or fall back to dimensionsStyles
+        return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
+      };
 
-    // Calculate flexBasis only when NOT preserving width/maxWidth
-    const preserveWidth = shouldPreserveDimension('width', preserveDimensionsInDesigner);
-    const preserveMaxWidth = shouldPreserveDimension('maxWidth', preserveDimensionsInDesigner);
-    const flexBasis = hasPreservedDimensions && (preserveWidth || preserveMaxWidth)
+      const preserveWidth = isPreserved('width');
+      const preserveMaxWidth = isPreserved('maxWidth');
+    const flexBasis = preserveDimensionsInDesigner && (preserveWidth || preserveMaxWidth)
       ? undefined
       : (jsStyle?.maxWidth ?? dimensionsStyles?.maxWidth ?? dimensionsStyles?.width);
 

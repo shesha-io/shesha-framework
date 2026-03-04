@@ -19,16 +19,21 @@ export const parseDimension = (value: string | number | null | undefined): Dimen
   }
 
   if (value === 'auto' || value === 'none') {
-    return { value: 0, unit: value as 'auto' | 'none' };
+    return { value: 0, unit: value };
   }
 
   // Match number with optional unit
   const match = /^(-?\d+(?:\.\d+)?)(px|%|vw|vh|em|rem)?$/.exec(value.trim());
   if (match && match[1] !== undefined) {
-    return {
-      value: parseFloat(match[1]),
-      unit: (match[2] || 'px') as DimensionValue['unit'],
-    };
+    const unit = match[2] || 'px';
+
+    // Type guard: validate unit is one of the allowed values
+    if (unit === 'px' || unit === '%' || unit === 'vw' || unit === 'vh' || unit === 'em' || unit === 'rem') {
+      return {
+        value: parseFloat(match[1]),
+        unit,
+      };
+    }
   }
 
   return null;
