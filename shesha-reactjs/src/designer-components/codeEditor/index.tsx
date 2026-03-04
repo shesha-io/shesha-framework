@@ -22,6 +22,7 @@ const CodeEditorComponent: CodeEditorComponentDefinition = {
   icon: <CodeSandboxOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && (dataFormat === StringFormats.javascript || dataFormat === StringFormats.json),
   Factory: ({ model }) => {

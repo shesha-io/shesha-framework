@@ -42,12 +42,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  /**
-   * Preserve only height in designer mode.
-   * TextArea typically has a specific height (rows) that should be maintained,
-   * while width should fill the container for WYSIWYG behavior.
-   */
-  preserveDimensionsInDesigner: ['height'],
+  preserveDimensionsInDesigner: true,
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
@@ -103,7 +98,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
 
     return (
       <ConfigurableFormItem
-        model={{ ...model, noLabelAutoMargin: true }}
+        model={model}
         initialValue={calculatedModel.defaultValue}
       >
         {(value, onChange) => {

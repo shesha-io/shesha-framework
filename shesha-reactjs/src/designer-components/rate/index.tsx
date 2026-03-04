@@ -34,6 +34,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   icon: <LikeOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
   }),

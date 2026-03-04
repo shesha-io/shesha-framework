@@ -5,7 +5,6 @@ import { IToolboxComponent } from '@/interfaces';
 export interface UseStylesProps {
   layout: FormLayout;
   hasLabel: boolean;
-  noLabelAutoMargin?: boolean;
   preserveDimensionsInDesigner?: IToolboxComponent['preserveDimensionsInDesigner'];
 }
 
@@ -19,7 +18,7 @@ const shouldPreserveHeight = (preserve: IToolboxComponent['preserveDimensionsInD
   return false;
 };
 
-export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelAutoMargin, preserveDimensionsInDesigner }: UseStylesProps) => {
+export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, preserveDimensionsInDesigner }: UseStylesProps) => {
   const LABEL_HEIGHT = '32px';
   const preserveHeight = shouldPreserveHeight(preserveDimensionsInDesigner);
 
@@ -33,7 +32,7 @@ export const useStyles = createStyles(({ css, cx }, { layout, hasLabel, noLabelA
             width: 100%;
 
           >.ant-form-item-label  {
-            ${noLabelAutoMargin ? 'margin: unset;' : 'margin: auto 0;'};
+            margin: auto 0;
           }
         }
 

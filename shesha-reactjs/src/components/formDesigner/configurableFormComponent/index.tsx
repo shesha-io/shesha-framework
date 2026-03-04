@@ -6,6 +6,7 @@ import React, {
   MutableRefObject,
   memo,
   useMemo,
+  useRef,
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
@@ -21,7 +22,7 @@ import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
 import { Tooltip } from 'antd';
 import { ShaForm, useIsDrawingForm } from '@/providers/form';
-import { useShaFormInstance } from '@/providers';
+
 import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
@@ -30,7 +31,6 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { dimensionUtils } from '../utils/dimensionUtils';
 import { stylingUtils } from '../utils/stylingUtils';
 import { designerConstants } from '../utils/designerConstants';
-import { useValidationHeight } from '../components/useValidationHeight';
 import { jsonSafeParse } from '@/utils/object';
 
 export interface IConfigurableFormComponentDesignerProps {
@@ -41,8 +41,6 @@ export interface IConfigurableFormComponentDesignerProps {
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
-const LABEL_HEIGHT = 32; // Height of label in vertical layout
-
 const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({
   componentModel,
   selectedComponentId,
@@ -53,19 +51,13 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const { activeDevice, zoom = 100 } = useCanvas();
-  const [formItemRef, validationHeight] = useValidationHeight(zoom / 100);
-  const shaForm = useShaFormInstance();
+  const { activeDevice } = useCanvas();
+  const formItemRef = useRef<HTMLDivElement>(null);
 
   // Memoize component lookup to prevent unnecessary re-renders
   const component = useMemo(() => getToolboxComponent(componentModel?.type), [getToolboxComponent, componentModel?.type]);
   // Extract primitive values for stable dependencies - avoid object recreation triggering re-renders
   const preserveDimensionsInDesigner = useMemo(() => component?.preserveDimensionsInDesigner, [component]);
-
-  // Determine if layout is vertical and component has a label
-  // In vertical layout with a label, we need to add label height to wrapper dimensions
-  const isVerticalLayout = shaForm?.settings?.layout === 'vertical';
-  const hasLabel = !componentModel?.hideLabel && !!componentModel?.label;
 
   /**
    * Merges component model with device-specific settings.
@@ -256,20 +248,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   }, [fullComponentModel, component, preserveDimensionsInDesigner, dimensionsStyles]);
 
   // Create wrapper style - owns dimensions and margins
-  // Pass combined autoHeight flag (from autoHeight property or textArea autoSize)
-  // Also pass layout and label info to adjust for vertical layout with labels
   const rootContainerStyle = useMemo(() => {
-    return stylingUtils.createRootContainerStyle(
-      componentDimensions,
-      margins,
-      validationHeight,
-      false, // hasAutoHeight - determined in stylingUtils
-      false, // hasAutoWidth - determined in stylingUtils
-      isVerticalLayout,
-      hasLabel,
-      LABEL_HEIGHT,
-    );
-  }, [componentDimensions, margins, validationHeight, isVerticalLayout, hasLabel]);
+    return stylingUtils.createRootContainerStyle(componentDimensions, margins);
+  }, [componentDimensions, margins]);
 
   return (
     <div

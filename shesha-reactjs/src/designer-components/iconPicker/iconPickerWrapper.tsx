@@ -70,27 +70,18 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   return (
     <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
       <Tooltip title={props?.description}>
-        <div
-          style={{
-            ...fullStyles,
-            fontSize: 20,
-            background: 'transparent', // icon should not have background and take the background of the parent like container
-            borderWidth: '0px',
-            borderColor: 'transparent',
-          }}
-        >
-          <IconPicker
-            value={iconValue as ShaIconTypes}
-            defaultValue={iconValue as ShaIconTypes}
-            onIconChange={onIconChange}
-            selectBtnSize={selectBtnSize}
-            iconSize={iconSize ?? fontSize}
-            readOnly={readOnly}
-            style={{ ...style, background: 'transparent' }}
-            color={props.color}
-            twoToneColor={color}
-          />
-        </div>
+        <IconPicker
+          value={iconValue as ShaIconTypes}
+          defaultValue={iconValue as ShaIconTypes}
+          onIconChange={onIconChange}
+          selectBtnSize={selectBtnSize}
+          iconSize={iconSize ?? fontSize}
+          readOnly={readOnly}
+          style={{ ...style,
+            ...fullStyles, background: 'transparent' }}
+          color={props.color}
+          twoToneColor={color}
+        />
       </Tooltip>
     </div>
   );

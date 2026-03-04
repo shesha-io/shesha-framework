@@ -95,6 +95,7 @@ const ImagePickerComponent: IToolboxComponent<IFileUploadProps> = {
   icon: <FileAddOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>

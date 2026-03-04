@@ -282,7 +282,6 @@ export interface IConfigurableFormComponent
 
   listType?: 'text' | 'thumbnail';
 
-  noLabelAutoMargin?: boolean;
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
