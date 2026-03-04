@@ -30,8 +30,8 @@ export default handleActions<ICanvasStateContext, any>(
       return {
         ...state,
         designerWidth: typeof width === 'string' ? width : `${width}px`,
-        designerDevice: deviceType as IDeviceTypes,
-        activeDevice: getSmallerDevice(deviceType as IDeviceTypes, state.physicalDevice),
+        designerDevice: deviceType,
+        activeDevice: getSmallerDevice(deviceType, state.physicalDevice),
       };
     },
     [CanvasConfigActionEnums.SetCanvasZoom]: (state: ICanvasStateContext, action: ReduxActions.Action<number>) => {

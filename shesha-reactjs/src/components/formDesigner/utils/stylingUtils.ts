@@ -76,9 +76,17 @@ export const stylingUtils = {
    * The wrapper applies margins directly and the inner component fills the available space.
    * When width is 100% with margins, the wrapper handles it without overflowing.
    *
+   * For vertical layout with labels, automatically adds label height to the wrapper's
+   * height dimensions to prevent the input from being squashed.
+   *
    * @param dimensions - The component dimensions
    * @param margins - The margin values to apply
    * @param validationHeight - Optional validation message height to account for
+   * @param hasAutoHeight - Whether the component has auto height
+   * @param hasAutoWidth - Whether the component has auto width
+   * @param isVerticalLayout - Whether the form layout is vertical
+   * @param hasLabel - Whether the component has a visible label
+   * @param labelHeight - Height of the label (default 32px)
    * @returns CSSProperties for the root container
    */
   createRootContainerStyle(
@@ -87,12 +95,29 @@ export const stylingUtils = {
     validationHeight?: number,
     hasAutoHeight?: boolean,
     hasAutoWidth?: boolean,
+    isVerticalLayout?: boolean,
+    hasLabel?: boolean,
+    labelHeight: number = 32,
   ): CSSProperties {
     // Use margin values directly (preserves relative values like 50%)
     const marginTop = addPx(margins?.marginTop ?? 0);
     const marginBottom = addPx(margins?.marginBottom ?? 0);
     const marginLeft = addPx(margins?.marginLeft ?? 0);
     const marginRight = addPx(margins?.marginRight ?? 0);
+
+    // Helper to add label height for vertical layout with labels
+    // This prevents the input from being squashed when both label and input share the same height
+    const addLabelHeight = (value: string | number | undefined): string | number | undefined => {
+      if (!value || value === 'auto') return value;
+      if (!isVerticalLayout || !hasLabel) return value;
+
+      const labelHeightPx = addPx(labelHeight);
+      // If it's already a calc expression, append the label height
+      if (typeof value === 'string' && value.startsWith('calc(')) {
+        return `${value.slice(0, -1)} + ${labelHeightPx})`;
+      }
+      return `calc(${addPx(value)} + ${labelHeightPx})`;
+    };
 
     // When width is 100% and there are margins, use getCalculatedDimension to prevent overflow
     // Use getCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
@@ -104,29 +129,33 @@ export const stylingUtils = {
         : 'auto';
 
     // Height is expanded to include padding to allow gap for component selecting e.g in button
+    // Also adds label height for vertical layout with labels
     const expandedHeight = dimensions.height && dimensions.height !== 'auto'
       ? getExpandedDimensions(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
       : undefined;
     const height = hasAutoHeight || dimensions.height === 'auto'
       ? 'auto'
-      : expandedHeight
-        ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
-        : validationHeight ? addPx(validationHeight) : undefined;
+      : addLabelHeight(
+        expandedHeight
+          ? `calc(${expandedHeight} + ${addPx(validationHeight ?? 0)})`
+          : validationHeight ? addPx(validationHeight) : undefined,
+      );
 
     // For min/max dimensions, subtract the default wrapper margins like we do for width/height
     // This ensures constrained dimensions account for the wrapper's default margins (5px 3px)
     // The wrapper always has these default margins applied, so min/max must subtract them
+    // Also adds label height for vertical layout with labels
     const minHeight = !dimensions.minHeight
       ? undefined
       : dimensions.minHeight === 'auto'
         ? 'auto'
-        : getCalculatedDimension(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom);
+        : addLabelHeight(getCalculatedDimension(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom));
 
     const maxHeight = !dimensions.maxHeight
       ? undefined
       : dimensions.maxHeight === 'auto'
         ? 'auto'
-        : getCalculatedDimension(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom);
+        : addLabelHeight(getCalculatedDimension(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom));
 
     const minWidth = !dimensions.minWidth
       ? undefined

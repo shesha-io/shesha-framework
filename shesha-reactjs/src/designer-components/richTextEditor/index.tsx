@@ -68,7 +68,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         showWordsCounter: model?.showWordsCounter,
       };
       return typedConfig;
-    }, [model, model.readOnly]);
+    }, [model]);
 
     const rerenderKey = `${model?.placeholder || ''}-${model?.placeholder || false}`;
 
