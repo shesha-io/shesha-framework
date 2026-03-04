@@ -27,7 +27,7 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
     required: model.validate?.required,
     tooltip: model.description || undefined,
     hidden: model.hidden,
-    className: classNames((styles.formItem, styles.formItem)),
+    className: classNames(styles.formItem),
     style: { margin: '5px 3px' },
   };
 

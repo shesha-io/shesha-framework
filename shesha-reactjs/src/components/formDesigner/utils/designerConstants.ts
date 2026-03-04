@@ -123,9 +123,14 @@ export const designerConstants = {
     paddingTop: string,
     paddingBottom: string,
   ): string | number | undefined {
-    if (!height) return undefined;
+    // Treat undefined/null as invalid, but allow 0 and '0' as valid heights
+    if (height === undefined || height === null) return undefined;
+
     // Add 8px to account for border width in designer (4px top + 4px bottom)
-    return `calc(${addPx(height)} + ${paddingTop} + ${paddingBottom} + 8px)`;
+    const heightWithUnit = addPx(height);
+    // Guard against addPx returning undefined - use original value or '0px' as fallback
+    const safeHeight = heightWithUnit ?? (typeof height === 'number' ? `${height}px` : height || '0px');
+    return `calc(${safeHeight} + ${paddingTop} + ${paddingBottom} + 8px)`;
   },
 
   /**
@@ -148,8 +153,13 @@ export const designerConstants = {
     padding1: string,
     padding2: string,
   ): string | number | undefined {
-    if (!value) return undefined;
-    return `calc(${addPx(value)} + ${padding1} + ${padding2})`;
+    // Treat undefined/null as invalid, but allow 0 and '0' as valid dimensions
+    if (value === undefined || value === null) return undefined;
+
+    const valueWithUnit = addPx(value);
+    // Guard against addPx returning undefined - use original value or '0px' as fallback
+    const safeValue = valueWithUnit ?? (typeof value === 'number' ? `${value}px` : value || '0px');
+    return `calc(${safeValue} + ${padding1} + ${padding2})`;
   },
 
   /**

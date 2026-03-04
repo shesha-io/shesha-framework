@@ -17,6 +17,18 @@ export const getStyleChangeValue = (
 };
 
 export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string): string => {
-  const v = jsonSafeParse(value || '{}') as IValue;
-  return (v || {})[`${type}${capitalizeFirstLetter(direction)}`] || '0';
+  const parsed = jsonSafeParse(value || '{}');
+
+  // Compute the dynamic key (e.g., "paddingTop", "marginLeft")
+  const key = `${type}${capitalizeFirstLetter(direction)}`;
+
+  // Runtime checks: ensure parsed is an object, property exists, and value is a string
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    const propValue = (parsed as Record<string, unknown>)[key];
+    if (typeof propValue === 'string') {
+      return propValue;
+    }
+  }
+
+  return '0';
 };

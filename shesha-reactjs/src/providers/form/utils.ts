@@ -1225,9 +1225,10 @@ export const getStyle = (
   // tslint:disable-next-line:function-constructor
   const allStyle = new Function('data, globalState', style)(formData, globalState);
   if (!allStyle || typeof allStyle !== 'object') return defaultStyle;
-  const { marginTop, marginBottom, marginLeft, marginRight, ...rest } = allStyle;
+  const { margin, marginTop, marginBottom, marginLeft, marginRight, ...rest } = allStyle;
   return excludeMargin
     ? rest : {
+      margin,
       marginTop,
       marginBottom,
       marginLeft,
