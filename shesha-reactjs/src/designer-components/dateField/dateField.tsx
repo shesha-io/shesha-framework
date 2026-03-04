@@ -25,6 +25,7 @@ const DateField: DateFieldDefinition = {
   isOutput: true,
   canBeJsSetting: true,
   icon: <CalendarOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();

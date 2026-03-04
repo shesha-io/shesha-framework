@@ -76,7 +76,6 @@ export interface IStyleType {
   hideScrollBar?: boolean;
   autoWidth?: boolean;
   autoHeight?: boolean;
-  inputWidth?: string | number;
 }
 
 export interface IInputStyles extends IStyleType {
@@ -283,7 +282,6 @@ export interface IConfigurableFormComponent
 
   listType?: 'text' | 'thumbnail';
 
-  noLabelAutoMargin?: boolean;
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>

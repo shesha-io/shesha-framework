@@ -89,6 +89,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   isInput: true,
   isOutput: true,
   icon: <LinkExternalOutlined />,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model: passedModel }) => {
     const { allStyles, hidden, readOnly, ...model } = passedModel;
 

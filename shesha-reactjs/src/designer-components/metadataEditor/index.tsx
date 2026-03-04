@@ -20,6 +20,7 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
   canBeJsSetting: false,
   name: 'Metadata editor',
   icon: <ApartmentOutlined />,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const metadataBuilderFactory = useMetadataBuilderFactory();

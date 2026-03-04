@@ -19,6 +19,7 @@ const SwitchComponent: SwitchComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
     return (
@@ -35,7 +36,7 @@ const SwitchComponent: SwitchComponentDefinition = {
             <Switch
               className="sha-switch"
               disabled={model.readOnly}
-              style={model.allStyles.jsStyle}
+              style={model.allStyles?.jsStyle}
               size={model.size as SwitchSize}
               checked={value}
               onChange={onChangeInternal}

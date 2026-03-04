@@ -34,6 +34,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
   canBeJsSetting: true,
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.entityReference ||
     (dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),

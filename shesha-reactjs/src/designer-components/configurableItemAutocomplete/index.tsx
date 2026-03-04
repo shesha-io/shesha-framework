@@ -20,6 +20,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     const { filter } = model;
     const allData = useAvailableConstantsData();
@@ -58,7 +59,13 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
         return undefined;
 
       return typeof (expression) === 'string'
-        ? JSON.parse(expression)
+        ? (() => {
+          try {
+            return JSON.parse(expression);
+          } catch {
+            return undefined;
+          }
+        })()
         : expression;
     }, [filter, allData.data, allData.globalState, allData.pageContext]);
 

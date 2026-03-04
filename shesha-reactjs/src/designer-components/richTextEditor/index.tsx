@@ -31,10 +31,11 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   icon: <EditOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { allStyles } = model;
-    const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles;
+    const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles ?? {};
 
     const { formMode } = useForm();
 
@@ -73,7 +74,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     const rerenderKey = `${model?.placeholder || ''}-${model?.placeholder || false}`;
 
     return (
-      <ConfigurableFormItem model={{ ...model, noLabelAutoMargin: true }} key={rerenderKey}>
+      <ConfigurableFormItem model={model} key={rerenderKey}>
         {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );
