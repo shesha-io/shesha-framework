@@ -132,8 +132,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     let calculatedWidth: string | number | undefined;
 
     if (preserveWidth) {
-      // Width is preserved - component manages its own width
-      calculatedWidth = wrapperWidth ?? 'auto';
+      // Width is preserved - component manages its own width, wrapper should not constrain it
+      calculatedWidth = 'auto';
     } else if (isInDesigner) {
       // In designer: auto width fills container, otherwise calculate with margins
       const isAutoWidth = wrapperWidth === 'auto';
@@ -149,8 +149,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     let calculatedHeight: string | number | undefined;
 
     if (preserveHeight) {
-      // Height is preserved - component manages its own height
-      calculatedHeight = wrapperHeight ?? 'auto';
+      // Height is preserved - component manages its own height, wrapper should not constrain it
+      calculatedHeight = 'auto';
     } else if (isInDesigner) {
       // In designer: height fills container, adjusted for validation message space
       const baseHeight = '100%';

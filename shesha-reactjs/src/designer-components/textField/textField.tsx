@@ -17,6 +17,7 @@ import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { toSizeCssProp } from '@/utils/form';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
@@ -64,7 +65,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       disabled: model.readOnly,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
-      style: { ...model.allStyles.fullStyle, width: '100%', height: '100%' },
+      style: { ...model.allStyles.fullStyle, width: model?.inputWidth ? toSizeCssProp(model.inputWidth) : '100%', height: '100%' },
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
       minLength: model.validate?.minLength,

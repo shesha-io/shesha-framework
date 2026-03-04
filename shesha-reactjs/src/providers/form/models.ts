@@ -76,6 +76,7 @@ export interface IStyleType {
   hideScrollBar?: boolean;
   autoWidth?: boolean;
   autoHeight?: boolean;
+  inputWidth?: string | number;
 }
 
 export interface IInputStyles extends IStyleType {
