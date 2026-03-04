@@ -423,7 +423,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaComponent} {
             position: relative;
-            min-height: 50px; // Ensure enough space for delete button and error icon
+            min-height: 50px; /* Ensure enough space for delete button and error icon */
 
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;

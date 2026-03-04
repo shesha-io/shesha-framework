@@ -35,7 +35,7 @@ const SwitchComponent: SwitchComponentDefinition = {
             <Switch
               className="sha-switch"
               disabled={model.readOnly}
-              style={model.allStyles.jsStyle}
+              style={model.allStyles?.jsStyle}
               size={model.size as SwitchSize}
               checked={value}
               onChange={onChangeInternal}
