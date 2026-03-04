@@ -205,7 +205,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
     // Helper to get component dimensions (what the inner component receives)
     // Components always fill 100% of their wrapper in designer mode (wrapper handles sizing)
-    const getComponentDimensions = (originalDims?: typeof fullComponentModel.dimensions): typeof deviceDimensions => {
+    const getComponentDimensions = (originalDims?: typeof fullComponentModel.dimensions): React.CSSProperties => {
       // If all dimensions are preserved, merge with device dimensions
       if (preservingAll) return { ...deviceDimensions, ...originalDims };
 
@@ -219,7 +219,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
           preserveDimensionsInDesigner,
           originalDims || {},
           true, // isDesignerMode
-        ) as typeof deviceDimensions;
+        );
       }
 
       // All components fill the wrapper in designer mode
@@ -244,7 +244,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         stylingBox: stylingBoxWithPaddingOnly,
       },
     };
-  }, [fullComponentModel, component, preserveDimensionsInDesigner]);
+  }, [fullComponentModel, component, preserveDimensionsInDesigner, dimensionsStyles]);
 
   // Create wrapper style - owns dimensions and margins
   // Pass combined autoHeight flag (from autoHeight property or textArea autoSize)

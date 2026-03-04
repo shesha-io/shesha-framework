@@ -2,16 +2,6 @@ import { CSSProperties } from 'react';
 import { IStyleType, IToolboxComponent } from '@/index';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 
-export interface DimensionConfig {
-  width?: string | number;
-  height?: string | number;
-  maxWidth?: string | number;
-  minWidth?: string | number;
-  maxHeight?: string | number;
-  minHeight?: string | number;
-  flexBasis?: string | number;
-}
-
 /**
  * Dimension keys that can be selectively preserved in designer mode.
  * Matches the array values allowed in preserveDimensionsInDesigner.

@@ -128,9 +128,17 @@ export const designerConstants = {
 
     // Add 8px to account for border width in designer (4px top + 4px bottom)
     const heightWithUnit = addPx(height);
-    // Guard against addPx returning undefined - use original value or '0px' as fallback
-    const safeHeight = heightWithUnit ?? (typeof height === 'number' ? `${height}px` : height || '0px');
-    return `calc(${safeHeight} + ${paddingTop} + ${paddingBottom} + 8px)`;
+    // Guard against addPx returning undefined - treat empty strings as unset
+    if (heightWithUnit === undefined) {
+      // For numbers, convert to px; for empty strings, propagate undefined
+      if (typeof height === 'number') {
+        return `calc(${height}px + ${paddingTop} + ${paddingBottom} + 8px)`;
+      }
+      if (height === '') return undefined;
+      // For other string values that addPx couldn't parse, use as-is
+      return `calc(${height} + ${paddingTop} + ${paddingBottom} + 8px)`;
+    }
+    return `calc(${heightWithUnit} + ${paddingTop} + ${paddingBottom} + 8px)`;
   },
 
   /**
@@ -157,9 +165,17 @@ export const designerConstants = {
     if (value === undefined || value === null) return undefined;
 
     const valueWithUnit = addPx(value);
-    // Guard against addPx returning undefined - use original value or '0px' as fallback
-    const safeValue = valueWithUnit ?? (typeof value === 'number' ? `${value}px` : value || '0px');
-    return `calc(${safeValue} + ${padding1} + ${padding2})`;
+    // Guard against addPx returning undefined - treat empty strings as unset
+    if (valueWithUnit === undefined) {
+      // For numbers, convert to px; for empty strings, propagate undefined
+      if (typeof value === 'number') {
+        return `calc(${value}px + ${padding1} + ${padding2})`;
+      }
+      if (value === '') return undefined;
+      // For other string values that addPx couldn't parse, use as-is
+      return `calc(${value} + ${padding1} + ${padding2})`;
+    }
+    return `calc(${valueWithUnit} + ${padding1} + ${padding2})`;
   },
 
   /**
