@@ -68,7 +68,7 @@ namespace Shesha.Services.StoredFiles
             var containerName = _configuration.GetSection(CloudStorageName)
                 .GetValue<string>("ContainerName") ?? ContainerName;
 
-            // URL-based auth: SAS token or Managed Identity
+            // URL-based auth: SAS token
             if (value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
                 var uri = new Uri(value);
