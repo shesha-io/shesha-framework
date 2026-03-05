@@ -11,7 +11,7 @@ export interface FindReferencesOptions {
   // includePaths?: boolean;
   /** Callback for each found reference */
   onFound?: (ref: ConfigurableItemFullName, path?: string) => void;
-  onAnalyze?: (currentObject: object, addRef: (ref: ConfigurableItemFullName, path?: string) => void, path?: string) => void;
+  onAnalyze?: (currentObject: unknown, addRef: (ref: ConfigurableItemFullName, path?: string) => void, path?: string) => void;
 }
 
 export class ItemReferenceFinder {
@@ -49,11 +49,11 @@ export class ItemReferenceFinder {
 
       if (typeof current === 'object') {
         visited.add(current);
-        onAnalyze?.(current, (customRef, customPath) => {
-          references.push(customRef);
-          onFound?.(customRef, customPath);
-        }, path);
       }
+      onAnalyze?.(current, (customRef, customPath) => {
+        references.push(customRef);
+        onFound?.(customRef, customPath);
+      }, path);
 
       // Check if it's an ConfigurableItemFullName
       if (this.isItemReference(current)) {

@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { ILinkProps } from '@/designer-components/link/interfaces';
-import { ConfigurableItemFullName, extractAjaxResponse, GetAllResponse, IAjaxResponse } from '@/interfaces';
+import { ConfigurableItemFullName, extractAjaxResponse, GetAllResponse, IAjaxResponse, IGenericGetAllPayload } from '@/interfaces';
 import { isConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { FormFullName, IComponentsDictionary, IConfigurableFormComponent, IConfigurableMainMenu, isNavigationActionConfiguration, isScriptActionConfiguration, useFormManager, useHttpClient, useSettings, useSheshaApplication } from '@/providers';
+import { FormFullName, HttpClientApi, IComponentsDictionary, IConfigurableFormComponent, IConfigurableMainMenu, isNavigationActionConfiguration, isScriptActionConfiguration, useFormManager, useHttpClient, useSettings, useSheshaApplication } from '@/providers';
 import { ItemReferenceFinder } from '@/utils/dependencies/item-reference-utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormOutlined, SettingOutlined } from '@ant-design/icons';
@@ -82,13 +82,15 @@ function parseUrlPureRegex(url: string): ParsedUrl | null {
   return result;
 }
 
-function extractPathsSimple(jsCode: string): string[] {
-  const pattern = /\b(dynamic|no-auth)\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+(?:\?[a-zA-Z0-9_=&%-]*)?\b/g;
+export function extractPathsSimple(jsCode: string): string[] {
+  const pattern = /\b(?<url>(dynamic|no-auth)\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)(?:\?[a-zA-Z0-9_=&%-]*)?\b/g;
   const paths: string[] = [];
-  let match;
+  let match: RegExpExecArray | null = null;
 
   while ((match = pattern.exec(jsCode)) !== null) {
-    paths.push(match[0]);
+    const url = match.groups?.["url"];
+    if (url)
+      paths.push(url);
   }
 
   return paths;
@@ -121,6 +123,41 @@ const findSpecificRefs = (components: IComponentsDictionary, callback: (ref: Con
   }
 };
 
+type SettingDefinitionDto = {
+  name: string;
+  module: { name: string };
+  label: string | null;
+  editorFormModule: string;
+  editorFormName: string;
+};
+
+type SettingDefinition = {
+  settingId: ConfigurableItemFullName;
+  label: string | null;
+  formId: FormFullName;
+};
+
+const getSettingsAsync = async (httpClient: HttpClientApi): Promise<SettingDefinition[]> => {
+  const payload: IGenericGetAllPayload = {
+    maxResultCount: -1,
+    skipCount: 0,
+    entityType: 'Shesha.Domain.SettingConfiguration',
+    // filter: JSON.stringify({ '==': [{ var: 'module.name' }, 'Shesha'] }),
+    filter: JSON.stringify({ "==": [{ var: "editorFormModule" }, "Shesha"] }),
+    properties: 'name, module { id name }, label editorFormModule editorFormName',
+  };
+  const url = `/api/services/app/Entities/GetAll?${qs.stringify(payload)}`;
+
+  const response = await httpClient.get<IAjaxResponse<GetAllResponse<SettingDefinitionDto>>>(url);
+  const data = extractAjaxResponse(response.data);
+
+  return data.items.map<SettingDefinition>((s) => ({
+    settingId: { name: s.name, module: s.module.name },
+    label: s.label,
+    formId: { name: s.editorFormName, module: s.editorFormModule },
+  }));
+};
+
 export const FormAnalyzer: FC = () => {
   const httpClient = useHttpClient();
   const { backendUrl } = useSheshaApplication();
@@ -144,17 +181,18 @@ export const FormAnalyzer: FC = () => {
         console.log(`LOG: loaded form "${form.module}/${form.name}"`);
         const uniqueRefs = ItemReferenceFinder.findAll(form.flatStructure.allComponents, { unique: true });
 
-        const allRefs = ItemReferenceFinder.findAndMap<unknown, DependencyInfo>(form.flatStructure.allComponents, (ref, path) => {
+        if (item.name === "email-link-verification") {
+          console.log('LOG: email-link-verification');
+        }
+
+        const allRefs = ItemReferenceFinder.findAndMap<unknown, DependencyInfo>({ allComponents: form.flatStructure.allComponents, settings: form.settings }, (ref, path) => {
           return {
             itemId: ref,
             path,
             isSatisfied: false,
           };
         }, {
-          onAnalyze: (current, addRef, _path) => {
-            if (!isConfigurableActionConfiguration(current))
-              return;
-
+          onAnalyze: (current, addRef, path) => {
             const tryAddFormByLink = (url: string | undefined | null, customPath?: string): void => {
               // callback
               if (!isNullOrWhiteSpace(url)) {
@@ -176,13 +214,17 @@ export const FormAnalyzer: FC = () => {
                 urls.forEach((url) => tryAddFormByLink(url, "JavaScript code"));
               }
             };
-
-            if (isScriptActionConfiguration(current)) {
-              tryAddFormsFromJs(current.actionArguments?.expression);
+            if (path.startsWith('settings') && typeof (current) === "string") {
+              tryAddFormsFromJs(current);
             }
-            if (isNavigationActionConfiguration(current) && current.actionArguments) {
-              if (current.actionArguments.navigationType === "url") {
-                tryAddFormByLink(current.actionArguments.url, "navigate action");
+            if (isConfigurableActionConfiguration(current)) {
+              if (isScriptActionConfiguration(current)) {
+                tryAddFormsFromJs(current.actionArguments?.expression);
+              }
+              if (isNavigationActionConfiguration(current) && current.actionArguments) {
+                if (current.actionArguments.navigationType === "url") {
+                  tryAddFormByLink(current.actionArguments.url, "navigate action");
+                }
               }
             }
           },
@@ -212,6 +254,22 @@ export const FormAnalyzer: FC = () => {
         console.error(`Failed to process form '${item.module}/${item.name}'`, error);
       }
     }
+
+    /**/
+    const allSettings = await getSettingsAsync(httpClient);
+    for (const setting of allSettings) {
+      const settingItem: SettingState = {
+        type: 'setting',
+        id: setting.settingId,
+        dependencies: [{
+          itemId: setting.formId,
+          path: "editorForm",
+          isSatisfied: false,
+        }],
+      };
+      allItems.push(settingItem);
+    }
+    /**/
 
     const settingId: ConfigurableItemFullName = { name: 'Shesha.MainMenuSettings', module: 'Shesha' };
     const mainMenu = await settings.getSetting<IConfigurableMainMenu>(settingId);

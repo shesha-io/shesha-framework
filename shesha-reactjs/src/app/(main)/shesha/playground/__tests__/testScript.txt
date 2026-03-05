@@ -1,0 +1,2846 @@
+{
+    "components": [
+        {
+            "id": "pWE9qCkqfakHA0aIQ3yJ5",
+            "type": "container",
+            "name": "container1",
+            "label": "Container1",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "customVisibility": null,
+            "isDynamic": false,
+            "direction": "vertical",
+            "justifyContent": "center",
+            "components": [
+                {
+                    "id": "yaj8douJW0twk77wrH8jk",
+                    "type": "container",
+                    "name": "container3",
+                    "label": "Container3",
+                    "labelAlign": "right",
+                    "parentId": "pWE9qCkqfakHA0aIQ3yJ5",
+                    "hidden": false,
+                    "customVisibility": null,
+                    "isDynamic": false,
+                    "direction": "vertical",
+                    "justifyContent": "left",
+                    "display": "block",
+                    "flexWrap": "wrap",
+                    "gap": "",
+                    "gridColumnsCount": "",
+                    "className": "",
+                    "style": "return {\n  width: '430px',\n  backgroundColor: 'white',\n  border: '1px solid lightgray',\n  padding: '3px 5px',\n  overflow: 'hidden'\n}",
+                    "settingsValidationErrors": [],
+                    "components": [
+                        {
+                            "id": "qxGTMiI86S3CGkkp1pqeI",
+                            "type": "container",
+                            "name": "container4",
+                            "label": "Container4",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": false,
+                            "customVisibility": null,
+                            "isDynamic": false,
+                            "direction": "vertical",
+                            "justifyContent": "left",
+                            "display": "flex",
+                            "flexWrap": "wrap",
+                            "flexDirection": "column",
+                            "gap": "",
+                            "gridColumnsCount": "",
+                            "alignItems": "center",
+                            "justifyItems": "center",
+                            "className": "",
+                            "settingsValidationErrors": [],
+                            "components": [
+                                {
+                                    "id": "9YvE5vKWVh-Xr4KEO3VkM",
+                                    "type": "image",
+                                    "name": "imageDisplay1",
+                                    "label": "",
+                                    "labelAlign": "right",
+                                    "parentId": "qxGTMiI86S3CGkkp1pqeI",
+                                    "hidden": false,
+                                    "customVisibility": null,
+                                    "isDynamic": false,
+                                    "description": "",
+                                    "validate": {},
+                                    "height": "100",
+                                    "width": "350",
+                                    "url": {
+                                        "_mode": "code",
+                                        "_code": "return \"/images/app-logo.png\""
+                                    },
+                                    "settingsValidationErrors": [],
+                                    "version": 6,
+                                    "componentName": "imageDisplay1",
+                                    "propertyName": "imageDisplay1",
+                                    "dataSource": "url",
+                                    "storedFileId": null,
+                                    "desktop": {
+                                        "width": "350",
+                                        "height": "100",
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "none"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {}
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "align": "left",
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "350px",
+                                            "height": "100px"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "tablet": {
+                                        "width": "350",
+                                        "height": "100",
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "none"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {}
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "align": "left",
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "350px",
+                                            "height": "100px"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "mobile": {
+                                        "width": "350",
+                                        "height": "100",
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "none"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {}
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "align": "left",
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "350px",
+                                            "height": "100px"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    }
+                                }
+                            ],
+                            "version": 7,
+                            "componentName": "container4",
+                            "propertyName": "container4",
+                            "desktop": {
+                                "className": "",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "flex",
+                                "stylingBox": "{}"
+                            },
+                            "tablet": {
+                                "className": "",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "flex",
+                                "stylingBox": "{}"
+                            },
+                            "mobile": {
+                                "className": "",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "flex",
+                                "stylingBox": "{}"
+                            },
+                            "shadowStyle": "none"
+                        },
+                        {
+                            "dividerType": "horizontal",
+                            "orientation": "center",
+                            "dashed": false,
+                            "plain": true,
+                            "id": "zODQuMCmTlXEyNG669pgB",
+                            "type": "divider",
+                            "name": "divider1",
+                            "label": "Divider1",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": false,
+                            "visibility": "Yes",
+                            "customVisibility": null,
+                            "isDynamic": false,
+                            "version": 3,
+                            "componentName": "divider1",
+                            "propertyName": "divider1"
+                        },
+                        {
+                            "id": "km0QpbyaS6k2oq6waKmyh",
+                            "type": "container",
+                            "name": "container7",
+                            "label": "Container7",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": false,
+                            "customVisibility": null,
+                            "isDynamic": false,
+                            "direction": "vertical",
+                            "justifyContent": "left",
+                            "display": "block",
+                            "flexWrap": "wrap",
+                            "components": [
+                                {
+                                    "code": false,
+                                    "copyable": false,
+                                    "delete": false,
+                                    "disabled": false,
+                                    "ellipsis": false,
+                                    "mark": false,
+                                    "italic": false,
+                                    "underline": false,
+                                    "level": 1,
+                                    "textType": "span",
+                                    "id": "Brnmf2xfp1k4oD8ztC-WZ",
+                                    "type": "text",
+                                    "name": "text1",
+                                    "label": "Text1",
+                                    "labelAlign": "right",
+                                    "parentId": "km0QpbyaS6k2oq6waKmyh",
+                                    "hidden": false,
+                                    "visibility": "Yes",
+                                    "customVisibility": null,
+                                    "isDynamic": false,
+                                    "contentDisplay": "content",
+                                    "content": "Forgot Password",
+                                    "dataType": "string",
+                                    "numberFormat": "round",
+                                    "contentType": "",
+                                    "fontSize": "text-xl",
+                                    "padding": "none",
+                                    "settingsValidationErrors": [],
+                                    "version": 5,
+                                    "componentName": "text1",
+                                    "propertyName": "text1",
+                                    "textAlign": "center",
+                                    "desktop": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": 1,
+                                                    "style": "none",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "color": "#000",
+                                            "type": "Segoe UI",
+                                            "align": "center",
+                                            "size": 17.5,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "350",
+                                            "height": "100%",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}",
+                                        "contentType": "custom"
+                                    },
+                                    "tablet": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": 1,
+                                                    "style": "none",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "color": "#000",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": "text-xl",
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "100%",
+                                            "height": "100%",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "mobile": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": 1,
+                                                    "style": "none",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "color": "#000",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": "text-xl",
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "100%",
+                                            "height": "100%",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "border": {
+                                        "radiusType": "all"
+                                    }
+                                }
+                            ],
+                            "version": 7,
+                            "componentName": "container7",
+                            "propertyName": "container7",
+                            "desktop": {
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "flex",
+                                "stylingBox": "{}",
+                                "flexDirection": "inherit",
+                                "justifyContent": "center",
+                                "alignItems": "center",
+                                "showAdvanced": true,
+                                "alignSelf": "stretch"
+                            },
+                            "tablet": {
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "block",
+                                "stylingBox": "{}"
+                            },
+                            "mobile": {
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "block",
+                                "stylingBox": "{}"
+                            },
+                            "shadowStyle": "none",
+                            "border": {
+                                "radiusType": "all"
+                            }
+                        },
+                        {
+                            "id": "wo9FKHDDnRH2yrr1ASgbB",
+                            "type": "container",
+                            "name": "container8",
+                            "label": "Container8",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": false,
+                            "customVisibility": null,
+                            "isDynamic": false,
+                            "direction": "vertical",
+                            "justifyContent": "left",
+                            "display": "block",
+                            "flexWrap": "wrap",
+                            "components": [
+                                {
+                                    "code": false,
+                                    "copyable": false,
+                                    "delete": false,
+                                    "disabled": false,
+                                    "ellipsis": false,
+                                    "mark": false,
+                                    "italic": false,
+                                    "underline": false,
+                                    "level": 1,
+                                    "textType": "span",
+                                    "id": "t8R0l2N9gHaSFF8HX-8vg",
+                                    "type": "text",
+                                    "name": "text2",
+                                    "label": "Text2",
+                                    "labelAlign": "right",
+                                    "parentId": "wo9FKHDDnRH2yrr1ASgbB",
+                                    "hidden": false,
+                                    "visibility": "Yes",
+                                    "customVisibility": null,
+                                    "isDynamic": false,
+                                    "contentDisplay": "content",
+                                    "content": "Please enter your username in the field below",
+                                    "dataType": "string",
+                                    "numberFormat": "round",
+                                    "contentType": "",
+                                    "padding": "none",
+                                    "settingsValidationErrors": [],
+                                    "version": 5,
+                                    "componentName": "text2",
+                                    "propertyName": "text2",
+                                    "textAlign": "center",
+                                    "desktop": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": 1,
+                                                    "style": "none",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "color": "#000",
+                                            "type": "Segoe UI",
+                                            "align": "center",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "350",
+                                            "height": "100%",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "tablet": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": 1,
+                                                    "style": "none",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "color": "#000",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "100%",
+                                            "height": "100%",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "mobile": {
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": 1,
+                                                    "style": "none",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "color": "",
+                                            "repeat": "no-repeat",
+                                            "size": "cover",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "color": "#000",
+                                            "type": "Segoe UI",
+                                            "align": "left",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "100%",
+                                            "height": "100%",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "border": {
+                                        "radiusType": "all"
+                                    }
+                                }
+                            ],
+                            "version": 7,
+                            "componentName": "container8",
+                            "propertyName": "container8",
+                            "desktop": {
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "flex",
+                                "stylingBox": "{}",
+                                "flexDirection": "row",
+                                "justifyContent": "center",
+                                "alignItems": "center",
+                                "showAdvanced": true
+                            },
+                            "tablet": {
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "block",
+                                "stylingBox": "{}"
+                            },
+                            "mobile": {
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "block",
+                                "stylingBox": "{}"
+                            },
+                            "shadowStyle": "none",
+                            "border": {
+                                "radiusType": "all"
+                            }
+                        },
+                        {
+                            "alertType": "error",
+                            "id": "jIvY-NJcZiT82qVavV7UV",
+                            "type": "alert",
+                            "name": "alert2",
+                            "label": "Alert2",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": {
+                                "_mode": "code",
+                                "_code": "// Automatically updated from 'customVisibility', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data?.errorMessage !== null && data?.errorMessage !== \"\" && data?.errorMessage !== undefined;\n\n})();",
+                                "_value": false
+                            },
+                            "isDynamic": false,
+                            "text": "{{data.errorMessage}}",
+                            "description": "",
+                            "showIcon": true,
+                            "closable": false,
+                            "settingsValidationErrors": [],
+                            "version": 2,
+                            "componentName": "alert2",
+                            "propertyName": "alert2"
+                        },
+                        {
+                            "textType": "text",
+                            "id": "TnshmtoO8s1dMbPHVXNzh",
+                            "type": "textField",
+                            "name": "errorMessage",
+                            "label": "Text field2",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": true,
+                            "customVisibility": null,
+                            "isDynamic": false,
+                            "version": 6,
+                            "placeholder": "",
+                            "description": "",
+                            "prefix": "",
+                            "suffix": "",
+                            "initialValue": "",
+                            "hideLabel": true,
+                            "validate": {
+                                "minLength": "",
+                                "maxLength": "",
+                                "message": ""
+                            },
+                            "quickviewWidth": "",
+                            "settingsValidationErrors": [],
+                            "componentName": "errorMessage",
+                            "propertyName": "errorMessage",
+                            "desktop": {
+                                "border": {
+                                    "selectedCorner": "all",
+                                    "selectedSide": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "bottom": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "left": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "right": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        }
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    }
+                                },
+                                "font": {
+                                    "color": "#000",
+                                    "type": "Segoe UI",
+                                    "align": "left",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                }
+                            },
+                            "tablet": {
+                                "border": {
+                                    "selectedCorner": "all",
+                                    "selectedSide": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "bottom": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "left": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "right": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        }
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    }
+                                },
+                                "font": {
+                                    "color": "#000",
+                                    "type": "Segoe UI",
+                                    "align": "left",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                }
+                            },
+                            "mobile": {
+                                "border": {
+                                    "selectedCorner": "all",
+                                    "selectedSide": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "bottom": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "left": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "right": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        }
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    }
+                                },
+                                "font": {
+                                    "color": "#000",
+                                    "type": "Segoe UI",
+                                    "align": "left",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                }
+                            }
+                        },
+                        {
+                            "textType": "text",
+                            "id": "mhpIMjh_ubxGMIVvFTbl7",
+                            "type": "textField",
+                            "name": "username",
+                            "label": "",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": false,
+                            "customVisibility": null,
+                            "isDynamic": false,
+                            "version": 6,
+                            "style": "return {\n  \"width\": \"418px\",\n  \"margin-top\": \"0.5em\"\n}",
+                            "placeholder": "Username",
+                            "description": "",
+                            "prefix": "",
+                            "suffix": "",
+                            "initialValue": "",
+                            "validate": {
+                                "minLength": "",
+                                "maxLength": "",
+                                "message": ""
+                            },
+                            "quickviewWidth": "",
+                            "settingsValidationErrors": [],
+                            "componentName": "username",
+                            "propertyName": "username",
+                            "desktop": {
+                                "border": {
+                                    "selectedCorner": "all",
+                                    "selectedSide": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "bottom": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "left": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "right": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        }
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    }
+                                },
+                                "font": {
+                                    "color": "#000",
+                                    "type": "Segoe UI",
+                                    "align": "left",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                }
+                            },
+                            "tablet": {
+                                "border": {
+                                    "selectedCorner": "all",
+                                    "selectedSide": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "bottom": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "left": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "right": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        }
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    }
+                                },
+                                "font": {
+                                    "color": "#000",
+                                    "type": "Segoe UI",
+                                    "align": "left",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                }
+                            },
+                            "mobile": {
+                                "border": {
+                                    "selectedCorner": "all",
+                                    "selectedSide": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "bottom": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "left": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "right": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        }
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    }
+                                },
+                                "font": {
+                                    "color": "#000",
+                                    "type": "Segoe UI",
+                                    "align": "left",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                }
+                            }
+                        },
+                        {
+                            "id": "9fsFyu6nT-LLW9tuA1mo4",
+                            "type": "button",
+                            "name": "button1",
+                            "label": "Next  >>",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": false,
+                            "customVisibility": null,
+                            "isDynamic": false,
+                            "actionConfiguration": {
+                                "actionName": "Execute Script",
+                                "actionOwner": "shesha.common",
+                                "actionArguments": {
+                                    "expression": "    //function to post data in a API\r\n    (function () {\r\n    data.errorMessage = ''\r\n    const username = data.username;\r\n    //PATH is used to declare the API that is getting the id\r\n    const PATH = `/api/services/app/User/GetUserPasswordResetOptions?username=${username}`;\r\n    //variable http used to post data to an API\r\n    http.get(`${PATH}`).then(onSuccess).catch(onError);\r\n    })();\r\n\r\n    //function to open a new tab when the script above is successful\r\n    function onSuccess(resp) {\r\n    //assigning the response to id\r\n    const result = resp.data.result;\r\n    localStorage.setItem(\"sDHfpSNzvVL28BeM\", data.username);\r\n    setGlobalState({key:'User',data:result});\r\n    \r\n    if (result?.length > 0) {\r\n        window.location.href = \"/no-auth/shesha/select-reset-method/?mode=edit\";\r\n    }else{\r\n        window.location.href = \"/no-auth/shesha/reset-password-options-error\";\r\n    }\r\n    }\r\n    //function to catch errors when the code runs\r\n    function onError(_e) {\r\n    //message is used to display the error message which is caught by the function \r\n    //setGlobalState({key: 'error', data: _e?.response?.data?.error?.message});\r\n    data.errorMessage = _e?.response?.data?.error?.message \r\n    }"
+                                },
+                                "handleSuccess": false,
+                                "handleFail": false,
+                                "_type": "action-config"
+                            },
+                            "buttonType": "primary",
+                            "version": 9,
+                            "sortOrder": 0,
+                            "itemType": "item",
+                            "style": "return {\n  \"width\": \"418px\",\n  \"margin-top\": \"0.5em\"\n}",
+                            "tooltip": "",
+                            "settingsValidationErrors": [],
+                            "block": true,
+                            "componentName": "button1",
+                            "propertyName": "button1",
+                            "editMode": {
+                                "_value": "inherited",
+                                "_mode": "code",
+                                "_code": "// Automatically updated from 'disabled' property, please review\n\nreturn !(() => {\n    // Source code\n\n// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data?.username && data?.username !== ' ';\n\n})();\n\n})();"
+                            },
+                            "desktop": {
+                                "buttonType": "primary",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "type": "Segoe UI",
+                                    "align": "center",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "stylingBox": "{\"marginTop\":\"\",\"marginBottom\":\"\",\"marginLeft\":\"\",\"marginRight\":\"\"}"
+                            },
+                            "mobile": {
+                                "buttonType": "primary",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "type": "Segoe UI",
+                                    "align": "center",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "stylingBox": "{}"
+                            },
+                            "tablet": {
+                                "buttonType": "primary",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "solid",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": 8
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "type": "Segoe UI",
+                                    "align": "center",
+                                    "size": 14,
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "32px",
+                                    "minHeight": "0px",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "#000000",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "stylingBox": "{}"
+                            },
+                            "border": {
+                                "radiusType": "all"
+                            }
+                        },
+                        {
+                            "id": "E8S1IgZCfrJ1RX6b39GBS",
+                            "type": "container",
+                            "name": "container6",
+                            "label": "Container6",
+                            "labelAlign": "right",
+                            "parentId": "yaj8douJW0twk77wrH8jk",
+                            "hidden": false,
+                            "customVisibility": null,
+                            "isDynamic": false,
+                            "direction": "vertical",
+                            "justifyContent": "left",
+                            "display": "flex",
+                            "flexWrap": "wrap",
+                            "flexDirection": "row",
+                            "gap": "",
+                            "gridColumnsCount": "",
+                            "alignItems": "normal",
+                            "className": "",
+                            "settingsValidationErrors": [],
+                            "components": [
+                                {
+                                    "id": "bH9XVexa6H3-NntVVc5dk_e63DIduQ",
+                                    "type": "button",
+                                    "componentName": "button2",
+                                    "label": "Back to login page",
+                                    "labelAlign": "right",
+                                    "parentId": "E8S1IgZCfrJ1RX6b39GBS",
+                                    "hidden": false,
+                                    "isDynamic": false,
+                                    "actionConfiguration": {
+                                        "_type": "action-config",
+                                        "actionName": "Navigate",
+                                        "actionOwner": "shesha.common",
+                                        "handleFail": false,
+                                        "handleSuccess": false,
+                                        "actionArguments": {
+                                            "navigationType": "url",
+                                            "url": "/login"
+                                        }
+                                    },
+                                    "buttonType": "default",
+                                    "version": 9,
+                                    "sortOrder": 0,
+                                    "itemType": "item",
+                                    "ghost": false,
+                                    "editMode": "editable",
+                                    "desktop": {
+                                        "buttonType": "link",
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "repeat": "no-repeat",
+                                            "size": "auto",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "type": "Segoe UI",
+                                            "align": "center",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "auto",
+                                            "height": "32px",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "mobile": {
+                                        "buttonType": "default",
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "repeat": "no-repeat",
+                                            "size": "auto",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "type": "Segoe UI",
+                                            "align": "center",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "auto",
+                                            "height": "32px",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "tablet": {
+                                        "buttonType": "default",
+                                        "border": {
+                                            "hideBorder": false,
+                                            "radiusType": "all",
+                                            "borderType": "all",
+                                            "border": {
+                                                "all": {
+                                                    "width": "1px",
+                                                    "style": "solid",
+                                                    "color": "#d9d9d9"
+                                                },
+                                                "top": {},
+                                                "bottom": {},
+                                                "left": {},
+                                                "right": {}
+                                            },
+                                            "radius": {
+                                                "all": 8
+                                            }
+                                        },
+                                        "background": {
+                                            "type": "color",
+                                            "repeat": "no-repeat",
+                                            "size": "auto",
+                                            "position": "center",
+                                            "gradient": {
+                                                "direction": "to right",
+                                                "colors": {}
+                                            },
+                                            "url": "",
+                                            "storedFile": {
+                                                "id": null
+                                            },
+                                            "uploadFile": null
+                                        },
+                                        "font": {
+                                            "type": "Segoe UI",
+                                            "align": "center",
+                                            "size": 14,
+                                            "weight": "400"
+                                        },
+                                        "dimensions": {
+                                            "width": "auto",
+                                            "height": "32px",
+                                            "minHeight": "0px",
+                                            "maxHeight": "auto",
+                                            "minWidth": "0px",
+                                            "maxWidth": "auto"
+                                        },
+                                        "shadow": {
+                                            "offsetX": 0,
+                                            "offsetY": 0,
+                                            "color": "#000000",
+                                            "blurRadius": 0,
+                                            "spreadRadius": 0
+                                        },
+                                        "stylingBox": "{}"
+                                    },
+                                    "border": {
+                                        "radiusType": "all"
+                                    }
+                                }
+                            ],
+                            "style": "return {\n  \"flex-direction\": \"column\",\n  \"margin-bottom\": \"25px\"\n}",
+                            "version": 7,
+                            "componentName": "container6",
+                            "propertyName": "container6",
+                            "desktop": {
+                                "style": null,
+                                "className": "",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "100%",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "100%",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "flex",
+                                "stylingBox": "{\"paddingTop\":\"\",\"marginTop\":\"15\",\"marginBottom\":\"15\"}",
+                                "flexDirection": "row",
+                                "justifyContent": "center",
+                                "showAdvanced": true,
+                                "alignItems": "center",
+                                "flexWrap": "nowrap",
+                                "alignSelf": "center",
+                                "justifySelf": "center"
+                            },
+                            "tablet": {
+                                "style": "return {\n  \"flex-direction\": \"column\",\n  \"margin-bottom\": \"25px\"\n}",
+                                "className": "",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "flex",
+                                "stylingBox": "{}"
+                            },
+                            "mobile": {
+                                "style": "return {\n  \"flex-direction\": \"column\",\n  \"margin-bottom\": \"25px\"\n}",
+                                "className": "",
+                                "border": {
+                                    "hideBorder": false,
+                                    "radiusType": "all",
+                                    "borderType": "all",
+                                    "border": {
+                                        "all": {
+                                            "width": "1px",
+                                            "style": "none",
+                                            "color": "#d9d9d9"
+                                        },
+                                        "top": {},
+                                        "bottom": {},
+                                        "left": {},
+                                        "right": {}
+                                    },
+                                    "radius": {
+                                        "all": "8"
+                                    }
+                                },
+                                "background": {
+                                    "type": "color",
+                                    "repeat": "no-repeat",
+                                    "size": "cover",
+                                    "position": "center",
+                                    "gradient": {
+                                        "direction": "to right",
+                                        "colors": {}
+                                    },
+                                    "url": "",
+                                    "storedFile": {
+                                        "id": null
+                                    },
+                                    "uploadFile": null
+                                },
+                                "font": {
+                                    "align": "left",
+                                    "weight": "400"
+                                },
+                                "dimensions": {
+                                    "width": "auto",
+                                    "height": "auto",
+                                    "minHeight": "auto",
+                                    "maxHeight": "auto",
+                                    "minWidth": "0px",
+                                    "maxWidth": "auto"
+                                },
+                                "shadow": {
+                                    "offsetX": 0,
+                                    "offsetY": 0,
+                                    "color": "rgba(0, 0, 0, 0.15)",
+                                    "blurRadius": 0,
+                                    "spreadRadius": 0
+                                },
+                                "display": "flex",
+                                "stylingBox": "{}"
+                            },
+                            "shadowStyle": "none",
+                            "border": {
+                                "radiusType": "all"
+                            }
+                        }
+                    ],
+                    "version": 7,
+                    "componentName": "container3",
+                    "propertyName": "container3",
+                    "desktop": {
+                        "style": null,
+                        "className": "",
+                        "border": {
+                            "hideBorder": false,
+                            "radiusType": "all",
+                            "borderType": "all",
+                            "border": {
+                                "all": {
+                                    "width": "1px",
+                                    "color": "#d9d9d9",
+                                    "style": "solid"
+                                },
+                                "top": {
+                                    "width": "1",
+                                    "style": "solid",
+                                    "color": "#e12424"
+                                },
+                                "bottom": {
+                                    "width": "1",
+                                    "style": "solid",
+                                    "color": "#ea2020"
+                                },
+                                "left": {
+                                    "width": "1",
+                                    "style": "solid",
+                                    "color": "#c62222"
+                                },
+                                "right": {
+                                    "width": "1",
+                                    "style": "solid",
+                                    "color": "#ce2222"
+                                }
+                            },
+                            "radius": {
+                                "all": 0
+                            }
+                        },
+                        "background": {
+                            "type": "color",
+                            "repeat": "no-repeat",
+                            "size": "cover",
+                            "position": "center",
+                            "gradient": {
+                                "direction": "to right",
+                                "colors": {}
+                            },
+                            "url": "",
+                            "storedFile": {
+                                "id": null
+                            },
+                            "uploadFile": null
+                        },
+                        "font": {
+                            "align": "left",
+                            "weight": "400"
+                        },
+                        "dimensions": {
+                            "width": "auto",
+                            "height": "auto",
+                            "minHeight": "auto",
+                            "maxHeight": "auto",
+                            "minWidth": "auto",
+                            "maxWidth": "auto"
+                        },
+                        "shadow": {
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "color": "rgba(0, 0, 0, 0.15)",
+                            "blurRadius": 0,
+                            "spreadRadius": 0
+                        },
+                        "display": "block",
+                        "stylingBox": "{\"marginRight\":\"\",\"paddingLeft\":\"10\",\"paddingRight\":\"10\",\"paddingTop\":\"5\",\"paddingBottom\":\"5\"}"
+                    },
+                    "tablet": {
+                        "style": "return {\n  width: '430px',\n  backgroundColor: 'white',\n  border: '1px solid lightgray',\n  padding: '3px 5px',\n  overflow: 'hidden'\n}",
+                        "className": "",
+                        "border": {
+                            "hideBorder": false,
+                            "radiusType": "all",
+                            "borderType": "all",
+                            "border": {
+                                "all": {
+                                    "width": "1px",
+                                    "style": "none",
+                                    "color": "#d9d9d9"
+                                },
+                                "top": {},
+                                "bottom": {},
+                                "left": {},
+                                "right": {}
+                            },
+                            "radius": {
+                                "all": "8"
+                            }
+                        },
+                        "background": {
+                            "type": "color",
+                            "repeat": "no-repeat",
+                            "size": "cover",
+                            "position": "center",
+                            "gradient": {
+                                "direction": "to right",
+                                "colors": {}
+                            },
+                            "url": "",
+                            "storedFile": {
+                                "id": null
+                            },
+                            "uploadFile": null
+                        },
+                        "font": {
+                            "align": "left",
+                            "weight": "400"
+                        },
+                        "dimensions": {
+                            "width": "auto",
+                            "height": "auto",
+                            "minHeight": "auto",
+                            "maxHeight": "auto",
+                            "minWidth": "0px",
+                            "maxWidth": "auto"
+                        },
+                        "shadow": {
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "color": "rgba(0, 0, 0, 0.15)",
+                            "blurRadius": 0,
+                            "spreadRadius": 0
+                        },
+                        "display": "block",
+                        "stylingBox": "{}"
+                    },
+                    "mobile": {
+                        "style": "return {\n  width: '430px',\n  backgroundColor: 'white',\n  border: '1px solid lightgray',\n  padding: '3px 5px',\n  overflow: 'hidden'\n}",
+                        "className": "",
+                        "border": {
+                            "hideBorder": false,
+                            "radiusType": "all",
+                            "borderType": "all",
+                            "border": {
+                                "all": {
+                                    "width": "1px",
+                                    "style": "none",
+                                    "color": "#d9d9d9"
+                                },
+                                "top": {},
+                                "bottom": {},
+                                "left": {},
+                                "right": {}
+                            },
+                            "radius": {
+                                "all": "8"
+                            }
+                        },
+                        "background": {
+                            "type": "color",
+                            "repeat": "no-repeat",
+                            "size": "cover",
+                            "position": "center",
+                            "gradient": {
+                                "direction": "to right",
+                                "colors": {}
+                            },
+                            "url": "",
+                            "storedFile": {
+                                "id": null
+                            },
+                            "uploadFile": null
+                        },
+                        "font": {
+                            "align": "left",
+                            "weight": "400"
+                        },
+                        "dimensions": {
+                            "width": "auto",
+                            "height": "auto",
+                            "minHeight": "auto",
+                            "maxHeight": "auto",
+                            "minWidth": "0px",
+                            "maxWidth": "auto"
+                        },
+                        "shadow": {
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "color": "rgba(0, 0, 0, 0.15)",
+                            "blurRadius": 0,
+                            "spreadRadius": 0
+                        },
+                        "display": "block",
+                        "stylingBox": "{}"
+                    },
+                    "shadowStyle": "none",
+                    "border": {
+                        "radiusType": "all"
+                    }
+                }
+            ],
+            "className": "",
+            "style": "return {\r\n\t\"display\": \"flex\",\r\n\t\"justify-content\": \"center\",\r\n\t\"align-items\": \"center\",\r\n\t\"text-align\": \"center\",\r\n\t\"min-height\": \"100vh\"\r\n}",
+            "settingsValidationErrors": [],
+            "display": "flex",
+            "flexDirection": "column",
+            "flexWrap": "nowrap",
+            "gap": "",
+            "gridColumnsCount": "",
+            "alignItems": "center",
+            "justifyItems": "center",
+            "version": 7,
+            "componentName": "container1",
+            "propertyName": "container1",
+            "desktop": {
+                "style": "return {\r\n\t\"display\": \"flex\",\r\n\t\"justify-content\": \"center\",\r\n\t\"align-items\": \"center\",\r\n\t\"text-align\": \"center\",\r\n\t\"min-height\": \"100vh\"\r\n}",
+                "className": "",
+                "border": {
+                    "hideBorder": false,
+                    "radiusType": "all",
+                    "borderType": "all",
+                    "border": {
+                        "all": {
+                            "width": "1px",
+                            "style": "none",
+                            "color": "#d9d9d9"
+                        },
+                        "top": {},
+                        "bottom": {},
+                        "left": {},
+                        "right": {}
+                    },
+                    "radius": {
+                        "all": "8"
+                    }
+                },
+                "background": {
+                    "type": "color",
+                    "repeat": "no-repeat",
+                    "size": "cover",
+                    "position": "center",
+                    "gradient": {
+                        "direction": "to right",
+                        "colors": {}
+                    },
+                    "url": "",
+                    "storedFile": {
+                        "id": null
+                    },
+                    "uploadFile": null
+                },
+                "font": {
+                    "align": "left",
+                    "weight": "400"
+                },
+                "dimensions": {
+                    "width": "auto",
+                    "height": "auto",
+                    "minHeight": "auto",
+                    "maxHeight": "auto",
+                    "minWidth": "0px",
+                    "maxWidth": "auto"
+                },
+                "shadow": {
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "color": "rgba(0, 0, 0, 0.15)",
+                    "blurRadius": 0,
+                    "spreadRadius": 0
+                },
+                "display": "flex",
+                "stylingBox": "{}",
+                "flexDirection": "column"
+            },
+            "tablet": {
+                "style": "return {\r\n\t\"display\": \"flex\",\r\n\t\"justify-content\": \"center\",\r\n\t\"align-items\": \"center\",\r\n\t\"text-align\": \"center\",\r\n\t\"min-height\": \"100vh\"\r\n}",
+                "className": "",
+                "border": {
+                    "hideBorder": false,
+                    "radiusType": "all",
+                    "borderType": "all",
+                    "border": {
+                        "all": {
+                            "width": "1px",
+                            "style": "none",
+                            "color": "#d9d9d9"
+                        },
+                        "top": {},
+                        "bottom": {},
+                        "left": {},
+                        "right": {}
+                    },
+                    "radius": {
+                        "all": "8"
+                    }
+                },
+                "background": {
+                    "type": "color",
+                    "repeat": "no-repeat",
+                    "size": "cover",
+                    "position": "center",
+                    "gradient": {
+                        "direction": "to right",
+                        "colors": {}
+                    },
+                    "url": "",
+                    "storedFile": {
+                        "id": null
+                    },
+                    "uploadFile": null
+                },
+                "font": {
+                    "align": "left",
+                    "weight": "400"
+                },
+                "dimensions": {
+                    "width": "auto",
+                    "height": "auto",
+                    "minHeight": "auto",
+                    "maxHeight": "auto",
+                    "minWidth": "0px",
+                    "maxWidth": "auto"
+                },
+                "shadow": {
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "color": "rgba(0, 0, 0, 0.15)",
+                    "blurRadius": 0,
+                    "spreadRadius": 0
+                },
+                "display": "flex",
+                "stylingBox": "{}"
+            },
+            "mobile": {
+                "style": "return {\r\n\t\"display\": \"flex\",\r\n\t\"justify-content\": \"center\",\r\n\t\"align-items\": \"center\",\r\n\t\"text-align\": \"center\",\r\n\t\"min-height\": \"100vh\"\r\n}",
+                "className": "",
+                "border": {
+                    "hideBorder": false,
+                    "radiusType": "all",
+                    "borderType": "all",
+                    "border": {
+                        "all": {
+                            "width": "1px",
+                            "style": "none",
+                            "color": "#d9d9d9"
+                        },
+                        "top": {},
+                        "bottom": {},
+                        "left": {},
+                        "right": {}
+                    },
+                    "radius": {
+                        "all": "8"
+                    }
+                },
+                "background": {
+                    "type": "color",
+                    "repeat": "no-repeat",
+                    "size": "cover",
+                    "position": "center",
+                    "gradient": {
+                        "direction": "to right",
+                        "colors": {}
+                    },
+                    "url": "",
+                    "storedFile": {
+                        "id": null
+                    },
+                    "uploadFile": null
+                },
+                "font": {
+                    "align": "left",
+                    "weight": "400"
+                },
+                "dimensions": {
+                    "width": "auto",
+                    "height": "auto",
+                    "minHeight": "auto",
+                    "maxHeight": "auto",
+                    "minWidth": "0px",
+                    "maxWidth": "auto"
+                },
+                "shadow": {
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "color": "rgba(0, 0, 0, 0.15)",
+                    "blurRadius": 0,
+                    "spreadRadius": 0
+                },
+                "display": "flex",
+                "stylingBox": "{}"
+            },
+            "shadowStyle": "none",
+            "border": {
+                "radiusType": "all"
+            }
+        }
+    ],
+    "formSettings": {
+        "_formFields": [
+            "modelType",
+            "layout",
+            "size",
+            "colon",
+            "labelCol.span",
+            "wrapperCol.span",
+            "showModeToggler",
+            "excludeFormFieldsInPayload",
+            "fieldsToFetch",
+            "formKeysToPersist",
+            "uniqueFormId",
+            "initialValues",
+            "preparedValues",
+            "onInitialized",
+            "onDataLoaded",
+            "onUpdate"
+        ],
+        "layout": "horizontal",
+        "colon": true,
+        "labelCol": {
+            "span": 5
+        },
+        "wrapperCol": {
+            "span": 13
+        },
+        "modelType": "",
+        "uniqueFormId": "",
+        "access": 5,
+        "permissions": [],
+        "version": 7,
+        "dataLoaderType": "gql",
+        "dataSubmitterType": "gql",
+        "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
+        "onAfterDataLoad": "\r\n// Migrated from Initial Values and components defaults\r\nconst initialData = {\n    \"errorMessage\": \"\",\n    \"username\": \"\",\n    ...form.data\n};\r\nform.setFieldsValue(initialData);\r\n// ----------------------------------------------------\r\n\r\n",
+        "onPrepareSubmitData": null,
+        "onBeforeSubmit": null,
+        "onSubmitSuccess": null,
+        "onSubmitFailed": null,
+        "dataSubmittersSettings": {
+            "gql": {
+                "endpointType": "default",
+                "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
+            }
+        },
+        "dataLoadersSettings": {
+            "gql": {
+                "endpointType": "default"
+            },
+            "custom": {}
+        }
+    }
+}

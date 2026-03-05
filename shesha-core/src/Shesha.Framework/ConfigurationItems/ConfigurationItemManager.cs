@@ -110,6 +110,11 @@ namespace Shesha.ConfigurationItems
             return Task.CompletedTask;
         }
 
+        protected virtual Task AfterItemExposedAsync(TItem exposedItem)
+        {
+            return Task.CompletedTask;
+        }
+
         /// <summary>
         /// Copy value of custom properties from <paramref name="source"/> to <paramref name="destination"/>.
         /// Is used in Duplicate and Expose operations
@@ -165,6 +170,8 @@ namespace Shesha.ConfigurationItems
                 });
 
                 await UnitOfWorkManager.Current.SaveChangesAsync();
+
+                await AfterItemExposedAsync(exposedConfig);
 
                 return exposedConfig;
             }            

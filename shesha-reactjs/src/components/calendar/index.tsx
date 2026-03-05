@@ -1,6 +1,7 @@
 import { DownOutlined } from '@ant-design/icons';
 import { Checkbox, Dropdown, Empty, Menu } from 'antd';
-import moment from 'moment/min/moment-with-locales';
+import moment from "moment";
+import "moment/min/locales"; // Imports ALL locales
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, momentLocalizer, SlotInfo, View } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';

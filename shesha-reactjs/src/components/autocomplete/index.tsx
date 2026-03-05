@@ -66,6 +66,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
 
+  const setSelected = (value: unknown): void => {
+    // Bring the value to Array form and create a copy of elements if they are objects to avoid side effects
+    // Changes Value may affect to Selected, as they may refer to the same object.
+    selected.current = getNormalizedValues(value).map((x) => typeof x === 'object' ? { ...x } : x);
+  };
+
   const keys = useMemo(() => {
     const res = props.value
       ? Array.isArray(props.value)
@@ -91,14 +97,14 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         const foundValues = keys.map((x) => source.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x))
           .filter((v) => v != null);
         if (foundValues.length > 0) {
-          selected.current = foundValues;
+          setSelected(foundValues);
         } else {
           // Use original values as fallback
-          selected.current = getNormalizedValues(props.value);
+          setSelected(props.value);
         }
       } else {
         // Use original values as fallback
-        selected.current = getNormalizedValues(props.value);
+        setSelected(props.value);
       }
     }
   }, [source?.isFetchingTableData, keys, props.value]); // , source?.tableData, keyValueFunc, outcomeValueFunc, allData]);
@@ -118,7 +124,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           setLoadingValues(false);
           setLoadingIndicator(false);
           if (props.value && hasDisplayName) {
-            selected.current = getNormalizedValues(props.value);
+            setSelected(props.value);
           }
           return;
         }
@@ -141,7 +147,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
               setLoadingIndicator(false);
               // Fallback to using existing values
               if (props.value) {
-                selected.current = getNormalizedValues(props.value);
+                setSelected(props.value);
               }
             }
           } else {
@@ -149,14 +155,14 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
             setLoadingValues(false);
             setLoadingIndicator(false);
             if (props.value) {
-              selected.current = getNormalizedValues(props.value);
+              setSelected(props.value);
             }
           }
         }
         if (props.dataSourceType === 'entitiesList' && hasDisplayName && !loadingValues && !selected.current?.length) {
           setLoadingIndicator(false);
           const values = getNormalizedValues(props.value);
-          selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
+          setSelected(keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x)));
         }
       } else {
         setLoadingIndicator(false);
@@ -202,11 +208,11 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   };
 
   const handleChange = (_value: unknown, option: unknown): void => {
-    selected.current = Boolean(option)
+    setSelected(Boolean(option)
       ? Array.isArray(option)
         ? (option as ISelectOption[]).map((o) => o.data)
         : [(option as ISelectOption).data]
-      : [];
+      : []);
 
     const selectedValue = Boolean(option)
       ? Array.isArray(option)

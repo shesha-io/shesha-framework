@@ -18,6 +18,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Dtos\**" />
+    <EmbeddedResource Remove="Services\Dtos\**" />
+    <None Remove="Services\Dtos\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\EnterpriseMigration\M20220719143699.cs" />
     <Compile Remove="Migrations\M20220706160000.cs" />
     <None Include="README.md" Pack="true" PackagePath="\" />
@@ -57,9 +63,5 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\Dtos\" />
   </ItemGroup>
 </Project>
