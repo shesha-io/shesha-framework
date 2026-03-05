@@ -52,12 +52,12 @@ export const useStyles = createStyles(
       display: flex;
       flex-direction: row;
       white-space: nowrap;
-      align-items: center;
+      align-items: ${isScrolling ? 'stretch' : 'center'};
       height: auto;
       min-height: 100%;
       width: ${width};
-      padding: 0;
-      overflow: visible;
+      padding: ${isScrolling ? '0' : '2px 0'};
+      overflow: visible !important;
     `;
 
     const menuWrapper = css`
@@ -66,7 +66,7 @@ export const useStyles = createStyles(
       align-items: center;
       scroll-behavior: smooth;
       scrollbar-width: none;
-      overflow-y: visible;
+      overflow-y: visible !important;
       margin: 0;
       padding: 0;
 
@@ -80,7 +80,7 @@ export const useStyles = createStyles(
         display: flex;
         width: calc(${width} - 80px);
         overflow-x: scroll;
-        overflow-y: visible;
+        overflow-y: visible !important;
       `
       : undefined;
 
@@ -94,6 +94,7 @@ export const useStyles = createStyles(
         font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
         font-weight: ${fontStyles?.fontWeight};
         font-family: ${fontStyles?.fontFamily};
+        overflow: visible !important;
 
         .${prefixCls}-menu-item::after,
           .${prefixCls}-menu-item-active::after,
@@ -288,7 +289,8 @@ export const useStyles = createStyles(
     `;
 
     // Ant Design horizontal menu items have a base height of 40px + padding
-    const menuItemHeight = `calc(46px + ${padding?.y ? `${padding.y * 2}px` : '0px'})`;
+    // Adjusted to 48px to match actual rendered height
+    const menuItemHeight = `calc(48px + ${padding?.y ? `${padding.y * 2}px` : '0px'})`;
 
     const scrollButtons = css`
       width: 80px;
@@ -302,7 +304,6 @@ export const useStyles = createStyles(
       align-self: center;
       margin: 0;
       padding: 0;
-      margin-top: 1px;
       gap: 0;
     `;
 
