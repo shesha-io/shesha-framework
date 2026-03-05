@@ -223,7 +223,7 @@ namespace Shesha.Validations
             {
                 case DataTypes.String:
                     var stringValueOrEmpty = value?.ToString() ?? string.Empty;
-                    if (propConfig.MinLength.HasValue && (value == null || stringValueOrEmpty.Length < propConfig.MinLength))
+                    if (propConfig.MinLength.HasValue && propConfig.MinLength > 0 && (value == null || stringValueOrEmpty.Length < propConfig.MinLength))
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage

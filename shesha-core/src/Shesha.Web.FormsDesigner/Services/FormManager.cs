@@ -6,6 +6,7 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
 using Shesha.Permissions;
+using Shesha.Reflection;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Models;
 using System.Collections.Generic;
@@ -116,6 +117,17 @@ namespace Shesha.Web.FormsDesigner.Services
             await _permissionedObjectManager.CopyAsync(
                 GetFormPermissionedObjectName(item.Module?.Name, item.Name),
                 GetFormPermissionedObjectName(duplicate.Module?.Name, duplicate.Name),
+                ShaPermissionedObjectsTypes.Form
+            );
+        }
+
+        protected override async Task AfterItemExposedAsync(FormConfiguration exposedItem)
+        {
+            var sourceItem = exposedItem.ExposedFrom.NotNull();
+
+            await _permissionedObjectManager.CopyAsync(
+                GetFormPermissionedObjectName(sourceItem.Module?.Name, sourceItem.Name),
+                GetFormPermissionedObjectName(exposedItem.Module?.Name, exposedItem.Name),
                 ShaPermissionedObjectsTypes.Form
             );
         }

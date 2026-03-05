@@ -79,14 +79,14 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
               condition={noPageContext}
               wrap={(children) => (
                 <DataContextProvider
-                  id="designerPageContext"
+                  id="pageContext"
                   description="Designer Page context"
                   name={SheshaCommonContexts.PageContext}
                   type="page"
                   webStorageType="sessionStorage"
                 >
                   <DataContextProvider
-                    id="designerFormContext"
+                    id="formContext"
                     description="Designer Form context"
                     name={SheshaCommonContexts.FormContext}
                     type="form"
