@@ -18,10 +18,8 @@ import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 import { IConfigurableColumnsProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
-import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { getUrlKeyParam } from '@/utils';
 
 export interface IWithUrlRepositoryArgs {
@@ -37,8 +35,6 @@ interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
   backendUrl: string;
   httpHeaders: IHttpHeadersDictionary;
   metadataDispatcher: IMetadataDispatcher;
-  apiHelper: IEntityEndpointsEvaluator;
-  mutator: IUseMutateResponse<any>;
 }
 
 const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
@@ -227,8 +223,6 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
 export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const metadataDispatcher = useMetadataDispatcher();
-  const apiHelper = useModelApiHelper();
-  const mutator = useMutate();
 
   const repository = useMemo<IUrlRepository>(() => {
     return createRepository({
@@ -236,10 +230,8 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
       backendUrl,
       httpHeaders,
       metadataDispatcher,
-      apiHelper,
-      mutator,
     });
-  }, [args.getListUrl, args.entityType, backendUrl, httpHeaders, apiHelper, mutator]);
+  }, [args.getListUrl, args.entityType, backendUrl, httpHeaders]);
 
   return repository;
 };
