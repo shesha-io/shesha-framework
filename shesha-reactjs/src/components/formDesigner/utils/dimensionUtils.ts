@@ -8,6 +8,7 @@ import { DESIGNER_DIMENSIONS } from './designerConstants';
  */
 export type PreservableDimension = 'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight';
 
+export const ALL_DIMENSIONS_COUNT = 6;
 /**
  * Normalized form of preserveDimensionsInDesigner for easier consumption.
  * Always returns a Set of dimension names that should be preserved.
@@ -154,7 +155,7 @@ export const dimensionUtils = {
     }
 
     // All dimensions preserved - return original
-    if (preservedSet.size === 6) { // All 6 dimension properties
+    if (preservedSet.size === ALL_DIMENSIONS_COUNT) { // All 6 dimension properties
       return dimensionsStyles;
     }
 
@@ -210,7 +211,7 @@ export const dimensionUtils = {
     }
 
     // All dimensions preserved - return margins stripped only
-    if (preservedSet.size === 6) {
+    if (preservedSet.size === ALL_DIMENSIONS_COUNT) {
       return marginsStripped;
     }
 
