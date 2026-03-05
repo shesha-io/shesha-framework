@@ -6,6 +6,7 @@ import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
+import { useStyles } from './styles';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -27,6 +28,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   }, [formItemlabelCol, formItemWrapperCol]);
 
   const { hideLabel, hidden } = model;
+  const { styles } = useStyles();
   if (hidden) return null;
 
   const propName = namePrefix && !model.initialContext
@@ -34,7 +36,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className),
+    className: classNames(className, styles.formItem),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
