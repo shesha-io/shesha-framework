@@ -7,14 +7,14 @@ import { IRadioOption } from '../settingsInput/interfaces';
 
 export interface ILabelProps {
   readOnly?: boolean;
-  onChange?: (value: any) => void;
-  value?: boolean;
   label: string | React.ReactNode;
+  value?: boolean;
   labelAlignOptions?: IRadioOption[];
 }
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions: labelAlign }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ value,readOnly, label, labelAlignOptions: labelAlign }) => {
   const { styles } = useStyles();
+
   return (
     <>
       <div className={!value ? styles.flexWrapper : ''}>

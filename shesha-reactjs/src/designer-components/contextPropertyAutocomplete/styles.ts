@@ -14,6 +14,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     color: darkslategrey;
     font-weight: 500;
     position: relative;
+    top: 8px;
     
     +.ant-form-item-tooltip {
         align-self: end !important;
