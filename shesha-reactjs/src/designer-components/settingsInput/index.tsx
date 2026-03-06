@@ -13,7 +13,6 @@ const SettingsInput: SettingsInputDefinition = {
   Factory: ({ model }) => {
     const { label, propertyName: property, tooltip: description, readOnly } = model;
 
-
     return (
       model.hidden ? null
         : (

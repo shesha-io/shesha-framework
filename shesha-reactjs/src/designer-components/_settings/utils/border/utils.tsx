@@ -165,6 +165,7 @@ export const getBorderInputs = (fbf: FormBuilderFactory, path = '', isResponsive
           propertyName: '',
           icon: 'BorderOutlined',
           tooltip: `Styles will apply to all border`,
+          width: 24
         },
         {
           id: nanoid(),
@@ -214,6 +215,7 @@ export const getBorderInputs = (fbf: FormBuilderFactory, path = '', isResponsive
                 propertyName: 'bordericon',
                 icon: sideValue.icon,
                 tooltip: `Styles will apply to ${side} border`,
+                width: 24
               },
               {
                 id: nanoid(),
@@ -261,8 +263,8 @@ export const getCornerInputs = (fbf: FormBuilderFactory, path = '', isResponsive
       inputType: 'radio',
       label: 'Radius Type',
       propertyName: `${path ? path + '.' : ''}border.radiusType`,
-      // defaultValue: 'all',
       buttonGroupOptions: radiusConfigType,
+      width: 24
     })
     .addSettingsInputRow({
       id: nanoid(),
