@@ -18,11 +18,27 @@ import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
-import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
-import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { getUrlKeyParam } from '@/utils';
 import { wrapDisplayName } from '@/utils/react';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+
+// Extended data column interface with additional properties used in URL repository
+interface IExtendedDataColumnProps extends IConfigurableColumnsProps {
+  propertyName?: string;
+  allowSorting?: boolean;
+  dataType?: string;
+  dataFormat?: string;
+  referenceListName?: string;
+  referenceListModule?: string;
+  entityTypeName?: string;
+  entityTypeModule?: string;
+  allowInherited?: boolean;
+  metadata?: any;
+}
+
+const isExtendedDataColumn = (col: IConfigurableColumnsProps): col is IExtendedDataColumnProps => {
+  return col.columnType === 'data';
+};
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -36,8 +52,6 @@ interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
   backendUrl: string;
   httpHeaders: IHttpHeadersDictionary;
   metadataDispatcher: IMetadataDispatcher;
-  apiHelper: IEntityEndpointsEvaluator;
-  mutator: IUseMutateResponse<any>;
 }
 
 const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
@@ -128,8 +142,36 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     });
   };
 
-  const prepareColumns = (_: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
-    return Promise.resolve([]);
+  const prepareColumns = (configurableColumns: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
+    if (!configurableColumns || configurableColumns.length === 0) {
+      return Promise.resolve([]);
+    }
+
+    // Convert configurable columns to DataTableColumnDto format
+    const dataTableColumns = configurableColumns
+      .filter(isExtendedDataColumn)
+      .map((col) => {
+        const result: DataTableColumnDto = {
+          propertyName: col.propertyName || col.accessor || col.caption,
+          name: col.propertyName || col.accessor || col.caption,
+          caption: col.caption,
+          description: col.description,
+          dataType: col.dataType ?? 'string',
+          dataFormat: col.dataFormat,
+          referenceListName: col.referenceListName,
+          referenceListModule: col.referenceListModule,
+          entityTypeName: col.entityTypeName,
+          entityTypeModule: col.entityTypeModule,
+          allowInherited: col.allowInherited ?? false,
+          isFilterable: true, // Enable filtering for all URL source columns
+          isSortable: col.allowSorting !== false, // Default to true unless explicitly disabled
+          metadata: col.metadata,
+        };
+
+        return result;
+      });
+
+    return Promise.resolve(dataTableColumns);
   };
 
   const performUpdate = (_rowIndex: number, _: any): Promise<any> => {
@@ -168,8 +210,6 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
 export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const metadataDispatcher = useMetadataDispatcher();
-  const apiHelper = useModelApiHelper();
-  const mutator = useMutate();
 
   const repository = useMemo<IUrlRepository>(() => {
     return createRepository({
@@ -177,8 +217,6 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
       backendUrl,
       httpHeaders,
       metadataDispatcher,
-      apiHelper,
-      mutator,
     });
   }, [args.getListUrl, backendUrl, httpHeaders]);
 
