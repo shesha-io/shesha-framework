@@ -254,10 +254,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     margin: 0;
                     display: flex;
                     white-space: normal;
-                    overflow: hidden;
                     max-width: 100%;
                     overflow: auto;
-        
                     .${shaComponentTitle} {
                         margin-right: 10px;
                     }
@@ -425,7 +423,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaComponent} {
             position: relative;
-            min-height: 50px; // Ensure enough space for delete button and error icon
+            min-height: 50px; /* Ensure enough space for delete button and error icon */
 
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
@@ -443,20 +441,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
               .${shaComponentIndicator} {
                 display: none;
-              }
-            }
-
-            // DataContext and DataTable components need more height in error state
-            &[data-sha-c-type="dataContext"],
-            &[data-sha-c-type="datatable"],
-            &[data-sha-c-type="dataList"],
-            &[data-sha-c-type="tableViewSelector"],
-            &[data-sha-c-type="childTable"],
-            &[data-sha-c-type="datatable.filter"],
-            &[data-sha-c-type="datatable.quickSearch"],
-            &[data-sha-c-type="datatable.pager"] {
-              .sha-error-icon-container {
-                min-height: 48px;
               }
             }
 
@@ -501,6 +485,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               cursor: grab;
               border: 1px dashed ${token.colorPrimary};
               box-sizing: border-box;
+              display: flex;
+              padding: 5px 3px;
             }
             &:not(:hover) {
                 .${shaComponentControls} {

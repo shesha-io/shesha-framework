@@ -77,7 +77,6 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
       )}
     >
       <>
-        {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
@@ -101,6 +100,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
           className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
           style={{ ...style, ...incomingStyle }}
         >
+          {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
           {component?.id && <ConfigurableFormComponentDesigner componentModel={component} />}
         </ReactSortable>
       </>

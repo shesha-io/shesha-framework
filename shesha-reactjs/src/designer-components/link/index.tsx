@@ -49,8 +49,8 @@ const LinkComponent: LinkComponentDefinition = {
         {() => {
           if (!hasChildren) {
             return (
-              <div style={{ ...linkStyle }}>
-                <a href={calculatedModel.href} target={target} className="sha-link" style={model.allStyles.fullStyle}>
+              <div style={{ ...linkStyle, alignItems: 'center', display: 'flex', height: '100%' }}>
+                <a href={calculatedModel.href} target={target} className="sha-link" style={{ ...model.allStyles.fullStyle, height: 'unset' }}>
                   {content}
                 </a>
               </div>

@@ -188,4 +188,7 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, Om
   showAdvanced?: boolean;
 }
 
-export type ContainerComponentDefinition = ComponentDefinition<"container", IContainerComponentProps>;
+export type ContainerComponentDefinition = ComponentDefinition<"container", IContainerComponentProps> & {
+  /** Static empty array to prevent unnecessary re-renders when isDynamic is false */
+  emptyComponents?: [];
+};

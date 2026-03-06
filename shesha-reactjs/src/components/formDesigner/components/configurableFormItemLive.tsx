@@ -6,6 +6,8 @@ import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
+import { designerConstants } from '../utils/designerConstants';
+import { addPx } from '@/utils/style';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -20,6 +22,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
+  const shaForm = useShaFormInstance();
+  const isInDesigner = shaForm.formMode === 'designer';
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -28,6 +32,22 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
 
   const { hideLabel, hidden } = model;
   if (hidden) return null;
+
+  const { top: defaultMarginTop, left: defaultMarginLeft, right: defaultMarginRight, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
+
+  // In designer mode: NEVER apply margins to Form.Item (wrapper handles them)
+  // In live mode: Apply margins from allStyles.margins or use defaults
+  // Note: margins are stored separately so inner components don't get them (prevents double margins)
+  const rawMargins = isInDesigner
+    ? { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }
+    : (model?.allStyles?.margins || {});
+
+  const {
+    marginTop = defaultMarginTop,
+    marginBottom = defaultMarginBottom,
+    marginRight = defaultMarginRight,
+    marginLeft = defaultMarginLeft,
+  } = rawMargins;
 
   const propName = namePrefix && !model.initialContext
     ? namePrefix + '.' + model.propertyName
@@ -46,6 +66,12 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
+    style: {
+      marginTop: addPx(marginTop),
+      marginBottom: addPx(marginBottom),
+      marginRight: addPx(marginRight),
+      marginLeft: addPx(marginLeft),
+    },
   };
 
   if (typeof children === 'function') {

@@ -25,6 +25,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
   type: 'passwordCombo',
   isInput: true,
   name: 'Password combo',
+  preserveDimensionsInDesigner: true,
   icon: <LockOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.password,

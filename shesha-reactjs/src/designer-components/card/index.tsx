@@ -26,6 +26,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   type: 'card',
   isInput: false,
   name: 'Card',
+  preserveDimensionsInDesigner: true,
   icon: <CodeSandboxSquareFilled />,
   Factory: ({ model }) => {
     const { data } = useFormData();
@@ -89,6 +90,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
           className={classNames(model.className, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}
           extra={extra}
+          styles={{}}
           style={{ ...removeNullUndefined(newStyles), ...getLayoutStyle(model, { data, globalState }) }}
         >
           <ComponentsContainer

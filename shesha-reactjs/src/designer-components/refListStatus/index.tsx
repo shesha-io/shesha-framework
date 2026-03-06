@@ -17,8 +17,10 @@ import { defaultStyles } from './utils';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
-  isInput: false,
+  isInput: true,
   isOutput: true,
+  // Component manages its own dimensions in designer mode
+  preserveDimensionsInDesigner: true,
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
   Factory: ({ model }) => {
@@ -49,6 +51,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
               showReflistName={showReflistName}
               solidBackground={solidBackground}
               style={model.allStyles?.fullStyle ?? {}}
+              isDesigner={formMode === 'designer'}
             />
           );
         }}

@@ -31,10 +31,11 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   icon: <EditOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { allStyles } = model;
-    const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles;
+    const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles ?? {};
 
     const { formMode } = useForm();
 
@@ -68,7 +69,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         showWordsCounter: model?.showWordsCounter,
       };
       return typedConfig;
-    }, [model, model.readOnly]);
+    }, [model]);
 
     const rerenderKey = `${model?.placeholder || ''}-${model?.placeholder || false}`;
 

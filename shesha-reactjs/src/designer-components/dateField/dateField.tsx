@@ -25,12 +25,15 @@ const DateField: DateFieldDefinition = {
   isOutput: true,
   canBeJsSetting: true,
   icon: <CalendarOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
+      width: '100%',
+      height: '100%',
     } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
     return (

@@ -25,6 +25,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>

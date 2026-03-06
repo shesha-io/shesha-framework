@@ -24,6 +24,7 @@ const DropdownComponent: DropdownComponentDefinition = {
   isHidden: false,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   calculateModel: (model, allData) => ({
     eventHandlers: customDropDownEventHandler(model, allData),

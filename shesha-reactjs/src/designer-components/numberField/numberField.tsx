@@ -29,6 +29,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
   canBeJsSetting: true,
   name: 'Number field',
   icon: <NumberOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   calculateModel: (model, allData) => {
     return {

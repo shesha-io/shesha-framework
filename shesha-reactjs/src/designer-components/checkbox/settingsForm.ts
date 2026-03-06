@@ -181,7 +181,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       parentId: styleRouterId,
                       ghost: true,
                       collapsible: 'header',
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                       content: {
                         id: nanoid(),
                         components: [...fbf()
@@ -196,7 +195,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 id: nanoid(),
                                 label: 'Size',
                                 propertyName: 'font.size',
-                                hideLabel: true,
                                 width: 50,
                               },
                               {
@@ -236,7 +234,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: nanoid(),
+                            parentId: styleRouterId,
                             inline: true,
                             label: 'Width',
                             inputs: [
@@ -269,38 +267,39 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 icon: "maxWidthIcon",
                               },
                             ],
+
                           })
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: nanoid(),
+                            parentId: styleRouterId,
                             inline: true,
                             inputs: [
                               {
                                 type: 'textField',
                                 id: nanoid(),
-                                label: "Height",
+                                label: 'Height',
                                 width: 85,
-                                propertyName: "dimensions.height",
-                                icon: "heightIcon",
-                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                propertyName: 'dimensions.height',
+                                icon: 'heightIcon',
+                                tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                               },
                               {
                                 type: 'textField',
                                 id: nanoid(),
-                                label: "Min Height",
+                                label: 'Min Height',
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "dimensions.minHeight",
-                                icon: "minHeightIcon",
+                                propertyName: 'dimensions.minHeight',
+                                icon: 'minHeightIcon',
                               },
                               {
                                 type: 'textField',
                                 id: nanoid(),
-                                label: "Max Height",
+                                label: 'Max Height',
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "dimensions.maxHeight",
-                                icon: "maxHeightIcon",
+                                propertyName: 'dimensions.maxHeight',
+                                icon: 'maxHeightIcon',
                               },
                             ],
                           })

@@ -30,6 +30,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   icon: <FileImageOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({
     ownerId: evaluateValueAsString(model.ownerId, allData),
     dataId: (allData.data as { Id: string })?.Id, // TODO: review and remove
@@ -145,5 +146,4 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
 };
 
 export default ImageComponent;
-
 

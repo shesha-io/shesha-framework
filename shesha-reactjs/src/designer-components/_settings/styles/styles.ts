@@ -1,6 +1,10 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, responsive, token }) => {
+  const formItem = cx(css`
+    margin: 0px !important;
+    }
+  `);
   const contentJs = cx(css`
         position: relative;
         top: 0px;
@@ -33,6 +37,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             font-weight: 500;
             position: relative;
             
+            
             +.ant-form-item-tooltip {
             align-self: end !important;
             position: relative;
@@ -40,9 +45,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             }
     `);
 
-  const bindingOptionsBtn = cx(css`
-        top: -8px;
-        `);
   const jsSwitch = cx(css`
             position: absolute;
             right: 0;
@@ -81,7 +83,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     contentCode,
     jsContent,
     label,
-    bindingOptionsBtn,
     jsSwitch,
+    formItem,
   };
 });

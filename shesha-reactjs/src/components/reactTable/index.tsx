@@ -602,7 +602,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       if (!cellRect) return { top: 0, left: 0 };
 
       // Get the canvas zoom level (default to 100 if not available)
-      const zoomLevel = canvasState?.zoom ?? 100;
+      const zoomLevel = shaForm?.formMode === "designer" ? canvasState?.zoom ?? 100 : 100;
       const zoomScale = Math.max(0.01, zoomLevel / 100);
 
       const viewport = {
