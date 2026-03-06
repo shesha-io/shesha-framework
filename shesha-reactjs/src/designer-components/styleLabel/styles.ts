@@ -24,7 +24,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     border: 1px solid ${token.colorPrimary};
     `);
 
-    const formItem = cx("", css`
+  const formItem = cx("", css`
       .ant-form-item {
         margin: 0px !important;
       }

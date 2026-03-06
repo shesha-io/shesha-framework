@@ -12,7 +12,7 @@ export interface ILabelProps {
   labelAlignOptions?: IRadioOption[];
 }
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ value,readOnly, label, labelAlignOptions: labelAlign }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions: labelAlign }) => {
   const { styles } = useStyles();
 
   return (

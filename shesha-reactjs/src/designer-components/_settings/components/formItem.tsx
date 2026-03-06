@@ -3,7 +3,6 @@ import { ConfigurableFormItem } from '@/components';
 import SettingsControl from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 import { useStyles } from '../styles/styles';
-import classNames from 'classnames';
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { styles } = useStyles();

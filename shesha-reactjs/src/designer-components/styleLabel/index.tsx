@@ -15,13 +15,13 @@ const LabelConfigurator: LabelConfiguratorDefinition = {
   icon: <ColumnWidthOutlined />,
   Factory: ({ model }) => {
     const { styles } = useStyles();
-    
+
     return (
 
-    <div className={styles.formItem}>
-      <ConfigurableFormItem model={model}>
-        <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} />
-      </ConfigurableFormItem>
+      <div className={styles.formItem}>
+        <ConfigurableFormItem model={model}>
+          <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} />
+        </ConfigurableFormItem>
       </div>
     );
   },
