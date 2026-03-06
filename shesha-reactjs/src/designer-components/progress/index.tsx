@@ -8,7 +8,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { ProgressProps } from 'antd';
 import { ProgressType, SuccessProps } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
@@ -56,12 +56,14 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       width,
       hidden,
       gapDegree,
+      style,
       allStyles,
     } = model;
 
     if (hidden) return null;
 
-    const finalStyle = { ...allStyles?.fullStyle, width: '100%', display: 'flex', alignItems: 'center' };
+    const styles = getStyle(style);
+    const finalStyle = allStyles?.fullStyle || styles;
 
 
     const getEvaluatedSuccessColor = (): SuccessProps => {
@@ -115,7 +117,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               strokeLinecap={strokeLinecap}
               success={getEvaluatedSuccessColor()}
               gapDegree={gapDegree}
-              style={{ ...finalStyle, width: '100%' }}
+              style={finalStyle}
             />
           );
         }}

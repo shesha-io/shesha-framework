@@ -95,7 +95,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                 type="number"
                 value={value}
                 {...inputProps}
-                style={{ ...model.allStyles.fullStyle, width: '100%', height: "100%" }}
+                style={{ ...model.allStyles.fullStyle }}
                 className={styles.numberField}
                 onChange={onChangeInternal}
               />

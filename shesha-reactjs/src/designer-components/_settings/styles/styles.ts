@@ -1,6 +1,9 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, responsive, token }) => {
+  const formItem = cx(css`
+    margin: 0px !important;
+  `);
   const contentJs = cx(css`
         position: relative;
         top: 0px;
@@ -80,5 +83,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     jsContent,
     label,
     jsSwitch,
+    formItem,
   };
 });

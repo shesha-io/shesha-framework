@@ -14,6 +14,7 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
   type: 'chevron',
   isInput: true,
   name: 'Chevron',
+  preserveDimensionsInDesigner: true,
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
     if (model.hidden) return null;
