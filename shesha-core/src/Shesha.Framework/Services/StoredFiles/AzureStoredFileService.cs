@@ -1,4 +1,4 @@
-﻿using Abp.Dependency;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -36,27 +36,80 @@ namespace Shesha.Services.StoredFiles
         }
 
         /// <summary>
-        /// Returns connection string. Note: for the Azure environment - uses standard environment variable
+        /// Returns the raw storage credential value from configuration.
+        /// Checks <c>CloudStorage:ConnectionString</c> first (preferred), then falls back
+        /// to the classic <c>ConnectionStrings:BlobStorage</c> key for backwards compatibility.
+        /// The value can be any of:
+        ///   - a classic Azure Storage connection string (DefaultEndpointsProtocol=…)
+        ///   - a container-level SAS URL  (https://…/container?sv=…&amp;sig=…)
+        ///   - an account-level SAS URL   (https://…?sv=…&amp;sig=…)
         /// </summary>
-        private string GetConnectionString() => _configuration.GetConnectionString(ConnectionStringName);
+        private string GetStorageValue()
+        {
+            var value = _configuration.GetSection(CloudStorageName).GetValue<string>("ConnectionString");
+            if (string.IsNullOrWhiteSpace(value))
+                value = _configuration.GetConnectionString(ConnectionStringName);
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="BlobContainerClient"/> by auto-detecting the authentication
+        /// method from the format of the configured storage value.
+        /// </summary>
+        private BlobContainerClient CreateBlobContainerClient()
+        {
+            var value = GetStorageValue();
+            if (string.IsNullOrWhiteSpace(value))
+                throw new InvalidOperationException(
+                    "Azure Blob Storage connection is not configured. " +
+                    "Set 'CloudStorage:ConnectionString' or 'ConnectionStrings:BlobStorage' " +
+                    "to a connection string, SAS URL, or account URL.");
+
+            var containerName = _configuration.GetSection(CloudStorageName)
+                .GetValue<string>("ContainerName") ?? ContainerName;
+
+            // URL-based auth: SAS token
+            if (value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                var uri = new Uri(value);
+                bool hasSasToken = !string.IsNullOrEmpty(uri.Query);
+                // uri.Segments for https://account.blob.core.windows.net/mycontainer?...
+                // is ['/', 'mycontainer'] (length 2), indicating container is in the URL path.
+                bool hasContainerInPath = uri.Segments.Length > 1 &&
+                                          !string.IsNullOrEmpty(uri.Segments[1].Trim('/'));
+
+                if (!hasSasToken)
+                    throw new InvalidOperationException(
+                        $"The configured storage URL '{uri.Host}' has no SAS token. " +
+                        "Provide a SAS URL (https://…?sv=…&sig=…) or a classic connection string.");
+
+                if (hasContainerInPath)
+                {
+                    // Container-level SAS URL — container name is already in the URI path.
+                    // The ContainerName setting from config is ignored to avoid a mismatch.
+                    return new BlobContainerClient(uri);
+                }
+
+                // Account-level SAS URL — combine with the configured container name.
+                return new BlobServiceClient(uri).GetBlobContainerClient(containerName);
+            }
+
+            // Classic connection string (AccountKey or Azurite emulator).
+            // Container is auto-created and set to public blob access on first use.
+            var client = new BlobContainerClient(value, containerName);
+            client.CreateIfNotExists();
+            client.SetAccessPolicy(PublicAccessType.BlobContainer);
+            return client;
+        }
 
         private BlobContainerClient BlobContainerClient
         {
             get
             {
-                // If Container name is not passed from the configs then we use the defaults container name which is 'files'
-                var containerName = _configuration.GetSection(CloudStorageName).GetValue<string>("ContainerName") ?? ContainerName;
-
                 if (_blobContainerClient != null)
                     return _blobContainerClient;
 
-                var containerClient = new BlobContainerClient(GetConnectionString(), containerName);
-                containerClient.CreateIfNotExists();
-
-                // Setup the permissions on the container to be public
-                containerClient.SetAccessPolicy(PublicAccessType.BlobContainer);
-
-                _blobContainerClient = containerClient;
+                _blobContainerClient = CreateBlobContainerClient();
                 return _blobContainerClient;
             }
         }
@@ -64,10 +117,13 @@ namespace Shesha.Services.StoredFiles
         private BlobClient GetBlobClient(string blobName)
         {
             var directoryName = _configuration.GetSection(CloudStorageName).GetValue<string>("DirectoryName");
-            return BlobContainerClient.GetBlobClient(Path.Combine(directoryName ?? "", blobName));
+            var blobPath = string.IsNullOrWhiteSpace(directoryName)
+                ? blobName
+                : $"{directoryName.TrimEnd('/')}/{blobName}";
+            return BlobContainerClient.GetBlobClient(blobPath);
         }
 
-        private string GetAzureFileName(StoredFileVersion version) => version.Id + version.FileType;
+        private static string GetAzureFileName(StoredFileVersion version) => version.Id + version.FileType;
 
         private async Task<Stream> GetStreamInternalAsync(string filePath)
         {
