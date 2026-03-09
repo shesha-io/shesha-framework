@@ -1,5 +1,6 @@
 import React from 'react';
 import { isDefined } from "@/utils/nullables";
+import { executeScriptSync } from '@/providers/form/utils';
 
 export interface DimensionValue {
   value: number;
@@ -8,15 +9,30 @@ export interface DimensionValue {
 
 /**
  * Parse a dimension value into its numeric value and unit
- * @param value - The dimension value to parse (e.g., "50vw", "100%", 300, "auto")
+ * @param value - The dimension value to parse (e.g., "50vw", "100%", 300, "auto", or JS code object)
+ * @param context - Optional context object containing available constants (from useAvailableConstantsData)
  * @returns Parsed dimension object with value and unit, or null if invalid
  */
-export const parseDimension = (value: string | number | null | undefined): DimensionValue | null => {
+export const parseDimension = (value: string | number | null | undefined | any, context?: object): DimensionValue | null => {
   if (!isDefined(value)) return null;
 
   if (typeof value === 'number') {
     return { value, unit: 'px' };
   }
+
+  // Handle JavaScript code execution for dynamic values
+  if (typeof value === 'object' && value?._mode === 'code' && value?._code) {
+    try {
+      const executedValue = executeScriptSync(value, context);
+      // Recursively parse the executed result
+      return parseDimension(executedValue, context);
+    } catch (error) {
+      console.error('Error executing dimension code:', error);
+      return null;
+    }
+  }
+
+  if (typeof value !== 'string') return null;
 
   if (value === 'auto' || value === 'none') {
     return { value: 0, unit: value };
@@ -42,10 +58,11 @@ export const parseDimension = (value: string | number | null | undefined): Dimen
 /**
  * Add 'px' unit to bare numbers, preserve existing units
  * @param value - The value to add units to
+ * @param context - Optional context object containing available constants (from useAvailableConstantsData)
  * @returns String with appropriate units, or undefined
  */
-export const addPx = (value: number | string | null | undefined): string | undefined => {
-  const parsed = parseDimension(value);
+export const addPx = (value: number | string | null | undefined, context?: object): string | undefined => {
+  const parsed = parseDimension(value, context);
   if (!parsed) return undefined;
 
   if (parsed.unit === 'auto' || parsed.unit === 'none') {
@@ -53,32 +70,6 @@ export const addPx = (value: number | string | null | undefined): string | undef
   }
 
   return `${parsed.value}${parsed.unit}`;
-};
-
-/**
- * Check if a dimension value can be used in calc() expressions with additions
- * @param dimensionValue - The dimension value to check
- * @returns true if the value can be used in calc() with additions
- */
-export const canAddToCalc = (dimensionValue: string | number | null | undefined): boolean => {
-  if (dimensionValue === undefined || dimensionValue === null) return false;
-
-  const parsed = parseDimension(dimensionValue);
-  if (!parsed) {
-    // Allow calc(...) and var(...) tokens
-    if (typeof dimensionValue === 'string') {
-      const v = dimensionValue.trim().toLowerCase();
-      if (v.startsWith('calc(') || v.startsWith('var(')) return true;
-    }
-    return false;
-  }
-
-  // Auto and none cannot be used in calc with additions
-  if (parsed.unit === 'auto' || parsed.unit === 'none') {
-    return false;
-  }
-
-  return true;
 };
 
 /**

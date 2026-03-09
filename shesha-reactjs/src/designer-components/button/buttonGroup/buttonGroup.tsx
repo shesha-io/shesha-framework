@@ -99,7 +99,7 @@ const createMenuItem = (
     : null;
 
   return isDivider
-    ? { type: 'divider', style: { height: addPx(props.dividerWidth), backgroundColor: props.dividerColor } }
+    ? { type: 'divider', style: { height: addPx(props.dividerWidth, appContext), backgroundColor: props.dividerColor } }
     : getButtonGroupMenuItem(
       <RenderButton props={props} uuid={props.id} form={form} />,
       props.id,
@@ -161,7 +161,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
         return <RenderButton props={{ ...item }} uuid={item.id} form={form} />;
       case 'separator':
       case 'line':
-        return <Divider type="vertical" key={uuid} style={{ width: addPx(item.dividerWidth), backgroundColor: item.dividerColor }} />;
+        return <Divider type="vertical" key={uuid} style={{ width: addPx(item.dividerWidth, appContext), backgroundColor: item.dividerColor }} />;
       default:
         return null;
     }
