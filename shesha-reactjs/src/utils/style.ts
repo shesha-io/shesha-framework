@@ -52,6 +52,18 @@ export const parseDimension = (value: string | number | null | undefined | IProp
       return null;
     }
   }
+  // Handle IPropertySetting with _mode === 'value' - extract the underlying value
+  if (typeof value === 'object' && value?._mode === 'value' && isDefined(value?._value)) {
+    // Validate that _value is a valid dimension type before recursing
+    if (!isValidDimensionResult(value._value)) {
+      console.error(
+        `Invalid dimension value in IPropertySetting._value. Expected string, number, null, or undefined but got ${typeof value._value}:`,
+        value._value,
+      );
+      return null;
+    }
+    return parseDimension(value._value, context);
+  }
 
   if (typeof value !== 'string') return null;
 
