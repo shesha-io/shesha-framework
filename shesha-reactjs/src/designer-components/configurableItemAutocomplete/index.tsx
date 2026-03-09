@@ -59,13 +59,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
         return undefined;
 
       return typeof (expression) === 'string'
-        ? (() => {
-          try {
-            return JSON.parse(expression);
-          } catch {
-            return undefined;
-          }
-        })()
+        ? JSON.parse(expression)
         : expression;
     }, [filter, allData.data, allData.globalState, allData.pageContext]);
 

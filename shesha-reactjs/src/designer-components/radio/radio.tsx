@@ -33,7 +33,6 @@ const RadioComponent: RadioComponentDefinition = {
     defaultValue: evaluateValue(model.defaultValue, allData.data),
   }),
   Factory: ({ model, calculatedModel }) => {
-    const { style, ...restProps } = model;
 
     return (
       <ConfigurableFormItem model={model}>
@@ -46,7 +45,7 @@ const RadioComponent: RadioComponentDefinition = {
 
           return (
             <RadioGroup
-              {...restProps}
+              {...model}
               style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
               value={value}
               dataSourceUrl={calculatedModel.dataSourceUrl}

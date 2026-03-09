@@ -1,6 +1,7 @@
 import React from 'react';
 import { isDefined } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
+import { IPropertySetting } from '..';
 
 export interface DimensionValue {
   value: number;
@@ -13,7 +14,7 @@ export interface DimensionValue {
  * @param context - Optional context object containing available constants (from useAvailableConstantsData)
  * @returns Parsed dimension object with value and unit, or null if invalid
  */
-export const parseDimension = (value: string | number | null | undefined | any, context?: object): DimensionValue | null => {
+export const parseDimension = (value: string | number | null | undefined | IPropertySetting, context?: object): DimensionValue | null => {
   if (!isDefined(value)) return null;
 
   if (typeof value === 'number') {
@@ -23,9 +24,9 @@ export const parseDimension = (value: string | number | null | undefined | any, 
   // Handle JavaScript code execution for dynamic values
   if (typeof value === 'object' && value?._mode === 'code' && value?._code) {
     try {
-      const executedValue = executeScriptSync(value, context);
+      const executedValue = executeScriptSync(value._code, context ?? {});
       // Recursively parse the executed result
-      return parseDimension(executedValue, context);
+      return parseDimension(executedValue as string | number | null | undefined, context);
     } catch (error) {
       console.error('Error executing dimension code:', error);
       return null;
