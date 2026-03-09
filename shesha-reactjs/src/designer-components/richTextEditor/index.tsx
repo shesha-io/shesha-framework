@@ -73,14 +73,17 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
 
     return (
       <ConfigurableFormItem model={model} key={rerenderKey}>
-        {(value, onChange) => <RichTextEditor 
-        config={config} 
-        value={value} 
-        onChange={onChange} 
-        style={{ 
-          ...(!model.autoHeight && { height, minHeight, maxHeight }),
-          ...(!model.autoWidth && { width, minWidth, maxWidth })
-          }} />}
+        {(value, onChange) => (
+          <RichTextEditor
+            config={config}
+            value={value}
+            onChange={onChange}
+            style={{
+              ...(!model.autoHeight && { height, minHeight, maxHeight }),
+              ...(!model.autoWidth && { width, minWidth, maxWidth }),
+            }}
+          />
+        )}
       </ConfigurableFormItem>
     );
   },

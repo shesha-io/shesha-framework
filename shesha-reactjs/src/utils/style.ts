@@ -40,7 +40,7 @@ export const parseDimension = (value: string | number | null | undefined | IProp
       if (!isValidDimensionResult(executedValue)) {
         console.error(
           `Invalid dimension value returned from script execution. Expected string, number, null, or undefined but got ${typeof executedValue}:`,
-          executedValue
+          executedValue,
         );
         return null;
       }
