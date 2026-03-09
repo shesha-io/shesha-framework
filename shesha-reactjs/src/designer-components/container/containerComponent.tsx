@@ -1,7 +1,7 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React, { useMemo } from 'react';
 import { ICommonContainerProps, IContainerComponentProps } from '@/interfaces';
-import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, useAvailableConstantsData } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { useFormData, useGlobalState } from '@/providers';
@@ -27,6 +27,7 @@ const ContainerComponent: ContainerComponentDefinition = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
+    const allData = useAvailableConstantsData();
     const { styles, cx } = useStyles();
 
     // For containers, use wrapperStyle instead of style for margins/dimensions
@@ -61,7 +62,7 @@ const ContainerComponent: ContainerComponentDefinition = {
       noDefaultStyling: model.noDefaultStyling,
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
-      gap: addPx(model.gap),
+      gap: addPx(model.gap, allData),
     }), [
       model.display,
       model.flexDirection,
@@ -76,6 +77,7 @@ const ContainerComponent: ContainerComponentDefinition = {
       model.gridColumnsCount,
       model.flexWrap,
       model.gap,
+      allData,
     ]);
 
     const wrapperStyle = useMemo(() => ({

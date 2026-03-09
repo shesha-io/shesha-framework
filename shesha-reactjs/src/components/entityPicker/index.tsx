@@ -11,6 +11,7 @@ import { EntityPickerModal } from './modal';
 import { getValueByPropertyName } from '@/utils/object';
 import { SheshaError } from '@/utils/errors';
 import { addPx } from '@/utils/style';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 const EntityPickerReadOnly = (props: IEntityPickerProps): JSX.Element => {
   const { entityType, displayEntityKey, value } = props;
 
@@ -71,6 +72,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): JSX.Element => {
 
   const { styles } = useStyles({ style });
   const selectRef = useRef(undefined);
+  const allData = useAvailableConstantsData();
 
   const [showModal, setShowModal] = useState(false);
 
@@ -227,7 +229,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): JSX.Element => {
                 paddingBottom,
                 paddingLeft,
                 borderLeftStyle: dividerStyle?.style ?? 'solid',
-                borderLeftWidth: addPx(dividerStyle?.width) ?? '1px',
+                borderLeftWidth: addPx(dividerStyle?.width, allData) ?? '1px',
                 borderLeftColor: dividerStyle?.color ?? '#d9d9d9',
                 borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
                 height: '100%',

@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
-import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
+import { getFieldNameFromExpression, getValidationRules, useAvailableConstantsData } from '@/providers/form/utils';
 import classNames from 'classnames';
 import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
@@ -24,6 +24,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
   const shaForm = useShaFormInstance();
   const isInDesigner = shaForm.formMode === 'designer';
+  const allData = useAvailableConstantsData();
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -67,10 +68,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     style: {
-      marginTop: addPx(marginTop),
-      marginBottom: addPx(marginBottom),
-      marginRight: addPx(marginRight),
-      marginLeft: addPx(marginLeft),
+      marginTop: addPx(marginTop, allData),
+      marginBottom: addPx(marginBottom, allData),
+      marginRight: addPx(marginRight, allData),
+      marginLeft: addPx(marginLeft, allData),
     },
   };
 

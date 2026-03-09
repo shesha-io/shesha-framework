@@ -5,6 +5,7 @@ import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { addPx } from '@/utils/style';
 import { titleDefaultStyles } from './utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
 export interface ISectionSeparatorProps {
   id?: string;
@@ -45,6 +46,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   const { styles } = useStyles();
   const titleRef = useRef<HTMLDivElement>(null);
   const [titleWidth, setTitleWidth] = useState(0);
+  const allData = useAvailableConstantsData();
 
   useEffect(() => {
     if (titleRef.current) {
@@ -105,7 +107,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   return vertical ? (
     <div
       className={styles.vertical}
-      style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em') }}
+      style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em', allData) }}
     >
     </div>
   ) : (
@@ -113,7 +115,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       style={{
         ...containerStyle,
         height: 'max-content',
-        width: addPx(lineWidth) ?? '100%',
+        width: addPx(lineWidth, allData) ?? '100%',
         marginRight: 1,
       }}
       key={id}
