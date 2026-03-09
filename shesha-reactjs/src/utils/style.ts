@@ -9,6 +9,16 @@ export interface DimensionValue {
 }
 
 /**
+ * Type guard to check if a value is a valid dimension input type
+ * @param value - The value to check
+ * @returns true if the value is string, number, null, or undefined
+ */
+const isValidDimensionResult = (value: unknown): value is string | number | null | undefined => {
+  const valueType = typeof value;
+  return valueType === 'string' || valueType === 'number' || value === null || value === undefined;
+};
+
+/**
  * Parse a dimension value into its numeric value and unit
  * @param value - The dimension value to parse (e.g., "50vw", "100%", 300, "auto", or JS code object)
  * @param context - Optional context object containing available constants (from useAvailableConstantsData)
@@ -25,8 +35,18 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   if (typeof value === 'object' && value?._mode === 'code' && value?._code) {
     try {
       const executedValue = executeScriptSync(value._code, context ?? {});
-      // Recursively parse the executed result
-      return parseDimension(executedValue as string | number | null | undefined, context);
+
+      // Validate that the executed result is a valid dimension type
+      if (!isValidDimensionResult(executedValue)) {
+        console.error(
+          `Invalid dimension value returned from script execution. Expected string, number, null, or undefined but got ${typeof executedValue}:`,
+          executedValue,
+        );
+        return null;
+      }
+
+      // Recursively parse the validated result
+      return parseDimension(executedValue, context);
     } catch (error) {
       console.error('Error executing dimension code:', error);
       return null;

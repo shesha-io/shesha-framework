@@ -3,6 +3,7 @@ import { App, Button, Image, Tooltip, Upload, UploadProps } from 'antd';
 import { toBase64, useSheshaApplication, useStoredFile } from '@/index';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { useStyles } from './styles';
 
 export type ImageSourceType = 'url' | 'storedFile' | 'base64';
 
@@ -21,6 +22,8 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   const { imageSource, value, allowPreview = false, styles, onChange, allowedFileTypes } = props;
 
   const readOnly = props?.readOnly || props.imageSource === 'url';
+
+  const { styles: classes } = useStyles();
 
   const { uploadFile, deleteFile, fileInfo } = useStoredFile(false) ?? {};
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -96,7 +99,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   };
 
   return (
-    <div style={{ position: 'relative', float: 'left' }}>
+    <div className={classes.imageWrapper}>
       {content && (
         <Image
           src={content}
