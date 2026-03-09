@@ -357,7 +357,7 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     dot,
     segment,
 
-    formItem
+    formItem,
   };
 });
 

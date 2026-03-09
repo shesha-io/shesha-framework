@@ -51,7 +51,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
     // Show error alert if there was an error evaluating filters
     if (filterError) {
       return (
-        <ConfigurableFormItem model={model} className={ styles.formItem}>
+        <ConfigurableFormItem model={model} className={styles.formItem}>
           <Alert
             showIcon
             message="Error evaluating filters"
@@ -66,7 +66,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
     // Don't render chart until filters are ready to prevent race conditions
     if (!filtersReady) {
       return (
-        <ConfigurableFormItem model={model} className={ styles.formItem}>
+        <ConfigurableFormItem model={model} className={styles.formItem}>
           <div className={cx(styles.loadingContainer)}>
             <ChartLoader chartType={model.chartType} />
             <div className={cx(styles.loadingText)}>Fetching data...</div>
@@ -76,7 +76,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
     }
 
     return (
-      <ConfigurableFormItem model={model} className={ styles.formItem}>
+      <ConfigurableFormItem model={model} className={styles.formItem}>
         {() => {
           return (
             <ChartDataProvider model={model}>

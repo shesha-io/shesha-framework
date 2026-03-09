@@ -67,7 +67,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     // Don't render chart until filters are ready to prevent race conditions
     if (!filtersReady) {
       return (
-        <ConfigurableFormItem model={model} className={ styles.formItem}>
+        <ConfigurableFormItem model={model} className={styles.formItem}>
           <div className={cx(styles.loadingContainer)}>
             <ChartLoader chartType={model.chartType} />
             <div className={cx(styles.loadingText)}>Fetching data...</div>
@@ -77,7 +77,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     }
 
     return (
-      <ConfigurableFormItem model={model} className={ styles.formItem}>
+      <ConfigurableFormItem model={model} className={styles.formItem}>
         {() => {
           return (
             <ChartDataProvider model={model}>

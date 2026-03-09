@@ -20,7 +20,6 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IBorderValue } from '../_settings/utils/border/interfaces';
-import { useStyles } from '@/components/statistic/styles/styles';
 
 interface IStatisticComponentProps extends Omit<IInputStyles, 'font'>, IConfigurableFormComponent {
   value?: number | string;
@@ -63,7 +62,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const titleFontStyles = useMemo(() => getFontStyle(titleFont), [titleFont]);
 
     const customEvents = getEventHandlers(model, allData);
-    
+
     if (formMode === 'designer') {
       return (
         <ConfigurableFormItem
