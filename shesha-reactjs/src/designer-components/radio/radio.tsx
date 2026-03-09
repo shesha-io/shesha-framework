@@ -33,7 +33,6 @@ const RadioComponent: RadioComponentDefinition = {
     defaultValue: evaluateValue(model.defaultValue, allData.data),
   }),
   Factory: ({ model, calculatedModel }) => {
-
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
