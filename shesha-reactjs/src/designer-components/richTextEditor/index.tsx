@@ -56,6 +56,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         defaultActionOnPaste: 'insert_as_html',
         enter: model?.enter || 'br',
         editHTMLDocumentMode: false,
+        ...(!model.autoHeight && { height, minHeight, maxHeight }),
+        ...(!model.autoWidth && { width, minWidth, maxWidth }),
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
         allowResizeX: model?.allowResizeX && !model?.autoWidth,
