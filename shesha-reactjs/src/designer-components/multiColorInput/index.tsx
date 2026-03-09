@@ -66,7 +66,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
           }}
           disabled={readOnly}
           icon={<PlusOutlined />}
-          style={{ margin: 'auto 0px' }}
+          style={{ margin: '5px 0px' }}
         >
         </Button>
       </Row>
