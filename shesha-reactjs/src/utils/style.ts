@@ -53,6 +53,11 @@ export const parseDimension = (value: string | number | null | undefined | IProp
     }
   }
 
+  // Handle IPropertySetting with _mode === 'value' - extract the underlying value
+  if (typeof value === 'object' && value?._mode === 'value' && isDefined(value?._value)) {
+    return parseDimension(value._value, context);
+  }
+
   if (typeof value !== 'string') return null;
 
   if (value === 'auto' || value === 'none') {
