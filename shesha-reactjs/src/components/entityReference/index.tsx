@@ -375,7 +375,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>{displayTextByType}</span>
       </Button>
     );
-  }, [fetched, styles, props, displayText, formIdentifier, entityId, displayTextByType, dialogExecute, properties, entityType, formType]);
+  }, [fetched, styles, props, displayText, formIdentifier, entityId, displayTextByType, dialogExecute, properties, entityType, formType, executionContext]);
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
