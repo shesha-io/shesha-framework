@@ -114,7 +114,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles }, ...resize };
       })
-      .add<IRichTextEditorProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IRichTextEditorProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 
 };
 
