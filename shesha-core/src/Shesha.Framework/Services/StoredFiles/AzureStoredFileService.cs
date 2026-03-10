@@ -2,6 +2,7 @@ using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -20,13 +21,16 @@ namespace Shesha.Services.StoredFiles
         private const string ContainerName = "files";
         private readonly IocManager _iocManager;
         private readonly IConfigurationRoot _configuration;
-        private BlobContainerClient _blobContainerClient;
+        private readonly ILogger _logger;
+        private readonly Lazy<BlobContainerClient> _blobContainerClient;
 
-        public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService, IocManager iocManager)
+        public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService, IocManager iocManager, ILogger logger)
             : base(fileService, versionService, storedFileVersionDownloadService)
         {
             _iocManager = iocManager;
             _configuration = GetConfiguration();
+            _blobContainerClient = new Lazy<BlobContainerClient>(CreateBlobContainerClient);
+            _logger = logger;
         }
 
         private IConfigurationRoot GetConfiguration()
@@ -87,6 +91,7 @@ namespace Shesha.Services.StoredFiles
                 {
                     // Container-level SAS URL — container name is already in the URI path.
                     // The ContainerName setting from config is ignored to avoid a mismatch.
+                    _logger.Warn("SAS URL container differs from configured ContainerName. Using URL container.");
                     return new BlobContainerClient(uri);
                 }
 
@@ -102,24 +107,19 @@ namespace Shesha.Services.StoredFiles
             return client;
         }
 
-        private BlobContainerClient BlobContainerClient
-        {
-            get
-            {
-                if (_blobContainerClient != null)
-                    return _blobContainerClient;
-
-                _blobContainerClient = CreateBlobContainerClient();
-                return _blobContainerClient;
-            }
-        }
+        private BlobContainerClient BlobContainerClient => _blobContainerClient.Value;
 
         private BlobClient GetBlobClient(string blobName)
         {
             var directoryName = _configuration.GetSection(CloudStorageName).GetValue<string>("DirectoryName");
+
+            var normalizedDirectory = directoryName?.Replace('\\', '/').Trim('/');
+
+            var normalizedBlobName = blobName.Replace('\\', '/').TrimStart('/');
+
             var blobPath = string.IsNullOrWhiteSpace(directoryName)
-                ? blobName
-                : $"{directoryName.TrimEnd('/')}/{blobName}";
+                ? normalizedBlobName
+                : $"{normalizedDirectory}/{blobName}";
             return BlobContainerClient.GetBlobClient(blobPath);
         }
 
@@ -165,7 +165,7 @@ namespace Shesha.Services.StoredFiles
         public override async Task UpdateVersionContentAsync(StoredFileVersion version, Stream stream)
         {
             if (stream == null)
-                throw new Exception($"{nameof(stream)} must not be null");
+                throw new ArgumentException($"{nameof(stream)} must not be null");
 
             var blob = GetBlobClient(GetAzureFileName(version));
 
