@@ -12,7 +12,6 @@ export const TextAreaWrapper: FC<ITextAreaSettingsInputProps> = (props) => {
       rows={2}
       placeholder={placeholder}
       size={size}
-      style={{ top: '4px' }}
     />
   );
 };

@@ -42,6 +42,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  preserveDimensionsInDesigner: true,
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
@@ -115,6 +116,9 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                 color: maxLength && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
                 marginTop: '0px',
                 marginBottom: '0px',
+                width: model.allStyles.dimensionsStyles?.width,
+                minWidth: model.allStyles.dimensionsStyles?.minWidth,
+                maxWidth: model.allStyles.dimensionsStyles?.maxWidth,
               }}
               >
                 {currentLength}

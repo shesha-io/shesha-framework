@@ -33,6 +33,7 @@ export const ShaFormStyles = createGlobalStyle`
     .${formClassNames.shaForm} {
         .${formClassNames.shaComponentsContainer} {
             min-height: 32px;
+            height: 100%;
             &.horizontal {
                 .${formClassNames.shaComponentsContainerInner} {
                     display: flex;

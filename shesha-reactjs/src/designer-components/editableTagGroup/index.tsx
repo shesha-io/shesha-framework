@@ -19,6 +19,7 @@ const EditableTagGroupComponent: EditableTagGroupComponentDefinition = {
   icon: <HomeOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.array && dataFormat === ArrayFormats.simple,
   Factory: ({ model }) => {
     return (

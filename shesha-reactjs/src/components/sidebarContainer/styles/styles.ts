@@ -23,7 +23,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
@@ -162,9 +162,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             margin-bottom: 16px;
           }
     
-          .${prefixCls}-form-item-label {
-            padding-bottom: 4px;
-          }
         }
 
         .${sidebarContainerMainArea} {

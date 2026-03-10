@@ -19,6 +19,8 @@ const TableContextComponentLegacy: TableContextComponentLegacyDefinition = {
   isHidden: true,
   name: 'Data Context (Legacy)',
   icon: <DatabaseOutlined />,
+  // Legacy container component manages its own layout
+  preserveDimensionsInDesigner: true,
   Factory: () => {
     return null;
   },

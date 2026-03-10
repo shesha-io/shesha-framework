@@ -79,7 +79,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
     font-weight: bold;
   }
   .${(p) => p.theme.prefixCls}-form-item {
-    margin-bottom: 0 !important;
+    margin: 0 !important;
   
     .${(p) => p.theme.prefixCls}-row {
       &.${(p) => p.theme.prefixCls}-form-item-row {
@@ -90,7 +90,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
 
   .sha-form-settings-editor .ant-form-item .ant-row.ant-form-item-row {
    margin-bottom: 0px !important;
-   .ant-form-item-control-input{
+   .${(p) => p.theme.prefixCls}-form-item-control-input {
      display: inline !important;
     }
   }
@@ -129,7 +129,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
   body {
     margin: 0;
     div {
-      .ant-dropdown-menu-submenu-title {
+      .${(p) => p.theme.prefixCls}-dropdown-menu-submenu-title {
         display: flex !important;
         align-items: center !important;
       }
@@ -143,7 +143,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
     display: inline-block;
     width: 0;
     visibility: hidden;
-    content: '\a0';
   }
   .sha-required-mark {
     margin-left: 4px;

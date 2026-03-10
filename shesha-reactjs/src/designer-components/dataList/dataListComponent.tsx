@@ -72,7 +72,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     .add<IDataListComponentProps>(9, (prev) => {
       return {
         ...prev,
-        desktop: { ...prev.desktop,
+        desktop: {
+          ...prev.desktop,
           gap: prev.cardSpacing,
           dimensions: {
             ...prev.desktop?.dimensions,
@@ -80,7 +81,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
             maxWidth: prev.cardMaxWidth,
             width: prev.customWidth,
             height: prev.cardHeight,
-          } },
+          },
+        },
       };
     }).add<IDataListComponentProps>(10, (prev) => {
       const cardSpacing = prev.cardSpacing || '0px';

@@ -221,7 +221,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
-    style: !isDragger && stylesProp,
+    style: !isDragger ? stylesProp : undefined,
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
       if (!isFileTypeAllowed(file.name, allowedFileTypes)) {

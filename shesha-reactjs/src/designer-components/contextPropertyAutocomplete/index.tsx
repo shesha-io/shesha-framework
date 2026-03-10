@@ -173,6 +173,7 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
   icon: <FileSearchOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   calculateModel(model, allData) {
     const initialValues = (allData.form?.initialValues ?? {}) as IContextPropertyAutocompleteState;
     return {

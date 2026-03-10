@@ -4,6 +4,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import LabelConfiguratorComponent from './labelConfigurator';
 import { LabelConfiguratorDefinition } from './interfaces';
 import { getSettings } from './settings';
+import { useStyles } from './styles';
 
 const LabelConfigurator: LabelConfiguratorDefinition = {
   type: 'labelConfigurator',
@@ -13,10 +14,15 @@ const LabelConfigurator: LabelConfiguratorDefinition = {
   canBeJsSetting: true,
   icon: <ColumnWidthOutlined />,
   Factory: ({ model }) => {
+    const { styles } = useStyles();
+
     return (
-      <ConfigurableFormItem model={model}>
-        <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} />
-      </ConfigurableFormItem>
+
+      <div className={styles.formItem}>
+        <ConfigurableFormItem model={model}>
+          <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} />
+        </ConfigurableFormItem>
+      </div>
     );
   },
   settingsFormMarkup: getSettings,

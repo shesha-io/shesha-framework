@@ -45,9 +45,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         hidden,
         layout,
         size: 'small',
-
       }}
-
       className="sha-js-label"
     >
       {(value, onChange) =>

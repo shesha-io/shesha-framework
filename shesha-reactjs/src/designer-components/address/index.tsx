@@ -19,6 +19,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   isInput: true,
   isOutput: true,
   icon: <HomeOutlined />,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
     const customEvents = getEventHandlers(model, allData);
