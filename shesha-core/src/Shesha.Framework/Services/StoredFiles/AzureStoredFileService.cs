@@ -119,7 +119,7 @@ namespace Shesha.Services.StoredFiles
 
             var blobPath = string.IsNullOrWhiteSpace(normalizedDirectory)
                 ? normalizedBlobName
-                : $"{normalizedDirectory}/{blobName}";
+                : $"{normalizedDirectory}/{normalizedBlobName}";
             return BlobContainerClient.GetBlobClient(blobPath);
         }
 
@@ -165,7 +165,7 @@ namespace Shesha.Services.StoredFiles
         public override async Task UpdateVersionContentAsync(StoredFileVersion version, Stream stream)
         {
             if (stream == null)
-                throw new ArgumentException($"{nameof(stream)} must not be null");
+                throw new ArgumentNullException($"{nameof(stream)} must not be null");
 
             var blob = GetBlobClient(GetAzureFileName(version));
 
