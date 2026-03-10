@@ -88,11 +88,22 @@ namespace Shesha
             IocManager.IocContainer.Register(
                 Component.For<IStoredFileService>().UsingFactoryMethod(f =>
                 {
-                    // IConfiguration configuration
                     var configuration = f.Resolve<IConfiguration>();
-                    var isAzureEnvironment = configuration.GetValue<bool>("IsAzureEnvironment");
 
-                    return isAzureEnvironment
+                    // Explicit flag (backwards compatible)
+                    var useAzure = configuration.GetValue<bool>("IsAzureEnvironment");
+
+                    // Auto-detect: if a blob storage credential is configured, use Azure
+                    // even when IsAzureEnvironment is not set. Supports connection strings,
+                    // SAS URLs, and plain account URLs (Managed Identity).
+                    if (!useAzure)
+                    {
+                        var blobValue = configuration.GetSection("CloudStorage").GetValue<string>("ConnectionString")
+                                     ?? configuration.GetConnectionString("BlobStorage");
+                        useAzure = !string.IsNullOrWhiteSpace(blobValue);
+                    }
+
+                    return useAzure
                         ? f.Resolve<AzureStoredFileService>() as IStoredFileService
                         : f.Resolve<StoredFileService>() as IStoredFileService;
                 })
