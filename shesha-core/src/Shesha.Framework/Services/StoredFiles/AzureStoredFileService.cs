@@ -117,7 +117,7 @@ namespace Shesha.Services.StoredFiles
 
             var normalizedBlobName = blobName.Replace('\\', '/').TrimStart('/');
 
-            var blobPath = string.IsNullOrWhiteSpace(directoryName)
+            var blobPath = string.IsNullOrWhiteSpace(normalizedDirectory)
                 ? normalizedBlobName
                 : $"{normalizedDirectory}/{blobName}";
             return BlobContainerClient.GetBlobClient(blobPath);
