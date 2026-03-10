@@ -1,5 +1,5 @@
-﻿using Shesha.Domain.ConfigurationItems;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Shesha.ConfigurationItems.Distribution
 {
@@ -11,7 +11,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Identifier
         /// </summary>
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// The Guid for the Config Item.
@@ -22,7 +22,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item name
         /// </summary>
-        public required string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Label of the con
@@ -32,7 +32,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item name
         /// </summary>
-        public required string ItemType { get; set; }
+        public string ItemType { get; set; }
 
         /// <summary>
         /// Item description
@@ -50,28 +50,29 @@ namespace Shesha.ConfigurationItems.Distribution
         public string? FrontEndApplication { get; set; }
 
         /// <summary>
-        /// Base item. Is used if the current item is inherited from another one
-        /// </summary>
-        public Guid? BaseItem { get; set; }
-
-        /// <summary>
-        /// Version number
-        /// </summary>
-        public int VersionNo { get; set; }
-
-        /// <summary>
-        /// Version status (Draft/In Progress/Live etc.)
-        /// </summary>
-        public ConfigurationItemVersionStatus VersionStatus { get; set; }
-
-        /// <summary>
-        /// Parent version. Note: version may have more than one child versions (e.g. new version was created and then cancelled, in this case a new version should be created in the same parent)
-        /// </summary>
-        public Guid? ParentVersionId { get; set; }
-
-        /// <summary>
         /// If true, it means that the item will not be visible to Config or End-users/Admins.
         /// </summary>
         public bool Suppress { get; set; }
+
+        #region V1 properties
+
+        public DateTime? DateUpdated { get; set; }
+
+        /// <summary>
+        /// List of base modules
+        /// </summary>
+        public List<string> BaseModules { get; set; } = new();
+
+        /// <summary>
+        /// Additional supporting comments
+        /// </summary>
+        public string? Comments { get; set; }
+
+        /// <summary>
+        /// Hash of the configuration JSON.Allows for easy comparison and search for versions with the same config.
+        /// </summary>
+        public string? ConfigHash { get; set; } = string.Empty;
+
+        #endregion
     }
 }

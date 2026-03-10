@@ -1,18 +1,21 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
+    [SnakeCaseNaming]
+    [Table("otp_audit_items", Schema = "frwk")]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class OtpAuditItem: FullAuditedEntity<Guid>
     {
         /// <summary>
         /// Mobile number/email address (depending on the `send type`) to which the OTP should be sent
         /// </summary>
-        [StringLength(200)]
+        [MaxLength(200)]
         public virtual string SendTo { get; set; }
 
         /// <summary>
@@ -20,10 +23,10 @@ namespace Shesha.Domain
         /// </summary>
         public virtual OtpSendType SendType { get; set; }
 
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? RecipientType { get; set; }
         
-        [StringLength(40)]
+        [MaxLength(100)]
         public virtual string? RecipientId { get; set; }
 
         /// <summary>
@@ -36,15 +39,15 @@ namespace Shesha.Domain
         /// </summary>
         public virtual DateTime? SentOn { get; set; }
 
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string Otp { get; set; }
         
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? ActionType { get; set; }
 
         public virtual OtpSendStatus SendStatus { get; set; }
         
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string? ErrorMessage { get; set; }
     }
 }

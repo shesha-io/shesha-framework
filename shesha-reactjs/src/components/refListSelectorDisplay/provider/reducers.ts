@@ -3,7 +3,7 @@ import {
   ISettingsUpdatePayload,
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
-  REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE
+  REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
 } from '@/components/refListSelectorDisplay/provider/contexts';
 import { RefListItemGroupActionEnums } from '@/components/refListSelectorDisplay/provider/actions';
 import { IRefListItemGroup } from '@/components/refListSelectorDisplay/provider/models';
@@ -23,7 +23,7 @@ const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorState
     },
     [RefListItemGroupActionEnums.StoreSettings]: (
       state: IRefListItemGroupConfiguratorStateContext,
-      action: ReduxActions.Action<ISettingsUpdatePayload>
+      action: ReduxActions.Action<ISettingsUpdatePayload>,
     ) => {
       const { payload } = action;
       return {
@@ -36,7 +36,7 @@ const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorState
         },
       };
     },
-    
+
     [RefListItemGroupActionEnums.SelectItem]: (
       state: IRefListItemGroupConfiguratorStateContext,
       action: ReduxActions.Action<string>,

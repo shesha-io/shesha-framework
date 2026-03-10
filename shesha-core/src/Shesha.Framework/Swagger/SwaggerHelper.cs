@@ -24,10 +24,7 @@ namespace Shesha.Swagger
 {
     public static class SwaggerHelper
     {
-        private static Lazy<IList<TypeInfo>> ServiceTypes = new Lazy<IList<TypeInfo>>(() => 
-        {
-            return ServiceTypesFunc();
-        });
+        private static Lazy<IList<TypeInfo>> ServiceTypes = new Lazy<IList<TypeInfo>>(ServiceTypesFunc);
 
         public static IList<TypeInfo> ServiceTypesFunc()
         {
@@ -41,23 +38,19 @@ namespace Shesha.Swagger
             return types;
         }
 
-        private static Lazy<IList<Type>> EntityTypes = new Lazy<IList<Type>>(() =>
-        {
-            return EntityTypesFunc();
-        });
+        private static Lazy<IList<Type>> EntityTypes = new Lazy<IList<Type>>(EntityTypesFunc);
 
         public static IList<Type> EntityTypesFunc()
         {
             var assemblyFinder = StaticContext.IocManager.Resolve<IAssemblyFinder>();
             return assemblyFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
-                .Where(a => !a.IsDynamic &&
-                            a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
-                ).SelectMany(a => a.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
+                .Where(a => a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)))
+                .SelectMany(a => a.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)))
                 .ToList();
         }
 
-        public static void AddEndpointsPerService(this SwaggerUIOptions options, bool useDynamicUpdate = true) 
+        public static void AddEndpointsPerService(this SwaggerUIOptions options, bool useDynamicUpdate = true)
         {
             if (useDynamicUpdate)
             {
@@ -81,7 +74,8 @@ namespace Shesha.Swagger
         /// <param name="options"></param>
         public static void AddDocumentsPerService(this SwaggerGenOptions options)
         {
-            var types = ServiceTypes.Value;
+            // always get new list because types can be changed
+            var types = ServiceTypesFunc();
 
             var docs = new Dictionary<string, OpenApiInfo>();
 
@@ -101,30 +95,31 @@ namespace Shesha.Swagger
                 docs.Add(GetDocumentNameForService(serviceName), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
             }
 
-            var entityTypes = EntityTypes.Value;
+            var entityTypes = EntityTypesFunc();
 
             // 3. Add Entities (need to add all entities because services may have been disabled but will be enabled in the future)
             foreach (var entity in entityTypes)
             {
-                var serviceName = entity.Name;
+                var serviceName = entity.Name + "Crud";
                 if (!docs.ContainsKey(GetDocumentNameForService(serviceName)))
                     docs.Add(GetDocumentNameForService(serviceName), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
             }
 
+            options.SwaggerGeneratorOptions.SwaggerDocs.Clear();
             foreach (var doc in docs)
             {
                 options.SwaggerDoc(doc.Key, doc.Value);
             }
 
-            options.DocInclusionPredicate((docName, description) => ApiExplorerGroupPerControllerConvention.GroupInclusionPredicate(docName, description));
+            options.DocInclusionPredicate(ApiExplorerGroupPerControllerConvention.GroupInclusionPredicate);
         }
 
-        public static string GetDocumentNameForService(string serviceName) 
+        public static string GetDocumentNameForService(string serviceName)
         {
             return $"service:{serviceName}";
         }
 
-        private static IList<TypeInfo> GetRegisteredControllerTypes() 
+        private static IList<TypeInfo> GetRegisteredControllerTypes()
         {
             var controllerFeature = new ControllerFeature();
             var applicationPartManager = StaticContext.IocManager.Resolve<ApplicationPartManager>();
@@ -155,7 +150,7 @@ namespace Shesha.Swagger
                     var typeName = String.Concat(modelType.Name.TakeWhile(x => x != '`'));
                     var test = typeName + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current);
                     return test;
-                } 
+                }
                 else if (modelType.HasInterface(typeof(IDynamicDtoProxy)) && modelType.BaseType != null)
                     return "Proxy" + GetSchemaId(modelType.BaseType);
                 else

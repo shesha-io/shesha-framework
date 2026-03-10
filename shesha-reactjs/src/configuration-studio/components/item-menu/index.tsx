@@ -1,0 +1,59 @@
+import { CustomErrorBoundary } from '@/components';
+import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-environment/contexts';
+import { useConfigurationStudio } from '@/configuration-studio/cs/contexts';
+import { useActiveDoc } from '@/configuration-studio/cs/hooks';
+import { buildConfiguraitonItemMenu } from '@/configuration-studio/menu-utils';
+import { TreeNodeType } from '@/configuration-studio/models';
+import { getIcon } from '@/configuration-studio/tree-utils';
+import { DownOutlined } from '@ant-design/icons';
+import { Button, Dropdown, MenuProps, Space } from 'antd';
+import React, { FC, useMemo } from 'react';
+
+type MenuItems = Required<MenuProps>["items"];
+
+export const ConfigurationItemMenu: FC = () => {
+  const cs = useConfigurationStudio();
+  const csEnv = useConfigurationStudioEnvironment();
+  const { getDocumentDefinition } = csEnv;
+  const activeDoc = useActiveDoc();
+
+  // TODO: add current tree selection to the dependencies list
+  const menuItems = useMemo<MenuItems>(() => {
+    return activeDoc && activeDoc.type === 'ci'
+      ? buildConfiguraitonItemMenu({
+        configurationStudio: cs,
+        node: {
+          id: activeDoc.itemId,
+          key: activeDoc.itemId,
+          nodeType: TreeNodeType.ConfigurationItem,
+          itemType: activeDoc.itemType,
+          discriminator: activeDoc.discriminator,
+          name: activeDoc.label,
+          label: activeDoc.label,
+          moduleId: activeDoc.moduleId,
+          moduleName: activeDoc.moduleName,
+          flags: activeDoc.flags,
+        },
+        getDocumentDefinition,
+      })
+      : [];
+  }, [cs, activeDoc, getDocumentDefinition]);
+
+  if (!activeDoc || menuItems.length === 0)
+    return undefined;
+  const icon = getIcon(csEnv, TreeNodeType.ConfigurationItem, activeDoc.itemType);
+
+  return (
+    <CustomErrorBoundary key={activeDoc.itemId}>
+      <Dropdown menu={{ items: menuItems }}>
+        <Button title={`${activeDoc.moduleName}/${activeDoc.label}`} size="small">
+          <Space>
+            {activeDoc.label}
+            {icon}
+            <DownOutlined />
+          </Space>
+        </Button>
+      </Dropdown>
+    </CustomErrorBoundary>
+  );
+};

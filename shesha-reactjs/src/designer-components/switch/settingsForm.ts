@@ -1,9 +1,8 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ISwitchComponentProps } from './interfaces';
 import { nanoid } from '@/utils/uuid';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: ISwitchComponentProps) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -14,7 +13,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
   const customStylePnlId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -29,7 +28,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -70,7 +69,6 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -80,18 +78,18 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       label: 'Hide',
                       size: 'small',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'events',
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'codeEditor',
@@ -99,17 +97,17 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   label: 'On Change',
                   labelAlign: 'right',
                   tooltip: 'Enter custom eventhandler on changing of event.',
-                  parentId: eventsTabId
+                  parentId: eventsTabId,
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -121,10 +119,19 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
-                  },
+                    _value: "",
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
+                      .addSettingsInput({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'enableStyleOnReadonly',
+                        label: 'Enable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true,
+                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlDimensions',
@@ -135,7 +142,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                         collapsible: 'header',
                         content: {
                           id: dimensionsStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
@@ -146,17 +153,16 @@ export const getSettings = (data: ISwitchComponentProps) => {
                                   id: nanoid(),
                                   label: "Size",
                                   propertyName: "size",
-                                  defaultValue: 'default',
                                   dropdownOptions: [
                                     { value: 'small', label: 'Small' },
                                     { value: 'default', label: 'Default' },
-                                  ]
+                                  ],
                                 },
-                              ]
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -168,7 +174,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                         collapsible: 'header',
                         content: {
                           id: customStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -176,41 +182,42 @@ export const getSettings = (data: ISwitchComponentProps) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

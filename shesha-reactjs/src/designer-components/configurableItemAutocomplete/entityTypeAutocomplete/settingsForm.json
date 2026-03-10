@@ -1,0 +1,494 @@
+{
+  "components": [
+    {
+      "id": "zWi_bGYeOr9NLFBdIJKuz2hHny9q78",
+      "type": "collapsiblePanel",
+      "propertyName": "panel2",
+      "componentName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "stylingBox": "{\"marginBottom\":\"5\"}",
+      "version": 7,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "rdMQ8zvQzp3OFK_fEZb5MdkHK8tTAY",
+        "components": []
+      },
+      "content": {
+        "id": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            },
+            "version": 0
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+            "label": "Label",
+            "version": 5,
+            "textType": "text",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
+          },
+          {
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            "type": "dropdown",
+            "propertyName": "labelAlign",
+            "parentId": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+            "label": "Label align",
+            "values": [
+              {
+                "label": "left",
+                "value": "left",
+                "id": "2d6411ae-0b56-4b4c-ad7c-fb15aa7fa1f5"
+              },
+              {
+                "label": "right",
+                "value": "right",
+                "id": "9e89461b-f916-4689-8789-1854ccedc666"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 7,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
+          },
+          {
+            "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+            "type": "textField",
+            "propertyName": "placeholder",
+            "parentId": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+            "label": "Placeholder",
+            "version": 5,
+            "textType": "text",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
+          },
+          {
+            "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+            "type": "textArea",
+            "propertyName": "description",
+            "parentId": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+            "label": "Description",
+            "version": 4,
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+            "label": "Hidden",
+            "version": 4,
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "propertyName": "hideLabel",
+            "parentId": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+            "label": "Hide Label",
+            "version": 4,
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
+          },
+          {
+            "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+            "type": "editModeSelector",
+            "propertyName": "editMode",
+            "parentId": "mU6PBeiFrwn-S4h0evRybgML8YNDp3",
+            "label": "Edit mode"
+          }
+        ]
+      },
+      "collapsible": "icon",
+      "customHeader": {
+        "id": "cOrERY7FIR0aSvETlM0SSdfOfX5BpC",
+        "components": []
+      },
+      "ghost": true,
+      "borderRadius": 8,
+      "components": []
+    },
+    {
+      "id": "aZrwkg-kEmka_9Zq_rg_9F9iRO4rEQ",
+      "type": "collapsiblePanel",
+      "propertyName": "panel2",
+      "componentName": "pnlData",
+      "label": "Data",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "stylingBox": "{\"marginBottom\":\"5\"}",
+      "version": 7,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "5SkaKe_N0feCU9-Xos4fpSwwYo5JHe",
+        "components": []
+      },
+      "content": {
+        "id": "hUgOhbYnOoh2JJcfaU3zD1hYd7yjpi",
+        "components": [
+          {
+            "id": "0d0dy-UXJOY1yLDN7fZQkD-7ori-Rx",
+            "type": "autocomplete",
+            "propertyName": "entityType",
+            "componentName": "entityType",
+            "label": "Entity Type",
+            "labelAlign": "right",
+            "parentId": "hUgOhbYnOoh2JJcfaU3zD1hYd7yjpi",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 6,
+            "dataSourceType": "url",
+            "useRawValues": true,
+            "desktop": {
+              "borderRadius": "8"
+            },
+            "tablet": {},
+            "mobile": {},
+            "mode": [
+              "single"
+            ],
+            "validate": {},
+            "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete"
+          },
+          {
+            "id": "NZAhm49SHOsCTjp99cCInZ41FN4e0F",
+            "type": "queryBuilder",
+            "propertyName": "filter",
+            "componentName": "filter",
+            "label": "Entity Filter",
+            "labelAlign": "right",
+            "parentId": "hUgOhbYnOoh2JJcfaU3zD1hYd7yjpi",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "modelType": {
+              "_mode": "code",
+              "_code": "    return data?.entityType;"
+            },
+            "validate": {}
+          },
+          {
+            "id": "8LMq9sAg-89Ze4Yud-DzFyFVV2UX6s",
+            "type": "dropdown",
+            "propertyName": "mode",
+            "componentName": "mode",
+            "label": "Selection Mode",
+            "labelAlign": "right",
+            "parentId": "hUgOhbYnOoh2JJcfaU3zD1hYd7yjpi",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 7,
+            "dataSourceType": "values",
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "simple",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {},
+            "mode": [
+              "single"
+            ],
+            "validate": {},
+            "values": [
+              {
+                "label": "single",
+                "value": "single"
+              },
+              {
+                "label": "multiple",
+                "value": "multiple"
+              }
+            ]
+          }
+        ]
+      },
+      "collapsible": "icon",
+      "customHeader": {
+        "id": "bFu2c-eqRxSE8clv8lUQ7VpbcpZv_E",
+        "components": []
+      },
+      "ghost": true,
+      "borderRadius": 8,
+      "components": []
+    },
+    {
+      "id": "RJq7EvRbVPwQPno1AwT8snXzBmK7cU",
+      "type": "collapsiblePanel",
+      "propertyName": "panel2",
+      "componentName": "pnlValidation",
+      "label": "Validation",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "stylingBox": "{\"marginBottom\":\"5\"}",
+      "version": 7,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "ijTNRj_0_Gi6RV58rwbXFbkI6pmk-H",
+        "components": []
+      },
+      "content": {
+        "id": "18MmybHmLSDY_HImige7H3RSrNdM43",
+        "components": [
+          {
+            "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
+            "type": "checkbox",
+            "propertyName": "validate.required",
+            "parentId": "18MmybHmLSDY_HImige7H3RSrNdM43",
+            "label": "Required",
+            "version": 4,
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
+          },
+          {
+            "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "textField",
+            "propertyName": "validate.message",
+            "parentId": "18MmybHmLSDY_HImige7H3RSrNdM43",
+            "label": "Message",
+            "validate": {},
+            "version": 5,
+            "textType": "text",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
+          },
+          {
+            "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
+            "type": "codeEditor",
+            "propertyName": "validate.validator",
+            "parentId": "18MmybHmLSDY_HImige7H3RSrNdM43",
+            "label": "Validator",
+            "validate": {},
+            "labelAlign": "right",
+            "hidden": false,
+            "description": "Enter custom validator logic for form.item rules. Returns a Promise",
+            "settingsValidationErrors": [],
+            "exposedVariables": [
+              {
+                "name": "rules",
+                "description": "Validate rules, only support customize validator",
+                "type": "object"
+              },
+              {
+                "name": "value",
+                "description": "Component current value",
+                "type": "object"
+              },
+              {
+                "name": "callback",
+                "description": "Callback called by component",
+                "type": "function"
+              },
+              {
+                "name": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "version": 4,
+            "language": "typescript",
+            "environment": "front-end"
+          }
+        ]
+      },
+      "collapsible": "icon",
+      "customHeader": {
+        "id": "fYTPTX_XOvcETbtRFz9c9nQtoT8cVm",
+        "components": []
+      },
+      "ghost": true,
+      "borderRadius": 8,
+      "components": []
+    },
+    {
+      "id": "bPHqmqb-bYflMMlx5HdmQWilELISSE",
+      "type": "collapsiblePanel",
+      "propertyName": "panel2",
+      "componentName": "pnlStyle",
+      "label": "Style",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "stylingBox": "{\"marginBottom\":\"5\"}",
+      "version": 7,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "_L_vwAmwg9KOCNF1bWMd5JwMY3FWqF",
+        "components": []
+      },
+      "content": {
+        "id": "2RKOAmXCRYs2-ag44GsdSu9J0JSabV",
+        "components": [
+          {
+            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+            "type": "codeEditor",
+            "propertyName": "style",
+            "label": "Style",
+            "parentId": "2RKOAmXCRYs2-ag44GsdSu9J0JSabV",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+            "exposedVariables": [
+              {
+                "name": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "version": 4,
+            "language": "typescript",
+            "environment": "front-end"
+          }
+        ]
+      },
+      "collapsible": "icon",
+      "customHeader": {
+        "id": "FYftZbna-r_SZUr6n2yT48oie6pAAC",
+        "components": []
+      },
+      "ghost": true,
+      "borderRadius": 8,
+      "components": []
+    },
+    {
+      "id": "494e8079-98f6-4a25-b9fd-40a77554ec89",
+      "type": "dropdown",
+      "propertyName": "size",
+      "parentId": "root",
+      "label": "Size",
+      "allowClear": true,
+      "values": [
+        {
+          "label": "Small",
+          "value": "small",
+          "id": "2f56ae38-e5f3-40ff-9830-bc048736ddb4"
+        },
+        {
+          "label": "Middle",
+          "value": "middle",
+          "id": "470d820b-7cd7-439c-8e95-1f5b3134f80c"
+        },
+        {
+          "label": "Large",
+          "value": "large",
+          "id": "1f2ac3db-3b3f-486c-991f-ad703088ab2d"
+        }
+      ],
+      "dataSourceType": "values",
+      "version": 7,
+      "useRawValues": false,
+      "referenceListId": null,
+      "valueFormat": "listItem",
+      "desktop": {},
+      "tablet": {},
+      "mobile": {}
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 7,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "customHeader": {
+        "id": "iANp8_zwAG7f1NpRsxr1i-Tf8YfHay",
+        "components": []
+      }
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    },
+    "access": null,
+    "permissions": null,
+    "version": 6,
+    "dataLoaderType": "gql",
+    "dataSubmitterType": "gql",
+    "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
+    "onAfterDataLoad": null,
+    "onPrepareSubmitData": null,
+    "onBeforeSubmit": null,
+    "onSubmitSuccess": null,
+    "onSubmitFailed": null,
+    "dataSubmittersSettings": {
+      "gql": {
+        "endpointType": "default",
+        "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
+      }
+    },
+    "dataLoadersSettings": {
+      "gql": {
+        "endpointType": "default"
+      },
+      "custom": {}
+    }
+  }
+}

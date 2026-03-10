@@ -39,7 +39,7 @@ namespace Shesha.Tests.DynamicEntities
                     return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = LocalIocManager.Resolve<IEntityTypeConfigurationStore>();
             var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
             var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
 
@@ -74,7 +74,7 @@ namespace Shesha.Tests.DynamicEntities
                     return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = LocalIocManager.Resolve<IEntityTypeConfigurationStore>();
             var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
             var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
 
@@ -116,6 +116,7 @@ namespace Shesha.Tests.DynamicEntities
                     var nested = new EntityPropertyDto { 
                         Name = supervisorPropName,
                         DataType = DataTypes.Object,
+                        DataFormat = ObjectFormats.Object,
                         Properties = new List<EntityPropertyDto>(),
                     };
                     nested.Properties.Add(new EntityPropertyDto { Name = supervisorFirstNamePropName, DataType = DataTypes.String });
@@ -128,7 +129,7 @@ namespace Shesha.Tests.DynamicEntities
                     return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = LocalIocManager.Resolve<IEntityTypeConfigurationStore>();
             var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
             var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
 

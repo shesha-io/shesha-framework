@@ -12,7 +12,7 @@ const SpecificationWidget: SpecificationWidgetType = {
     return (
       <SpecificationConditionEditor
         value={value}
-        onChange={value => {
+        onChange={(value) => {
           setValue(value);
         }}
       />

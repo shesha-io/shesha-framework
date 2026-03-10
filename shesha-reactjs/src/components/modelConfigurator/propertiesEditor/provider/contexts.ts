@@ -36,12 +36,12 @@ export interface IPropertiesEditorActionsContext {
 }
 
 export const PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE: IPropertiesEditorStateContext = {
-  items: [],  
+  items: [],
 };
 
 export const PropertiesEditorStateContext = createNamedContext<IPropertiesEditorStateContext>(
   PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
-  "PropertiesEditorStateContext"
+  "PropertiesEditorStateContext",
 );
 
 export const PropertiesEditorActionsContext = createNamedContext<IPropertiesEditorActionsContext>(undefined, "PropertiesEditorActionsContext");

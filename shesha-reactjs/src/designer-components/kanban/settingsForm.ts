@@ -1,12 +1,11 @@
-import { IKanbanProps } from '@/components/kanban/model';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IKanbanProps) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   // Generate unique IDs for top-level components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -29,9 +28,7 @@ export const getSettings = (data: IKanbanProps) => {
   // Generate IDs for background panels
   const bgStylePanelId = nanoid();
   const bgStyleContentId = nanoid();
-  //const bgStyleRowId = nanoid();
-  const bgStyleControlsRowId = nanoid();
-  const bgStyleRepeatRowId = nanoid();
+  // const bgStyleRowId = nanoid();
 
   // Generate IDs for shadow panels
   const shadowStylePanelId = nanoid();
@@ -69,7 +66,7 @@ export const getSettings = (data: IKanbanProps) => {
   const colCustomStyleContentId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -84,9 +81,10 @@ export const getSettings = (data: IKanbanProps) => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
+                  inputType: 'textField',
                   propertyName: 'componentName',
                   label: 'Component Name',
                   parentId: commonTabId,
@@ -245,15 +243,15 @@ export const getSettings = (data: IKanbanProps) => {
             title: 'Data',
             id: columnsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   parentId: columnsTabId,
-                      inputType: 'referenceListAutocomplete',
-                      propertyName: 'referenceList',
-                      label: 'Reference List',
-                      tooltip: 'Make sure to reselect the reference list if any changes are made to its items',
-                      filter: { and: [{ '==': [{ var: 'isLast' }, true] }] },
+                  inputType: 'referenceListAutocomplete',
+                  propertyName: 'referenceList',
+                  label: 'Reference List',
+                  tooltip: 'Make sure to reselect the reference list if any changes are made to its items',
+                  filter: { and: [{ '==': [{ var: 'isLast' }, true] }] },
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -276,7 +274,7 @@ export const getSettings = (data: IKanbanProps) => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -289,9 +287,9 @@ export const getSettings = (data: IKanbanProps) => {
                     _mode: 'code',
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: headerStylesPanelId,
                         propertyName: 'headerStyles',
@@ -303,7 +301,7 @@ export const getSettings = (data: IKanbanProps) => {
                         content: {
                           id: headerStylesContentId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addCollapsiblePanel({
                                 id: fontStylePanelId,
                                 propertyName: 'pnlFontStyle',
@@ -315,7 +313,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: fontStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: fontStyleRowId,
                                         parentId: fontStyleContentId,
@@ -345,7 +343,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             propertyName: 'font.weight',
                                             hideLabel: true,
                                             tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                            dropdownOptions: fontWeights,
+                                            dropdownOptions: fontWeightsOptions,
                                             width: 100,
                                           },
                                           {
@@ -372,7 +370,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: bgStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         parentId: bgStyleContentId,
@@ -381,33 +379,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         propertyName: 'background.type',
                                         inputType: 'radio',
                                         tooltip: 'Select a type of background',
-                                        buttonGroupOptions: [
-                                          {
-                                            value: 'color',
-                                            icon: 'FormatPainterOutlined',
-                                            title: 'Color',
-                                          },
-                                          {
-                                            value: 'gradient',
-                                            icon: 'BgColorsOutlined',
-                                            title: 'Gradient',
-                                          },
-                                          {
-                                            value: 'image',
-                                            icon: 'PictureOutlined',
-                                            title: 'Image',
-                                          },
-                                          {
-                                            value: 'url',
-                                            icon: 'LinkOutlined',
-                                            title: 'URL',
-                                          },
-                                          {
-                                            value: 'storedFile',
-                                            icon: 'DatabaseOutlined',
-                                            title: 'Stored File',
-                                          },
-                                        ],
+                                        buttonGroupOptions: backgroundTypeOptions,
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -507,104 +479,44 @@ export const getSettings = (data: IKanbanProps) => {
                                         ],
                                       })
                                       .addSettingsInputRow({
-                                        id: bgStyleControlsRowId,
-                                        parentId: bgStyleContentId,
-                                        hidden: {
-                                          _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
+                                        id: nanoid(),
+                                        parentId: styleRouterId,
                                         inline: true,
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                         inputs: [
                                           {
                                             type: 'customDropdown',
                                             id: nanoid(),
-                                            label: 'Size',
+                                            label: "Size",
                                             hideLabel: true,
-                                            propertyName: 'background.size',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'cover',
-                                                label: 'Cover',
-                                              },
-                                              {
-                                                value: 'contain',
-                                                label: 'Contain',
-                                              },
-                                              {
-                                                value: 'auto',
-                                                label: 'Auto',
-                                              },
-                                            ],
+                                            propertyName: "background.size",
+                                            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                            dropdownOptions: sizeOptions,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                           },
                                           {
                                             type: 'customDropdown',
                                             id: nanoid(),
-                                            label: 'Position',
+                                            label: "Position",
                                             hideLabel: true,
-                                            propertyName: 'background.position',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'center',
-                                                label: 'Center',
-                                              },
-                                              {
-                                                value: 'top',
-                                                label: 'Top',
-                                              },
-                                              {
-                                                value: 'left',
-                                                label: 'Left',
-                                              },
-                                              {
-                                                value: 'right',
-                                                label: 'Right',
-                                              },
-                                              {
-                                                value: 'bottom',
-                                                label: 'Bottom',
-                                              },
-                                              {
-                                                value: 'top left',
-                                                label: 'Top Left',
-                                              },
-                                              {
-                                                value: 'top right',
-                                                label: 'Top Right',
-                                              },
-                                              {
-                                                value: 'bottom left',
-                                                label: 'Bottom Left',
-                                              },
-                                              {
-                                                value: 'bottom right',
-                                                label: 'Bottom Right',
-                                              },
-                                            ],
+                                            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
+                                            propertyName: "background.position",
+                                            dropdownOptions: positionOptions,
                                           },
                                         ],
                                       })
                                       .addSettingsInputRow({
-                                        id: bgStyleRepeatRowId,
-                                        parentId: bgStyleContentId,
-                                        inputs: [
-                                          {
-                                            type: 'radio',
-                                            id: nanoid(),
-                                            label: 'Repeat',
-                                            hideLabel: true,
-                                            propertyName: 'background.repeat',
-                                            inputType: 'radio',
-                                            buttonGroupOptions: repeatOptions,
-                                          },
-                                        ],
-                                        hidden: {
-                                          _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
+                                        id: nanoid(),
+                                        parentId: styleRouterId,
+                                        inputs: [{
+                                          type: 'radio',
+                                          id: nanoid(),
+                                          label: 'Repeat',
+                                          hideLabel: true,
+                                          propertyName: 'background.repeat',
+                                          buttonGroupOptions: repeatOptions,
+                                        }],
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                       })
                                       .toJson(),
                                   ],
@@ -621,7 +533,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: shadowStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: shadowStyleRowId,
                                         parentId: shadowStyleContentId,
@@ -691,18 +603,18 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: borderStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addContainer({
                                         id: borderStyleRowId,
                                         parentId: borderStyleContentId,
                                         propertyName: 'borderContainer',
-                                        components: getBorderInputs() as any,
+                                        components: getBorderInputs(fbf),
                                       })
                                       .addContainer({
                                         id: borderRadiusRowId,
                                         parentId: borderStyleContentId,
                                         propertyName: 'borderRadiusContainer',
-                                        components: getCornerInputs() as any,
+                                        components: getCornerInputs(fbf),
                                       })
                                       .toJson(),
                                   ],
@@ -719,7 +631,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: customStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         inputType: 'codeEditor',
@@ -748,7 +660,15 @@ export const getSettings = (data: IKanbanProps) => {
                         content: {
                           id: columnStylesContentId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
+                              .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'gap',
+                                label: 'Gap',
+                                inputType: 'numberField',
+                                tooltip: 'The gap between the columns',
+                                jsSetting: true,
+                              })
                               .addCollapsiblePanel({
                                 id: colDimensionsPanelId,
                                 propertyName: 'pnlcolumnStyles.dimensions',
@@ -760,7 +680,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: colDimensionsContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colDimensionsWidthRowId,
                                         parentId: colDimensionsContentId,
@@ -846,7 +766,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: colBgContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         parentId: colBgContentId,
@@ -855,33 +775,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         propertyName: 'columnStyles.background.type',
                                         inputType: 'radio',
                                         tooltip: 'Select a type of background',
-                                        buttonGroupOptions: [
-                                          {
-                                            value: 'color',
-                                            icon: 'FormatPainterOutlined',
-                                            title: 'Color',
-                                          },
-                                          {
-                                            value: 'gradient',
-                                            icon: 'BgColorsOutlined',
-                                            title: 'Gradient',
-                                          },
-                                          {
-                                            value: 'image',
-                                            icon: 'PictureOutlined',
-                                            title: 'Image',
-                                          },
-                                          {
-                                            value: 'url',
-                                            icon: 'LinkOutlined',
-                                            title: 'URL',
-                                          },
-                                          {
-                                            value: 'storedFile',
-                                            icon: 'DatabaseOutlined',
-                                            title: 'Stored File',
-                                          },
-                                        ],
+                                        buttonGroupOptions: backgroundTypeOptions,
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -997,20 +891,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             label: 'Size',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.size',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'cover',
-                                                label: 'Cover',
-                                              },
-                                              {
-                                                value: 'contain',
-                                                label: 'Contain',
-                                              },
-                                              {
-                                                value: 'auto',
-                                                label: 'Auto',
-                                              },
-                                            ],
+                                            dropdownOptions: sizeOptions,
                                           },
                                           {
                                             type: 'customDropdown',
@@ -1018,44 +899,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             label: 'Position',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.position',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'center',
-                                                label: 'Center',
-                                              },
-                                              {
-                                                value: 'top',
-                                                label: 'Top',
-                                              },
-                                              {
-                                                value: 'left',
-                                                label: 'Left',
-                                              },
-                                              {
-                                                value: 'right',
-                                                label: 'Right',
-                                              },
-                                              {
-                                                value: 'bottom',
-                                                label: 'Bottom',
-                                              },
-                                              {
-                                                value: 'top left',
-                                                label: 'Top Left',
-                                              },
-                                              {
-                                                value: 'top right',
-                                                label: 'Top Right',
-                                              },
-                                              {
-                                                value: 'bottom left',
-                                                label: 'Bottom Left',
-                                              },
-                                              {
-                                                value: 'bottom right',
-                                                label: 'Bottom Right',
-                                              },
-                                            ],
+                                            dropdownOptions: positionOptions,
                                           },
                                         ],
                                       })
@@ -1069,7 +913,6 @@ export const getSettings = (data: IKanbanProps) => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.repeat',
-                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
@@ -1095,7 +938,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: colShadowContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colShadowRowId,
                                         parentId: colShadowContentId,
@@ -1165,7 +1008,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: colBorderContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colBorderStyleId,
                                         parentId: colBorderContentId,
@@ -1190,12 +1033,12 @@ export const getSettings = (data: IKanbanProps) => {
                                       .addContainer({
                                         id: colBorderContainerId,
                                         parentId: colBorderContentId,
-                                        components: getBorderInputs('columnStyles', true) as any,
+                                        components: getBorderInputs(fbf, 'columnStyles', true),
                                       })
                                       .addContainer({
                                         id: colBorderRadiusRowId,
                                         parentId: colBorderContentId,
-                                        components: getCornerInputs('columnStyles', true) as any,
+                                        components: getCornerInputs(fbf, 'columnStyles', true),
                                       })
                                       .toJson(),
                                   ],
@@ -1211,7 +1054,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: colMarginPaddingContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addStyleBox({
                                         id: nanoid(),
                                         label: 'Margin Padding',
@@ -1233,7 +1076,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 content: {
                                   id: colCustomStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         inputType: 'codeEditor',
@@ -1262,13 +1105,14 @@ export const getSettings = (data: IKanbanProps) => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
                   size: 'small',
+                  jsSetting: true,
                   parentId: securityTabId,
                   tooltip: 'Enter a list of permissions that should be associated with this component',
                 })

@@ -1,15 +1,12 @@
 import React, { FC } from 'react';
 import { Modal } from 'antd';
 import { ConfigurableForm } from '@/components';
-import { FormMarkup } from '@/providers/form/models';
-import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerSettings } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
-import { useTheme } from '@/index';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 import { getSettings } from './formSettings';
-
-const formSettingsMarkup = getSettings() as FormMarkup;
+import { useFormViaFactory } from '@/form-factory/hooks';
 
 export interface IFormSettingsEditorProps {
   isVisible: boolean;
@@ -18,16 +15,13 @@ export interface IFormSettingsEditorProps {
 }
 
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
-  const { theme } = useTheme();
-  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
-  const { updateFormSettings } = useFormDesignerActions();
+  const formSettings = useFormDesignerSettings();
+  const { updateFormSettings } = useFormDesigner();
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
+  const formSettingsMarkup = useFormViaFactory(getSettings);
 
-  formSettings.labelCol = { span: formSettings?.labelCol?.span || theme?.labelSpan };
-  formSettings.wrapperCol = { span: formSettings?.wrapperCol?.span || theme?.componentSpan };
-
-  const onSave = values => {
+  const onSave = (values): void => {
     if (!readOnly) {
       updateFormSettings(values);
       close();
@@ -40,8 +34,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
     <Modal
       open={isVisible}
       title="Form Settings"
-      width="50vw"
-
+      width="clamp(590px, 50vw, 800px)" // min 320px, preferred 50vw, max 700px
       onOk={() => {
         formRef.current?.submit();
       }}
@@ -56,7 +49,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
-
+          className="sha-form-settings-editor"
           shaFormRef={formRef}
           onFinish={onSave}
           markup={formSettingsMarkup}

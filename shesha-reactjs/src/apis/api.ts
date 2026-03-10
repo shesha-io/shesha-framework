@@ -1,5 +1,5 @@
 import { useGet, UseGetProps } from '@/hooks/useGet';
-import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IAjaxErrorResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 
 /**
  * Generic DTO of the simple autocomplete item
@@ -27,7 +27,7 @@ export type UseApiEndpointsProps = Omit<
 >;
 
 export const useApiEndpoints = (props: UseApiEndpointsProps) =>
-  useGet<AutocompleteItemDtoListAjaxResponse, IAjaxResponseBase, ApiEndpointsQueryParams, void>(
+  useGet<AutocompleteItemDtoListAjaxResponse, IAjaxErrorResponse, ApiEndpointsQueryParams, void>(
     `/api/services/app/Api/Endpoints`,
     props
   );

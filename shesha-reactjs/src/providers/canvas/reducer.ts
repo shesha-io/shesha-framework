@@ -1,6 +1,6 @@
 import { handleActions } from 'redux-actions';
 import { CanvasConfigActionEnums } from './actions';
-import { ICanvasStateContext, CANVAS_CONTEXT_INITIAL_STATE, ICanvasWidthProps, IDeviceTypes } from './contexts';
+import { ICanvasStateContext, CANVAS_CONTEXT_INITIAL_STATE, ICanvasWidthProps, IDeviceTypes, IViewType } from './contexts';
 import { getDeviceTypeByWidth, getSmallerDevice, getWidthByDeviceType } from './utils';
 
 export default handleActions<ICanvasStateContext, any>(
@@ -19,7 +19,7 @@ export default handleActions<ICanvasStateContext, any>(
 
       return {
         ...state,
-        designerWidth: getWidthByDeviceType(deviceType),
+        designerWidth: state.designerWidth ?? getWidthByDeviceType(deviceType),
         designerDevice: deviceType,
         activeDevice: getSmallerDevice(deviceType, state.physicalDevice),
       };
@@ -41,6 +41,26 @@ export default handleActions<ICanvasStateContext, any>(
         zoom: payload,
       };
     },
+    [CanvasConfigActionEnums.SetCanvasAutoZoom]: (state: ICanvasStateContext) => {
+      return {
+        ...state,
+        autoZoom: !state.autoZoom,
+      };
+    },
+    [CanvasConfigActionEnums.SetConfigTreePanelSize]: (state: ICanvasStateContext, action: ReduxActions.Action<number>) => {
+      const { payload } = action;
+      return {
+        ...state,
+        configTreePanelSize: payload,
+      };
+    },
+    [CanvasConfigActionEnums.SetViewType]: (state: ICanvasStateContext, action: ReduxActions.Action<IViewType>) => {
+      const { payload } = action;
+      return {
+        ...state,
+        viewType: payload,
+      };
+    },
   },
-  CANVAS_CONTEXT_INITIAL_STATE
+  CANVAS_CONTEXT_INITIAL_STATE,
 );

@@ -4,7 +4,7 @@ import { INote, INotesStateContext } from './contexts';
 
 export function notesReducer(
   incomingState: INotesStateContext,
-  action: ReduxActions.Action<INotesStateContext>
+  action: ReduxActions.Action<INotesStateContext>,
 ): INotesStateContext {
   //#region Register flags reducer
   const state = flagsReducer(incomingState, action) as INotesStateContext;
@@ -17,12 +17,12 @@ export function notesReducer(
     case NotesActionEnums.FetchNotesSuccess:
     case NotesActionEnums.FetchNotesError:
     case NotesActionEnums.PostNotesRequest:
+    case NotesActionEnums.UpdateNotesRequest:
     case NotesActionEnums.PostNotesError:
     case NotesActionEnums.DeleteNotesRequest:
     case NotesActionEnums.DeleteNotesError:
-
     case NotesActionEnums.SetSettings:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+    /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
         ...state,
@@ -46,6 +46,17 @@ export function notesReducer(
       return {
         ...state,
         notes: Array.isArray(notes) ? [notesToAdd, ...notes] : [notesToAdd],
+      };
+    }
+    case NotesActionEnums.OnNoteUpdated:
+    case NotesActionEnums.UpdateNotesSuccess:{
+      const { notes } = state;
+      const { newNotes } = payload;
+      const updatedNote = newNotes as INote;
+
+      return {
+        ...state,
+        notes: notes.map((note) => note.id === updatedNote.id ? updatedNote : note),
       };
     }
     case NotesActionEnums.OnNoteRemoved:

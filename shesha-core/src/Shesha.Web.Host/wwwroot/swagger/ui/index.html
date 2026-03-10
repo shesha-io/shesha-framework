@@ -78,7 +78,7 @@
                 if (!configObject.urls[i].url.startsWith('http'))
                     configObject.urls[i].url = window.location.origin + '/' + configObject.urls[i].url;
             }
-
+            
             // Apply mandatory parameters
             configObject.dom_id = "#swagger-ui";
             configObject.presets = [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset];
@@ -112,9 +112,10 @@
                                         onClick: function () {
                                             var authorizeButton = document.getElementById('authorize');
                                             if (abp.auth.getToken()) {
-                                                abp.swagger.logout();
-                                                authorizeButton.innerText = getAuthorizeButtonText();
-                                                authorizeButton.className = 'btn ' + getAuthorizeButtonCssClass();
+                                                abp.swagger.logout(function () {
+                                                    authorizeButton.innerText = getAuthorizeButtonText();
+                                                    authorizeButton.className = 'btn ' + getAuthorizeButtonCssClass();
+                                                });                                                
                                             } else {
                                                 abp.swagger.openAuthDialog(function () {
                                                     authorizeButton.innerText = getAuthorizeButtonText();

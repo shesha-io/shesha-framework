@@ -1,3 +1,4 @@
+import { IStyleType } from '@/index';
 import {
   ButtonGroupItemProps,
   IButtonGroupItemBase,
@@ -5,13 +6,15 @@ import {
   isDynamicItem,
   isGroup,
 } from '@/providers/buttonGroupConfigurator/models';
+import { ButtonType } from 'antd/lib/button';
 
 export interface IDynamicItemsEvaluationStore {
   dynamicItems: IResolvedDynamicItem[];
+  buttonType?: ButtonType;
   items: ButtonGroupItemProps[];
 }
 
-export interface IResolvedDynamicItem extends IDynamicItem {
+export interface IResolvedDynamicItem extends IDynamicItem, IStyleType {
   isResolved: boolean;
   resolvedItems: ButtonGroupItemProps[];
 }
@@ -24,7 +27,7 @@ export const isResolvedDynamicItem = (item: IButtonGroupItemBase): item is IReso
 
 export const getDynamicActionsItemsLevel = (
   items: ButtonGroupItemProps[],
-  onDynamicItem: (dynamicItem: IResolvedDynamicItem) => void
+  onDynamicItem: (dynamicItem: IResolvedDynamicItem) => void,
 ): ButtonGroupItemProps[] => {
   const result = items.map((item) => {
     if (isDynamicItem(item)) {

@@ -9,12 +9,12 @@ namespace Shesha.MultiTenancy.Dto
     public class TenantDto : EntityDto
     {
         [Required]
-        [StringLength(AbpTenantBase.MaxTenancyNameLength)]
+        [MaxLength(AbpTenantBase.MaxTenancyNameLength)]
         [RegularExpression(AbpTenantBase.TenancyNameRegex)]
         public string TenancyName { get; set; }
 
         [Required]
-        [StringLength(AbpTenantBase.MaxNameLength)]
+        [MaxLength(AbpTenantBase.MaxNameLength)]
         public string Name { get; set; }        
         
         public bool IsActive {get; set;}

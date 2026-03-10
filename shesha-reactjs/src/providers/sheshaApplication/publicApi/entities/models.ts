@@ -1,25 +1,25 @@
 export interface EntityApiItem {
-    name: string;
-    description?: string;
-    accessor: string;
+  name: string;
+  description?: string;
+  accessor: string;
 }
 
 export interface DataTypeInfo {
-    dataType: string;
-    dataFormat?: string;
-    objectType?: string;
+  dataType: string;
+  dataFormat?: string;
+  objectType?: string;
 }
 
 export interface EntityConfigurationDto extends EntityApiItem {
-    module: EntityApiItem;
-    entityType: EntityApiItem;
+  module: EntityApiItem;
+  fullClassName: string;
 }
 
-export interface IEntityTypeIndentifier {
-    module: string;
-    name: string;
+export interface IEntityTypeIdentifier {
+  module: string | null;
+  name: string;
 }
 
 export interface IEntity<TId = string> {
-    id: TId;
+  id: TId;
 };

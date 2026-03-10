@@ -10,51 +10,53 @@ import { ItemSettingsMarkupFactory } from './interfaces';
 import { ConfigurableForm } from '@/components';
 
 export interface IPropertiesPanelProps<TItem extends ListItemWithId> extends ItemPropertiesRendererProps<TItem> {
-    settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
+  settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
 }
 
-export const PropertiesPanel = <TItem extends ListItemWithId>(props: IPropertiesPanelProps<TItem>) => {
-    const { item, onChange, readOnly, settingsMarkupFactory } = props;
+export const PropertiesPanel = <TItem extends ListItemWithId>(props: IPropertiesPanelProps<TItem>): JSX.Element => {
+  const { item, onChange, readOnly, settingsMarkupFactory } = props;
 
-    const [form] = Form.useForm();
+  const [form] = Form.useForm();
 
-    const formRef = useRef<ConfigurableFormInstance>(null);
+  const formRef = useRef<ConfigurableFormInstance>(null);
 
-    const debouncedSave = useDebouncedCallback(
-        values => {
-            onChange?.({ ...item, ...values });
-        },
-        // delay in ms
-        300
+  const debouncedSave = useDebouncedCallback(
+    (values) => {
+      onChange?.({ ...item, ...values });
+    },
+    // delay in ms
+    300,
+  );
+
+  const editor = useMemo(() => {
+    const emptyEditor = null;
+    if (!item) return emptyEditor;
+
+    const markup = settingsMarkupFactory(item) ?? [];
+    return (
+      <SourceFilesFolderProvider folder={`item-${item.id}`}>
+        <ConfigurableForm
+          // key={selectedItemId} // rerender for each item to initialize all controls
+          formRef={formRef}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          mode={readOnly ? 'readonly' : 'edit'}
+          markup={markup}
+          form={form}
+          initialValues={item}
+          onValuesChange={debouncedSave}
+          className={sheshaStyles.verticalSettingsClass}
+          isSettingsForm={true}
+        />
+      </SourceFilesFolderProvider>
     );
+  }, [item]);
 
-    const editor = useMemo(() => {
-        const emptyEditor = null;
-        if (!item) return emptyEditor;
-
-        const markup = settingsMarkupFactory(item) ?? [];
-        return (
-            <SourceFilesFolderProvider folder={`item-${item.id}`}>
-                <ConfigurableForm
-                    //key={selectedItemId} // rerender for each item to initialize all controls
-                    formRef={formRef}
-                    labelCol={{ span: 24 }}
-                    wrapperCol={{ span: 24 }}
-                    mode={readOnly ? 'readonly' : 'edit'}
-                    markup={markup}
-                    form={form}
-                    initialValues={item}
-                    onValuesChange={debouncedSave}
-                    className={sheshaStyles.verticalSettingsClass}
-                    isSettingsForm={true}
-                />
-            </SourceFilesFolderProvider>
-        );
-    }, [item]);
-
-    return Boolean(item)
-        ? (<>{editor}</>)
-        : (<div>
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
-        </div>);
+  return Boolean(item)
+    ? (<>{editor}</>)
+    : (
+      <div>
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
+      </div>
+    );
 };

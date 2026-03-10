@@ -40,11 +40,11 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     hidden: model.hidden,
     valuePropName: valuePropName,
     initialValue: initialValue,
-    tooltip: model.description,
+    tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
-    //layout: model.layout, this property appears to have been removed from the Ant component
+    // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
 

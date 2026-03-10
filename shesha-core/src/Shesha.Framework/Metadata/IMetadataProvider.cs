@@ -1,4 +1,5 @@
-﻿using Shesha.Metadata.Dtos;
+﻿using Shesha.Domain;
+using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,7 +11,9 @@ namespace Shesha.Metadata
     /// </summary>
     public interface IMetadataProvider
     {
-        Task<MetadataDto> GetAsync(Type? containerType, string containerName);
+        Task<MetadataDto> GetAsync(Type containerType, EntityConfig? entityConfig = null);
+
+        Task<MetadataDto> GetAsync(string? moduleName, string container);
 
         Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type containerType);
 
@@ -20,6 +23,22 @@ namespace Shesha.Metadata
         /// <returns></returns>
         Task<List<SpecificationDto>> GetSpecificationsAsync(Type entityType);
 
-        Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType, string containerName);
+        Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType);
+
+        /// <summary>
+        /// Get list of all models available in the application
+        /// </summary>
+        /// <returns></returns>
+        Task<List<ModelDto>> GetAllModelsAsync();
+
+        /// <summary>
+        /// Get type of container by name
+        /// </summary>
+        Task<Type> GetContainerTypeAsync(string? moduleName, string container);
+
+        /// <summary>
+        /// Get type of container by name
+        /// </summary>
+        Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container);
     }
 }

@@ -18,7 +18,7 @@ declare module '*.scss' {
 }
 
 // tslint:disable-next-line:interface-name
-interface SvgrComponent extends React.StatelessComponent<React.SVGAttributes<SVGElement>> {}
+type SvgrComponent = React.StatelessComponent<React.SVGAttributes<SVGElement>>;
 
 declare module '*.svg' {
   const svgUrl: string;

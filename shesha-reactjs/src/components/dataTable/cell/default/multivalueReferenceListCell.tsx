@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import { IDataCellProps } from '../interfaces';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { asNumber } from '../utils';
 
-export interface IMultivalueReferenceListCellProps<D extends object = {}, V = any> extends IDataCellProps<D, V> { }
+export type IMultivalueReferenceListCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
 
-const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
-  props: IMultivalueReferenceListCellProps<D, V>
-) => {
+const MultivalueReferenceListCellInternal = <D extends object = object, V = any>(
+  props: IMultivalueReferenceListCellProps<D, V>,
+): JSX.Element => {
   const { value } = props;
   const { referenceListName, referenceListModule } = props.columnConfig;
 
@@ -16,16 +17,22 @@ const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
   const mapped = useMemo(() => {
     if (!refListItems || !Array.isArray(refListItems) || !value || !Array.isArray(value)) return null;
 
-    const mappedArray = value.map((item) => refListItems.find((i) => i.itemValue === item)?.item);
+    const mappedArray = value
+      .map((item) => {
+        const numericValue = asNumber(item);
+        const found = numericValue === null ? null : refListItems.find((i) => i.itemValue === numericValue);
+        return found?.item || null;
+      })
+      .filter((item) => item !== null && item !== undefined);
     return mappedArray.join(', ');
   }, [refListItems, value]);
 
   return <>{mapped}</>;
 };
 
-export const MultivalueReferenceListCell = <D extends object = {}, V = any>(
-  props: IMultivalueReferenceListCellProps<D, V>
-) => {
+export const MultivalueReferenceListCell = <D extends object = object, V = any>(
+  props: IMultivalueReferenceListCellProps<D, V>,
+): JSX.Element => {
   const { value } = props;
   if (!value || !props.columnConfig) return null;
 

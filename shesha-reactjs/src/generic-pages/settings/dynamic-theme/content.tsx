@@ -22,11 +22,11 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
       <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
         <CollapsiblePanel
           collapsible="disabled"
-          header={
+          header={(
             <Typography.Text type="secondary" className={styles.themeHeader}>
               Theme Parameters
             </Typography.Text>
-          }
+          )}
           className={styles.themeParameters}
         >
           <Alert type="info" message="You can modify the values by selecting the colour block" showIcon />
@@ -37,11 +37,11 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
       <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
         <CollapsiblePanel
           className={styles.themeParameters}
-          header={
+          header={(
             <Typography.Text type="secondary" className={styles.themeHeader}>
               Results
             </Typography.Text>
-          }
+          )}
         >
           <SectionSeparator title="Alerts" />
           <AlertsExample />

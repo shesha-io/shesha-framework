@@ -7,7 +7,7 @@ import React from 'react';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IConfigurableItemAutocompleteComponentProps } from './interfaces';
 import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
-import { evaluateDynamicFilters } from '@/utils';
+import { evaluateDynamicFilters } from '@/utils/datatable';
 import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { ConfigItemAutocomplete } from '@/components/configurableItemAutocomplete';
 
@@ -21,7 +21,6 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-
     const { filter } = model;
     const allData = useAvailableConstantsData();
 
@@ -46,7 +45,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
             data: { ...allData.pageContext },
           },
         ],
-        propertyMetadataAccessor
+        propertyMetadataAccessor,
       );
 
       if (response.find((f) => f?.unevaluatedExpressions?.length))
@@ -57,7 +56,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
         : undefined;
       if (!expression)
         return undefined;
-      
+
       return typeof (expression) === 'string'
         ? JSON.parse(expression)
         : expression;
@@ -65,7 +64,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) =>
+        {(value, onChange) => (
           <ConfigItemAutocomplete
             entityType={model.entityType}
             readOnly={model.readOnly}
@@ -73,16 +72,17 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
             onChange={onChange}
             mode={model.mode}
             filter={evaluatedFilter}
-          />}
+          />
+        )}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IConfigurableItemAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
       entityType: '',
-      mode: 'single'
+      mode: 'single',
     })),
 };

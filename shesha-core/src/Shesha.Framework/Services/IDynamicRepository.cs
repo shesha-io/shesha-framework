@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Shesha.Services
 {
     /// <summary>
-    /// Dynamic repository, allows to manipulate entities of different types using type reference or <see cref="EntityConfiguration.TypeShortAlias"/>
+    /// Dynamic repository, allows to manipulate entities of different types using type reference or <see cref="EntityTypeConfiguration.TypeShortAlias"/>
     /// </summary>
     public interface IDynamicRepository
     {

@@ -11,7 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Module = Shesha.Domain.ConfigurationItems.Module;
+using Module = Shesha.Domain.Module;
 
 namespace Shesha.Permissions
 {

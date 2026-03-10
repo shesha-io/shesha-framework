@@ -3,8 +3,6 @@ import { Collapse, Empty } from 'antd';
 import { getLastSection } from '@/utils/string';
 import { ObjectsTree } from './objectsTree';
 
-const { Panel } = Collapse;
-
 export interface IGrouppedObjectsTreeProps<TItem> {
   defaultSelected?: string;
   items: TItem[];
@@ -28,8 +26,7 @@ interface GrouppedObjects<TItem> {
   visibleItems: TItem[];
 }
 
-export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TItem>) => {
-
+export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTreeProps<TItem>): JSX.Element => {
   const childFieldName = props.childFieldName ?? 'children';
 
   const getVisible = (items: TItem[], searchText: string): TItem[] => {
@@ -37,15 +34,15 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
     if (!items)
       return result;
 
-    items.forEach(item => {
-      if (true /*!item.hidden*/) {
+    items.forEach((item) => {
+      if (true /* !item.hidden*/) {
         const childItems = getVisible(item[childFieldName], searchText);
-        const matched = 
-          Array.isArray(childItems) && childItems.length > 0 
-          || (searchText ?? '') === '' 
-          || (typeof props?.isMatch === 'function' ? props.isMatch(item, props.searchText) : false);
+        const matched =
+          (Array.isArray(childItems) && childItems.length > 0) ||
+          (searchText ?? '') === '' ||
+          (typeof props?.isMatch === 'function' ? props.isMatch(item, props.searchText) : false);
 
-        if (matched /*|| childItems.length > 0*/) {
+        if (matched /* || childItems.length > 0*/) {
           const filteredItem: TItem = { ...item, [childFieldName]: [...childItems] };
           result.push(filteredItem);
         }
@@ -55,7 +52,7 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
     return result;
   };
 
-  const grouping = (field: string, split: boolean) => {
+  const grouping = (field: string, split: boolean): GrouppedObjects<TItem>[] => {
     const groups = [] as GrouppedObjects<TItem>[];
     if (Boolean(props?.items)) {
       props.items?.forEach((item) => {
@@ -71,7 +68,7 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
           groups.push({ groupName: name, visibleItems: [item] });
         }
       });
-      groups.forEach(group => {
+      groups.forEach((group) => {
         group.visibleItems = getVisible(group.visibleItems, props.searchText);
       });
     }
@@ -81,13 +78,13 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
     });
   };
 
-  const onCollapseChange = (key: string | string[]) => {
+  const onCollapseChange = (key: string | string[]): void => {
     if (Boolean(props?.setOpenedKeys)) {
       props.setOpenedKeys(Array.isArray(key) ? key : [key]);
     }
   };
 
-  const onChangeHandler = (item: TItem) => {
+  const onChangeHandler = (item: TItem): void => {
     if (Boolean(props.onChange))
       props.onChange(item);
   };
@@ -98,55 +95,64 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
 
   useEffect(() => {
     if (props.defaultSelected) {
-      const g = groups.find(group => group.visibleItems.find(item => (props.idFieldName ? item[props.idFieldName] : item['id'])?.toLowerCase() === props.defaultSelected?.toLocaleLowerCase()));
+      const g = groups.find((group) => group.visibleItems.find((item) => (props.idFieldName ? item[props.idFieldName] : item['id'])?.toLowerCase() === props.defaultSelected?.toLocaleLowerCase()));
       if (g) {
-        if (!props.openedKeys.find(key => key === g.groupName)) {
+        if (!props.openedKeys.find((key) => key === g.groupName)) {
           onCollapseChange([...props.openedKeys, g.groupName]);
         }
       }
     }
   }, [groups]);
 
+  const defaultExpandAll = props?.searchText.length > 1 && groups[0].visibleItems.length <= 6;
+
   return (
     <>
+      {groups.length === 1 && (
+        <div key={groups[0].groupName}>
+          <ObjectsTree<TItem>
+            items={groups[0].visibleItems}
+            searchText={props?.searchText}
+            defaultExpandAll={defaultExpandAll}
+            onChange={onChangeHandler}
+            defaultSelected={props.defaultSelected?.toLowerCase()}
+            onRenterItem={props?.onRenterItem}
+            getIcon={groups[0].groupName === '-' ? undefined : props?.getIcon}
+            getIsLeaf={groups[0].groupName === '-' ? undefined : props?.getIsLeaf}
+          />
+        </div>
+      )}
       {groups.length > 0 && (
-        <Collapse activeKey={props?.openedKeys} accordion onChange={onCollapseChange} >
-          {groups.map((ds) => {
-            const visibleItems = ds.visibleItems;
-            const defaultExpandAll = props?.searchText.length > 1 && visibleItems.length <= 6;
-
-            let classes = ['sha-toolbox-panel'];
-
-            return visibleItems.length === 0 ? null : (
-              ds.groupName === '-'
-                ? (
+        <Collapse
+          activeKey={props?.openedKeys}
+          accordion
+          onChange={onCollapseChange}
+          items={groups.map((ds) => {
+            const defaultExpandAll = props?.searchText.length > 1 && ds.visibleItems.length <= 6;
+            return {
+              label: <span>{ds.groupName}</span>,
+              className: 'sha-toolbox-panel',
+              title: ds.groupName,
+              forceRender: true,
+              children: ds.visibleItems.length === 0 ? null
+                : (
                   <div key={ds.groupName}>
                     <ObjectsTree<TItem>
-                      items={visibleItems}
+                      items={ds.visibleItems}
                       searchText={props?.searchText}
                       defaultExpandAll={defaultExpandAll}
                       onChange={onChangeHandler}
                       defaultSelected={props.defaultSelected?.toLowerCase()}
                       onRenterItem={props?.onRenterItem}
+                      getIcon={ds.groupName === '-' ? undefined : props?.getIcon}
+                      getIsLeaf={ds.groupName === '-' ? undefined : props?.getIsLeaf}
                     />
                   </div>
-                )
-                : (
-                  <Panel header={ds.groupName} key={ds.groupName} className={classes.reduce((a, c) => a + ' ' + c)} forceRender={true}>
-                    <ObjectsTree<TItem>
-                      items={visibleItems}
-                      searchText={props?.searchText}
-                      defaultExpandAll={defaultExpandAll}
-                      onChange={onChangeHandler}
-                      defaultSelected={props?.openedKeys?.find(key => key === ds.groupName) ? props.defaultSelected?.toLowerCase() : null}
-                      onRenterItem={props?.onRenterItem}
-                      getIcon={props?.getIcon}
-                      getIsLeaf={props?.getIsLeaf}
-                    />
-                  </Panel>
-                )
-            );
+                ),
+            };
           })}
+        >
+          {}
         </Collapse>
       )}
       {groups.length === 0 && (

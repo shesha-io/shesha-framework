@@ -20,7 +20,7 @@ export interface IMainMenuActionsContext {
 
 export const MAIN_MENU_CONTEXT_INITIAL_STATE: IMainMenuStateContext = {
   loadedMenu: {
-    items: [],    
+    items: [],
   },
 };
 

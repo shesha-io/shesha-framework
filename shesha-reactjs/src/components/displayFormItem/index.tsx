@@ -27,7 +27,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
   const [state, setState] = useState({ isEdit: false });
   const { styles } = useStyles();
 
-  const onSave = () => {
+  const onSave = (): void => {
     if (Boolean(value?.trim())) {
       setState({ ...state, isEdit: false });
     }
@@ -35,7 +35,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
     if (onControlSave) onControlSave();
   };
 
-  const renderChildren = () => {
+  const renderChildren = (): string | typeof children => {
     try {
       if (Boolean(children)) return children;
       return 'N/A';
@@ -58,7 +58,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
               <AutoCompletePlaces
                 value={value}
                 onChange={onValueChange}
-              //extra={<Extra onExtraChange={() => {}} />}
+              // extra={<Extra onExtraChange={() => {}} />}
               />
             )}
           </>

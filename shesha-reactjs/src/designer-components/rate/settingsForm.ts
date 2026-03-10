@@ -1,16 +1,15 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
-import { IRateProps } from '.';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IRateProps) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -25,7 +24,7 @@ export const getSettings = (data: IRateProps) => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -34,7 +33,7 @@ export const getSettings = (data: IRateProps) => {
                   styledLabel: true,
                   validate: { required: true },
                   size: 'small',
-                  jsSetting: true
+                  jsSetting: true,
                 })
                 .addLabelConfigurator({
                   id: nanoid(),
@@ -42,7 +41,6 @@ export const getSettings = (data: IRateProps) => {
                   label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
-                  defaultValue: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -88,7 +86,6 @@ export const getSettings = (data: IRateProps) => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -97,20 +94,19 @@ export const getSettings = (data: IRateProps) => {
                       propertyName: 'hidden',
                       label: 'Hide',
                       size: 'small',
-                      defaultValue: 'inherit',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'events',
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'codeEditor',
@@ -118,25 +114,25 @@ export const getSettings = (data: IRateProps) => {
                   label: 'On Change',
                   labelAlign: 'right',
                   tooltip: 'Enter custom eventhandler on changing of event.',
-                  parentId: eventsTabId
+                  parentId: eventsTabId,
                 })
                 .addSettingsInput({
-                    id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
-                    inputType: 'codeEditor',
-                    propertyName: 'onFocusCustom',
-                    label: 'On Focus',
-                    labelAlign: 'right',
-                    tooltip: 'Enter custom eventhandler on focus of event.',
-                    parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                  id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                  inputType: 'codeEditor',
+                  propertyName: 'onFocusCustom',
+                  label: 'On Focus',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on focus of event.',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
-                    id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
-                    inputType: 'codeEditor',
-                    propertyName: 'onBlurCustom',
-                    label: 'On Blur',
-                    labelAlign: 'right',
-                    tooltip: 'Enter custom eventhandler on blur of event.',
-                    parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                  id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                  inputType: 'codeEditor',
+                  propertyName: 'onBlurCustom',
+                  label: 'On Blur',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on blur of event.',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
                   id: '1232d96c-b808-4316-8a36-701b09e5f6c7',
@@ -145,17 +141,17 @@ export const getSettings = (data: IRateProps) => {
                   label: 'On Click',
                   labelAlign: 'right',
                   tooltip: 'Enter custom eventhandler on click of event.',
-                  parentId: 'Cc47W08MWrKdhoGqFKMI2'
-              })
-                .toJson()
-            ]
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .toJson(),
+            ],
           },
           {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: 'styleRouter',
                   propertyName: 'propertyRouter1',
@@ -167,10 +163,10 @@ export const getSettings = (data: IRateProps) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
-                  },
+                    _value: "",
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: 'customStyleCollapsiblePanel',
                         propertyName: 'customStyle',
@@ -181,7 +177,7 @@ export const getSettings = (data: IRateProps) => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -190,41 +186,42 @@ export const getSettings = (data: IRateProps) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
                   size: 'small',
+                  jsSetting: true,
                   parentId: securityTabId,
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
-        ]
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

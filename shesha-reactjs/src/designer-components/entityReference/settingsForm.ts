@@ -1,17 +1,16 @@
-import { DesignerToolbarSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
-import { IEntityReferenceControlProps } from './entityReference';
 import {
   backgroundTypeOptions,
   positionOptions,
   repeatOptions,
   sizeOptions,
 } from '../_settings/utils/background/utils';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IEntityReferenceControlProps) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -22,7 +21,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
   const hiddenId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -37,7 +36,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: propertyNameId,
                   propertyName: 'propertyName',
@@ -78,9 +77,61 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     },
                   ],
                 })
+                .addSettingsInput({
+                  inputType: 'switch',
+                  id: hiddenId,
+                  propertyName: 'hidden',
+                  parentId: commonTabId,
+                  label: 'Hide',
+                  jsSetting: true,
+                  layout: 'horizontal',
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: 'data',
+            title: 'Data',
+            id: dataTabId,
+            components: [
+              ...fbf()
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'entityTypeAutocomplete',
+                  propertyName: 'entityType',
+                  label: 'Entity Type',
+                  tooltip: 'The entity type you want to reference.',
+                  labelAlign: 'right',
+                  parentId: dataTabId,
+                  hidden: false,
+                  validate: { required: true },
+                  settingsValidationErrors: [],
+                  jsSetting: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'autocomplete',
+                  allowClear: true,
+                  propertyName: 'getEntityUrl',
+                  label: 'Get Entity URL',
+                  labelAlign: 'right',
+                  parentId: dataTabId,
+                  hidden: false,
+                  dataSourceType: 'url',
+                  validate: {
+                    required: {
+                      _code: 'return !getSettingValue(data?.entityType);',
+                      _mode: 'code',
+                      _value: true,
+                    } as any,
+                  },
+                  dataSourceUrl: '/api/services/app/Api/Endpoints',
+                  settingsValidationErrors: [],
+                  useRawValues: true,
+                })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: commonTabId,
+                  parentId: dataTabId,
                   inputs: [
                     {
                       id: nanoid(),
@@ -100,16 +151,21 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         _mode: 'code',
                         _value: false,
                       } as any,
-                      parentId: commonTabId,
+                      parentId: dataTabId,
                     },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  inputs: [
                     {
                       id: nanoid(),
                       propertyName: 'iconName',
                       label: 'Icon',
-                      parentId: commonTabId,
+                      parentId: dataTabId,
                       type: 'iconPicker',
                       jsSetting: true,
-                      allowClear: true,
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
@@ -125,7 +181,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       id: nanoid(),
                       propertyName: 'textTitle',
                       label: 'Text Title',
-                      parentId: commonTabId,
+                      parentId: dataTabId,
                       type: 'textField',
                       jsSetting: true,
                       readOnly: {
@@ -140,58 +196,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       } as any,
                     },
                   ],
-                })
-                .addSettingsInput({
-                  inputType: 'switch',
-                  id: hiddenId,
-                  propertyName: 'hidden',
-                  parentId: commonTabId,
-                  label: 'Hide',
-                  jsSetting: true,
-                  layout: 'horizontal',
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'data',
-            title: 'Data',
-            id: dataTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'autocomplete',
-                  allowClear: true,
-                  propertyName: 'entityType',
-                  label: 'Entity Type',
-                  description: 'The entity type you want to use for the chart.',
-                  labelAlign: 'right',
-                  parentId: dataTabId,
-                  hidden: false,
-                  dataSourceType: 'url',
-                  validate: { required: true },
-                  dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                  settingsValidationErrors: [],
-                  useRawValues: true,
-                  width: '100%',
-                  jsSetting: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'autocomplete',
-                  allowClear: true,
-                  propertyName: 'getEntityUrl',
-                  label: 'Get Entity URL',
-                  labelAlign: 'right',
-                  parentId: dataTabId,
-                  hidden: false,
-                  dataSourceType: 'url',
-                  validate: { required: true },
-                  dataSourceUrl: '/api/services/app/Api/Endpoints',
-                  settingsValidationErrors: [],
-                  useRawValues: true,
-                  width: '100%',
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -211,7 +215,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       type: 'propertyAutocomplete',
                       allowClear: true,
                       jsSetting: true,
-                      width: '100%',
                       modelType: {
                         _code: 'return getSettingValue(data?.entityType);',
                         _mode: 'code',
@@ -234,7 +237,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     { value: 'NavigateLink', label: 'Navigate link' },
                     { value: 'Dialog', label: 'Dialog' },
                   ],
-                  defaultValue: 'Quickview',
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -252,7 +254,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         { value: 'name', label: 'Name' },
                         { value: 'dynamic', label: 'Dynamic' },
                       ],
-                      defaultValue: 'name',
                     },
                     {
                       id: nanoid(),
@@ -261,8 +262,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       parentId: dataTabId,
                       type: 'formTypeAutocomplete',
                       jsSetting: true,
-                      width: '100%',
-                      allowClear: true,
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
@@ -295,318 +294,257 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     },
                   ],
                 })
-                .addContainer({
+                .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'pnlDialogSettings',
                   label: 'Dialog Settings',
-                  labelAlign: 'right',
+                  labelAlign: 'left',
                   parentId: dataTabId,
                   hidden: {
                     _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  components: [
-                    ...new DesignerToolbarSettings()
-                      .addSectionSeparator({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        label: 'Dialog Settings',
-                        labelAlign: 'left',
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'modalTitle',
-                            label: 'Modal Title',
-                            parentId: dataTabId,
-                            type: 'textField',
-                            jsSetting: true,
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'footerButtons',
-                            label: 'Footer Buttons',
-                            parentId: dataTabId,
-                            type: 'dropdown',
-                            allowClear: true,
-                            jsSetting: true,
-                            dropdownOptions: [
-                              { value: 'default', label: 'Default' },
-                              { value: 'custom', label: 'Custom' },
-                              { value: 'none', label: 'None' },
-                            ],
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'buttons',
-                            label: 'Configure Modal Buttons',
-                            parentId: dataTabId,
-                            type: 'buttonGroupConfigurator',
-                            hidden: {
-                              _code: 'return getSettingValue(data?.footerButtons) !== "custom";',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                            jsSetting: true,
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'submitHttpVerb',
-                            label: 'Submit HTTP Verb',
-                            parentId: dataTabId,
-                            type: 'dropdown',
-                            allowClear: true,
-                            dropdownOptions: [
-                              { value: 'POST', label: 'POST' },
-                              { value: 'PUT', label: 'PUT' },
-                            ],
-                            defaultValue: 'POST',
-                            hidden: {
-                              _code: 'return getSettingValue(data?.footerButtons) === "default";',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                            jsSetting: true,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: appearanceTabId,
-                        readOnly: {
-                          _code: 'return getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'additionalProperties',
-                            label: 'Additional Properties',
-                            parentId: dataTabId,
-                            jsSetting: true,
-                            type: 'labelValueEditor',
-                            labelTitle: 'Key',
-                            valueTitle: 'Value',
-                            labelName: 'key',
-                            valueName: 'value',
-                            tooltip:
-                              'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
-                              'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
-                              'Id initial value is already initialised with {{entityReference.id}} but you can override it',
-                            exposedVariables: [
-                              { name: 'data', description: 'This form data', type: 'object' },
-                              { name: 'form', description: 'Form instance', type: 'object' },
-                              {
-                                name: 'formMode',
-                                description: 'Current form mode',
-                                type: "'designer' | 'edit' | 'readonly'",
-                              },
-                              { name: 'globalState', description: 'Global state', type: 'object' },
-                              {
-                                name: 'entityReference.id',
-                                description: 'Id of entity reference entity',
-                                type: 'object',
-                              },
-                              { name: 'entityReference.entity', description: 'Entity', type: 'object' },
-                              { name: 'moment', description: 'moment', type: '' },
-                              { name: 'http', description: 'axiosHttp', type: '' },
-                            ].map((item) => JSON.stringify(item)),
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'modalWidth',
-                            label: 'Dialog Width (%)',
-                            parentId: dataTabId,
-                            type: 'dropdown',
-                            allowClear: true,
-                            jsSetting: true,
-                            dropdownOptions: [
-                              { value: '40%', label: 'Small' },
-                              { value: '60%', label: 'Medium' },
-                              { value: '80%', label: 'Large' },
-                              { value: 'custom', label: 'Custom' },
-                            ],
-                            width: '100%',
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'widthUnits',
-                            label: 'Width Units',
-                            parentId: dataTabId,
-                            type: 'dropdown',
-                            allowClear: true,
-                            jsSetting: true,
-                            dropdownOptions: [
-                              { value: '%', label: 'Percentage (%)' },
-                              { value: 'px', label: 'Pixels (px)' },
-                            ],
-                            width: '100%',
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'customWidth',
-                            label: 'Custom Width',
-                            parentId: dataTabId,
-                            type: 'textField',
-                            jsSetting: true,
-                            min: 0,
-                            width: '100%',
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'handleSuccess',
-                            label: 'Handle Success',
-                            parentId: dataTabId,
-                            type: 'switch',
-                            defaultValue: true,
-                            jsSetting: true,
-                            width: '100%',
-                          },
-                        ],
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlOnSuccess',
-                        label: 'On Success Handler',
-                        labelAlign: 'left',
-                        parentId: dataTabId,
-                        collapsible: 'header',
-                        ghost: true,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.handleSuccess) !== true;',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        content: {
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...fbf()
+                        .addSettingsInputRow({
                           id: nanoid(),
-                          components: [
-                            ...new DesignerToolbarSettings()
-                              .addConfigurableActionConfigurator({
-                                id: nanoid(),
-                                propertyName: 'onSuccess',
-                                label: 'On Success',
-                                parentId: dataTabId,
-                                jsSetting: true,
-                              })
-                              .toJson(),
+                          parentId: dataTabId,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'modalTitle',
+                              label: 'Modal Title',
+                              parentId: dataTabId,
+                              type: 'textField',
+                              jsSetting: true,
+                            },
+                            {
+                              id: nanoid(),
+                              propertyName: 'footerButtons',
+                              label: 'Footer Buttons',
+                              parentId: dataTabId,
+                              type: 'dropdown',
+                              allowClear: true,
+                              jsSetting: true,
+                              dropdownOptions: [
+                                { value: 'default', label: 'Default' },
+                                { value: 'custom', label: 'Custom' },
+                                { value: 'none', label: 'None' },
+                              ],
+                            },
                           ],
-                        },
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'handleFail',
-                            label: 'Handle Fail',
-                            parentId: dataTabId,
-                            type: 'switch',
-                            defaultValue: false,
-                            jsSetting: false,
-                          },
-                        ],
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlOnFail',
-                        label: 'On Fail Handler',
-                        labelAlign: 'left',
-                        parentId: dataTabId,
-                        collapsible: 'header',
-                        ghost: true,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.handleFail) !== true;',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        content: {
+                        })
+                        .addSettingsInputRow({
                           id: nanoid(),
-                          components: [
-                            ...new DesignerToolbarSettings()
-                              .addConfigurableActionConfigurator({
-                                id: nanoid(),
-                                propertyName: 'onFail',
-                                label: 'On Fail',
-                                parentId: dataTabId,
-                                jsSetting: false,
-                              })
-                              .toJson(),
+                          parentId: dataTabId,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'buttons',
+                              label: 'Configure Modal Buttons',
+                              parentId: dataTabId,
+                              type: 'buttonGroupConfigurator',
+                              hidden: {
+                                _code: 'return getSettingValue(data?.footerButtons) !== "custom";',
+                                _mode: 'code',
+                                _value: false,
+                              } as any,
+                              jsSetting: true,
+                            },
+                            {
+                              id: nanoid(),
+                              propertyName: 'submitHttpVerb',
+                              label: 'Submit HTTP Verb',
+                              parentId: dataTabId,
+                              type: 'dropdown',
+                              allowClear: true,
+                              dropdownOptions: [
+                                { value: 'POST', label: 'POST' },
+                                { value: 'PUT', label: 'PUT' },
+                              ],
+                              hidden: {
+                                _code: 'return getSettingValue(data?.footerButtons) === "default";',
+                                _mode: 'code',
+                                _value: false,
+                              } as any,
+                              jsSetting: true,
+                            },
                           ],
-                        },
-                      })
-                      .toJson(),
-                  ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: dataTabId,
+                          readOnly: {
+                            _code: 'return getSettingValue(data?.readOnly);',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'additionalProperties',
+                              label: 'Additional Properties',
+                              parentId: dataTabId,
+                              jsSetting: true,
+                              type: 'labelValueEditor',
+                              labelTitle: 'Key',
+                              valueTitle: 'Value',
+                              labelName: 'key',
+                              valueName: 'value',
+                              tooltip:
+                                'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
+                                'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
+                                'Id initial value is already initialised with {{entityReference.id}} but you can override it',
+                            },
+                            {
+                              id: nanoid(),
+                              propertyName: 'modalWidth',
+                              label: 'Dialog Width',
+                              parentId: dataTabId,
+                              type: 'customDropdown',
+                              customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                              customDropdownMode: 'single',
+                              allowClear: true,
+                              jsSetting: true,
+                              dropdownOptions: [
+                                { value: '40%', label: 'Small' },
+                                { value: '60%', label: 'Medium' },
+                                { value: '80%', label: 'Large' },
+                              ],
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: dataTabId,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'handleSuccess',
+                              label: 'Handle Success',
+                              parentId: dataTabId,
+                              type: 'switch',
+                              jsSetting: true,
+                            },
+                          ],
+                        })
+                        .addCollapsiblePanel({
+                          id: nanoid(),
+                          propertyName: 'pnlOnSuccess',
+                          label: 'On Success Handler',
+                          labelAlign: 'left',
+                          parentId: dataTabId,
+                          collapsible: 'header',
+                          ghost: true,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.handleSuccess) !== true;',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          content: {
+                            id: nanoid(),
+                            components: [
+                              ...fbf()
+                                .addConfigurableActionConfigurator({
+                                  id: nanoid(),
+                                  propertyName: 'onSuccess',
+                                  label: 'On Success',
+                                  parentId: dataTabId,
+                                  jsSetting: true,
+                                })
+                                .toJson(),
+                            ],
+                          },
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: dataTabId,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'handleFail',
+                              label: 'Handle Fail',
+                              parentId: dataTabId,
+                              type: 'switch',
+                              jsSetting: true,
+                            },
+                          ],
+                        })
+                        .addCollapsiblePanel({
+                          id: nanoid(),
+                          propertyName: 'pnlOnFail',
+                          label: 'On Fail Handler',
+                          labelAlign: 'left',
+                          parentId: dataTabId,
+                          collapsible: 'header',
+                          ghost: true,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.handleFail) !== true;',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          content: {
+                            id: nanoid(),
+                            components: [
+                              ...fbf()
+                                .addConfigurableActionConfigurator({
+                                  id: nanoid(),
+                                  propertyName: 'onFail',
+                                  label: 'On Fail',
+                                  parentId: dataTabId,
+                                  jsSetting: false,
+                                })
+                                .toJson(),
+                            ],
+                          },
+                        })
+                        .toJson(),
+                    ],
+                  },
                 })
-                .addContainer({
+                .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'pnlQuickviewSettings',
                   label: 'Quickview Settings',
-                  labelAlign: 'right',
+                  labelAlign: 'left',
+                  hideLabel: false,
                   parentId: dataTabId,
                   hidden: {
                     _code: 'return getSettingValue(data?.entityReferenceType) !== "Quickview";',
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  components: [
-                    ...new DesignerToolbarSettings()
-                      .addSectionSeparator({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        label: 'Quickview Settings',
-                        labelAlign: 'left',
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'quickviewWidth',
-                        label: 'Quickview Width',
-                        parentId: dataTabId,
-                        inputType: 'numberField',
-                        jsSetting: true,
-                        defaultValue: 600,
-                        min: 201,
-                      })
-                      .toJson(),
-                  ],
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...fbf()
+                        .addSettingsInput({
+                          id: nanoid(),
+                          propertyName: 'quickviewWidth',
+                          label: 'Quickview Width',
+                          tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit.',
+                          parentId: dataTabId,
+                          inputType: 'textField',
+                          jsSetting: true,
+                          icon: 'widthIcon',
+                          width: '50%',
+                        })
+                        .toJson(),
+                    ],
+                  },
                 })
                 .toJson(),
             ],
@@ -616,7 +554,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -629,9 +567,9 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: 'fontStyleCollapsiblePanel',
                         propertyName: 'pnlFontStyle',
@@ -643,7 +581,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         content: {
                           id: 'fontStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'try26voxhs-HxJ5k5ngYE',
                                 parentId: 'fontStylePnl',
@@ -673,7 +611,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {
@@ -690,7 +628,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                     propertyName: 'font.align',
                                     hideLabel: true,
                                     width: 60,
-                                    dropdownOptions: textAlign,
+                                    dropdownOptions: textAlignOptions,
                                   },
                                 ],
                               })
@@ -709,7 +647,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         content: {
                           id: 'dimensionsStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'dimensionsStyleRowWidth',
                                 parentId: 'dimensionsStylePnl',
@@ -793,17 +731,17 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         content: {
                           id: 'borderStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
 
                               .addContainer({
                                 id: 'borderStyleRow',
                                 parentId: 'borderStylePnl',
-                                components: getBorderInputs() as any,
+                                components: getBorderInputs(fbf),
                               })
                               .addContainer({
                                 id: 'borderRadiusStyleRow',
                                 parentId: 'borderStylePnl',
-                                components: getCornerInputs() as any,
+                                components: getCornerInputs(fbf),
                               })
                               .toJson(),
                           ],
@@ -820,7 +758,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         content: {
                           id: 'backgroundStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: 'backgroundStyleRow-selectType',
                                 parentId: 'backgroundStylePnl',
@@ -977,7 +915,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],
@@ -1003,7 +940,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         content: {
                           id: 'shadowStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'shadowStyleRow',
                                 parentId: 'shadowStylePnl',
@@ -1072,7 +1009,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addStyleBox({
                                 id: nanoid(),
                                 label: 'Margin Padding',
@@ -1094,7 +1031,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'pnlLayout',
@@ -1109,7 +1046,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                     jsSetting: true,
                                     min: 0,
                                     max: 24,
-                                    defaultValue: 8,
                                   },
                                   {
                                     type: 'numberField',
@@ -1120,7 +1056,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                     jsSetting: true,
                                     min: 0,
                                     max: 24,
-                                    defaultValue: 16,
                                   },
                                 ],
                               })
@@ -1139,7 +1074,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 readOnly: {
                                   _code: 'return  getSettingValue(data?.readOnly);',
@@ -1151,7 +1086,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                 propertyName: 'style',
                                 parentId: styleRouterId,
                                 label: 'Style',
-                                description:
+                                tooltip:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
                               .toJson(),
@@ -1169,13 +1104,14 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
             title: 'Security',
             id: securityId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityId,
                 })

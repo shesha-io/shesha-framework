@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug All Tests in File",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "${file}",
+        "--passWithNoTests",
+        "--no-coverage",
+        "--watchAll=false",
+        "--verbose"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "name": "Debug Rollup Build",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}\\node_modules\\rollup\\dist\\bin\\rollup",
+      "args": [
+        "-c",
+        "--silent"
+      ],
+      "cwd": "${workspaceFolder}",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+  ]
+}

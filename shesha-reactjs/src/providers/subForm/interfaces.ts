@@ -1,6 +1,7 @@
 import { ColProps } from 'antd';
 import { FormMarkupWithSettings, IChangeable, IValuable } from '@/interfaces';
 import { FormIdentifier } from '../form/models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export interface ISubFormProviderProps extends IValuable, IChangeable {
   context?: string;
@@ -23,7 +24,7 @@ export interface ISubFormProviderProps extends IValuable, IChangeable {
   wrapperCol?: ColProps;
   dataSource?: 'form' | 'api';
   apiMode?: 'entityName' | 'url';
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   properties?: string | string[];
   queryParams?: string;
 

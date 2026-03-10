@@ -2,13 +2,14 @@
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 namespace Shesha.DynamicEntities
 {
     /// <summary>
     /// ASP.Net Core register Controller at runtime
     /// https://stackoverflow.com/questions/46156649/asp-net-core-register-controller-at-runtime
     /// </summary>
-    public sealed class SheshaActionDescriptorChangeProvider : IActionDescriptorChangeProvider, IDisposable
+    public sealed class SheshaActionDescriptorChangeProvider : IActionDescriptorChangeProvider, IDisposable //ActionDescriptorCollectionProvider, IDisposable//
     {
         private bool _disposed;
 
@@ -34,6 +35,20 @@ namespace Shesha.DynamicEntities
 
             _disposed = true;
             TokenSource?.Dispose();
+        }
+
+        public static async Task RefreshControllersAsync()
+        {
+            // Notify change
+            // ASP.Net Core register Controller at runtime
+            // https://stackoverflow.com/questions/46156649/asp-net-core-register-controller-at-runtime
+            if (Instance != null)
+            {
+                Instance.HasChanged = true;
+                var tokenSource = Instance.TokenSource;
+                if (tokenSource != null)
+                    await tokenSource.CancelAsync();
+            }
         }
     }
 }

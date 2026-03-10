@@ -5,7 +5,6 @@ import Button from '@/designer-components/button/button';
 import ButtonGroup from '@/designer-components/button/buttonGroup/buttonGroupComponent';
 import Buttons from '@/designer-components/button/buttonGroup/buttonsComponent';
 import CheckboxGroup from '@/designer-components/checkboxGroup/checkboxGroup';
-import ChildEntitiesTagGroup from '@/designer-components/childEntitiesTagGroup';
 import CodeEditor from '@/designer-components/codeEditor';
 import ColorPickerComponent from '@/designer-components/colorPicker';
 import Columns from '@/designer-components/columns/columns';
@@ -21,7 +20,6 @@ import NotificationAutocompleteComponent from '@/designer-components/notificatio
 import IconPicker from '@/designer-components/iconPicker';
 import ImagePickerComponent from '@/designer-components/imagePicker';
 import Image from '@/designer-components/image';
-import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
 import KeyInformationBarComponent from '@/designer-components/keyInformationBar';
 import Paragraph from '@/designer-components/_legacyComponents/paragraph';
 import Title from '@/designer-components/_legacyComponents/title';
@@ -35,11 +33,13 @@ import PermissionedObjectsTree from '@/designer-components/permissions/permissio
 import PermissionsTree from '@/designer-components/permissions/permissionsTree/permissionsTree';
 import Progress from '@/designer-components/progress';
 import { PropertyAutocompleteComponent } from '@/designer-components/propertyAutocomplete';
-import Radio from '@/designer-components/radio/radio';
+import RadioComponent from '@/designer-components/radio/radio';
 import Rate from '@/designer-components/rate';
 import ReferenceListAutocompleteComponent from '@/designer-components/referenceListAutocomplete';
 import RichTextEditor from '@/designer-components/richTextEditor';
 import ScheduledJobExecutionLog from '@/designer-components/scheduledJobExecutionLog/scheduledJobExecutionLog';
+import ProcessMonitor from '@/designer-components/processMonitor/processMonitorComponent';
+import LogViewer from '@/designer-components/logViewer/logViewer';
 import Section from '@/designer-components/section';
 import SectionSeprator from '@/designer-components/sectionSeprator';
 import SizableColumnsComponent from '@/designer-components/sizableColumns/sizableColumns';
@@ -64,7 +64,6 @@ import CollapsiblePanel from '@/designer-components/collapsiblePanel/collapsible
 import ConfigurableActionConfigurator from '@/designer-components/configurableActionsConfigurator';
 import ContainerComponent from '@/designer-components/container/containerComponent';
 import ContextPropertyAutocompleteComponent from '@/designer-components/contextPropertyAutocomplete';
-import DataContextComponent from '@/designer-components/dataContextComponent';
 import DataContextSelector from '@/designer-components/dataContextSelector';
 import ChildTable from '@/designer-components/dataTable/childTable';
 import Pager from '@/designer-components/dataTable/pager/pagerComponent';
@@ -92,10 +91,11 @@ import { SortingEditorComponent } from '@/designer-components/sortingEditor/inde
 import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
-import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
+import { IToolboxComponent, IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
 import EditModeToggler from '@/designer-components/editModeToggler';
 import ProfileDropdown from '@/designer-components/profileDropdown';
+import HorizontalMenu from '@/designer-components/horizontalMenu';
 import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/contexts';
 import { HEADER_CONFIGURATION, HEADER_PUB_PORTAL_CONFIGURATION } from '@/components/mainLayout/constant';
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
@@ -115,10 +115,13 @@ import PieChartComponent from '@/designer-components/charts/pie';
 import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 import DividerComponent from '@/designer-components/_legacyComponents/divider';
+import EntityTypeAutocompleteComponent from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
+import CalendarComponent from '@/designer-components/calendar';
+import TableContextComponentLegacy from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
 
 export const getToolboxComponents = (
   devMode: boolean,
-  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>,
 ): IToolboxComponentGroup[] => {
   return [
     {
@@ -133,7 +136,7 @@ export const getToolboxComponents = (
         TextAreaComponent,
         Checkbox,
         CheckboxGroup,
-        Radio,
+        RadioComponent,
         Slider,
         Switch,
         DateField,
@@ -156,7 +159,6 @@ export const getToolboxComponents = (
         IconPicker,
         HtmlRender,
         Image,
-        ImageAnnotationComponent,
         RichTextEditor,
         Markdown,
         PasswordCombo,
@@ -164,7 +166,8 @@ export const getToolboxComponents = (
         RefListStatusComponent,
         StatusTag,
         ChevronComponent,
-        KanbanComponent
+        KanbanComponent,
+        CalendarComponent,
       ],
     },
     {
@@ -176,13 +179,13 @@ export const getToolboxComponents = (
         FileUpload,
         AttachmentsEditor,
         Notes,
-        ChildEntitiesTagGroup,
       ],
     },
     {
       name: 'Tables and Lists',
       visible: true,
       components: [
+        TableContextComponentLegacy,
         TableContext,
         DataTable,
         DataList,
@@ -197,7 +200,7 @@ export const getToolboxComponents = (
     {
       name: 'Data Access',
       visible: false,
-      components: [DataSource, DataContextComponent],
+      components: [DataSource],
     },
     {
       name: 'Layout',
@@ -215,6 +218,7 @@ export const getToolboxComponents = (
         Tabs,
         Wizard,
         SubForm,
+        HorizontalMenu,
       ],
     },
     {
@@ -268,9 +272,12 @@ export const getToolboxComponents = (
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
         ConfigurableItemAutocompleteComponent,
+        EntityTypeAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,
+        ProcessMonitor,
+        LogViewer,
       ],
     },
     {
@@ -282,4 +289,15 @@ export const getToolboxComponents = (
       components: [EditModeToggler, ProfileDropdown],
     },
   ];
+};
+
+export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
+  const result = new Map<string, IToolboxComponent>();
+
+  for (const toolboxComponentGroup of getToolboxComponents(false, { formId: null, formProps: null })) {
+    for (const toolboxComponent of toolboxComponentGroup.components) {
+      result.set(toolboxComponent.type, toolboxComponent);
+    }
+  }
+  return result;
 };

@@ -1,12 +1,12 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = () => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -16,7 +16,7 @@ export const getSettings = () => {
   const validationTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -31,7 +31,7 @@ export const getSettings = () => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -63,7 +63,6 @@ export const getSettings = () => {
                       propertyName: 'listType',
                       label: 'List Type',
                       type: 'dropdown',
-                      defaultValue: 'text',
                       dropdownOptions: [
                         { label: 'File name', value: 'text' },
                         { label: 'Thumbnail', value: 'thumbnail' },
@@ -91,7 +90,7 @@ export const getSettings = () => {
                   ],
                 })
                 .addSettingsInputRow({
-                   id: nanoid(),
+                  id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
                     {
@@ -99,7 +98,6 @@ export const getSettings = () => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       type: 'editModeSelector',
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -132,7 +130,6 @@ export const getSettings = () => {
                       propertyName: 'allowUpload',
                       label: 'Allow Upload',
                       type: 'switch',
-                      defaultValue: true,
                       jsSetting: true,
                     },
                   ],
@@ -165,7 +162,7 @@ export const getSettings = () => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: dataTabId,
@@ -181,10 +178,7 @@ export const getSettings = () => {
                       id: nanoid(),
                       propertyName: 'ownerType',
                       label: 'Owner Type',
-                      type: 'autocomplete',
-                      dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                      useRawValues: true,
+                      type: 'entityTypeAutocomplete',
                       jsSetting: true,
                     },
                   ],
@@ -206,7 +200,8 @@ export const getSettings = () => {
                       label: 'Allowed File Types',
                       type: 'editableTagGroupProps',
                       description: 'File types that can be accepted.',
-                      jsSetting: true,
+                      tooltip: "The file typeName should consist a dot before the name, for example: .png",
+
                     },
                   ],
                 })
@@ -218,7 +213,7 @@ export const getSettings = () => {
             title: 'Validation',
             id: validationTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'validate.required',
@@ -234,7 +229,7 @@ export const getSettings = () => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -247,9 +242,18 @@ export const getSettings = () => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
+                      .addSettingsInput({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'enableStyleOnReadonly',
+                        label: 'Enable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true,
+                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -261,7 +265,7 @@ export const getSettings = () => {
                         content: {
                           id: 'fontStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'fontStylePnl',
@@ -291,7 +295,7 @@ export const getSettings = () => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {
@@ -309,20 +313,13 @@ export const getSettings = () => {
                                     hideLabel: true,
                                     width: 60,
                                     hidden: {
-                                      _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
+                                      _code: 'return  getSettingValue(data.listType) === "thumbnail";',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
-                                    dropdownOptions: textAlign,
+                                    dropdownOptions: textAlignOptions,
                                   },
                                 ],
-                              })
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'primaryColor',
-                                label: 'Primary Color',
-                                inputType: 'colorPicker',
-                                jsSetting: true,
                               })
                               .toJson(),
                           ],
@@ -344,7 +341,7 @@ export const getSettings = () => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -433,7 +430,7 @@ export const getSettings = () => {
                         content: {
                           id: 'borderStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -458,12 +455,12 @@ export const getSettings = () => {
                               .addContainer({
                                 id: nanoid(),
                                 parentId: 'borderStylePnl',
-                                components: getBorderInputs() as any,
+                                components: getBorderInputs(fbf),
                               })
                               .addContainer({
                                 id: nanoid(),
                                 parentId: 'borderStylePnl',
-                                components: getCornerInputs() as any,
+                                components: getCornerInputs(fbf),
                               })
                               .toJson(),
                           ],
@@ -485,7 +482,7 @@ export const getSettings = () => {
                         content: {
                           id: 'backgroundStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -662,7 +659,6 @@ export const getSettings = () => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],
@@ -693,7 +689,7 @@ export const getSettings = () => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -759,7 +755,7 @@ export const getSettings = () => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 inputType: 'codeEditor',
@@ -784,12 +780,13 @@ export const getSettings = () => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })

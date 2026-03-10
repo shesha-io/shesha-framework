@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Uow;
+using Abp.Threading;
 using GraphQL;
 using GraphQL.Types;
 using NetTopologySuite.Geometries;
@@ -13,7 +14,6 @@ using Shesha.Extensions;
 using Shesha.Json;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,6 +41,10 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             _unitOfWorkManager = unitOfWorkManager;
 
             var genericType = typeof(TModel);
+
+            if (genericType.Name.Contains("FormConfiguration")) 
+            { 
+            }
 
             Name = MakeName(typeof(TModel));
 
@@ -139,6 +143,10 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
         private void EmitField(PropertyInfo propertyInfo)
         {
+            if (propertyInfo.Name.Contains("Revision")) 
+            { 
+            }
+
             var isDictionary = propertyInfo.PropertyType.IsAssignableToGenericType(typeof(IDictionary<,>));
             var typeName = propertyInfo.PropertyType.Name;
 
@@ -200,15 +208,6 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 });
                 return;
             }
-
-            // ToDo: AS - need to decide how to return GenericEntityReference - as object or as scalar
-            /*if (propertyInfo.PropertyType == typeof(GenericEntityReference))
-            {
-                Field(GraphTypeMapper.GetGraphType(typeof(GenericEntityReference), isInput: false), propertyInfo.Name, resolve: context => {
-                    return  propertyInfo.GetValue(context.Source) as GenericEntityReference;
-                });
-                return;
-            }*/
 
             if (isDictionary || propertyInfo.PropertyType.Namespace != null && !propertyInfo.PropertyType.Namespace.StartsWith("System"))
             {

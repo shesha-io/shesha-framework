@@ -8,9 +8,9 @@ const LOCALIZATION = 'LOCALIZATION';
  * @param localization - localization
  */
 
-export const setLocalization = (localization: string) => getLocalStorage()?.setItem(LOCALIZATION, localization);
-export const getLocalization = () => getLocalStorage()?.getItem(LOCALIZATION);
-export const getLocalizationOrDefault = () => {
+export const setLocalization = (localization: string): void => getLocalStorage()?.setItem(LOCALIZATION, localization);
+export const getLocalization = (): string | undefined => getLocalStorage()?.getItem(LOCALIZATION);
+export const getLocalizationOrDefault = (): string => {
   let localization = getLocalization();
   if (!localization && typeof navigator !== 'undefined') {
     localization = navigator.language;

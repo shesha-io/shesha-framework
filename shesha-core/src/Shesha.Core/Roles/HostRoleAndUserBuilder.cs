@@ -64,7 +64,7 @@ namespace Shesha.Roles
 
         private ShaRole EnsureRoleExist(string name)
         {
-            var role = _roleRepository.FirstOrDefault(r => r.TenantId == null && r.Name == name);
+            var role = _roleRepository.FirstOrDefault(r => r.Name == name);
             if (role == null)
             {
                 role = new ShaRole
@@ -73,6 +73,7 @@ namespace Shesha.Roles
                     //NameSpace
                 };
                 role.SetHardLinkToApplication(true);
+
                 _roleRepository.Insert(role);
             }
 

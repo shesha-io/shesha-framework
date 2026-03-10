@@ -7,9 +7,10 @@ import { executeScriptSync } from '@/providers/form/utils';
 
 interface IFormExpression {
   argumentsEvaluationContext: GenericDictionary;
-  executeAction: (payload: IExecuteActionPayload | IConfigurableActionConfiguration) => void;
+  executeActionViaPayload: (payload: IExecuteActionPayload) => void;
+  executeActionViaConfiguration: (payload: IConfigurableActionConfiguration) => void;
   executeBooleanExpression: (expression: string, returnBoolean?: boolean) => boolean;
-  executeExpression: (expression?: string) => any;
+  executeExpression: (expression?: string) => unknown;
 }
 
 export const useFormExpression = (): IFormExpression => {
@@ -17,15 +18,14 @@ export const useFormExpression = (): IFormExpression => {
 
   const allData: GenericDictionary = useAvailableConstantsData();
 
-  const executeAction = (payload: IExecuteActionPayload | IConfigurableActionConfiguration) => {
-    if ((payload as IExecuteActionPayload)?.argumentsEvaluationContext) {
-      executeConfig(payload as IExecuteActionPayload);
-    } else {
-      executeConfig({ actionConfiguration: payload as IConfigurableActionConfiguration, argumentsEvaluationContext: allData });
-    }
+  const executeActionViaPayload = (payload: IExecuteActionPayload): void => {
+    executeConfig(payload as IExecuteActionPayload);
+  };
+  const executeActionViaConfiguration = (payload: IConfigurableActionConfiguration): void => {
+    executeConfig({ actionConfiguration: payload as IConfigurableActionConfiguration, argumentsEvaluationContext: allData });
   };
 
-  const executeBooleanExpression = (expression: string, returnBoolean = true) => {
+  const executeBooleanExpression = (expression: string, returnBoolean = true): boolean => {
     if (!expression) {
       if (returnBoolean) {
         return true;
@@ -39,7 +39,7 @@ export const useFormExpression = (): IFormExpression => {
     return typeof evaluated === 'boolean' ? evaluated : true;
   };
 
-  const executeExpression = (expression: string = '') => executeScriptSync(expression, allData);
+  const executeExpression = (expression: string = ''): boolean => executeScriptSync<boolean>(expression, allData) ?? false;
 
-  return { argumentsEvaluationContext: allData, executeAction, executeBooleanExpression, executeExpression };
+  return { argumentsEvaluationContext: allData, executeBooleanExpression, executeExpression, executeActionViaPayload, executeActionViaConfiguration };
 };

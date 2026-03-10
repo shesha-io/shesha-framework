@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
-using Shesha.ConfigurationItems;
 using System;
 using System.ComponentModel;
 
 namespace Shesha.Domain
 {
     /// <summary>
-    /// Identifier oif the configuration item
+    /// Identifier of the configuration item
     /// </summary>
     public abstract class ConfigurationItemIdentifier: IEquatable<ConfigurationItemIdentifier>
     {
@@ -74,13 +73,15 @@ namespace Shesha.Domain
         }
     }
 
-    public abstract class ConfigurationItemIdentifier<TItem>: ConfigurationItemIdentifier where TItem : IConfigurationItem
+    public abstract class ConfigurationItemIdentifier<TItem>: ConfigurationItemIdentifier where TItem : ConfigurationItem
     {
         protected ConfigurationItemIdentifier(string? module, string name) : base(module, name)
         {
         }
 
+        [JsonIgnore]
         public override Type ItemType => typeof(TItem);
+        [JsonIgnore]
         public override string ItemTypeName => ItemType.Name;
     }
 

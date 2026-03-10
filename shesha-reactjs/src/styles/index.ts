@@ -1,27 +1,27 @@
 import { FullToken, createStyles, css, createGlobalStyle, ThemeProvider } from "antd-style";
 
 export const sheshaStyles = {
-    paddingSM: 4,
-    paddingMD: 8,
-    paddingLG: 12,
+  paddingSM: 4,
+  paddingMD: 8,
+  paddingLG: 12,
 
-    layoutHeaderHeight: "55px", // @layout-header-height
-    pageHeadingHeight: "45px", // @sha-page-heading-height
-    pageToolbarHeight: "33px", // @sha-page-toolbar-height
-    border: "1px solid #d3d3d3", // @sha-border
+  layoutHeaderHeight: "55px", // @layout-header-height
+  pageHeadingHeight: "45px", // @sha-page-heading-height
+  pageToolbarHeight: "33px", // @sha-page-toolbar-height
+  border: "1px solid #d3d3d3", // @sha-border
 
-    columnFilterHeight: "150px",
+  columnFilterHeight: "150px",
 
-    transition: "all 0.3s ease-out;",
+  transition: "all 0.3s ease-out;",
 
-    mediaPhoneLg: "only screen and (max-width: 500px)",
+  mediaPhoneLg: "only screen and (max-width: 500px)",
 
-    flexCenterAlignedSpaceBetween: `
+  flexCenterAlignedSpaceBetween: `
     display: flex;
     justify-content: space-between;
     align-items: center;
 `,
-    thinScrollbars:
+  thinScrollbars:
         `
 scrollbar-width: thin;
 ::-webkit-scrollbar {
@@ -33,11 +33,11 @@ scrollbar-width: thin;
     border-radius: 4px;
     background-color: #ccc;
 }`,
-    verticalSettingsClass: 'vertical-settings',
+  verticalSettingsClass: 'vertical-settings',
 };
 
-export const getTextHoverEffects = (token: FullToken) => {
-    return `
+export const getTextHoverEffects = (token: FullToken): string => {
+  return `
         transition: ${sheshaStyles.transition};
         &:hover {
             color: ${token.colorPrimary} !important;
@@ -47,8 +47,8 @@ export const getTextHoverEffects = (token: FullToken) => {
     `;
 };
 
-export const getWarningHoverEffects = (token: FullToken) => {
-    return `
+export const getWarningHoverEffects = (token: FullToken): string => {
+  return `
         transition: ${sheshaStyles.transition};
         &:hover {
             color: ${token.colorWarning} !important;

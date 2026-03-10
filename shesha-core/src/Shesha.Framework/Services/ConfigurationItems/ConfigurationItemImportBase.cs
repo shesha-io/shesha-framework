@@ -1,9 +1,10 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Newtonsoft.Json;
+using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +20,7 @@ namespace Shesha.Services.ConfigurationItems
         protected IRepository<Module, Guid> ModuleRepo { get; private set; }
         protected IRepository<FrontEndApp, Guid> FrontendAppRepo { get; private set; }
         public IUnitOfWorkManager UnitOfWorkManager { get; set; } = default!;
+        public IConfigurationFrameworkRuntime CfRuntime { get; set; }
 
         public ConfigurationItemImportBase(IRepository<Module, Guid> _moduleRepo, IRepository<FrontEndApp, Guid> _frontendAppRepo)
         {
@@ -87,29 +89,174 @@ namespace Shesha.Services.ConfigurationItems
         }
     }
 
-    public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase 
-        where TItem : ConfigurationItemBase
+    public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase, IConfigurableItemImport
+        where TItem : ConfigurationItem, new()
         where TDistributedItem : DistributedConfigurableItemBase
     {
-        protected ConfigurationItemImportBase(IRepository<Module, Guid> _moduleRepo, IRepository<FrontEndApp, Guid> _frontendAppRepo) : base(_moduleRepo, _frontendAppRepo)
+        protected IRepository<TItem, Guid> Repository { get; private set; }
+        public IRepository<ConfigurationItemRevision, Guid> RevisionRepository { get; set; }
+        public abstract string ItemType { get; }
+
+        protected ConfigurationItemImportBase(
+            IRepository<TItem, Guid> repository,
+            IRepository<Module, Guid> moduleRepo, 
+            IRepository<FrontEndApp, Guid> frontendAppRepo) : base(moduleRepo, frontendAppRepo)
         {
+            Repository = repository;
         }
 
+        /// <summary>
+        /// Get importer for a subtype (if applicable). Is used when single importer supports multiple item subtypes
+        /// </summary>
+        /// <param name="distributedItem"></param>
+        /// <returns></returns>
+        public virtual IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem) 
+        {
+            return this;
+        }
+
+        /// <summary>
+        /// Reads configuration item from json stream
+        /// </summary>
         public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
+        {
+            var json = await ReadJsonAsync(jsonStream);
+            return await ReadFromJsonAsync(json);
+        }
+
+        protected async Task<string> ReadJsonAsync(Stream jsonStream)
         {
             using (var reader = new StreamReader(jsonStream))
             {
-                var json = await reader.ReadToEndAsync();
+                return await reader.ReadToEndAsync();
+            }
+        }
 
-                var result = !string.IsNullOrWhiteSpace(json)
+        /// <summary>
+        /// Reads configuration item from json
+        /// </summary>
+        public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json) 
+        {
+            return await ReadDistributedItemFromJsonAsync(json);
+        }
+
+        /// <summary>
+        /// Reads configuration item from json
+        /// </summary>
+        protected virtual Task<TDistributedItem> ReadDistributedItemFromJsonAsync(string json)
+        {
+            var result = !string.IsNullOrWhiteSpace(json)
                     ? JsonConvert.DeserializeObject<TDistributedItem>(json)
                     : null;
 
-                if (result == null)
-                    throw new Exception($"Failed to read {typeof(TDistributedItem).FullName} from json");
+            if (result == null)
+                throw new Exception($"Failed to read {typeof(TDistributedItem).FullName} from json");
 
-                return result;
+            return Task.FromResult(result);
+        }
+
+        /// <summary>
+        /// Imports configuration item
+        /// </summary>
+        /// <param name="item">Item to import</param>
+        /// <param name="context">Import context</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        public async Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+
+            if (!(item is TDistributedItem itemConfig))
+                throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {typeof(TDistributedItem).FullName}. Actual type is {item.GetType().FullName}");
+
+            return await ImportAsync(itemConfig, context);
+        }
+
+        protected virtual TItem CreateNew(TDistributedItem distributedItem) => new TItem();
+
+        protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context) 
+        {
+            using (CfRuntime.DisableConfigurationTracking()) 
+            {
+                // check if form exists
+                var item = await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
+
+                if (await SkipImportAsync(item, distributedItem))
+                    return item;
+
+                var isNew = item == null;
+                if (item == null)
+                {
+                    item = CreateNew(distributedItem);
+                    item.Module = await GetModuleAsync(distributedItem.ModuleName, context);
+                    item.Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context);
+                    item.Name = distributedItem.Name;
+                }
+
+                await MapStandardPropsToItemAsync(item, distributedItem);
+                await MapCustomPropsToItemAsync(item, distributedItem);
+
+                item.Normalize();
+                if (isNew)
+                    await Repository.InsertAsync(item);
+                else
+                    await Repository.UpdateAsync(item);
+
+                var revision = item.MakeNewRevision(context.IsMigrationImport
+                    ? ConfigurationItemRevisionCreationMethod.MigrationImport
+                    : ConfigurationItemRevisionCreationMethod.ManualImport
+                );
+                revision.CreatedByImport = context.ImportResult;
+
+                await RevisionRepository.InsertAsync(revision);
+
+                item.LatestImportedRevisionId = revision.Id;
+                await Repository.UpdateAsync(item);
+
+                await AfterImportAsync(item, distributedItem, context);
+
+                return item;
             }
         }
-    }
+
+        protected virtual Task AfterImportAsync(TItem item, 
+            TDistributedItem distributedItem,
+            IConfigurationItemsImportContext context
+        )
+        {
+            return Task.CompletedTask;
+        }
+
+        protected async Task<bool> SkipImportAsync(TItem? item, TDistributedItem distributedItem)
+        {
+            if (item == null)
+                return false;
+
+            var baseEquals = (item.Module == null ? string.IsNullOrWhiteSpace(distributedItem.ModuleName) : item.Module.Name == distributedItem.ModuleName) &&
+                item.Name == distributedItem.Name &&
+                item.Suppress == distributedItem.Suppress &&
+
+                item.Label == distributedItem.Label &&
+                item.Description == distributedItem.Description;
+            if (!baseEquals)
+                return false;
+
+            return await CustomPropsAreEqualAsync(item, distributedItem);
+        }
+
+        protected abstract Task<bool> CustomPropsAreEqualAsync(TItem item, TDistributedItem distributedItem);
+
+        protected Task MapStandardPropsToItemAsync(TItem item, TDistributedItem distributedItem) 
+        {
+            item.Suppress = distributedItem.Suppress;
+            item.Label = distributedItem.Label;
+            item.Description = distributedItem.Description;
+
+            return Task.CompletedTask;
+        }
+
+        protected abstract Task MapCustomPropsToItemAsync(TItem item, TDistributedItem distributedItem);
+    }    
 }

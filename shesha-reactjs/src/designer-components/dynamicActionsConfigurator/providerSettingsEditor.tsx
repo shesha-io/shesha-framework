@@ -8,24 +8,26 @@ import { GenericSettingsEditor } from './genericSettingsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
 import { CollapsiblePanel } from '@/components';
-
+import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 export interface IProviderSettingsEditorProps {
   provider: IDynamicActionsContext;
   value?: any;
   onChange?: (value: any) => void;
   readOnly?: boolean;
-  //exposedVariables?: ICodeExposedVariable[];
+  // exposedVariables?: ICodeExposedVariable[];
   availableConstants?: IObjectMetadata;
 }
 
 const getDefaultFactory = (
+  fbf: FormBuilderFactory,
   markup: FormMarkup | FormMarkupFactory,
-  readOnly: boolean
+  readOnly: boolean,
 ): IConfigurableActionArgumentsFormFactory => {
-  return ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
+  const component = ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }): JSX.Element => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
 
-    const formMarkup = markupFactory({ exposedVariables, availableConstants });
+    const formMarkup = markupFactory({ fbf, exposedVariables, availableConstants });
     return (
       <GenericSettingsEditor
         model={model}
@@ -37,6 +39,8 @@ const getDefaultFactory = (
       />
     );
   };
+  component.displayName = `DefaultProviderSettings`;
+  return component;
 };
 
 export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
@@ -44,26 +48,27 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
   value,
   onChange,
   readOnly = false,
-  //exposedVariables,
+  // exposedVariables,
   availableConstants,
 }) => {
+  const fbf = useFormBuilderFactory();
   const settingsEditor = useMemo(() => {
     if (provider) {
       const settingsFormFactory = provider.settingsFormFactory
         ? provider.settingsFormFactory
         : provider.settingsFormMarkup
-          ? getDefaultFactory(provider.settingsFormMarkup, readOnly)
+          ? getDefaultFactory(fbf, provider.settingsFormMarkup, readOnly)
           : null;
 
-      const onCancel = () => {
+      const onCancel = (): void => {
         //
       };
 
-      const onSave = (values) => {
+      const onSave = (values): void => {
         if (onChange) onChange(values);
       };
 
-      const onValuesChange = (_changedValues, values) => {
+      const onValuesChange = (_changedValues, values): void => {
         if (onChange) onChange(values);
       };
 
@@ -74,7 +79,7 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
           onCancel,
           onValuesChange,
           readOnly,
-          //exposedVariables,
+          // exposedVariables,
           availableConstants,
         })
         : null;
@@ -86,7 +91,25 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
 
   return (
     <CollapsiblePanel
-      ghost={true}
+      ghost={false}
+      headerStyle={{
+        backgroundColor: "#fff",
+        borderBottomColor: "var(--primary-color)",
+        borderBottomStyle: "solid",
+        borderBottomWidth: "2px",
+        borderTopLeftRadius: "0px",
+        borderTopRightRadius: "0px",
+        color: "darkslategray",
+        fontFamily: "Segoe UI",
+        fontSize: "14px",
+        fontWeight: "500",
+      }}
+      bodyStyle={{
+        borderStyle: "none",
+        borderWidth: "0px",
+        fontWeight: 400,
+        marginBottom: "5px",
+      }}
       header="Settings"
     >
       {settingsEditor}

@@ -10,7 +10,7 @@ namespace Shesha.Generators
 {
     public class SnakeCaseNameGenerator : INameGenerator, ISingletonDependency
     {
-        public string AutoGeneratorDbSchema { get; set; } = "auto_gen";
+        public string AutoGeneratorDbSchema { get; set; } = MappingHelper.AutoGeneratorSchema;
         public int MaxLenght { get; set; } = 63;
         public GeneratorMaxLengthActionEnum MaxLengthAction { get; set; } = GeneratorMaxLengthActionEnum.ThrowError;
 
@@ -56,7 +56,7 @@ namespace Shesha.Generators
                 switch (MaxLengthAction)
                 {
                     case GeneratorMaxLengthActionEnum.ThrowError:
-                        throw new ArgumentOutOfRangeException($"Lenght of '{res}' is more then {maxLenght}");
+                        throw new ArgumentOutOfRangeException($"Lenght of '{res}' is more than {maxLenght}");
                     case GeneratorMaxLengthActionEnum.TrimRight:
                         return res.Substring(0, maxLenght);
                     case GeneratorMaxLengthActionEnum.TrimParts:

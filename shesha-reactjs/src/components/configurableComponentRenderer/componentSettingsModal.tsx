@@ -12,14 +12,14 @@ export interface IProps<TModel = any> {
   onSave: (model: TModel) => void;
 }
 
-export const ComponentSettingsModal = <TSettings extends any>({ title, markup, model, onCancel, onSave }: IProps<TSettings>) => {
+export const ComponentSettingsModal = <TSettings extends object>({ title, markup, model, onCancel, onSave }: IProps<TSettings>): JSX.Element => {
   const formLayout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
   const formRef = useShaFormRef();
 
-  const onOk = () => {
+  const onOk = (): void => {
     formRef.current?.submit();
   };
 

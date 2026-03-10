@@ -1,4 +1,4 @@
-function removeNullUndefined<T extends Object>(obj: T): T {
+function removeNullUndefined<T extends object>(obj: T): T {
   const newObj = {} as T;
   if (!obj) {
     return obj;

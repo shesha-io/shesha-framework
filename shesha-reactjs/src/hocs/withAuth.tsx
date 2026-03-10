@@ -2,6 +2,7 @@ import React, { ComponentType, FC, Fragment, useEffect } from 'react';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import SheshaLoader from '@/components/sheshaLoader';
+import { wrapDisplayName } from '@/utils/react';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
@@ -18,7 +19,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const loginUrl = useLoginUrl({ homePageUrl: landingPage, unauthorizedRedirectUrl });
 
   useEffect(() => {
-    if (!isLoggedIn) {      
+    if (!isLoggedIn) {
       checkAuth(loginUrl).then(() => {
         forceUpdate({});
       });
@@ -26,7 +27,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   }, [checkAuth, loginUrl, isLoggedIn]);
 
   return isLoggedIn
-    ? <Fragment>{props.children(router?.query)}</Fragment> 
+    ? <Fragment>{props.children(router?.query)}</Fragment>
     : <SheshaLoader message={authState.hint || "Initializing..."} />;
 };
 
@@ -35,7 +36,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
  */
 export const withAuth =
   <P extends object>(Component: ComponentType<P>, unauthorizedRedirectUrl = '/login', landingPage = '/'): FC<P> =>
-    (props) => {
+    wrapDisplayName((props) => {
       const propsObj = Array.isArray(props) ? props[0] : props;
 
       return (
@@ -47,4 +48,4 @@ export const withAuth =
           )}
         </ComponentWithAuth>
       );
-    };
+    }, "withAuth");

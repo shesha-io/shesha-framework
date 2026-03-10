@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useContext } from 'react';
-import { StackedNavigationModalStateContext } from './contexts';
+import { IStackedNavigationModalStateContext, StackedNavigationModalStateContext } from './contexts';
 
 export interface StackedNavigationModalProviderProps {
   isMaxWidth?: boolean;
@@ -23,7 +23,7 @@ const StackedNavigationModalProvider: FC<PropsWithChildren<StackedNavigationModa
   );
 };
 
-function useStackedModal() {
+function useStackedModal(): IStackedNavigationModalStateContext {
   return useContext(StackedNavigationModalStateContext);
 }
 

@@ -25,23 +25,26 @@ export interface IGenericRefListDropDownProps<TValue = any> extends IRefListDrop
 
 }
 
-export interface IRefListDropDownProps<TValue = any> extends Omit<SelectProps<any>, 'onChange'>, IReadOnly {
+type LimitedSelectProps = Pick<SelectProps<any>, 'mode' | 'disabled' | 'allowClear' | 'filterOption' | 'placeholder' | 'variant' | 'defaultValue' | 'className'>;
+
+export interface IRefListDropDownProps<TValue = any> extends LimitedSelectProps, IReadOnly {
   /**
    * Reference List identifier
    */
   referenceListId: IReferenceListIdentifier;
-  /**
-   * How large should the button be?
-   */
   filters?: number[];
-  width?: number;
   style?: CSSProperties;
-  base?: string;
+  tagStyle?: CSSProperties;
+  showIcon?: boolean;
+  solidColor?: boolean;
+  showItemName?: boolean;
   value?: TValue | TValue[];
   ignoredValues?: number[];
   disabledValues?: number[];
   size?: SizeType;
+  displayStyle?: 'tags' | 'text';
   onChange?: (value: TValue | TValue[]) => void;
+  enableStyleOnReadonly?: boolean;
 }
 
 export interface IRefListDropDownOption {
@@ -56,6 +59,9 @@ export interface ISelectOption<TValue = any> {
   label: string | React.ReactNode;
   data: TValue;
   disabled?: boolean;
+  color?: string;
+  icon?: string;
+  description?: string;
 }
 
 export type CustomLabeledValue<TValue = any> = LabeledValue & { data: TValue };

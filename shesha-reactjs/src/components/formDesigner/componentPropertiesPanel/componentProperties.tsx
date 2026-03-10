@@ -1,51 +1,51 @@
 import React, { FC, useCallback } from 'react';
-import { useFormDesignerActions } from '@/providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { ComponentPropertiesEditor } from './componentPropertiesEditor';
 import ParentProvider from '@/providers/parentProvider/index';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
-import { IConfigurableFormComponent, IPersistedFormProps, IToolboxComponent } from '@/interfaces';
+import { IConfigurableFormComponent, IPersistedFormProps, IToolboxComponentBase } from '@/interfaces';
 
 const getSourceFolderForComponent = (componentModel: IConfigurableFormComponent, formProps: IPersistedFormProps): string => {
-    if (!componentModel || !formProps)
-        return undefined;
+  if (!componentModel || !formProps)
+    return undefined;
 
-    const componentUid = componentModel.componentName ?? componentModel.id;
-    return `/forms/${formProps.module}/${formProps.name}/${componentUid}`;
+  const componentUid = componentModel.componentName ?? componentModel.id;
+  return `/forms/${formProps.module}/${formProps.name}/${componentUid}`;
 };
 
 export interface IComponentPropertiesEditrorProps {
-    componentModel: IConfigurableFormComponent;
-    readOnly: boolean;
-    toolboxComponent: IToolboxComponent;
+  componentModel: IConfigurableFormComponent;
+  readOnly: boolean;
+  toolboxComponent: IToolboxComponentBase;
 }
 export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = (props) => {
-    const { componentModel, readOnly, toolboxComponent } = props;
-    const { id } = componentModel;
-    const { updateComponent } = useFormDesignerActions();
-    
-    const { formProps } = useFormPersister();
+  const { componentModel, readOnly, toolboxComponent } = props;
+  const { id } = componentModel;
+  const { updateComponent } = useFormDesigner();
 
-    const onSave = useCallback(values => {
-        if (!readOnly)
-            updateComponent({ componentId: id, settings: { ...values, id } });
-        return Promise.resolve();
-    }, [id, readOnly, updateComponent]);
+  const { formProps } = useFormPersister();
 
-    const sourcesFolder = getSourceFolderForComponent(componentModel, formProps);
+  const onSave = useCallback((values) => {
+    if (!readOnly)
+      updateComponent({ componentId: id, settings: { ...values, id } });
+    return Promise.resolve();
+  }, [id, readOnly, updateComponent]);
 
-    return (
-        <SourceFilesFolderProvider folder={sourcesFolder}>
-            <ParentProvider model={{ readOnly: readOnly }}>
-                <ComponentPropertiesEditor
-                    key={id}
-                    componentModel={componentModel}
-                    readOnly={readOnly}
-                    onSave={onSave}
-                    autoSave={true}
-                    toolboxComponent={toolboxComponent}
-                />
-            </ParentProvider>
-        </SourceFilesFolderProvider>
-    );
+  const sourcesFolder = getSourceFolderForComponent(componentModel, formProps);
+
+  return (
+    <SourceFilesFolderProvider folder={sourcesFolder}>
+      <ParentProvider model={{ readOnly: readOnly }}>
+        <ComponentPropertiesEditor
+          key={id}
+          componentModel={componentModel}
+          readOnly={readOnly}
+          onSave={onSave}
+          autoSave={true}
+          toolboxComponent={toolboxComponent}
+        />
+      </ParentProvider>
+    </SourceFilesFolderProvider>
+  );
 };

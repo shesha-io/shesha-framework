@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const shaQueryBuilderField = cx("sha-query-builder-field", css`
+  const shaQueryBuilderField = cx("sha-query-builder-field", css`
         .${prefixCls}-collapse-item {
             .${prefixCls}-collapse-header {
                 padding: 0 !important;
@@ -14,9 +14,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
     `);
 
-    const shaQueryBuilder = "sha-query-builder";
-    const shaQqueryBuilderPlainWrapperBtnWrapper = "sha-query-builder-plain-wrapper-btn-wrapper";
-    const shaQueryBuilderPlainWrapper = cx("sha-query-builder-plain-wrapper", css`
+  const shaQueryBuilder = "sha-query-builder";
+  const shaQqueryBuilderPlainWrapperBtnWrapper = "sha-query-builder-plain-wrapper-btn-wrapper";
+  const shaQueryBuilderPlainWrapper = cx("sha-query-builder-plain-wrapper", css`
         min-height: 250px;
 
         .${shaQueryBuilder} {
@@ -30,15 +30,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
     `);
 
-    const shaQueryBuilderMarginTop8 = cx("sha-query-builder-margin-top", css`
+  const shaQueryBuilderMarginTop8 = cx("sha-query-builder-margin-top", css`
         margin-top: 8px;
     `);
 
-    return {
-        shaQueryBuilderField,
-        shaQueryBuilderPlainWrapper,
-        shaQueryBuilder,
-        shaQqueryBuilderPlainWrapperBtnWrapper,
-        shaQueryBuilderMarginTop8: shaQueryBuilderMarginTop8,
-    };
+  return {
+    shaQueryBuilderField,
+    shaQueryBuilderPlainWrapper,
+    shaQueryBuilder,
+    shaQqueryBuilderPlainWrapperBtnWrapper,
+    shaQueryBuilderMarginTop8: shaQueryBuilderMarginTop8,
+  };
 });

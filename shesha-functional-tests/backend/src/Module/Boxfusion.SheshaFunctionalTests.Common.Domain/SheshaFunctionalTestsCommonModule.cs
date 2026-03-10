@@ -27,7 +27,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common
             FriendlyName = "Shesha Functional Tests Common",
             Publisher = "Boxfusion",
             Alias = "functionalTests"
-
         };
 
         /// inheritedDoc

@@ -1,4 +1,7 @@
 import { MetadataSourceType } from './metadata';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IReferenceListIdentifier } from './referenceList';
+import { EntityInitFlags } from '@/apis/modelConfigurations';
 
 export interface IModelItem {
   id: string;
@@ -17,7 +20,7 @@ export interface IModelItem {
   /**
    * Data type
    */
-  dataType?: string | null;
+  dataType: string;
   /**
    * Data format
    */
@@ -25,15 +28,11 @@ export interface IModelItem {
   /**
    * Entity type. Aplicable for entity references
    */
-  entityType?: string | null;
+  entityType?: IEntityTypeIdentifier | null;
   /**
-   * Reference list name
+   * Reference list Id
    */
-  referenceListName?: string | null;
-  /**
-   * Reference list module
-   */
-  referenceListModule?: string | null;
+  referenceListId?: IReferenceListIdentifier | null;
 
   source?: MetadataSourceType;
 
@@ -41,8 +40,21 @@ export interface IModelItem {
 
   properties?: IModelItem[];
 
+  itemsType?: IModelItem;
+
+  isItemsType?: boolean;
+
+  isChildProperty?: boolean;
+
   /**
    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
    */
   isFrameworkRelated?: boolean;
+
+  columnName?: string;
+  createdInDb?: boolean;
+  inheritedFromId?: string;
+
+  initStatus?: EntityInitFlags;
+  initMessage?: string;
 }

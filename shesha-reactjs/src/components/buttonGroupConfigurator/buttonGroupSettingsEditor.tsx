@@ -20,11 +20,11 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
   const { addItem, readOnly } = contextAccessor();
   const { styles } = useStyles();
 
-  const onAddItemClick = () => {
+  const onAddItemClick = (): void => {
     addItem();
   };
 
-  const onAddGroupClick = () => {
+  const onAddGroupClick = (): void => {
     addItem((items) => {
       const itemsCount = (items ?? []).length;
       const itemNo = itemsCount + 1;
@@ -35,10 +35,10 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
         sortOrder: itemsCount,
         name: `group${itemNo}`,
         label: `Group ${itemNo}`,
-        buttonType: 'link',
+        buttonType: 'default',
         hideWhenEmpty: true,
         childItems: [],
-        editMode: 'inherited'
+        editMode: 'inherited',
       };
       return group;
     });
@@ -52,17 +52,18 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
     ? level === 1
       ? (
         <div className={styles.customActionButtons}>
-          <Button onClick={onAddGroupClick} type='primary'>Add Group</Button>
-          <Button onClick={onAddItemClick} type='primary'>Add New Item</Button>
+          <Button onClick={onAddGroupClick} type="primary">Add Group</Button>
+          <Button onClick={onAddItemClick} type="primary">Add New Item</Button>
         </div>
       )
       : !(parent.childItems?.length)
         ? (
           <Divider style={{ marginTop: 0, marginBottom: 0 }}>
-            <Button shape='round' size='small' type='link' onClick={onAddItemClick}>Add item</Button>
+            <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>
             <Divider type="vertical" />
-            <Button shape='round' size='small' type='link' onClick={onAddGroupClick}>Add group</Button>
-          </Divider>)
+            <Button shape="round" size="small" type="link" onClick={onAddGroupClick}>Add group</Button>
+          </Divider>
+        )
         : null
     : null;
 };
@@ -79,9 +80,9 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       name: `button${itemNo}`,
       label: `Button ${itemNo}`,
       itemSubType: 'button',
-      buttonType: 'link',
+      buttonType: itemNo === 1 ? 'primary' : 'default',
       editMode: 'inherited',
-      ...initialValues()
+      ...initialValues(),
     };
 
     return newItem;

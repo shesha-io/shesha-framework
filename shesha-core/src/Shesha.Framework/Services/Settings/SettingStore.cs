@@ -1,14 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
-using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Services.Settings.Cache;
 using Shesha.Services.Settings.Dto;
@@ -38,23 +34,13 @@ namespace Shesha.Services.Settings
         /// Default constructor
         /// </summary>
         public SettingStore(
-            IRepository<SettingConfiguration, Guid> repository, 
-            IRepository<ConfigurationItem, Guid> configurationItemRepository, 
-            IRepository<Module, Guid> moduleRepository, 
-            IUnitOfWorkManager unitOfWorkManager,
             IRepository<SettingValue, Guid> settingValueRepository,
             IConfigurationFrameworkRuntime cfRuntime,
-            ISettingCacheHolder cacheHolder) : base(repository, moduleRepository, unitOfWorkManager)
+            ISettingCacheHolder cacheHolder) : base()
         {
             _settingValueRepository = settingValueRepository;
             _cfRuntime = cfRuntime;
             _cacheHolder = cacheHolder;
-        }
-
-        /// inheritedDoc
-        public override Task<SettingConfiguration> CopyAsync(SettingConfiguration item, CopyItemInput input)
-        {
-            throw new System.NotImplementedException();
         }
 
         /// inheritedDoc
@@ -79,13 +65,11 @@ namespace Shesha.Services.Settings
             var definition = new SettingConfiguration();
             definition.Name = input.Name;
             definition.Module = module;
-            definition.Description = input.Description;
-            definition.Label = input.Label;
 
-            definition.VersionNo = 1;
-            definition.VersionStatus = ConfigurationItemVersionStatus.Live;
             definition.Origin = definition;
 
+            definition.Description = input.Description;
+            definition.Label = input.Label;
             definition.DataType = input.DataType;
             definition.EditorFormName = input.EditorFormName;
             definition.EditorFormModule = input.EditorFormModule;
@@ -106,58 +90,21 @@ namespace Shesha.Services.Settings
         }
 
         /// inheritedDoc
-        public override async Task<SettingConfiguration> CreateNewVersionAsync(SettingConfiguration item)
-        {
-            var newVersion = new SettingConfiguration();
-            newVersion.Origin = item.Origin;
-            newVersion.Name = item.Name;
-            newVersion.Module = item.Module;
-            newVersion.Application = item.Application;
-            newVersion.Description = item.Description;
-            newVersion.Label = item.Label;
-            newVersion.TenantId = item.TenantId;
-
-            newVersion.ParentVersion = item; // set parent version
-            newVersion.VersionNo = item.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
-
-            newVersion.DataType = item.DataType;
-            newVersion.EditorFormName = item.EditorFormName;
-            newVersion.EditorFormModule = item.EditorFormModule;
-            newVersion.OrderIndex = item.OrderIndex;
-            newVersion.IsClientSpecific = item.IsClientSpecific;
-            newVersion.AccessMode = item.AccessMode;
-            newVersion.Category = item.Category;
-            newVersion.IsUserSpecific = item.IsUserSpecific;
-            newVersion.ClientAccess = item.ClientAccess;
-            newVersion.Normalize();
-
-            await Repository.InsertAsync(newVersion);
-
-            return newVersion;
-        }
-
-        /// inheritedDoc
         public Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
         {
             return Repository.GetAll()
                 .Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression())
-                .Where(s => s.IsLast && s.VersionStatus == ConfigurationItemVersionStatus.Live)
                 .FirstOrDefaultAsync();
         }
 
         /// inheritedDoc
-        public override Task<IConfigurationItemDto> MapToDtoAsync(SettingConfiguration item)
-        {
-            var dto = ObjectMapper.Map<SettingDefinitionDto>(item);
-            return Task.FromResult<IConfigurationItemDto>(dto);
-        }
-
-        /// inheritedDoc
-        public Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
+        public Task<SettingValue?> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             return WithUnitOfWorkAsync(async () => {
                 var settingConfiguration = await GetSettingConfigurationAsync(setting);
+                if (settingConfiguration == null)
+                    return null;
+
                 var query = _settingValueRepository.GetAll()
                     .Where(v => v.SettingConfiguration.Id == settingConfiguration.Id);
 
@@ -239,6 +186,23 @@ namespace Shesha.Services.Settings
             var cacheKey = GetCacheKey(new CacheKeyArgs(eventData.Entity));
             await _cacheHolder.Cache.RemoveAsync(cacheKey);
         }
+
+        protected override Task CopyItemPropertiesAsync(SettingConfiguration source, SettingConfiguration destination)
+        {
+            destination.DataType = source.DataType;
+            destination.DataFormat = source.DataFormat;
+            destination.EditorFormName = source.EditorFormName;
+            destination.EditorFormModule = source.EditorFormModule;
+            destination.OrderIndex = source.OrderIndex;
+            destination.Category = source.Category;
+            destination.IsClientSpecific = source.IsClientSpecific;
+            destination.AccessMode = source.AccessMode;
+            destination.IsUserSpecific = source.IsUserSpecific;
+            destination.ClientAccess = source.ClientAccess;
+            
+            return Task.CompletedTask;
+        }
+
         private class CacheKeyArgs
         {
             public string? Module { get; private set; }

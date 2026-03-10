@@ -1,8 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
+using Shesha.DynamicEntities.Enums;
 using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
@@ -13,10 +13,26 @@ namespace Shesha.DynamicEntities.Dtos
     /// <summary>
     /// Model configuration DTO
     /// </summary>
-    public class ModelConfigurationDto : EntityDto<Guid?>, IConfigurationItemDto
+    public class ModelConfigurationDto : EntityDto<Guid>, IConfigurationItemDto
     {
+        public bool CreatedInDb { get; set; }
+
+        public EntityInitFlags? InitStatus { get; set; }
+        public string? InitMessage { get; set; }
+
+        public string? DiscriminatorValue { get; set; }
+        
+        public string? SchemaName { get; set; }
+        public string? TableName { get; set; }
+
+        public Guid? InheritedFromId { get; set; }
+        public string? InheritedFromClassName { get; set; }
+        public string? InheritedFromNamespace { get; set; }
+
+        public bool IsExposed { get; set; }
+
         public string ClassName { get; set; }
-        public string Namespace { get; set; }
+        public string? Namespace { get; set; }
 
         public bool GenerateAppService { get; set; }
 
@@ -27,14 +43,14 @@ namespace Shesha.DynamicEntities.Dtos
         public string? HardcodedPropertiesMD5 { get; set; }
         public DateTime ChangeTime { get; set; }
 
-        // ConfigurationItem        
+        // ConfigurationItem
+        public Guid? FolderId { get; set; }
+
         public Guid? ModuleId { get; set; }
         public string? Module { get; set; }
         public string Name { get; set; }
         public string? Label { get; set; }
         public string? Description { get; set; }
-        public int VersionNo { get; set; }
-        public ConfigurationItemVersionStatus VersionStatus { get; set; }
         public bool Suppress { get; set; }
         public bool NotImplemented { get; set; }
 
@@ -73,7 +89,7 @@ namespace Shesha.DynamicEntities.Dtos
                 new EntityViewConfigurationDto { IsStandard = true, Type = "List item", FormId = null },
             });
 
-            if (model?.ViewConfigurations != null)
+            if (model.ViewConfigurations != null)
             {
                 foreach (var view in model.ViewConfigurations)
                 {
@@ -85,7 +101,6 @@ namespace Shesha.DynamicEntities.Dtos
                 }
             }
             ViewConfigurations = list;
-
         }
     }
 }

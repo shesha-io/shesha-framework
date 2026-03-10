@@ -15,14 +15,14 @@ export const selectItemAction = createAction<string, string>(RefListItemGroupAct
 
 export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
   RefListItemGroupActionEnums.UpdateItem,
-  (p) => p
+  (p) => p,
 );
 
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   RefListItemGroupActionEnums.UpdateChildItems,
-  (p) => p
+  (p) => p,
 );
 
 export const storeSettingsAction = createAction<ISettingsUpdatePayload>(
-  RefListItemGroupActionEnums.StoreSettings
+  RefListItemGroupActionEnums.StoreSettings,
 );

@@ -1,6 +1,5 @@
 import { nanoid } from '@/utils/uuid';
 import { useSheshaApplication } from "@/providers";
-import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import axios, { Method } from 'axios';
 import { IKeyValue } from "@/interfaces/keyValue";
@@ -9,6 +8,8 @@ import qs from "qs";
 import { unwrapAbpResponse } from "@/utils/fetchers";
 import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { getQueryParams } from "@/utils/url";
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 
 export interface IApiCallArguments {
   url: string;
@@ -29,8 +30,8 @@ const HttpVerbs: Method[] = ['get',
   'link',
   'unlink'];
 
-export const apiCallArgumentsForm = new DesignerToolbarSettings()
-  .addSettingsInputRow({
+const getApiCallArgumentsForm: FormMarkupFactory = ({ fbf }) => {
+  return fbf().addSettingsInputRow({
     id: 'httpverb-url-row',
     inputs: [
       {
@@ -38,8 +39,7 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
         type: 'dropdown',
         propertyName: 'verb',
         label: 'HTTP Verb',
-        dropdownOptions: HttpVerbs.map(v => ({ id: v, label: v.toUpperCase(), value: v })),
-        defaultValue: 'get',
+        dropdownOptions: HttpVerbs.map((v) => ({ id: v, label: v.toUpperCase(), value: v })),
       },
       {
         id: nanoid(),
@@ -48,50 +48,50 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
         label: 'URL',
         description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs can be used for external applications.',
         httpVerb: "{data.verb}",
-      }
-    ]
-  })
-  .addSettingsInputRow({
-    id: "parameters-standard-header-row",
-    inputs: [
-      {
-        id: nanoid(),
-        type: 'labelValueEditor',
-        propertyName: 'parameters',
-        label: 'Parameters',
-        description: 'Request parameters. They will be included into the request as query string or body depending on the selected verb.',
-        labelName: 'key',
-        labelTitle: 'Key',
-        valueName: 'value',
-        valueTitle: 'Value',
       },
-      {
-        id: nanoid(),
-        type: 'switch',
-        propertyName: 'sendStandardHeaders',
-        label: 'Send Standard Headers',
-        description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
-        defaultValue: true,
-      }
-    ]
+    ],
   })
-  .addSettingsInput({
-    id: nanoid(),
-    inputType: 'labelValueEditor',
-    propertyName: 'headers',
-    label: 'Headers',
-    labelName: 'key',
-    labelTitle: 'Key',
-    valueName: 'value',
-    valueTitle: 'Value',
-  })
-  .toJson();
-
-const isGlobalUrl = (url: string) => {
-  return url?.match(/^(http|ftp|https):\/\//gi);
+    .addSettingsInputRow({
+      id: "parameters-standard-header-row",
+      inputs: [
+        {
+          id: nanoid(),
+          type: 'labelValueEditor',
+          propertyName: 'parameters',
+          label: 'Parameters',
+          description: 'Request parameters. They will be included into the request as query string or body depending on the selected verb.',
+          labelName: 'key',
+          labelTitle: 'Key',
+          valueName: 'value',
+          valueTitle: 'Value',
+        },
+        {
+          id: nanoid(),
+          type: 'switch',
+          propertyName: 'sendStandardHeaders',
+          label: 'Send Standard Headers',
+          description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
+        },
+      ],
+    })
+    .addSettingsInput({
+      id: nanoid(),
+      inputType: 'labelValueEditor',
+      propertyName: 'headers',
+      label: 'Headers',
+      labelName: 'key',
+      labelTitle: 'Key',
+      valueName: 'value',
+      valueTitle: 'Value',
+    })
+    .toJson();
 };
 
-export const useApiCallAction = () => {
+const isGlobalUrl = (url: string): boolean => {
+  return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|ftp|https):\/\//gi));
+};
+
+export const useApiCallAction = (): void => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   useConfigurableAction<IApiCallArguments>({
@@ -99,8 +99,10 @@ export const useApiCallAction = () => {
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
     name: 'API Call',
+    label: 'Call API',
+    sortOrder: 5,
     hasArguments: true,
-    argumentsFormMarkup: apiCallArgumentsForm,
+    argumentsFormMarkup: getApiCallArgumentsForm,
     executer: (actionArgs, _context) => {
       const {
         url,
@@ -129,7 +131,7 @@ export const useApiCallAction = () => {
       const encodeAsQueryString = ['get', 'delete'].includes(verb?.toLowerCase());
       if (encodeAsQueryString) {
         const queryStringData = { ...getQueryParams(preparedUrl), ...preparedData };
-        preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData)}`;
+        preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData, { allowDots: true })}`;
         preparedData = undefined;
       }
 
@@ -139,7 +141,7 @@ export const useApiCallAction = () => {
         data: preparedData,
         method: verb as Method,
         headers: allHeaders,
-      }).then(response => unwrapAbpResponse(response.data));
-    }
+      }).then((response) => unwrapAbpResponse(response.data));
+    },
   }, [backendUrl, httpHeaders]);
-};  
+};

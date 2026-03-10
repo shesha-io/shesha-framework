@@ -8,14 +8,17 @@ using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate;
 using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
 using Shesha.Migrations;
+using Shesha.Mvc;
 using Shesha.NHibernate.Maps;
 using Shesha.NHibernate.Session;
 using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Services
@@ -39,9 +42,9 @@ namespace Shesha.Services
         /// </summary>
         /// <returns></returns>
         [DontWrapResult]
-        public Task<string?> GetConventionsAsync()
+        public Task<ShaFileContentResult> GetConventionsAsync()
         {
-            return Task.FromResult(Conventions.LastCompiledXml);
+            return Task.FromResult(new ShaFileContentResult(Encoding.UTF8.GetBytes(Conventions.LastCompiledXml ?? string.Empty), "application/xml") { FileDownloadName = "nhibernate_mappings.xml" });
         }
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace Shesha.Services
         {
             try
             {
-                var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+                var typeFinder = StaticContext.IocManager.Resolve<IShaTypeFinder>();
                 var migrationGenerator = StaticContext.IocManager.Resolve<IMigrationGenerator>();
 
                 var types = typeFinder.FindAll().Where(t => t.IsEntityType()
@@ -86,6 +89,18 @@ namespace Shesha.Services
             }
         }
 
+        [HttpGet]
+        [DontWrapResult]
+        public string GenerateMigration(string entityType) 
+        {
+            var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+            var type = typeFinder.Find(t => t.FullName == entityType).Single();
+            var migrationGenerator = StaticContext.IocManager.Resolve<IMigrationGenerator>();
+
+            var migration = migrationGenerator.GenerateMigrations([type]);
+            return migration;
+        }
+
         /// <summary>
         /// NOTE: to be removed
         /// </summary>
@@ -93,7 +108,7 @@ namespace Shesha.Services
         [DontWrapResult]
         public void TestEntity(string entityType) 
         {
-            var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+            var typeFinder = StaticContext.IocManager.Resolve<IShaTypeFinder>();
             var type = typeFinder.Find(t => t.FullName == entityType).Single();
             TryFetch(type, e => 
             {

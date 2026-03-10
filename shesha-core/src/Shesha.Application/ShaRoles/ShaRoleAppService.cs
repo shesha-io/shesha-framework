@@ -36,9 +36,6 @@ namespace Shesha.ShaRoles
             CheckCreatePermission();
 
             var role = ObjectMapper.Map<ShaRole>(input);
-            role.VersionNo = 1;
-            // ToDo: implement versioning of ShaRole
-            role.VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live;
 
             await Repository.InsertAsync(role);
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -52,7 +49,9 @@ namespace Shesha.ShaRoles
 
             var role = await Repository.GetAsync(input.Id);
 
-            ObjectMapper.Map(input, role);
+            role.Label = input.Label;
+            role.Description = input.Description;
+            role.MapPermissions(input.Permissions);            
 
             await _shaPermissionChecker.ClearPermissionsCacheAsync();
 
@@ -79,7 +78,7 @@ namespace Shesha.ShaRoles
         public async Task<bool> IsRoleGrantedAsync(IsRoleGrantedInput input)
         {
             var userId = AbpSession.GetUserId();
-            var isGranted = await _roleAppointmentRepository.GetAll().AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role != null && a.Role.Name == input.RoleName);
+            var isGranted = await _roleAppointmentRepository.GetAll().AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName);
             return isGranted;
         }
     }

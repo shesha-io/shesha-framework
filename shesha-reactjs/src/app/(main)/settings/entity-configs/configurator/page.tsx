@@ -1,11 +1,11 @@
 "use client";
 
 import { PageWithLayout } from "@/interfaces";
-import { EntityConfiguratorPage } from  '@/generic-pages/entity-config/configurator';
 import React from "react";
+import { ModelConfigurator } from "@/components";
 
-const Page: PageWithLayout<{}> = () => {
-  return <EntityConfiguratorPage />;
+const Page: PageWithLayout = () => {
+  return <ModelConfigurator />;
 };
 
 export default Page;

@@ -7,21 +7,21 @@ export type ContainerType = FC<IComponentsContainerBaseProps>;
 export const ComponentsContainerContext = createNamedContext<ContainerType>(undefined, "ComponentsContainerContext");
 
 export interface IComponentsContainerProviderProps {
-    ContainerComponent: ContainerType;
+  ContainerComponent: ContainerType;
 }
 export const ComponentsContainerProvider: FC<PropsWithChildren<IComponentsContainerProviderProps>> = ({ ContainerComponent, children }) => {
-    return (
-        <ComponentsContainerContext.Provider value={ContainerComponent}>
-            {children}
-        </ComponentsContainerContext.Provider>
-    );
+  return (
+    <ComponentsContainerContext.Provider value={ContainerComponent}>
+      {children}
+    </ComponentsContainerContext.Provider>
+  );
 };
 
-export function useComponentContainer() {
-    const context = useContext(ComponentsContainerContext);
+export function useComponentContainer(): ContainerType {
+  const context = useContext(ComponentsContainerContext);
 
-    if (!context)
-        throw new Error('useComponentContainer must be used within a ComponentsContainerProvider');
+  if (!context)
+    throw new Error('useComponentContainer must be used within a ComponentsContainerProvider');
 
-    return context;
+  return context;
 };

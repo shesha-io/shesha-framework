@@ -25,7 +25,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Sender text (email address/mobile number etc)
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string SenderText { get; set; }
         /// <summary>
         /// CC emails

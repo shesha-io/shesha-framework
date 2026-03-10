@@ -1,15 +1,12 @@
 import { FileAddOutlined } from '@ant-design/icons';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { FileUpload } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IFormItem, IToolboxComponent } from '@/interfaces';
-import { IStyleType, StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { DataTypes } from '@/interfaces';
+import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { useForm } from '@/providers/form';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
-  evaluateValue,
-  getStyle,
-  pickStyleFromModel,
+  evaluateValueAsString,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import {
@@ -21,110 +18,29 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { removeUndefinedProps } from '@/utils/object';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { listType } from '../attachmentsEditor/attachmentsEditor';
-import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
 
-export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
-  ownerId: string;
-  ownerType: string;
-  allowUpload?: boolean;
-  allowReplace?: boolean;
-  allowDelete?: boolean;
-  useSync?: boolean;
-  allowedFileTypes?: string[];
-  isDragger?: boolean;
-  listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
-}
-
-const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
+const FileUploadComponent: FileUploadComponentDefinition = {
   type: 'fileUpload',
   name: 'File',
   icon: <FileAddOutlined />,
   isInput: true,
   isOutput: true,
+  dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
-    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const { backendUrl } = useSheshaApplication();
 
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const background = model?.background;
-    const jsStyle = getStyle(model?.style, model);
-
-    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-      let objectUrl = '';
-
-      const fetchStyles = async () => {
-        let storedImageUrl = '';
-
-        try {
-          if (background?.storedFile?.id && background?.type === 'storedFile') {
-            const response = await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`, {
-              headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-            });
-
-            if (!response.ok) {
-              throw new Error(`Failed to fetch background: ${response.status} ${response.statusText}`);
-            }
-
-            const blob = await response.blob();
-            objectUrl = URL.createObjectURL(blob);
-            storedImageUrl = objectUrl;
-          }
-        } catch (error) {
-          console.error('Error fetching background image:', error);
-        }
-
-        const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-
-      // Cleanup function to revoke the object URL when component unmounts or when dependencies change
-      return () => {
-        if (objectUrl) {
-          URL.revokeObjectURL(objectUrl);
-        }
-      };
-    }, [background, backendUrl, httpHeaders]);
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles,
-      jsStyle,
-    });
-
-    const finalStyle = removeUndefinedProps(additionalStyles);
-
+    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const ownerId = evaluateValue(model.ownerId, { data, globalState });
+    const ownerId = evaluateValueAsString(model.ownerId, { data, globalState });
 
     const enabled = !model.readOnly;
 
@@ -138,13 +54,11 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               fileId={model.value?.Id ?? model.value}
               baseUrl={backendUrl}
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-              ownerType={
-                Boolean(model.ownerType)
-                  ? model.ownerType
-                  : Boolean(formSettings?.modelType)
-                    ? formSettings?.modelType
-                    : ''
-              }
+              ownerType={!isEntityTypeIdEmpty(model.ownerType)
+                ? model.ownerType
+                : !isEntityTypeIdEmpty(formSettings?.modelType)
+                  ? formSettings?.modelType
+                  : ''}
               propertyName={model.propertyName}
               uploadMode={model.useSync ? 'sync' : 'async'}
             >
@@ -192,7 +106,10 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
           owner: prev['owner'],
         } as IFileUploadProps;
       })
-      .add<IFileUploadProps>(1, (prev, context) => ({ ...prev, useSync: !Boolean(context.formSettings?.modelType) }))
+      .add<IFileUploadProps>(1, (prev, context) => ({
+        ...prev,
+        useSync: prev.useSync === undefined ? isEntityTypeIdEmpty(context.formSettings?.modelType) : prev.useSync,
+      }))
       .add<IFileUploadProps>(2, (prev) => {
         const pn = prev['name'] ?? prev.propertyName;
         const model = migratePropertyName(migrateCustomFunctions(prev));
@@ -202,15 +119,9 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
       .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
       .add<IFileUploadProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IFileUploadProps>(6, (prev) => ({
-        ...prev,
-        ...defaultStyles(),
-        desktop: { ...defaultStyles() },
-        mobile: { ...defaultStyles() },
-        tablet: { ...defaultStyles() },
-      })),
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+      .add<IFileUploadProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default FileUploadComponent;

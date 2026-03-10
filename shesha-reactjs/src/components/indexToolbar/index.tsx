@@ -22,7 +22,7 @@ export const IndexToolbar: FC<IIndexToolbarProps> = ({ items, elementsRight, cla
 
       <div className="sha-index-toolbar-right">
         {Array.isArray(elementsRight) ? (
-          elementsRight?.map(element => <span key={nanoid()}>{element}</span>)
+          elementsRight?.map((element) => <span key={nanoid()}>{element}</span>)
         ) : (
           <NodeOrFuncRenderer>{elementsRight}</NodeOrFuncRenderer>
         )}

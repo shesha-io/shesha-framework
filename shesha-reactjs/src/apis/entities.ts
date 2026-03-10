@@ -9,6 +9,9 @@ export interface IDynamicDataResult {
 }
 
 export interface EntitiesGetQueryParams {
+  name?: string;
+  module?: string;
+
   entityType?: string;
   /**
    * List of properties to fetch in GraphQL-like syntax. Supports nested properties
@@ -26,10 +29,13 @@ export const entitiesGet = (queryParams: EntitiesGetQueryParams, props: entities
   RestfulShesha.get<IDynamicDataResult, unknown, EntitiesGetQueryParams, void>(
     `/api/services/app/Entities/Get`,
     queryParams,
-    props
-  );
+    props,
+);
 
 export interface EntitiesGetAllQueryParams {
+  name?: string;
+  module?: string;
+  
   entityType?: string;
   /**
    * List of properties to fetch in GraphQL-like syntax. Supports nested properties

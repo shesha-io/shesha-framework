@@ -1,9 +1,9 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const styleTabId = nanoid();
@@ -11,7 +11,7 @@ export const getSettings = (data: any) => {
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -25,7 +25,7 @@ export const getSettings = (data: any) => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: 'propertyName',
@@ -69,8 +69,8 @@ export const getSettings = (data: any) => {
                     parentId: commonTabId,
                     hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false } as any,
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -95,8 +95,8 @@ export const getSettings = (data: any) => {
                     parentId: commonTabId,
                     hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false } as any,
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -106,14 +106,14 @@ export const getSettings = (data: any) => {
                 parentId: commonTabId,
                 jsSetting: true,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
             title: 'Appearance',
             id: styleTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -125,10 +125,10 @@ export const getSettings = (data: any) => {
                 propertyRouteName: {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                  _value: ""
-                },
+                  _value: "",
+                } as any,
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'subTextStyle',
@@ -139,7 +139,7 @@ export const getSettings = (data: any) => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addCollapsiblePanel({
                             id: 'fontStyleCollapsiblePanel',
                             propertyName: 'pnlFontStyle',
@@ -150,7 +150,7 @@ export const getSettings = (data: any) => {
                             collapsible: 'header',
                             content: {
                               id: 'fontStylePnl',
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addSettingsInputRow({
                                   id: 'try26voxhs-HxJ5k5ngYE',
                                   parentId: 'fontStylePnl',
@@ -180,7 +180,7 @@ export const getSettings = (data: any) => {
                                       propertyName: 'font.weight',
                                       hideLabel: true,
                                       tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                      dropdownOptions: fontWeights,
+                                      dropdownOptions: fontWeightsOptions,
                                       width: 100,
                                     },
                                     {
@@ -197,14 +197,14 @@ export const getSettings = (data: any) => {
                                       propertyName: 'font.align',
                                       hideLabel: true,
                                       width: 60,
-                                      dropdownOptions: textAlign,
+                                      dropdownOptions: textAlignOptions,
                                       hidden: { _code: 'return  getSettingValue(data?.mode) === "multiple";', _mode: 'code', _value: false } as any,
                                     },
                                   ],
                                 })
-                                .toJson()
-                              ]
-                            }
+                                .toJson(),
+                              ],
+                            },
                           })
                           .addSettingsInput({
                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -215,9 +215,9 @@ export const getSettings = (data: any) => {
                             label: 'Custom Style',
                             description: 'A script that returns the style of the sub text as an object. This should conform to CSSProperties',
                           })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
                     .addCollapsiblePanel({
                       id: nanoid(),
@@ -229,7 +229,7 @@ export const getSettings = (data: any) => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             id: nanoid(),
@@ -238,21 +238,21 @@ export const getSettings = (data: any) => {
                             label: 'Content Style',
                             description: 'A script that returns the style of the popover content as an object. This should conform to CSSProperties',
                           })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
-                    .toJson()
-                ]
+                    .toJson(),
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'security',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
@@ -260,19 +260,19 @@ export const getSettings = (data: any) => {
                 propertyName: 'permissions',
                 label: 'Permissions',
                 size: 'small',
-                parentId: securityTabId
+                parentId: securityTabId,
               })
-              .toJson()
-            ]
-          }
-        ]
+              .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

@@ -1,6 +1,6 @@
 import { Modal, Spin } from 'antd';
-import { ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
-import React, { useRef } from 'react';
+import { ISettingsFormInstance, IToolboxComponentBase } from '@/interfaces';
+import React, { ReactNode, useRef } from 'react';
 import { useMedia } from 'react-use';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ComponentPropertiesEditor } from '@/components/formDesigner/componentPropertiesPanel/componentPropertiesEditor';
@@ -10,7 +10,7 @@ export interface IProps<T extends IConfigurableFormComponent> {
   isVisible: boolean;
   onSave: (model: T) => Promise<void>;
   onCancel: () => void;
-  formComponent: IToolboxComponent;
+  formComponent: IToolboxComponentBase;
   readOnly: boolean;
   propertyFilter?: (name: string) => boolean;
 }
@@ -23,7 +23,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
   readOnly,
   model,
   propertyFilter,
-}: IProps<T>) {
+}: IProps<T>): ReactNode {
   const isSmall = useMedia('(max-width: 480px)');
   const formRef = useRef<ISettingsFormInstance>();
 
@@ -32,13 +32,13 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
 
   const saving = false;
 
-  const onCancelClick = () => {
+  const onCancelClick = (): void => {
     if (formRef.current)
       formRef.current.reset();
     onCancel();
   };
 
-  const onOkClick = () => {
+  const onOkClick = (): void => {
     if (formRef.current)
       formRef.current.submit();
   };
@@ -57,6 +57,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
       <Spin spinning={saving} tip="Please wait...">
         {/* <ValidationErrors error={error?.data}></ValidationErrors> */}
         <ComponentPropertiesEditor
+          isInModal={true}
           componentModel={model}
           readOnly={readOnly}
           onSave={onSave}
@@ -66,8 +67,8 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
           propertyFilter={propertyFilter}
           layoutSettings={{
             labelCol: { span: 8 },
-            wrapperCol: { span: 16 },
-            layout: 'horizontal'
+            wrapperCol: { span: 24 },
+            layout: 'vertical',
           }}
         />
       </Spin>

@@ -39,6 +39,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
           className={model?.className}
           style={{ ...getStyle(model?.style, formData), ...allStyles.fullStyle }}
           error="Validation Errors (visible in the runtime only)"
+          renderMode="alert"
         />
       );
 
@@ -47,12 +48,13 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
         className={model?.className}
         style={{ ...getStyle(model?.style, formData), ...allStyles.fullStyle }}
         error={validationErrors}
+        renderMode="alert"
       />
     );
   },
   /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  settingsFormMarkup: getSettings,
   migrator: (m) =>
     m.add<IValidationErrorsComponentProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };

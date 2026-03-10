@@ -3,12 +3,12 @@ import DateCell from './default/dateCell';
 import DateTimeCell from './default/dateTimeCell';
 import EntityCell from './default/entityCell';
 import NumberCell from './default/numberCell';
-import React, { FC, useRef } from 'react';
+import React, { FC, useMemo } from 'react';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components';
 import { DEFAULT_FORM_SETTINGS, FormItemProvider, IConfigurableFormComponent, useForm } from '@/providers';
-import { upgradeComponent, useAvailableConstantsData } from '@/providers/form/utils';
+import { upgradeComponent } from '@/providers/form/utils';
 import { getInjectables } from './utils';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
@@ -16,13 +16,15 @@ import { ITableDataColumn } from '@/providers/dataTable/interfaces';
 import { MultivalueReferenceListCell } from './default/multivalueReferenceListCell';
 import { ReferenceListCell } from './default/referenceListCell';
 import { useCrud } from '@/providers/crudContext';
-import { useDeepCompareMemo } from '@/hooks';
+import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { editorAdapters, updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
+import { updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
+import { getEditorAdapter } from '@/components/formComponentSelector';
 import MultiEntityCell from './default/multiEntityCell';
 import FormComponentMemo from '@/components/formDesigner/formComponent';
+import { useStyles } from '../styles/styles';
 
-export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
+export const DefaultDataDisplayCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): JSX.Element => {
   const { columnConfig } = props;
   const { form } = useForm();
   const value = form.getFieldValue(columnConfig.propertyName?.split('.'));
@@ -46,6 +48,7 @@ export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props:
     case 'array': {
       switch (columnConfig.dataFormat) {
         case 'reference-list-item':
+        case 'multivalue-reference-list':
           return <MultivalueReferenceListCell<D, V> {...cellProps} />;
         case 'entity':
           return <MultiEntityCell<D, V> {...cellProps} />;
@@ -60,36 +63,44 @@ export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props:
   }
 };
 
-const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
-  const { columnConfig, propertyMeta, customComponent } = props;
+const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
+  const { columnConfig, propertyMeta, customComponent, defaultRow, defaultValue } = props;
+  const { styles, cx } = useStyles();
 
   const toolboxComponents = useFormDesignerComponents();
-  const allData = useAvailableConstantsData();
 
   const component = toolboxComponents[customComponent.type];
-  const injectables = getInjectables(props);
 
-  const componentModel: IConfigurableFormComponent  = useDeepCompareMemo(() => {
+  const injectables = useMemo(() => getInjectables(props), [defaultRow, defaultValue]);
+
+  const model = useMemo(() => upgradeComponent(
+    customComponent.settings,
+    component,
+    DEFAULT_FORM_SETTINGS,
+    { allComponents: { component: customComponent.settings }, componentRelations: {} },
+  ), [customComponent.settings, component]);
+
+  const actualModel = useActualContextData(
+    model, props.readOnly ? true : undefined,
+    {
+      tableRow: injectables.injectedTableRow,
+    },
+  );
+
+  const componentModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
     // migrate component
-    const model = upgradeComponent(
-      customComponent.settings,
-      component,
-      DEFAULT_FORM_SETTINGS,
-      { allComponents: { 'component': customComponent.settings }, componentRelations: {} }
-    );
-
     let editorModel: IColumnEditorProps = {
-      ...model,
+      ...actualModel,
       ...injectables,
       id: props.columnConfig.columnId,
       type: customComponent.type,
       propertyName: columnConfig.propertyName,
       label: null,
       hideLabel: true,
-      readOnly: model.readOnly === undefined ? props.readOnly : model.readOnly,
+      readOnly: actualModel.readOnly === undefined ? props.readOnly : actualModel.readOnly,
     };
 
-    const adapter = editorAdapters[customComponent.type];
+    const adapter = getEditorAdapter(component);
 
     if (component.linkToModelMetadata && propertyMeta && adapter?.propertiesFilter) {
       editorModel = updateModelExcludeFiltered(editorModel, component.linkToModelMetadata({
@@ -99,9 +110,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     }
 
     return editorModel;
-  }, [customComponent.settings, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
-
-  const componentRef = useRef();
+  }, [actualModel, columnConfig, propertyMeta, injectables, customComponent.type, props.readOnly]);
 
   if (!component) {
     return <div>Component not found</div>;
@@ -110,14 +119,18 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   return (
     <CustomErrorBoundary>
       {/* set namePrefix = '' to reset subForm prefix */}
-      <FormItemProvider namePrefix=''> 
-        <FormComponentMemo componentModel={componentModel} componentRef={componentRef} />
+      <FormItemProvider namePrefix="">
+        <div className={cx(styles.shaDataCell, styles.shaSpanCenterVertically)}>
+          <FormComponentMemo componentModel={componentModel} />
+        </div>
       </FormItemProvider>
     </CustomErrorBoundary>
   );
-};
+});
 
-export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>) => {
+ComponentWrapper.displayName = 'ComponentWrapper';
+
+export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>): JSX.Element => {
   const { columnConfig, propertyMeta } = props;
   const customComponent = columnConfig?.createComponent;
   const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
@@ -127,7 +140,7 @@ export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>) 
   );
 };
 
-const ReadDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
+const ReadDataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): JSX.Element => {
   const { columnConfig, propertyMeta } = props;
   const customComponent = columnConfig?.displayComponent;
 
@@ -147,7 +160,7 @@ const ReadDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D
   );
 };
 
-const UpdateDataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
+const UpdateDataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): JSX.Element => {
   const { columnConfig, propertyMeta, value } = props;
   const customComponent = columnConfig?.editComponent;
   const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
@@ -164,7 +177,7 @@ const UpdateDataCell = <D extends object = {}, V = number>(props: IDataCellProps
   );
 };
 
-export const DataCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
+export const DataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): JSX.Element => {
   const { mode } = useCrud();
 
   switch (mode) {

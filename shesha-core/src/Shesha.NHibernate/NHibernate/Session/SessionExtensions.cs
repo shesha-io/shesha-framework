@@ -4,6 +4,7 @@ using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using Shesha.NHibernate.Interceptors;
+using Shesha.Orm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,9 +24,12 @@ namespace Shesha.NHibernate.Session
             var persister = sessionImpl.Factory.GetEntityPersister(className);
 
             var oldEntry = session.GetEntry(entity);
-            Object[] oldState = oldEntry.LoadedState;
-            Object[] currentState = persister.GetPropertyValues(entity);
-            Int32[] dirtyProps = persister.FindDirty(currentState, oldState, entity, sessionImpl);
+            object[]? oldState = oldEntry.LoadedState;
+            if (oldState == null)
+                return new();
+
+            object[] currentState = persister.GetPropertyValues(entity);
+            int[] dirtyProps = persister.FindDirty(currentState, oldState, entity, sessionImpl);
 
             return dirtyProps != null
                 ? dirtyProps.Select(i => new DirtyPropertyInfo()
@@ -35,7 +39,7 @@ namespace Shesha.NHibernate.Session
                         NewValue = currentState[i]
                     })
                     .ToList()
-                : new List<DirtyPropertyInfo>();
+                : new ();
         }
         
         public static EntityEntry? GetEntryOrNull(this ISession session, Object entity) 
@@ -63,13 +67,6 @@ namespace Shesha.NHibernate.Session
                 return true;
             }
             return entity is ISoftDelete && entity.As<ISoftDelete>().IsDeleted;
-        }
-
-        public class DirtyPropertyInfo
-        {
-            public required string Name { get; init; }
-            public object? OldValue { get; init; }
-            public object? NewValue { get; init; }
         }
 
         /// <summary>

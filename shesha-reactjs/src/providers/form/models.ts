@@ -2,10 +2,9 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import React, { CSSProperties, ReactNode } from 'react';
-import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
+import { IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
-import { nanoid } from '@/utils/uuid';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
@@ -13,6 +12,9 @@ import { IBorderValue } from '@/designer-components/_settings/utils/border/inter
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { ColorValueType } from 'antd/es/color-picker/interface';
+import { isDefined } from '@/utils/nullables';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -22,24 +24,13 @@ export interface ISubmitActionArguments {
   validateFields?: boolean;
 }
 
-export const SubmitActionArgumentsMarkup = new DesignerToolbarSettings()
-  .addCheckbox({ id: nanoid(), propertyName: 'validateFields', parentId: 'root', label: 'Validate fields', defaultValue: false })
-  .toJson();
-
 export type FormMode = 'designer' | 'edit' | 'readonly';
-
-export type ViewType = 'details' | 'table' | 'form' | 'blank' | 'masterDetails' | 'menu' | 'dashboard';
 
 export type LabelAlign = 'left' | 'right';
 
 export type PropertySettingMode = 'value' | 'code';
-/*
-export enum PropertySettingMode {
-  Value = 'value',
-  Code = 'code'
-}
-*/
-export interface IPropertySetting<Value = any> {
+
+export interface IPropertySetting<Value = unknown> {
   _mode?: PropertySettingMode;
   _value?: Value;
   _code?: string;
@@ -52,7 +43,7 @@ export interface IFormComponentContainer {
   /** Unique Id of the component */
   id: string;
   /** Id of the parent component */
-  parentId?: string;
+  parentId?: string | undefined;
 }
 
 export interface IComponentValidationRules {
@@ -72,6 +63,7 @@ export interface IStyleType {
   background?: IBackgroundValue;
   font?: IFontValue;
   shadow?: IShadowValue;
+  menuItemShadow?: IShadowValue;
   dimensions?: IDimensionsValue;
   size?: SizeType;
   style?: string;
@@ -80,7 +72,7 @@ export interface IStyleType {
   primaryBgColor?: ColorValueType;
   secondaryBgColor?: ColorValueType;
   secondaryTextColor?: ColorValueType;
-  overflow?: boolean;
+  overflow?: boolean | "dropdown" | "menu" | "scroll";
   hideScrollBar?: boolean;
 }
 
@@ -88,6 +80,8 @@ export interface IInputStyles extends IStyleType {
   borderSize?: string | number;
   borderRadius?: string | number;
   borderType?: string;
+  borderStyle?: string;
+  borderWidth?: string | number;
   borderColor?: string;
   fontColor?: string;
   color?: string;
@@ -112,23 +106,23 @@ export interface IInputStyles extends IStyleType {
 };
 
 export type ConfigurableFormComponentTypes =
-  | 'alert'
-  | 'address'
-  | 'toolbar'
-  | 'dropdown'
-  | 'textField'
-  | 'textField'
-  | 'textArea'
-  | 'iconPicker'
-  | 'colorPicker'
-  | 'container'
-  | 'collapsiblePanel'
-  | 'autocomplete'
-  | 'checkbox'
-  | 'numberField'
-  | 'sectionSeparator'
-  | 'queryBuilder'
-  | 'labelValueEditor';
+  | 'alert' |
+  'address' |
+  'toolbar' |
+  'dropdown' |
+  'textField' |
+  'textField' |
+  'textArea' |
+  'iconPicker' |
+  'colorPicker' |
+  'container' |
+  'collapsiblePanel' |
+  'autocomplete' |
+  'checkbox' |
+  'numberField' |
+  'sectionSeparator' |
+  'queryBuilder' |
+  'labelValueEditor';
 
 export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
@@ -142,7 +136,7 @@ export interface IComponentLabelProps {
 
 export interface IComponentRuntimeProps {
   /**/
-  settingsValidationErrors?: IAsyncValidationError[];
+  settingsValidationErrors?: IAsyncValidationError[] | undefined;
 
   /** Custom onBlur handler */
   onBlurCustom?: string;
@@ -155,6 +149,9 @@ export interface IComponentRuntimeProps {
 
   /** Custom onFocus handler */
   onFocusCustom?: string;
+
+  /** Custom onSelect handler */
+  onSelectCustom?: string;
 }
 
 export interface IComponentBindingProps {
@@ -173,7 +170,7 @@ export interface IComponentBindingProps {
 
 export interface IComponentVisibilityProps {
   /** Hidden field is still a part of the form but not visible on it */
-  hidden?: boolean;
+  hidden?: boolean | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */
@@ -235,9 +232,6 @@ export interface IConfigurableFormComponent
   /** @deprecated Use disabled in js mode instead */
   customEnabled?: string;
 
-  /** Default value of the field */
-  defaultValue?: any;
-
   /** Control size */
   size?: SizeType;
 
@@ -263,6 +257,8 @@ export interface IConfigurableFormComponent
 
   permissions?: string[];
 
+  _formFields?: string[];
+
   layout?: FormLayout;
 
   inputStyles?: IStyleType;
@@ -274,7 +270,14 @@ export interface IConfigurableFormComponent
   mobile?: any;
 
   allStyles?: IFormComponentStyles;
+
+  enableStyleOnReadonly?: boolean;
+
+  listType?: 'text' | 'thumbnail';
 }
+
+export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
+  isDefined(component) && ['id', 'type'].every((key) => (key in component && typeof component[key] === 'string'));
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
   /** Whether the component is read-only */
@@ -286,12 +289,18 @@ export interface IComponentsContainer {
   components: IConfigurableFormComponent[];
 }
 
+export type IRawComponentsContainer = IFormComponentContainer & {
+  components: IConfigurableFormComponent[];
+};
+export const isRawComponentsContainer = (obj: unknown): obj is IRawComponentsContainer =>
+  isDefined(obj) && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
+
 export interface IComponentsDictionary {
-  [index: string]: IConfigurableFormComponent;
+  [index: string]: IConfigurableFormComponent | IRawComponentsContainer;
 }
 
 export interface IComponentRelations {
-  [index: string]: string[];
+  [index: string]: string[] | undefined;
 }
 
 export interface IFlatComponentsStructure {
@@ -300,7 +309,7 @@ export interface IFlatComponentsStructure {
 }
 
 export interface IFormSettingsCommon {
-  modelType?: string;
+  modelType?: IEntityTypeIdentifier | string;
   layout: FormLayout;
   colon: boolean;
   labelCol: ColProps;
@@ -308,8 +317,8 @@ export interface IFormSettingsCommon {
   size?: SizeType;
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean;
-  permissions?: string[];
-  access?: number;
+  permissions?: string[] | undefined;
+  access?: number | undefined;
 }
 
 export interface ILegacyFormSettings extends IFormSettingsCommon {
@@ -330,7 +339,7 @@ export interface ILegacyFormSettings extends IFormSettingsCommon {
   onInitialized?: string;
   onDataLoaded?: string;
   onUpdate?: string;
-  //#endregion 
+  //#endregion
 }
 
 export interface IFormLifecycleSettings {
@@ -339,7 +348,7 @@ export interface IFormLifecycleSettings {
   dataSubmitterType?: string;
   dataSubmittersSettings?: IDictionary<object>;
 
-  //#region lifecycle 
+  //#region lifecycle
   onBeforeDataLoad?: string;
   onAfterDataLoad?: string;
 
@@ -373,10 +382,7 @@ export interface FormMarkupWithSettings {
   components: IConfigurableFormComponent[];
 }
 export type FormRawMarkup = IConfigurableFormComponent[];
-export type FormMarkup =
-  | FormRawMarkup
-  | FormMarkupWithSettings | ((data: any) => FormRawMarkup
-    | FormMarkupWithSettings);
+export type FormMarkup = FormRawMarkup | FormMarkupWithSettings;
 
 export type FormFullName = ConfigurableItemFullName;
 export type FormUid = ConfigurableItemUid;
@@ -389,19 +395,6 @@ export interface IPersistedFormProps {
   label?: string;
   description?: string;
   markup?: FormRawMarkup;
-  /**
-   * Version number
-   */
-  versionNo?: number;
-  /**
-   * Version status
-   */
-  versionStatus?: number;
-
-  /**
-   * If true, indicates that it's the last version of the form
-   */
-  isLastVersion?: boolean;
 }
 
 type AllKeys<T> = T extends unknown ? keyof T : never;
@@ -445,16 +438,16 @@ export interface IFormSections {
  * Form DTO
  */
 export interface FormDto {
-  id?: string;
+  id: string;
   /**
    * Form name
    */
-  name?: string;
+  name: string;
 
   /**
    * Module
    */
-  module?: string;
+  module: string;
   /**
    * Form label
    */
@@ -475,15 +468,14 @@ export interface FormDto {
    * Type
    */
   type?: string | null;
-
-  versionNo?: number;
-  versionStatus?: number;
-  isLastVersion?: boolean;
+  access: number | null;
+  permissions: string[] | null;
 }
 
 export interface IFormDto extends Omit<FormDto, 'markup'> {
-  markup: FormRawMarkup;
-  settings: IFormSettings;
+  markup: FormRawMarkup | null;
+  settings: IFormSettings | null;
+  readOnly: boolean;
 }
 
 export interface IFormValidationRulesOptions {
@@ -497,11 +489,16 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
   colon: true,
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
-  permissions: []
+  permissions: [],
 };
 
 export type ActionParametersJs = string;
-export type ActionParametersDictionary = [{ key: string; value: string }];
+// export type ActionParametersDictionary = [{ key: string; value: string }];
+export type ActionParametersDictionary = { [key: string]: any };
 export type ActionParameters = ActionParametersJs | ActionParametersDictionary;
 export type ActionArguments = { [key: string]: any };
 export type GenericDictionary = { [key: string]: any };
+
+export const STYLE_BOX_CSS_POPERTIES = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
+export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];
+export type StyleBoxValue = Pick<CSSProperties, StyleBoxCssProperties>;

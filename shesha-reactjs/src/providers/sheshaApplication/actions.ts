@@ -11,14 +11,14 @@ export enum SheshaApplicationActionEnums {
 
 export const setHeadersAction = createAction<IRequestHeaders, IRequestHeaders>(
   SheshaApplicationActionEnums.SetRequestHeaders,
-  (p) => p
+  (p) => p,
 );
 
 export const setBackendUrlAction = createAction<string, string>(SheshaApplicationActionEnums.SetBackendUrl, (p) => p);
 
 export const setGlobalVariablesAction = createAction<{ [x: string]: any }, { [x: string]: any }>(
   SheshaApplicationActionEnums.SetGlobalVariables,
-  (p) => p
+  (p) => p,
 );
 
 export interface RegisterFormDesignerComponentsActionPayload {
@@ -27,5 +27,5 @@ export interface RegisterFormDesignerComponentsActionPayload {
 }
 export const registerFormDesignerComponentsAction = createAction<RegisterFormDesignerComponentsActionPayload, RegisterFormDesignerComponentsActionPayload>(
   SheshaApplicationActionEnums.RegisterFormDesignerComponents,
-  (p) => p
+  (p) => p,
 );

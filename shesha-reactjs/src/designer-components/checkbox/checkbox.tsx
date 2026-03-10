@@ -1,13 +1,11 @@
-import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
+import React, { useMemo } from 'react';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxProps } from 'antd';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { ICheckboxComponentProps } from './interfaces';
+import { CheckboxComponentDefinition, ICheckboxComponentProps } from './interfaces';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -16,12 +14,11 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-
-interface ICheckboxComponentCalulatedValues {
-  eventHandlers?: IEventHandlers<any>;
-}
+import { useStyles } from './styles';
+import { migratePrevStyles } from '../_common-migrations';
+import { defaultStyles } from './utils';
 
 interface ExtendedCheckboxProps extends CheckboxProps {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
@@ -29,7 +26,7 @@ interface ExtendedCheckboxProps extends CheckboxProps {
   onChange?: (e: CheckboxChangeEvent) => void;
 }
 
-const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxComponentCalulatedValues> = {
+const CheckboxComponent: CheckboxComponentDefinition = {
   type: 'checkbox',
   isInput: true,
   isOutput: true,
@@ -37,30 +34,34 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  calculateModel: (model, allData) => ({eventHandlers: getAllEventHandlers(model, allData)}),
+  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
+    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+
+    const { styles } = useStyles({ style: finalStyle });
+
     return (
-      <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
+      <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
           const events: ExtendedCheckboxProps = {
             onBlur: calculatedModel.eventHandlers.onBlur,
             onFocus: calculatedModel.eventHandlers.onFocus,
             onChange: (e: CheckboxChangeEvent) => {
               calculatedModel.eventHandlers.onChange({ value: e.target.checked }, e);
-              if (typeof onChange === 'function') onChange(e);
-            }
+              if (typeof onChange === 'function') onChange(e.target.checked);
+            },
           };
 
-          return model.readOnly 
-            ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} />
-            : <Checkbox className="sha-checkbox" disabled={model.readOnly} style={model.allStyles.jsStyle} checked={value} {...events} />
-          ;
+          return <Checkbox className={styles.checkbox} disabled={model.readOnly} checked={value} {...events} />;
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -73,7 +74,8 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      }),
+      })
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles()))),
 };
 
 export default CheckboxComponent;

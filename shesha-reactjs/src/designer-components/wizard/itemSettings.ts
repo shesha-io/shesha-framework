@@ -1,9 +1,11 @@
-import { DesignerToolbarSettings } from '@/interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontWeights, fontTypes } from '../_settings/utils/font/utils';
-export const getItemSettings = () => {
+import { fontWeightsOptions, fontTypes } from '../_settings/utils/font/utils';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
+
+export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormComponent[] => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -25,7 +27,7 @@ export const getItemSettings = () => {
   const beforeRenderContentId = nanoid();
   const otherSettingsContentId = nanoid();
 
-  return new DesignerToolbarSettings()
+  return fbf()
     .addSearchableTabs({
       id: searchableTabsId,
       propertyName: 'settingsTabs',
@@ -39,7 +41,7 @@ export const getItemSettings = () => {
           key: '1',
           title: 'Common',
           id: commonTabId,
-          components: [...new DesignerToolbarSettings()
+          components: [...fbf()
             .addSettingsInputRow({
               id: nanoid(),
               parentId: commonTabId,
@@ -48,7 +50,7 @@ export const getItemSettings = () => {
                   id: nanoid(),
                   type: 'textField',
                   propertyName: 'name',
-                  label: 'Component Name',
+                  label: 'Name',
                   size: 'small',
                   validate: {
                     required: true,
@@ -60,9 +62,9 @@ export const getItemSettings = () => {
                   propertyName: 'title',
                   label: 'Title',
                   labelAlign: 'right',
-                  jsSetting: true
-                }
-              ]
+                  jsSetting: true,
+                },
+              ],
             })
             .addSettingsInputRow({
               id: nanoid(),
@@ -83,8 +85,8 @@ export const getItemSettings = () => {
                   label: 'Description',
                   labelAlign: 'right',
                   jsSetting: true,
-                }
-              ]
+                },
+              ],
             })
             .addSettingsInputRow({
               id: nanoid(),
@@ -113,7 +115,7 @@ export const getItemSettings = () => {
                   ],
                   validate: { required: true },
                 },
-              ]
+              ],
             })
             .addSettingsInputRow({
               id: nanoid(),
@@ -136,10 +138,9 @@ export const getItemSettings = () => {
                   label: 'Allow Cancel',
                   labelAlign: 'right',
                   hidden: false,
-                  defaultValue: false,
                   validate: {},
                   jsSetting: true,
-                }]
+                }],
             })
             .addSettingsInput({
               inputType: 'switch',
@@ -149,7 +150,6 @@ export const getItemSettings = () => {
               labelAlign: 'right',
               parentId: commonTabId,
               hidden: false,
-              defaultValue: false,
               validate: {},
               jsSetting: true,
             })
@@ -163,7 +163,7 @@ export const getItemSettings = () => {
               collapsible: 'header',
               content: {
                 id: nextButtonContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -184,7 +184,7 @@ export const getItemSettings = () => {
                         description: 'Write the code that returns whether this button is enabled',
                         labelAlign: 'right',
                         parentId: nextButtonContentId,
-                      }]
+                      }],
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -196,7 +196,6 @@ export const getItemSettings = () => {
                         propertyName: 'beforeNextActionConfiguration',
                         label: 'Before Next Action',
                         hidden: false,
-                        hideLabel: true,
                         validate: {},
                         jsSetting: false,
                         settingsValidationErrors: [],
@@ -205,17 +204,16 @@ export const getItemSettings = () => {
                         id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'afterNextActionConfiguration',
-                        hideLabel: true,
                         label: 'After Next Action',
                         hidden: false,
                         customVisibility: '',
                         validate: {},
                         jsSetting: false,
                         settingsValidationErrors: [],
-                      }]
+                      }],
                   })
-                  .toJson()]
-              }
+                  .toJson()],
+              },
             })
             .addCollapsiblePanel({
               id: nanoid(),
@@ -227,7 +225,16 @@ export const getItemSettings = () => {
               collapsible: 'header',
               content: {
                 id: backButtonContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
+                  .addSettingsInput({
+                    id: nanoid(),
+                    inputType: 'switch',
+                    propertyName: 'showBackButton',
+                    label: 'Show Back Button',
+                    labelAlign: 'right',
+                    parentId: backButtonContentId,
+                    jsSetting: true,
+                  })
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -248,7 +255,7 @@ export const getItemSettings = () => {
                         description: 'Write the code that returns whether this button is enabled',
                         labelAlign: 'right',
                         parentId: backButtonContentId,
-                      }]
+                      }],
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -259,7 +266,6 @@ export const getItemSettings = () => {
                         propertyName: 'beforeBackActionConfiguration',
                         label: 'Before Back Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                       },
                       {
@@ -268,14 +274,13 @@ export const getItemSettings = () => {
                         propertyName: 'afterBackActionConfiguration',
                         label: 'After Back Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                         customVisibility: '',
-                      }
-                    ]
+                      },
+                    ],
                   })
-                  .toJson()]
-              }
+                  .toJson()],
+              },
             })
             .addCollapsiblePanel({
               id: nanoid(),
@@ -287,7 +292,16 @@ export const getItemSettings = () => {
               collapsible: 'header',
               content: {
                 id: doneButtonContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
+                  .addSettingsInput({
+                    id: nanoid(),
+                    inputType: 'switch',
+                    propertyName: 'showDoneButton',
+                    label: 'Show Done Button',
+                    labelAlign: 'right',
+                    parentId: doneButtonContentId,
+                    jsSetting: true,
+                  })
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -308,8 +322,8 @@ export const getItemSettings = () => {
                         description: 'Write the code that returns whether this button is enabled',
                         labelAlign: 'right',
                         parentId: doneButtonContentId,
-                      }
-                    ]
+                      },
+                    ],
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -321,7 +335,6 @@ export const getItemSettings = () => {
                         propertyName: 'beforeDoneActionConfiguration',
                         label: 'Before Done Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                       },
                       {
@@ -330,14 +343,13 @@ export const getItemSettings = () => {
                         propertyName: 'afterDoneActionConfiguration',
                         label: 'After Done Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                         customVisibility: '',
-                      }
-                    ]
+                      },
+                    ],
                   })
-                  .toJson()]
-              }
+                  .toJson()],
+              },
             })
             .addCollapsiblePanel({
               id: nanoid(),
@@ -349,7 +361,7 @@ export const getItemSettings = () => {
               collapsible: 'header',
               content: {
                 id: cancelButtonContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -370,8 +382,8 @@ export const getItemSettings = () => {
                         description: 'Write the code that returns whether this button is enabled',
                         labelAlign: 'right',
                         parentId: cancelButtonContentId,
-                      }
-                    ]
+                      },
+                    ],
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -383,7 +395,6 @@ export const getItemSettings = () => {
                         propertyName: 'beforeCancelActionConfiguration',
                         label: 'Before Cancel Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                       },
                       {
@@ -392,14 +403,13 @@ export const getItemSettings = () => {
                         propertyName: 'afterCancelActionConfiguration',
                         label: 'After Cancel Action',
                         hidden: false,
-                        hideLabel: true,
                         jsSetting: false,
                         customVisibility: '',
-                      }
-                    ]
+                      },
+                    ],
                   })
-                  .toJson()]
-              }
+                  .toJson()],
+              },
             })
             .addCollapsiblePanel({
               id: nanoid(),
@@ -411,17 +421,16 @@ export const getItemSettings = () => {
               collapsible: 'header',
               content: {
                 id: beforeRenderContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addConfigurableActionConfigurator({
                     id: nanoid(),
                     propertyName: 'onBeforeRenderActionConfiguration',
                     label: 'Action Configuration',
-                    hideLabel: true,
                     hidden: false,
                     parentId: beforeRenderContentId,
                   })
-                  .toJson()]
-              }
+                  .toJson()],
+              },
             })
             .addCollapsiblePanel({
               id: nanoid(),
@@ -433,7 +442,7 @@ export const getItemSettings = () => {
               collapsible: 'header',
               content: {
                 id: otherSettingsContentId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -460,21 +469,21 @@ export const getItemSettings = () => {
                         description:
                           'Enter custom enabled code.  You must return true to enable the component. ' +
                           'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-                      }
-                    ]
+                      },
+                    ],
                   })
-                  .toJson()]
-              }
+                  .toJson()],
+              },
             })
-            .toJson()
-          ]
+            .toJson(),
+          ],
         },
         {
           key: '2',
           title: 'Appearance',
           id: appearanceTabId,
           components: [
-            ...new DesignerToolbarSettings()
+            ...fbf()
               .addCollapsiblePanel({
                 id: nanoid(),
                 propertyName: 'pnlFontStyle',
@@ -485,7 +494,7 @@ export const getItemSettings = () => {
                 collapsible: 'header',
                 content: {
                   id: fontStylePnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: fontStylePnlId,
@@ -518,7 +527,7 @@ export const getItemSettings = () => {
                           hideLabel: true,
                           placeholder: '400',
                           tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                          dropdownOptions: fontWeights,
+                          dropdownOptions: fontWeightsOptions,
                           width: 100,
                         },
                         {
@@ -527,12 +536,12 @@ export const getItemSettings = () => {
                           label: 'Color',
                           propertyName: 'font.color',
                           hideLabel: true,
-                        }
+                        },
                       ],
                     })
-                    .toJson()
-                  ]
-                }
+                    .toJson(),
+                  ],
+                },
               })
               .addCollapsiblePanel({
                 id: nanoid(),
@@ -545,20 +554,20 @@ export const getItemSettings = () => {
                 collapsible: 'header',
                 content: {
                   id: borderStylePnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addContainer({
                       id: nanoid(),
                       parentId: borderStylePnlId,
-                      components: getBorderInputs("", false) as any
+                      components: getBorderInputs(fbf, "", false),
                     })
                     .addContainer({
                       id: nanoid(),
                       parentId: borderStylePnlId,
-                      components: getCornerInputs("", false) as any
+                      components: getCornerInputs(fbf, "", false),
                     })
-                    .toJson()
-                  ]
-                }
+                    .toJson(),
+                  ],
+                },
               })
               .addCollapsiblePanel({
                 id: nanoid(),
@@ -572,7 +581,7 @@ export const getItemSettings = () => {
                 content: {
                   id: backgroundStylePnlId,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         parentId: backgroundStylePnlId,
@@ -580,7 +589,6 @@ export const getItemSettings = () => {
                         jsSetting: false,
                         propertyName: "background.type",
                         inputType: "radio",
-                        defaultValue: "color",
                         tooltip: "Select a type of background",
                         buttonGroupOptions: backgroundTypeOptions,
                       })
@@ -606,7 +614,7 @@ export const getItemSettings = () => {
                           propertyName: "background.gradient.colors",
                           label: "Colors",
                           jsSetting: false,
-                        }
+                        },
                         ],
                         hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                         hideLabel: true,
@@ -645,9 +653,9 @@ export const getItemSettings = () => {
                             id: nanoid(),
                             jsSetting: false,
                             propertyName: "background.storedFile.id",
-                            label: "File ID"
-                          }
-                        ]
+                            label: "File ID",
+                          },
+                        ],
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -675,7 +683,7 @@ export const getItemSettings = () => {
                             propertyName: "background.position",
                             dropdownOptions: positionOptions,
                           },
-                        ]
+                        ],
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -686,14 +694,13 @@ export const getItemSettings = () => {
                           label: 'Repeat',
                           hideLabel: true,
                           propertyName: 'background.repeat',
-                          inputType: 'radio',
                           buttonGroupOptions: repeatOptions,
                         }],
                         hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                       })
-                      .toJson()
+                      .toJson(),
                   ],
-                }
+                },
               })
               .addCollapsiblePanel({
                 id: nanoid(),
@@ -706,7 +713,7 @@ export const getItemSettings = () => {
                 collapsible: 'header',
                 content: {
                   id: shadowStylePnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: shadowStylePnlId,
@@ -719,7 +726,6 @@ export const getItemSettings = () => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: "offsetHorizontalIcon",
                           propertyName: 'shadow.offsetX',
                         },
@@ -730,7 +736,6 @@ export const getItemSettings = () => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'offsetVerticalIcon',
                           propertyName: 'shadow.offsetY',
                         },
@@ -741,7 +746,6 @@ export const getItemSettings = () => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'blurIcon',
                           propertyName: 'shadow.blurRadius',
                         },
@@ -752,7 +756,6 @@ export const getItemSettings = () => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'spreadIcon',
                           propertyName: 'shadow.spreadRadius',
                         },
@@ -765,9 +768,9 @@ export const getItemSettings = () => {
                         },
                       ],
                     })
-                    .toJson()
-                  ]
-                }
+                    .toJson(),
+                  ],
+                },
               })
               .addCollapsiblePanel({
                 id: nanoid(),
@@ -778,16 +781,16 @@ export const getItemSettings = () => {
                 collapsible: 'header',
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addStyleBox({
                       id: nanoid(),
                       label: 'Margin Padding',
                       hideLabel: true,
                       propertyName: 'stylingBox',
                     })
-                    .toJson()
-                  ]
-                }
+                    .toJson(),
+                  ],
+                },
               })
               .addCollapsiblePanel({
                 id: 'customStyleCollapsiblePanel',
@@ -799,7 +802,7 @@ export const getItemSettings = () => {
                 collapsible: 'header',
                 content: {
                   id: customStylePnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: customStylePnlId,
@@ -818,20 +821,20 @@ export const getItemSettings = () => {
                           hideLabel: false,
                           label: 'Style',
                           description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                        }
-                      ]
+                        },
+                      ],
                     })
-                    .toJson()
-                  ]
-                }
+                    .toJson(),
+                  ],
+                },
               })
-              .toJson()]
+              .toJson()],
         },
         {
           key: '3',
           title: 'Security',
           id: securityTabId,
-          components: [...new DesignerToolbarSettings()
+          components: [...fbf()
             .addSettingsInput({
               id: nanoid(),
               propertyName: 'permissions',
@@ -839,11 +842,11 @@ export const getItemSettings = () => {
               parentId: securityTabId,
               inputType: 'permissions',
               tooltip: 'Enter a list of permissions that should be associated with this component',
-              jsSetting: true
+              jsSetting: true,
             })
-            .toJson()
-          ]
-        }
-      ]
+            .toJson(),
+          ],
+        },
+      ],
     }).toJson();
 };

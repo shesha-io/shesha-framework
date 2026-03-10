@@ -1,4 +1,4 @@
-import React, { Context, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import React, { Context, PropsWithChildren, ReactElement, useContext, useEffect, useMemo, useReducer } from 'react';
 import { PromisedValue } from '@/utils/promises';
 import { IComponentSettings } from '../appConfigurator/models';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
@@ -40,28 +40,28 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   name,
   isApplicationSpecific,
   migrator,
-}: PropsWithChildren<IGenericConfigurableComponentProviderProps<TSettings>>) => {
+}: PropsWithChildren<IGenericConfigurableComponentProviderProps<TSettings>>): ReactElement => {
   const reducer = useMemo(() => reducerFactory(initialState), []);
 
-  const { getComponent, updateComponent } = useConfigurationItemsLoader();
+  const { getComponentAsync, updateComponentAsync } = useConfigurationItemsLoader();
 
   const upgradeSettings = (value: TSettings): TSettings => {
     if (!isObject(value))
       return value;
-      
+
     if (!migrator) return value;
 
     const migratorInstance = new Migrator<TSettings, TSettings>();
     const fluent = migrator(migratorInstance);
-    const versionedValue = {...value} as IHasVersion;
-    if (versionedValue.version === undefined) 
+    const versionedValue = { ...value } as IHasVersion;
+    if (versionedValue.version === undefined)
       versionedValue.version = -1;
     const model = fluent.migrator.upgrade(versionedValue, {});
     return model;
   };
 
   const initialSettingsMemo = useMemo<TSettings>(() => {
-    const promised = getComponent({ name, isApplicationSpecific, skipCache: false });
+    const promised = getComponentAsync({ name, isApplicationSpecific, skipCache: false });
     const loadedSettings = promised.value?.settings as TSettings;
     if (!loadedSettings)
       return undefined;
@@ -77,9 +77,9 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
     settings: initialSettings,
   });
 
-  const fetchInternal = (loader: PromisedValue<IComponentSettings>) => {
-    dispatch(loadRequestAction({ name, isApplicationSpecific }));
-    
+  const fetchInternal = (loader: PromisedValue<IComponentSettings>): void => {
+    dispatch(loadRequestAction());
+
     loader.promise
       .then((component) => {
         const upToDateComponent = {
@@ -96,13 +96,13 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   useEffect(() => {
     if (!Boolean(name) || Boolean(state.settings)) return;
 
-    fetchInternal(getComponent({ name, isApplicationSpecific, skipCache: false }));
+    fetchInternal(getComponentAsync({ name, isApplicationSpecific, skipCache: false }));
   }, []);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const loadComponent = () => {
-    var loader = getComponent({ name, isApplicationSpecific, skipCache: true });
+  const loadComponent = (): void => {
+    var loader = getComponentAsync({ name, isApplicationSpecific, skipCache: true });
     fetchInternal(loader);
   };
 
@@ -112,21 +112,21 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
       return Promise.resolve();
     }
 
-    dispatch(saveRequestAction({}));
+    dispatch(saveRequestAction());
 
     // keep version number, it may be removed by the settings editor
     const version = (state.settings as IHasVersion)?.version;
     const settingsToSave = version
       ? { ...(settings as object), version }
       : settings;
-     
+
     const payload = {
       module: null,
       name: state.name,
       isApplicationSpecific: isApplicationSpecific,
       settings: settingsToSave as object,
     };
-    return updateComponent(payload)
+    return updateComponentAsync(payload)
       .then((_response) => {
         dispatch(saveSuccessAction({ settings: payload.settings }));
       })
@@ -154,12 +154,17 @@ export interface IConfigurableComponentProviderProps {
   isApplicationSpecific: boolean;
 }
 
-export const createConfigurableComponent = <TSettings extends any>(defaultSettings: TSettings, migrator?: ComponentSettingsMigrator<TSettings>) => {
+type CreateConfigurableComponentResponse<TSettings extends any> = {
+  ConfigurableComponentProvider: <T extends PropsWithChildren<IConfigurableComponentProviderProps>>(props: T) => ReactElement;
+  useConfigurableComponent: () => IConfigurableComponentStateContext<TSettings> & IConfigurableComponentActionsContext<TSettings>;
+};
+
+export const createConfigurableComponent = <TSettings extends any>(defaultSettings: TSettings, migrator?: ComponentSettingsMigrator<TSettings>): CreateConfigurableComponentResponse<TSettings> => {
   const initialState = getContextInitialState<TSettings>(defaultSettings);
   const StateContext = getConfigurableComponentStateContext<TSettings>(initialState);
   const ActionContext = getConfigurableComponentActionsContext<TSettings>();
 
-  const useConfigurableComponent = () => {
+  const useConfigurableComponent = (): IConfigurableComponentStateContext<TSettings> & IConfigurableComponentActionsContext<TSettings> => {
     const stateContext = useContext(StateContext);
     const actionsContext = useContext(ActionContext);
 
@@ -171,8 +176,8 @@ export const createConfigurableComponent = <TSettings extends any>(defaultSettin
   };
 
   const ConfigurableComponentProvider = <T extends PropsWithChildren<IConfigurableComponentProviderProps>>(
-    props: T
-  ) => {
+    props: T,
+  ): ReactElement => {
     return (
       <GenericConfigurableComponentProvider<TSettings>
         initialState={initialState}

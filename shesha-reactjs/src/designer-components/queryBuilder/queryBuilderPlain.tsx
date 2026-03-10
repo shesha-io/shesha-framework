@@ -11,7 +11,7 @@ export interface IQueryBuilderPlainProps {
 
 export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange, readOnly = false }) => {
   const { styles } = useStyles();
-  const handleChange = (jsonLogicResult: JsonLogicResult) => {
+  const handleChange = (jsonLogicResult: JsonLogicResult): void => {
     if (readOnly) return;
     if (jsonLogicResult) {
       if (jsonLogicResult && jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {

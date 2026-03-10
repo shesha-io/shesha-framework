@@ -48,7 +48,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
                 ExecuteNonQuery(sql, command =>
                 {
                     command.AddParameter("@id", id);
-                    command.AddParameter("@tenantId", null);
+                    command.AddParameter<int?>("@tenantId", null);
                     command.AddParameter("@description", description);
                     command.AddParameter("@name", name);
                     command.AddParameter("@namespace", @namespace);
@@ -278,13 +278,13 @@ where
 
             ExecuteNonQuery(sql, command => {
                 command.AddParameter("@Id", id);
-                command.AddParameter("@TenantId", null);
+                command.AddParameter<int?>("@TenantId", null);
                 command.AddParameter("@Description", item.Description);
                 command.AddParameter("@HardLinkToApplication", false);
                 command.AddParameter("@Item", item.Item);
                 command.AddParameter("@ItemValue", item.ItemValue);
                 command.AddParameter("@OrderIndex", item.OrderIndex ?? item.ItemValue);
-                command.AddParameter("@ParentId", null);
+                command.AddParameter<Guid?>("@ParentId", null);
                 command.AddParameter("@ReferenceListId", refListId);
             });
 

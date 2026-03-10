@@ -1,3 +1,4 @@
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { CSSProperties } from 'react';
 
@@ -40,3 +41,5 @@ export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyle
   disabledTimeFunc?: string;
   additionalStyles?: CSSProperties;
 }
+
+export type DateFieldDefinition = ComponentDefinition<"dateField", IDateFieldProps>;

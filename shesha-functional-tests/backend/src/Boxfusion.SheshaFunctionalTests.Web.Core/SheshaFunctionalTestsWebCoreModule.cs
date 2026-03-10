@@ -1,7 +1,10 @@
 using Abp.Modules;
 using Abp.Reflection.Extensions;
+using Boxfusion.SheshaFunctionalTest.DisabledModule;
 using Boxfusion.SheshaFunctionalTests.Common;
 using Boxfusion.SheshaFunctionalTests.Common.Authorization;
+using Boxfusion.SheshaFunctionalTests.ModuleA;
+using Boxfusion.SheshaFunctionalTests.ModuleB;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +16,7 @@ using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Elmah;
 using Shesha.Import;
+using Shesha.Modules;
 using Shesha.Sms.Clickatell;
 using Shesha.Web.FormsDesigner;
 using System;
@@ -32,11 +36,22 @@ namespace Boxfusion.SheshaFunctionalTests
         typeof(SheshaClickatellModule),
         typeof(SheshaFunctionalTestsCommonModule),
         typeof(SheshaElmahModule),
-        typeof(SheshaFunctionalTestsCommonApplicationModule)
+        typeof(SheshaFunctionalTestsCommonApplicationModule),
+        typeof(SheshaFunctionalTestsDisabledModule),
+        typeof(SheshaFunctionalTestsModuleA),
+        typeof(SheshaFunctionalTestsModuleB)
      )]
-    public class SheshaFunctionalTestsWebCoreModule : AbpModule
+    public class SheshaFunctionalTestsWebCoreModule : SheshaModule
     {
         private readonly IConfigurationRoot _appConfiguration;
+
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("Boxfusion.SheshaFunctionalTests.Web")
+        {
+            FriendlyName = "Shesha Functional Tests Web",
+            Publisher = "Boxfusion",
+            Alias = "functionalTestsWeb",
+            Hierarchy = [typeof(SheshaFunctionalTestsModuleA), typeof(SheshaFunctionalTestsModuleB), typeof(SheshaFunctionalTestsCommonModule), typeof(SheshaFrameworkModule)],
+        };
 
         /// <summary>
         /// 
@@ -68,7 +83,10 @@ namespace Boxfusion.SheshaFunctionalTests
             tokenAuthConfig.Issuer = _appConfiguration.GetRequired("Authentication:JwtBearer:Issuer");
             tokenAuthConfig.Audience = _appConfiguration.GetRequired("Authentication:JwtBearer:Audience");
             tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);
-            tokenAuthConfig.Expiration = TimeSpan.FromDays(5);
+            // Min expiration is 60 seconds, max is 30 days
+            tokenAuthConfig.Expiration = int.TryParse(_appConfiguration["Authentication:JwtBearer:ExpirationSeconds"], out var expiration) && expiration >= 60 && expiration <= 86400 * 30
+                ? TimeSpan.FromSeconds(expiration)
+                : TimeSpan.FromDays(1);
         }
 
         /// <summary>

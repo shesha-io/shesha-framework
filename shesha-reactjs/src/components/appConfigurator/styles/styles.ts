@@ -39,6 +39,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
         .${shaConfigurableComponent} {
           position: relative;
           min-height: 30px;
+          display: block;
       
           &.${shaConfigurableComponentSelected} {
             border: 2px dashed ${token.colorPrimary};
@@ -52,18 +53,23 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             right: 0;
             z-index: 10;
             cursor: pointer;
+            display: block;
+            min-height: 100%;
+            pointer-events: none;
 
             .sha-configurable-logo-button-wrapper {
               position: absolute;
               right: -32px;
               height: 100%;
               vertical-align: middle;
+              pointer-events: auto;
             }
 
             .sha-configurable-sidemenu-button-wrapper {
               position: fixed;
               left: 14px;
               bottom: 14px;
+              pointer-events: auto;
             }
 
             .sha-configurable-view-button-wrapper {
@@ -73,12 +79,16 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
               padding: 4px;
               height: 34px;
               overflow-y: hidden;
-              width: 100%
+              width: 100%;
+              position: relative;
+              z-index: 11;
+              pointer-events: auto;
             }
             
             .sha-configurable-view-details {
               background-color: #14A38B;
               color: #ffffff;
+              pointer-events: auto;
             }
             
             .sha-configurable-view-button-wrapper > button {
@@ -89,6 +99,10 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
               top: 3px;
               left: calc(50% - 14px);
               border: none;
+              z-index: 12;
+              display: block;
+              visibility: visible;
+              pointer-events: auto;
             }
 
           .lite{
@@ -98,11 +112,26 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             height: 100%;
             padding: 20px;
             padding-top: 10px;
+            position: relative;
+            pointer-events: auto;
+
+            > button {
+              color: #ffffff;
+              background-color: #14A38B;
+              height: 28px;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              border: none;
+              z-index: 12;
+              pointer-events: auto;
+            }
           } 
       
           .${shaConfigurableComponentOverlay}:after {
             content: '';
-      
+
             position: absolute;
             top: 0;
             bottom: 0;
@@ -110,6 +139,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             right: 0;
             background-color: #ddd;
             opacity: 0.3;
+            pointer-events: none;
           }
       
           .${shaForm} {

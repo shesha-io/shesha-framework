@@ -28,14 +28,14 @@ export interface ISwitchModeActionPayload {
 
 export const switchModeAction = createAction<ISwitchModeActionPayload, ISwitchModeActionPayload>(
   CrudActionEnums.SwitchMode,
-  (p) => p
+  (p) => p,
 );
 
 export const setAutoSaveAction = createAction<boolean, boolean>(CrudActionEnums.SetAutoSave, (p) => p);
 
 export const setInitialValuesLoadingAction = createAction<boolean, boolean>(
   CrudActionEnums.SetInitialValuesLoading,
-  (p) => p
+  (p) => p,
 );
 
 export const setInitialValuesAction = createAction<object, object>(CrudActionEnums.SetInitialValues, (p) => p);

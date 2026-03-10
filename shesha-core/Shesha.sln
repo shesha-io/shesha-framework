@@ -60,6 +60,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheshaCodeAnalyzers.Package
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheshaCodeAnalyzers.Test", "analyzers\SheshaCodeAnalyzers.Test\SheshaCodeAnalyzers.Test.csproj", "{C2196593-1C13-50DC-5C68-2C3B3193BB38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shesha.Tests.ModuleA", "test\Shesha.Tests.ModuleA\Shesha.Tests.ModuleA.csproj", "{79C8061A-C56C-CD48-CA80-5053CDE0A5F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shesha.Tests.ModuleB", "test\Shesha.Tests.ModuleB\Shesha.Tests.ModuleB.csproj", "{D140AFF0-4485-6214-3EB7-793EC812B972}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -154,6 +158,14 @@ Global
 		{C2196593-1C13-50DC-5C68-2C3B3193BB38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2196593-1C13-50DC-5C68-2C3B3193BB38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2196593-1C13-50DC-5C68-2C3B3193BB38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79C8061A-C56C-CD48-CA80-5053CDE0A5F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79C8061A-C56C-CD48-CA80-5053CDE0A5F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79C8061A-C56C-CD48-CA80-5053CDE0A5F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79C8061A-C56C-CD48-CA80-5053CDE0A5F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D140AFF0-4485-6214-3EB7-793EC812B972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D140AFF0-4485-6214-3EB7-793EC812B972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D140AFF0-4485-6214-3EB7-793EC812B972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D140AFF0-4485-6214-3EB7-793EC812B972}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,6 +194,8 @@ Global
 		{05DC5A74-CCC2-3A28-008A-F69B34CF66E5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{18145AAA-0E16-6212-F535-4A82F5069A17} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{C2196593-1C13-50DC-5C68-2C3B3193BB38} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{79C8061A-C56C-CD48-CA80-5053CDE0A5F9} = {F10AA149-2626-486E-85BB-9CD5365F3016}
+		{D140AFF0-4485-6214-3EB7-793EC812B972} = {F10AA149-2626-486E-85BB-9CD5365F3016}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95ED23F3-8DEA-456E-A44B-87A161CB696A}

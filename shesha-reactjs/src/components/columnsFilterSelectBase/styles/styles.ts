@@ -1,8 +1,8 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const columnsFilterSelect = cx("columns-filter-select", css`
+  const columnsFilterSelect = cx("columns-filter-select", css`
         display: flex;
         align-items: center;
     
@@ -28,8 +28,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             }
         }    
     `);
-    
-    return {
-        columnsFilterSelect,
-    };
+
+  return {
+    columnsFilterSelect,
+  };
 });

@@ -1,7 +1,6 @@
 export interface ConfigurableItemFullName {
-    readonly name: string;
-    readonly module?: string | null;
-    readonly version?: number;
+  readonly name: string;
+  readonly module: string | null;
 }
 
 export type ConfigurableItemUid = string;

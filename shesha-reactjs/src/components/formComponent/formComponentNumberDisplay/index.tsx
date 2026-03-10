@@ -8,7 +8,7 @@ export const FormComponentNumberDisplay: FC<IFormComponent> = ({ name, isEdittin
   const [val, changeVal] = useState(value as number);
 
   if (isEditting) {
-    const handleChange = (num: number | undefined = 0) => {
+    const handleChange = (num: number | undefined = 0): void => {
       changeVal(num);
 
       if (onChange) {

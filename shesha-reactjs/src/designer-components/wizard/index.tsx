@@ -29,6 +29,11 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
+    steps: model.steps?.map((step) => ({
+      ...step,
+      showBackButton: step?.showBackButton ?? true,
+      showDoneButton: step?.showDoneButton ?? true,
+    })) ?? [],
   }),
   migrator: (m) =>
     m
@@ -72,7 +77,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               beforeDoneActionConfiguration: step.doneButtonActionConfiguration,
             };
           }),
-          editMode: 'inherited'
+          editMode: 'inherited',
         };
       })
       .add<IWizardComponentProps>(
@@ -81,15 +86,16 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           migrateFunctionToProp(
             migratePropertyName(migrateCustomFunctions(prev as IConfigurableFormComponent)),
             'defaultActiveStep',
-            'defaultActiveValue'
-          ) as IWizardComponentProps
+            'defaultActiveValue',
+          ) as IWizardComponentProps,
       )
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
-      .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()), overflow: true })),
-  settingsFormMarkup: () => getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+      .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()), overflow: true }))
+      .add<IWizardComponentProps>(8, (prev) => ({ ...prev, stepWidth: '200px' })),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 
   customContainerNames: ['steps'],
   getContainers: (model) => {

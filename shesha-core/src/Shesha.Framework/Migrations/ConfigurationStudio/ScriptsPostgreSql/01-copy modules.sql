@@ -1,0 +1,42 @@
+INSERT INTO frwk.modules
+           (id
+           ,creation_time
+           ,creator_user_id
+           ,last_modification_time
+           ,last_modifier_user_id
+           ,is_deleted
+           ,deletion_time
+           ,deleter_user_id
+           ,accessor
+           ,current_version_no
+           ,description
+           ,first_initialized_date
+           ,friendly_name
+           ,is_editable
+           ,is_enabled
+           ,is_root_module
+           ,last_initialized_date
+           ,name
+           ,publisher)
+select
+	"Id"
+	,"CreationTime"
+	,"CreatorUserId"
+	,"LastModificationTime"
+	,"LastModifierUserId"
+	,"IsDeleted"
+	,"DeletionTime"
+	,"DeleterUserId"
+	,"Accessor"
+	,"CurrentVersionNo"
+	,"Description"
+	,"FirstInitializedDate"
+	,"FriendlyName"
+	,"IsEditable"
+	,"IsEnabled"
+	,"IsRootModule"
+	,"LastInitializedDate"
+	,"Name"
+	,"Publisher"
+from
+	"Frwk_Modules"

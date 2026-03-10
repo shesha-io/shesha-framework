@@ -42,7 +42,7 @@ export const ButtonGroupItemsGroup: FC<IButtonGroupItemsGroupProps> = ({ item, i
         items: item.childItems || [],
         onChange: (newItems, changeDetails) => {
           onChange({ ...item, childItems: [...newItems] }, changeDetails);
-        }
+        },
       })}
     </>
   );

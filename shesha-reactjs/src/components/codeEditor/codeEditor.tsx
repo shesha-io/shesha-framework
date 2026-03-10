@@ -6,14 +6,14 @@ import { CodeEditorLoadingProgressor } from './loadingProgressor';
 const CodeEditorNoSsr = lazy(() => import('./client-side/codeEditorClientSide'));
 
 const CodeEditorInternal: FC<ICodeEditorProps> = (props) => {
-    const isSSR = typeof window === 'undefined';
-    return isSSR ? (
-        <CodeEditorLoadingProgressor />
-    ) : (
-        <React.Suspense fallback={<CodeEditorLoadingProgressor />}>
-            <CodeEditorNoSsr {...props} />
-        </React.Suspense>
-    );
+  const isSSR = typeof window === 'undefined';
+  return isSSR ? (
+    <CodeEditorLoadingProgressor />
+  ) : (
+    <React.Suspense fallback={<CodeEditorLoadingProgressor />}>
+      <CodeEditorNoSsr {...props} />
+    </React.Suspense>
+  );
 };
 
 /**

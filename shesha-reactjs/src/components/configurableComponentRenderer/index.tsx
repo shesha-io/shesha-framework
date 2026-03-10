@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useState } from 'react';
+import React, { FC, PropsWithChildren, ReactElement, useState } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ISettingsEditor } from '@/components/configurableComponent';
@@ -18,7 +18,7 @@ export interface IOverlayProps {
 
 export type ConfigurableComponentChildrenFn<TSettings = any> = (
   componentState: IComponentStateProps<TSettings>,
-  BlockOverlay: (props: IOverlayProps) => React.ReactElement
+  BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
 export interface IConfigurableComponentRendererProps<TSettings = any> {
@@ -37,25 +37,42 @@ export interface IBlockOverlayProps {
 const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, children, visible }) => {
   if (!visible) return null;
 
+  type ClickableProps = { onClick?: React.MouseEventHandler };
+
+  // Clone the children and compose onClick handlers
+  const enhancedChildren = React.Children.map(children, (child) => {
+    if (!React.isValidElement<ClickableProps>(child)) return child;
+    if (child.type === React.Fragment) return child;
+
+    const existingOnClick = child.props.onClick;
+    const mergedOnClick: React.MouseEventHandler = (e) => {
+      e.stopPropagation();
+      existingOnClick?.(e);
+      onClick?.();
+    };
+
+    return React.cloneElement(child, { onClick: mergedOnClick });
+  });
+
   return (
-    <div onClick={onClick} className="sha-configurable-component-overlay">
-      {children}
+    <div className="sha-configurable-component-overlay">
+      {enhancedChildren}
     </div>
   );
 };
 
-export const ConfigurableComponentRenderer = <TSettings extends any>({
+export const ConfigurableComponentRenderer = <TSettings extends object>({
   children,
   canConfigure = true,
   onStartEdit,
   contextAccessor,
   settingsEditor,
-}: IConfigurableComponentRendererProps<TSettings>) => {
+}: IConfigurableComponentRendererProps<TSettings>): ReactElement => {
   const [editorIsVisible, setEditorIsVisible] = useState(false);
   const { mode } = useAppConfigurator();
   const { save, settings } = contextAccessor();
-  const {styles} = useStyles();
-  const {formInfoBlockVisible} = useAppConfigurator();
+  const { styles } = useStyles();
+  const { formInfoBlockVisible } = useAppConfigurator();
 
   if (!children) return null;
 
@@ -76,21 +93,22 @@ export const ConfigurableComponentRenderer = <TSettings extends any>({
     settings,
   };
 
-  const onOverlayClick = () => {
+
+  const onOverlayClick = (): void => {
     if (onStartEdit) onStartEdit();
     else setEditorIsVisible(true);
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     setEditorIsVisible(false);
   };
 
-  const onSave = (model: TSettings) => {
+  const onSave = (model: TSettings): void => {
     save(model)
       .then(() => {
         setEditorIsVisible(false);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
   };
@@ -100,7 +118,7 @@ export const ConfigurableComponentRenderer = <TSettings extends any>({
       {children(componentState, ({ children: overlayChildren }) => (
         <BlockOverlay visible={formInfoBlockVisible === true} onClick={onOverlayClick}>
           <div className={styles.shaSidebarEditModeContainer}>
-          {overlayChildren}
+            {overlayChildren}
           </div>
         </BlockOverlay>
       ))}

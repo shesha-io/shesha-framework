@@ -11,9 +11,12 @@ import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
-import { defaultStyles } from '../util';
-import { defaultContainerStyles } from './utils';
+import { migratePrevStyles, migrateStyles } from '@/designer-components/_common-migrations/migrateStyles';
+import { defaultContainerStyles, defaultStyles } from './utils';
+import { ConfigurableFormItem } from '@/components';
+import { useStyles } from './styles/styles';
+import { nanoid } from '@/utils/uuid';
+import { migrateButtonGroupDynamicItems } from '@/designer-components/_common-migrations/migrateButtonGroupDynamicItems';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -21,7 +24,13 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model, form }) => {
-    return model.hidden ? null : <ButtonGroup {...model} readOnly={model.readOnly} form={form} />;
+    const { styles } = useStyles();
+    return model.hidden ? null
+      : (
+        <ConfigurableFormItem model={{ ...model, hideLabel: true }} className={styles.shaHideEmpty}>
+          <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />
+        </ConfigurableFormItem>
+      );
   },
   actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m
@@ -33,7 +42,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     })
     .add<IButtonGroupComponentProps>(1, migrateV0toV1)
     .add<IButtonGroupComponentProps>(2, migrateV1toV2)
-    .add<IButtonGroupComponentProps>(3, (prev) => ({ ...prev, isInline: prev['isInline'] ?? true, })) /* default isInline to true if not specified */
+    .add<IButtonGroupComponentProps>(3, (prev) => ({ ...prev, isInline: prev['isInline'] ?? true })) /* default isInline to true if not specified */
     .add<IButtonGroupComponentProps>(4, (prev) => {
       const newModel = { ...prev };
       newModel.items = prev.items?.map((item) => migrateCustomFunctions(item as any));
@@ -43,10 +52,8 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       const newModel = { ...prev };
 
       const updateItemDefaults = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        if (isItem(item) && item.itemSubType === 'line') {
-          const initialStyles = migratePrevStyles(item, defaultStyles(item));
-          return { ...item, itemSubType: 'separator', buttonType: item.buttonType ?? 'link', ...initialStyles };
-        } // remove `line`, it works by the same way as `separator`
+        if (isItem(item) && item.itemSubType === 'line')
+          return { ...item, itemSubType: 'separator', buttonType: item.buttonType ?? 'link' }; // remove `line`, it works by the same way as `separator`
 
         if (isGroup(item) && typeof (item.hideWhenEmpty) === 'undefined')
           return {
@@ -68,7 +75,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       const newModel = { ...prev, editMode: 'editable' } as IButtonGroupComponentProps;
 
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        const newItem = { ...migrateReadOnly(item, 'inherited'), ...migratePrevStyles(item) };
+        const newItem = migrateReadOnly(item, 'inherited');
         if (Array.isArray(newItem['childItems']))
           newItem['childItems'] = newItem['childItems'].map(updateItems);
         return newItem;
@@ -91,8 +98,96 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         items: prev.items.map(setDownIcon),
       };
     })
-    .add<IButtonGroupComponentProps>(11, (prev) => ({ ...migratePrevStyles(prev, defaultContainerStyles(prev)) })),
-  settingsFormMarkup: (props) => getSettings(props),
+    .add<IButtonGroupComponentProps>(11, (prev) => ({ ...migratePrevStyles(prev, defaultContainerStyles()) }))
+    .add<IButtonGroupComponentProps>(12, (prev) => {
+      const newModel = { ...prev, gap: prev.spaceSize ?? 'middle' };
+      const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
+        const newItem = { ...item, ...migrateStyles({ ...item, size: item.size ?? prev.size }, defaultStyles({ ...item, size: item.size ?? prev.size })) };
+        if (Array.isArray(newItem['childItems']))
+          newItem['childItems'] = newItem['childItems'].map(updateItems);
+        return newItem;
+      };
+
+      newModel.items = newModel.items.map(updateItems);
+      return newModel;
+    })
+    .add<IButtonGroupComponentProps>(13, (prev) => {
+      const newModel = { ...prev };
+      newModel.items = prev.items;
+      return newModel;
+    })
+    .add<IButtonGroupComponentProps>(14, (prev) => {
+      // Add default buttons with proper styling when ButtonGroup is empty
+      if (!prev.items || prev.items.length === 0) {
+        const newModel = { ...prev };
+        return {
+          ...newModel,
+          items: [
+            {
+              id: nanoid(),
+              itemType: 'item',
+              sortOrder: 0,
+              name: 'button1',
+              label: 'Button 1',
+              itemSubType: 'button',
+              buttonType: 'primary',
+              editMode: 'inherited',
+              permissions: [],
+              hidden: false,
+              background: {
+                type: 'color',
+                repeat: 'no-repeat',
+                size: 'cover',
+                position: 'center',
+                gradient: { direction: 'to right', colors: {} },
+              },
+              font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+              dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+              border: {
+                radiusType: 'all',
+                borderType: 'all',
+                hideBorder: false,
+                border: { all: { width: '1px', style: 'solid' } },
+                radius: { all: 8 },
+              },
+              shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
+            },
+            {
+              id: nanoid(),
+              itemType: 'item',
+              sortOrder: 1,
+              name: 'button2',
+              label: 'Button 2',
+              itemSubType: 'button',
+              buttonType: 'default',
+              editMode: 'inherited',
+              permissions: [],
+              hidden: false,
+              background: {
+                type: 'color',
+                repeat: 'no-repeat',
+                size: 'cover',
+                position: 'center',
+                gradient: { direction: 'to right', colors: {} },
+              },
+              font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+              dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+              border: {
+                radiusType: 'all',
+                borderType: 'all',
+                hideBorder: false,
+                border: { all: { width: '1px', style: 'solid' } },
+                radius: { all: 8 },
+              },
+              shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
+            },
+          ],
+        };
+      }
+      return prev;
+    })
+    .add<IButtonGroupComponentProps>(15, (prev) => ({ ...prev, items: migrateButtonGroupDynamicItems(prev.items) })),
+  settingsFormMarkup: getSettings,
 };
 
 export default ButtonGroupComponent;

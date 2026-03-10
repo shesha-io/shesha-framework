@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Collections.Extensions;
 using Abp.Domain.Entities;
 using Abp.ObjectMapping;
+using Abp.UI;
 using GraphQL;
 using GraphQL.Execution;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +30,7 @@ namespace Shesha.DynamicEntities
 {
     public class EntitiesAppService : SheshaAppServiceBase
     {
-        private readonly IEntityConfigurationStore _entityConfigStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigStore;
         private readonly IExcelUtility _excelUtility;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
         private readonly ISpecificationsFinder _specificationsFinder;
@@ -36,7 +38,7 @@ namespace Shesha.DynamicEntities
         public IObjectMapper AutoMapper { get; set; }
 
         public EntitiesAppService(
-            IEntityConfigurationStore entityConfigStore,
+            IEntityTypeConfigurationStore entityConfigStore,
             IExcelUtility excelUtility,
             IObjectPermissionChecker objectPermissionChecker,
             ISpecificationsFinder specificationsFinder
@@ -48,23 +50,29 @@ namespace Shesha.DynamicEntities
             _specificationsFinder = specificationsFinder;
         }
 
-        protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
+        protected async Task CheckPermissionAsync(EntityTypeConfiguration entityConfig, string method)
         {
             var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
             await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod.NotNull(), ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
         }
 
+        private EntityTypeConfiguration GetConfig(EntityTypeIdInput entityTypeId)
+        {
+            var entityConfig = entityTypeId.EntityType.IsNullOrEmpty()
+                ? _entityConfigStore.Get(entityTypeId.Module, entityTypeId.Name.NotNull())
+                : _entityConfigStore.Get(entityTypeId.EntityType.NotNull());
+            if (entityConfig == null)
+                throw new EntityTypeNotFoundException(entityTypeId.ToString());
+            return entityConfig;
+        }
+
         [HttpGet]
-        public virtual async Task<IDynamicDataResult> GetAsync(string entityType, GetDynamicEntityInput<string> input)
+        public virtual async Task<IDynamicDataResult> GetAsync(EntityTypeIdInput entityTypeId, GetDynamicEntityInput<string> input)
         {
             try
             {
-                var entityConfig = _entityConfigStore.Get(entityType);
-                if (entityConfig == null)
-                    throw new EntityTypeNotFoundException(entityType);
-
+                var entityConfig = GetConfig(entityTypeId);
                 var typeName = entityConfig.EntityType.FullName;
-
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
@@ -110,14 +118,11 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpGet]
-        public virtual async Task<IDynamicDataResult> GetAllAsync(string entityType, PropsFilteredPagedAndSortedResultRequestDto input)
+        public virtual async Task<IDynamicDataResult> GetAllAsync(EntityTypeIdInput entityTypeId, PropsFilteredPagedAndSortedResultRequestDto input)
         {
             try
             {
-                var entityConfig = _entityConfigStore.Get(entityType);
-                if (entityConfig == null)
-                    throw new EntityTypeNotFoundException(entityType);
-
+                var entityConfig = GetConfig(entityTypeId);
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
@@ -142,12 +147,8 @@ namespace Shesha.DynamicEntities
         {
             try
             {
-                var entityConfig = _entityConfigStore.Get(input.EntityType);
-                if (entityConfig == null)
-                    throw new EntityTypeNotFoundException(input.EntityType);
-
+                var entityConfig = GetConfig(input.EntityTypeId);
                 var typeName = entityConfig.EntityType.FullName;
-
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
@@ -208,11 +209,9 @@ namespace Shesha.DynamicEntities
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
-        public Task<List<SpecificationDto>> SpecificationsAsync(string entityType) 
+        public Task<List<SpecificationDto>> SpecificationsAsync(EntityTypeIdInput entityTypeId) 
         {
-            var entityConfig = _entityConfigStore.Get(entityType);
-            if (entityConfig == null)
-                throw new EntityTypeNotFoundException(entityType);
+            var entityConfig = GetConfig(entityTypeId);
 
             var specifications = _specificationsFinder.AllSpecifications.Where(s => entityConfig.EntityType.IsAssignableFrom(s.EntityType) /* include base classes */ && !s.IsGlobal).ToList();
 
@@ -242,6 +241,12 @@ namespace Shesha.DynamicEntities
             var property = ReflectionHelper.GetProperty(entityConfig.EntityType, input.PropertyName, true);
             if (property == null)
                 throw new ArgumentException($"Property `{input.PropertyName}` not found in the type `{input.EntityType}`");
+
+            if (input.Items.Any(i => i.OrderIndex == null))
+                throw new UserFriendlyException("Items should use valid non empty order indexes");
+
+            if (input.Items.All(i => i.OrderIndex == 0))
+                throw new UserFriendlyException("Reordering is not available for enon ordered items");
 
             var reordererType = typeof(IEntityReorderer<,,>).MakeGenericType(entityConfig.EntityType, entityConfig.IdType, property.PropertyType.GetUnderlyingTypeIfNullable());
             var reorderer = IocManager.Resolve(reordererType).ForceCastAs<IEntityReorderer>();

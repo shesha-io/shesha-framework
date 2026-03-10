@@ -17,7 +17,7 @@ export interface IPermissionsTreeComponentProps extends IConfigurableFormCompone
   /**
    * Whether this control is disabled
    */
-   disabled?: boolean;
+  disabled?: boolean;
   /**
    * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
    */
@@ -43,7 +43,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
           onSelectAction={model.onSelectAction}
           formComponentId={model?.id}
           formComponentName={model.componentName}
-          value={model?.value} 
+          value={model?.value}
           updateKey={model?.updateKey}
           onChange={model?.onChange}
           readOnly={model?.readOnly}
@@ -54,20 +54,20 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
     } else {
       return (
         <ConfigurableFormItem model={model}>
-          {(value, onChange) =>
-            <PermissionsTree 
+          {(value, onChange) => (
+            <PermissionsTree
               onSelectAction={model.onSelectAction}
               formComponentId={model?.id}
               formComponentName={model.componentName}
-              value={value} 
+              value={value}
               updateKey={model?.updateKey}
               onChange={onChange}
               readOnly={model?.readOnly}
               mode={model?.mode ?? "Select"}
               height={model?.height}
             />
-          }
-          </ConfigurableFormItem>
+          )}
+        </ConfigurableFormItem>
       );
     };
   },
@@ -77,7 +77,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
     };
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model): IPermissionsTreeComponentProps => {
     return {
       ...model,
@@ -86,8 +86,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   migrator: (m) => m
     .add<IPermissionsTreeComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IPermissionsTreeComponentProps)
     .add<IPermissionsTreeComponentProps>(1, (prev) => migrateReadOnly(prev))
-    .add<IPermissionsTreeComponentProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
+    .add<IPermissionsTreeComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
 };
 
 export default PermissionedObjectsTreeComponent;

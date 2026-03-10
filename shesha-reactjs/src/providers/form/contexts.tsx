@@ -28,9 +28,7 @@ export interface IFormStateInternalContext {
   shaForm?: IShaFormInstance;
 }
 
-export interface IFormStateContext extends IFormStateInternalContext {
-  
-}
+export type IFormStateContext = IFormStateInternalContext;
 
 export interface ISetFormDataPayload {
   /** form field values */

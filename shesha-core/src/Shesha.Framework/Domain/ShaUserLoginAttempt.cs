@@ -11,7 +11,8 @@ using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {
-    [Table("Frwk_UserLoginAttempts")]
+    [SnakeCaseNaming]
+    [Table("user_login_attempts", Schema = "frwk")]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class ShaUserLoginAttempt : Entity<Guid>, IHasCreationTime, IMayHaveTenant
     {
@@ -48,7 +49,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Tenancy name.
         /// </summary>
-        [StringLength(MaxTenancyNameLength)]
+        [MaxLength(MaxTenancyNameLength)]
         public virtual string? TenancyName { get; set; }
 
         /// <summary>
@@ -59,26 +60,26 @@ namespace Shesha.Domain
         /// <summary>
         /// User name or email address
         /// </summary>
-        [StringLength(MaxUserNameOrEmailAddressLength)]
+        [MaxLength(MaxUserNameOrEmailAddressLength)]
         public virtual string UserNameOrEmailAddress { get; set; }
 
         /// <summary>
         /// IP address of the client.
         /// </summary>
-        [StringLength(MaxClientIpAddressLength)]
-        public virtual string ClientIpAddress { get; set; }
+        [MaxLength(MaxClientIpAddressLength)]
+        public virtual string? ClientIpAddress { get; set; }
 
         /// <summary>
         /// Name (generally computer name) of the client.
         /// </summary>
-        [StringLength(MaxClientNameLength)]
-        public virtual string ClientName { get; set; }
+        [MaxLength(MaxClientNameLength)]
+        public virtual string? ClientName { get; set; }
 
         /// <summary>
         /// Browser information if this method is called in a web request.
         /// </summary>
-        [StringLength(MaxBrowserInfoLength)]
-        public virtual string BrowserInfo { get; set; }
+        [MaxLength(MaxBrowserInfoLength)]
+        public virtual string? BrowserInfo { get; set; }
 
         /// <summary>
         /// Login attempt result.
@@ -95,9 +96,9 @@ namespace Shesha.Domain
             CreationTime = Clock.Now;
         }
 
-        [StringLength(20)]
+        [MaxLength(20)]
         public virtual string? IMEI { get; set; }
-        [StringLength(255)]
+        [MaxLength(255)]
         public virtual string? DeviceName { get; set; }
 
         public virtual int? LoginAttemptNumber { get; set; }

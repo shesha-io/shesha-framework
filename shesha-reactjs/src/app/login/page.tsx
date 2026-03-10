@@ -2,14 +2,11 @@
 
 import React from 'react';
 import { ConfigurableForm } from '@/components';
-import { LOGIN_CONFIGURATION } from '@/components/mainLayout/constant';
-import { FormFullName } from '@/providers';
+import { ACTIVE_LOGIN } from '@/components/mainLayout/constant';
 import { PageWithLayout } from '@/index';
 
-interface IProps {}
-
-const Login: PageWithLayout<IProps> = () => (
-  <ConfigurableForm mode={'edit'} formId={LOGIN_CONFIGURATION as FormFullName} />
+const Login: PageWithLayout = () => (
+  <ConfigurableForm mode="edit" formId={ACTIVE_LOGIN} />
 );
 
 export default Login;

@@ -41,8 +41,7 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IDividerProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-  ,
+    .add<IDividerProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
   initModel: (model) => ({
     dividerType: 'horizontal',
     dashed: false,

@@ -121,5 +121,10 @@
 
     <text name="Validation.CorrectErrorsAndTryAgain">Please correct the errors and try again</text>
     <text name="Validation.SomethingWentWrong">Something went wrong</text>
+      
+    <text name="LogonAudit">Logon Audit</text>
+    <text name="OtpAudit">OTP Audit</text>
+    <text name="NotificationsAudit">Notifications Audit</text>
+    <text name="DataAudit">Data Audit</text>
   </texts>
 </localizationDictionary>

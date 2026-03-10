@@ -18,11 +18,11 @@ export const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
   toggleColumnFilter,
 }) => {
   const { styles } = useStyles();
-  const handleToggleColumnFilter = (values: string[]) => {
+  const handleToggleColumnFilter = (values: string[]): void => {
     toggleColumnFilter(values); // There will always be one new element
   };
 
-  const filterOption = (inputValue: string, option: any) =>
+  const filterOption = (inputValue: string, option: any): boolean =>
     (option.props.children as string).toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
 
   return (

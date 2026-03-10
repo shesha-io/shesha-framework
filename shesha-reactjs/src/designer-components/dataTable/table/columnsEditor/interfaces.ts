@@ -1,7 +1,8 @@
-import { IConfigurableFormComponent } from '@/interfaces';
-import { ITableComponentBaseProps } from '../models';
+import { ComponentDefinition, IConfigurableFormComponent } from '@/interfaces';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
-export interface IColumnsEditorComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent {
-  //items: ColumnsItemProps[];
-  modelType: string;
+export interface IColumnsEditorComponentProps extends IConfigurableFormComponent {
+  modelType: string | IEntityTypeIdentifier;
 }
+
+export type ColumnsEditorComponentDefinition = ComponentDefinition<"columnsEditorComponent", IColumnsEditorComponentProps>;

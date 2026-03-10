@@ -1,4 +1,5 @@
 ﻿using Abp.Specifications;
+using Shesha.Domain;
 using System;
 using System.Linq.Expressions;
 
@@ -7,7 +8,7 @@ namespace Shesha.ConfigurationItems.Specifications
     /// <summary>
     /// Specification to find configuration item by name and module
     /// </summary>
-    public class ByNameAndModuleSpecification<TItem> : ISpecification<TItem> where TItem : IConfigurationItem
+    public class ByNameAndModuleSpecification<TItem> : ISpecification<TItem> where TItem : ConfigurationItem
     {
         public string Name { get; private set; }
         public string? ModuleName { get; private set; }

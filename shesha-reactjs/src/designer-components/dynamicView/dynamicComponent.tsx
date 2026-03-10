@@ -1,21 +1,20 @@
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useMemo } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useActualContextData, useActualContextExecution, useCalculatedModel, useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { formComponentActualModelPropertyFilter } from '@/providers/form/utils';
 import { IModelValidation } from '@/utils/errors';
-import ComponentError from '@/components/componentErrors';
-import { formComponentActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
+import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
 import AttributeDecorator from '@/components/attributeDecorator';
-import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
 }
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componentModel }) => {
-
-  useShaFormUpdateDate();
+  useShaFormDataUpdate();
 
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
@@ -24,39 +23,37 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(componentModel.type);
 
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
     ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
-  
+
   const actualModel = useActualContextData(
     deviceModel,
     undefined,
     undefined,
-    (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name),
+    (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
   );
 
   // TODO: AS review hidden and enabled for SubForm
-  actualModel.hidden = shaForm.formMode !== 'designer'
-    && (
-      actualModel.hidden
-      || !anyOfPermissionsGranted(actualModel?.permissions || []));
-      // || !isComponentFiltered(actualModel)); ToDo: AS - check if needed for dynamic components
+  actualModel.hidden = shaForm.formMode !== 'designer' &&
+    (
+      actualModel.hidden ||
+      !anyOfPermissionsGranted(actualModel?.permissions || []));
+  // || !isComponentFiltered(actualModel)); ToDo: AS - check if needed for dynamic components
 
   // binding only input and output components
-  if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
+  if (!toolboxComponent.isInput && !toolboxComponent.isOutput)
     actualModel.propertyName = undefined;
 
   actualModel.jsStyle = useActualContextExecution(actualModel.style, null, {}); // use default style if empty or error
 
-  const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.calculateModel);
+  const calculatedModel = useCalculatedModel(actualModel, toolboxComponent.calculateModel);
 
   const control = useMemo(() => (
-    <toolboxComponent.Factory 
-      componentRef={componentRef}
+    <toolboxComponent.Factory
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}
@@ -65,25 +62,43 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     />
   ), [actualModel, actualModel.hidden, actualModel.jsStyle, calculatedModel]);
 
-  if (!toolboxComponent) 
-    return <ComponentError errors={{
-        hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type
-      }} message={`Component '${componentModel.type}' not found`} type='error'
-    />;
-
-  if (shaForm.formMode === 'designer') {
-    const validationResult: IModelValidation = {hasErrors: false, errors: []};
-    toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
-      validationResult.hasErrors = true;
-      validationResult.errors.push({ propertyName, error });
-    });
-    if (validationResult.hasErrors) {
-      validationResult.componentId = componentModel.id;
-      validationResult.componentName = componentModel.componentName;
-      validationResult.componentType = componentModel.type;
-      return <ComponentError errors={validationResult} message='' type='warning'/>;
-    }
+  // Check for missing toolboxComponent immediately after retrieval
+  if (!toolboxComponent) {
+    const validationResult: IModelValidation = {
+      hasErrors: true,
+      componentId: componentModel.id,
+      componentName: componentModel.componentName,
+      componentType: componentModel.type,
+      errors: [{ error: `Component '${componentModel.type}' not found` }],
+    };
+    // Component not found - return early with just error message
+    return (
+      <div style={{ minHeight: '40px', position: 'relative', padding: '8px', border: '1px dashed #ccc' }}>
+        <ErrorIconPopover
+          mode="validation"
+          validationResult={validationResult}
+          type="error"
+          isDesignerMode={shaForm.formMode === 'designer'}
+        >
+          <div style={{ color: '#999', fontSize: '12px' }}>Component &apos;{componentModel.type}&apos; not registered</div>
+        </ErrorIconPopover>
+      </div>
+    );
   }
+
+  // Run validation in both designer and runtime modes
+  const errors: Array<{ propertyName?: string; error: string }> = [];
+  toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
+    errors.push({ propertyName, error });
+  });
+
+  const validationResult: IModelValidation | undefined = errors.length > 0 ? {
+    hasErrors: true,
+    componentId: componentModel.id,
+    componentName: componentModel.componentName,
+    componentType: componentModel.type,
+    errors,
+  } : undefined;
 
   const attributes = {
     'data-sha-c-id': `${componentModel.id}`,
@@ -97,10 +112,17 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     attributes['data-sha-parent-form-name'] = `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}`;
   }
 
+  // Wrap component with error icon if there are validation errors
+  const wrappedControl = validationResult ? (
+    <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={shaForm.formMode === 'designer'}>
+      {control}
+    </ErrorIconPopover>
+  ) : control;
+
   return (
     <CustomErrorBoundary>
       <AttributeDecorator attributes={attributes}>
-        {control}
+        {wrappedControl}
       </AttributeDecorator>
     </CustomErrorBoundary>
   );

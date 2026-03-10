@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -16,23 +15,18 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// <summary>
         /// List of items to be exported
         /// </summary>
-        public IList<ConfigurationItemBase> Items { get; set; }
+        public IList<ConfigurationItem> Items { get; set; }
 
         /// <summary>
         /// Enable/disable export of dependencies
         /// </summary>
         public bool ExportDependencies { get; set; }
 
-        /// <summary>
-        /// Mode of the version selection (live/ready/latest)
-        /// </summary>
-        public ConfigurationItemViewMode VersionSelectionMode { get; set; }
-
         private readonly IIocManager _iocManager;
         
         private readonly Dictionary<Type, IConfigurableItemExport?> _exporters = new Dictionary<Type, IConfigurableItemExport?>();
 
-        public IConfigurableItemExport? GetExporter(ConfigurationItemBase item) 
+        public IConfigurableItemExport? GetExporter(ConfigurationItem item) 
         {
             var itemType = item.GetType().StripCastleProxyType();
 
@@ -45,12 +39,12 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             return exporter;            
         }
 
-        public PreparePackageContext(IList<ConfigurationItemBase> items, IIocManager iocManager)
+        public PreparePackageContext(IList<ConfigurationItem> items, IIocManager iocManager)
         {
             _iocManager = iocManager;
             Items = items;
         }
-        public PreparePackageContext(IList<ConfigurationItemBase> items) : this(items, StaticContext.IocManager) 
+        public PreparePackageContext(IList<ConfigurationItem> items) : this(items, StaticContext.IocManager) 
         { 
         }
     }

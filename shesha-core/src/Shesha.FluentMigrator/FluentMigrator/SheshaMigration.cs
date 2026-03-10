@@ -37,31 +37,5 @@ namespace Shesha.FluentMigrator
             parameter.Value = value;
             command.Parameters.Add(parameter);
         }
-
-        /*
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="table"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public bool RowExists(string table, object id)
-        {
-            this.ApplicationContext
-            var exists = false;
-            Execute.WithConnection((connection, transaction) =>
-            {
-                using var command = connection.CreateCommand();
-                command.CommandText = $"select 1 from {table} where Id = :Id";
-                var param = command.CreateParameter();
-                param.ParameterName = "Id";
-                param.Value = id;
-
-                exists = command.ExecuteScalar() != null;
-            });
-
-            return exists;
-        }
-        */
     }
 }

@@ -1,9 +1,9 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const shaLayoutHeadingTitle = "sha-layout-heading-title";
-    const shaLayoutHeadingContent = cx("sha-layout-heading-content", css`
+  const shaLayoutHeadingTitle = "sha-layout-heading-title";
+  const shaLayoutHeadingContent = cx("sha-layout-heading-content", css`
         ${sheshaStyles.flexCenterAlignedSpaceBetween}
         padding: 0 ${sheshaStyles.paddingLG}px;
         width: 100%;
@@ -13,8 +13,8 @@ export const useStyles = createStyles(({ css, cx }) => {
             font-size: 16px;
         }
   `);
-    return {
-        shaLayoutHeadingContent,
-        shaLayoutHeadingTitle,
-    };
+  return {
+    shaLayoutHeadingContent,
+    shaLayoutHeadingTitle,
+  };
 });

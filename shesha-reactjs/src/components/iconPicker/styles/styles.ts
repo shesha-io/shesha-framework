@@ -1,10 +1,10 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 
 export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
-    const shaIconPickerSelectedIcon = "sha-icon-picker-selected-icon";
-    const shaIconPickerParent = "sha-icon-pciker-parent";
-    const shaIconPicker = cx("sha-icon-picker", css`
+  const shaIconPickerSelectedIcon = "sha-icon-picker-selected-icon";
+  const shaIconPickerParent = "sha-icon-pciker-parent";
+  const shaIconPicker = cx("sha-icon-picker", css`
         .${shaIconPickerSelectedIcon} {
             &:not(.sha-readonly) {
                 cursor: pointer;
@@ -13,18 +13,27 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
             .${iconPrefixCls} {
                 margin-right: ${sheshaStyles.paddingLG}px;
             }
+
+            .ant-btn {
+                background: transparent;
+                color: inherit;
+                &:hover {
+                    background: transparent;
+                    color: inherit;
+                }
+            }
         }
     `);
-    const shaIconPickerSearch = "sha-icon-picker-search";
-    const shaIconPickerSearchInputContainer = "sha-icon-picker-search-input-container";
-    const shaIconPickerIconList = "sha-icon-picker-icon-list";
-    const shaIconPickerIconListGroup = "sha-icon-picker-icon-list-group";
-    const shaIconPickerIconListGroupHeader = "sha-icon-picker-icon-list-group-header";
-    const shaIconPickerIconListGroupBody = "sha-icon-picker-icon-list-group-body";
-    const shaIconPickerIconListIcon = "sha-icon-picker-icon-list-icon";
-    const shaIconPickerIconListIconName = "sha-icon-picker-icon-list-icon-name";
+  const shaIconPickerSearch = "sha-icon-picker-search";
+  const shaIconPickerSearchInputContainer = "sha-icon-picker-search-input-container";
+  const shaIconPickerIconList = "sha-icon-picker-icon-list";
+  const shaIconPickerIconListGroup = "sha-icon-picker-icon-list-group";
+  const shaIconPickerIconListGroupHeader = "sha-icon-picker-icon-list-group-header";
+  const shaIconPickerIconListGroupBody = "sha-icon-picker-icon-list-group-body";
+  const shaIconPickerIconListIcon = "sha-icon-picker-icon-list-icon";
+  const shaIconPickerIconListIconName = "sha-icon-picker-icon-list-icon-name";
 
-    const shaIconPickerModal = cx("sha-icon-picker-modal", css`
+  const shaIconPickerModal = cx("sha-icon-picker-modal", css`
         .${shaIconPickerSearch} {
             display: flex;
             margin-bottom: ${sheshaStyles.paddingLG}px;
@@ -87,20 +96,20 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
         }
       }    
     `);
-    
 
-    return {
-        shaIconPicker,
-        shaIconPickerSelectedIcon,
-        shaIconPickerModal,
-        shaIconPickerSearch,
-        shaIconPickerSearchInputContainer,
-        shaIconPickerIconList,
-        shaIconPickerIconListGroup,
-        shaIconPickerIconListGroupHeader,
-        shaIconPickerIconListGroupBody,
-        shaIconPickerIconListIcon,
-        shaIconPickerIconListIconName,
-        shaIconPickerParent
-    };
+
+  return {
+    shaIconPicker,
+    shaIconPickerSelectedIcon,
+    shaIconPickerModal,
+    shaIconPickerSearch,
+    shaIconPickerSearchInputContainer,
+    shaIconPickerIconList,
+    shaIconPickerIconListGroup,
+    shaIconPickerIconListGroupHeader,
+    shaIconPickerIconListGroupBody,
+    shaIconPickerIconListIcon,
+    shaIconPickerIconListIconName,
+    shaIconPickerParent,
+  };
 });

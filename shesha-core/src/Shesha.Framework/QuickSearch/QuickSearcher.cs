@@ -23,7 +23,7 @@ namespace Shesha.QuickSearch
     /// </summary>
     public class QuickSearcher: IQuickSearcher, ITransientDependency
     {
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly ICacheManager _cacheManager;
         private readonly IRepository<ReferenceListItem, Guid> _refListItemRepository;
         private readonly IReferenceListHelper _refListHelper;
@@ -36,7 +36,7 @@ namespace Shesha.QuickSearch
         private readonly MethodInfo queryableAnyMethod = typeof(Queryable).GetMethods().FirstOrDefault(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Count() == 2) ?? throw new Exception($"Method {nameof(Queryable.Any)} not found in type '{typeof(Queryable).FullName}'");
 
         public QuickSearcher(
-            IEntityConfigurationStore entityConfigurationStore, 
+            IEntityTypeConfigurationStore entityConfigurationStore, 
             IRepository<ReferenceListItem, Guid> refListItemRepository, 
             ICacheManager cacheManager, 
             IReferenceListHelper refListHelper,
@@ -345,7 +345,7 @@ namespace Shesha.QuickSearch
             return _quickSearchPropertiesCache.Get(cacheKey, (s) => DoGetPropertiesForSqlQuickSearch<TEntity>(properties));
         }
 
-        private bool TryGetProperty(EntityConfiguration entityConfig, string name, [NotNullWhen(true)] out PropertyConfiguration? propConfig) 
+        private bool TryGetProperty(EntityTypeConfiguration entityConfig, string name, [NotNullWhen(true)] out PropertyConfiguration? propConfig) 
         {
             if (name == EntityConstants.DisplayNameField) 
             {

@@ -9,7 +9,7 @@ export const FormComponentBoolDisplay: FC<IFormComponent> = ({ name, isEditting,
   const [isChecked, changeVal] = useState(value as boolean);
 
   if (isEditting) {
-    const handleChange = ({ target: { checked } }: CheckboxChangeEvent) => {
+    const handleChange = ({ target: { checked } }: CheckboxChangeEvent): void => {
       changeVal(checked);
 
       if (onChange) {

@@ -17,7 +17,6 @@
         public const string Boolean = "boolean";
         public const string Array = "array";
         public const string Object = "object";
-        public const string ObjectReference = "object-reference";
     }
 
     /// <summary>
@@ -36,7 +35,6 @@
         public const string ReferenceListItem = "reference-list-item";
         public const string Boolean = "boolean";
         public const string Object = "object";
-        public const string ObjectReference = "object-reference";
     }
 
     /// <summary>

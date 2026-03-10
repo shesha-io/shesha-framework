@@ -159,16 +159,14 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     height = 'auto',
     maxHeight = 'auto',
     maxWidth = 'auto',
-    minHeight = 'auto',
+    minHeight = '32px',
     minWidth = '0px',
     borderColor = '#d9d9d9',
     borderRadius = '8',
     borderStyle = 'none',
     borderWidth = '1px',
     shadowStyle,
-    display = 'flex'
   } = prev || {};
-
 
   const isBelow = shadowStyle === 'below';
   const isAbove = shadowStyle === 'above';
@@ -176,7 +174,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
   return {
     background: {
       type: 'color',
-      color: 'transparent',
+      color: '',
 
     },
     dimensions: {
@@ -185,7 +183,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       minHeight,
       maxHeight,
       minWidth,
-      maxWidth
+      maxWidth,
     },
     border: {
       radiusType: 'all',
@@ -193,27 +191,27 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       border: {
         all: { width: borderWidth, color: borderColor, style: borderStyle as any },
       },
-      radius: { all: borderRadius }
+      radius: { all: borderRadius },
     },
     shadow: {
       blurRadius: isBelow || isAbove ? 4 : 0,
-      color: 'rgba(0, 0, 0, 0.15)',
+      color: '#000000',
       offsetX: 0,
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
-      spreadRadius: 0
+      spreadRadius: 0,
     },
-    display: display,
+    display: prev?.className === 'sha-index-table-control' || prev?.className === 'index-table-controls-right' ? 'flex' : prev?.display ?? null,
     direction: prev?.direction ?? "horizontal",
-    flexWrap: prev?.flexWrap ?? "wrap",
+    flexWrap: prev?.className === 'sha-index-table-control' || prev?.className === 'index-table-controls-right' ? 'nowrap' : prev?.flexWrap ?? "wrap",
     flexDirection: prev?.flexDirection ?? "row",
     justifyContent: prev?.justifyContent ?? "left",
-    alignItems: prev?.alignItems ?? "normal",
+    alignItems: prev?.className === 'index-table-controls-right' ? 'center' : prev?.alignItems ?? "normal",
     alignSelf: prev?.alignSelf ?? "normal",
     justifyItems: prev?.justifyItems ?? "normal",
     textJustify: prev?.textJustify ?? "auto",
     justifySelf: prev?.justifySelf ?? "normal",
     noDefaultStyling: prev?.noDefaultStyling ?? false,
     gridColumnsCount: prev?.gridColumnsCount ?? null,
-    gap: prev?.gap ?? '8px'
+    gap: prev?.gap ?? '8px',
   };
 };

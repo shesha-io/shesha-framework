@@ -7,9 +7,8 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.MultiTenancy;
+using Abp.Threading;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
-using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace Shesha.Authorization
 {
     public class ShaPermissionManager : PermissionManager, IShaPermissionManager
     {
-        private readonly IIocManager _iocManager;
+        private const string IsDbPermission = "IsDbPermission";
         private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepository;
 
         public ShaPermissionManager(
@@ -33,7 +32,6 @@ namespace Shesha.Authorization
             ) : 
             base(iocManager, authorizationConfiguration, unitOfWorkManager, multiTenancyConfig)
         {
-            _iocManager = iocManager;
             _permissionDefinitionRepository = permissionDefinitionRepository;
         }
 
@@ -70,10 +68,10 @@ namespace Shesha.Authorization
                 if (dbPermission != null)
                 {
                     var permission = GetPermissionOrNull(dbPermission.Parent);
-                    while (permission == null && dbPermissions.Any(x => x.Name == dbPermission?.Parent))
+                    while (permission == null && dbPermissions.Any(x => x.Name == dbPermission.Parent))
                     {
-                        dbPermission = dbPermissions.First(x => x.Name == dbPermission?.Parent);
-                        permission = GetPermissionOrNull(dbPermission?.Parent);
+                        dbPermission = dbPermissions.First(x => x.Name == dbPermission.Parent);
+                        permission = GetPermissionOrNull(dbPermission.Parent);
                     }
 
                     if (permission != null)
@@ -83,9 +81,9 @@ namespace Shesha.Authorization
                     else
                     {
                         // remove permission with missed parent
-                        await _permissionDefinitionRepository.DeleteAsync(dbPermission.NotNull());
+                        await _permissionDefinitionRepository.DeleteAsync(dbPermission);
                     }
-                    dbPermissions.Remove(dbPermission.NotNull());
+                    dbPermissions.Remove(dbPermission);
                 }
             }
         }
@@ -141,7 +139,7 @@ namespace Shesha.Authorization
                     (permissionDefinition.Description ?? "").L(),
                     properties: new Dictionary<string, object?>() 
                     { 
-                        { "IsDbPermission", true },
+                        { IsDbPermission, true },
                         { "ModuleId", permissionDefinition.Module?.Id },
                     }
                 );
@@ -155,7 +153,7 @@ namespace Shesha.Authorization
                     (permissionDefinition.Description ?? "").L(),
                     properties: new Dictionary<string, object?>()
                     {
-                        { "IsDbPermission", true },
+                        { IsDbPermission, true },
                         { "ModuleId", permissionDefinition.Module?.Id },
                     }
                 );
@@ -263,8 +261,8 @@ namespace Shesha.Authorization
             var permission = GetPermissionOrNull(name);
             if (permission != null
                 && permission.Properties != null 
-                && permission.Properties.ContainsKey("IsDbPermission") 
-                && (bool)permission.Properties["IsDbPermission"])
+                && permission.Properties.ContainsKey(IsDbPermission) 
+                && (bool)permission.Properties[IsDbPermission])
             {
                 RemovePermission(name);
             }

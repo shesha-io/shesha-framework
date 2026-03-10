@@ -1,33 +1,12 @@
-import * as RestfulShesha from '@/utils/fetchers';
+import { IToolboxComponents } from '@/interfaces';
+import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
-  isFormFullName,
-  isFormRawId,
-} from './utils';
-import { ConfigurationItemsViewMode } from '../appConfigurator/models';
-import { EntityAjaxResponse, IEntity } from '@/generic-pages/dynamic/interfaces';
-import {
-  FormDto,
   FormIdentifier,
-  FormMarkupWithSettings,
   IComponentsDictionary,
   IFlatComponentsStructure,
-  IFormDto,
-  IFormSettings
+  IFormSettings,
+  isConfigurableFormComponent,
 } from './models';
-import { GetDataError, useGet } from '@/hooks';
-import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
-import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { IPropertyMetadata } from '@/interfaces/metadata';
-import { IErrorInfo } from '@/interfaces/errorInfo';
-import { IToolboxComponents } from '@/interfaces';
-import { removeNullUndefined } from '@/providers/utils';
-import {
-  useEffect,
-  useMemo,
-} from 'react';
-import {
-  useAppConfigurator,
-} from '@/providers';
 
 /**
  * Form configuration DTO
@@ -70,176 +49,25 @@ export interface FormConfigurationDto {
    * Cache MD5, is used for client-side caching
    */
   cacheMd5?: string | null;
+  /**
+   * Generation logic type name
+   */
+  generationLogicTypeName?: string | null;
 }
 
 export interface IFormFetcherProps {
   lazy: boolean;
 }
-export interface IFormByIdProps {
-  id: string;
-}
-export interface IFormByNameProps {
-  module?: string;
-  name: string;
-  version?: number;
-}
-export type UseFormConfigurationByIdArgs = IFormByIdProps & IFormFetcherProps;
-export type UseFormConfigurationByNameArgs = IFormByNameProps & IFormFetcherProps;
 export type UseFormConfigurationArgs = {
   formId: FormIdentifier;
 } & IFormFetcherProps;
 
-export interface IUseFormConfigurationProps {
+export interface FormInfo {
   id?: string;
+  name?: string;
   module?: string;
-  name: string;
-  version?: number;
-  lazy: boolean;
-}
-
-export type FormProperties = Omit<FormConfigurationDto, 'markup'>;
-
-export interface IFormMarkupResponse {
-  requestParams: any;
-  formConfiguration: IFormDto;
-  loading: boolean;
-  error: GetDataError<IAjaxResponseBase>;
-  refetch: () => Promise<FormMarkupWithSettings>;
-}
-
-interface IGetFormByNamePayload {
-  module?: string;
-  name: string;
-  version?: number;
-}
-
-interface IGetFormByIdPayload {
-  id: string;
-}
-
-export const getMarkupFromResponse = (
-  data: IAbpWrappedGetEntityResponse<FormConfigurationDto>
-): FormMarkupWithSettings => {
-  const markupJson = data?.result?.markup;
-  return markupJson ? (JSON.parse(markupJson) as FormMarkupWithSettings) : null;
-};
-
-/**
- * Load form markup from the back-end
- */
-export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string, httpHeaders: HeadersInit) => {
-  const requestParams = isFormRawId(formId)
-    ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formId } }
-    : isFormFullName(formId)
-      ? {
-        url: '/api/services/Shesha/FormConfiguration/GetByName',
-        queryParams: removeNullUndefined({ name: formId.name, module: formId.module, version: formId.version }),
-      }
-      : null;
-
-  return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(
-    requestParams.url,
-    requestParams.queryParams,
-    { base: backendUrl, headers: httpHeaders }
-  );
-};
-
-export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarkupResponse => {
-  const { configurationItemMode } = useAppConfigurator();
-  const { formId } = args;
-  const requestParams = useMemo(() => {
-    if (isFormRawId(formId))
-      return {
-        url: '/api/services/Shesha/FormConfiguration/Get',
-        queryParams: { id: args.formId as string },
-      };
-
-    if (isFormFullName(formId))
-      return {
-        url: '/api/services/Shesha/FormConfiguration/GetByName',
-        queryParams: removeNullUndefined({ name: formId.name, module: formId.module, version: formId.version }),
-      };
-
-    return null;
-  }, [formId, configurationItemMode]);
-
-  const canFetch = Boolean(requestParams && requestParams.url);
-  const fetcher = useGet<
-    IAbpWrappedGetEntityResponse<FormConfigurationDto>,
-    IAjaxResponseBase,
-    IGetFormByIdPayload | IGetFormByNamePayload
-  >(requestParams?.url ?? '', { queryParams: requestParams?.queryParams, lazy: args.lazy || !canFetch });
-
-  const reFetch = () => {
-    return fetcher.refetch({ path: requestParams.url, queryParams: requestParams.queryParams });
-  };
-
-  const reFetcher = () => {
-    return canFetch
-      ? reFetch().then((response) => {
-        return getMarkupFromResponse(response);
-      })
-      : Promise.reject('Can`t fetch form due to internal state');
-  };
-
-  useEffect(() => {
-    if (fetcher.data && canFetch) reFetcher();
-  }, [configurationItemMode]);
-
-  const formConfiguration = useMemo<IFormDto>(() => {
-    if (fetcher?.data?.result) {
-      const markupWithSettings = getMarkupFromResponse(fetcher?.data);
-      return {
-        ...fetcher?.data?.result,
-        markup: markupWithSettings?.components,
-        settings: markupWithSettings?.formSettings,
-      };
-    } else return null;
-  }, [args.formId, fetcher?.data]);
-
-  const result: IFormMarkupResponse = {
-    formConfiguration: formConfiguration,
-    loading: fetcher.loading,
-    error: fetcher.error,
-    refetch: reFetcher,
-    requestParams: requestParams,
-  };
-  return result;
-};
-
-export interface UseFormWitgDataArgs {
-  formId?: FormIdentifier;
-  dataId?: string;
-  configurationItemMode?: ConfigurationItemsViewMode;
-  onFormLoaded?: (form: IFormDto) => void;
-  onDataLoaded?: (data: any) => void;
-}
-
-export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
-
-export interface FormInfo extends Pick<FormDto, 'id' | 'module' | 'name' | 'versionNo' | 'versionStatus'> {
   flatStructure: IFlatComponentsStructure;
   settings: IFormSettings;
-}
-
-export interface FormWithDataResponse {
-  form?: FormInfo;
-  fetchedData?: IEntity;
-  loadingState: LoadingState;
-  loaderHint?: string;
-  error?: IErrorInfo;
-  dataFetcher?: () => Promise<EntityAjaxResponse | void>;
-  refetcher?: () => void;
-}
-export interface FormWithDataState {
-  loaderHint?: string;
-  loadingState: LoadingState;
-  fetchedData?: IEntity;
-  gqlFields?: string;
-  getDataUrl?: string;
-  form?: FormInfo;
-  error?: IErrorInfo;
-  dataFetcher?: () => Promise<EntityAjaxResponse | void>;
 }
 
 // just for intrenal use
@@ -250,19 +78,19 @@ interface IFieldData {
 }
 
 export const filterDataByOutputComponents = (
-  data: any,
+  data: object,
   components: IComponentsDictionary,
   toolboxComponents: IToolboxComponents,
-) => {
+): any => {
   const newData = { ...data };
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       var component = components[key];
-      if (component.propertyName 
-          && component.type
-          && data.hasOwnProperty(component.propertyName) 
-          && !toolboxComponents[component.type]?.isOutput) {
-         delete data[component.propertyName];
+      if (isConfigurableFormComponent(component) && component.propertyName &&
+        component.type &&
+        data.hasOwnProperty(component.propertyName) &&
+        !toolboxComponents[component.type]?.isOutput) {
+        delete data[component.propertyName];
       }
     }
   }
@@ -271,13 +99,13 @@ export const filterDataByOutputComponents = (
 };
 
 export const gqlFieldsToString = (fields: IFieldData[]): string => {
-  const resf = (items: IFieldData[]) => {
+  const resf = (items: IFieldData[]): string => {
     let s = '';
     items.forEach((item) => {
-      if (!(item.property
-          || item.name === 'id'
-          || item.name === '_className'
-          || item.name === '_displayName'
+      if (!(item.property ||
+        item.name === 'id' ||
+        item.name === '_className' ||
+        item.name === '_displayName'
       )) return;
       s += s ? ',' + item.name : item.name;
       if (item.child.length > 0) {

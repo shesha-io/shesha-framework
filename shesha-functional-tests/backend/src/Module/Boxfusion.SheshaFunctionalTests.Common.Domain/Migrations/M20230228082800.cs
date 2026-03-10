@@ -1,21 +1,11 @@
 ﻿using FluentMigrator;
 using Shesha.FluentMigrator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230228082800), MsSqlOnly]
-    public class M20230228082800 : Migration
+    [Migration(20230228082800)]
+    public class M20230228082800 : OneWayMigration
     {
-        public override void Down()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Up()
         {
             if (!Schema.Table("SheshaFunctionalTests_Brands").Exists())

@@ -18,17 +18,17 @@ interface ISubformMarkupAndSettings extends IPersistedFormPropsWithComponents, I
 
 export const setMarkupWithSettingsAction = createAction<ISubformMarkupAndSettings, ISubformMarkupAndSettings>(
   SubFormActionEnums.SetMarkupWithSettings,
-  (p) => p
+  (p) => p,
 );
 
 export const fetchDataRequestAction = createAction<void, void>(SubFormActionEnums.FetchDataRequest, (p) => p);
 export const fetchDataSuccessAction = createAction<IFetchDataSuccessPayload, IFetchDataSuccessPayload>(
   SubFormActionEnums.FetchDataSuccess,
-  (p) => p
+  (p) => p,
 );
 export const fetchDataErrorAction = createAction<IFetchDataErrorPayload, IFetchDataErrorPayload>(
   SubFormActionEnums.FetchDataError,
-  (p) => p
+  (p) => p,
 );
 
 /* NEW_ACTION_GOES_HERE */

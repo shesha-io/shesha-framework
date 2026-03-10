@@ -4,10 +4,10 @@ import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import { IHeaderAction } from './models';
 import { createNamedContext } from '@/utils/react';
 
-export type IFlagProgressFlags = 'fetchFileInfo' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
-export type IFlagSucceededFlags = 'fetchFileInfo' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
-export type IFlagErrorFlags = 'fetchFileInfo' /* NEW_ERROR_FLAG_GOES_HERE */;
-export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
+export type IFlagProgressFlags = 'fetchFileInfo';
+export type IFlagSucceededFlags = 'fetchFileInfo';
+export type IFlagErrorFlags = 'fetchFileInfo';
+export type IFlagActionedFlags = '__DEFAULT__';
 
 export interface ISidebarMenuStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {

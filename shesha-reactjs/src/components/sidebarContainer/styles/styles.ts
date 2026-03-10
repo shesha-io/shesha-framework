@@ -1,9 +1,9 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
-  const leftSidebarWidth = "550px";
-  const sidebarBtnHeight = "35px";
+export const useStyles = createStyles(({ css, cx, prefixCls }) => {
+  const LEFT_SIDEBAR_WIDTH = "550px";
+  const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
 
   const sidebarContainerHeader = "sidebar-container-header";
   const sidebarContainerBody = "sidebar-container-body";
@@ -17,16 +17,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const sidebarBodyContent = "sidebar-body-content";
   const sidebarContainerLeft = "sidebar-container-left";
   const sidebarContainerRight = "sidebar-container-right";
+  const canvasWrapper = "canvas-wrapper";
+  const designerCanvas = "designer-canvas";
+  const canvasPopupContainer = "canvas-popup-container";
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
       overflow-x: hidden;
 
       .${sidebarContainerMainAreaBody}{
-        max-height: 85vh;
         overflow: auto;
-        margin: 0 auto;
-       
+        height: 100%;
+        ${sheshaStyles.thinScrollbars}
       }
     
       .${sidebarContainerHeader} {
@@ -39,24 +41,26 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         display: flex;
         position: relative;
         width: 100%;
+        min-height: 100%;
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
-
           &.allow-full-collapse {
             display: none;
           }
     
           &.open {
-            width: ${leftSidebarWidth};
+            width: ${LEFT_SIDEBAR_WIDTH};
             display: block;
+            overflow: auto;
+            ${sheshaStyles.thinScrollbars}
 
             .${sidebarHeader} {
               .sidebar-header-title {
                 display: flex;
                 width:100%;
               }
-            
+
             }
           }
     
@@ -76,21 +80,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             display: flex;
     
             .sidebar-header-title {
-              width: calc(${leftSidebarWidth} - ${sidebarBtnHeight});
-              background: #282828;
+              width: calc(${LEFT_SIDEBAR_WIDTH} - ${SIDEBAR_BTN_HEIGHT});
               display: none;
               align-items: center;
               padding: 0 ${sheshaStyles.paddingLG}px;
               font-weight: 500;
-              font-size: 16px;
-              color: white;
+              font-size: 14px;
             }
     
             .${sidebarHeaderBtn} {
-              height: ${sidebarBtnHeight};
-              width: ${sidebarBtnHeight};
-              background: ${token.colorPrimary};
-              color: white;
+              height: ${SIDEBAR_BTN_HEIGHT};
+              width: ${SIDEBAR_BTN_HEIGHT};
               display: flex;
               justify-content: center;
               align-items: center;
@@ -103,8 +103,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             overflow-x: hidden;
             overflow-y: auto;
             display: flex;
+            height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             padding: ${sheshaStyles.paddingLG}px;
             flex: 1;
+            ${sheshaStyles.thinScrollbars}
     
             .sidebar-body-content {
               width: 100%;
@@ -112,12 +114,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
               &.open {
                 display: block;
-                height: 85vh;
               }
             }
     
             .sidebar-body-placeholder {
-              width: ${sidebarBtnHeight};
+              width: ${SIDEBAR_BTN_HEIGHT};
     
               &.open {
                 width: 0;
@@ -128,7 +129,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerLeft} {
           border-right: 1px solid lightgrey;
-          min-height: calc(100vh - 102px);
     
           &.open {
             .toggle-open-btn {
@@ -139,7 +139,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerRight} {
           border-left: 1px solid lightgrey;
-          min-height: calc(100vh - 102px);
     
           &.open {
             .toggle-open-btn {
@@ -167,17 +166,38 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             padding-bottom: 4px;
           }
         }
-    
+
         .${sidebarContainerMainArea} {
-         width: 100%;
-         position: sticky;
-          overflow-x: auto;
-    
+          width: 100%;
+          overflow: auto;
+
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
           }
         }
-      }    
+
+        .${designerCanvas} {
+          margin: 0 auto;
+          height: 100%;
+          overflow: auto;
+          transform-origin: top left;
+        }
+      }
+
+      .${canvasPopupContainer} {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        transform-origin: top left;
+        z-index: 100;
+
+        > * {
+          pointer-events: auto;
+        }
+      }
     `);
 
   return {
@@ -194,5 +214,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     sidebarBodyContent,
     sidebarContainerLeft,
     sidebarContainerRight,
+    designerCanvas,
+    canvasWrapper,
+    canvasPopupContainer,
   };
 });

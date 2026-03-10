@@ -7,6 +7,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityHistory;
+using Shesha.Orm;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -228,7 +229,7 @@ namespace Shesha.Extensions
             catch (Exception ex)
             {
                 throw new Exception(
-                    $"An error occured whilst trying to retrieve DisplayText of property '{propertyName}' on type of '{entity.GetType().FullName}'.", ex);
+                    $"An error occurred whilst trying to retrieve DisplayText of property '{propertyName}' on type of '{entity.GetType().FullName}'.", ex);
             }
         }
 
@@ -442,6 +443,24 @@ namespace Shesha.Extensions
         {
             var provider = StaticContext.IocManager.Resolve<IEntityTypeProvider>();
             return provider.GetEntityType(entity);
-        }        
+        }
+
+        /// <summary>
+        /// Get dirty properties of the specified <paramref name="entity"/>
+        /// </summary>
+        public static List<DirtyPropertyInfo> GetDirtyProperties<T>(this IEntity<T> entity)
+        {
+            var informer = StaticContext.IocManager.Resolve<IEntityPersistanceInformer>();
+            return informer.GetDirtyProperties(entity);
+        }
+
+        /// <summary>
+        /// Returns true if the specified <paramref name="entity"/> is dirty (has any of changed properties)
+        /// </summary>
+        public static bool IsDirty<T>(this IEntity<T> entity) 
+        {
+            var informer = StaticContext.IocManager.Resolve<IEntityPersistanceInformer>();
+            return informer.IsDirty(entity);
+        }
     }
 }

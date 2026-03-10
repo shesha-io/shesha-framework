@@ -10,5 +10,10 @@ namespace Shesha.DynamicEntities.Cache
         public ModelConfigsCacheHolder(ICacheManager cacheManager) : base("ModelConfigsCache", cacheManager)
         {
         }
+
+        public string GetCacheKey(string? @namespace, string className)
+        {
+            return $"{@namespace}|{className}";
+        }
     }
 }

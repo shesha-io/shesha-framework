@@ -1,13 +1,13 @@
 import { EditMode, IConfigurableFormComponent } from '@/providers';
 import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils';
 
-export const migrateFunctionToProp = <T extends IConfigurableFormComponent,>(
+export const migrateFunctionToProp = <T extends IConfigurableFormComponent>(
   prev: T,
   propName: string,
   funcPropname: string,
   replaceFunction: (source: string) => string = null,
   invert: Boolean = false,
-) => {
+): T => {
   const model = { ...prev };
 
   const propSettings = getPropertySettingsFromValue(prev[propName]);
@@ -24,26 +24,26 @@ export const migrateFunctionToProp = <T extends IConfigurableFormComponent,>(
     model[propName] = {
       ...propSettings,
       _mode: 'code',
-      _code: func
+      _code: func,
     };
     delete model[funcPropname];
   }
   return model;
 };
 
-export const migrateHidden = <T extends IConfigurableFormComponent,>(prev: T) => {
+export const migrateHidden = <T extends IConfigurableFormComponent>(prev: T): T => {
   return migrateFunctionToProp(prev, 'hidden', 'customVisibility', null, true);
 };
 
-export const migrateDisabled = <T extends IConfigurableFormComponent,>(prev: T) => {
+export const migrateDisabled = <T extends IConfigurableFormComponent>(prev: T): T => {
   return migrateFunctionToProp(prev, 'disabled', 'customEnabled', null, true);
 };
 
-export const migrateCustomFunctions = <T extends IConfigurableFormComponent,>(prev: T) => {
+export const migrateCustomFunctions = <T extends IConfigurableFormComponent>(prev: T): T => {
   return migrateDisabled(migrateHidden(prev));
 };
 
-export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev: T) => {
+export const migratePropertyName = <T extends IConfigurableFormComponent>(prev: T): T => {
   const name = prev['name'];
   if (!!name && !prev.propertyName)
     return { ...prev, componentName: name, propertyName: name } as T;
@@ -51,20 +51,20 @@ export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev:
     return { ...prev } as T;
 };
 
-export const migrateReadOnly = <T,>(prev: T, defaultValue?: EditMode) => {
+export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
   const disabled = prev['disabled'];
   const readOnly = prev['readOnly'];
   const model = {
     ...prev, editMode:
-      readOnly === true && disabled === true
-      || readOnly === true && !disabled 
-      || disabled === true && !readOnly
+      (readOnly === true && disabled === true) ||
+      (readOnly === true && !disabled) ||
+      (disabled === true && !readOnly)
         ? 'readOnly'
         : readOnly === true && !!disabled && disabled['_mode'] === 'code'
           ? { _value: 'readOnly', _mode: 'value', _code: disabled['_code'] }
           : !readOnly && !!disabled && disabled['_mode'] === 'code'
             ? { _value: 'inherited', _mode: 'code', _code: disabled['_code'] }
-            : undefined
+            : undefined,
   } as T;
 
   if (isPropertySettings(model['editMode'])) {
@@ -79,6 +79,6 @@ export const migrateReadOnly = <T,>(prev: T, defaultValue?: EditMode) => {
   if (!model['editMode'] && !!defaultValue)
     model['editMode'] = defaultValue;
 
-  //delete model.disabled;
+  // delete model.disabled;
   return model;
 };

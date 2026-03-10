@@ -46,7 +46,7 @@ namespace Shesha.Permissions
         public RefListPermissionedAccess? ActualAccess { get; set; }
         public RefListPermissionedAccess? InheritedAccess { get; set; }
 
-        public string? Parent { get; set; }
+        public string Parent { get; set; } = string.Empty;
         
         public List<PermissionedObjectDto> Children { get; set; } = new List<PermissionedObjectDto>();
 

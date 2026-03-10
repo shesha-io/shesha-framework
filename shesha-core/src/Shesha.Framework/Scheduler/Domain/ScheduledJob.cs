@@ -28,7 +28,7 @@ namespace Shesha.Scheduler.Domain
         /// Description of the job
         /// </summary>
         [DataType(DataType.MultilineText)]
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string? JobDescription { get; set; }
 
         /// <summary>
@@ -49,13 +49,13 @@ namespace Shesha.Scheduler.Domain
         /// <summary>
         /// Folder to store the logs
         /// </summary>
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string? LogFolder { get; set; }
 
         /// <summary>
         /// Used to specify if job class uses generic definition of ScheduledJobBase or default.
         /// </summary>
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string JobType { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace Shesha.Tests.Metadata
         {
             var metadataProvider = Resolve<MetadataProvider>();
             
-            var properties = await metadataProvider.GetPropertiesAsync(typeof(EntityWithReadonlyProp), "");
+            var properties = await metadataProvider.GetPropertiesAsync(typeof(EntityWithReadonlyProp));
 
             var includesCalculatedReadonly = properties.Any(p => p.Path == nameof(EntityWithReadonlyProp.CalculatedReadonly));
             Assert.True(includesCalculatedReadonly, $"Calculated readonly property '{nameof(EntityWithReadonlyProp.CalculatedReadonly)}' must be included into metadata");

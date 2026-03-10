@@ -1,5 +1,5 @@
-import React, { FC, useEffect } from 'react';
-import { Pagination } from 'antd';
+import React, { CSSProperties, FC } from 'react';
+import { Pagination, Select } from 'antd';
 import { useMedia } from 'react-use';
 import { useStyles } from './style';
 
@@ -30,7 +30,7 @@ export interface ITablePagerBaseProps {
 
   /** A function to change  */
   changePageSize: (size: number) => void;
-  style?: any;
+  style?: CSSProperties;
 }
 
 export const TablePaging: FC<ITablePagerBaseProps> = ({
@@ -48,17 +48,17 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   const isWider = useMedia('(min-width: 1202px)');
   const { styles } = useStyles({ style });
 
-  const onPageNumberChange = (page: number, pageSize?: number) => {
+  const onPageNumberChange = (page: number, pageSize?: number): void => {
     setCurrentPage(page);
     changePageSize(pageSize);
   };
 
-  const onShowSizeChange = (current: number, size?: number) => {
+  const onShowSizeChange = (current: number, size?: number): void => {
     changePageSize(size);
     setCurrentPage(current);
   };
 
-  const showTotal = (total: number, range: number[]) => {
+  const showTotal = (total: number, range: number[]): string | null => {
     if (showTotalItems) {
       return total > 0 ? `${range[0]}-${range[1]} of ${total} items` : '0 items found';
     }
@@ -66,28 +66,35 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
     return null;
   };
 
-  useEffect(() => {
-    if (!isNaN(selectedPageSize)) onShowSizeChange(1, selectedPageSize);
-  }, [showSizeChanger]);
-
   if (!isWider) return null;
 
   return (
-    <Pagination
-      className={styles.pager}
-      style={style}
-      size="small"
-      total={totalRows}
-      pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
-      current={currentPage}
-      pageSize={selectedPageSize}
-      showSizeChanger={showSizeChanger}
-      onChange={onPageNumberChange}
-      onShowSizeChange={onShowSizeChange}
-      showLessItems
-      disabled={disabled}
-      showTotal={showTotal} // TODO: add `filtered from xxx` here if needed
-    />
+    <div className={styles.pagerContainer} style={style}>
+      <Pagination
+        className={styles.pager}
+        size="small"
+        total={totalRows}
+        pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
+        current={currentPage}
+        pageSize={selectedPageSize}
+        showSizeChanger={false}
+        onChange={onPageNumberChange}
+        onShowSizeChange={onShowSizeChange}
+        showLessItems
+        disabled={disabled}
+        showTotal={showTotal} // TODO: add `filtered from xxx` here if needed
+      />
+      {showSizeChanger && (
+        <Select
+          size="small"
+          className={styles.dropdown}
+          classNames={{ popup: { root: styles.popup } }}
+          options={pageSizeOptions.map((s) => ({ label: `${s} / page`, value: s }))}
+          value={selectedPageSize}
+          onChange={(value) => onShowSizeChange(currentPage, value)}
+        />
+      )}
+    </div>
   );
 };
 

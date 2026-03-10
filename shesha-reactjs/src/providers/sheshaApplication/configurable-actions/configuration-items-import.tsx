@@ -1,9 +1,9 @@
-import ConfigurationItemsImport, { IImportInterface } from '@/components/configurationFramework/itemsImport';
+import { ConfigurationItemsImport, IImportInterface } from '@/components/configurationFramework/itemsImport';
 import React, {
   FC,
   MutableRefObject,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { Button, App } from 'antd';
 import { ICommonModalProps } from '../../dynamicModal/models';
@@ -16,17 +16,17 @@ import { ValidationErrors } from '@/components';
 
 const actionsOwner = 'Configuration Items';
 
-interface IConfigurationItemsExportFooterProps {
+interface IConfigurationItemsImportFooterProps {
   hideModal: () => void;
-  importerRef: MutableRefObject<IImportInterface>;
+  importerRef: MutableRefObject<IImportInterface | undefined>;
 }
 
-export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
+export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
   const { hideModal, importerRef: exporterRef } = props;
   const { message, notification } = App.useApp();
 
-  const onImport = () => {
+  const onImport = (): void => {
     setInProgress(true);
 
     exporterRef.current.importExecuter().then(() => {
@@ -44,13 +44,13 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 
   return (
     <>
-      <Button type='default' onClick={hideModal}>Cancel</Button>
-      <Button type='primary' icon={<ImportOutlined />} onClick={onImport} loading={inProgress}>Import</Button>
+      <Button type="default" onClick={hideModal}>Cancel</Button>
+      <Button type="primary" icon={<ImportOutlined />} onClick={onImport} loading={inProgress}>Import</Button>
     </>
   );
 };
 
-export const useConfigurationItemsImportAction = () => {
+export const useConfigurationItemsImportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
   const exporterRef = useRef<IImportInterface>();
@@ -64,13 +64,12 @@ export const useConfigurationItemsImportAction = () => {
       const modalId = nanoid();
 
       return new Promise((resolve, reject) => {
-
-        const hideModal = () => {
+        const hideModal = (): void => {
           reject();
           removeModal(modalId);
         };
 
-        const onImported = () => {
+        const onImported = (): void => {
           removeModal(modalId);
           resolve(true);
         };
@@ -78,7 +77,7 @@ export const useConfigurationItemsImportAction = () => {
         const modalProps: ICommonModalProps = {
           ...actionArgs,
           id: modalId,
-          title: "Import Configuration Items",
+          title: "Import Configuration",
           width: "60%",
           isVisible: true,
           onClose: (positive, result) => {
@@ -90,7 +89,7 @@ export const useConfigurationItemsImportAction = () => {
           },
           showModalFooter: false,
           content: <ConfigurationItemsImport onImported={onImported} importRef={exporterRef} />,
-          footer: <ConfigurationItemsExportFooter hideModal={hideModal} importerRef={exporterRef} />
+          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={exporterRef} />,
         };
         createModal({ ...modalProps });
       });

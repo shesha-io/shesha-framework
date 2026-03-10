@@ -51,11 +51,9 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
 }) => {
   const { styles } = useStyles();
   const { data: refList } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName));
-  
-  const filter = ({ itemValue }: ReferenceListItemDto) => {
-    const localFilter = filters?.includes(itemValue);
 
-    return localFilter ? filter : !filter;
+  const filter = ({ itemValue }: ReferenceListItemDto): boolean => {
+    return filters.includes(itemValue);
   };
 
   const numericValue = typeof value === 'number' ? value : value?.itemValue;
@@ -69,7 +67,7 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
   const radioStyle: CSSProperties =
     orientation === 'vertical' ? { display: 'block', height: '30px', lineHeight: '30px' } : {};
 
-  const handleChange = (event: RadioChangeEvent) => {
+  const handleChange = (event: RadioChangeEvent): void => {
     if (onSelectionChange) {
       onSelectionChange(event?.target?.value, event);
     }

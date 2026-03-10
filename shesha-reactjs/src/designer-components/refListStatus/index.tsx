@@ -48,7 +48,8 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
               showIcon={model.showIcon}
               showReflistName={showReflistName}
               solidBackground={solidBackground}
-              style={model.allStyles?.fullStyle ?? {}} />
+              style={model.allStyles?.fullStyle ?? {}}
+            />
           );
         }}
       </ConfigurableFormItem>
@@ -58,7 +59,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   initModel: (model) => {
     const customModel: IRefListStatusProps = {
       ...model,
-      hideLabel: true
+      hideLabel: true,
     };
     return customModel;
   },
@@ -101,10 +102,9 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IRefListStatusProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+    .add<IRefListStatusProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): IRefListStatusProps => {
     return {
       ...model,

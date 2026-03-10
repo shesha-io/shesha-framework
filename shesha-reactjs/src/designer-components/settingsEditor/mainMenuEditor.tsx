@@ -36,12 +36,12 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
     const [menuProps, setMenuProps] = useState<IConfigurableMainMenu>(undefined);
 
     const { applicationKey = null } = useSheshaApplication();
-    const { selectedApplication = null, saveStatus, editorMode } = useSettingsEditor(false) ?? {};
+    const { selectedApplication = null, saveStatus, editorMode, saveSetting } = useSettingsEditor(false) ?? {};
     const { changeMainMenu, saveMainMenu } = useMainMenu();
     const form = useForm();
     const initialValues = useRef<IConfigurableMainMenu>();
 
-    const updateMenu = (value: IConfigurableMainMenu) => {
+    const updateMenu = (value: IConfigurableMainMenu): void => {
       const migratorInstance = new Migrator<IConfigurableMainMenu, IConfigurableMainMenu>();
       const fluent = mainMenuMigration(migratorInstance);
       const versionedValue = { ...value } as IHasVersion;
@@ -65,7 +65,7 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
       }
     }, [form.formData]);
 
-    const onChange = (changedValue: any) => {
+    const onChange = (changedValue: any): void => {
       const newData = { ...menuProps, items: changedValue };
       setMenuProps(newData);
       form.setFormData({ values: newData, mergeValues: false });
@@ -81,7 +81,7 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
       );
     }
 
-    const onCancel = () => {
+    const onCancel = (): void => {
       setIsModalOpen(false);
       setMenuProps(initialValues.current);
       form.setFormData({ values: initialValues.current, mergeValues: false });
@@ -89,7 +89,7 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
       setIsModalOpen(false);
     };
 
-    const onOk = () => {
+    const onOk = (): void => {
       if (form.formData === undefined) {
         message.error('Menu configuration is empty!');
         return;
@@ -98,6 +98,11 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
       saveMainMenu(form.formData)
         .then(() => {
           changeMainMenu(form.formData);
+        })
+        .then(async () => {
+          if (saveSetting) {
+            await saveSetting();
+          }
         })
         .then(() => {
           message.success('Menu saved successfully!');
@@ -126,8 +131,8 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
       </div>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default MainMenuEditorComponent;

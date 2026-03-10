@@ -159,7 +159,7 @@ namespace Shesha
         public ISchemaContainer SchemaContainer { get; set; }
         public IGraphQLSerializer Serializer { get; set; }
         public IEntityConfigCache EntityConfigCache { get; set; }
-        public IEntityConfigurationStore EntityConfigurationStore { get; set; }
+        public IEntityTypeConfigurationStore EntityConfigurationStore { get; set; }
 
         /// <summary>
         /// Query entity data. 
@@ -208,6 +208,9 @@ namespace Shesha
 
             if (result.Errors != null)
             {
+                if (result.Errors.Count() == 1 && result.Errors.First().InnerException is EntityNotFoundException notFoundException)
+                    throw notFoundException;
+
                 var validationResults = result.Errors.Select(e => new ValidationResult(e.FullMessage())).ToList();
                 throw new AbpValidationException(string.Join("\r\n", validationResults.Select(r => r.ErrorMessage)), validationResults);
             }
@@ -293,12 +296,9 @@ namespace Shesha
                 return properties;
 
             var regex = new Regex(@"[\s,]+");
-            var props = string.Join(' ', regex.Split(properties).Select(p => StringHelper.ToCamelCase(p)));
-
-            var propList = props.Replace("{", " { ").Replace("}", " } ").Split(" ");
+            var propList = regex.Split(properties.Replace("{", " { ").Replace("}", " } ")).Select(p => StringHelper.ToCamelCase(p));
 
             var sb = new StringBuilder();
-
             await AppendPropertiesAsync(sb, typeof(TEntity).GetRequiredFullName(), propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
 
             return "id " + sb.ToString();
@@ -331,17 +331,17 @@ namespace Shesha
                         if (brace > 0) innerProps.Add(propList[i]);
                         i++;
                     }
-                    if (propConfig?.EntityType.IsNullOrWhiteSpace() ?? true)
+                    if (propConfig == null 
+                        || propConfig.DataType == DataTypes.EntityReference && propConfig.EntityFullClassName.IsNullOrWhiteSpace())
                         sb.Append(prop + " { " + string.Join(" ", innerProps) + " } ");
                     else
                     {
                         sb.Append(prop);
                         // skip Json properties because only whole Json data is allowed to be retrieved
-                        if (propConfig.DataType != DataTypes.ObjectReference
-                            && propConfig.DataType != DataTypes.Object)
+                        if (propConfig.DataType != DataTypes.Object)
                         {
                             sb.Append(" { id ");
-                            await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
+                            await AppendPropertiesAsync(sb, propConfig.EntityFullClassName, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
                             sb.Append(" } ");
                         }
                         else
@@ -367,12 +367,13 @@ namespace Shesha
                 case DataTypes.Array:
                     switch (property.DataFormat)
                     {
-                        case ArrayFormats.ReferenceListItem:
-                        case ArrayFormats.ObjectReference:
-                        case ArrayFormats.Object:
+                        case ArrayFormats.Simple:
+                        case ArrayFormats.ChildObjects:
+                        case ArrayFormats.MultivalueReferenceList:
                             sb.AppendLine(propertyName);
                             break;
                         case ArrayFormats.EntityReference:
+                        case ArrayFormats.ManyToManyEntities:
                             sb.Append(propertyName);
                             sb.AppendLine(" {id _className _displayName} ");
                             break;
@@ -381,7 +382,8 @@ namespace Shesha
                     }
                     break;
                 case DataTypes.EntityReference:
-                    if (fullReference || property.EntityType.IsNullOrWhiteSpace())
+                case DataTypes.File:
+                    if (fullReference || property.EntityFullClassName.IsNullOrWhiteSpace())
                     {
                         // GenericEntityReference
                         //sb.AppendLine($"{propertyName}: {propertyName}");
@@ -392,18 +394,6 @@ namespace Shesha
                         // EntityReference
                         sb.AppendLine($"{propertyName}: {propertyName}{nameof(IEntity.Id)}");
                     break;
-
-                case DataTypes.Object:
-                    {
-                        sb.Append(propertyName);
-                        sb.AppendLine("{");
-                        foreach (var subProp in property.Properties)
-                        {
-                            AppendProperty(sb, subProp);
-                        }
-                        sb.AppendLine("}");
-                        break;
-                    }
                 default:
                     sb.AppendLine(propertyName);
                     break;

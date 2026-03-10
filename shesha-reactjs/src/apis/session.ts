@@ -7,6 +7,11 @@ export interface GrantedPermissionDto {
   permissionedEntity?: IEntityReferenceDto[] | null;
 }
 
+export interface InitializationErrorsInfoDto {
+  lastInitialization?: string;
+  errors?: string[] | null;
+}
+
 export interface UserLoginInfoDto {
   id?: number;
   accountFound?: boolean;
@@ -41,9 +46,10 @@ export interface GetCurrentLoginInfoOutput {
   application?: ApplicationInfoDto;
   user?: UserLoginInfoDto;
   tenant?: TenantLoginInfoDto;
+  initializationErrors?: InitializationErrorsInfoDto;
 }
 
-export interface GetCurrentLoginInfoOutputAjaxResponse extends IAjaxResponse<GetCurrentLoginInfoOutput> {}
+export type GetCurrentLoginInfoOutputAjaxResponse = IAjaxResponse<GetCurrentLoginInfoOutput>;
 
 export type sessionGetCurrentLoginInfoProps = Omit<
   RestfulShesha.GetProps<GetCurrentLoginInfoOutputAjaxResponse, IAjaxResponseBase, void, void>,

@@ -33,7 +33,7 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
           submitHttpVerb: 'POST',
           labelCol: prev['labelCol'] ?? 8,
           wrapperCol: prev['wrapperCol'] ?? 16,
-          selectionMode: prev['selectionMode'] ?? 'none',
+          selectionMode: prev['selectionMode'] ?? 'single',
           deleteConfirmMessage: prev['deleteConfirmMessage'] ?? `return '';`,
           totalRecords: 100,
           buttons: prev['buttons'] ?? [

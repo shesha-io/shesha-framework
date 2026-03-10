@@ -55,7 +55,7 @@ namespace Shesha.Authorization
             var typeName = type.GetRequiredFullName();
             var methodName = methodInfo.Name.RemovePostfix("Async");
 
-            var isCrud = type.FindBaseGenericType(typeof(AbpCrudAppService<,,,,,>)) != null;
+            var isCrud = type.IsSheshaDynamicCrudAppService();
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 

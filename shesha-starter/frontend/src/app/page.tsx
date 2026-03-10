@@ -3,11 +3,18 @@
 import Banner from 'src/components/Banner';
 import Card from 'src/components/NavCard';
 import React from 'react';
-import { MainLayout, PageWithLayout } from '@shesha-io/reactjs';
+import { useLayoutSelection, PageWithLayout } from '@shesha-io/reactjs';
+import { LAYOUT_MODE, ACTIVE_HEADER, ACTIVE_FOOTER } from '@/app-constants/layout';
 
 const Home: PageWithLayout<{}> = () => {
+  const { LayoutComponent } = useLayoutSelection(LAYOUT_MODE);
+
   return (
-    <MainLayout noPadding>
+    <LayoutComponent
+      noPadding
+      headerFormId={ACTIVE_HEADER}
+      footerFormId={ACTIVE_FOOTER}
+    >
       <div
         style={{
           padding: "15px",
@@ -48,7 +55,7 @@ const Home: PageWithLayout<{}> = () => {
           />
         </div>
       </div>
-    </MainLayout>
+    </LayoutComponent>
   );
 };
 

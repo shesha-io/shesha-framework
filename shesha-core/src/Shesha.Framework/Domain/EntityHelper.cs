@@ -10,9 +10,9 @@ namespace Shesha.Domain
     /// </summary>
     public static class EntityHelper
     {
-        private static IEntityConfigurationStore? _configurationStore;
+        private static IEntityTypeConfigurationStore? _configurationStore;
 
-        private static IEntityConfigurationStore ConfigurationStore => _configurationStore ?? throw new Exception($"{nameof(IEntityConfigurationStore)} is unavailable");
+        private static IEntityTypeConfigurationStore ConfigurationStore => _configurationStore ?? throw new Exception($"{nameof(IEntityTypeConfigurationStore)} is unavailable");
 
         /// <summary>
         /// Refresh configuration store instance using provided <paramref name="iocManager"/>. Note: for internal usage and unit-tests only
@@ -20,8 +20,8 @@ namespace Shesha.Domain
         /// <param name="iocManager"></param>
         public static void RefreshStore(IIocManager iocManager)
         {
-            _configurationStore = iocManager.IsRegistered<IEntityConfigurationStore>()
-                ? iocManager.Resolve<IEntityConfigurationStore>()
+            _configurationStore = iocManager.IsRegistered<IEntityTypeConfigurationStore>()
+                ? iocManager.Resolve<IEntityTypeConfigurationStore>()
                 : null;
         }
 
@@ -34,7 +34,7 @@ namespace Shesha.Domain
         /// Get entity configuration by type short alias
         /// </summary>
 
-        public static EntityConfiguration GetEntityConfiguration(this string typeShortAlias)
+        public static EntityTypeConfiguration GetEntityConfiguration(this string typeShortAlias)
         {
             return ConfigurationStore.Get(typeShortAlias);
         }
@@ -42,7 +42,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Get entity configuration by entity type
         /// </summary>
-        public static EntityConfiguration GetEntityConfiguration(this Type entityType)
+        public static EntityTypeConfiguration GetEntityConfiguration(this Type entityType)
         {
             return ConfigurationStore.Get(entityType);
         }

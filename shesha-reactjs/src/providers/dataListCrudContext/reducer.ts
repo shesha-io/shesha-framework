@@ -122,7 +122,7 @@ const reducer = handleActions<ICrudStateContext, any>(
     },
   },
 
-  CRUD_CONTEXT_INITIAL_STATE
+  CRUD_CONTEXT_INITIAL_STATE,
 );
 
 export default reducer;

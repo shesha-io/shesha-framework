@@ -1,10 +1,10 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const lineHeight = "27px";
+  const lineHeight = "27px";
 
-    const autocompleteFormItem = "autocomplete-form-item";
-    const displayFormItem = cx("display-form-item", css`
+  const autocompleteFormItem = "autocomplete-form-item";
+  const displayFormItem = cx("display-form-item", css`
         .${prefixCls}-form-item-label {
             line-height: ${lineHeight};
         }
@@ -35,7 +35,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
                 }
             }
         }
-  `); 
+  `);
 
   return {
     displayFormItem,

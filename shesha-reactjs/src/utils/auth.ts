@@ -1,5 +1,4 @@
 import jseu from 'js-encoding-utils';
-import { getLocalizationOrDefault } from './localization';
 import { getLocalStorage } from './storage';
 import { IAccessToken } from '@/interfaces';
 
@@ -8,7 +7,7 @@ import { IAccessToken } from '@/interfaces';
  */
 export const AUTHORIZATION_HEADER_NAME = 'Authorization';
 
-export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAccessToken, tokenName?: string) => {
+export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAccessToken, tokenName?: string): void => {
   const token = {
     accessToken,
     expireInSeconds,
@@ -18,8 +17,6 @@ export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAcces
   const encodedToken = jseu.encoder.encodeBase64(JSON.stringify(token));
 
   getLocalStorage()?.setItem(tokenName, encodedToken);
-
-  return token;
 };
 
 const parseToken = (token: string): IAccessToken => {
@@ -35,7 +32,7 @@ export const hasTokenExpired = (date: string): boolean => {
   return new Date(date) < new Date();
 };
 
-export const removeAccessToken = (tokenName: string) => {
+export const removeAccessToken = (tokenName: string): boolean => {
   try {
     getLocalStorage()?.removeItem(tokenName);
     getLocalStorage()?.clear();
@@ -60,13 +57,4 @@ export const getAccessToken = (tokenName: string): IAccessToken | null => {
   }
 
   return null;
-};
-
-export const getHttpHeaders = (token: string | null) => {
-  const headers = {};
-  if (token) headers[AUTHORIZATION_HEADER_NAME] = `Bearer ${token}`;
-
-  headers['.AspNetCore.Culture'] = getLocalizationOrDefault();
-
-  return headers;
 };

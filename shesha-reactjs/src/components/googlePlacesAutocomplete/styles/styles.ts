@@ -1,16 +1,16 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }) => {
-    const dropdownContainer = "dropdown-container";
-    const suggestionContainer = "suggestion-container";
-    const suggestion = "suggestion";
+export const useStyles = createStyles(({ css, cx, token }, { fontFamily, fontWeight, textAlign, color, fontSize }) => {
+  const dropdownContainer = "dropdown-container";
+  const suggestionContainer = "suggestion-container";
+  const suggestion = "suggestion";
 
-    const highlightedSuggestion = css`
+  const highlightedSuggestion = css`
         cursor: pointer;
         background: ${token.colorPrimaryBgHover};
     `;
 
-    const locationSearchInputWrapper = cx("location-search-input-wrapper", css`
+  const locationSearchInputWrapper = cx("location-search-input-wrapper", css`
         width: 100%;
         position: relative;
     
@@ -39,13 +39,23 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 }
             }
         }
+
+         > .ant-input-affix-wrapper {
+          .ant-input {
+            --ant-color-text: ${color} !important;
+            --ant-font-size: ${fontSize} !important;
+            font-weight: ${fontWeight};
+            font-family: ${fontFamily};
+            text-align: ${textAlign};
+            }
+        }
 `);
 
-    return {
-        highlightedSuggestion,
-        dropdownContainer,
-        suggestionContainer,
-        locationSearchInputWrapper,
-        suggestion,
-    };
+  return {
+    highlightedSuggestion,
+    dropdownContainer,
+    suggestionContainer,
+    locationSearchInputWrapper,
+    suggestion,
+  };
 });

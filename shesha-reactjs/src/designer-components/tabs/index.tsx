@@ -1,11 +1,10 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
-import { ITabsComponentProps } from './models';
-import { IToolboxComponent } from '@/interfaces';
+import { ITabsComponentProps, TabsComponentDefinition } from './models';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
 import { Tabs, TabsProps } from 'antd';
@@ -22,7 +21,7 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 type TabItem = TabsProps['items'][number];
 
-const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
+const TabsComponent: TabsComponentDefinition = {
   type: 'tabs',
   isInput: false,
   name: 'Tabs',
@@ -30,14 +29,19 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   Factory: ({ model }) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
+    const [activeKey, setActiveKey] = useState<string>(model.defaultActiveKey || (model.tabs?.length && model.tabs[0]?.key));
 
     const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor } = model;
 
-    const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
+    useEffect(() => {
+      if (defaultActiveKey) {
+        setActiveKey(defaultActiveKey);
+      }
+    }, [defaultActiveKey]);
 
     const cardStyles = useFormComponentStyles({ ...model.card });
 
-    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles, } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: model.allStyles.overflowStyles });
+    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: model.allStyles.overflowStyles });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -79,13 +83,15 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           className: className,
           forceRender: forceRender,
           animated: animated,
-          destroyInactiveTabPane: destroyInactiveTabPane,
+          destroyOnHidden: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
-          disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
+          disabled: selectMode === 'readOnly' || (selectMode === 'inherited' && readOnly),
           children: (
             <ParentProvider model={item}>
               <ComponentsContainer
-                containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
+                containerId={id}
+                dynamicComponents={model?.isDynamic ? components : []}
+              />
             </ParentProvider>
           ),
         };
@@ -94,8 +100,17 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       return tabItems;
     }, [tabs]);
 
-    return model.hidden ? null : (
-      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
+    return model.hidden || !items.length ? null : (
+      <Tabs
+        animated={false}
+        activeKey={activeKey}
+        onChange={setActiveKey}
+        size={size}
+        type={tabType}
+        tabPosition={tabPosition}
+        items={items}
+        className={styles.content}
+      />
     );
   },
   initModel: (model) => {
@@ -111,7 +126,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         title: 'Tab 1',
         editMode: 'inherited',
         selectMode: 'editable',
-        components: []
+        components: [],
       }],
     };
     return tabsModel;
@@ -124,7 +139,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(1, (prev) => {
       const newModel = { ...prev };
-      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
+      newModel.tabs = newModel.tabs.map((x) => migrateReadOnly(x, 'inherited'));
       return newModel;
     })
     .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
@@ -138,10 +153,10 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         card: { ...initialCardStyle },
         desktop: { ...newModel.desktop, card: { ...initialCardStyle } },
         tablet: { ...newModel.tablet, card: { ...initialCardStyle } },
-        mobile: { ...newModel.mobile, card: { ...initialCardStyle } }
+        mobile: { ...newModel.mobile, card: { ...initialCardStyle } },
       };
     }),
-  settingsFormMarkup: () => getSettings(),
+  settingsFormMarkup: getSettings,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
     return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));

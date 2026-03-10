@@ -1,10 +1,10 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const columnNames = "column-names";
-    const columnName = "column-name";
-    const shaIndexTableColumnVisibilityToggle = cx("sha-index-table-column-visibility-toggle", css`
+  const columnNames = "column-names";
+  const columnName = "column-name";
+  const shaIndexTableColumnVisibilityToggle = cx("sha-index-table-column-visibility-toggle", css`
         .${prefixCls}-input-search {
             margin-bottom: ${sheshaStyles.paddingLG}px;
         }
@@ -20,9 +20,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
     `);
 
-   return {
+  return {
     shaIndexTableColumnVisibilityToggle,
     columnNames,
     columnName,
-   };
+  };
 });

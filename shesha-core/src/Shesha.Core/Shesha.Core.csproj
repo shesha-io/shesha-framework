@@ -64,4 +64,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Framework\Shesha.Framework.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ConfigurationItems\Distribution\" />
+  </ItemGroup>
 </Project>

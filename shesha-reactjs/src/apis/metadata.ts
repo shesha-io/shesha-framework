@@ -2,6 +2,8 @@ import { useGet, UseGetProps } from '@/hooks/useGet';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
 import { IDictionary } from '..';
+import { ConfigurationDto } from '@/providers/configurationItemsLoader/models';
+import { IApiEndpoint, IEntityTypeIdentifierQueryParams, ISpecification } from '@/interfaces/metadata';
 
 /**
  * Indicate the source of the entity/property metadata
@@ -31,12 +33,14 @@ export interface PropertyMetadataDto {
    * Validation message
    */
   validationMessage?: string | null;
-  path?: string | null;
+  path: string;
   label?: string | null;
   description?: string | null;
-  dataType?: string | null;
+  dataType: string;
   dataFormat?: string | null;
+  containerType?: string | null;
   entityType?: string | null;
+  entityModule?: string | null;
   referenceListName?: string | null;
   referenceListModule?: string | null;
   orderIndex?: number;
@@ -52,87 +56,58 @@ export interface PropertyMetadataDto {
   /**
    * Child properties (applicable for complex objects)
    */
-  properties?: PropertyMetadataDto[] | null;
+  properties?: PropertyMetadataDto[];
   itemsType?: PropertyMetadataDto;
   source?: MetadataSourceType;
 }
 
 /**
- * API endpoint DTO
- */
-export interface ApiEndpointDto {
-  /**
-   * Http verb (get/post/put etc)
-   */
-  httpVerb: string;
-  /**
-   * Url
-   */
-  url: string;
-}
-
-/**
- * DTO of the specification that can be applied on top of the entity query
- */
-export interface SpecificationDto {
-  /**
-   * Name. Unique for all specifications in the application
-   */
-  name?: string | null;
-  /**
-   * Friendly name
-   */
-  friendlyName?: string | null;
-  /**
-   * Description
-   */
-  description?: string | null;
-}
-
-/**
  * Metadata DTO
  */
-export interface MetadataDto {
+export interface MetadataDto extends ConfigurationDto {
   /**
    * Data type
    */
-  dataType?: string | null;
-  /**
-   * Module
-   */
-  module?: string | null;
-
+  dataType: string;
   /**
    * Type accessor
    */
-  typeAccessor?: string | null;
+  typeAccessor?: string;
   /**
    * Module accessor
    */
-  moduleAccessor?: string | null;
+  moduleAccessor: string | null;
   /**
    * Propeties
    */
-  properties?: PropertyMetadataDto[] | null;
+  properties: PropertyMetadataDto[];
   /**
    * Specifications, applicable for entities
    */
-  specifications?: SpecificationDto[] | null;
+  specifications: ISpecification[];
   /**
    * Default API endpoints.
    * key - operation name (create/read/update/delete etc.)
    * value - endpoint DTO (url and http verb)
    */
-  apiEndpoints?: IDictionary<ApiEndpointDto> | null;
+  apiEndpoints: IDictionary<IApiEndpoint>;
 
-  className: string;
+  fullClassName: string;
+
   aliases?: string[];
+
+  md5?: string;
+
+  inheritedFromModule?: string | null | undefined;
+
+  inheritedFromName?: string | null | undefined;
+
+  inheritedFromFullClassName?: string | null | undefined;
 }
 
 export type MetadataDtoAjaxResponse = IAjaxResponse<MetadataDto>;
 
-export interface MetadataGetQueryParams {
-  container?: string;
+export interface MetadataGetQueryParams extends IEntityTypeIdentifierQueryParams {
   /**
    * The requested API version
    */

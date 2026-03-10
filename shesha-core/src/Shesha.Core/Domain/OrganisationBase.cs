@@ -23,20 +23,20 @@ namespace Shesha.Domain
         /// 
         /// </summary>
 
-        [StringLength(50)]
+        [MaxLength(50)]
         [Browsable(false)]
         public virtual string ShortAlias { get; set; }
         /// <summary>
         /// 
         /// </summary>
 
-        [StringLength(300), DataType(DataType.MultilineText)]
+        [MaxLength(300), DataType(DataType.MultilineText)]
         public virtual string Description { get; set; }
         /// <summary>
         /// 
         /// </summary>
 
-        [StringLength(1000), DataType(DataType.MultilineText)]
+        [MaxLength(1000), DataType(DataType.MultilineText)]
         [Display(Name = "Address (free text)")]
         public virtual string FreeTextAddress { get; set; }
         /// <summary>
@@ -54,22 +54,22 @@ namespace Shesha.Domain
         /// 
         /// </summary>
 
-        [StringLength(200)]
+        [MaxLength(200)]
         public virtual string ContactEmail { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(50)]
+        [MaxLength(50)]
         public virtual string ContactMobileNo { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(200)]
+        [MaxLength(200)]
         public virtual string ContactName { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(200)]
+        [MaxLength(200)]
         public virtual string ContactRole { get; set; }
         /// <summary>
         /// 

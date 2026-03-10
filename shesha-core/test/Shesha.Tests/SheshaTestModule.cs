@@ -16,10 +16,13 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
+using Shesha.Modules;
 using Shesha.NHibernate;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;
 using Shesha.Tests.Fixtures;
+using Shesha.Tests.ModuleA;
+using Shesha.Tests.ModuleB;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Collections.Generic;
@@ -36,13 +39,25 @@ namespace Shesha.Tests
         typeof(SheshaFormsDesignerModule),
         typeof(SheshaApplicationModule),
         typeof(SheshaFrameworkModule),
-        typeof(SheshaNHibernateModule)        
-        )]
-    public class SheshaTestModule : AbpModule
+        typeof(SheshaNHibernateModule),
+        typeof(SheshaTestsModuleA), 
+        typeof(SheshaTestsModuleB)
+    )]
+    public class SheshaTestModule : SheshaModule
     {
-        public SheshaTestModule(SheshaNHibernateModule nhModule)
+        public const string ModuleName = "Shesha.Tests";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
+        {
+            FriendlyName = "Shesha Tests",
+            Publisher = "Boxfusion",
+            Alias = "shaTests",
+            Hierarchy = [typeof(SheshaTestsModuleA), typeof(SheshaTestsModuleB), typeof(SheshaFrameworkModule)]
+        };
+
+        public SheshaTestModule(SheshaNHibernateModule nhModule, SheshaFrameworkModule frwkModule)
         {
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
+            frwkModule.SkipAppWarmUp = true;
         }
 
         public override void PreInitialize()
@@ -54,7 +69,7 @@ namespace Shesha.Tests
             var dbFixture = IocManager.IsRegistered<IDatabaseFixture>()
                 ? IocManager.Resolve<IDatabaseFixture>()
                 : null;
-            if (dbFixture != null /*&& false*/)
+            if (dbFixture != null)
             {
                 nhConfig.UseDbms(c => dbFixture.DbmsType, c => dbFixture.ConnectionString);
             }
@@ -65,7 +80,6 @@ namespace Shesha.Tests
             }
 
             Configuration.UnitOfWork.Timeout = TimeSpan.FromMinutes(30);
-            Configuration.UnitOfWork.IsTransactional = false;
 
             // Disable static mapper usage since it breaks unit tests (see https://github.com/aspnetboilerplate/aspnetboilerplate/issues/2052)
             Configuration.Modules.AbpAutoMapper().UseStaticMapper = false;

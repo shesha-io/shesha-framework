@@ -9,7 +9,7 @@ import { SlidersOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
-export interface ISelectColumnsButtonComponentProps extends IConfigurableFormComponent { }
+export type ISelectColumnsButtonComponentProps = IConfigurableFormComponent;
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -27,11 +27,10 @@ const SelectColumnsButtonComponent: IToolboxComponent<ISelectColumnsButtonCompon
       items: [],
     };
   },
-  migrator: m => m
+  migrator: (m) => m
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISelectColumnsButtonComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<ISelectColumnsButtonComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+    .add<ISelectColumnsButtonComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) })),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   isHidden: true, // note: to be removed, now is used only for backward compatibility

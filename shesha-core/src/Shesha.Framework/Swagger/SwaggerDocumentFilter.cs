@@ -1,7 +1,7 @@
 ﻿using Abp.Dependency;
+using Abp.Threading;
 using Microsoft.OpenApi.Models;
 using Shesha.Permissions;
-using Shesha.Utilities;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Shesha.Swagger

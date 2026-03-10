@@ -1,14 +1,9 @@
 ﻿using FluentMigrator;
 using Shesha.FluentMigrator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230316114500), MsSqlOnly]
+    [Migration(20230316114500)]
     public class M20230316114500 : AutoReversingMigration
     {
         public override void Up()

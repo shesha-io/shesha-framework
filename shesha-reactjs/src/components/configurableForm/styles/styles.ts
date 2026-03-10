@@ -1,23 +1,23 @@
 import { createGlobalStyle } from 'antd-style';
 
 const formClassNames = {
-    shaFormContainer: 'sha-form-container',
-    shaForm: 'sha-form',
-    shaComponentsContainer: 'sha-components-container',
-    shaComponentsContainerInner: 'sha-components-container-inner',
-    shaFormInfoCard: 'sha-form-info-card',
-    shaFormInfoCardTitle: 'sha-form-info-card-title',
-    shaError: 'sha-error',
-    shaFormInfoCardParent: 'sha-form-info-card-parent',
-    shaEditMode: 'sha-edit-mode',
+  shaFormContainer: 'sha-form-container',
+  shaForm: 'sha-form',
+  shaComponentsContainer: 'sha-components-container',
+  shaComponentsContainerInner: 'sha-components-container-inner',
+  shaFormInfoCard: 'sha-form-info-card',
+  shaFormInfoCardTitle: 'sha-form-info-card-title',
+  shaError: 'sha-error',
+  shaFormInfoCardParent: 'sha-form-info-card-parent',
+  shaEditMode: 'sha-edit-mode',
 };
 
 const hookResponse = {
-    styles: formClassNames,
+  styles: formClassNames,
 };
 
-export const useStyles = () => {
-    return hookResponse;
+export const useStyles = (): typeof hookResponse => {
+  return hookResponse;
 };
 
 export const ShaFormStyles = createGlobalStyle`
@@ -67,7 +67,7 @@ export const ShaFormStyles = createGlobalStyle`
         position: absolute;
         top: 0px;
         left: -2px;
-        overflow-x: hidden;
+        overflow: hidden;
     }
 
     .${formClassNames.shaFormInfoCard} {       

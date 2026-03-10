@@ -1,9 +1,11 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import React, { FC, useEffect, useState, useRef, MutableRefObject } from 'react';
+import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
 import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -17,15 +19,19 @@ import { ValueRenderer } from '@/components/valueRenderer/index';
 import { toCamelCase } from '@/utils/string';
 import { DataListItemRenderer } from './itemRenderer';
 import DataListItemCreateModal from './createModal';
-import { useMemo } from 'react';
+
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
+import { ConfigurationLoadingError } from '@/providers/configurationItemsLoader/errors';
 
 interface EntityForm {
-  entityType: string;
+  entityType: string | IEntityTypeIdentifier;
   isFetchingFormId?: boolean;
   formId: FormIdentifier;
   formType?: string;
@@ -52,9 +58,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   entityType,
   selectedIds,
   changeSelectedIds,
-  orientation,
-  listItemWidth,
-  customListItemWidth,
+  orientation = 'vertical',
   grouping,
   groupingMetadata,
   collapsible,
@@ -73,22 +77,21 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   noDataSecondaryText,
   noDataText,
   cardHeight,
-  cardMaxWidth = '350px',
-  cardMinWidth = '350px',
   showBorder,
   cardSpacing,
+  style,
+  showEditIcons = true,
+  gap,
+  onRowDeleteSuccessAction,
+  onListItemClick,
+  onListItemHover,
+  onListItemSelect,
+  onSelectionChange,
   ...props
 }) => {
-
-  const { styles } = useStyles();
-  //const refreshRef = useRef(0);
+  const { styles, theme } = useStyles();
 
   let skipCache = false;
-  /*const now = new Date().valueOf();
-  if ((now - refreshRef.current) > 5000) {
-    skipCache = true;
-    refreshRef.current = now;
-  }*/
 
   interface IFormIdDictionary {
     [key: string]: Promise<FormFullName>;
@@ -118,7 +121,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [selectedRow, selectedRows, selectionMode]);
 
   const allData = useAvailableConstantsData();
-  const { configurationItemMode } = useAppConfigurator();
   const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
 
   const dynamicContext = useActionDynamicContext(props.dblClickActionConfiguration);
@@ -127,37 +129,87 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
 
-  const onSelectRowLocal = (index: number, row: any) => {
+  const onSelectRowLocal = (index: number, row: any): void => {
     if (selectionMode === 'none') return;
 
     if (selectionMode === 'multiple') {
       let selected = [...selectedIds];
-      if (selectedIds.find((x) => x === row?.id)) selected = selected.filter((x) => x !== row?.id);
-      else selected = [...selected, row?.id];
+      const wasSelected = selectedIds.find((x) => x === row?.id);
+
+      if (wasSelected) {
+        // Deselecting - don't trigger onListItemSelect
+        selected = selected.filter((x) => x !== row?.id);
+      } else {
+        // Selecting - trigger onListItemSelect event
+        if (onListItemSelect) {
+          onListItemSelect(index, row);
+        }
+        selected = [...selected, row?.id];
+      }
+
       changeSelectedIds(selected);
-      onMultiSelectRows(
-        records?.map((item: any, index) => {
-          return { isSelected: Boolean(selected.find((x) => x === item?.id)), index, id: item?.id, original: item };
-        })
-      );
+
+      const updatedSelection = records?.map((item: any, index) => {
+        return { isSelected: Boolean(selected.find((x) => x === item?.id)), index, id: item?.id, original: item };
+      });
+
+      onMultiSelectRows(updatedSelection);
+
+      // Trigger onSelectionChange event
+      if (onSelectionChange) {
+        const selectedItems = records?.filter((item) => selected.includes(item?.id)) || [];
+        const selectedIndices = records?.map((item, idx) => selected.includes(item?.id) ? idx : -1).filter((idx) => idx !== -1) || [];
+        onSelectionChange(selectedItems, selectedIndices);
+      }
     } else {
-      if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(index, row);
+      // Single selection mode
+      const isCurrentlySelected = selectedRow?.index === index;
+
+      if (isCurrentlySelected) {
+        // Deselecting - don't trigger onListItemSelect
+        if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(null, null);
+
+        // Trigger onSelectionChange event for deselection
+        if (onSelectionChange) {
+          onSelectionChange([], []);
+        }
+      } else {
+        // Selecting - trigger onListItemSelect event
+        if (onListItemSelect) {
+          onListItemSelect(index, row);
+        }
+
+        if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(index, row);
+
+        // Trigger onSelectionChange event for single selection
+        if (onSelectionChange) {
+          onSelectionChange([row], [index]);
+        }
+      }
     }
   };
 
-  const onSelectAllRowsLocal = (val: Boolean) => {
-    changeSelectedIds(
-      val
-        ? records?.map((item: any) => {
-          return item?.id;
-        })
-        : []
-    );
-    onMultiSelectRows(
-      records?.map((item: any, index) => {
-        return { isSelected: val, index, id: item?.id, original: item };
+  const onSelectAllRowsLocal = (val: Boolean): void => {
+    const newSelectedIds = val
+      ? records?.map((item: any) => {
+        return item?.id;
       })
-    );
+      : [];
+
+    changeSelectedIds(newSelectedIds);
+
+    const updatedSelection = records?.map((item: any, index) => {
+      return { isSelected: val, index, id: item?.id, original: item };
+    });
+
+    onMultiSelectRows(updatedSelection);
+
+    // Trigger onSelectionChange event
+    if (onSelectionChange) {
+      const selectedItems = val ? records || [] : [];
+      const selectedIndices = val ? records?.map((_, index) => index) || [] : [];
+      onSelectionChange(selectedItems, selectedIndices);
+    }
   };
 
   const previousIds = usePrevious(selectedIds);
@@ -172,7 +224,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (!isFetchingTableData && records?.length && props.onFetchDataSuccess) props.onFetchDataSuccess();
   }, [isFetchingTableData]);
 
-  const { getEntityFormId, getForm } = useConfigurationItemsLoader();
+  const { getEntityFormIdAsync, getFormAsync } = useConfigurationItemsLoader();
 
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
@@ -186,83 +238,123 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const persistedCreateFormProps = createFormInfo.current?.formConfiguration;
 
-  const [measuredRef, measured] = useMeasure();
-  const [itemWidthCalc, setItemWidth] = useState({});
+  const [measuredRef] = useMeasure();
 
-  // TODO: Horisontal orientation works incorrect under Container with Display = `grid`
+  const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
 
-  //The below forces the card to use max-width, therefore avoiding the issue of having cards
-  //with varying sizes. This is only a problem when selection mode is not "none"
+  const isReady = (forms: EntityForm[]): void => {
+    // Check if all forms have finished loading (either successfully or with an error)
+    // A form is considered "loaded" when formConfiguration is not undefined
+    // (it can be null if there was an error, or a valid object if successful)
+    const allFormsProcessed = forms.every((x) => x.formConfiguration !== undefined);
 
-  if (orientation === "wrap" && selectionMode !== "none") {
-    cardMinWidth = cardMaxWidth;
-  }
-
-  useEffect(() => {
-    if (measured?.width === 0) return;
-    let res = null;
-    if (orientation === "horizontal" && listItemWidth !== 'custom') {
-      res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties);
-
-    } else if (orientation === "horizontal" && listItemWidth === "custom") {
-      res = ({ width: `${customListItemWidth}px` } as React.CSSProperties);
-
-    } else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
-      res =
-        selectionMode === 'none'
-          ? ({ width: '100%' } as React.CSSProperties)
-          : ({ width: 'calc(100% - 0px)' } as React.CSSProperties);
-    } else {
-      res =
-        listItemWidth === 'custom'
-          ? ({ width: `${customListItemWidth}px` } as React.CSSProperties)
-          : { width: `${(measured?.width - 40) * listItemWidth - (selectionMode === 'none' ? 0 : 28)}px` };
-    }
-
-    setItemWidth(res);
-  }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
-
-  const isReady = (forms: EntityForm[]) => {
-    if (!(!forms || forms.length === 0 || forms.find(x => !x.formConfiguration))) {
+    if (allFormsProcessed) {
       updateRows();
       updateContent();
     }
   };
 
-  const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
-    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
+  const isValidFormId = (formId: FormIdentifier): boolean => {
+    if (!formId) return false;
+
+    // If it's a string, it should not be empty
+    if (typeof formId === 'string') {
+      const isValid = formId.trim().length > 0;
+      if (!isValid) {
+        console.warn('Invalid formId: empty string');
+      }
+      return isValid;
+    }
+
+    // If it's an object (FormFullName), it should have both name and module
+    if (typeof formId === 'object') {
+      const hasName = formId.name && typeof formId.name === 'string' && formId.name.trim().length > 0;
+      const hasModule = formId.module && typeof formId.module === 'string' && formId.module.trim().length > 0;
+      const isValid = hasName && hasModule;
+
+      if (!isValid) {
+        console.warn('Invalid formId object:', {
+          name: formId.name,
+          module: formId.module,
+          hasName,
+          hasModule,
+        });
+      }
+
+      return isValid;
+    }
+
+    return false;
+  };
+
+  const getEntityForm = (entityType: string | IEntityTypeIdentifier, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
+    let entityForm = entityForms.current.find((x) => x.formType === fType && isEntityTypeIdEqual(x.entityType, entityType));
     if (!entityForm) {
       entityForm = {
-        entityType: className,
+        entityType: typeof entityType === 'string' ? entityType : { ...entityType },
         formId: fId,
-        formConfiguration: null,
+        formConfiguration: undefined, // undefined means "not yet loaded", null means "failed to load"
         formType: fType,
       };
       entityForms.current.push(entityForm);
       if (!entityFormInfo?.current)
         entityFormInfo.current = entityForm;
     } else
-      return !!entityForm.formConfiguration;
+      return entityForm.formConfiguration !== undefined; // Return true if already processed (either loaded or failed)
 
-    if (!!entityForm.formId) {
-      getForm({ formId: entityForm.formId, configurationItemMode, skipCache })
-        .then(response => {
+    if (!!entityForm.formId && isValidFormId(entityForm.formId)) {
+      getFormAsync({ formId: entityForm.formId, skipCache })
+        .then((response) => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
+        })
+        .catch((error) => {
+          if (error instanceof ConfigurationLoadingError) {
+            console.error('Configuration loading error:', error.message, error.details);
+          } else {
+            console.error('Failed to load form configuration:', error);
+          }
+          // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+          entityForm.formConfiguration = null;
+          isReady(entityForms.current);
         });
+    } else if (!!entityForm.formId && !isValidFormId(entityForm.formId)) {
+      // FormId exists but is invalid - don't attempt to fetch
+      console.warn('Invalid formId provided to DataList:', entityForm.formId);
+      entityForm.formConfiguration = null;
+      isReady(entityForms.current);
     } else {
-
-      const f = loadedFormId.current[`${entityForm.entityType}_${fType}`]
-        ?? getEntityFormId(entityForm.entityType, fType);
+      const entityTypeKey = getEntityTypeName(entityForm.entityType) ?? '';
+      const cacheKey = `${entityTypeKey}_${fType ?? ''}`;
+      const f = loadedFormId.current[cacheKey] ?? getEntityFormIdAsync(entityForm.entityType, fType);
 
       f.then((e) =>
-        getForm({ formId: e, configurationItemMode, skipCache })
-          .then(response => {
+        getFormAsync({ formId: e, skipCache })
+          .then((response) => {
             entityForm.formId = e;
             entityForm.formConfiguration = response;
             isReady(entityForms.current);
           })
-      );
+          .catch((error) => {
+            if (error instanceof ConfigurationLoadingError) {
+              console.error('Configuration loading error:', error.message, error.details);
+            } else {
+              console.error('Failed to load form configuration:', error);
+            }
+            // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+            entityForm.formConfiguration = null;
+            isReady(entityForms.current);
+          }),
+      ).catch((error) => {
+        if (error instanceof ConfigurationLoadingError) {
+          console.error('Configuration loading error (form ID):', error.message, error.details);
+        } else {
+          console.error('Failed to get form ID:', error);
+        }
+        // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+        entityForm.formConfiguration = null;
+        isReady(entityForms.current);
+      });
 
       loadedFormId.current[`${entityForm.entityType}_${fType}`] = f;
     };
@@ -273,33 +365,35 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     let isReady = true;
 
     let fId = createFormId;
-    let className = '$createFormName$';
+    let formEntityType: string | IEntityTypeIdentifier = '$createFormName$';
     let fType = null;
     if (formSelectionMode === 'view') {
       fId = null;
-      className = entityType ?? '$createFormName$';
+      formEntityType = entityType ?? '$createFormName$';
       fType = !!createFormType ? createFormType : null;
     }
     if (!!fId || !!fType)
-      isReady = getEntityForm(className, fId, fType, createFormInfo) && isReady;
+      isReady = getEntityForm(formEntityType, fId, fType, createFormInfo) && isReady;
 
     records.forEach((item) => {
       let fId = null;
-      let className = null;
+      let formEntityType = null;
       let fType = null;
       if (formSelectionMode === 'name') {
-        className = '$formName$';
+        formEntityType = '$formName$';
         fId = formId;
       }
       if (formSelectionMode === 'view') {
         fType = !!formType ? formType : null;
-        className = entityType ?? item?._className;
+        formEntityType = entityType ?? item?._className;
       }
       if (formSelectionMode === 'expression') {
         fId = getFormIdFromExpression(item);
+        // Use the form ID itself as the entity type to ensure unique caching per form
+        formEntityType = fId ? ConfigurableItemIdentifierToString(fId) : '$expressionForm$';
       }
       if (!!fId || !!fType)
-        isReady = getEntityForm(className, fId, fType, entityFormInfo) && isReady;
+        isReady = getEntityForm(formEntityType, fId, fType, entityFormInfo) && isReady;
     });
 
     // we don't need to wait form requests if all form is ready
@@ -307,31 +401,97 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
-  const renderSubForm = (item: any, index: number) => {
-    let className = null;
+  const renderSubForm = (item: any, index: number): JSX.Element => {
+    let formEntityType = null;
     let fType = null;
     if (formSelectionMode === 'name') {
-      className = '$formName$';
+      formEntityType = '$formName$';
     }
     if (formSelectionMode === 'view') {
-      className = entityType ?? item?._className;
+      formEntityType = entityType ?? item?._className;
       fType = formType;
     }
+    if (formSelectionMode === 'expression') {
+      const expressionFormId = getFormIdFromExpression(item);
+      formEntityType = expressionFormId ? ConfigurableItemIdentifierToString(expressionFormId) : '$expressionForm$';
+    }
 
-    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
+    let entityForm = entityForms.current.find((x) => isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup)
-      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
+    if (!entityForm?.formConfiguration?.markup) {
+      const isDesignMode = allData.form?.formMode === 'designer';
 
-    const dblClick = () => {
+      // In runtime mode, don't render anything if form is not configured
+      if (!isDesignMode) {
+        return null;
+      }
+
+      // In designer mode, show placeholder matching DataListPlaceholder style
+      // Validation errors are now handled by validateModel and useComponentValidation at the component level
+      // This placeholder is shown for items when the form is not configured
+      return (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '12px 16px',
+            backgroundColor: theme.colorBgContainer,
+            borderTop: `1px solid ${theme.colorBorder}`,
+            borderBottom: `1px solid ${theme.colorBorder}`,
+          }}
+        >
+          {/* Icon placeholder */}
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: theme.colorFillSecondary,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              fontSize: '18px',
+              color: theme.colorTextQuaternary,
+            }}
+          >
+            👤
+          </div>
+          {/* Text content */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontWeight: 500,
+                fontSize: '14px',
+                color: theme.colorTextSecondary,
+                marginBottom: '4px',
+              }}
+            >
+              Heading
+            </div>
+            <div
+              style={{
+                fontSize: '12px',
+                color: theme.colorTextTertiary,
+              }}
+            >
+              Subtext
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const dblClick = (): boolean => {
       if (props.dblClickActionConfiguration) {
         // TODO: implement generic context collector
         const evaluationContext = {
           ...allData,
           selectedRow: item,
-          ...dynamicContext
+          ...dynamicContext,
         };
         executeAction({
           actionConfiguration: props.dblClickActionConfiguration,
@@ -360,10 +520,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             formSettings={entityForm?.formConfiguration?.settings}
             data={item}
             listId={id}
-            listName='Data List'
+            listName="Data List"
             itemIndex={index}
             itemId={item['id']}
-            allowEdit={canEditInline}
+            allowEdit={showEditIcons && canEditInline}
             allowDelete={canDeleteInline}
             updater={(rowData) => updateAction(index, rowData)}
             deleter={() => deleteAction(index, item)}
@@ -386,10 +546,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         currentGroup: null,
         propertyName: g.propertyName,
         index: index,
-        propertyPath: g.propertyName.split('.')
+        propertyPath: g.propertyName.split('.'),
       }));
 
-      const getValue = (container: object, path: string[]) => {
+      const getValue = (container: object, path: string[]): any => {
         return path.reduce((prev, part) => prev ? prev[part] : undefined, container);
       };
 
@@ -404,7 +564,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             g.currentGroup = {
               index: index,
               value: groupValue,
-              $childs: []
+              $childs: [],
             };
             parent.push(g.currentGroup);
             differenceFound = true;
@@ -419,14 +579,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return null;
   }, [records, grouping, groupingMetadata]);
 
-  const renderGroupTitle = (value: any, propertyName: string, style: React.CSSProperties) => {
+  const renderGroupTitle = (value: any, propertyName: string, style: React.CSSProperties): ReactElement => {
     if (!Boolean(value) && value !== false) {
       if (!!style)
         return <Typography.Text style={style}>(empty)</Typography.Text>;
       else
-        return <Typography.Text type='secondary'>(empty)</Typography.Text>;
+        return <Typography.Text type="secondary">(empty)</Typography.Text>;
     }
-    const propertyMeta = groupingMetadata.find(p => toCamelCase(p.path) === propertyName);
+    const propertyMeta = groupingMetadata.find((p) => toCamelCase(p.path) === propertyName);
     return <Typography.Text style={style}><ValueRenderer value={value} meta={propertyMeta} /></Typography.Text>;
   };
 
@@ -436,7 +596,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       <Collapse
         key={key}
         defaultActiveKey={collapseByDefault ? [] : ['1']}
-        expandIconPosition='start'
+        expandIconPosition="start"
         className={`sha-group-level-${group.index}`}
         collapsible={collapsible ? undefined : 'disabled'}
         style={computedGroupStyle}
@@ -452,45 +612,87 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
-  const renderRow = (item: any, index: number, isLastItem: Boolean) => {
+
+  const renderRow = (item: any, index: number, isLastItem: Boolean): ReactElement => {
+    const stylesAsCSS = style as CSSProperties;
+
+    const hasBorder = (): boolean => {
+      const borderProps = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
+      return borderProps.some((prop) => {
+        const value = stylesAsCSS?.[prop];
+        return value && value !== 'none' && value !== '0' && value !== '0px';
+      });
+    };
 
     const selected =
-      selectedRow?.index === index && !(selectedRows?.length > 0) ||
+      (selectedRow?.index === index && !(selectedRows?.length > 0)) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
+
+    const itemStyles: CSSProperties = {
+      ...(stylesAsCSS || {}),
+      ...(orientation === 'horizontal' && { flexShrink: 0 }),
+      ...(orientation === 'wrap' && showBorder && {
+        border: '1px solid #d3d3d3',
+        borderRadius: '8px',
+      }),
+      ...(orientation !== 'wrap' && {
+        marginTop: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
+      }),
+    };
+
     return (
-      <div>
+      <div key={`row-${index}`}>
         <ConditionalWrap
-          condition={selectionMode !== 'none'}
+          condition={selectionMode === 'multiple'}
           wrap={(children) => (
             <Checkbox
               className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}
               checked={selected}
               onChange={() => {
                 onSelectRowLocal(index, item);
-              }}>
+              }}
+            >
               {children}
             </Checkbox>
           )}
         >
           <div
-            className={classNames(orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, { selected })}
+            className={classNames(
+              orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem,
+              { selected },
+            )}
             onClick={() => {
-              onSelectRowLocal(index, item);
+              // For single and multiple selection modes, trigger selection when clicking on row
+              if (selectionMode === 'single' || selectionMode === 'multiple') {
+                onSelectRowLocal(index, item);
+              }
+              // Trigger onListItemClick event
+              if (onListItemClick) {
+                onListItemClick(index, item);
+              }
             }}
-            style={orientation === 'wrap' ? {
-              minWidth: `${Number(cardMinWidth) ? cardMinWidth + 'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth + 'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight + 'px' : cardHeight}`,
-              ...(showBorder && { border: '1px #d3d3d3 solid' })
-            } : itemWidthCalc}
+            onMouseEnter={() => {
+              // Trigger onListItemHover event
+              if (onListItemHover) {
+                onListItemHover(index, item);
+              }
+            }}
+            style={{ ...itemStyles, width: orientation === 'wrap' ? 'unset' : itemStyles.width, overflow: 'auto' }}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
-        </ConditionalWrap>{' '}
-        {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
+        </ConditionalWrap>
+        {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
+          <Divider
+            style={{ margin: '10px', width: itemStyles.width }}
+            className={classNames(styles.shaDatalistComponentDivider, { selected })}
+          />
+        ))}
       </div>
     );
   };
 
-  const onCreateClick = () => {
+  const onCreateClick = (): void => {
     if (canAddInline)
       setCreateModalOpen(true);
   };
@@ -507,25 +709,71 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return () => Promise.resolve(
       props.onNewListItemInitialize
         ? onNewListItemInitializeExecuter(allData.form, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
-        : {}
+        : {},
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
 
-
-  const updateRows = () => {
+  const updateRows = (): void => {
     rows.current = records?.map((item: any, index) => renderSubForm(item, index));
   };
 
-  const updateContent = () => {
+  const updateContent = (): void => {
     setContent(groups
       ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
-      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index))
+      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index)),
     );
+  };
+
+
+  const getContainerStyles = (): CSSProperties => {
+    const containerStyles: CSSProperties = {
+      gap: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
+      ...fcContainerStyles.jsStyle,
+      ...fcContainerStyles.stylingBoxAsCSS,
+      ...fcContainerStyles.dimensionsStyles,
+    };
+
+    const rawItemWidth =
+      (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
+    const itemWidth =
+      rawItemWidth !== undefined
+        ? typeof rawItemWidth === 'number'
+          ? `${rawItemWidth}px`
+          : rawItemWidth
+        : '300px';
+
+    switch (orientation) {
+      case 'horizontal':
+        return {
+          ...containerStyles,
+          display: 'flex',
+          gridAutoFlow: 'row',
+          gridAutoColumns: 'max-content',
+          alignItems: 'start',
+        };
+
+      case 'wrap':
+        return {
+          ...containerStyles,
+          display: 'grid',
+          gridTemplateColumns: `repeat(auto-fill, ${itemWidth})`,
+          alignItems: 'start',
+        };
+
+      case 'vertical':
+      default:
+        return {
+          ...containerStyles,
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          alignItems: 'stretch',
+        };
+    }
   };
 
   return (
     <>
-      {createModalOpen && createFormInfo?.current?.formConfiguration &&
+      {createModalOpen && createFormInfo?.current?.formConfiguration && (
         <DataListItemCreateModal
           id={id}
           formInfo={persistedCreateFormProps}
@@ -536,9 +784,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           data={onNewListItemInitialize}
           width={props.modalWidth}
         />
-      }
+      )}
       <div>
-        <Show when={selectionMode === 'multiple'} >
+        <Show when={selectionMode === 'multiple'}>
           <Checkbox
             onChange={(e) => {
               onSelectAllRowsLocal(e.target.checked);
@@ -550,58 +798,49 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </Checkbox>
           <Divider />
         </Show>
-        {// Use Configurable Action
-        /*<Show when={canAddInline}>
-          <Button 
-            type='link' 
-            shape="round" 
-            title='Add new item' 
-            icon={<PlusCircleOutlined />} 
-            className="sha-link"
+        <Show when={canAddInline}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
             onClick={onCreateClick}
+            style={{ marginLeft: '2px' }}
           >
-            Add new item...
+            Add New Item
           </Button>
-        </Show>*/}
+        </Show>
       </div>
       <FormInfo visible={formInfoBlockVisible} formProps={{ ...(persistedFormProps as IPersistedFormProps) }}>
         <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
           <div
             key="spin_key"
             ref={measuredRef}
+            style={getContainerStyles()}
             className={classNames(styles.shaDatalistComponentBody, {
               loading: isFetchingTableData && records?.length === 0,
               horizontal: orientation === 'horizontal',
+              wrap: orientation === 'wrap',
+              vertical: orientation === 'vertical',
             })}
           >
-
             <Show when={records?.length === 0}>
-              <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
+              <EmptyState
+                noDataIcon={noDataIcon}
+                noDataSecondaryText={noDataSecondaryText}
+                noDataText={noDataText}
+              />
             </Show>
 
             <Show when={records?.length > 0}>
-              {orientation === "wrap" &&
-                <div className={styles.shaDatalistWrapParent} style={{ gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))` }}>
-                  {content}
-                </div>
-              }
-
-              {orientation === "horizontal" &&
-                <div className={styles.shaDatalistHorizontal}>
-                  {React.Children.map(content, child => {
-                    return React.cloneElement(child, { style: itemWidthCalc });
-                  })}
-                </div>
-              }
-
-              {orientation === "vertical" &&
-                <div style={itemWidthCalc}>
-                  {React.Children.map(content, child => {
-                    return React.cloneElement(child, { style: itemWidthCalc });
-                  })}
-                </div>
-              }
-
+              {React.Children.map(content, (child, index) => {
+                return React.cloneElement(child, {
+                  key: child.key || index,
+                  style: {
+                    ...child.props.style,
+                    overflow: 'visible',
+                    flex: '0 0 100%',
+                  },
+                });
+              })}
             </Show>
           </div>
         </ShaSpin>

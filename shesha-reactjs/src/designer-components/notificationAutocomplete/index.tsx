@@ -17,7 +17,7 @@ const NotificationAutocompleteComponent: IToolboxComponent<INotificationAutocomp
   Factory: () => {
     throw new Error('Notification Autocomplete component was removed');
   },
-  migrator: m => m
+  migrator: (m) => m
     .add<IConfigurableItemAutocompleteComponentProps>(0, (prev) => {
       return {
         ...prev,
@@ -26,7 +26,7 @@ const NotificationAutocompleteComponent: IToolboxComponent<INotificationAutocomp
         mode: 'single',
         entityType: 'Shesha.Domain.NotificationTypeConfig',
       };
-    })
+    }),
 };
 
 export default NotificationAutocompleteComponent;

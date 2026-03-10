@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
+using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Security;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
@@ -38,10 +39,12 @@ namespace Shesha
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName) { 
             FriendlyName = "Shesha Core",
             Publisher = "Shesha",
-#if DisableEditModule
+#if !DEBUG
             IsEditable = false,
 #endif
         };
+
+        public bool SkipAppWarmUp { get; set; }
 
         public SheshaFrameworkModule()
         {
@@ -104,6 +107,7 @@ namespace Shesha
                 .RegisterConfigurableItemImport<ReferenceList, IReferenceListImport, ReferenceListImport>();
 
             IocManager
+                .RegisterConfigurableItemManager<EntityConfig, IEntityConfigManager, EntityConfigManager>()
                 .RegisterConfigurableItemExport<EntityConfig, IEntityConfigExport, EntityConfigExport>()
                 .RegisterConfigurableItemImport<EntityConfig, IEntityConfigImport, EntityConfigImport>();
 
@@ -165,10 +169,6 @@ namespace Shesha
 
         public override void PostInitialize()
         {
-            IocManager.Resolve<ShaPermissionManager>().Initialize();
-
-            var def = IocManager.Resolve<IPermissionDefinitionContext>();
-
             // register Shesha exception to error converter
             IocManager.Resolve<ErrorInfoBuilder>().AddExceptionConverter(IocManager.Resolve<ShaExceptionToErrorInfoConverter>());
 

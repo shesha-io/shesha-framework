@@ -10,7 +10,7 @@ namespace Shesha.Domain
     {
         public virtual Boolean IsPrimary { get; set; }
 
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string Description { get; set; }
 
         [AllowInherited]
@@ -27,7 +27,7 @@ namespace Shesha.Domain
     [Table("Core_OrganisationPersons")]
     public class OrganisationPerson : OrganisationPersonBase<Organisation, Person>
     {
-        [ReferenceList("Shesha.Core", "OrganisationPersonRole")]
+        [ReferenceList("OrganisationPersonRole")]
         public override int? Role { get; set; }
     }
 }

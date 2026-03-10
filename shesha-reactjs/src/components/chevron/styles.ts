@@ -1,19 +1,19 @@
 import { addPx } from '@/utils/style';
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
-    const chevronButton = cx(`${prefixCls}-chevron-btn`, css`
+export const useStyles = createStyles(({ css, cx, prefixCls }, { height }) => {
+  const chevronButton = cx(`${prefixCls}-chevron-btn`, css`
         &:hover {
             background-color: #f0f0f0;
           }
     `);
 
-    const buttonGroup = cx(`${prefixCls}-chevron-btn-group`, css`
+  const buttonGroup = cx(`${prefixCls}-chevron-btn-group`, css`
         display: flex;
 
     `);
 
-    const activeButton = cx(`${prefixCls}-chevron-active`, css`
+  const activeButton = cx(`${prefixCls}-chevron-active`, css`
         background-color: blue;
         color: white;
 
@@ -22,14 +22,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
         }
     `);
 
-    const pipelineContainer = cx(`${prefixCls}-pipeline-container`, css`
+  const pipelineContainer = cx(`${prefixCls}-pipeline-container`, css`
       position: relative;
       display: flex;
       padding: 10px 0;
 
       `);
 
-    const pipelineStages = cx(`${prefixCls}-pipeline-stages`, css`
+  const pipelineStages = cx(`${prefixCls}-pipeline-stages`, css`
         display: flex;
         overflow-x: auto;
         scroll-behavior: smooth;
@@ -42,7 +42,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
         }
     `);
 
-    const pipelineStage = cx(`${prefixCls}-pipeline-stage`, css`
+  const pipelineStage = cx(`${prefixCls}-pipeline-stage`, css`
       flex-shrink: 0;
       color: white;
       padding: 10px 20px;
@@ -50,8 +50,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
       white-space: nowrap;
       margin-right: 10px;
     `);
-    
-    const arrowButton = cx(`${prefixCls}-arrow-button`, css`
+
+  const arrowButton = cx(`${prefixCls}-arrow-button`, css`
         z-index: 10;
         background-color: #f0f0f0;
         border: none;
@@ -78,8 +78,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
         }
       `);
 
-    
-    const leftArrow = cx(`${prefixCls}-left-arrow`, css`
+
+  const leftArrow = cx(`${prefixCls}-left-arrow`, css`
       left: 5px;
       clip-path: polygon(25% 0%, 100% 1%, 100% 100%, 25% 100%, 0% 50%);
 
@@ -87,8 +87,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
         transform: rotate(-135deg);
       }
     `);
-    
-    const rightArrow = cx(`${prefixCls}-right-arrow`, css`
+
+  const rightArrow = cx(`${prefixCls}-right-arrow`, css`
       right: 5px;
       clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
       
@@ -98,15 +98,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
     `);
 
 
-    return {
-        chevronButton,
-        buttonGroup,
-        activeButton,
-        pipelineContainer,
-        pipelineStages,
-        pipelineStage,
-        leftArrow,
-        rightArrow,
-        arrowButton
-    };
+  return {
+    chevronButton,
+    buttonGroup,
+    activeButton,
+    pipelineContainer,
+    pipelineStages,
+    pipelineStage,
+    leftArrow,
+    rightArrow,
+    arrowButton,
+  };
 });

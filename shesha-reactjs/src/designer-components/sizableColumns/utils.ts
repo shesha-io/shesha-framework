@@ -13,13 +13,13 @@ export const defaultStyles = (): ISizableColumnInputProps => {
         all: {
           width: 0,
           style: 'solid',
-          color: '#fff'
-        }
+          color: '#fff',
+        },
       },
       radius: { all: 0 },
       borderType: 'all',
-      radiusType: 'all'
+      radiusType: 'all',
     },
-    stylingBox: "{\"marginBottom\":\"5\"}"
+    stylingBox: "{\"marginBottom\":\"5\"}",
   };
 };

@@ -5,7 +5,7 @@ import {
   getDefaultModel,
   getFormItemProps,
   getInputProps,
-  IPasswordComponentProps
+  IPasswordComponentProps,
 } from './utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IToolboxComponent } from '@/interfaces';
@@ -30,7 +30,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
     dataType === DataTypes.string && dataFormat === StringFormats.password,
   Factory: ({ model }) => {
     const defaultModel = getDefaultModel(model);
-    const { placeholder, confirmPlaceholder, message, minLength } = defaultModel || {};
+    const { placeholder, confirmPlaceholder, message, minLength, repeatPropertyName } = defaultModel || {};
     const { formData } = useForm();
 
     const options = { hidden: model.hidden, formData };
@@ -54,11 +54,12 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
         errorMessage={message}
         style={model.allStyles.fullStyle}
         className={styles.passwordCombo}
+        repeatPropertyName={repeatPropertyName}
       />
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IPasswordComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPasswordComponentProps>(1, (prev) => migrateReadOnly(prev))
@@ -67,7 +68,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
       const styles: IInputStyles = {
         size: prev.size,
         hideBorder: prev.hideBorder,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };

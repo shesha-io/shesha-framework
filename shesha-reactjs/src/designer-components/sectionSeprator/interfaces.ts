@@ -1,14 +1,17 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IFontValue } from '../_settings/utils/font/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 
 export interface ISectionSeparatorComponentProps extends IConfigurableFormComponent {
-    containerStyle?: string;
-    titleStyle?: string;
-    lineFont?: IFontValue;
-    font?: IFontValue;
-    titleStylingBox?: string;
-    containerStylingBox?: string;
-    dashed?: boolean;
-    lineWidth?: string;
-    lineHeight?: string;
+  containerStyle?: string;
+  titleStyle?: string;
+  lineFont?: IFontValue;
+  font?: IFontValue;
+  titleStylingBox?: string;
+  containerStylingBox?: string;
+  dashed?: boolean;
+  lineWidth?: string;
+  lineHeight?: string;
 }
+
+export type SectionSeparatorComponentDefinition = ComponentDefinition<"sectionSeparator", ISectionSeparatorComponentProps>;

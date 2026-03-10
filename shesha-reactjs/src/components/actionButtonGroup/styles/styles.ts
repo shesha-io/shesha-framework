@@ -1,9 +1,9 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-    const toolbarItem = "toolbar-item";
-    const shaActionBtnGroup = cx("sha-action-btn-group", css`
+  const toolbarItem = "toolbar-item";
+  const shaActionBtnGroup = cx("sha-action-btn-group", css`
         button.${toolbarItem} {
             padding-left: 10px !important;
         
@@ -32,8 +32,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             }
         }
   `);
-    return {
-        shaActionBtnGroup,
-        toolbarItem,
-    };
+  return {
+    shaActionBtnGroup,
+    toolbarItem,
+  };
 });

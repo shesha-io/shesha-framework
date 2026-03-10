@@ -55,7 +55,7 @@
             SheshaFunctionalTests Permission checker
             </summary>
         </member>
-        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.#ctor(Abp.Domain.Repositories.IRepository{Shesha.Domain.Person,System.Guid},Abp.Domain.Repositories.IRepository{Shesha.Domain.ShaRoleAppointedPerson,System.Guid},Abp.Domain.Repositories.IRepository{Shesha.Domain.ShaRoleAppointmentEntity,System.Guid})">
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.#ctor(Abp.Domain.Repositories.IRepository{Shesha.Domain.Person,System.Guid},Abp.Domain.Repositories.IRepository{Shesha.Domain.ShaRoleAppointedPerson,System.Guid})">
             <summary>
             Default constructor
             </summary>

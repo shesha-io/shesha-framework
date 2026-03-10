@@ -1,20 +1,24 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Timing;
+using Microsoft.AspNetCore.Http;
+using NetTopologySuite.Index.HPRtree;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems.Distribution
@@ -26,12 +30,12 @@ namespace Shesha.ConfigurationItems.Distribution
     {
         public const string NoModuleFolder = "[no-module]";
 
-        private readonly IRepository<ConfigurationItemBase, Guid> _itemsRepository;
+        private readonly IRepository<ConfigurationItem, Guid> _itemsRepository;
         private readonly IStoredFileService _storedFileService;
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
         public IIocManager IocManager { get; set; } = default!;
 
-        public ConfigurationPackageManager(IRepository<ConfigurationItemBase, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
+        public ConfigurationPackageManager(IRepository<ConfigurationItem, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
         {
             _itemsRepository = itemsRepository;
             _storedFileService = storedFileService;
@@ -49,7 +53,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                     using (var entryStream = entry.Open())
                     {
-                        await item.Exporter.WriteToJsonAsync(item.ItemData, entryStream);
+                        await item.Exporter.WriteItemToJsonAsync(item.ItemData, entryStream);
                     }
                 }
             }
@@ -104,7 +108,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return Task.FromResult(pack);
         }
 
-        private async Task ProcessItemExportAsync(ConfigurationItemBase item, ConfigurationItemsExportResult exportResult, PreparePackageContext context)
+        private async Task ProcessItemExportAsync(ConfigurationItem item, ConfigurationItemsExportResult exportResult, PreparePackageContext context)
         {
             var path = GetItemRelativePath(item);
             if (exportResult.Items.Any(i => i.RelativePath == path))
@@ -113,6 +117,10 @@ namespace Shesha.ConfigurationItems.Distribution
             var exporter = context.GetExporter(item);
             if (exporter == null)
                 throw new ExporterNotFoundException(item.ItemType);
+
+            var canExport = await exporter.CanExportItemAsync(item);
+            if (!canExport)
+                return;
 
             var dto = await exporter.ExportItemAsync(item);
 
@@ -133,9 +141,9 @@ namespace Shesha.ConfigurationItems.Distribution
                     var dependencies = await depsProvider.GetReferencedItemsAsync(item);
                     foreach (var dependency in dependencies)
                     {
-                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItemBase>();                        
+                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItem>();                        
 
-                        var dependencyItem = await query.GetItemByIdAsync(dependency, context.VersionSelectionMode);
+                        var dependencyItem = await query.GetItemByIdAsync(dependency);
 
                         // todo: write log and include all missing items
                         if (dependencyItem != null)
@@ -152,7 +160,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItemBase item) 
+        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItem item) 
         {
             var requestedType = item.GetType().StripCastleProxyType();
 
@@ -167,7 +175,7 @@ namespace Shesha.ConfigurationItems.Distribution
             var type = itemType;
             while (type != null)
             {
-                if (type.IsAssignableTo(typeof(IConfigurationItem)))
+                if (type.IsAssignableTo(typeof(ConfigurationItem)))
                 {
                     var serviceType = typeof(IDependenciesProvider<>).MakeGenericType(type);
                     var services = IocManager.ResolveAll(serviceType).OfType<IDependenciesProvider>().ToList();
@@ -180,7 +188,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return null;
         }
 
-        private string GetItemRelativePath(ConfigurationItemBase item)
+        private string GetItemRelativePath(ConfigurationItem item)
         {
             var moduleFolder = item.Module != null
                 ? item.Module.Name
@@ -191,6 +199,14 @@ namespace Shesha.ConfigurationItems.Distribution
                 : Path.Combine(moduleFolder, item.ItemType);
 
             return Path.Combine(folder, $"{item.Name.RemovePathIllegalCharacters()}.json");
+        }
+
+        private async Task<DistributedConfigurableItemBase> ReadDtoAsync(IConfigurableItemImport importer, Func<Stream> streamGetter) 
+        {
+            using (var jsonStream = streamGetter()) 
+            {
+                return await importer.ReadFromJsonAsync(jsonStream);
+            }
         }
 
         public async Task ImportAsync(ConfigurationItemsPackage package, PackageImportContext context)
@@ -219,24 +235,28 @@ namespace Shesha.ConfigurationItems.Distribution
 
                 foreach (var group in groups)
                 {
-                    var importer = group.First().Importer.NotNull();
-                    var items = new List<DistributedConfigurableItemBase>();
+                    var mainImporter = group.First().Importer.NotNull();
+                    var itemsToImport = new List<ItemToImport>();
                     foreach (var item in group)
                     {
                         context.CancellationToken.ThrowIfCancellationRequested();
                         try
                         {
-                            using (var jsonStream = item.StreamGetter())
+                            var itemDto = await ReadDtoAsync(mainImporter, item.StreamGetter);
+                            var shouldImport = context.ShouldImportItem == null || context.ShouldImportItem.Invoke(itemDto);
+
+                            if (shouldImport)
                             {
-                                var itemDto = await importer.ReadFromJsonAsync(jsonStream);
-                                var shouldImport = context.ShouldImportItem == null || context.ShouldImportItem.Invoke(itemDto);
+                                var subtypeImporter = mainImporter.GetSubtypeImporter(itemDto);
+                                
+                                // read DTO again using correct subtype importer to handle custom properties
+                                if (subtypeImporter != mainImporter)
+                                    itemDto = await ReadDtoAsync(subtypeImporter, item.StreamGetter);
 
-                                if (shouldImport)
-                                    items.Add(itemDto);
-                                else
-                                    context.Logger.Info($"Item skipped by condition");
-
+                                itemsToImport.Add(new ItemToImport(itemDto, subtypeImporter));
                             }
+                            else
+                                context.Logger.Info($"Item skipped by condition");
                         }
                         catch (Exception e)
                         {
@@ -245,33 +265,38 @@ namespace Shesha.ConfigurationItems.Distribution
                         }
                     }
 
-                    items = await importer.SortItemsAsync(items);
-
-                    foreach (var item in items)
+                    var groupsByImporter = itemsToImport.GroupBy(x => x.Importer, (importer, items) => new { Importer = importer, Items = items.Select(x => x.Item).ToList() });
+                    foreach (var subGroup in groupsByImporter)
                     {
-                        context.CancellationToken.ThrowIfCancellationRequested();
+                        var importer = subGroup.Importer;
+                        var items = await importer.SortItemsAsync(subGroup.Items);
 
-                        try
+                        foreach (var item in items)
                         {
-                            await importer.ImportItemAsync(item, context);
-                        }
-                        catch (Exception e)
-                        {
-                            context.Logger.Error($"Item import failed", e);
-                            throw;
-                        }
+                            context.CancellationToken.ThrowIfCancellationRequested();
 
-                        var span = (Clock.Now - startTime);
-                        var speed = Math.Round(rowNo / (span.TotalSeconds > 0 ? span.TotalSeconds : 1), 2);
-                        //importResult.AvgSpeed = Convert.ToDecimal(speed);
-                        var estimated = new TimeSpan(span.Ticks / rowNo * totalItems);
-                        context.Logger.Info($"processed {rowNo} from {totalItems} ({(double)rowNo / totalItems * 100:0.#}%), estimated time = {estimated.Minutes:D2}:{estimated.Seconds:D2}:{estimated.Milliseconds:D3}, speed = {speed} row/sec");
-                        rowNo++;
+                            try
+                            {
+                                await importer.ImportItemAsync(item, context);
+                            }
+                            catch (Exception e)
+                            {
+                                context.Logger.Error($"Item import failed", e);
+                                throw;
+                            }
 
-                        await updateResultAsync(res => {
-                            res.AvgSpeed = Convert.ToDecimal(speed);
-                        });
-                    }
+                            var span = (Clock.Now - startTime);
+                            var speed = Math.Round(rowNo / (span.TotalSeconds > 0 ? span.TotalSeconds : 1), 2);
+                            //importResult.AvgSpeed = Convert.ToDecimal(speed);
+                            var estimated = new TimeSpan(span.Ticks / rowNo * totalItems);
+                            context.Logger.Info($"processed {rowNo} from {totalItems} ({(double)rowNo / totalItems * 100:0.#}%), estimated time = {estimated.Minutes:D2}:{estimated.Seconds:D2}:{estimated.Milliseconds:D3}, speed = {speed} row/sec");
+                            rowNo++;
+
+                            await updateResultAsync(res => {
+                                res.AvgSpeed = Convert.ToDecimal(speed);
+                            });
+                        }
+                    }                    
                 }
 
                 context.Logger.Info($"Package imported successfully");
@@ -306,6 +331,161 @@ namespace Shesha.ConfigurationItems.Distribution
             };
             await _importResultRepository.InsertAsync(result);
             return result;
+        }
+
+        public async Task<AnalyzePackageResponse> AnalyzePackageAsync(Stream stream, ReadPackageContext context)
+        {
+            using var package = await ReadPackageAsync(stream, context);
+
+            var result = new AnalyzePackageResponse();
+
+            foreach (var item in package.Items)
+            {
+                if (item.Importer == null)
+                    continue;
+
+                using (var jsonStream = item.StreamGetter())
+                {
+                    var srcItemDto = await item.Importer.ReadFromJsonAsync(jsonStream);
+
+                    var dbItem = await _itemsRepository.GetByByFullName(srcItemDto.ModuleName, srcItemDto.Name)
+                        .FilterByApplication(item.ApplicationKey)
+                        .FirstOrDefaultAsync();
+
+                    var isExposed = srcItemDto.BaseModules.Any();
+                    var baseModule = isExposed
+                        ? srcItemDto.BaseModules.FirstOrDefault()
+                        : srcItemDto.ModuleName;
+                    var overrideModule = isExposed
+                        ? srcItemDto.ModuleName
+                        : null;
+
+                    var status = await GetItemStatusAsync(srcItemDto, dbItem, out var description);
+                    var itemDto = new AnalyzePackageResponse.PackageItemDto
+                    {
+                        Id = srcItemDto.Id,
+                        Name = srcItemDto.Name,
+                        Label = srcItemDto.Label,
+                        Description = srcItemDto.Description,
+                        //FrontEndApplication = srcItemDto.FrontEndApplication,
+                        Type = srcItemDto.ItemType,
+
+                        DateUpdated = srcItemDto.DateUpdated,
+                        BaseModule = baseModule.NotNull(),
+                        OverrideModule = overrideModule,
+
+                        Status = status,
+                        StatusDescription = description,
+                    };
+
+                    result.Items.Add(itemDto);
+                }
+            }
+
+            return result;
+        }
+
+        
+        private Task<AnalyzePackageResponse.PackageItemStatus> GetItemStatusAsync(DistributedConfigurableItemBase distributedItem, ConfigurationItem? dbItem, out string? description) 
+        {
+            if (dbItem == null)
+            {
+                description = null;
+                return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.New);
+            }
+            else {
+                var revision = dbItem.LatestRevision;
+
+                if (revision != null && !string.IsNullOrWhiteSpace(distributedItem.ConfigHash) && revision.ConfigHash == distributedItem.ConfigHash)
+                {
+                    description = null;
+                    return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Unchanged);
+                }
+                else
+                {
+                    // TODO: check import errors
+                    description = null;
+                    return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Updated);
+                }
+            }                
+        }
+
+        public async Task MergePackagesAsync(IFormFile[] packages, Stream stream)
+        {
+            var packageInfos = packages.Select(p => {
+                var date = TryGetPackageDate(p.FileName);
+                return date.HasValue ? new { Date = date.Value, File = p } : null;
+            })
+            .WhereNotNull()
+            .OrderBy(p => p.Date)
+            .ToList();
+
+            using (var tempFolder = new TempFolder()) 
+            {
+                foreach (var packageInfo in packageInfos)
+                {
+                    using (var packageStream = packageInfo.File.OpenReadStream())
+                    {
+                        using (var zip = new ZipArchive(packageStream, ZipArchiveMode.Read))
+                        {
+                            zip.ExtractToDirectory(tempFolder.Path, overwriteFiles: true);
+                        }
+                    }
+                }
+
+                var files = Directory.GetFiles(tempFolder.Path, "*.*", new EnumerationOptions() { RecurseSubdirectories = true }).ToList();
+                using (var zip = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true))
+                {
+                    foreach (var fileToZip in files)
+                    {
+                        using (var fileData = new FileStream(fileToZip, FileMode.Open))
+                        {
+                            var zipFilename = Path.GetRelativePath(tempFolder.Path, fileToZip);
+                            var entry = zip.CreateEntry(zipFilename);
+
+                            using (var dstStream = entry.Open())
+                            {
+                                await fileData.CopyToAsync(dstStream);
+                            }
+                        }
+                    }
+                }
+                stream.Position = 0;
+            }
+        }
+
+        private DateTime? TryGetPackageDate(string fileName)
+        {
+            var packageRegex = new Regex(@"[.]*package(?'year'\d{4})(?'month'\d{2})(?'day'\d{2})_(?'hour'\d{2})(?'minute'\d{2})\.shaconfig");
+            var match = packageRegex.Match(fileName);
+
+            if (!match.Success)
+                return null;
+
+            var version = $"{match.Groups["year"]}{match.Groups["month"]}{match.Groups["day"]}{match.Groups["hour"]}{match.Groups["minute"]}";
+
+            return DateTime.TryParseExact(version, "yyyyMMddHHmm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+                ? date
+                : null;
+        }
+
+        private class ItemToImport
+        {
+            /// <summary>
+            /// Item
+            /// </summary>
+            public DistributedConfigurableItemBase Item { get; set; }
+
+            /// <summary>
+            /// Corresponding importer
+            /// </summary>
+            public IConfigurableItemImport Importer { get; set; }
+
+            public ItemToImport(DistributedConfigurableItemBase item, IConfigurableItemImport importer)
+            {
+                Item = item;
+                Importer = importer;
+            }
         }
     }
 }

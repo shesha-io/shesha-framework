@@ -3,9 +3,10 @@ import { ReactNode } from 'react';
 import { FormMarkup, GenericDictionary } from '@/providers/form/models';
 import { StandardNodeTypes } from './formComponent';
 import { IObjectMetadata } from './metadata';
-import { IApplicationApi } from '@/providers';
+import { ActionParametersDictionary, IApplicationApi } from '@/providers';
 import { IFormApi } from '@/providers/form/formApi';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface IHasPreviousActionResponse {
   actionResponse?: any;
@@ -34,15 +35,10 @@ export const HasPreviousActionResponse = (value: HasPreviousActionResult): value
  */
 export type IConfigurableActionExecuter<TArguments, TReponse> = (
   actionArguments: TArguments,
-  context: IActionExecutionContext
+  context: IActionExecutionContext,
 ) => Promise<TReponse>;
 
-
-export interface IConfigurableActionArguments {
-
-}
-
-export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments> {
+export interface ISettingsFormFactoryArgs<TModel extends object = object> {
   model: TModel;
   onSave: (values: TModel) => void;
   onCancel: () => void;
@@ -55,11 +51,12 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments>
 export interface FormMarkupFactoryArgs {
   exposedVariables?: ICodeExposedVariable[];
   availableConstants?: IObjectMetadata;
+  fbf: FormBuilderFactory;
 }
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
 
-export type IConfigurableActionArgumentsFormFactory<TModel = IConfigurableActionArguments> = (
-  props: ISettingsFormFactoryArgs<TModel>
+export type IConfigurableActionArgumentsFormFactory<TModel extends object = object> = (
+  props: ISettingsFormFactoryArgs<TModel>,
 ) => ReactNode;
 
 export interface IHasActionOwner {
@@ -84,21 +81,19 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
 export type DynamicContextHook = () => GenericDictionary;
 export const EMPTY_DYNAMIC_CONTEXT_HOOK: DynamicContextHook = () => ({});
 
-export interface ConfigurableActionArgumentsMigrationContext {
-
-}
+export type ConfigurableActionArgumentsMigrationContext = void;
 
 /**
  * Arguments migrator
  */
 export type ConfigurableActionArgumentsMigrator<TArguments> = (
-  migrator: Migrator<any, TArguments, ConfigurableActionArgumentsMigrationContext>
+  migrator: Migrator<unknown, TArguments, ConfigurableActionArgumentsMigrationContext>,
 ) => MigratorFluent<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>;
 
 /**
  * Configurable action descriptor. Is used to define consigurable actions
  */
-export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionArguments, TReponse = any>
+export interface IConfigurableActionDescriptor<TArguments extends object = object, TReponse = unknown>
   extends IConfigurableActionIdentifier {
   /**
    * User friendly name of the action. Action name is displayed if the label is not specified
@@ -108,6 +103,10 @@ export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionA
    * Action description
    */
   description?: string;
+  /**
+   * Sort order for displaying actions in the list. Lower numbers appear first.
+   */
+  sortOrder?: number;
   /**
    * If true, indicaes that the action has configurable arguments
    */
@@ -136,7 +135,7 @@ export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionA
   /**
    * Arguments migrations. Returns last version of arguments
    */
-  migrator?: ConfigurableActionArgumentsMigrator<IConfigurableActionArguments>;
+  migrator?: ConfigurableActionArgumentsMigrator<TArguments>;
 }
 
 export interface IMayHaveType {
@@ -146,7 +145,7 @@ export interface IMayHaveType {
 /**
  * Configurable action configuration. Is used in the form components to configure actions
  */
-export interface IConfigurableActionConfiguration<TArguments = any> extends IMayHaveType {
+export interface IConfigurableActionConfiguration<TArguments extends ActionParametersDictionary = ActionParametersDictionary> extends IMayHaveType {
   actionOwner: string;
   actionName: string;
   version?: number;
@@ -156,6 +155,12 @@ export interface IConfigurableActionConfiguration<TArguments = any> extends IMay
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
 }
+
+export const isConfigurableActionConfiguration = (actionConfig: unknown): actionConfig is IConfigurableActionConfiguration => {
+  return actionConfig && typeof (actionConfig) === 'object' &&
+    'actionOwner' in actionConfig && typeof (actionConfig.actionOwner) === 'string' &&
+    'actionName' in actionConfig && typeof (actionConfig.actionName) === 'string';
+};
 
 /**
  * Make default action configuration, is used for component initialization

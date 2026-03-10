@@ -1,7 +1,5 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState, FC } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
-import { DataNode, EventDataNode } from 'antd/lib/tree';
-import { FC } from 'react';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { Key } from 'rc-tree/lib/interface';
 import {
@@ -9,7 +7,8 @@ import {
   Space,
   Tag,
   Tooltip,
-  Tree
+  Tree,
+  TreeProps,
 } from 'antd';
 import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { useLocalStorage } from 'react-use';
@@ -20,8 +19,9 @@ import {
   usePermissionDelete,
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
-import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormInstanceOrUndefined } from '@/providers/form/providers/shaFormProvider';
 import { ShaSpin, useAvailableConstantsData } from '@/index';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 interface IDataNode {
   title: JSX.Element;
@@ -36,22 +36,6 @@ interface IDataNode {
 interface IPermissionModule {
   moduleName: string;
   permissions: PermissionDto[];
-}
-
-// note: antd types were changed, CustomEventDataNode was added to fix build, to be reviewed later
-interface CustomEventDataNode extends EventDataNode<{}> { }
-
-interface ICheckInfo {
-  event: 'check';
-  node: CustomEventDataNode;
-  checked: boolean;
-  nativeEvent: MouseEvent;
-  checkedNodes: DataNode[];
-  checkedNodesPositions?: {
-    node: DataNode;
-    pos: string;
-  }[];
-  halfCheckedKeys?: Key[];
 }
 
 export type PermissionsTreeMode = 'Edit' | 'Select' | 'View';
@@ -78,6 +62,10 @@ export interface IPermissionsTreeProps {
 const emptyId = '_';
 const withoutModule = '[no-module]';
 
+const getErrorMessageOrDefault = (error: unknown, defaultMessage: string = "Unknown error"): string => {
+  return typeof (error) === 'object' && 'message' in error && typeof (error.message) === 'string' ? error.message : defaultMessage;
+};
+
 export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, onSelectAction, ...rest }) => {
   const { message } = App.useApp();
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissions.toolbox.objects.openedKeys', ['']);
@@ -102,7 +90,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const shaForm = useShaFormInstance(false);
+  const shaForm = useShaFormInstanceOrUndefined();
   const { setFormMode } = shaForm ?? {};
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -123,17 +111,17 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   // do autoexpand only for new object
   useEffect(() => {
     const exp = openedKeys ?? [];
-    const expand = (key: string) => {
-      if (!exp.find(e => e === key)) {
+    const expand = (key: string): void => {
+      if (!exp.find((e) => e === key)) {
         exp.push(key);
       }
     };
     if (allItems) {
       if (value) {
-        const f = (list: PermissionDto[]) => {
-          list.forEach(item => {
-            if (item.child?.length > 0 && item.child.find(c => value.find(v => v === c.id))) {
-              if (exp.find(e => e === item.id))
+        const f = (list: PermissionDto[]): void => {
+          list.forEach((item) => {
+            if (item.child?.length > 0 && item.child.find((c) => value.find((v) => v === c.id))) {
+              if (exp.find((e) => e === item.id))
                 expand(item.id);
               f(item.child);
             }
@@ -143,16 +131,15 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       }
 
       const modules: GuidEntityReferenceDto[] = [];
-      const sorted = allItems.sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
+      const sorted = [...allItems].sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
 
-      sorted?.forEach(item => {
-        //const module = item.module ? item.module._displayName ?? {withoutModule};
-        if (!modules.find(m => m?.id === item.module?.id))
+      sorted?.forEach((item) => {
+        if (!modules.find((m) => m?.id === item.module?.id))
           modules.push(item.module);
       });
 
       if (firstExpand)
-        modules.forEach(m => expand(m?._displayName ?? withoutModule));
+        modules.forEach((m) => expand(m?._displayName ?? withoutModule));
       setFirstExpand(false);
 
       setAllModules(modules);
@@ -163,8 +150,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
   useEffect(() => {
     if (!isFetchingData) {
-      if (fetchingDataResponse) {
-        const fetchedData = fetchingDataResponse?.result;
+      if (isAjaxSuccessResponse(fetchingDataResponse)) {
+        const fetchedData = fetchingDataResponse.result;
         if (fetchedData)
           setAllItems(fetchedData);
       }
@@ -175,20 +162,22 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   }, [isFetchingData, fetchingDataError, fetchingDataResponse]);
 
-  const onCheck = (keys: any, _info: ICheckInfo) => {
+  const onCheck: TreeProps['onCheck'] = (keys, _info): void => {
     if (rest.readOnly) return;
-    setChecked(keys?.checked);
+    if (!keys || Array.isArray(keys))
+      return;
+    setChecked(keys.checked);
     if (Boolean(onChange))
       onChange(
-        keys?.checked.map(item => {
+        keys.checked.map((item) => {
           return item.toString();
-        })
+        }),
       );
   };
 
-  const onExpand = (keys: Key[]) => {
+  const onExpand = (keys: Key[]): void => {
     setExpanded(keys);
-    setOpenedKeys(keys.map(item => item.toString()));
+    setOpenedKeys(keys.map((item) => item.toString()));
   };
 
   const findItem = (items: PermissionDto[], key: string): PermissionDto => {
@@ -204,16 +193,16 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     return res;
   };
 
-  const onChangeAction = (selectedRow: PermissionDto) => {
+  const onChangeAction = (selectedRow: PermissionDto): void => {
     if (onSelectAction?.actionName) {
       executeAction({
         actionConfiguration: onSelectAction,
-        argumentsEvaluationContext: {...allData.current, selectedRow},
+        argumentsEvaluationContext: { ...allData.current, selectedRow },
       });
     }
   };
 
-  const onSelect = (keys: Key[]) => {
+  const onSelect = (keys: Key[]): void => {
     if (!keys || keys.length === 0) {
       setSelected(null);
 
@@ -221,7 +210,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       return;
     }
 
-    const ids = keys.map(item => {
+    const ids = keys.map((item) => {
       return item.toString();
     });
     const item = findItem(allItems, ids[0]);
@@ -245,7 +234,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   }, [doSelect]);
 
-  const addPermission = (parent: PermissionDto, list: PermissionDto[]) => {
+  const addPermission = (parent: PermissionDto, list: PermissionDto[]): PermissionDto => {
     const o: PermissionDto = {
       id: emptyId,
       name: 'NewPermission',
@@ -260,7 +249,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     return o;
   };
 
-  const deletePermission = () => {
+  const deletePermission = (): void => {
     const s = findItem(allItems, selected[0]);
     if (Boolean(s.parentName)) {
       setDoSelect(s.parentName);
@@ -278,12 +267,12 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     setAllItems([...allItems]);
   };
 
-  const expandNode = (key: string) => {
-    if (expanded.length === 0 || !expanded.find(x => x === key))
-      setExpanded(prev => [...prev, key]);
+  const expandNode = (key: string): void => {
+    if (expanded.length === 0 || !expanded.find((x) => x === key))
+      setExpanded((prev) => [...prev, key]);
   };
 
-  const expandParent = (items: PermissionDto[], item: PermissionDto) => {
+  const expandParent = (items: PermissionDto[], item: PermissionDto): void => {
     const parent = item.parentName ? findItem(items, item.parentName) : null;
     const exp = parent ? parent.id : item.module?._displayName ?? withoutModule;
     expandNode(exp);
@@ -294,7 +283,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   useEffect(() => {
     if (!isDeleting && Boolean(selected[0]) && selected.length > 0) {
       if (deleteDataError) {
-        message.error(deleteDataError.message);
+        message.error(getErrorMessageOrDefault(deleteDataError));
       } else {
         deletePermission();
       }
@@ -304,7 +293,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   useEffect(() => {
     if (!isParentUpdating && Boolean(dragInfo)) {
       if (updateParentDataError) {
-        message.error(updateParentDataError.message);
+        message.error(getErrorMessageOrDefault(updateParentDataError));
       } else {
         const newItems = [...allItems];
         const dragItem = findItem(newItems, dragInfo.dragNode.key);
@@ -336,7 +325,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
             dragItem.parentName = dropItem.name;
           }
         } else {
-          const dropModule = allModules.find(x => x._displayName === dragInfo.node.key);
+          const dropModule = allModules.find((x) => x._displayName === dragInfo.node.key);
           newItems.push(dragItem);
           dragItem.parentName = null;
           dragItem.module = dropModule;
@@ -350,11 +339,11 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   }, [isParentUpdating, updateParentDataError]);
 
-  const onDragStart = info => {
+  const onDragStart = (info): void => {
     setSelected([info.node.key]);
   };
 
-  const onDrop = info => {
+  const onDrop = (info): void => {
     const dropItem = findItem(allItems, info.node.key);
     const dragItem = findItem(allItems, info.dragNode.key);
     if (!dragItem) return;
@@ -378,7 +367,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       updateParentRequest.mutate({ ...dragItem, parentName: null, module: null });
       return;
     }
-    const dropModule = allModules.find(x => x._displayName === info.node.key);
+    const dropModule = allModules.find((x) => x._displayName === info.node.key);
     if (dropModule) {
       setDragInfo(info);
       updateParentRequest.mutate({ ...dragItem, parentName: null, module: { ...dropModule } });
@@ -389,7 +378,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     const result: PermissionDto[] = [];
     if (!items) return result;
 
-    items?.forEach(item => {
+    items?.forEach((item) => {
       const childItems = getVisible(item.child, searchText);
       const matched =
         (searchText ?? '') === '' ||
@@ -410,11 +399,11 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     const result: IPermissionModule[] = [];
     if (!items) return result;
 
-    const sorted = items.sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
+    const sorted = [...items].sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
 
-    sorted?.forEach(item => {
+    sorted?.forEach((item) => {
       const moduleName = item.module?._displayName ?? withoutModule;
-      let m = result.find(m => m.moduleName === moduleName);
+      let m = result.find((m) => m.moduleName === moduleName);
       if (!m) {
         m = { moduleName: moduleName, permissions: [] };
         result.push(m);
@@ -425,7 +414,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     return result;
   };
 
-  const mapItem = (item: IPermissionModule | PermissionDto) => {
+  const mapItem = (item: IPermissionModule | PermissionDto): IDataNode => {
     const p = item as PermissionDto;
     if (!p.id) {
       const m = item as IPermissionModule;
@@ -455,23 +444,23 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       children: p.child?.map(mapItem),
       checkable: rest.mode === 'Select',
       selectable: true,
-    } as IDataNode;
+    } satisfies IDataNode;
   };
 
-  const updateTree = () => {
+  const updateTree = (): void => {
     const visible = getVisible(allItems, rest.hideSearch ? rest.searchText : searchText);
     if (searchText || rest.searchText) {
       const nodes = [];
-      const f = (item: PermissionDto) => {
+      const f = (item: PermissionDto): void => {
         if (item.child.length > 0) {
           item.child.forEach(f);
-          //nodes.push(...item.child.map(f));
+          // nodes.push(...item.child.map(f));
         } else {
           nodes.push(item);
         }
       };
       visible.forEach(f);
-      nodes.forEach(n => expandParent(allItems, n));
+      nodes.forEach((n) => expandParent(allItems, n));
     }
     setVisibleNodes(getModules(visible).map(mapItem));
   };
@@ -504,7 +493,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -517,7 +506,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       executer: () => {
         let s = findItem(allItems, emptyId);
         if (!s) {
-          setAllItems(prev => {
+          setAllItems((prev) => {
             addPermission(null, prev);
             return [...prev];
           });
@@ -531,7 +520,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -561,7 +550,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -588,10 +577,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
-  const getLoadingHint = () => {
+  const getLoadingHint = (): string => {
     switch (true) {
       case isFetchingData:
         return 'Fetching data...';

@@ -1,5 +1,7 @@
+import { ComponentDefinition } from '@/interfaces';
 import { headerType } from './../../components/panel/index';
 import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
+import { isDefined } from '@/utils/nullables';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 
@@ -35,8 +37,13 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   tablet?: any;
 };
 
+// TODO: implement generic guard on the component level
+export const isCollapsiblePanel = (component: IConfigurableFormComponent): component is ICollapsiblePanelComponentProps => isDefined(component) && component.type === 'collapsiblePanel';
+
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {
   collapsedByDefault?: boolean;
   expandIconPosition?: ExpandIconPosition;
   components?: IConfigurableFormComponent[];
 }
+
+export type CollapsiblePanelComponentDefinition = ComponentDefinition<"collapsiblePanel", ICollapsiblePanelComponentProps>;

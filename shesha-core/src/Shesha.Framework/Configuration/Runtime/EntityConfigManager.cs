@@ -1,12 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
-using Abp.Runtime.Session;
+using Abp.Extensions;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
-using Shesha.Dto.Interfaces;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using System;
@@ -19,18 +16,19 @@ namespace Shesha.Configuration.Runtime
     /// inheritedDoc
     public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
     {
-        private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
+        public readonly IRepository<EntityProperty, Guid> PropertyConfigRepo;
 
-        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
-
-        public EntityConfigManager(
-            IRepository<EntityConfig, Guid> repository,
-            IRepository<EntityProperty, Guid> propertyConfigRepo,
-            IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager            
-        ) : base(repository, moduleRepository, unitOfWorkManager)
+        public EntityConfigManager(IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
         {
-            _propertyConfigRepo = propertyConfigRepo;
+            PropertyConfigRepo = propertyConfigRepo;
+        }
+
+        public async Task<EntityConfig?> GetByEntityTypeIdAsync(EntityTypeIdentifier entityId)
+        {
+            return entityId.FullClassName.IsNullOrEmpty()
+                ? await Repository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Module != null && entityId.Module != null && x.Module.Name == entityId.Module && x.Name == entityId.Name)
+                : await Repository.GetAll().FirstOrDefaultAsync(x => x.FullClassName == entityId.FullClassName || x.TypeShortAlias == entityId.FullClassName);
         }
 
         public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null)
@@ -41,20 +39,22 @@ namespace Shesha.Configuration.Runtime
                 .Select(x => new EntityConfigDto()
                 {
                     Id = x.Id,
+                    Suppress = x.Suppress,
+
+                    Name = x.Name,
+                    Module = x.Module!.Name,
+
                     ClassName = x.ClassName,
-                    FriendlyName = x.FriendlyName,
-                    TypeShortAlias = x.TypeShortAlias,
                     TableName = x.TableName,
                     Namespace = x.Namespace,
                     DiscriminatorValue = x.DiscriminatorValue,
-                    Source = x.Source,
-                    EntityConfigType = x.EntityConfigType,
-                    Suppress = x.Suppress,
-                    Module = x.Module!.Name,
-                    Name = x.Name,
-                    Label = x.Label,
 
-                    VersionStatus = x.VersionStatus,
+                    EntityConfigType = x.EntityConfigType,
+
+                    Label = x.Label,
+                    TypeShortAlias = x.TypeShortAlias,
+
+                    Source = x.Source,
                 }).ToListAsync();
 
             return implemented ?? false
@@ -62,110 +62,98 @@ namespace Shesha.Configuration.Runtime
                 : result;
         }
 
-        public override async Task<EntityConfig> CreateNewVersionAsync(EntityConfig item)
-        {
-            // todo: check business rules
-
-            var newVersion =new EntityConfig();
-
-            MapEntityConfig(item, newVersion);
-
-            newVersion.ParentVersion = item; // set parent version
-            newVersion.VersionNo = item.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
-
-            await Repository.InsertAsync(newVersion);
-
-            await MapPropertiesAsync(item, newVersion);
-
-            return newVersion;
-        }
-
-        protected EntityConfig MapEntityConfig(EntityConfig src, EntityConfig dest)
-        {
-            dest.Name = src.Name;
-            dest.Module = src.Module;
-            dest.Application = src.Application;
-            dest.ItemType = src.ItemType;
-
-            dest.Origin = src.Origin;
-            dest.BaseItem = src.BaseItem;
-            dest.ParentVersion = src.ParentVersion;
-
-            dest.Label = src.Label;
-            dest.Description = src.Description;
-            dest.VersionNo = src.VersionNo;
-            dest.VersionStatus = src.VersionStatus;
-            dest.Suppress = src.Suppress;
-
-            // entity config specific properties
-            dest.FriendlyName = src.FriendlyName;
-            dest.TypeShortAlias = src.TypeShortAlias;
-            dest.TableName = src.TableName;
-            dest.ClassName = src.ClassName;
-            dest.Namespace = src.Namespace;
-            dest.DiscriminatorValue = src.DiscriminatorValue;
-            dest.GenerateAppService = src.GenerateAppService;
-            dest.Source = src.Source;
-            dest.EntityConfigType = src.EntityConfigType;
-            dest.HardcodedPropertiesMD5 = src.HardcodedPropertiesMD5;
-
-            dest.ViewConfigurations = src.ViewConfigurations.ToList();
-
-            return dest;
-        }
-
-        protected async Task MapPropertiesAsync(
-            EntityConfig srcItem,
-            EntityConfig item
+        protected async Task<EntityProperty?> CopyPropertiesAsync(
+            IList<EntityProperty> properties,
+            EntityConfig destination,
+            EntityProperty? parentProperty = null,
+            EntityProperty? srcItemsType = null
         )
         {
-            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == srcItem);
+            EntityProperty? itemsType = null;
+
             foreach (var src in properties)
             {
-                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
-                    ?? new EntityProperty { 
-                        EntityConfig = item,
-                        Name = src.Name,
-                        DataType = src.DataType
-                    };
+                var property = new EntityProperty
+                {
+                    EntityConfig = destination,
+                    Name = src.Name,
+                    DataType = src.DataType,
+                    ParentProperty = parentProperty,
+                    Label = src.Label,
+                    Description = src.Description,
+                    DataFormat = src.DataFormat,
+                    EntityFullClassName = src.EntityFullClassName,
+                    EntityType = src.EntityType,
+                    EntityModule = src.EntityModule,
+                    ReferenceListName = src.ReferenceListName,
+                    ReferenceListModule = src.ReferenceListModule,
+                    IsFrameworkRelated = src.IsFrameworkRelated,
 
-                dbItem.Label = src.Label;
-                dbItem.Description = src.Description;
-                dbItem.DataType = src.DataType;
-                dbItem.DataFormat = src.DataFormat;
-                dbItem.EntityType = src.EntityType;
-                dbItem.ReferenceListName = src.ReferenceListName;
-                dbItem.ReferenceListModule = src.ReferenceListModule;
-                dbItem.IsFrameworkRelated = src.IsFrameworkRelated;
+                    Min = src.Min,
+                    Max = src.Max,
+                    MinLength = src.MinLength,
+                    MaxLength = src.MaxLength,
+                    Suppress = src.Suppress,
+                    Audited = src.Audited,
+                    Required = src.Required,
+                    ReadOnly = src.ReadOnly,
+                    RegExp = src.RegExp,
+                    ValidationMessage = src.ValidationMessage,
 
-                dbItem.Min = src.Min;
-                dbItem.Max = src.Max;
-                dbItem.MinLength = src.MinLength;
-                dbItem.MaxLength = src.MaxLength;
-                dbItem.Suppress = src.Suppress;
-                dbItem.Audited = src.Audited;
-                dbItem.Required = src.Required;
-                dbItem.ReadOnly = src.ReadOnly;
-                dbItem.RegExp = src.RegExp;
-                dbItem.ValidationMessage = src.ValidationMessage;
+                    CascadeCreate = src.CascadeCreate,
+                    CascadeUpdate = src.CascadeUpdate,
+                    CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced,
 
-                dbItem.CascadeCreate = src.CascadeCreate;
-                dbItem.CascadeUpdate = src.CascadeUpdate;
-                dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
+                    ColumnName = src.ColumnName,
+                    
+                    InitStatus = src.InitStatus,
+                    InitMessage = src.InitMessage,
+                    CreatedInDb = src.CreatedInDb,
 
-                await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
+                    Formatting = src.Formatting,
+                    InheritedFrom = src.InheritedFrom,
+                    ListConfiguration = src.ListConfiguration,
+                    SortOrder = src.SortOrder,
+                    Source = src.Source,
+                };
+                if (parentProperty != null)
+                    parentProperty.Properties.Add(property);
+
+                property.ItemsType = await CopyPropertiesAsync(src.Properties, destination, property, src.ItemsType);
+
+                await PropertyConfigRepo.InsertOrUpdateAsync(property);
+
+                if (src == srcItemsType)
+                    itemsType = property;
             }
+
+            return itemsType;
         }
 
-        public override Task<EntityConfig> CopyAsync(EntityConfig item, CopyItemInput input)
+        protected override async Task CopyItemPropertiesAsync(EntityConfig source, EntityConfig destination)
         {
-            throw new NotImplementedException();
-        }
 
-        public override Task<IConfigurationItemDto> MapToDtoAsync(EntityConfig item)
-        {
-            throw new NotImplementedException();
+            destination.Label = source.Label;
+            destination.Description = source.Description;
+
+            destination.SchemaName = source.SchemaName;
+            destination.TableName = source.TableName;
+            destination.DiscriminatorValue = source.DiscriminatorValue;
+
+            destination.ClassName = source.ClassName;
+            destination.Namespace = source.Namespace;
+            destination.EntityConfigType = source.EntityConfigType;
+            destination.InheritedFrom = source.InheritedFrom;
+
+            destination.TypeShortAlias = source.TypeShortAlias;
+            destination.HardcodedPropertiesMD5 = source.HardcodedPropertiesMD5;
+            destination.ViewConfigurations = source.ViewConfigurations?.Select(v => v.Clone()).ToList() ?? new List<EntityViewConfigurationDto>();
+            destination.GenerateAppService = source.GenerateAppService;
+            destination.Source = source.Source;
+            destination.Accessor = source.Accessor;
+
+            var properties = await PropertyConfigRepo.GetAllListAsync(x => x.EntityConfig == source && x.ParentProperty == null);
+            await CopyPropertiesAsync(properties, destination);
         }
     }
 }

@@ -28,3 +28,9 @@ export const LEGACY_FORMS_MODULE_NAME = '(legacy forms)';
 export const LEGACY_REFERENCE_LISTS_MODULE_NAME = '(legacy lists)';
 
 export const HOME_CACHE_URL = 'HXUL_SRFT';
+
+export const LAYOUT_CONSTANTS = {
+  SIDEBAR_BTN_HEIGHT: "35px",
+  TOOLBAR_HEIGHT: "56px",
+  HEADER_HEIGHT: "60px",
+};

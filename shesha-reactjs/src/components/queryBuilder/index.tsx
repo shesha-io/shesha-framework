@@ -16,13 +16,13 @@ import {
   Settings,
 } from '@react-awesome-query-builder/antd';
 
-const QueryBuilder: FC<IQueryBuilderProps> = props => {
+const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
   const { value } = props;
   const { fields, fetchFields, customWidgets } = useQueryBuilder();
 
   const missingFields = useMemo(() => {
     const vars = extractVars(value);
-    const result = vars.filter(v => !fields.find(f => f.propertyName === v));
+    const result = vars.filter((v) => !fields.find((f) => f.propertyName === v));
     return result;
   }, [value, fields]);
 
@@ -43,7 +43,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = props => {
     removeInvalidMultiSelectValuesOnLoad: false,
     fieldSources: ["field", "func"],
     renderFunc: (props) => (<FuncSelect {...props} />),
-    renderField: (props) => (<FieldAutocomplete {...props} /*fields={fields}*/ />),
+    renderField: (props) => (<FieldAutocomplete {...props} /* fields={fields}*/ />),
   };
 
   const convertFields = (fields: IProperty[]): Fields => {
@@ -110,7 +110,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = props => {
 
       const subfields = dataType === '!struct' ? {} : undefined;
       if (subfields) {
-        childProps.forEach(p => {
+        childProps.forEach((p) => {
           const converted = convertField(p);
           if (converted)
             subfields[p.propertyName] = converted;
@@ -123,7 +123,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = props => {
         // @ts-ignore note: types are wrong in the library, they doesn't allow to extend
         fieldSettings,
         preferWidgets: fieldPreferWidgets.length > 0 ? fieldPreferWidgets : undefined,
-        subfields: subfields
+        subfields: subfields,
       };
     };
 

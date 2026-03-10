@@ -1,10 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
-using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using Shesha.Services.ConfigurationItems;
@@ -20,9 +17,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
     /// </summary>
     public class NotificationTypeImport : ConfigurationItemImportBase<NotificationTypeConfig, DistributedNotificationType>, INotificationTypeImport, ITransientDependency
     {
-        private readonly IRepository<NotificationTypeConfig, Guid> _repository;
         private readonly INotificationManager _manager;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<NotificationTemplate, Guid> _templateRepo;
 
         public NotificationTypeImport(
@@ -30,125 +25,91 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<NotificationTypeConfig, Guid> repository,
             IRepository<NotificationTemplate, Guid> templateRepo,
-            INotificationManager manager,
-            IUnitOfWorkManager unitOfWorkManager            
-        ) : base (moduleRepo, frontEndAppRepo)
+            INotificationManager manager            
+        ) : base (repository, moduleRepo, frontEndAppRepo)
         {
-            _repository = repository;
             _templateRepo = templateRepo;
-            _manager = manager;
-            _unitOfWorkManager = unitOfWorkManager;
+            _manager = manager;           
         }
 
-        public string ItemType => NotificationTypeConfig.ItemTypeName;
+        public override string ItemType => NotificationTypeConfig.ItemTypeName;
 
-        public async Task<ConfigurationItemBase> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        protected override async Task AfterImportAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem, IConfigurationItemsImportContext context)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
-            if (!(item is DistributedNotificationType itemConfig))
-                throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(NotificationTypeConfig)}. Actual type is {item.GetType().FullName}");
-
-            return await ImportAsync(itemConfig, context);
+            await ImportTemplatesAsync(item, distributedItem.Templates);
         }
 
-        protected async Task<ConfigurationItemBase> ImportAsync(DistributedNotificationType item, IConfigurationItemsImportContext context)
+        private async Task ImportTemplatesAsync(NotificationTypeConfig item, List<DistributedNotificationTemplateDto> templates)
         {
-            // use status specified in the context with fallback to imported value
-            var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
+            var dbTemplates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
 
-            var existingNotification = await _repository.GetByByFullName(item.ModuleName, item.Name).FirstOrDefaultAsync(e => e.IsLast);
-
-            if (existingNotification != null)
-            {
-                switch (existingNotification.VersionStatus)
-                {
-                    case ConfigurationItemVersionStatus.Draft:
-                    case ConfigurationItemVersionStatus.Ready:
-                        {
-                            // cancel existing version
-                            await _manager.CancelVersionAsync(existingNotification);
-                            break;
-                        }
-                }
-                // mark existing live form as retired if we import new form as live
-                if (statusToImport == ConfigurationItemVersionStatus.Live)
-                {
-                    var liveVersion = existingNotification.VersionStatus == ConfigurationItemVersionStatus.Live
-                        ? existingNotification
-                        : await _repository.GetByByFullName(item.ModuleName, item.Name).FirstOrDefaultAsync(e => e.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    if (liveVersion != null)
-                    {
-                        await _manager.UpdateStatusAsync(liveVersion, ConfigurationItemVersionStatus.Retired);
-                        await _unitOfWorkManager.Current.SaveChangesAsync(); // save changes to guarantee sequence of update
-                    }
-                }
-                
-                // Create new version. Note: it copies all nested items
-                var newVersion = await _manager.CreateNewVersionWithoutDetailsAsync(existingNotification);
-
-                // important: set status according to the context
-                newVersion.VersionStatus = statusToImport;
-                newVersion.CreatedByImport = context.ImportResult;
-                newVersion.Normalize();
-
-                // todo: save external Id
-                // how to handle origin?
-
-                await _repository.UpdateAsync(newVersion);
-
-                await ImportTemplatesAsync(newVersion, item.Templates);
-
-                return newVersion;
-            }
-            else
-            {
-                var newNotification = new NotificationTypeConfig();
-                await MapConfigAsync(item, newNotification, context);
-
-                newNotification.VersionNo = 1;
-
-                // important: set status according to the context
-                newNotification.VersionStatus = statusToImport;
-                newNotification.CreatedByImport = context.ImportResult;
-
-                newNotification.Normalize();
-
-                await _repository.InsertAsync(newNotification);
-
-                await ImportTemplatesAsync(newNotification, item.Templates);
-
-                return newNotification;
-            }
-        }
-
-        private async Task ImportTemplatesAsync(NotificationTypeConfig newVersion, List<DistributedNotificationTemplateDto> templates)
-        {
             foreach (var templateDto in templates) 
             {
-                var template = new NotificationTemplate { PartOf = newVersion }.CopyTemplatePropsFrom(templateDto);
-                await _templateRepo.InsertAsync(template);
+                var dbTemplate = dbTemplates.FirstOrDefault(dbt => dbt.TitleTemplate == templateDto.TitleTemplate &&
+                    dbt.BodyTemplate == templateDto.BodyTemplate &&
+                    dbt.MessageFormat == templateDto.MessageFormat);
+                if (dbTemplate != null)
+                {
+                    // template exists - remove from the list to keep only the ones that need to be deleted
+                    dbTemplates.Remove(dbTemplate);
+                }
+                else 
+                {
+                    // template is missing - create
+                    var template = new NotificationTemplate { PartOf = item }.CopyTemplatePropsFrom(templateDto);
+                    await _templateRepo.InsertAsync(template);
+                }                    
+            }
+
+            // remove templates that need to be deleted
+            foreach (var dbTemplate in dbTemplates)
+            {
+                await _templateRepo.DeleteAsync(dbTemplate);
             }
         }
 
-        protected async Task<NotificationTypeConfig> MapConfigAsync(DistributedNotificationType item, NotificationTypeConfig dbItem, IConfigurationItemsImportContext context)
+        protected override async Task<bool> CustomPropsAreEqualAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem)
         {
-            dbItem.Name = item.Name;
-            dbItem.Module = await GetModuleAsync(item.ModuleName, context);
-            dbItem.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
-            dbItem.ItemType = item.ItemType;
+            var equals = item.IsTimeSensitive == distributedItem.IsTimeSensitive &&
+                item.AllowAttachments == distributedItem.AllowAttachments &&
+                item.Disable == distributedItem.Disable &&
+                item.CanOptOut == distributedItem.CanOptOut &&
+                (item.Category ?? string.Empty) == (distributedItem.Category ?? string.Empty) &&
+                IdListsEqual(item.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>(), distributedItem.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>());
 
-            dbItem.Label = item.Label;
-            dbItem.Description = item.Description;
-            dbItem.VersionNo = item.VersionNo;
-            dbItem.VersionStatus = item.VersionStatus;
-            dbItem.Suppress = item.Suppress;
+            if (!equals)
+                return false;
 
+            // compare templates
+            var dbTemplates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
+            if (dbTemplates.Count() != distributedItem.Templates.Count)
+                return false;
+
+            var unprocessedTemplates = distributedItem.Templates.ToList();
+            foreach (var dbTemplate in dbTemplates)
+            {
+                var template = unprocessedTemplates.FirstOrDefault(dt => dt.TitleTemplate == dbTemplate.TitleTemplate &&
+                    dt.BodyTemplate == dbTemplate.BodyTemplate &&
+                    dt.MessageFormat == dbTemplate.MessageFormat);
+                if (template != null)
+                    unprocessedTemplates.Remove(template);
+                else
+                    return false;
+            }
+            return true;
+        }
+
+        private bool IdListsEqual(IList<ConfigurationItemIdentifierDto> listA, IList<ConfigurationItemIdentifierDto> listB)
+        { 
+            return listA.Count == listB.Count && listA.All(listB.Contains);
+        }
+
+        protected override Task MapCustomPropsToItemAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem)
+        {
             // entity specific properties
-            dbItem.CopyNotificationSpecificPropsFrom(item);
+            item.CopyNotificationSpecificPropsFrom(distributedItem);
 
-            return dbItem;
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,12 +1,17 @@
 ﻿using Newtonsoft.Json.Linq;
+using Shesha.DynamicEntities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 
 namespace Shesha.DynamicEntities.Binder
 {
+    [DebuggerStepThrough]
     public class EntityModelBindingContext
     {
+        public ModelConfigurationDto? ModelConfiguration {  get; set; }
+
         /// <summary>
         /// Validation results for whole model
         /// </summary>

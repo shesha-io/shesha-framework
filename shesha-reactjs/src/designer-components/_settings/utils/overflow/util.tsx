@@ -1,16 +1,10 @@
-export const getOverflowStyle = (overflow: boolean, hideScrollBar: boolean): React.CSSProperties => {
-    if (!overflow) return {};
-    return {
-        overflow: 'auto',
-        scrollbarWidth: 'thin',
-        '::-webkit-scrollbar': {
-            width: '8px',
-            backgroundColor: 'transparent'
-        },
-        ...(hideScrollBar && {
-            '::-webkit-scrollbar': { display: 'none' },
-            'msOverflowStyle': 'none',
-            'scrollbarWidth': 'none',
-        })
-    };
+export const getOverflowStyle = (overflow: boolean | string | undefined, hideScrollBar: boolean): React.CSSProperties => {
+  // Only apply CSS overflow styles if overflow is explicitly true (boolean)
+  // String values like 'dropdown', 'menu', 'scroll' are for component-specific behavior, not CSS overflow
+  if (overflow !== true) return {};
+  return {
+    overflow: 'auto',
+    scrollbarWidth: hideScrollBar ? 'none' : 'thin',
+    scrollbarColor: hideScrollBar ? undefined : '#8B8B8B transparent',
+  };
 };

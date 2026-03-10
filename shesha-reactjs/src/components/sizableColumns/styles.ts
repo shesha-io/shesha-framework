@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const split = cx(css`
+  const split = cx(css`
         .gutter {
             background-color: #eee;
         
@@ -19,7 +19,7 @@ export const useStyles = createStyles(({ css, cx }) => {
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
         }
   `);
-    return {
-        split,
-    };
+  return {
+    split,
+  };
 });

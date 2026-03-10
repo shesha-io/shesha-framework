@@ -1,5 +1,3 @@
-//import columnSettingsJson from './columnSettings.json';
-//import { getSettings } from './columnSettings';
 import React, {
   FC,
   useEffect,
@@ -15,6 +13,7 @@ import { sheshaStyles } from '@/styles';
 import { usePrevious } from 'react-use';
 import { IMetadataContext } from '@/providers/metadata/contexts';
 import { getColumnSettings } from './columnSettings';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 export interface IColumnPropertiesProps {
   item?: ColumnsItemProps;
@@ -26,9 +25,10 @@ export interface IColumnPropertiesProps {
 
 export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, readOnly, parentComponentType }) => {
   const [form] = Form.useForm();
+  const fbf = useFormBuilderFactory();
 
   const columnType = Form.useWatch('columnType', form);
-  const columnSettings = useMemo(() => getColumnSettings({ type: parentComponentType }), [parentComponentType]);
+  const columnSettings = useMemo(() => getColumnSettings(fbf, { type: parentComponentType }), [fbf, parentComponentType]);
 
   const prevColumnType = usePrevious(columnType);
   useEffect(() => {
@@ -49,10 +49,10 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
 
-  const linkToModelMetadata = (metadata: IPropertyMetadata) => {
+  const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
     if (readOnly) return;
     const values = form.getFieldsValue() as IDataColumnsProps;
     const newValues: IDataColumnsProps = {
@@ -81,5 +81,4 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       className={sheshaStyles.verticalSettingsClass}
     />
   );
-
 };

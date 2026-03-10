@@ -21,7 +21,7 @@ export const Column: FC<IProps> = ({ item }) => {
     <>
       {actionProps && actionProps.icon && <ShaIcon iconName={actionProps.icon as IconType} />}
       <span className={styles.listItemName}>{item.caption}</span>
-      {item.description && (
+      {item.description && item.columnType === "data" && (
         <Tooltip title={item.description}>
           <QuestionCircleOutlined className={styles.helpIcon} />
         </Tooltip>

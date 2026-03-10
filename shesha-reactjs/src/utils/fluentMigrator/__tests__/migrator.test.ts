@@ -25,7 +25,7 @@ describe('Given 2 migrations', () => {
   test('Then I expect model migrated to the last verson with result check', () => {
       const source: V1Model = { name: 'Lorem ipsum', version: -1 };
       
-      const dst = registration.migrator.upgrade(source);
+      const dst = registration.migrator.upgrade(source, {});
 
       expect(dst.path).toEqual('Lorem ipsum');
       expect(dst.description).toEqual('description!');

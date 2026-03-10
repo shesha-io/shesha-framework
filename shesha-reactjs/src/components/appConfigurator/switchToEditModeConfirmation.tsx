@@ -2,11 +2,9 @@ import React, { FC } from 'react';
 import { Modal } from 'antd';
 import { useAppConfigurator } from '@/providers';
 
-export interface IProps {}
-
-export const SwitchToEditModeConfirmation: FC<IProps> = () => {
+export const SwitchToEditModeConfirmation: FC = () => {
   const { editModeConfirmationVisible, switchApplicationMode, toggleEditModeConfirmation } = useAppConfigurator();
-  
+
   return (
     <Modal
       title="Launch Edit Mode"
@@ -14,7 +12,7 @@ export const SwitchToEditModeConfirmation: FC<IProps> = () => {
       onCancel={() => toggleEditModeConfirmation(false)}
       onOk={() => switchApplicationMode('edit')}
     >
-      <p>Would you like to leave 'Live Mode' and launch 'Edit Mode'?</p>
+      <p>Would you like to leave &apos;Live Mode&apos; and launch &apos;Edit Mode&apos;?</p>
     </Modal>
   );
 };

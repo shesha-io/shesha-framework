@@ -1,13 +1,15 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { AutoComplete, Button, Select, Space, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useForm, useMetadata, useMetadataDispatcher } from '@/providers';
+import { useEntityMetadataFetcher, useForm, useMetadata, useMetadataDispatcher } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { camelCase } from 'lodash';
-import { IPropertyMetadata, asPropertiesArray } from '@/interfaces/metadata';
+import { IPropertyMetadata, asPropertiesArray, isIHasEntityType } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { useConfigurableFormActions } from '@/providers/form/actions';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { DataTypes } from '@/interfaces';
 
 export interface IPropertyAutocompleteProps {
   id?: string;
@@ -22,6 +24,7 @@ export interface IPropertyAutocompleteProps {
   autoFillProps?: boolean;
   readOnly?: boolean;
   allowClear?: boolean;
+  propertyModelType?: string | IEntityTypeIdentifier;
 }
 
 interface IOption {
@@ -34,12 +37,12 @@ interface IAutocompleteState {
   properties: IPropertyMetadata[];
 }
 
-const getFullPath = (path: string, prefix: string) => {
+const getFullPath = (path: string, prefix: string): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
 const properties2options = (properties: IPropertyMetadata[], prefix: string): IOption[] => {
-  return properties.map(p => {
+  return properties.map((p) => {
     const value = getFullPath(p.path, prefix);
     const icon = getIconByPropertyMetadata(p);
     const label = (
@@ -47,30 +50,24 @@ const properties2options = (properties: IPropertyMetadata[], prefix: string): IO
     );
     return {
       value: value,
-      label: label
+      label: label,
     };
   });
 };
 
-export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 'single', readOnly = false, allowClear = false, ...props }) => {
+export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 'single', readOnly = false, allowClear = false, onPropertiesLoaded, ...props }) => {
   const { style = { width: '32px' } } = props;
 
   const meta = useMetadata(false);
   const { getContainerProperties } = useMetadataDispatcher();
-  const { metadata } = meta || {};
+  const { getByEntityType } = useEntityMetadataFetcher();
+  const [modelTypeHierarchy, setModelTypeHierarchy] = useState<IEntityTypeIdentifier[]>([]);
+
+  const { metadata } = meta ?? {};
 
   const initialProperties = asPropertiesArray(metadata?.properties, []);
   const [state, setState] = useState<IAutocompleteState>({ options: properties2options(initialProperties, null), properties: initialProperties });
   const [multipleValue, setMultipleValue] = useState('');
-
-  const setProperties = (properties: IPropertyMetadata[], prefix: string) => {
-    if (props.onPropertiesLoaded)
-      props.onPropertiesLoaded(properties, prefix);
-    setState({
-      properties: properties,
-      options: properties2options(properties, prefix)
-    });
-  };
 
   const form = useForm(false);
   const { linkToModelMetadata } = useConfigurableFormActions(false) ?? {};
@@ -96,21 +93,82 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   }, [multipleValue]);
 
   const getProperty = (path: string): IPropertyMetadata => {
-    return state.properties.find(p => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
+    return state.properties.find((p) => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
   };
+
+  // update propertyModel type hierarchy
+  const propModelUid = typeof (props.propertyModelType) === 'string' ? props.propertyModelType : `${props.propertyModelType?.module}.${props.propertyModelType?.name}`;
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!props.propertyModelType) {
+      setModelTypeHierarchy([]);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const typeList: IEntityTypeIdentifier[] = [];
+
+    const getParentAsync = async (entityType: string | IEntityTypeIdentifier): Promise<void> => {
+      const entity = await getByEntityType(entityType);
+      if (!entity) return;
+      typeList.push({ name: entity.entityType, module: entity.entityModule } as IEntityTypeIdentifier);
+      if (isIHasEntityType(entity) && entity.inheritedFromEntityType) {
+        await getParentAsync({ name: entity.inheritedFromEntityType, module: entity.inheritedFromEntityModule } as IEntityTypeIdentifier);
+      }
+    };
+
+    getParentAsync(props.propertyModelType)
+      .then(() => {
+        if (!cancelled) {
+          setModelTypeHierarchy(typeList);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to fetch entity type hierarchy:', error);
+        if (!cancelled) {
+          setModelTypeHierarchy([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [propModelUid]);
 
   // TODO: move to metadata dispatcher
   // TODO: add `loadProperties` method with callback:
   //    modelType, properties[] (dot notation props list)
   useEffect(() => {
-    getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then(properties => {
-      setProperties(properties, containerPath ?? containerPathMultiple);
-    }).catch(() => {
-      setProperties([], '');
-    });
-  }, [metadata?.properties, containerPath, containerPathMultiple]);
+    const setProperties = (properties: IPropertyMetadata[], prefix: string): void => {
+      if (onPropertiesLoaded)
+        onPropertiesLoaded(properties, prefix);
+      setState({
+        properties: properties,
+        options: properties2options(properties, prefix),
+      });
+    };
 
-  const onSelect = (data: string) => {
+    if (!metadata) {
+      setProperties([], '');
+    } else {
+      getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then((properties) => {
+        const propertyModeltype = props.propertyModelType;
+        const preparedProperties = Boolean(propertyModeltype)
+          // Filter properties by propertyModelType
+          ? properties.filter((p) =>
+            p.dataType === DataTypes.entityReference &&
+            modelTypeHierarchy.some((pmt) => (p.entityModule ?? null) === (pmt.module ?? null) && p.entityType === pmt.name))
+          : properties;
+        setProperties(preparedProperties, containerPath ?? containerPathMultiple);
+      }).catch(() => {
+        setProperties([], '');
+      });
+    }
+  }, [metadata, modelTypeHierarchy, containerPath, containerPathMultiple, props.propertyModelType, getContainerProperties, onPropertiesLoaded]);
+
+  const onSelect = (data: string): void => {
     if (props.onChange) props.onChange(data);
     const property = getProperty(data);
     if (props.onSelect) {
@@ -121,9 +179,9 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     }
   };
 
-  const selectMultipleVlaue = (data: string) => {
+  const selectMultipleVlaue = (data: string): void => {
     var list = props.value
-      ? Array.isArray(props.value) ? props.value : []
+      ? Array.isArray(props.value) ? [...props.value] : []
       : [];
 
     list.push(data);
@@ -136,11 +194,11 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     }
   };
 
-  const onAddMultipleClick = () => {
+  const onAddMultipleClick = (): void => {
     selectMultipleVlaue(multipleValue);
   };
 
-  const onSelectMultiple = (data: string) => {
+  const onSelectMultiple = (data: string): void => {
     if (data !== multipleValue) {
       setMultipleValue(data);
     } else {
@@ -148,10 +206,10 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     }
   };
 
-  const onSearchMultiple = (data: string) => {
+  const onSearchMultiple = (data: string): void => {
     setMultipleValue(data);
     const filteredOptions: IOption[] = [];
-    state.properties.forEach(p => {
+    state.properties.forEach((p) => {
       const fullPath = getFullPath(p.path, containerPathMultiple);
 
       if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase()))
@@ -162,11 +220,11 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   };
 
 
-  const onSearch = (data: string) => {
+  const onSearch = (data: string): void => {
     if (props.onChange) props.onChange(data);
 
     const filteredOptions: IOption[] = [];
-    state.properties.forEach(p => {
+    state.properties.forEach((p) => {
       const fullPath = getFullPath(p.path, containerPath);
 
       if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase()))
@@ -183,11 +241,11 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       value={props.value}
       options={state.options}
       style={props.style}
+      styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       onSelect={onSelect}
       onSearch={onSearch}
       notFoundContent="Not found"
       size={props.size}
-      dropdownStyle={props?.dropdownStyle}
       popupMatchSelectWidth={false}
       allowClear={allowClear}
     />
@@ -198,29 +256,30 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   if (mode === 'tags')
     return (
-      <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /*showSearch*/ size={props.size} disabled={readOnly}>
+      <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /* showSearch*/ size={props.size} disabled={readOnly}>
         {state.options.map((option, index) => (
           <Select.Option key={index} value={camelCase(option.value)}>
             {option.label}
           </Select.Option>
         ))}
-      </Select>);
+      </Select>
+    );
 
-  const forMap = (tag: string) => {
+  const forMap = (tag: string): JSX.Element => {
     const tagElem = (
       <>
         <Tag
           closable
-          onClose={e => {
+          onClose={(e) => {
             e.preventDefault();
             if (Array.isArray(props.value))
-              if (props.onChange) props.onChange(props.value.filter(item => item !== tag));
+              if (props.onChange) props.onChange(props.value.filter((item) => item !== tag));
           }}
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
             setMultipleValue(tag);
             if (Array.isArray(props.value))
-              if (props.onChange) props.onChange(props.value.filter(item => item !== tag));
+              if (props.onChange) props.onChange(props.value.filter((item) => item !== tag));
           }}
         >
           {tag}
@@ -228,7 +287,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       </>
     );
     return (
-      <span key={tag} style={{ display: 'inline-block' }}>
+      <span key={tag} style={{ display: 'inline-block', marginTop: 13 }}>
         {tagElem}
       </span>
     );
@@ -238,18 +297,17 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   return (
     <>
-      <Space.Compact style={{ width: "100%", ...props.style }}>
+      <Space.Compact style={{ width: "100%", ...props.style, marginTop: tagChild?.length ? 4 : 0 }}>
         <AutoComplete
           disabled={readOnly}
           value={multipleValue}
           options={state.options}
           style={props.style}
-          //onChange={setMultipleValue}
+          styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
           onSelect={onSelectMultiple}
           onSearch={onSearchMultiple}
           notFoundContent="Not found"
           size={props.size}
-          dropdownStyle={props?.dropdownStyle}
           popupMatchSelectWidth={false}
         />
         <Button
@@ -260,7 +318,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           size={props.size}
         />
       </Space.Compact>
-      <div style={{ marginTop: 16 }}>
+      <div>
         {tagChild}
       </div>
     </>

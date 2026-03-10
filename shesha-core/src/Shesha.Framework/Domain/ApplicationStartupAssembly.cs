@@ -10,16 +10,16 @@ namespace Shesha.Domain
     /// Assembly loaded during the applicaiton startup
     /// </summary>
     [SnakeCaseNaming]
-    [Table("frwk_application_startup_assemblies")]
+    [Table("application_startup_assemblies", Schema = "frwk")]
     public class ApplicationStartupAssembly : Entity<Guid>
     {
         public required virtual string FileName { get; set; }
         public virtual string? FilePath { get; set; }
-        [StringLength(50)]
+        [MaxLength(50)]
         public required virtual string FileMD5 { get; set; }
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? FileVersion { get; set; }
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? ProductVersion { get; set; }
         public required virtual ApplicationStartup ApplicationStartup { get; set; }
     }

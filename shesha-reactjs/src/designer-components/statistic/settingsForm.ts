@@ -1,11 +1,11 @@
-import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
-import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
+import { fontTypes, fontWeightsOptions, textAlignOptions } from "../_settings/utils/font/utils";
 import { repeatOptions, positionOptions, sizeOptions } from "../_settings/utils/background/utils";
+import { SettingsFormMarkupFactory } from "@/interfaces";
 
-export const getSettings = (data: any) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceId = nanoid();
@@ -19,7 +19,7 @@ export const getSettings = (data: any) => {
   const shadowStylePnlId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -33,7 +33,7 @@ export const getSettings = (data: any) => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: "propertyName",
@@ -41,7 +41,7 @@ export const getSettings = (data: any) => {
                 label: "Property Name",
                 size: "small",
                 validate: {
-                  "required": true
+                  required: true,
                 },
                 jsSetting: true,
                 styledLabel: true,
@@ -64,9 +64,19 @@ export const getSettings = (data: any) => {
                     propertyName: 'placeholder',
                     label: 'Placeholder',
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
+              .addSettingsInput(
+                {
+                  inputType: 'switch',
+                  id: nanoid(),
+                  propertyName: 'hidden',
+                  label: 'Hide',
+                  jsSetting: true,
+                  parentId: commonTabId,
+                },
+              )
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
@@ -86,7 +96,7 @@ export const getSettings = (data: any) => {
                     label: 'Precision',
                     jsSetting: true,
                     min: 0,
-                  }
+                  },
                 ],
               })
               .addSettingsInputRow({
@@ -129,14 +139,14 @@ export const getSettings = (data: any) => {
                   },
                 ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'events',
             title: 'Events',
             id: eventsId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
@@ -144,17 +154,17 @@ export const getSettings = (data: any) => {
                 label: 'On Click',
                 labelAlign: 'right',
                 tooltip: 'Enter custom eventhandler on click of event.',
-                parentId: eventsId
+                parentId: eventsId,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -166,10 +176,10 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
-                  },
+                    _value: "",
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'titleStyle',
@@ -181,7 +191,7 @@ export const getSettings = (data: any) => {
                         collapsedByDefault: true,
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: pnlFontStyleId,
@@ -210,7 +220,7 @@ export const getSettings = (data: any) => {
                                   label: 'Weight',
                                   propertyName: 'titleFont.weight',
                                   hideLabel: true,
-                                  dropdownOptions: fontWeights,
+                                  dropdownOptions: fontWeightsOptions,
                                   width: 100,
                                 },
                                 {
@@ -227,7 +237,7 @@ export const getSettings = (data: any) => {
                                   propertyName: 'titleFont.align',
                                   hideLabel: true,
                                   width: 60,
-                                  dropdownOptions: textAlign,
+                                  dropdownOptions: textAlignOptions,
                                 },
                               ],
                             })
@@ -239,9 +249,9 @@ export const getSettings = (data: any) => {
                               label: 'Custom Styles',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -254,7 +264,7 @@ export const getSettings = (data: any) => {
                         collapsedByDefault: true,
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: pnlFontStyleId,
@@ -284,7 +294,7 @@ export const getSettings = (data: any) => {
                                   label: 'Weight',
                                   propertyName: 'valueFont.weight',
                                   hideLabel: true,
-                                  dropdownOptions: fontWeights,
+                                  dropdownOptions: fontWeightsOptions,
                                   width: 100,
                                 },
                                 {
@@ -301,7 +311,7 @@ export const getSettings = (data: any) => {
                                   propertyName: 'valueFont.align',
                                   hideLabel: true,
                                   width: 60,
-                                  dropdownOptions: textAlign,
+                                  dropdownOptions: textAlignOptions,
                                 },
                               ],
                             })
@@ -313,9 +323,9 @@ export const getSettings = (data: any) => {
                               label: 'Custom Styles',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
@@ -328,7 +338,7 @@ export const getSettings = (data: any) => {
                         collapsedByDefault: true,
                         content: {
                           id: dimensionsStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
@@ -341,7 +351,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                 },
                                 {
                                   type: 'textField',
@@ -360,8 +370,8 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
-                                }
-                              ]
+                                },
+                              ],
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -375,7 +385,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.height",
                                   icon: "heightIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                 },
                                 {
                                   type: 'textField',
@@ -394,12 +404,12 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
-                                }
-                              ]
+                                },
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -413,20 +423,20 @@ export const getSettings = (data: any) => {
                         collapsedByDefault: true,
                         content: {
                           id: 'borderStylePnl',
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addContainer({
                               id: 'borderStyleRow',
                               parentId: 'borderStylePnl',
-                              components: getBorderInputs() as any
+                              components: getBorderInputs(fbf),
                             })
                             .addContainer({
                               id: 'borderRadiusStyleRow',
                               parentId: 'borderStylePnl',
-                              components: getCornerInputs() as any
+                              components: getCornerInputs(fbf),
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -440,7 +450,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: backgroundStylePnlId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: `${backgroundStylePnlId}-type`,
                                 parentId: backgroundStylePnlId,
@@ -453,28 +463,28 @@ export const getSettings = (data: any) => {
                                   {
                                     value: "color",
                                     icon: "FormatPainterOutlined",
-                                    title: "Color"
+                                    title: "Color",
                                   },
                                   {
                                     value: "gradient",
                                     icon: "BgColorsOutlined",
-                                    title: "Gradient"
+                                    title: "Gradient",
                                   },
                                   {
                                     value: "image",
                                     icon: "PictureOutlined",
-                                    title: "Image"
+                                    title: "Image",
                                   },
                                   {
                                     value: "url",
                                     icon: "LinkOutlined",
-                                    title: "URL"
+                                    title: "URL",
                                   },
                                   {
                                     value: "storedFile",
                                     icon: "DatabaseOutlined",
-                                    title: "Stored File"
-                                  }
+                                    title: "Stored File",
+                                  },
                                 ],
                               })
                               .addSettingsInputRow({
@@ -499,7 +509,7 @@ export const getSettings = (data: any) => {
                                   propertyName: "background.gradient.colors",
                                   label: "Colors",
                                   jsSetting: false,
-                                }
+                                },
                                 ],
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
@@ -538,9 +548,9 @@ export const getSettings = (data: any) => {
                                     id: 'backgroundStyle-storedFile',
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
-                                    label: "File ID"
-                                  }
-                                ]
+                                    label: "File ID",
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyleRow-controls",
@@ -565,8 +575,8 @@ export const getSettings = (data: any) => {
                                     customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
@@ -577,14 +587,13 @@ export const getSettings = (data: any) => {
                                   label: 'Repeat',
                                   hideLabel: true,
                                   propertyName: 'background.repeat',
-                                  inputType: 'radio',
                                   buttonGroupOptions: repeatOptions,
                                 }],
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
-                              .toJson()
+                              .toJson(),
                           ],
-                        }
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -597,7 +606,7 @@ export const getSettings = (data: any) => {
                         collapsedByDefault: true,
                         content: {
                           id: shadowStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
@@ -653,9 +662,9 @@ export const getSettings = (data: any) => {
                                 },
                               ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -667,16 +676,16 @@ export const getSettings = (data: any) => {
                         collapsedByDefault: true,
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addStyleBox({
                               id: nanoid(),
                               label: 'Margin Padding',
                               hideLabel: true,
                               propertyName: 'stylingBox',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -689,7 +698,7 @@ export const getSettings = (data: any) => {
                         collapsedByDefault: true,
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -698,40 +707,41 @@ export const getSettings = (data: any) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
-                  ]
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
             title: 'Security',
             id: securityId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',
                 label: 'Permissions',
                 size: 'small',
-                parentId: securityId
+                jsSetting: true,
+                parentId: securityId,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
-        ]
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

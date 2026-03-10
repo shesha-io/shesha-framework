@@ -1,14 +1,14 @@
 import { FormInstance } from 'antd';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import {
   ModelConfigurationDto,
   entityConfigDelete,
   modelConfigurationsCreate,
-  modelConfigurationsGetById,
   modelConfigurationsUpdate,
 } from '@/apis/modelConfigurations';
-import { useSheshaApplication } from '@/providers';
+import { useHttpClient, useSheshaApplication } from '@/providers';
 import {
+  cancelAction,
   changeModelIdAction,
   createNewAction,
   deleteErrorAction,
@@ -20,14 +20,21 @@ import {
   saveErrorAction,
   saveRequestAction,
   saveSuccessAction,
+  setErrorsAction,
+  setModifiedAction,
+  setShowErrorsAction,
 } from './actions';
 import {
+  IModelConfiguratorActionsContext,
+  IModelConfiguratorStateContext,
+  IPropertyErrors,
   MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
   ModelConfiguratorActionsContext,
   ModelConfiguratorStateContext,
 } from './contexts';
-import { IModelConfiguratorInstance } from './interfaces';
 import modelReducer from './reducer';
+import { IAjaxResponse, isAjaxErrorResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { propertyModelValidator, validateDuplicated } from '@/components/modelConfigurator/propertiesEditor/renderer/propertySettings/propertyModelValidator';
 
 export interface IModelConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -36,13 +43,13 @@ export interface IModelConfiguratorProviderPropsBase {
 export interface IModelConfiguratorProviderProps {
   id?: string;
   form: FormInstance;
-  configuratorRef?: MutableRefObject<IModelConfiguratorInstance | null>;
 }
 
 const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProviderProps>> = (props) => {
   const { children } = props;
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
 
   const [state, dispatch] = useReducer(modelReducer, {
     ...MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
@@ -50,59 +57,80 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     form: props.form,
   });
 
-  const load = () => {
+  const load = (): void => {
     if (state.id) {
       dispatch(loadRequestAction());
 
-      // { name: state.className, namespace: state.namespace }
-      modelConfigurationsGetById({}, { id: state.id, base: backendUrl, headers: httpHeaders })
+      httpClient.get<IAjaxResponse<ModelConfigurationDto>>(`/api/ModelConfigurations/${state.id}`)
         .then((response) => {
-          if (response.success) {
-            dispatch(loadSuccessAction(response.result));
-          } else dispatch(loadErrorAction(response.error));
+          if (isAjaxSuccessResponse(response.data))
+            dispatch(loadSuccessAction(response.data.result));
+          else
+            dispatch(loadErrorAction(response.data.error));
         })
         .catch((e) => {
-          dispatch(loadErrorAction({ message: 'Failed to load model', details: e }));
+          if (isAjaxErrorResponse(e.response?.data))
+            dispatch(loadErrorAction(e.response.data.error));
+          else
+            dispatch(loadErrorAction({ message: 'Failed to load model' }));
         });
-    } /*
-    else
-      console.error("Failed to fetch a model configuraiton by Id - Id not specified");*/
+    }
   };
-    
+
   useEffect(() => {
     load();
   }, [state.id]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const changeModelId = (id: string) => {
+  const changeModelId = (id: string): void => {
     dispatch(changeModelIdAction(id));
   };
 
-  const createNew = (model: ModelConfigurationDto) => {
+  const createNew = (model: ModelConfigurationDto): void => {
     dispatch(createNewAction(model));
   };
 
-  const submit = () => {
+  const submit = (): void => {
     state.form.submit();
   };
 
   const prepareValues = (values: ModelConfigurationDto): ModelConfigurationDto => {
-    return { ...values, id: state.id };
+    return state.id
+      ? { ...values, id: state.id }
+      : { ...values, className: values.name, namespace: values.module };
+  };
+
+  const validateModel = (model: ModelConfigurationDto): IPropertyErrors[] => {
+    let errors: IPropertyErrors[] = validateDuplicated(model.properties, '');
+    model.properties?.forEach((prop) => {
+      errors = errors.concat(propertyModelValidator(prop));
+    });
+
+    dispatch(setErrorsAction(errors));
+
+    return errors;
   };
 
   const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> =>
     new Promise<ModelConfigurationDto>((resolve, reject) => {
-      // TODO: validate all properties
+      const errors = validateModel(values);
+      if (errors.length > 0) {
+        dispatch(setShowErrorsAction(true));
+        reject();
+        return;
+      }
+
       const preparedValues = prepareValues(values);
 
+      dispatch(setErrorsAction([]));
       dispatch(saveRequestAction());
 
       const mutate = state.id ? modelConfigurationsUpdate : modelConfigurationsCreate;
 
       mutate(preparedValues, { base: backendUrl, headers: httpHeaders })
         .then((response) => {
-          if (response.success) {
+          if (isAjaxSuccessResponse(response)) {
             dispatch(saveSuccessAction(response.result));
             resolve(response.result);
           } else {
@@ -116,9 +144,13 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
-  const getModelSettings = () => prepareValues(state.form.getFieldsValue());
+  const cancel = (): void => {
+    dispatch(cancelAction());
+  };
 
-  const savePromise: () => Promise<ModelConfigurationDto> = () =>
+  const getModelSettings = (): ModelConfigurationDto => prepareValues(state.form.getFieldsValue());
+
+  const saveForm: () => Promise<ModelConfigurationDto> = () =>
     new Promise<ModelConfigurationDto>((resolve, reject) => {
       state.form
         .validateFields()
@@ -131,11 +163,11 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         .catch((error) => reject(error));
     });
 
-  const deleteFunc = (values: ModelConfigurationDto): Promise<void> =>
+  const deleteFunc = (): Promise<void> =>
     new Promise<void>((resolve, reject) => {
       dispatch(deleteRequestAction());
 
-      entityConfigDelete({ base: backendUrl, queryParams: { id: values.id }, headers: httpHeaders })
+      entityConfigDelete({ base: backendUrl, queryParams: { id: state.modelConfiguration?.id }, headers: httpHeaders })
         .then(() => {
           dispatch(deleteSuccessAction());
           resolve();
@@ -146,21 +178,9 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
-  const deletePromise: () => Promise<void> = () =>
-    new Promise<void>((resolve, reject) => {
-      deleteFunc(state.modelConfiguration)
-        .then(() => resolve())
-        .catch(() => reject());
-    });
-
-  if (props.configuratorRef) {
-    props.configuratorRef.current = {
-      save: savePromise,
-      changeModelId: changeModelId,
-      createNew: createNew,
-      delete: deletePromise,
-    };
-  }
+  const setModified = (isModified?: boolean): void => {
+    dispatch(setModifiedAction(isModified ?? true));
+  };
 
   return (
     <ModelConfiguratorStateContext.Provider value={{ ...state }}>
@@ -169,8 +189,14 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
           changeModelId,
           load,
           save,
+          saveForm,
           submit,
           getModelSettings,
+          cancel,
+          delete: deleteFunc,
+          createNew,
+          setModified,
+          validateModel,
           /* NEW_ACTION_GOES_HERE */
         }}
       >
@@ -180,7 +206,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   );
 };
 
-function useModelConfiguratorState() {
+function useModelConfiguratorState(): IModelConfiguratorStateContext {
   const context = useContext(ModelConfiguratorStateContext);
 
   if (context === undefined) {
@@ -190,7 +216,7 @@ function useModelConfiguratorState() {
   return context;
 }
 
-function useModelConfiguratorActions() {
+function useModelConfiguratorActions(): IModelConfiguratorActionsContext {
   const context = useContext(ModelConfiguratorActionsContext);
 
   if (context === undefined) {
@@ -200,7 +226,7 @@ function useModelConfiguratorActions() {
   return context;
 }
 
-function useModelConfigurator() {
+function useModelConfigurator(): IModelConfiguratorStateContext & IModelConfiguratorActionsContext {
   return { ...useModelConfiguratorState(), ...useModelConfiguratorActions() };
 }
 

@@ -26,7 +26,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
           <UrlActions>
             <EntityActions>
               <StandardApis>
-                <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
+                <StoredFilesProvider baseUrl={backendUrl} ownerId="" ownerType="">
                   {children}
                 </StoredFilesProvider>
               </StandardApis>

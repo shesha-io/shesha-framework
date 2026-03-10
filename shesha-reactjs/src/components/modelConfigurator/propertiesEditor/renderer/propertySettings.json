@@ -456,7 +456,7 @@
       "customEnabled": "return data.source != 1;",
       "dataSourceType": "url",
       "validate": {},
-      "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+      "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
       "settingsValidationErrors": [],
       "useRawValues": true,
       "textType": "text"

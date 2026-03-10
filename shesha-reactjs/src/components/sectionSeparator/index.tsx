@@ -58,15 +58,15 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     '--border-thickness': `${lineThickness ?? 2}px`,
     '--border-style': lineType,
     '--border-color': lineColor || styles.primaryColor,
-    textAlign: labelAlign,
-    marginBottom: marginBottom || '8px',
+    "textAlign": labelAlign,
+    "marginBottom": marginBottom || '8px',
   } as CSSProperties;
 
   const baseStyle: CSSProperties = {
     borderBottom: inline ? `${lineThickness || 2}px ${lineType} ${lineColor || styles.primaryColor}` : 'none',
   };
 
-  const getLineStyles = (isLeft: boolean) => {
+  const getLineStyles = (isLeft: boolean): CSSProperties => {
     if ((isLeft && labelAlign === 'left') || (!isLeft && labelAlign === 'right')) {
       return { width: `calc(${titleMargin || 0}% - ${titleWidth / 2}px)` };
     }
@@ -74,7 +74,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     return { flex: 1 };
   };
 
-  const renderTitle = () => {
+  const renderTitle = (): ReactNode => {
     if (!title) return null;
 
     let titleMarginStyle: CSSProperties = { margin: '0 8px', display: 'flex', alignItems: 'center' };
@@ -105,13 +105,16 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   return vertical ? (
     <div
       className={styles.vertical}
-      style={{ ...borderStyle, ...containerStyle, height: addPx(lineHeight || '0.9em') }}
-    ></div>
+      style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em'), marginRight: 1 }}
+    >
+    </div>
   ) : (
     <div
       style={{
         ...containerStyle,
+        height: 'max-content',
         width: addPx(lineWidth),
+        marginRight: 1,
       }}
       key={id}
     >

@@ -1,113 +1,119 @@
 import _ from 'lodash';
-import React, { FC, MutableRefObject, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
-import { Alert } from 'antd';
-import { evaluateDynamicFilters } from '@/utils';
+import { evaluateDynamicFilters } from '@/utils/datatable';
 import { ITableViewSelectorComponentProps } from './models';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
-import { useDataContextManager } from '@/providers/dataContextManager';
 import {
-    useDataFetchDependency,
-    useDataTableStore,
-    useForm,
-    useGlobalState,
-    useNestedPropertyMetadatAccessor,
-    useSheshaApplication
+  useDataContextManagerOrUndefined,
+  useDataFetchDependency,
+  useDataTableStore,
+  useGlobalState,
+  useNestedPropertyMetadatAccessor,
+  useSheshaApplication,
 } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
+import { useStyles } from '../tableContext/styles';
 
-interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
-    componentRef: MutableRefObject<any>;
-}
+type ITableViewSelectorProps = ITableViewSelectorComponentProps;
 
 export const TableViewSelector: FC<ITableViewSelectorProps> = ({
-    id,
-    filters,
-    hidden,
-    componentRef,
-    persistSelectedFilters,
+  id,
+  filters,
+  hidden,
+  persistSelectedFilters,
+  showIcon,
 }) => {
-    const {
-        columns,
-        changeSelectedStoredFilterIds,
-        selectedStoredFilterIds,
-        setPredefinedFilters,
-        predefinedFilters,
-        changePersistedFiltersToggle,
-        modelType,
-    } = useDataTableStore();
+  const {
+    changeSelectedStoredFilterIds,
+    selectedStoredFilterIds,
+    setPredefinedFilters,
+    predefinedFilters,
+    changePersistedFiltersToggle,
+    modelType,
+  } = useDataTableStore();
 
-    const application = useSheshaApplication();
-    const { globalState } = useGlobalState();
-    const { formData, formMode } = useForm();
-    const dataContextManager = useDataContextManager(false);
-    const pageContext = dataContextManager?.getPageContext();
-    const dataContext = useDataContext(false);
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
+  const { styles } = useStyles();
 
-    componentRef.current = {
-        columns,
-    };
+  // ToDo: AS - need to optimize
+  useShaFormDataUpdate();
 
-    const selectedFilterId =
-        selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;
+  const application = useSheshaApplication();
+  const { globalState } = useGlobalState();
+  const { formData, formMode } = useShaFormInstance();
+  const dataContextManager = useDataContextManagerOrUndefined();
+  const pageContext = dataContextManager?.getPageContext();
+  const dataContext = useDataContextOrUndefined();
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
-    const dataFetchDep = useDataFetchDependency(id);
+  const selectedFilterId =
+    selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;
 
-    //#region Filters
-    const debounceEvaluateDynamicFiltersHelper = () => {
-        const match = [
-            { match: 'data', data: formData },
-            { match: 'globalState', data: globalState },
-            { match: 'pageContext', data: {...pageContext?.getFull()} },
-        ];
+  const dataFetchDep = useDataFetchDependency(id);
 
-        if (dataContextManager)
-            match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id) });
+  //#region Filters
+  const debounceEvaluateDynamicFiltersHelper = (): void => {
+    const match = [
+      { match: 'data', data: formData },
+      { match: 'globalState', data: globalState },
+      { match: 'pageContext', data: { ...pageContext?.getFull() } },
+    ];
 
-        const permissionedFilters = filters.filter(f => !f.permissions || f.permissions && application.anyOfPermissionsGranted(f.permissions));
+    if (dataContextManager)
+      match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id) });
 
-        evaluateDynamicFilters(
-          permissionedFilters,
-          match,
-          propertyMetadataAccessor
-        ).then((evaluatedFilters) => {
-          dataFetchDep.ready();
-          setPredefinedFilters(evaluatedFilters);
-        });
-    };
+    const permissionedFilters = filters.filter((f) => !f.permissions || (f.permissions && application.anyOfPermissionsGranted(f.permissions)));
 
-    useDeepCompareEffect(() => {
-        debounceEvaluateDynamicFiltersHelper();
-    }, [filters, formData, globalState, dataContextManager.lastUpdate]);
+    evaluateDynamicFilters(
+      permissionedFilters,
+      match,
+      propertyMetadataAccessor,
+    ).then((evaluatedFilters) => {
+      dataFetchDep.ready();
+      setPredefinedFilters(evaluatedFilters);
+    });
+  };
 
-    useEffect(() => {
-        changePersistedFiltersToggle(persistSelectedFilters);
-    }, [persistSelectedFilters]);
-    //#endregion
+  useDeepCompareEffect(() => {
+    debounceEvaluateDynamicFiltersHelper();
+  }, [filters, formData, globalState, dataContextManager.lastUpdate]);
 
-    const changeSelectedFilter = (id: string) => {
-        changeSelectedStoredFilterIds(id ? [id] : []);
-    };
+  useEffect(() => {
+    changePersistedFiltersToggle(persistSelectedFilters);
+  }, [persistSelectedFilters]);
+  //#endregion
 
-    const defaultTitle = predefinedFilters?.length ? predefinedFilters[0]?.name : null;
+  const changeSelectedFilter = (id: string): void => {
+    changeSelectedStoredFilterIds(id ? [id] : []);
+  };
 
-    const isDesignerMode = formMode === 'designer';
+  const defaultTitle = predefinedFilters?.length ? predefinedFilters[0]?.name : null;
 
-    if (!defaultTitle) {
-        if (isDesignerMode) {
-            return <Alert message="Please make sure that you have at least 1 filter" type="warning" showIcon />;
-        }
+  const isDesignerMode = formMode === 'designer';
 
-        return null;
+  if (!defaultTitle) {
+    if (isDesignerMode) {
+      // WYSIWYG fallback when no filters are configured
+      return (
+        <div className={styles.hintContainer}>
+          <div className={styles.viewSelectorMockup}>
+            View: Default
+          </div>
+        </div>
+      );
     }
 
-    return (
-        <TableViewSelectorRenderer
-            hidden={hidden && !isDesignerMode}
-            filters={predefinedFilters || []}
-            onSelectFilter={changeSelectedFilter}
-            selectedFilterId={selectedFilterId}
-        />
-    );
+    return null;
+  }
+
+  return (
+    <TableViewSelectorRenderer
+      hidden={hidden && !isDesignerMode}
+      filters={predefinedFilters || []}
+      onSelectFilter={changeSelectedFilter}
+      selectedFilterId={selectedFilterId}
+      showIcon={showIcon}
+    />
+  );
 };

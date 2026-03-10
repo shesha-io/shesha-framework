@@ -54,16 +54,16 @@ const genSharedButtonStyle = (token: MergedToken): CSSInterpolation => {
       },
 
       [`${componentCls}-content`]: {
-        position: 'relative',
-        flex: 'auto',
-        minWidth: 0,
-        wordWrap: 'break-word',
+        "position": 'relative',
+        "flex": 'auto',
+        "minWidth": 0,
+        "wordWrap": 'break-word',
 
         '&-author': {
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'flex-start',
-          marginBottom: marginXXS,
+          "display": 'flex',
+          "flexWrap": 'wrap',
+          "justifyContent": 'flex-start',
+          "marginBottom": marginXXS,
 
           '& > a, & > span': {
             paddingInlineEnd: paddingXS,
@@ -72,12 +72,12 @@ const genSharedButtonStyle = (token: MergedToken): CSSInterpolation => {
           },
 
           '&-name': {
-            color: colorTextSecondary,
+            "color": colorTextSecondary,
             fontSize,
-            transition: `color ${motionDurationSlow}`,
+            "transition": `color ${motionDurationSlow}`,
 
             '> *': {
-              color: colorTextSecondary,
+              "color": colorTextSecondary,
               '&:hover': {
                 color: colorTextSecondary,
               },
@@ -96,21 +96,21 @@ const genSharedButtonStyle = (token: MergedToken): CSSInterpolation => {
       },
 
       [`${componentCls}-actions`]: {
-        marginTop: marginSM,
-        marginBottom: 0,
-        paddingInlineStart: 0,
+        "marginTop": marginSM,
+        "marginBottom": 0,
+        "paddingInlineStart": 0,
 
         '> li': {
-          display: 'inline-block',
-          color: colorTextSecondary,
+          "display": 'inline-block',
+          "color": colorTextSecondary,
 
           '> span': {
-            marginInlineEnd: marginSM,
-            color: colorTextSecondary,
-            fontSize: fontSizeSM,
-            cursor: 'pointer',
-            transition: `color ${motionDurationSlow}`,
-            userSelect: 'none',
+            "marginInlineEnd": marginSM,
+            "color": colorTextSecondary,
+            "fontSize": fontSizeSM,
+            "cursor": 'pointer',
+            "transition": `color ${motionDurationSlow}`,
+            "userSelect": 'none',
 
             '&:hover': {
               color: colorText,

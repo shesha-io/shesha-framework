@@ -105,7 +105,8 @@ namespace Shesha.Metadata
                 .OrderBy(x => x.Name)
                 .Select(p => new ModelDto
                 {
-                    ClassName = p.GetRequiredFullName(),
+                    Name = p.Name,
+                    FullClassName = p.GetRequiredFullName(),
                     Type = p,
                     Description = ReflectionHelper.GetDescription(p),
                     Alias = null

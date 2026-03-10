@@ -22,7 +22,7 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
     const { data: formData } = useFormData();
 
     const propertyName = model.propertyAccessor
-      ? evaluateString(model.propertyAccessor, { data: formData }) 
+      ? evaluateString(model.propertyAccessor, { data: formData })
       : null;
     const { noSelectionItemText, noSelectionItemValue } = model;
     const meta = useMetadata(false);
@@ -35,20 +35,17 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
       <ConfigurableFormItem model={model}>
         <FormComponentSelector
           componentType={model.componentType}
-          noSelectionItem={
-            noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
-          }
+          noSelectionItem={noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined}
           readOnly={model.readOnly}
           propertyMeta={propertyMeta}
         />
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
-  migrator: m => m
-    .add<IComponentSelectorComponentProps>(0, prev => ({ ...prev, componentType: 'input' }))
-    .add<IComponentSelectorComponentProps>(1, prev => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IComponentSelectorComponentProps>(2, (prev) => migrateVisibility(prev))
-  ,
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  migrator: (m) => m
+    .add<IComponentSelectorComponentProps>(0, (prev) => ({ ...prev, componentType: 'input' }))
+    .add<IComponentSelectorComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IComponentSelectorComponentProps>(2, (prev) => migrateVisibility(prev)),
 };

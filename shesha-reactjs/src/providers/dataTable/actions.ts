@@ -17,6 +17,8 @@ import {
   GroupingItem,
   FilterExpression,
 } from './interfaces';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IModelValidation } from '@/utils/errors';
 
 export enum DataTableActionEnums {
   FetchColumnsSuccess = 'FETCH_COLUMNS_SUCCESS',
@@ -69,41 +71,47 @@ export enum DataTableActionEnums {
   FetchGroupingColumnsSuccess = 'FETCH_GROUPING_COLUMNS_SUCCESS',
   SetSortingSettings = 'SET_SORTING_SETTINGS',
   SetStandardSorting = 'SET_STANDARD_SORTING',
+  SetContextValidation = 'SET_CONTEXT_VALIDATION',
 }
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
   DataTableActionEnums.SetSelectedRow,
-  p => p
+  (p) => p,
 );
 
 export const setDraggingRowAction = createAction<DragState, DragState>(
   DataTableActionEnums.SetDraggingState,
-  p => p
+  (p) => p,
 );
 
 export const setMultiSelectedRowAction = createAction<Array<Row> | Row, Array<Row> | Row>(
   DataTableActionEnums.SetMultiSelectedRow,
-  p => p
+  (p) => p,
 );
 
-export const setModelTypeAction = createAction<string, string>(
+export const setModelTypeAction = createAction<string | IEntityTypeIdentifier, string | IEntityTypeIdentifier>(
   DataTableActionEnums.SetModelType,
-  p => p
+  (p) => p,
 );
 
 export const fetchTableDataAction = createAction<IGetListDataPayload, IGetListDataPayload>(
   DataTableActionEnums.FetchTableData,
-  (p) => p
+  (p) => p,
 );
 
 export const fetchTableDataSuccessAction = createAction<ITableDataInternalResponse, ITableDataInternalResponse>(
   DataTableActionEnums.FetchTableDataSuccess,
-  (p) => p
+  (p) => p,
 );
 
-export const fetchTableDataErrorAction = createAction(DataTableActionEnums.FetchTableDataError, () => {
-  /*nop*/
-});
+export interface IFetchTableDataErrorPayload {
+  error?: any;
+}
+
+export const fetchTableDataErrorAction = createAction<IFetchTableDataErrorPayload, IFetchTableDataErrorPayload>(
+  DataTableActionEnums.FetchTableDataError,
+  (p) => p,
+);
 
 export interface ISetRowDataPayload {
   rowIndex: number;
@@ -111,7 +119,7 @@ export interface ISetRowDataPayload {
 }
 export const setRowDataAction = createAction<ISetRowDataPayload, ISetRowDataPayload>(
   DataTableActionEnums.SetRowData,
-  (p) => p
+  (p) => p,
 );
 
 export interface IFetchColumnsSuccessSuccessPayload {
@@ -130,19 +138,19 @@ export const changeQuickSearchAction = createAction<string, string>(DataTableAct
 
 export const toggleSaveFilterModalAction = createAction<boolean, boolean>(
   DataTableActionEnums.ToggleSaveFilterModal,
-  (p) => p
+  (p) => p,
 );
 
 export const setCurrentPageAction = createAction<number, number>(DataTableActionEnums.SetCurrentPage, (p) => p);
 
 export const toggleColumnVisibilityAction = createAction<string, string>(
   DataTableActionEnums.ToggleColumnVisibility,
-  (p) => p
+  (p) => p,
 );
 
 export const toggleColumnFilterAction = createAction<string[], string[]>(
   DataTableActionEnums.ToggleColumnFilter,
-  (p) => p
+  (p) => p,
 );
 
 export const removeColumFilterAction = createAction<string, any>(DataTableActionEnums.RemoveColumnFilter, (p) => p);
@@ -153,7 +161,7 @@ export interface IChangeFilterOptionPayload {
 }
 export const changeFilterOptionAction = createAction<IChangeFilterOptionPayload, IChangeFilterOptionPayload>(
   DataTableActionEnums.ChangeFilterOption,
-  (p) => p
+  (p) => p,
 );
 
 export interface IChangeFilterAction {
@@ -163,12 +171,12 @@ export interface IChangeFilterAction {
 
 export const changeFilterAction = createAction<IChangeFilterAction, IChangeFilterAction>(
   DataTableActionEnums.ChangeFilter,
-  (p) => p
+  (p) => p,
 );
 
 export const applyFilterAction = createAction<ITableFilter[], ITableFilter[]>(
   DataTableActionEnums.ApplyFilter,
-  (p) => p
+  (p) => p,
 );
 
 export const changeUserConfigIdAction = createAction<any, any>(DataTableActionEnums.ChangeUserConfigId, (p) => p);
@@ -179,7 +187,7 @@ export const changeActionedRowAction = createAction<any, any>(DataTableActionEnu
 
 export const changeSelectedStoredFilterIdsAction = createAction<string[], string[]>(
   DataTableActionEnums.ChangeSelectedStoredFilterIds,
-  (p) => p
+  (p) => p,
 );
 
 export interface ISetPredefinedFiltersPayload {
@@ -188,7 +196,7 @@ export interface ISetPredefinedFiltersPayload {
 }
 export const setPredefinedFiltersAction = createAction<ISetPredefinedFiltersPayload, ISetPredefinedFiltersPayload>(
   DataTableActionEnums.SetPredefinedFilters,
-  (p) => p
+  (p) => p,
 );
 
 export interface ISetPermanentFilterActionPayload {
@@ -196,12 +204,12 @@ export interface ISetPermanentFilterActionPayload {
 }
 export const setPermanentFilterAction = createAction<ISetPermanentFilterActionPayload, ISetPermanentFilterActionPayload>(
   DataTableActionEnums.SetPermanentFilter,
-  (p) => p
+  (p) => p,
 );
 
 export const changeSelectedIdsAction = createAction<string[], string[]>(
   DataTableActionEnums.ChangeSelectedIds,
-  (p) => p
+  (p) => p,
 );
 
 export const exportToExcelRequestAction = createAction(DataTableActionEnums.ExportToExcelRequest);
@@ -209,7 +217,7 @@ export const exportToExcelSuccessAction = createAction(DataTableActionEnums.Expo
 export const exportToExcelErrorAction = createAction<string, string>(DataTableActionEnums.ExportToExcelError, (p) => p);
 export const exportToExcelWarningAction = createAction<string, string>(
   DataTableActionEnums.ExportToExcelWarning,
-  (p) => p
+  (p) => p,
 );
 
 export interface IRegisterConfigurableColumnsPayload {
@@ -230,17 +238,17 @@ export const onGroupAction = createAction<ISortingItem[], ISortingItem[]>(DataTa
 
 export const changeDisplayColumnAction = createAction<string, string>(
   DataTableActionEnums.ChangeDisplayColumn,
-  (p) => p
+  (p) => p,
 );
 
 export const changePersistedFiltersToggleAction = createAction<boolean, boolean>(
   DataTableActionEnums.ChangePersistedFiltersToggle,
-  (p) => p
+  (p) => p,
 );
 
 export const setDataFetchingModeAction = createAction<DataFetchingMode, DataFetchingMode>(
   DataTableActionEnums.SetDataFetchingMode,
-  p => p
+  (p) => p,
 );
 
 export interface IFetchGroupingColumnsSuccessPayload {
@@ -250,7 +258,7 @@ export interface IFetchGroupingColumnsSuccessPayload {
 export const fetchGroupingColumnsSuccessAction = createAction<
   IFetchGroupingColumnsSuccessPayload,
   IFetchGroupingColumnsSuccessPayload
->(DataTableActionEnums.FetchGroupingColumnsSuccess, p => p);
+>(DataTableActionEnums.FetchGroupingColumnsSuccess, (p) => p);
 
 export interface ISortingSettingsActionPayload {
   sortMode?: SortMode;
@@ -261,9 +269,14 @@ export interface ISortingSettingsActionPayload {
 export const setSortingSettingsAction = createAction<
   ISortingSettingsActionPayload,
   ISortingSettingsActionPayload
->(DataTableActionEnums.SetSortingSettings, p => p);
+>(DataTableActionEnums.SetSortingSettings, (p) => p);
 
 export const setStandardSortingAction = createAction<
   IColumnSorting[],
   IColumnSorting[]
->(DataTableActionEnums.SetStandardSorting, p => p);
+>(DataTableActionEnums.SetStandardSorting, (p) => p);
+
+export const setContextValidationAction = createAction<
+  IModelValidation | undefined,
+  IModelValidation | undefined
+>(DataTableActionEnums.SetContextValidation, (p) => p);

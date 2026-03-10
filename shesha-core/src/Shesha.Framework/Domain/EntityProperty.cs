@@ -1,7 +1,10 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using Newtonsoft.Json.Linq;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,8 +16,27 @@ namespace Shesha.Domain
     /// Configuration of the entity property
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.EntityProperty", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [SnakeCaseNaming]
+    [Table("entity_properties", Schema = "frwk")]
     public class EntityProperty: FullAuditedEntity<Guid>
     {
+        public virtual EntityInitFlags InitStatus { get; set; }
+        public virtual string? InitMessage { get; set; }
+
+        public virtual bool CreatedInDb { get; set; }
+
+
+        /// <summary>
+        /// Entity Config Revision
+        /// Name of column in the DB
+        /// </summary>
+        public virtual string? ColumnName { get; set; }
+
+        /// <summary>
+        /// If Inherited from other property
+        /// </summary>
+        public virtual EntityProperty? InheritedFrom { get; set; }
+
         /// <summary>
         /// Owner entity config
         /// </summary>
@@ -28,7 +50,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Label (display name)
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string? Label { get; set; }
 
         /// <summary>
@@ -40,33 +62,45 @@ namespace Shesha.Domain
         /// <summary>
         /// Data type
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? DataType { get; set; }
 
         /// <summary>
         /// Data format
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? DataFormat { get; set; }
 
         /// <summary>
-        /// Entity type. Aplicable for entity references
+        /// Entity type. Applicable for entity references
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(1000)]
+        public virtual string? EntityFullClassName { get; set; }
+
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
+        [MaxLength(300)]
         public virtual string? EntityType { get; set; }
+
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
+        [MaxLength(300)]
+        public virtual string? EntityModule { get; set; }
 
         /// <summary>
         /// Reference list name
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? ReferenceListName { get; set; }
 
         /// <summary>
         /// Reference list module
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string? ReferenceListModule { get; set; }
-        
+
         /// <summary>
         /// Source of the property (code/user)
         /// </summary>
@@ -85,7 +119,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Child properties (applicable for objects)
         /// </summary>
-        [InverseProperty("ParentPropertyId")]
+        [InverseProperty("parent_property_id")]
         public virtual IList<EntityProperty> Properties { get; set; } = new List<EntityProperty>();
 
         /// <summary>
@@ -169,5 +203,22 @@ namespace Shesha.Domain
         /// Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
         /// </summary>
         public virtual bool CascadeDeleteUnreferenced { get; set; }
+
+        /// <summary>
+        /// List configuration and DB mapping
+        /// </summary>
+        [SaveAsJson]
+        public virtual EntityPropertyListConfiguration? ListConfiguration { get; set; }
+
+        /// <summary>
+        /// DataType specific formatting
+        /// </summary>
+        [SaveAsJson]
+        public virtual JObject? Formatting { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} {DataType} ({DataFormat} {EntityFullClassName})";
+        }
     }
 }

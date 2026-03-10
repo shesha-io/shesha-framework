@@ -24,6 +24,7 @@ import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
+import { ConfigurableForm } from '@/index';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -41,7 +42,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   contentStyle?: CSSProperties;
   layoutBackgroundStyle?: CSSProperties;
   footerStyle?: CSSProperties;
-  footer?: ReactNodeOrFunc;
+  footerFormId?: FormFullName;
   heading?: ReactNodeOrFunc;
   /**
    * @deprecated - if passed it will still be used, but the one from the ThemeProvider is the one being used
@@ -80,7 +81,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     style,
     contentStyle,
     layoutBackgroundStyle = {},
-    footer,
+    footerFormId,
     footerStyle,
     heading,
     fixHeading = false,
@@ -104,6 +105,69 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     if (!!title) document.title = title;
   }, [title]);
 
+  // Update CSS custom property for dynamic header height
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    let lastHeight = 0;
+
+    const updateHeaderHeight = (): void => {
+      const headerElement = document.querySelector('.ant-layout-header');
+      if (headerElement) {
+        const actualHeight = headerElement.getBoundingClientRect().height;
+        // Only update if height actually changed to avoid unnecessary DOM writes
+        if (actualHeight !== lastHeight) {
+          lastHeight = actualHeight;
+          document.documentElement.style.setProperty('--sha-header-height', `${actualHeight}px`);
+        }
+      }
+    };
+
+    // Debounced update function
+    const debouncedUpdate = (): void => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateHeaderHeight, 16); // ~60fps
+    };
+
+    // Initial update
+    setTimeout(updateHeaderHeight, 100); // Delay to ensure elements are rendered
+
+    // Set up ResizeObserver to watch for header height changes
+    const headerElement = document.querySelector('.ant-layout-header');
+    let resizeObserver: ResizeObserver | undefined;
+
+    if (headerElement) {
+      resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const actualHeight = entry.contentRect.height;
+          // Only update if height actually changed
+          if (actualHeight !== lastHeight) {
+            lastHeight = actualHeight;
+            document.documentElement.style.setProperty('--sha-header-height', `${actualHeight}px`);
+          }
+        }
+      });
+      resizeObserver.observe(headerElement);
+    }
+
+    // Only observe specific changes that might affect layout
+    const mutationObserver = new MutationObserver(debouncedUpdate);
+
+    if (headerElement) {
+      mutationObserver.observe(headerElement, {
+        childList: true, // Only direct children changes
+        subtree: false, // Don't observe deep changes
+        attributes: true,
+        attributeFilter: ['style'], // Only style changes
+      });
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      resizeObserver?.disconnect();
+      mutationObserver?.disconnect();
+    };
+  }, []);
+
   const hasHeading = useMemo(() => {
     return Boolean(heading);
   }, [heading]);
@@ -112,12 +176,12 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     return fixHeading && ((Boolean(title) && showHeading) || Boolean(heading));
   }, [heading, title, showHeading, fixHeading]);
 
-  const onCollapse = (value: boolean) => {
+  const onCollapse = (value: boolean): void => {
     setGlobalVariables({ isSideBarExpanded: !value });
     setCollapsed(value);
   };
 
-  const renderPageControls = () => {
+  const renderPageControls = (): ReactNode => {
     if (!headerControls && !reference) return null;
 
     return (
@@ -185,9 +249,9 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
           </NodeOrFuncRenderer>
         </Content>
 
-        {footer && (
+        {footerFormId && (
           <Footer style={footerStyle}>
-            <NodeOrFuncRenderer>{footer}</NodeOrFuncRenderer>
+            <ConfigurableForm mode="edit" formId={footerFormId} />
           </Footer>
         )}
       </Layout>

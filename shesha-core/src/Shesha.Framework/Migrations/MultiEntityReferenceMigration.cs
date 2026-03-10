@@ -34,16 +34,16 @@ namespace Shesha.Migrations
                 .DistinctBy(x => $"{x.DeclaringType.NotNull().Name}_{x.Name}")
                 .ToList();
 
-            if (!Schema.Schema(MappingHelper.AutoGeneratorSchema).Exists())
-                Create.Schema(MappingHelper.AutoGeneratorSchema);
+            if (!Schema.Schema(_nameGenerator.AutoGeneratorDbSchema).Exists())
+                Create.Schema(_nameGenerator.AutoGeneratorDbSchema);
 
             foreach (var property in mtmProperties)
             {
                 var (parentType, parentIdType, childType, childIdType) = MappingHelper.GetManyToManyTableData(property);
                 var(tableName, parentTableName, childTableName, parentColumnName, childColumnName) = _nameGenerator.GetAutoManyToManyTableNames(property);
-                if (!Schema.Schema(MappingHelper.AutoGeneratorSchema).Table(tableName).Exists())
+                if (!Schema.Schema(_nameGenerator.AutoGeneratorDbSchema).Table(tableName).Exists())
                 {
-                    var table = Create.Table(tableName).InSchema(MappingHelper.AutoGeneratorSchema)
+                    var table = Create.Table(tableName).InSchema(_nameGenerator.AutoGeneratorDbSchema)
                         .WithForeignKeyColumn(parentIdType, parentColumnName, parentTableName).NotNullable()
                         .WithForeignKeyColumn(childIdType, childColumnName, childTableName).NotNullable();
                 }

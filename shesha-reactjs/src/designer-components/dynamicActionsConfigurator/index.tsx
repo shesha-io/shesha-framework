@@ -1,5 +1,5 @@
 import React from 'react';
-import { configurableActionsConfiguratorSettingsForm } from './settings';
+import { getSettings } from './settings';
 import { DynamicActionsConfigurator } from './configurator';
 import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
@@ -14,17 +14,16 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
-
     if (model.hidden) return null;
 
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => (
-          <DynamicActionsConfigurator editorConfig={model} readOnly={model.readOnly} value={value} onChange={onChange} />
+          <DynamicActionsConfigurator readOnly={model.readOnly} value={value} onChange={onChange} />
         )}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: configurableActionsConfiguratorSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };

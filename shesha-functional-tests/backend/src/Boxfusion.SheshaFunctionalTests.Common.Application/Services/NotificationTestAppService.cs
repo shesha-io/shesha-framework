@@ -1,11 +1,14 @@
-﻿using Abp.Domain.Repositories;
+﻿using System.Diagnostics;
+using Abp.Domain.Repositories;
 using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
+using NHibernate.Linq;
 using Shesha;
+using Shesha.DelayedUpdate;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Notifications;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
-using Shesha.Services;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
@@ -15,26 +18,64 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<NotificationTypeConfig, Guid> _notificationTypeRepository;
-        private readonly IStoredFileService _storedFileService;
+        private readonly IRepository<StoredFile, Guid> _storedFileRepository;
         
-        public NotificationTestAppService(INotificationSender notificationService, IRepository<NotificationChannelConfig, Guid> notificationChannelRepository, IRepository<Person, Guid> personRepository, IRepository<NotificationTypeConfig, Guid> notificationTypeRepository, IStoredFileService storedFileService)
+        public NotificationTestAppService(
+            INotificationSender notificationService,
+            IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
+            IRepository<Person, Guid> personRepository,
+            IRepository<NotificationTypeConfig, Guid> notificationTypeRepository,
+            IRepository<StoredFile, Guid> storedFileRepository
+        )
         {
             _notificationService = notificationService;
             _notificationChannelRepository = notificationChannelRepository;
             _personRepository = personRepository;
             _notificationTypeRepository = notificationTypeRepository;
-            _storedFileService = storedFileService;
+            _storedFileRepository = storedFileRepository;
+        }
+
+        private async Task<List<NotificationAttachmentDto>> GetAttachmentsAsync(DelayedUpdateGroup[]? delayedUpdate)
+        {
+            List<NotificationAttachmentDto> attachments = new List<NotificationAttachmentDto>();
+
+            var payloadFiles = delayedUpdate?.FirstOrDefault(x => x.Name == "storedFiles");
+
+            if (payloadFiles != null && payloadFiles.Items.Count > 0)
+            {
+                foreach (var payloadFile in payloadFiles.Items)
+                {
+                    var id = payloadFile.Id.ToString();
+
+                    if (string.IsNullOrEmpty(id))
+                        continue;
+
+                    var file = await _storedFileRepository.GetAsync(Guid.Parse(id));
+                    if (file != null)
+                    {
+                        attachments.Add(new NotificationAttachmentDto()
+                        {
+                            FileName = file.FileName,
+                            StoredFileId = file.Id,
+                        });
+                    }
+                }
+            }
+
+            return attachments;
         }
 
         public async Task TestNotificationAsync(NotificationDto notification)
         {
+            var attachments = await GetAttachmentsAsync(notification._delayedUpdate);
+
             if (notification.Type == null)
                 throw new ArgumentException($"{nameof(notification.Type)} must not be  null");
-
             // Fetch notification type details
-            var type = await _notificationTypeRepository.FirstOrDefaultAsync(notification.Type.Id);
+            var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name);
+
             if (type == null)
-                throw new ArgumentException($"Notification type with ID {notification.Type.Id} does not exist.");
+                throw new ArgumentException($"Notification type does not exist.");
             // Get recipient details
             var recipientPerson = notification.Recipient?.Id != null 
                 ? await _personRepository.FirstOrDefaultAsync(notification.Recipient.Id)
@@ -48,17 +89,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Subject = type.Name,
                 Body = type.Description ?? string.Empty
             };
-
-            // Get attachments only if recipient is provided
-            var files = recipientPerson != null
-                ? await _storedFileService.GetAttachmentsAsync(recipientPerson)
-                : null;
-
-            var attachments = files?.Select(x => new NotificationAttachmentDto()
-            {
-                FileName = x.FileName,
-                StoredFileId = x.Id,
-            }).ToList();
 
             var senderPerson = await GetCurrentPersonAsync();
             if (senderPerson == null)
@@ -82,15 +112,16 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 null,
                 channel
             );
-        }
+         }
         public async Task BulkPublishAsync(BulkNotificationDto notification)
         {
             if (notification.Type == null)
                 throw new ArgumentException($"{nameof(notification.Type)} must not be  null");
 
-            var type = await _notificationTypeRepository.FirstOrDefaultAsync(notification.Type.Id);
+                        // Fetch notification type details
+            var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name);
             if (type == null)
-                throw new ArgumentException($"Notification type with ID {notification.Type.Id} does not exist.");
+                throw new ArgumentException($"Notification type does not exist.");
             // Get channel details
             var channel = notification.Channel != null ? await _notificationChannelRepository.FirstOrDefaultAsync(notification.Channel.Id) : null;
             // Prepare notification data
@@ -98,10 +129,13 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 Name = "Test Name",
             };
+
             // Get the current person
             var senderPerson = await GetCurrentPersonAsync();
             if (senderPerson == null)
                 throw new InvalidOperationException("Current person could not be determined. Ensure the user is logged in.");
+
+            var attachments = await GetAttachmentsAsync(notification._delayedUpdate);
 
             var sender = new PersonMessageParticipant(senderPerson);
 
@@ -116,7 +150,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
-                        null,
+                        attachments,
                         null,
                         null,
                         channel
@@ -137,7 +171,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
-                        null,
+                        attachments,
                         null,
                         null,
                         channel

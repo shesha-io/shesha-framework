@@ -1,5 +1,5 @@
-﻿using Shesha.ConfigurationItems.Distribution.Models;
-using Shesha.Domain;
+﻿using Shesha.Domain;
+using Shesha.Services.ConfigurationItems;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -22,13 +22,19 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <param name="item">Item to be imported</param>
         /// <param name="context">Import context</param>
         /// <returns></returns>
-        Task<ConfigurationItemBase> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context);
+        Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context);
+
+        /// <summary>
+        /// Read item from json stream
+        /// </summary>
+        /// <returns></returns>
+        Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream);
 
         /// <summary>
         /// Read item from json
         /// </summary>
         /// <returns></returns>
-        Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream);
+        Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json);
 
         /// <summary>
         /// Sort items to import in specific order
@@ -36,9 +42,16 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <param name="items"></param>
         /// <returns></returns>
         Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items);
+
+        /// <summary>
+        /// Get importer for a subtype (if applicable). Is used when single importer supports multiple item subtypes
+        /// </summary>
+        /// <param name="distributedItem"></param>
+        /// <returns></returns>
+        IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem);
     }
 
-    public interface IConfigurableItemImport<TItem> : IConfigurableItemImport where TItem : ConfigurationItemBase 
+    public interface IConfigurableItemImport<TItem> : IConfigurableItemImport where TItem : ConfigurationItem 
     { 
 
     }

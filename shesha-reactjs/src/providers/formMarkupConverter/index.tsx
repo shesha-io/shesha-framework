@@ -8,7 +8,7 @@ export interface IFormMarkupConverterProps {
   formSettings: IFormSettings;
   children: (
     flatStructure: IFlatComponentsStructure,
-    onChange: (flatStructure: IFlatComponentsStructure) => void
+    onChange: (flatStructure: IFlatComponentsStructure) => void,
   ) => ReactNode;
 }
 
@@ -19,7 +19,7 @@ const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({ children, markup, 
     return convertFormMarkupToFlatStructure(markup, formSettings, designerComponents);
   }, [markup, formSettings, designerComponents]);
 
-  const onChange = (_value: IFlatComponentsStructure) => {
+  const onChange = (_value: IFlatComponentsStructure): void => {
     // nop
   };
 

@@ -1,9 +1,8 @@
-import { IToolboxComponent } from '@/interfaces/index';
 import { FormMarkup } from '@/providers/form/models';
 import { OneToOneOutlined } from '@ant-design/icons';
 import { LabelValueEditor } from '@/components/labelValueEditor/labelValueEditor';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { ILabelValueEditorComponentProps } from './interfaces';
+import { ILabelValueEditorComponentProps, LabelValueEditorComponentDefinition } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -12,7 +11,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentProps> = {
+const LabelValueEditorComponent: LabelValueEditorComponentDefinition = {
   type: 'labelValueEditor',
   name: 'Label Value editor',
   icon: <OneToOneOutlined />,
@@ -20,9 +19,8 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-
     if (model.hidden) return null;
-    
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => <LabelValueEditor {...model} value={value} onChange={onChange} />}
@@ -44,10 +42,9 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
       };
     })
     .add<ILabelValueEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<ILabelValueEditorComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
+    .add<ILabelValueEditorComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export { LabelValueEditorComponent };

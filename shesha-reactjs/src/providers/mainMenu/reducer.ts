@@ -7,7 +7,7 @@ export const uiReducer = handleActions<IMainMenuStateContext, any>(
   {
     [MainMenuActionEnums.SetLoadedMenu]: (
       state: IMainMenuStateContext,
-      action: ReduxActions.Action<IConfigurableMainMenu>
+      action: ReduxActions.Action<IConfigurableMainMenu>,
     ) => {
       const { payload } = action;
 
@@ -19,7 +19,7 @@ export const uiReducer = handleActions<IMainMenuStateContext, any>(
 
     [MainMenuActionEnums.SetItems]: (
       state: IMainMenuStateContext,
-      action: ReduxActions.Action<ISidebarMenuItem[]>
+      action: ReduxActions.Action<ISidebarMenuItem[]>,
     ) => {
       const { payload } = action;
 
@@ -30,5 +30,5 @@ export const uiReducer = handleActions<IMainMenuStateContext, any>(
     },
   },
 
-  MAIN_MENU_CONTEXT_INITIAL_STATE
+  MAIN_MENU_CONTEXT_INITIAL_STATE,
 );

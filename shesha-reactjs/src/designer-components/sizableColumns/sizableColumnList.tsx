@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useContext, useState, Fragment } from 'react';
+import React, { FC, useEffect, useRef, useContext, useState, Fragment, ReactElement, CSSProperties } from 'react';
 import {
   DragDropContext,
   DropResult,
@@ -25,7 +25,7 @@ const EditableContext = createNamedContext(null, "EditableContext");
 
 const DragHandleContext = createNamedContext(null, "DragHandleContext");
 
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }): ReactElement => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
 
@@ -37,14 +37,14 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
     }
   }, [editing]);
 
-  const toggleEdit = () => {
+  const toggleEdit = (): void => {
     setEditing(!editing);
     form.setFieldsValue({
       [dataIndex]: record[dataIndex],
     });
   };
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     try {
       const values = await form.validateFields();
       toggleEdit();
@@ -88,7 +88,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   return <td {...restProps}>{childNode}</td>;
 };
 
-const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
+const getItemStyle = (draggableStyle: any, isDragging: boolean): CSSProperties => ({
   padding: '2px',
   userSelect: 'none',
   background: isDragging ? 'white' : 'inherit',
@@ -96,7 +96,7 @@ const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
   ...draggableStyle,
 });
 
-const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
+const DraggableBodyRowInner = ({ columns, className, style, ...restProps }): ReactElement => {
   const [form] = Form.useForm();
 
   // function findIndex base on Table rowKey props and should always be a right array index
@@ -125,7 +125,7 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
   );
 };
 
-const DragHandle = () => {
+const DragHandle = (): ReactElement => {
   const dragHandleProps = useContext(DragHandleContext);
   return (<MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />);
 };
@@ -133,12 +133,12 @@ const DragHandle = () => {
 export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const columns = value as ISizableColumnProps[];
 
-  const handleDeleteTab = (key: string) => {
+  const handleDeleteTab = (key: string): void => {
     const newColumns = columns.filter((column) => column.id !== key);
     onChange(newColumns);
   };
 
-  const handleAddColumn = () => {
+  const handleAddColumn = (): void => {
     const newColumn: ISizableColumnProps = {
       id: nanoid(),
       size: 25,
@@ -148,7 +148,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
     onChange(newColumns);
   };
 
-  const handleSaveCell = (row) => {
+  const handleSaveCell = (row): void => {
     const newData = [...columns];
     const index = newData.findIndex((item) => row.id === item.id);
     const currentItem = newData[index];
@@ -205,7 +205,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
     };
   });
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = (result: DropResult): void => {
     const { source, destination } = result;
 
     if (!destination) {
@@ -231,7 +231,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const toggleModal = () => setShowDialog((prevVisible) => !prevVisible);
+  const toggleModal = (): void => setShowDialog((prevVisible) => !prevVisible);
 
   return (
     <Fragment>
@@ -248,7 +248,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
       >
         <Space direction="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId={'columns'}>
+            <Droppable droppableId="columns">
               {(provided: DroppableProvided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>
                   <Table

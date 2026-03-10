@@ -1,5 +1,4 @@
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { CodeSandboxOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -7,7 +6,7 @@ import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { CodeEditor } from './codeEditor';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
+import { CodeEditorComponentDefinition, ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { CodeEditorWithStandardConstants } from './codeEditorWithConstants';
@@ -17,7 +16,7 @@ import { Environment } from '@/publicJsApis/metadataBuilder';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
+const CodeEditorComponent: CodeEditorComponentDefinition = {
   type: 'codeEditor',
   name: 'Code Editor',
   icon: <CodeSandboxOutlined />,
@@ -42,14 +41,13 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
             language: "typescript",
             ...editorProps,
             mode: model.mode || 'dialog',
-            readOnly: model.readOnly
+            readOnly: model.readOnly,
           };
 
           return Boolean(constantsEvaluator)
             ? <CodeEditor {...props} availableConstants={constantsEvaluator} resultType={resultType} />
             : <CodeEditorWithStandardConstants {...props} resultType={resultType} />;
-        }
-        }
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -58,9 +56,8 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     .add<ICodeEditorComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ICodeEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<ICodeEditorComponentProps>(3, (prev) => ({ ...prev, language: prev.language ?? "typescript" }))
-    .add<ICodeEditorComponentProps>(4, (prev) => ({ ...prev, environment: prev.environment ?? (prev.language === "typescript" ? Environment.FrontEnd : Environment.None) }))
-  ,
-  initModel: model => {
+    .add<ICodeEditorComponentProps>(4, (prev) => ({ ...prev, environment: prev.environment ?? (prev.language === "typescript" ? Environment.FrontEnd : Environment.None) })),
+  initModel: (model) => {
     const textAreaModel: ICodeEditorComponentProps = {
       ...model,
       label: 'Code Editor',
@@ -70,7 +67,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     return textAreaModel;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default CodeEditorComponent;

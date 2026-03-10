@@ -30,7 +30,7 @@ export interface ThunkDispatch<S, A> {
 export function useThunkReducer<S, A>(
   reducer: Reducer<S, A>,
   initialArg: S,
-  init?: (s: S) => S
+  init?: (s: S) => S,
 ): [S, ThunkDispatch<S, A>] {
   const [hookState, setHookState] = useState(() => (init ? init(initialArg) : initialArg));
 
@@ -38,27 +38,27 @@ export function useThunkReducer<S, A>(
   const state = useRef(hookState);
   const getState = useCallback(() => state.current, [state]);
   const setState = useCallback(
-    (newState) => {
+    (newState: S) => {
       state.current = newState;
       setHookState(newState);
     },
-    [state, setHookState]
+    [state, setHookState],
   );
 
   // Reducer.
   const reduce = useCallback(
-    (action) => {
+    (action: A) => {
       return reducer(getState(), action);
     },
-    [reducer, getState]
+    [reducer, getState],
   );
 
   // Augmented dispatcher.
   const dispatch = useCallback(
-    (action) => {
+    <Action extends (dispatch: ThunkDispatch<S, A>, getState: () => S) => unknown>(action: Action) => {
       return typeof action === 'function' ? action(dispatch, getState) : setState(reduce(action));
     },
-    [getState, setState, reduce]
+    [getState, setState, reduce],
   );
 
   return [hookState, dispatch];

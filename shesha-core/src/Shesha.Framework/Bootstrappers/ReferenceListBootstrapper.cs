@@ -2,11 +2,12 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
+using AutoMapper.Internal;
 using Castle.Core.Logging;
+using Shesha.Attributes;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Startup;
@@ -21,18 +22,13 @@ using System.Threading.Tasks;
 
 namespace Shesha.Bootstrappers
 {
-    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
-    public class ReferenceListBootstrapper : IBootstrapper, ITransientDependency
+    [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
+    public class ReferenceListBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<ReferenceList, Guid> _listRepo;
         private readonly IRepository<ReferenceListItem, Guid> _listItemRepo;
         private readonly IModuleManager _moduleManager;
-        private readonly IApplicationStartupSession _startupSession;
-
-
-        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public ReferenceListBootstrapper(
             ITypeFinder typeFinder,
@@ -40,25 +36,48 @@ namespace Shesha.Bootstrappers
             IRepository<ReferenceList, Guid> listRepo,
             IRepository<ReferenceListItem, Guid> listItemRepo,
             IModuleManager moduleManager,
-            IApplicationStartupSession startupSession
-        )
+            IApplicationStartupSession startupSession,
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _typeFinder = typeFinder;
-            _unitOfWorkManager = unitOfWorkManager;
             _listRepo = listRepo;
             _listItemRepo = listItemRepo;
             _moduleManager = moduleManager;
-            _startupSession = startupSession;
         }
 
         [UnitOfWork(IsDisabled = true)]
-        public async Task ProcessAsync()
+        protected override async Task ProcessInternalAsync()
         {
-            Logger.Warn("Bootstrap reference lists");
+            LogInfo("Bootstrap reference lists");
 
-            var grouppedLists = _typeFinder
+            var refListTypes = _typeFinder
                 .Find(type => type != null && type.IsPublic && type.IsEnum && type.HasAttribute<ReferenceListAttribute>())
                 .Select(e => new RefListType(e.Assembly, e, e.GetAttribute<ReferenceListAttribute>()))
+                .ToList();
+
+            // search for hardcoded entities
+            var entityTypes = _typeFinder.Find(type => type.IsEntityType() && !type.IsDynamic()).ToList();
+            foreach (var entityType in entityTypes)
+            {
+                var properties = entityType.GetProperties(BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance);
+                foreach (var property in properties) 
+                {
+                    var attr = property.GetAttributeOrNull<ReferenceListAttribute>();
+                    if (attr != null) 
+                    {
+                        var refListId = attr.GetReferenceListIdentifier(property);
+                        var alreadyAdded = refListTypes.Any(t => t.RefListId == refListId);
+                        if (!alreadyAdded) 
+                        {
+                            refListTypes.Add(new RefListType(entityType.Assembly, refListId));
+                        }
+                    }                    
+                }
+            }
+            
+            var grouppedLists = refListTypes
                 .GroupBy(e => e.Assembly, (assembly, lists) => new
                 {
                     Assembly = assembly,
@@ -66,22 +85,25 @@ namespace Shesha.Bootstrappers
                 })
                 .ToList();
 
-            if (!grouppedLists.Any()) 
+            if (!grouppedLists.Any())
             {
-                Logger.Warn($"Reference lists to bootstrap not found");
+                LogInfo($"Reference lists to bootstrap not found");
                 return;
             }
 
             var all = grouppedLists.Count();
-            Logger.Warn($"Found {all} assemblies to bootstrap");
-            grouppedLists = grouppedLists.Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly)).ToList();
-            Logger.Warn($"{all - grouppedLists.Count()} assemblies skipped as unchanged");
-
-            foreach (var group in grouppedLists) 
+            LogInfo($"Found {all} assemblies to bootstrap");
+            if (!ForceUpdate)
             {
-                using (var unitOfWork = _unitOfWorkManager.Begin())
+                grouppedLists = grouppedLists.Where(x => !StartupSession.AssemblyStaysUnchanged(x.Assembly)).ToList();
+                LogInfo($"{all - grouppedLists.Count()} assemblies skipped as unchanged");
+            }
+
+            foreach (var group in grouppedLists)
+            {
+                using (var unitOfWork = UnitOfWorkManager.Begin())
                 {
-                    using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                    using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
                         await ProcessAssemblyAsync(group.Assembly, group.Lists);
                     }
@@ -89,13 +111,13 @@ namespace Shesha.Bootstrappers
                 }
             }
 
-            Logger.Warn("Bootstrap reference lists finished successfully");
+            LogInfo("Bootstrap reference lists finished successfully");
         }
 
-        private async Task ProcessAssemblyAsync(Assembly assembly, List<RefListType> lists) 
+        private async Task ProcessAssemblyAsync(Assembly assembly, List<RefListType> lists)
         {
-            Logger.Warn($"Bootstrap assembly {assembly.FullName}");
-            
+            LogInfo($"Bootstrap assembly {assembly.FullName}");
+
             var module = await _moduleManager.GetOrCreateModuleAsync(assembly);
             if (module == null)
                 return;
@@ -103,99 +125,87 @@ namespace Shesha.Bootstrappers
             var listNo = 1;
             foreach (var list in lists)
             {
-                Logger.Info($"process list {listNo}/{lists.Count()}: '{list.Enum.FullName}'");
+                LogInfo($"process list {listNo}/{lists.Count()}: '{list.RefListId}'");
 
                 try
                 {
                     await ProcessListAsync(module, list);
-                    
-                    Logger.Info($"process list {listNo++}/{lists.Count()}: '{list.Enum.FullName}' - finished");
+
+                    LogInfo($"process list {listNo++}/{lists.Count()}: '{list.RefListId}' - finished");
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"An error occured during bootstrapping of the referenceList {list.Attribute.FullName}", e);
+                    throw new Exception($"An error occured during bootstrapping of the referenceList {list.RefListId}", e);
                 }
             }
 
-            Logger.Warn($"Bootstrap assembly {assembly.FullName} - finished");
+            LogInfo($"Bootstrap assembly {assembly.FullName} - finished");
         }
 
-        private async Task ProcessListAsync(Domain.ConfigurationItems.Module module, RefListType list) 
+        private async Task ProcessListAsync(Domain.Module module, RefListType list) 
         {
             var listInCode = new List<ListItemInfo>();
-            var values = Enum.GetValues(list.Enum);
 
-            Logger.Info($"  number of items in code: {values.Length}");
-
-            foreach (var value in values)
+            if (list.Enum != null) 
             {
-                var intValue = Convert.ToInt64(value);
-                var internalName = Enum.GetName(list.Enum, intValue) ?? throw new Exception($"Value '{intValue}' not found in enum '{list.Enum.FullName}'");
-                var memberInfo = list.Enum.GetMember(internalName).Single();
+                var values = Enum.GetValues(list.Enum);
 
-                var displayAttribute = memberInfo.GetAttributeOrNull<DisplayAttribute>();
-                var descriptionAttribute = memberInfo.GetAttributeOrNull<DescriptionAttribute>();
+                LogInfo($"  number of items in code: {values.Length}");
 
-                if (displayAttribute != null && displayAttribute.GetAutoGenerateField() == false)
-                    continue;
-
-                var refListItemAttribute = memberInfo.GetAttributeOrNull<ReferenceListItemAttribute>();
-
-                listInCode.Add(new ListItemInfo
+                foreach (var value in values)
                 {
-                    Name = displayAttribute != null
-                        ? displayAttribute.Name
-                        : internalName.ToFriendlyName(),
-                    Description = descriptionAttribute != null
-                        ? descriptionAttribute.Description
-                        : displayAttribute?.GetDescription(),
-                    Value = intValue,
-                    OrderIndex = displayAttribute?.GetOrder() ?? intValue,
-                    Color = refListItemAttribute?.Color,
-                });
+                    var intValue = Convert.ToInt64(value);
+                    var internalName = Enum.GetName(list.Enum, intValue) ?? throw new Exception($"Value '{intValue}' not found in enum '{list.Enum.FullName}'");
+                    var memberInfo = list.Enum.GetMember(internalName).Single();
+
+                    var displayAttribute = memberInfo.GetAttributeOrNull<DisplayAttribute>();
+                    var descriptionAttribute = memberInfo.GetAttributeOrNull<DescriptionAttribute>();
+
+                    if (displayAttribute != null && displayAttribute.GetAutoGenerateField() == false)
+                        continue;
+
+                    var refListItemAttribute = memberInfo.GetAttributeOrNull<ReferenceListItemAttribute>();
+
+                    listInCode.Add(new ListItemInfo
+                    {
+                        Name = displayAttribute != null
+                            ? displayAttribute.Name
+                            : internalName.ToFriendlyName(),
+                        Description = descriptionAttribute != null
+                            ? descriptionAttribute.Description
+                            : displayAttribute?.GetDescription(),
+                        Value = intValue,
+                        OrderIndex = displayAttribute?.GetOrder() ?? intValue,
+                        Color = refListItemAttribute?.Color,
+                    });
+                }
             }
 
-            // note: if the module on the attribute is null - use fallback to 
-            var searchByNamespaceOnly = list.Attribute.IsLegacy;
-            var refListId = list.Attribute.GetReferenceListIdentifier(list.Enum);
+            var moduleName = list.RefListId.Module;
 
-            var listModule = refListId.Module != null
-                ? await _moduleManager.GetOrCreateModuleAsync(refListId.Module)
+            var listModule = !string.IsNullOrWhiteSpace(moduleName)
+                ? await _moduleManager.GetOrCreateModuleAsync(moduleName)
                 : module;
 
-            var listInDb = searchByNamespaceOnly
-                ? await _listRepo.GetAll()
-                    .Where(l => l.Name == list.Attribute.FullName)
-                    .OrderBy(l => l.Module == null ? 0 : 1)
-                    .ThenBy(l => !l.IsDeleted ? 0 : 1)
-                    .FirstOrDefaultAsync()
-                : await _listRepo.GetAll()
-                    .Where(l => l.Name == list.Attribute.FullName &&
-                        l.Module == listModule)
-                    .OrderBy(l => !l.IsDeleted ? 0 : 1)
+            var listInDb = await _listRepo.GetAll()
+                .Where(l => l.Name == list.RefListId.Name && l.Module == listModule)
+                .OrderBy(l => !l.IsDeleted ? 0 : 1)
                 .FirstOrDefaultAsync();
 
             if (listInDb == null)
             {
-                Logger.Info($"  list in the DB: found");
+                LogInfo($"  list in the DB: not found");
 
-                listInDb = new ReferenceList()
-                {
-                    Namespace = list.Attribute.GetNamespace(),
+                listInDb = new ReferenceList() { 
+                    Module = listModule,
+                    Name = list.RefListId.Name,
                 };
+
                 listInDb.SetHardLinkToApplication(true);
+                listInDb.Label = list.Enum?.GetDisplayName();
+                listInDb.Description = list.Enum?.GetDescription();
 
-                // ToDo: AS - Get Module, Description and Suppress
-                listInDb.Module = module;
-                listInDb.Name = list.Attribute.FullName;
-
-                listInDb.Label = list.Enum.GetDisplayName();
-                listInDb.Description = list.Enum.GetDescription();
                 listInDb.Suppress = false;
-
-                // ToDo: Temporary
-                listInDb.VersionNo = 1;
-                listInDb.VersionStatus = ConfigurationItemVersionStatus.Live;
 
                 listInDb.Normalize();
 
@@ -203,14 +213,12 @@ namespace Shesha.Bootstrappers
             }
             else
             {
-                Logger.Info($"  list in the DB: not found");
+                LogInfo($"  list in the DB: found");
 
                 // update list if required
-                if (module != null && listInDb.Module != module || !listInDb.HardLinkToApplication)
+                if (!listInDb.HardLinkToApplication)
                 {
-                    listInDb.Module = listModule;
                     listInDb.SetHardLinkToApplication(true);
-
                     await _listRepo.UpdateAsync(listInDb);
                 }
             }
@@ -219,37 +227,38 @@ namespace Shesha.Bootstrappers
                 .Where(i => i.ReferenceList == listInDb)
                 .ToListAsync();
 
-            Logger.Info($"  items in the DB: {itemsInDb.Count()}");
+            LogInfo($"  items in the DB: {itemsInDb.Count()}");
 
             var toAdd = listInCode.Where(i => !itemsInDb.Any(iv => iv.ItemValue == i.Value)).ToList();
 
-            Logger.Info($"  items to add: {toAdd.Count()}");
+            LogInfo($"  items to add: {toAdd.Count()}");
 
             foreach (var item in toAdd)
             {
                 var newItem = new ReferenceListItem()
                 {
                     ItemValue = item.Value,
-                    Item = item.Name,
-                    Description = item.Description,
+                    Item = item.Name ?? string.Empty,
+                    Description = item.Description ?? string.Empty,
                     OrderIndex = item.OrderIndex,
                     ReferenceList = listInDb,
-                    Color = item.Color,
+                    Color = item.Color ?? string.Empty,
                 };
                 newItem.SetHardLinkToApplication(true);
 
-                await _listItemRepo.InsertOrUpdateAsync(newItem);
+                await _listItemRepo.InsertAsync(newItem);
             }
 
             var toInactivate = itemsInDb.Where(ldb => ldb.HardLinkToApplication && !listInCode.Any(i => i.Value == ldb.ItemValue)).ToList();
-            Logger.Info($"  items to delete: {toInactivate.Count()}");
+            LogInfo($"  items to delete: {toInactivate.Count()}");
 
             foreach (var item in toInactivate)
             {
                 await _listItemRepo.DeleteAsync(item);
             }
 
-            var toUpdate = itemsInDb.Select(idb => {
+            var toUpdate = itemsInDb.Select(idb =>
+            {
                 var updatedItemInCode = listInCode.FirstOrDefault(i => i.Value == idb.ItemValue && (i.Name != idb.Item || !idb.HardLinkToApplication));
                 return updatedItemInCode != null
                 ? new
@@ -261,31 +270,37 @@ namespace Shesha.Bootstrappers
             })
                 .WhereNotNull()
                 .ToList();
-            Logger.Info($"  items to update: {toUpdate.Count()}");
+            LogInfo($"  items to update: {toUpdate.Count()}");
 
             foreach (var item in toUpdate)
             {
-                item.ItemInDB.Item = item.UpdatedItemInCode.Name;
+                item.ItemInDB.Item = item.UpdatedItemInCode.Name ?? string.Empty;
                 item.ItemInDB.SetHardLinkToApplication(true);
-                await _listItemRepo.InsertOrUpdateAsync(item.ItemInDB);
+
+                await _listItemRepo.UpdateAsync(item.ItemInDB);
             }
 
-            await _listRepo.InsertOrUpdateAsync(listInDb);
+            await _listRepo.UpdateAsync(listInDb);
 
-            await _unitOfWorkManager.Current.SaveChangesAsync();
+            await UnitOfWorkManager.Current.SaveChangesAsync();
         }
 
-        private class RefListType 
+        private class RefListType
         {
             public Assembly Assembly { get; set; }
-            public Type Enum { get; set; }
-            public ReferenceListAttribute Attribute { get; set; }
+            public Type? Enum { get; set; }
+            public ReferenceListIdentifier RefListId { get; set; }
 
             public RefListType(Assembly assembly, Type @enum, ReferenceListAttribute attribute)
             {
                 Assembly = assembly;
                 Enum = @enum;
-                Attribute = attribute;
+                RefListId = attribute.GetReferenceListIdentifier(@enum);
+            }
+            public RefListType(Assembly assembly, ReferenceListIdentifier refListId)
+            {
+                Assembly = assembly;
+                RefListId = refListId;
             }
         }
 

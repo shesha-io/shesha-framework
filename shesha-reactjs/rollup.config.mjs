@@ -1,5 +1,5 @@
+
 import typescript from '@rollup/plugin-typescript';
-import commonjs from '@rollup/plugin-commonjs';
 import postCss from 'rollup-plugin-postcss';
 import multi from '@rollup/plugin-multi-entry';
 import svgr from '@svgr/rollup';
@@ -9,8 +9,9 @@ import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json' with { type: 'json' };
-import eslint from '@rollup/plugin-eslint';
 import { codeAsText } from "./src/rollup-plugins/codeAsText.js";
+import { memoryTrace } from "./src/rollup-plugins/memoryTrace.js";
+import { warningHandlerPlugin } from "./src/rollup-plugins/warningHandler.mjs";
 
 export default {
   input: ['src/index.tsx', 'src/providers/index.ts'],
@@ -62,8 +63,15 @@ export default {
     'zlib',
   ],
   plugins: [
+    warningHandlerPlugin({
+      logFile: 'build-warnings.log',
+      logLevel: 'warnings-only',
+      timestampFormat: 'locale',
+      maxFileSize: 5 * 1024 * 1024, // 5MB
+      backupOldLogs: false
+    }),
+    memoryTrace(false),
     codeAsText(),
-    eslint({ throwOnError: true, include: 'src/**/*.ts{,x}' }),
     multi(),
     peerDepsExternal({
       includeDependencies: true,
@@ -84,11 +92,8 @@ export default {
     }),
     typescript({
       noEmitOnError: true,
-      tsconfig: './tsconfig.rollup.json'
-    }),
-    commonjs({
-      include: 'node_modules/**',
-      defaultIsModuleExports: true,
+      tsconfig: './tsconfig.rollup.json',
+      filterRoot: 'src',
     }),
     json(),
     localResolve(),

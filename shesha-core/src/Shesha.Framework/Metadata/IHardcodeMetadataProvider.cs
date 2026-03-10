@@ -31,15 +31,16 @@ namespace Shesha.Metadata
         /// Get data type of the specified property
         /// </summary>
         /// <returns></returns>
-        DataTypeInfo GetDataType(PropertyInfo propInfo);
+        DataTypeInfo GetDataType(PropertyInfo propInfo, Type entityType);
 
         /// <summary>
         /// Get data type by property type
         /// </summary>
         /// <param name="propType"></param>
         /// <param name="propInfo"></param>
+        /// <param name="entityType"></param>
         /// <returns></returns>
-        DataTypeInfo? GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo);
+        DataTypeInfo? GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo, Type entityType);
 
         /// <summary>
         /// Returns true if the property is a framework related one

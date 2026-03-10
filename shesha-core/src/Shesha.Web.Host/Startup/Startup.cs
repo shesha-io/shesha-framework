@@ -185,7 +185,7 @@ namespace Shesha.Web.Host.Startup
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
             app.UseSwaggerUI(options =>
             {
-                //options.AddEndpointsPerService();
+                options.AddEndpointsPerService();
                 options.SwaggerEndpoint("swagger/v1/swagger.json", "Shesha API V1");
 
                 options.IndexStream = () => Assembly.GetExecutingAssembly()
@@ -215,6 +215,7 @@ namespace Shesha.Web.Host.Startup
                 options.IgnoreObsoleteActions();
                 options.AddXmlDocuments();
 
+                options.SchemaFilter<JsonIgnoreSchemaFilter>();
                 options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();

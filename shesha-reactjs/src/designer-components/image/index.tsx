@@ -1,17 +1,17 @@
-import { IFormItem, IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup } from '@/providers/form/models';
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { evaluateValue, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React from 'react';
+import { evaluateValueAsString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import React, { ReactElement } from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IStyleType, StoredFileProvider } from '@/providers';
-import { ImageField, ImageSourceType } from './image';
+import { StoredFileProvider } from '@/providers';
+import { ImageField } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
@@ -19,43 +19,8 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useTheme } from 'antd-style';
-
-export interface IImageStyleProps {
-  height?: number | string;
-  width?: number | string;
-  objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none';
-  objectPosition?: string;
-  filter?: string;
-  filterIntensity?: number;
-  borderSize?: number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  stylingBox?: string;
-  opacity?: number;
-  style?: string;
-}
-export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps, IStyleType {
-  url?: string;
-  storedFileId?: string;
-  base64?: string;
-  dataSource?: ImageSourceType;
-  ownerType?: string;
-  ownerId?: string;
-  fileCategory?: string;
-  allowPreview?: boolean;
-  allowedFileTypes?: string[];
-  alt?: string;
-  opacity?: number;
-  sepia?: number;
-  grayscale?: number;
-  blur?: number;
-  brightness?: number;
-  contrast?: number;
-  saturate?: number;
-  hueRotate?: number;
-  invert?: number;
-}
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { IImageProps, IImageStyleProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -66,8 +31,8 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   isInput: true,
   isOutput: true,
   calculateModel: (model, allData) => ({
-    ownerId: evaluateValue(model.ownerId, allData),
-    dataId: allData.data?.Id,
+    ownerId: evaluateValueAsString(model.ownerId, allData),
+    dataId: (allData.data as { Id: string })?.Id, // TODO: review and remove
     formModelType: allData.form.formSettings?.modelType,
   }),
   Factory: ({ model, calculatedModel }) => {
@@ -86,7 +51,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       ...model.allStyles.dimensionsStyles,
       ...model.allStyles.borderStyles,
       ...model.allStyles.shadowStyles,
-      ...model.allStyles.stylingBoxAsCSS
+      ...model.allStyles.stylingBoxAsCSS,
     });
 
     return (
@@ -94,7 +59,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         {(value, onChange) => {
           const uploadedFileUrl = model.base64 || value;
 
-          const readonly = model.readOnly || model.dataSource === 'base64' && Boolean(model.base64);
+          const readonly = model.readOnly || (model.dataSource === 'base64' && Boolean(model.base64));
 
           const val = model.dataSource === 'storedFile'
             ? model.storedFileId || value?.id || value
@@ -102,19 +67,17 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               ? uploadedFileUrl
               : model.url || value;
 
-          const fileProvider = child => {
+          const fileProvider = (child): ReactElement => {
             return (
               <StoredFileProvider
                 value={val}
                 onChange={onChange}
                 fileId={val}
                 ownerId={Boolean(calculatedModel.ownerId) ? calculatedModel.ownerId : Boolean(calculatedModel.dataId) ? calculatedModel.dataId : ''}
-                ownerType={
-                  Boolean(model.ownerType) ? model.ownerType : Boolean(calculatedModel.formModelType) ? calculatedModel.formModelType : ''
-                }
+                ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(calculatedModel.formModelType) ? calculatedModel.formModelType : ''}
                 fileCategory={model.fileCategory}
                 propertyName={!model.context ? model.propertyName : null}
-                //uploadMode={model.useSync ? 'sync' : 'async'}
+                // uploadMode={model.useSync ? 'sync' : 'async'}
               >
                 {child}
               </StoredFileProvider>
@@ -144,7 +107,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   },
   initModel: (model) => {
     const customModel: IImageProps = {
-      ...model
+      ...model,
     };
     return customModel;
   },
@@ -177,7 +140,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IImageProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 

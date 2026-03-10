@@ -1,10 +1,10 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles, getTextHoverEffects } from '@/styles';
+import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
+
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
-    const filterHeading = "filter-heading";
-    const filterInput = "filter-input";
-    const shaColumnItemFilter = cx("sha-column-item-filter", css`
+  const filterHeading = "filter-heading";
+  const filterInput = "filter-input";
+  const shaColumnItemFilter = cx("sha-column-item-filter", css`
         margin-bottom: ${sheshaStyles.paddingLG}px;
     
         .${filterHeading} {
@@ -62,9 +62,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
         }
   `);
-    return {
-        shaColumnItemFilter,
-        filterHeading,
-        filterInput,
-    };
+  return {
+    shaColumnItemFilter,
+    filterHeading,
+    filterInput,
+  };
 });

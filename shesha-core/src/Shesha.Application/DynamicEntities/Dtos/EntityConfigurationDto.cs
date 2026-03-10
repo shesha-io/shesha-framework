@@ -6,6 +6,7 @@
     public class EntityConfigurationDto : EntityApiItemBase
     {
         public EntityApiItemBase Module { get; set; }
+        public string FullClassName { get; set; }
     }
 
     public class EntityApiItemBase

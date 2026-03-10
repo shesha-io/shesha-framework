@@ -26,6 +26,9 @@ export interface IWizardStepProps extends IStyleType {
   backButtonCustomEnabled?: string;
   doneButtonCustomEnabled?: string;
 
+  showBackButton?: boolean;
+  showDoneButton?: boolean;
+
   cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
   nextButtonActionConfiguration?: IConfigurableActionConfiguration;
   backButtonActionConfiguration?: IConfigurableActionConfiguration;
@@ -79,4 +82,5 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   primaryBgColor?: React.CSSProperties['color'];
   secondaryBgColor?: React.CSSProperties['color'];
   secondaryTextColor?: React.CSSProperties['color'];
+  stepWidth?: string;
 }

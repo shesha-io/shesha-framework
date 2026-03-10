@@ -1,44 +1,43 @@
-export interface IBaseAccessor {
-
-}
-
 /**
  * Base group accessor
  */
-export class BaseAccessor<TChild = IBaseAccessor, TManager = any> implements IBaseAccessor {
-    readonly _accessor: string;
-    readonly _children: Map<string, TChild>;
-    readonly _manager: TManager;
+export class BaseAccessor<TChild extends object = object, TManager = any> {
+  readonly _accessor: string;
 
-    createChild(accessor: string): TChild {
-        throw new Error("Method 'createChild()' must be implemented. Accessor: " + accessor);
-    }
+  readonly _children: Map<string, TChild>;
 
-    getChildAccessor(accessor: string): IBaseAccessor {
-        if (this._children.has(accessor))
-            return this._children.get(accessor);
+  readonly _manager: TManager;
 
-        const children = this.createChild(accessor);
-        this._children.set(accessor, children);
-        return children;
-    }
+  createChild(accessor: string): TChild {
+    throw new Error("Method 'createChild()' must be implemented. Accessor: " + accessor);
+  }
 
-    constructor(manager: TManager, name: string) {
-        this._manager = manager;
-        this._accessor = name;
-        this._children = new Map<string, TChild>();
+  getChildAccessor(accessor: string): TChild {
+    const existingChild = this._children.get(accessor);
+    if (existingChild)
+      return existingChild;
 
-        return new Proxy(this, {
-            get(target, name) {
-                if (name in target) {
-                    const result = target[name];
-                    return typeof result === 'function' ? result.bind(target) : result;
-                }
+    const children = this.createChild(accessor);
+    this._children.set(accessor, children);
+    return children;
+  }
 
-                return typeof (name) === 'string'
-                    ? target.getChildAccessor(name)
-                    : undefined;
-            },
-        });
-    }
+  constructor(manager: TManager, name: string) {
+    this._manager = manager;
+    this._accessor = name;
+    this._children = new Map<string, TChild>();
+
+    return new Proxy(this, {
+      get(target, name) {
+        if (name in target) {
+          const result = target[name];
+          return typeof result === 'function' ? result.bind(target) : result;
+        }
+
+        return typeof (name) === 'string'
+          ? target.getChildAccessor(name)
+          : undefined;
+      },
+    });
+  }
 }

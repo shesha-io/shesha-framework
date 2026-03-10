@@ -19,7 +19,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
 
   const style = getAlignmentStyle(props);
 
-  //alias added for readability and avoiding names clashes
+  // alias added for readability and avoiding names clashes
   const { value: subFormData } = useSubForm();
   const { globalState } = useGlobalState();
 
@@ -29,7 +29,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
       const evaluated = executeScriptSync(expression, { data: subFormData, globalState });
       return typeof evaluated === 'boolean' ? evaluated : true;
     },
-    [subFormData, globalState]
+    [subFormData, globalState],
   );
 
   return (
@@ -40,7 +40,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
         })
         .map((model) => {
           return (
-            <FormComponent 
+            <FormComponent
               componentModel={{
                 ...model,
                 context: model.context ?? context,

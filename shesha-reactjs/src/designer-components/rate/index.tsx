@@ -19,7 +19,6 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
-  defaultValue?: number;
   allowClear?: boolean;
   allowHalf?: boolean;
   icon?: string;
@@ -44,44 +43,47 @@ const RateComponent: IToolboxComponent<IRateProps> = {
 
     return model.hidden
       ? null
-      : <ConfigurableFormItem model={model}>
-        {(value,  onChange) => {
-          const customEvent = calculatedModel.eventHandlers;
-          const onChangeInternal = (value: number) => {
-            customEvent.onChange({value});
-            if (typeof onChange === 'function') onChange(value);
-          };
-          
-          return <Rate
-            allowClear={allowClear}
-            //allowHalf={allowHalf}
-            character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-            disabled={readOnly}
-            count={localCount ?? 5}
-            tooltips={tooltips}
-            className={classNames(className, 'sha-rate')}
-            style={model.allStyles.fullStyle}
-            {...customEvent}
-            value={value}
-            onChange={onChangeInternal}
-          />;
-        }}
-      </ConfigurableFormItem>
+      : (
+        <ConfigurableFormItem model={model}>
+          {(value, onChange) => {
+            const customEvent = calculatedModel.eventHandlers;
+            const onChangeInternal = (value: number): void => {
+              customEvent.onChange({ value });
+              if (typeof onChange === 'function') onChange(value);
+            };
+
+            return (
+              <Rate
+                allowClear={allowClear}
+                // allowHalf={allowHalf}
+                character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
+                disabled={readOnly}
+                count={localCount ?? 5}
+                tooltips={tooltips}
+                className={classNames(className, 'sha-rate')}
+                style={model.allStyles.fullStyle}
+                {...customEvent}
+                value={value}
+                onChange={onChangeInternal}
+              />
+            );
+          }}
+        </ConfigurableFormItem>
+      )
     ;
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))
     .add<IRateProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IRateProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IRateProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IRateProps>(4, (prev) => {
       prev.hideLabel = true;
       if (!prev.icon) prev.icon = 'StarFilled';
       return prev;
-    })
-  ,
+    }),
 };
 
 export default RateComponent;

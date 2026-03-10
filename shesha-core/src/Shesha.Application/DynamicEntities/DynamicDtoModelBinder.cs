@@ -280,7 +280,6 @@ namespace Shesha.DynamicEntities
             foreach (var prop in props)
             {
                 if (prop.CanWrite
-                    // todo: AS - change to __jObject nameof
                     && prop.Name != "JObject"
                     && prop.Name != nameof(IHasClassNameField._className)
                     && prop.Name != nameof(IHasDisplayNameField._displayName)

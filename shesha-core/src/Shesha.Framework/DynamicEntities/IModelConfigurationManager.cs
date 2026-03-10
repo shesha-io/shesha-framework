@@ -1,4 +1,5 @@
-﻿using Shesha.Domain;
+﻿using Shesha.Configuration.Runtime;
+using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata.Dtos;
 using System.Collections.Generic;
@@ -9,39 +10,34 @@ namespace Shesha.DynamicEntities
     /// <summary>
     /// Model Configuration Manager. Provides an access to the configurable models and properties
     /// </summary>
-    public interface IModelConfigurationManager
+    public interface IModelConfigurationManager: IEntityConfigManager
     {
         /// <summary>
-        /// Merge entity configurations
+        /// Get model configuration
         /// </summary>
-        /// <param name="source">Source configuration</param>
-        /// <param name="destination">Destination configuration</param>
-        /// <param name="deleteAfterMerge">Delete source configuration after merge</param>
-        /// <param name="deepUpdate">Set to true to update all references from the source class name to the destination class name (properties, JsonEntities, etc)</param>
-        /// <returns></returns>
-        Task MergeConfigurationsAsync(EntityConfig source, EntityConfig destination, bool deleteAfterMerge, bool deepUpdate);
+        Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto> GetModelConfigurationAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(EntityConfig modelConfig, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(string? moduleName, string? @namespace, string entityTypeName, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto> GetModelConfigurationAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string? moduleName, string? @namespace, string entityTypeName, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Create model configuration
         /// </summary>
         /// <param name="input">Model configuration Dto</param>
         /// <returns></returns>
-        Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input);
+        Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input);
 
         /// <summary>
         /// Update model configuration

@@ -16,18 +16,17 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
   Factory: ({ model }) => {
     return <DataSource {...model} />;
   },
-  migrator: m =>
-    m.add<IDataSourceComponentProps>(0, prev => {
+  migrator: (m) =>
+    m.add<IDataSourceComponentProps>(0, (prev) => {
       return {
         ...prev,
         name: prev['uniqueStateId'] ?? prev['name'],
-        sourceType: 'Entity'
+        sourceType: 'Entity',
       };
     })
       .add<IDataSourceComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IDataSourceComponentProps>(2, (prev) => migrateVisibility(prev))
-      .add<IDataSourceComponentProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+      .add<IDataSourceComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
   settingsFormFactory: (props) => (<DataSourceSettingsForm {...props} />),
 };
 

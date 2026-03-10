@@ -5,6 +5,8 @@ import { EntityData, IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } f
 import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import { getEntityFilterByIds } from './graphQl';
 import { isEqual } from 'lodash';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { getEntityTypeIdentifierQueryParams } from '@/providers/metadataDispatcher/entities/utils';
 
 interface AutocompleteReturn {
   data: EntityData[];
@@ -16,7 +18,7 @@ interface AutocompleteReturn {
 export type AutocompleteValueType = string | string[] | object | object[];
 
 export interface IAutocompleteProps {
-  entityType: string;
+  entityType: string | IEntityTypeIdentifier;
   filter?: string;
   maxResultCount?: number;
   displayProperty?: string;
@@ -25,15 +27,15 @@ export interface IAutocompleteProps {
 
 const buildFilterById = (value: AutocompleteValueType): string => {
   if (!value) return null;
-   
-  const ids = (Array.isArray(value) ? value : [value]).map(val => {
+
+  const ids = (Array.isArray(value) ? value : [value]).map((val) => {
     return typeof val === 'string' ? val : val?.id ?? undefined;
-  }).filter(x => Boolean(x));
-  
+  }).filter((x) => Boolean(x));
+
   return getEntityFilterByIds(ids);
 };
 
-export const autocompleteValueIsEmpty = (value: any): boolean => {
+export const autocompleteValueIsEmpty = (value: AutocompleteValueType): boolean => {
   return Array.isArray(value) ? value.length === 0 : !Boolean(value);
 };
 
@@ -51,11 +53,11 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     return {
       skipCount: 0,
       maxResultCount: props.maxResultCount ?? 10,
-      entityType: props.entityType,
       properties: properties,
       quickSearch: term,
       filter: props?.filter,
       sorting: displayProperty,
+      ...getEntityTypeIdentifierQueryParams(props.entityType),
     };
   };
 
@@ -64,17 +66,17 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
   const getValuePayload: IGenericGetAllPayload = {
     skipCount: 0,
     maxResultCount: 1000,
-    entityType: props.entityType,
     properties: properties,
     sorting: displayProperty,
     filter: buildFilterById(props.value),
+    ...getEntityTypeIdentifierQueryParams(props.entityType),
   };
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: autocompleteValueIsEmpty(props.value),
       queryParams: getValuePayload,
-    }
+    },
   );
 
 
@@ -82,10 +84,10 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: true,
-    }
+    },
   );
 
-  const search = (term: string) => {
+  const search = (term: string): void => {
     const queryParams = getListFetcherQueryParams(term);
     if (isEqual(queryParams, previousQueryParams.current))
       return;

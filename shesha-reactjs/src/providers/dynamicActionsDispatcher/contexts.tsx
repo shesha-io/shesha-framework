@@ -28,6 +28,6 @@ export interface IDynamicActionsRegistration {
 export const DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE: IDynamicActionsDispatcherStateContext = {
 };
 
-export const DynamicActionsDispatcherStateContext = createNamedContext<IDynamicActionsDispatcherStateContext>({...DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE}, "DynamicActionsDispatcherStateContext");
+export const DynamicActionsDispatcherStateContext = createNamedContext<IDynamicActionsDispatcherStateContext>({ ...DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE }, "DynamicActionsDispatcherStateContext");
 
 export const DynamicActionsDispatcherActionsContext = createNamedContext<IDynamicActionsDispatcherActionsContext>(undefined, "DynamicActionsDispatcherActionsContext");

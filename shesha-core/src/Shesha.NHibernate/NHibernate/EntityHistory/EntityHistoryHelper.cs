@@ -22,13 +22,13 @@ using Shesha.EntityHistory;
 using Shesha.Extensions;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
+using Shesha.Orm;
 using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SessionExtensions = Shesha.NHibernate.Session.SessionExtensions;
 
 namespace Shesha.NHibernate.EntityHistory
 {
@@ -103,17 +103,15 @@ namespace Shesha.NHibernate.EntityHistory
             var typeOfEntity = entity.GetType().StripCastleProxyType();
 
             if (!IsTypeOfEntity(typeOfEntity))
-            {
                 return null;
-            }
-
-            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name));
 
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
 
             var isAudited = IsTypeOfAuditedEntity(typeOfEntity);
             if (isAudited != null && !isAudited.Value) return null;
+
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(null, typeOfEntity.Namespace.NotNull(), typeOfEntity.Name, true));
 
             if (entityConfig != null && isAudited == null && isTracked == null)
             {
@@ -162,7 +160,7 @@ namespace Shesha.NHibernate.EntityHistory
                 }
             }
 
-            var dirtyProps = dirtyP.Select(i => new SessionExtensions.DirtyPropertyInfo
+            var dirtyProps = dirtyP.Select(i => new DirtyPropertyInfo
                     { Name = persister.PropertyNames[i], OldValue = entityEntry.LoadedState?[i], NewValue = currentState[i] })
                 .ToList();
 
@@ -215,7 +213,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// Gets the property changes for this entry.
         /// </summary>
         private ICollection<EntityPropertyChange> GetPropertyChanges(bool fullAudited, EntityChange entityChange, Type unproxiedEntityType, object entity,
-            ModelConfigurationDto entityConfig, IList<SessionExtensions.DirtyPropertyInfo> dirtyProps)
+            ModelConfigurationDto entityConfig, IList<DirtyPropertyInfo> dirtyProps)
         {
             var propertyChanges = new List<EntityPropertyChange>();
 
@@ -360,7 +358,7 @@ namespace Shesha.NHibernate.EntityHistory
                 : Convert.ToInt64(value);
         }
 
-        private bool AddAuditedAsEvent(PropertyInfo propInfo, SessionExtensions.DirtyPropertyInfo property, EntityPropertyChange? propertyChange, EntityChange entityChange, object entity)
+        private bool AddAuditedAsEvent(PropertyInfo propInfo, DirtyPropertyInfo property, EntityPropertyChange? propertyChange, EntityChange entityChange, object entity)
         {
             var auditedAsEvent = propInfo.GetCustomAttribute<AuditedAsEventAttribute>();
             if (auditedAsEvent != null)
@@ -406,9 +404,9 @@ namespace Shesha.NHibernate.EntityHistory
                 ? propInfo.PropertyType.GetGenericArguments()[0] 
                 : propInfo.PropertyType;
 
-            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name));
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace.NotNull(), entityType.Name, true));
 
-            var configuredAudit = (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
+            var configuredAudit = entityConfig != null && (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
             var audited = propInfo.GetCustomAttribute<AuditedAttribute>();
             var auditedAsMany = propInfo.GetCustomAttribute<AuditedAsManyToManyAttribute>();
             var auditedAsP = propInfo.GetCustomAttributes().FirstOrDefault(x => x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,>)) != null)?.GetType();

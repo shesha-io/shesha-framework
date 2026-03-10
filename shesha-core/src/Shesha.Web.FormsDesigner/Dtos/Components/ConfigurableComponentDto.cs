@@ -22,10 +22,5 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// Settings in JSON format
         /// </summary>
         public string? Settings { get; set; }
-
-        /// <summary>
-        /// Cache MD5, is used for client-side caching
-        /// </summary>
-        public string? CacheMd5 { get; set; }
     }
 }

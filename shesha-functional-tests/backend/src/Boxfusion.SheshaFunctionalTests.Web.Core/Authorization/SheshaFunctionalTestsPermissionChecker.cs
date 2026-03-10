@@ -17,16 +17,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
     {
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
-        private readonly IRepository<ShaRoleAppointmentEntity, Guid> _appEntityRepository;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public SheshaFunctionalTestsPermissionChecker(IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository, IRepository<ShaRoleAppointmentEntity, Guid> appEntityRepository)
+        public SheshaFunctionalTestsPermissionChecker(IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository)
         {
             _personRepository = personRepository;
             _rolePersonRepository = rolePersonRepository;
-            _appEntityRepository = appEntityRepository;
         }
 
         /// <summary>
@@ -71,7 +69,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         public async Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
         {
             return await _rolePersonRepository.GetAll()
-                .Where(e => e.Role != null && roles.Contains(e.Role.Name) && e.Person == person).AnyAsync();
+                .Where(e => roles.Contains(e.Role.Name) && e.Person == person).AnyAsync();
         }
 
         /// <summary>

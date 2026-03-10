@@ -318,9 +318,9 @@ namespace Shesha.Notifications
         }
 
         [Obsolete("For backward compatibility only (is used by old scheduled jobs)")]
-        public async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName) 
+        public Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName) 
         {
-            await SendAsync(messageId);
+            return SendAsync(messageId);
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace Shesha.Notifications
             }
         }
 
-        public async Task SendNotificationAsync<TData>(
+        public Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
             Person? senderPerson, 
             Person receiverPerson, 
@@ -371,7 +371,7 @@ namespace Shesha.Notifications
                 ? new PersonMessageParticipant(senderPerson)
                 : null;
             var receiver = new PersonMessageParticipant(receiverPerson);            
-            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel, category);
+            return SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel, category);
         }
     }
 }

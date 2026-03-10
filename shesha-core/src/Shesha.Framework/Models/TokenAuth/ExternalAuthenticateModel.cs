@@ -6,11 +6,11 @@ namespace Shesha.Models.TokenAuth
     public class ExternalAuthenticateModel
     {
         [Required]
-        [StringLength(UserLogin.MaxLoginProviderLength)]
+        [MaxLength(UserLogin.MaxLoginProviderLength)]
         public string AuthProvider { get; set; }
 
         [Required]
-        [StringLength(UserLogin.MaxProviderKeyLength)]
+        [MaxLength(UserLogin.MaxProviderKeyLength)]
         public string ProviderKey { get; set; }
 
         [Required]

@@ -1,5 +1,4 @@
 import { createStyles } from 'antd-style';
-import { sheshaStyles } from '@/styles';
 
 interface IStyleProps {
   block: boolean;
@@ -9,7 +8,8 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, props: IS
   const shaGlobalTableFilter = cx(
     'sha-global-table-filter',
     css`
-      padding-right: ${sheshaStyles.paddingLG}px;
+      display: flex;
+      align-items: center;
       width: ${props.block ? '100%' : '350px'};
 
       .ant-input-group-wrapper {
@@ -46,7 +46,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, props: IS
         padding-right: 0;
         width: 100%;
       }
-    `
+    `,
   );
   return {
     shaGlobalTableFilter,

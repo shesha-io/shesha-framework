@@ -1,4 +1,4 @@
-﻿using Shesha.Domain.ConfigurationItems;
+﻿using Shesha.Domain;
 using System.Threading;
 
 namespace Shesha.ConfigurationItems.Distribution
@@ -19,11 +19,6 @@ namespace Shesha.ConfigurationItems.Distribution
         public bool CreateFrontEndApplications { get; }
 
         /// <summary>
-        /// Is used to override status of the imported items. Leave empty to import statuses as is.
-        /// </summary>
-        public ConfigurationItemVersionStatus? ImportStatusAs { get; }
-
-        /// <summary>
         /// Import result. If specified, all imported items will be linked to the corresponding import session
         /// </summary>
         public ConfigurationPackageImportResult? ImportResult { get; }
@@ -32,5 +27,10 @@ namespace Shesha.ConfigurationItems.Distribution
         /// Cancellation token. Is used for termination of the import process 
         /// </summary>
         public CancellationToken CancellationToken { get; }
+
+        /// <summary>
+        /// If true, indicates that current import is a migration
+        /// </summary>
+        public bool IsMigrationImport { get; }
     }
 }

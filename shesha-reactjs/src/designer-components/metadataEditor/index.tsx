@@ -21,22 +21,20 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
   name: 'Metadata editor',
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {
-    const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
-
     const { data: formData } = useFormData();
     const metadataBuilderFactory = useMetadataBuilderFactory();
 
     const baseProperties = useMemo<IPropertyMetadata[]>(() => {
       if (!model.baseProperties)
         return [];
-      
+
       const metadataBuilder = metadataBuilderFactory();
       const result = executeScriptSync<IPropertyMetadata[]>(model.baseProperties, { data: formData, metadataBuilder });
       return result;
     }, [model.baseProperties, formData]);
-    
+
     return (
-      <ConfigurableFormItem model={model} {...initialValue}>
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           return (
             <MetadataEditor
@@ -52,5 +50,5 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model)
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

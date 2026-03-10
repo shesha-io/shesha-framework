@@ -41,19 +41,14 @@ namespace Shesha.Tests.DynamicEntities
             {
                 Person? testPerson = null;
 
-                try
-                {
-                    var json1 = @"{ 'firstName': 'TestPerson', 'gender': 'Male', 'dateOfBirth': '2011-12-13T12:13:14Z' }";
-                    var jObject1 = JObject.Parse(json1);
-                    var testErrors1 = new List<ValidationResult>();
-                    testPerson = new Person();
-                    var testResult1 = await _entityModelBinder.BindPropertiesAsync(jObject1, testPerson, new EntityModelBindingContext());
-                    Assert.True(testResult1);
-                    Assert.True(testPerson.DateOfBirth == new DateTime(2011, 12, 13)); // Check only date because Person.DateOfBirth has DataType(DataType.Date) attribute
-                }
-                finally
-                {
-                }
+                var json1 = @"{ 'firstName': 'TestPerson', 'gender': 'Male', 'dateOfBirth': '2011-12-13T12:13:14Z' }";
+                var jObject1 = JObject.Parse(json1);
+                var testErrors1 = new List<ValidationResult>();
+                testPerson = new Person();
+                var testResult1 = await _entityModelBinder.BindPropertiesAsync(jObject1, testPerson, new EntityModelBindingContext());
+                Assert.True(testResult1);
+                Assert.True(testPerson.DateOfBirth == new DateTime(2011, 12, 13)); // Check only date because Person.DateOfBirth has DataType(DataType.Date) attribute
+                await uow.CompleteAsync();
             }
         }
 

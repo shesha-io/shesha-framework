@@ -6,8 +6,14 @@ ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 #Install dependencies
+# RUN apt-get update
+# RUN apt-get update && apt-get install -y libfontconfig1
+
 RUN apt-get update
-RUN apt-get update && apt-get install -y libfontconfig1
+RUN apt-get install -y libc6 libgdiplus libicu-dev libharfbuzz0b libfontconfig1 libfreetype6
+RUN apt-get install -y libpango-1.0-0 libpangocairo-1.0
+RUN apt-get install -y libfontconfig1
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY . /app

@@ -1,11 +1,11 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
 
-export const getSettings = (data: any) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -14,7 +14,7 @@ export const getSettings = (data: any) => {
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -29,7 +29,7 @@ export const getSettings = (data: any) => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'componentName',
@@ -39,10 +39,11 @@ export const getSettings = (data: any) => {
                   validate: {
                     required: true,
                   },
-                  jsSetting: false
+                  jsSetting: false,
                 })
                 .addSettingsInput({
                   id: nanoid(),
+                  inputType: 'textField',
                   propertyName: 'label',
                   parentId: commonTabId,
                   label: 'Heading',
@@ -69,7 +70,6 @@ export const getSettings = (data: any) => {
                   inputType: 'switch',
                   label: 'Hide When Empty',
                   propertyName: 'hideWhenEmpty',
-                  defaultValue: false,
                   jsSetting: true,
                 })
                 .toJson(),
@@ -81,7 +81,7 @@ export const getSettings = (data: any) => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -93,10 +93,10 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
-                  },
+                    _value: "",
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlBorderStyle',
@@ -108,20 +108,20 @@ export const getSettings = (data: any) => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getBorderInputs() as any
+                              components: getBorderInputs(fbf),
                             })
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getCornerInputs() as any
+                              components: getCornerInputs(fbf),
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -135,7 +135,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -168,7 +168,7 @@ export const getSettings = (data: any) => {
                                   propertyName: "background.gradient.colors",
                                   label: "Colors",
                                   jsSetting: false,
-                                }
+                                },
                                 ],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
@@ -207,9 +207,9 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
-                                    label: "File ID"
-                                  }
-                                ]
+                                    label: "File ID",
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -235,7 +235,7 @@ export const getSettings = (data: any) => {
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
                                   },
-                                ]
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -246,14 +246,13 @@ export const getSettings = (data: any) => {
                                   label: 'Repeat',
                                   hideLabel: true,
                                   propertyName: 'background.repeat',
-                                  inputType: 'radio',
                                   buttonGroupOptions: repeatOptions,
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
-                              .toJson()
+                              .toJson(),
                           ],
-                        }
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -266,7 +265,7 @@ export const getSettings = (data: any) => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -278,7 +277,6 @@ export const getSettings = (data: any) => {
                                   label: 'Offset X',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: "offsetHorizontalIcon",
                                   propertyName: 'shadow.offsetX',
                                 },
@@ -288,7 +286,6 @@ export const getSettings = (data: any) => {
                                   label: 'Offset Y',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'offsetVerticalIcon',
                                   propertyName: 'shadow.offsetY',
                                 },
@@ -298,7 +295,6 @@ export const getSettings = (data: any) => {
                                   label: 'Blur',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'blurIcon',
                                   propertyName: 'shadow.blurRadius',
                                 },
@@ -308,7 +304,6 @@ export const getSettings = (data: any) => {
                                   label: 'Spread',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'spreadIcon',
                                   propertyName: 'shadow.spreadRadius',
                                 },
@@ -321,9 +316,9 @@ export const getSettings = (data: any) => {
                                 },
                               ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -334,16 +329,16 @@ export const getSettings = (data: any) => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addStyleBox({
                               id: nanoid(),
                               label: 'Margin Padding',
                               hideLabel: true,
                               propertyName: 'stylingBox',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -355,7 +350,7 @@ export const getSettings = (data: any) => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -369,27 +364,28 @@ export const getSettings = (data: any) => {
                               propertyName: 'className',
                               label: 'Custom CSS Class',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: '4',
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })

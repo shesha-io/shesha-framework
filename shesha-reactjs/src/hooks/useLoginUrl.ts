@@ -6,13 +6,13 @@ export interface UseLoginUrlArgs {
   unauthorizedRedirectUrl: string;
 }
 
-export const useLoginUrl = ({ homePageUrl, unauthorizedRedirectUrl }: UseLoginUrlArgs) => {
+export const useLoginUrl = ({ homePageUrl, unauthorizedRedirectUrl }: UseLoginUrlArgs): string => {
   const { router } = useShaRouting();
 
   const redirectUrl =
-    isSameUrls(router?.path, homePageUrl) || isSameUrls(router?.path, unauthorizedRedirectUrl)
+    isSameUrls(router.path, homePageUrl) || isSameUrls(router.path, unauthorizedRedirectUrl)
       ? ''
-      : `/?returnUrl=${encodeURIComponent(router?.fullPath)}`;
+      : `/?returnUrl=${encodeURIComponent(router.fullPath)}`;
 
   return `${unauthorizedRedirectUrl}${redirectUrl}`;
 };

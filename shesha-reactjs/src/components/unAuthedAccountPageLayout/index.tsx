@@ -17,7 +17,6 @@ export const UnAuthedAccountPageLayout: FC<{
   hint?: string;
   children?: ReactNode;
 }> = ({ className, children, heading, hint }) => {
-
   return (
     <UnAuthedLayoutContainer className={className}>
       <div className="un-authed-account-page-layout-form-container">

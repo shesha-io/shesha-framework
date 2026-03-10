@@ -2,9 +2,8 @@ import React, { CSSProperties, FC, useMemo } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
-import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useForm, useSheshaApplication } from '@/providers';
+import { FormItemProvider, isConfigurableFormComponent, ROOT_COMPONENT_KEY, useForm, useSheshaApplication } from '@/providers';
 import FormInfo from '@/components/configurableForm/formInfo';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { ComponentsContainerSubForm } from './componentsContainerSubForm';
@@ -21,7 +20,6 @@ interface ISubFormProps {
 
 const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { formInfoBlockVisible } = useAppConfigurator();
   const {
     id,
     module,
@@ -31,9 +29,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     formSettings,
     propertyName,
     context,
-    versionStatus,
-    hasFetchedConfig,
-    versionNo,
     description,
     allComponents,
   } = useSubForm();
@@ -50,7 +45,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
           for (const comp in allComponents)
             if (Object.hasOwn(allComponents, comp)) {
               const component = allComponents[comp];
-              if (component.propertyName && !component.context)
+              if (isConfigurableFormComponent(component) && component.propertyName && !component.context)
                 properties.push([...propertyName.split('.'), ...component.propertyName.split('.')]);
             }
 
@@ -64,15 +59,11 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
       },
     });
 
-  const formStatusInfo = versionStatus ? ConfigurationItemVersionStatusMap[versionStatus] : null;
-
-  const showFormInfo = hasFetchedConfig && formInfoBlockVisible && Boolean(formStatusInfo && id && name);
-
   const isLoading = useMemo(() => {
     return Object.values(loading).find((l) => Boolean(l));
   }, [loading]);
 
-  const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
+  const persistedFormProps: IPersistedFormProps = { id, module, description, name };
 
   if (formSettings?.access === 4 && !anyOfPermissionsGranted(formSettings?.permissions || [])) {
     return (
@@ -81,11 +72,11 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
         style={{ height: '100vh - 55px' }}
         title="403"
         subTitle="Sorry, you are not authorized to access this page."
-        extra={
+        extra={(
           <Button type="primary">
-            <Link href={'/'}>Back Home</Link>
+            <Link href="/">Back Home</Link>
           </Button>
-        }
+        )}
       />
     );
   }
@@ -97,7 +88,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
           'data-sha-c-form-name': `${module}/${name}`,
         }}
       >
-        <FormInfo visible={showFormInfo} formProps={persistedFormProps}>
+        <FormInfo visible={false} formProps={persistedFormProps}>
           <div style={{ flex: 1 }} data-name={propertyName}>
             {Object.keys(errors).map((error, index) => (
               <ValidationErrors key={index} error={errors[error]} />

@@ -62,7 +62,7 @@ namespace Shesha.Tests.DynamicEntities
                     {
                         new EntityPropertyDto
                         {
-                            Name = "UnitTestDynamicObject", DataType = DataTypes.Object, Source = MetadataSourceType.UserDefined,
+                            Name = "UnitTestDynamicObject", DataType = DataTypes.Object, DataFormat = ObjectFormats.Object, Source = MetadataSourceType.UserDefined,
                             Properties = new List<EntityPropertyDto>()
                             {
                                 new EntityPropertyDto {Name = "UnitTestObjectProperty1", DataType = DataTypes.String, Source = MetadataSourceType.UserDefined},
@@ -86,7 +86,7 @@ namespace Shesha.Tests.DynamicEntities
                     return Task.FromResult<List<EntityPropertyDto>?>(result);
                 });
 
-            var entityConfigStore = Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = Resolve<IEntityTypeConfigurationStore>();
             var fullProxyCacheHolder = Resolve<IFullProxyCacheHolder>();
             var dynamicTypeCacheHolder = Resolve<IDynamicTypeCacheHolder>();
             var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
@@ -154,7 +154,7 @@ namespace Shesha.Tests.DynamicEntities
                     var dynamicPropertyManager = new DynamicPropertyManager(
                         Resolve<IRepository<EntityProperty, Guid>>(),
                         Resolve<IRepository<EntityPropertyValue, Guid>>(),
-                        Resolve<IEntityConfigurationStore>(),
+                        Resolve<IEntityTypeConfigurationStore>(),
                         Resolve<IDynamicRepository>()
                         )
                     { DtoTypeBuilder = builder, SerializationManager = serializationManager };

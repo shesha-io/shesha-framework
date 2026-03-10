@@ -1,6 +1,7 @@
 "use client";
 
-import { MainLayout } from '@shesha-io/reactjs';
+import { useLayoutSelection } from '@shesha-io/reactjs';
+import { LAYOUT_MODE, ACTIVE_HEADER, ACTIVE_FOOTER } from '@/app-constants/layout';
 import React from 'react';
 
 export default function Layout({
@@ -8,9 +9,15 @@ export default function Layout({
 }: {
     children: React.ReactNode;
 }) {
+    const { LayoutComponent } = useLayoutSelection(LAYOUT_MODE);
+
     return (
-        <MainLayout noPadding>
+        <LayoutComponent
+            noPadding
+            headerFormId={ACTIVE_HEADER}
+            footerFormId={ACTIVE_FOOTER}
+        >
             {children}
-        </MainLayout>
+        </LayoutComponent>
     );
 };

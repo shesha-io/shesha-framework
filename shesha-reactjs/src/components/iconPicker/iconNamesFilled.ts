@@ -229,9 +229,9 @@ export type BrandAndLogosFilledIconTypes = typeof FILLED_ICON_GROUPS.brandAndLog
 export type ApplicationFilledIconTypes = typeof FILLED_ICON_GROUPS.application[number];
 
 export type FilledIconTypes =
-  | DirectionalFilledIconTypes
-  | SuggestedFilledIconTypes
-  | EditorFilledIconTypes
-  | DataFilledIconTypes
-  | BrandAndLogosFilledIconTypes
-  | ApplicationFilledIconTypes;
+  | DirectionalFilledIconTypes |
+  SuggestedFilledIconTypes |
+  EditorFilledIconTypes |
+  DataFilledIconTypes |
+  BrandAndLogosFilledIconTypes |
+  ApplicationFilledIconTypes;

@@ -1,25 +1,22 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
-import { ValidationErrors } from '..';
 import {
-  FormMode,
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
   useDataTableStore,
-  useForm,
-  useGlobalState,
   useHttpClient,
   useMetadata,
-  useShaFormInstance,
+  useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
 import { removeUndefinedProperties } from '@/utils/array';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
+import { RowReorderValidationError } from '@/utils/errors';
 import { ReactTable } from '@/components/reactTable';
 import {
   IColumnResizing,
@@ -43,19 +40,20 @@ import {
   standardCellComponentTypes,
 } from '@/providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { executeScriptSync, useApplicationContextData } from '@/providers/form/utils';
+import { executeScript, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import moment from 'moment';
-import { ConfigurableFormInstance, IAnyObject } from '@/interfaces';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
-import { useStyles } from './styles/styles';
-import { adjustWidth, getCruadActionConditions } from './cell/utils';
+import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
-import { getFormApi } from '@/providers/form/formApi';
+import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
+import { StandaloneTable } from '@/designer-components/dataTable/table/standaloneTable';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -71,6 +69,75 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  showExpandedView?: boolean;
+
+  rowBackgroundColor?: string;
+  rowAlternateBackgroundColor?: string;
+  rowHoverBackgroundColor?: string;
+  rowSelectedBackgroundColor?: string;
+  borderRadius?: string;
+  border?: IBorderValue;
+  hoverHighlight?: boolean;
+  striped?: boolean;
+  backgroundColor?: string;
+
+  // Header styling
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
+  headerBackgroundColor?: string;
+  headerTextAlign?: string; // Alignment for header cells
+  bodyTextAlign?: string; // Alignment for body cells
+
+  // Deprecated - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
+  headerTextColor?: string;
+  /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
+  textAlign?: string;
+
+  // Table body styling
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+  rowBorderStyle?: IBorderValue;
+
+  // Body font styling
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: number & {} | string;
+  bodyFontColor?: string;
+
+  // Action column icon styling
+  actionIconSize?: string | number;
+  actionIconColor?: string;
+
+  // Cell styling
+  cellTextColor?: string;
+  cellBackgroundColor?: string;
+  cellBorderColor?: string;
+  cellBorders?: boolean;
+  cellPadding?: string;
+  cellBorder?: IBorderValue;
+
+  // Border and shadow styling
+  headerBorder?: IBorderValue;
+  headerShadow?: IShadowValue;
+  rowShadow?: IShadowValue;
+  rowDividers?: boolean;
+
+  // Overall table styling
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -79,6 +146,7 @@ export interface IExtendedModalProps extends ModalProps {
 
 export const DataTable: FC<Partial<IIndexTableProps>> = ({
   useMultiselect: useMultiSelect,
+  selectionMode,
   selectedRowIndex,
   onSelectRow,
   onDblClick,
@@ -103,15 +171,57 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   noDataSecondaryText,
   noDataIcon,
   onRowSaveSuccessAction: onRowSaveSuccess,
+  showExpandedView,
+  onRowDeleteSuccessAction,
+  rowBackgroundColor,
+  rowAlternateBackgroundColor,
+  rowHoverBackgroundColor,
+  rowSelectedBackgroundColor,
+  border,
+  hoverHighlight,
+  striped,
+  onRowClick,
+  onRowDoubleClick,
+  onRowHover,
+  onRowSelect,
+  onSelectionChange,
+  backgroundColor,
+  headerFont,
+  headerFontFamily,
+  headerFontSize,
+  headerFontWeight,
+  headerBackgroundColor,
+  headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
+  textAlign,
+  rowHeight,
+  rowPadding,
+  rowBorder,
+  rowBorderStyle,
+  boxShadow,
+  sortableIndicatorColor,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
+  actionIconSize,
+  actionIconColor,
+  columnsMismatch,
   ...props
 }) => {
-  const store = useDataTableStore();
-  const form = useForm(false);
-  const formApi = getFormApi(form ?? { formMode: 'readonly', formData: {} } as ConfigurableFormInstance);
-  const { formMode, data: formData } = formApi;
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  const [visibleColumns, setVisibleColumns] = useState<number>(0);
-  const appContextData = useApplicationContextData();
+  const store = useDataTableStore(false);
+  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const multiSelect = mode === 'multiple';
+  const appContext = useAvailableConstantsData();
+
+  // Compute effective header font values with backward compatibility
+  const effectiveHeaderFontFamily = headerFont?.type ?? headerFontFamily;
+  const effectiveHeaderFontSize = headerFont?.size ? `${headerFont.size}px` : headerFontSize;
+  const effectiveHeaderFontWeight = headerFont?.weight ?? headerFontWeight;
+  const effectiveHeaderTextColor = headerFont?.color ?? headerTextColor;
+  const effectiveHeaderTextAlign = headerFont?.align ?? headerTextAlign ?? textAlign;
+  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign; // Body uses bodyTextAlign or falls back to textAlign (deprecated)
 
   if (tableRef) tableRef.current = store;
 
@@ -120,6 +230,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     isFetchingTableData,
     totalPages,
     columns,
+    configurableColumns,
     groupingColumns,
     pageSizeOptions,
     currentPage,
@@ -141,9 +252,48 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     sortMode,
     strictSortBy,
     setColumnWidths,
+    customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   } = store;
 
-  const onSelectRowLocal = (index: number, row: any) => {
+  const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
+  const { executeAction } = useConfigurableActionDispatcher();
+
+  const handleRowSelect = useMemo(() => {
+    if (!onRowSelect?.actionName) return undefined;
+
+    return (row: any, rowIndex: number) => {
+      const currentSelectedRow = { index: rowIndex, row: row, id: row?.id };
+      const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowSelect,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row select action:', error);
+      }
+    };
+  }, [onRowSelect, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
+
+  // Clear all selections when selection mode changes
+  const previousMode = usePrevious(mode);
+  useEffect(() => {
+    // Only clear if mode actually changed
+    if (previousMode !== undefined && previousMode !== mode) {
+      if (selectedRow && setSelectedRow) {
+        setSelectedRow(null, null);
+      }
+      if (selectedIds && selectedIds.length > 0 && changeSelectedIds) {
+        changeSelectedIds([]);
+      }
+    }
+  }, [mode, previousMode, selectedRow, selectedIds, setSelectedRow, changeSelectedIds]);
+
+  const onSelectRowLocal = (index: number, row: any): void => {
     if (onSelectRow) {
       onSelectRow(index, row);
     }
@@ -151,15 +301,25 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (setSelectedRow) {
       const rowId = row?.id;
       const currentId = store.selectedRow?.id;
-      if (rowId !== currentId) setSelectedRow(index, row);
-      else setSelectedRow(null, null);
+      if (rowId !== currentId) {
+        setSelectedRow(index, row);
+        if (handleRowSelect) {
+          handleRowSelect(row, index);
+        }
+      } else {
+        setSelectedRow(null, null);
+      }
     }
   };
 
   const previousIds = usePrevious(selectedIds);
 
   useEffect(() => {
-    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
+    if (
+      mode === 'multiple' &&
+      !(previousIds?.length === 0 && selectedIds?.length === 0) &&
+      typeof onSelectedIdsChanged === 'function'
+    ) {
       onSelectedIdsChanged(selectedIds);
     }
   }, [selectedIds]);
@@ -207,28 +367,91 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onRowsChanged(tableData);
     }
   }, [tableData]);
-  const { styles } = useStyles();
 
-  const metadata = useMetadata(false)?.metadata;
+  const entityMetadata = useMetadata(false);
+  const metadata = entityMetadata?.metadata;
 
-  const { backendUrl } = useSheshaApplication();
-  const httpClient = useHttpClient();
+  const handleRowDoubleClick = useMemo(() => {
+    if (!onRowDoubleClick?.actionName) return undefined;
+
+    return (row: any, rowIndex: number) => {
+      const currentSelectedRow = { index: rowIndex, row: row, id: row?.id };
+      const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowDoubleClick,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row double-click action:', error);
+      }
+    };
+  }, [onRowDoubleClick, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
+
+  const handleSelectionChange = useMemo(() => {
+    if (!onSelectionChange?.actionName) return undefined;
+
+    return (selectedIds: string[]) => {
+      const evaluationContext = { ...appContext, selectedIds };
+
+      try {
+        executeAction({
+          actionConfiguration: onSelectionChange,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing selection change action:', error);
+      }
+    };
+  }, [onSelectionChange, appContext.contexts.lastUpdate, httpClient]);
+
+  const combinedDblClickHandler = useMemo(() => {
+    return (rowData: any, rowIndex: number) => {
+      if (dblClickHandler) {
+        if (typeof dblClickHandler === 'function') {
+          dblClickHandler(rowData, rowIndex);
+        }
+      }
+      if (handleRowDoubleClick) {
+        handleRowDoubleClick(rowData, rowIndex);
+      }
+    };
+  }, [dblClickHandler, handleRowDoubleClick]);
+
+  useEffect(() => {
+    if (handleSelectionChange && previousIds !== undefined) {
+      // Check if the selection actually changed by comparing the arrays
+      const currentIds = selectedIds || [];
+      const prevIds = previousIds || [];
+
+      // Don't trigger on first selection (when moving from no selection to first selection)
+      if (prevIds.length === 0 && currentIds.length > 0) {
+        return; // Skip first selection - only fire when moving FROM one selection TO another
+      }
+
+      // Compare sorted arrays for efficient comparison
+      const currentSorted = [...currentIds].sort();
+      const prevSorted = [...prevIds].sort();
+
+      const hasChanged = currentSorted.length !== prevSorted.length ||
+        currentSorted.some((id, index) => id !== prevSorted[index]);
+
+      if (hasChanged) {
+        handleSelectionChange(currentIds);
+      }
+    }
+  }, [selectedIds, handleSelectionChange, previousIds]);
 
   const toolboxComponents = useFormDesignerComponents();
-  const shaForm = useShaFormInstance();
-
-  const onNewRowInitializeExecuter = useMemo<Function>(() => {
-    return props.onNewRowInitialize
-      ? new Function('form, globalState, http, moment, application', props.onNewRowInitialize)
-      : null;
-  }, [props.onNewRowInitialize]);
+  const shaForm = useShaFormInstanceOrUndefined();
 
   const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-        //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
+        // return onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
+        const result = executeScriptSync(props.onNewRowInitialize, appContext) as object;
         return Promise.resolve(result);
       }
       : () => {
@@ -236,14 +459,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       };
 
     return result;
-  }, [onNewRowInitializeExecuter, formData, globalState]);
+  }, [props.onNewRowInitialize, appContext.contexts.lastUpdate]);
 
   const evaluateYesNoInheritJs = (
     value: YesNoInheritJs,
     jsExpression: string,
-    formMode: FormMode,
-    formData: any,
-    globalState: IAnyObject
   ): boolean => {
     switch (value) {
       case 'yes':
@@ -251,90 +471,53 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       case 'no':
         return false;
       case 'inherit':
-        return formMode === 'edit';
+        return appContext.form.formMode === 'edit';
       case 'js': {
         return (
           jsExpression &&
-          executeScriptSync<boolean>(jsExpression, {
-            formData: formData,
-            globalState: globalState,
-            moment: moment,
-            application: appContextData,
-          })
+          executeScriptSync<boolean>(jsExpression, { ...appContext, formData: appContext.data })
         );
       }
     }
-    return false;
   };
-
-  const prevCrudOptions = usePrevious({
-    canDelete: evaluateYesNoInheritJs(
-      props.canDeleteInline,
-      props.canDeleteInlineExpression,
-      formMode,
-      formData,
-      globalState
-    ),
-    canEdit: evaluateYesNoInheritJs(
-      props.canEditInline,
-      props.canEditInlineExpression,
-      formMode,
-      formData,
-      globalState
-    ),
-    inlineEditMode,
-    formMode,
-    canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
-  });
 
   const crudOptions = useMemo(() => {
     const result = {
       canDelete: evaluateYesNoInheritJs(
         props.canDeleteInline,
         props.canDeleteInlineExpression,
-        formMode,
-        formData,
-        globalState
       ),
       canEdit: evaluateYesNoInheritJs(
         props.canEditInline,
         props.canEditInlineExpression,
-        formMode,
-        formData,
-        globalState
       ),
       inlineEditMode,
-      formMode,
-      canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
-      onNewRowInitialize
+      formMode: appContext.form?.formMode,
+      canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression),
+      onNewRowInitialize,
     };
     return {
       ...result,
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
-  }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
+  }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, appContext.contexts.lastUpdate]);
 
-  const widthOptions = useMemo(() => {
-    return getCruadActionConditions(crudOptions, prevCrudOptions);
-  }, [crudOptions, prevCrudOptions]);
+  // Check if there's a crud operations column - if so, disable row selection
+  const hasCrudOperationsColumn = useMemo(() => {
+    return columns.filter((c) => !!c.show).some((c) => c.columnType === 'crud-operations');
+  }, [columns]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
-    setVisibleColumns(columns?.filter((c) => c.show).length);
     const localPreparedColumns = columns
       .map((column) => {
         if (column.columnType === 'crud-operations') {
           const { maxWidth, minWidth } = adjustWidth(
             {
-              maxWidth: column.maxWidth,
-              minWidth: column.minWidth,
+              canDelete: props.canDeleteInline,
+              canEdit: props.canEditInline,
+              canAdd: props.canAddInline,
+              inlineEditMode,
             },
-            {
-              canDivideWidth: widthOptions.canDivideWidth,
-              canDoubleWidth: widthOptions.canDoubleWidth,
-              canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
-              canTripleWidth: widthOptions.canTripleWidth,
-              columnsChanged: visibleColumns !== columns?.filter((c) => c.show).length && !!visibleColumns
-            }
           );
           column.minWidth = minWidth;
           column.maxWidth = maxWidth;
@@ -371,7 +554,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return removeUndefinedProperties(column) as DataTableColumn<any>;
       });
     return localPreparedColumns;
-
   }, [
     columns,
     crudOptions.enabled,
@@ -386,75 +568,85 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const defaultSorting =
     sortMode === 'standard' ? userSorting?.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc })) : undefined;
 
-  // http, moment
-  const performOnRowSave = useMemo<OnSaveHandler>(() => {
-    if (!onRowSave) return (data) => Promise.resolve(data);
-
-    const executer = new Function('data, form, globalState, http, moment, application', onRowSave);
-    return (data, formApi, globalState) => {
-      const preparedData = executer(data, formApi, globalState, httpClient, moment, appContextData);
-      return Promise.resolve(preparedData);
-    };
-  }, [onRowSave, httpClient]);
-
-  const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
       return () => {
-        /*nop*/
+        /* nop*/
       };
 
-    return (data, formApi, globalState, setGlobalState) => {
-      const evaluationContext = {
-        data,
-        formApi,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
+    return (data) => {
+      const evaluationContext = { ...appContext, data };
       // execute the action
       executeAction({
         actionConfiguration: onRowSaveSuccess,
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onRowSaveSuccess, backendUrl]);
+  }, [onRowSaveSuccess, appContext.contexts.lastUpdate, backendUrl, executeAction]);
 
-  const updater = (rowIndex: number, rowData: any): Promise<any> => {
+  const performOnRowSave = useMemo<OnSaveHandler>(() => {
+    if (!onRowSave) return (data) => Promise.resolve(data);
+
+    return (data) => {
+      return executeScript(onRowSave, { ...appContext, data });
+    };
+  }, [onRowSave, appContext.contexts.lastUpdate]);
+
+  const updater = useMemo(() => (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, formApi, globalState).then((preparedData) => {
+    return performOnRowSave(rowData).then((preparedData: object | undefined) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
           : undefined;
 
-      return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData /*, response*/);
-        performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
+      // use preparedData ?? rowData to handle the case when onRowSave returns undefined
+      return repository.performUpdate(rowIndex, preparedData ?? rowData, options).then((response) => {
+        setRowData(rowIndex, preparedData ?? rowData);
+        performOnRowSaveSuccess(preparedData ?? rowData);
         return response;
       });
     });
-  };
+  }, [store, onRowSave, appContext.contexts.lastUpdate]);
 
-  const creater = (rowData: any): Promise<any> => {
+  const creater = useMemo(() => (rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, formApi, globalState).then((preparedData) => {
+    return performOnRowSave(rowData).then((preparedData: object | undefined) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
           : undefined;
 
-      return repository.performCreate(0, preparedData, options).then(() => {
+      // use preparedData ?? rowData to handle the case when onRowSave returns undefined
+      return repository.performCreate(0, preparedData ?? rowData, options).then(() => {
         store.refreshTable();
-        performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
+        performOnRowSaveSuccess(preparedData ?? rowData);
       });
     });
-  };
+  }, [store, onRowSave, appContext.contexts.lastUpdate]);
+
+  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowDeleteSuccessAction)
+      return () => {
+        /* nop*/
+      };
+    return (data) => {
+      const evaluationContext = { ...appContext, data };
+      try {
+        executeAction({
+          actionConfiguration: onRowDeleteSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row delete success action:', error);
+      }
+    };
+  }, [onRowDeleteSuccessAction, httpClient]);
+
 
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
@@ -466,13 +658,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
+      performOnRowDeleteSuccessAction(rowData);
       store.refreshTable();
     });
   };
 
   const getCrudComponents = (
     allowEdit: boolean,
-    componentAccessor: (col: ITableDataColumn) => IFieldComponentProps
+    componentAccessor: (col: ITableDataColumn) => IFieldComponentProps,
   ): IFlatComponentsStructure => {
     const result: IFlatComponentsStructure = {
       allComponents: {},
@@ -562,7 +755,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       propertyPath: g.propertyName.split('.'),
     }));
 
-    const getValue = (container: object, path: string[]) => {
+    const getValue = (container: object, path: string[]): any => {
       return path.reduce((prev, part) => (prev ? prev[part] : undefined), container);
     };
 
@@ -589,7 +782,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return result;
   };
 
-  const renderGroupTitle = (value: any, propertyName: string) => {
+  const renderGroupTitle = (value: any, propertyName: string): ReactElement => {
     if (!Boolean(value) && value !== false) return <Typography.Text type="secondary">(empty)</Typography.Text>;
     const column = groupingColumns.find((c) => isDataColumn(c) && c.propertyName === propertyName);
     const propertyMeta = isDataColumn(column) ? column.metadata : null;
@@ -631,22 +824,104 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return repository && repository.supportsGrouping && repository?.supportsGrouping({ sortMode });
   }, [repository, sortMode]);
 
-  const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
+  const handleRowsReordered = async (payload: OnRowsReorderedArgs): Promise<void> => {
     const repository = store.getRepository();
-    if (!repository) return Promise.reject('Repository is not specified');
+    if (!repository)
+      throw new Error('Repository is not specified');
 
     const supported = repository.supportsReordering && repository.supportsReordering({ sortMode, strictSortBy });
-    if (supported === true) {
-      const reorderPayload: RowsReorderPayload = {
-        ...payload,
-        propertyName: strictSortBy,
-      };
+    if (supported !== true)
+      throw new Error(typeof supported === 'string' ? supported : 'Reordering is not supported');
 
-      return repository.reorder(reorderPayload);
-    } else return Promise.reject(typeof supported === 'string' ? supported : 'Reordering is not supported');
+    // Get current data state
+    const oldData = payload.getOld();
+    const newData = payload.getNew();
+    const oldIdx = payload.oldIndex ?? -1;
+    const newIdx = payload.newIndex ?? -1;
+
+    // Validate indices
+    if (oldIdx < 0 || oldIdx >= oldData.length || newIdx < 0 || newIdx >= oldData.length) {
+      console.warn(
+        `Invalid reorder indices: oldIndex=${oldIdx}, newIndex=${newIdx}, data length=${oldData.length}. Resetting to original order.`,
+      );
+      payload.applyOrder(oldData);
+      throw new Error(
+        `Reordering cancelled: indices out of bounds (oldIndex=${oldIdx}, newIndex=${newIdx}, valid range=0-${oldData.length - 1})`,
+      );
+    }
+
+    const movedRow = oldData[oldIdx];
+
+    // Execute onBeforeRowReorder event (if configured)
+    if (onBeforeRowReorder) {
+      await new Promise<void>((resolve, reject) => {
+        const beforeArgs: IBeforeRowReorderArguments = {
+          oldIndex: oldIdx,
+          newIndex: newIdx,
+          rowData: movedRow,
+          allData: oldData,
+        };
+
+        const evaluationContext = { ...appContext, data: beforeArgs };
+
+        executeAction({
+          actionConfiguration: {
+            ...onBeforeRowReorder,
+          },
+          argumentsEvaluationContext: evaluationContext,
+          success: () => {
+            resolve();
+          },
+          fail: (error) => {
+            console.error('OnBeforeRowReorder event error:', error);
+            payload.applyOrder(oldData);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            reject(new RowReorderValidationError(errorMessage));
+          },
+        });
+      });
+    }
+
+    // Prepare reorder payload
+    const reorderPayload: RowsReorderPayload = {
+      ...payload,
+      propertyName: strictSortBy,
+      customReorderEndpoint: customReorderEndpoint,
+    };
+
+    try {
+      // Execute the actual reorder operation
+      const apiResponse = await repository.reorder(reorderPayload);
+
+      // Execute onAfterRowReorder event (if configured)
+      if (onAfterRowReorder) {
+        try {
+          const afterArgs: IAfterRowReorderArguments = {
+            oldIndex: oldIdx,
+            newIndex: newIdx,
+            rowData: movedRow,
+            allData: newData,
+            response: apiResponse,
+          };
+
+          const evaluationContext = { ...appContext, data: afterArgs };
+
+          // Execute the after event action
+          await executeAction({
+            actionConfiguration: onAfterRowReorder,
+            argumentsEvaluationContext: evaluationContext,
+          });
+        } catch (error) {
+          console.error('OnAfterRowReorder event error:', error);
+          // Note: We don't throw here as the reorder has already completed successfully
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing) => {
+  const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing): void => {
     const widths = columns.map<IColumnWidth>((c) => ({
       id: c.id,
       width: typeof c.width === 'number' ? c.width : undefined,
@@ -659,15 +934,19 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect,
+    useMultiSelect: multiSelect,
+    selectionMode: mode,
     freezeHeaders,
-    onSelectRow: onSelectRowLocal,
-    onRowDoubleClick: dblClickHandler,
-    onSelectedIdsChanged: changeSelectedIds,
-    onMultiRowSelect,
+    // Disable row selection when there's a crud operations column
+    onSelectRow: hasCrudOperationsColumn ? undefined : onSelectRowLocal,
+    onRowDoubleClick: combinedDblClickHandler,
+    onSelectedIdsChanged: mode === 'multiple' ? changeSelectedIds : undefined,
+    onMultiRowSelect: mode === 'multiple' ? onMultiRowSelect : undefined,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,
-    selectedRowIndex,
+    // Only use selectedRowIndex in single mode; in multiple mode, row.isSelected controls highlighting
+    // Disable row selection highlighting when there's a crud operations column
+    selectedRowIndex: mode === 'single' && !hasCrudOperationsColumn ? selectedRowIndex : undefined,
     loading: isFetchingTableData,
     pageCount: totalPages,
     manualFilters: true, // informs React Table that you'll be handling sorting and pagination server-side
@@ -698,23 +977,79 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineDisplayComponents,
     minHeight: props.minHeight,
     maxHeight: props.maxHeight,
-    noDataText,
-    noDataSecondaryText,
+    noDataText: noDataText,
+    noDataSecondaryText: noDataSecondaryText,
     noDataIcon,
     allowReordering: allowReordering && reorderingAvailable,
     onRowsReordered: handleRowsReordered,
 
     onRowsRendering: grouping && grouping.length > 0 && groupingAvailable ? onRowsRenderingWithGrouping : undefined,
     onResizedChange: onResizedChange,
+
+    showExpandedView,
+
+    rowBackgroundColor,
+    rowAlternateBackgroundColor,
+    rowHoverBackgroundColor: hoverHighlight ? (rowHoverBackgroundColor || '') : undefined,
+    rowSelectedBackgroundColor,
+    border,
+    striped,
+    backgroundColor,
+    headerFontFamily: effectiveHeaderFontFamily,
+    headerFontSize: effectiveHeaderFontSize,
+    headerFontWeight: effectiveHeaderFontWeight,
+    headerBackgroundColor,
+    headerTextColor: effectiveHeaderTextColor,
+    headerTextAlign: effectiveHeaderTextAlign,
+    bodyTextAlign: effectiveBodyTextAlign,
+    rowHeight,
+    rowPadding,
+    rowBorder,
+    rowBorderStyle,
+    boxShadow,
+    sortableIndicatorColor,
+
+    onRowClickAction: onRowClick,
+    onRowHoverAction: onRowHover,
+    onRowSelectAction: onRowSelect,
+    onSelectionChangeAction: onSelectionChange,
+
+    cellTextColor: props.cellTextColor,
+    cellBackgroundColor: props.cellBackgroundColor,
+    cellBorderColor: props.cellBorderColor,
+    cellBorders: props.cellBorders,
+    cellPadding: props.cellPadding,
+    headerBorder: props.headerBorder,
+    cellBorder: props.cellBorder,
+    headerShadow: props.headerShadow,
+    rowShadow: props.rowShadow,
+    rowDividers: props.rowDividers,
+    bodyFontFamily,
+    bodyFontSize,
+    bodyFontWeight,
+    bodyFontColor,
+    actionIconSize,
+    actionIconColor,
   };
+
+  // Always render ReactTable - it handles empty columns gracefully
+  // Only show StandaloneTable in designer mode when there are truly no configured columns
+  // Only show StandaloneTable when:
+  // 1. In designer mode
+  // 2. configurableColumns has been initialized (not undefined) AND is empty
+  // 3. columns (from store) is also empty
+  // This prevents showing StandaloneTable during initial load before columns are registered
+  const shouldShowStandaloneTable =
+    configurableColumns !== undefined && configurableColumns.length === 0 &&
+    (!columns || columns.length === 0);
 
   return (
     <Fragment>
-      <div className={styles.shaChildTableErrorContainer}>
-        {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
-      </div>
-
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
+      {shouldShowStandaloneTable ? (
+        <StandaloneTable items={[]} type="" id="" />
+      ) : (
+        <ReactTable {...tableProps} />
+      )}
     </Fragment>
   );
 };

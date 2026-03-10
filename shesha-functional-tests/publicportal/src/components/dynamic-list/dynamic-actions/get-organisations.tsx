@@ -4,7 +4,6 @@ import {
     DynamicActionsProvider,
     ButtonGroupItemProps,
     DynamicItemsEvaluationHook,
-    useAppConfigurator,
     IButtonItem,
 } from '@shesha-io/reactjs';
 import { useOrganisationalAccounts } from '../hooks';
@@ -16,7 +15,6 @@ export interface IOrganisationActionsProps {
 
 const useOrganisationsActions: DynamicItemsEvaluationHook = (args) => {
     const { data, isLoading, error } = useOrganisationalAccounts();
-    const { configurationItemMode } = useAppConfigurator();
 
     // fetch definitions. Dependencies: current user, CF mode
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
@@ -42,7 +40,7 @@ const useOrganisationsActions: DynamicItemsEvaluationHook = (args) => {
         }));
 
         return result;
-    }, [args.item, data, configurationItemMode]);
+    }, [args.item, data]);
 
     return operations;
 };

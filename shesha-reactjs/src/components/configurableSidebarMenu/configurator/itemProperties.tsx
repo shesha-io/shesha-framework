@@ -3,7 +3,6 @@ import React, {
   useMemo,
 } from 'react';
 import { Empty } from 'antd';
-import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
@@ -11,6 +10,7 @@ import { sheshaStyles } from '@/styles';
 import { ConfigurableForm } from '@/components';
 import { getGroupSettings } from './groupSettings';
 import { getItemSettings } from './itemSettings';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 export interface ISidebarItemPropertiesProps {
   item?: ISidebarMenuItem;
@@ -20,12 +20,14 @@ export interface ISidebarItemPropertiesProps {
 
 export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, onChange, readOnly }) => {
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
+
+  const fbf = useFormBuilderFactory();
 
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const editor = useMemo(() => {
@@ -33,18 +35,18 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
     if (!item) return emptyEditor;
 
     const markup = isSidebarGroup(item)
-      ? getGroupSettings(item) as FormMarkup
-      : (getItemSettings(item) as FormMarkup);
-      
+      ? getGroupSettings({ fbf })
+      : getItemSettings({ fbf });
+
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
         <ConfigurableForm
-          //key={item.id} // rerender for each item to initialize all controls
+          // key={item.id} // rerender for each item to initialize all controls
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
           markup={markup}
-          cacheKey={isSidebarGroup(item) ? 'group' : 'item'}
+          cacheKey={isSidebarGroup(item) ? 'group' : 'button'}
           initialValues={item}
           onValuesChange={debouncedSave}
           className={sheshaStyles.verticalSettingsClass}

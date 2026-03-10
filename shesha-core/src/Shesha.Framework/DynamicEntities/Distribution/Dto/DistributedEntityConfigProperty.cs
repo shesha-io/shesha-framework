@@ -2,6 +2,7 @@
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Enums;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.DynamicEntities.Distribution.Dto
 {
@@ -43,8 +44,19 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
-        public string? EntityType { get; set; }
+        public string? EntityFullClassName { get; set; }
 
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
+        [MaxLength(300)]
+        public virtual string? EntityType { get; set; }
+
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
+        [MaxLength(300)]
+        public virtual string? EntityModule { get; set; }
         /// <summary>
         /// Reference list name
         /// </summary>

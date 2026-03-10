@@ -3,6 +3,7 @@ using Newtonsoft.Json.Serialization;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using Shesha.JsonEntities;
 using Shesha.JsonEntities.Proxy;
 using System;
 using System.Data.Common;
@@ -31,18 +32,7 @@ namespace Shesha.NHibernate.UserTypes
 
         public object? DeepCopy(object value)
         {
-            if (value == null)
-                return null;
-
-            if (value is IJsonEntityProxy proxy)
-                return JsonEntityProxy.GetJson(proxy).ToObject<T>();
-
-            var serialized = JsonConvert.SerializeObject(value, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
-
-            return JsonConvert.DeserializeObject<T>(serialized);
+            return JsonEntityExtensions.AsJsonEntity<T>(value);
         }
 
         public object? Disassemble(object value)

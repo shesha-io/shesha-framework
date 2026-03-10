@@ -35,7 +35,7 @@ namespace Shesha.GraphQL.Provider.Queries
     public class EntityQuery<TEntity, TId> : ObjectGraphType, ITransientDependency where TEntity : class, IEntity<TId>
     {
         private readonly IJsonLogic2LinqConverter _jsonLogicConverter;
-        private readonly IEntityConfigurationStore _entityConfigStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigStore;
 
         public EntityQuery(IServiceProvider serviceProvider)
         {
@@ -44,7 +44,7 @@ namespace Shesha.GraphQL.Provider.Queries
             Name = entityName + "Query";
 
             _jsonLogicConverter = serviceProvider.GetRequiredService<IJsonLogic2LinqConverter>();
-            _entityConfigStore = serviceProvider.GetRequiredService<IEntityConfigurationStore>();
+            _entityConfigStore = serviceProvider.GetRequiredService<IEntityTypeConfigurationStore>();
 
             var repository = serviceProvider.GetRequiredService<IRepository<TEntity, TId>>();
             var asyncExecuter = serviceProvider.GetRequiredService<IAsyncQueryableExecuter>();

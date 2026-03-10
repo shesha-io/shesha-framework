@@ -158,10 +158,10 @@ namespace Shesha
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the existing entity or null for a new one</param>
         /// <param name="action">Update action</param>
-        protected async Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Func<T, Task> action)
+        protected Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Func<T, Task> action)
             where T : class, IEntity<Guid>
         {
-            return await SaveOrUpdateEntityAsync<T, Guid>(id, action);
+            return SaveOrUpdateEntityAsync<T, Guid>(id, action);
         }
 
         /// <summary>
@@ -170,10 +170,10 @@ namespace Shesha
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the existing entity or null for a new one</param>
         /// <param name="action">Update action</param>
-        protected async Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Action<T> action)
+        protected Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Action<T> action)
             where T : class, IEntity<Guid>
         {
-            return await SaveOrUpdateEntityAsync<T, Guid>(id, a =>
+            return SaveOrUpdateEntityAsync<T, Guid>(id, a =>
             {
                 action.Invoke(a);
                 return Task.CompletedTask;
@@ -207,9 +207,9 @@ namespace Shesha
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the entity</param>
         /// <returns></returns>
-        protected async Task<T?> GetEntityOrNullAsync<T>(Guid id) where T : class, IEntity<Guid>
+        protected Task<T?> GetEntityOrNullAsync<T>(Guid id) where T : class, IEntity<Guid>
         {
-            return await GetEntityOrNullAsync<T, Guid>(id);
+            return GetEntityOrNullAsync<T, Guid>(id);
         }
 
         /// <summary>
@@ -235,9 +235,9 @@ namespace Shesha
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the entity</param>
         /// <returns></returns>
-        protected async Task<T> GetEntityAsync<T>(Guid id) where T : class, IEntity<Guid>
+        protected Task<T> GetEntityAsync<T>(Guid id) where T : class, IEntity<Guid>
         {
-            return await GetEntityAsync<T, Guid>(id);
+            return GetEntityAsync<T, Guid>(id);
         }
 
         /// <summary>
@@ -294,8 +294,8 @@ namespace Shesha
             await FluentValidationsOnEntityAsync(entity, validationResults);
             var result = !validationResults.Any();
             if (ValidatorManager != null)
-                result = result && await ValidatorManager.ValidateObjectAsync(entity, validationResults);
-            return result && Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
+                result = await ValidatorManager.ValidateObjectAsync(entity, validationResults) && result;
+            return Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults) && result;
         }
 
         /// <summary>
@@ -429,19 +429,18 @@ namespace Shesha
             var jObject = dto._jObject;
 
             var result = new DynamicDtoMapingResult();
-            bool mapResult = true;
             if (jObject != null)
             {
                 // Update the Jobject from the input because it might have changed
                 ObjectToJsonExtension.ObjectToJObject(dto, jObject);
-                mapResult = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
+                await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
             }
             else
             {
                 await MapStaticPropertiesToEntityDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
             }
 
-            mapResult = mapResult && await ValidateEntityAsync<TEntity>(entity, result.ValidationResults);
+            await ValidateEntityAsync(entity, result.ValidationResults);
 
             if (result.HasValidationError)
                 return result;
@@ -451,15 +450,6 @@ namespace Shesha
 
             if (result.HasValidationError)
                 return result;
-
-            if (jObject != null)
-            {
-                await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
-            }
-            else
-            {
-                await MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
-            }
 
             return result;
         }
@@ -483,9 +473,7 @@ namespace Shesha
             var result = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
             result = result && await ValidateEntityAsync<TEntity>(entity, validationResult);
 
-            if (!result) return false;
-
-            return await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
+            return result;
         }
 
         /// <summary>
@@ -497,13 +485,13 @@ namespace Shesha
         /// <param name="entity">Destination entity</param>
         /// <param name="validationResult">Validation result</param>
         /// <returns></returns>
-        protected async Task<bool> MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(
+        protected Task<bool> MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(
             JObject jObject,
             TEntity entity,
             List<ValidationResult> validationResult)
             where TEntity : class, IEntity<TPrimaryKey>
         {
-            return await EntityModelBinder.BindPropertiesAsync(jObject, entity, new EntityModelBindingContext() { ValidationResult = validationResult });
+            return EntityModelBinder.BindPropertiesAsync(jObject, entity, new EntityModelBindingContext() { ValidationResult = validationResult });
         }
 
         /// <summary>

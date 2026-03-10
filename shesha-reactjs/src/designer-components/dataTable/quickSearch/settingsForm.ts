@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/index';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = (data: any) =>
-  new DesignerToolbarSettings(data)
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+  return fbf()
     .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'separatorDisplay',
@@ -18,13 +18,12 @@ export const getSettings = (data: any) =>
       },
       content: {
         id: nanoid(),
-        components: new DesignerToolbarSettings()
+        components: fbf()
           .addCheckbox({
             id: nanoid(),
             propertyName: 'block',
             parentId: 'root',
             label: 'Block',
-            defaultValue: false,
           })
           .toJson(),
       },
@@ -39,8 +38,8 @@ export const getSettings = (data: any) =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-        components: [...new DesignerToolbarSettings() 
+        id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...fbf()
           .addPermissionAutocomplete({
             id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
             propertyName: 'permissions',
@@ -49,8 +48,9 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             hidden: false,
             validate: {},
-          }).toJson()
-        ]
-  }
-  })
+          }).toJson(),
+        ],
+      },
+    })
     .toJson();
+};

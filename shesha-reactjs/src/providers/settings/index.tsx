@@ -1,16 +1,11 @@
-import { useSheshaApplication } from '@/providers';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { settingsGetValue } from '@/apis/settings';
-import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { ISettingsContext, SETTINGS_CONTEXT_INITIAL_STATE, SettingsContext } from './contexts';
+import { ISettingsActionsContext, ISettingsContext, SettingsContext } from './contexts';
 import { ISettingIdentifier, ISettingsDictionary } from './models';
-import reducer from './reducer';
 
-export interface ISettingsProviderProps {}
-
-const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ children }) => {
-  const [state] = useThunkReducer(reducer, SETTINGS_CONTEXT_INITIAL_STATE);
+const SettingsProvider: FC<PropsWithChildren> = ({ children }) => {
   const settings = useRef<ISettingsDictionary>({});
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -31,7 +26,7 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
 
     const settingPromise = settingsGetValue(
       { name: settingId.name, module: settingId.module },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     ).then((response) => {
       return response.success ? response.result : null;
     });
@@ -42,17 +37,20 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
   };
 
   const contextValue: ISettingsContext = {
-    ...state,
     getSetting,
   };
 
   return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
 };
 
-function useSettings(require: boolean = true) {
-  const context = useContext(SettingsContext);
 
-  if (context === undefined && require) {
+function useSettingsOrUndefined(): ISettingsActionsContext | undefined {
+  return useContext(SettingsContext);
+}
+
+function useSettings(): ISettingsActionsContext {
+  const context = useSettingsOrUndefined();
+  if (context === undefined) {
     throw new Error('useSettings must be used within a SettingsProvider');
   }
 
@@ -67,7 +65,7 @@ export interface SettingValueLoadingState<TValue = any> {
   error?: IErrorInfo;
 }
 
-const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
+const useSettingValue = <TValue = any>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
   const settings = useSettings();
   const [state, setState] = useState<SettingValueLoadingState>({ loadingState: 'waiting' });
 
@@ -80,4 +78,4 @@ const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingV
   return state;
 };
 
-export { SettingsProvider, useSettingValue, useSettings };
+export { SettingsProvider, useSettingValue, useSettings, useSettingsOrUndefined };

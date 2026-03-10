@@ -1,24 +1,24 @@
 import { ShaForm } from '@/providers';
 import { ConfigurableFormComponent } from '@/components';
 import { useParent } from '@/providers/parentProvider/index';
-import React, { CSSProperties, FC, PropsWithChildren } from 'react';
+import React, { CSSProperties, FC, PropsWithChildren, ReactNode } from 'react';
 import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';
 import classNames from 'classnames';
 
 type AlignmentProps = Pick<
   IComponentsContainerProps,
-  | 'direction'
-  | 'justifyContent'
-  | 'alignItems'
-  | 'justifyItems'
-  | 'flexDirection'
-  | 'justifySelf'
-  | 'alignSelf'
-  | 'textJustify'
-  | 'gap'
-  | 'gridColumnsCount'
-  | 'display'
-  | 'flexWrap'
+  | 'direction' |
+  'justifyContent' |
+  'alignItems' |
+  'justifyItems' |
+  'flexDirection' |
+  'justifySelf' |
+  'alignSelf' |
+  'textJustify' |
+  'gap' |
+  'gridColumnsCount' |
+  'display' |
+  'flexWrap'
 >;
 
 export const getAlignmentStyle = ({
@@ -73,7 +73,7 @@ export const ItemContainerForm: FC<PropsWithChildren<IComponentsContainerProps>>
 
   const components = ShaForm.useChildComponents(props.containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
-  const renderComponents = () => {
+  const renderComponents = (): ReactNode => {
     const renderedComponents = components.map((c) => {
       return <ConfigurableFormComponent id={c.id} key={c.id} />;
     });

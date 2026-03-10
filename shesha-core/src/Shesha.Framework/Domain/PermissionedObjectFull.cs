@@ -1,15 +1,16 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using Shesha.Domain.Attributes;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObjectFull", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
-    [Table("vw_Frwk_PermissionedObjectsFull")]
+    [Table("vw_permissioned_objects_full", Schema = "frwk")]
+    [ImMutable]
+    [SnakeCaseNaming]
     public class PermissionedObjectFull : FullAuditedEntity<Guid>
     {
         /// <summary>
@@ -28,8 +29,8 @@ namespace Shesha.Domain
         /// </summary>
         [NotNull]
         public virtual Module Module { get; set; }
-        public string ModuleName { get; set; }
-        public Guid? ModuleId { get; set; }
+        public virtual string ModuleName { get; set; }
+        public virtual Guid? ModuleId { get; set; }
 
         /// <summary>
         /// Type of the permissioned object

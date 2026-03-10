@@ -5,11 +5,9 @@ export interface IStackedNavigationModalStateContext {
   parentId?: string;
 }
 
-export interface IStackedNavigationModalActionsContext {}
-
 export const STACKED_NAVIGATION_MODAL_CONTEXT_INITIAL_STATE: IStackedNavigationModalStateContext = {};
 
 export const StackedNavigationModalStateContext = createNamedContext<IStackedNavigationModalStateContext>(
   STACKED_NAVIGATION_MODAL_CONTEXT_INITIAL_STATE,
-  "StackedNavigationModalStateContext"
+  "StackedNavigationModalStateContext",
 );

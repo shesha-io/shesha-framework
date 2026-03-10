@@ -1,7 +1,7 @@
 import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
+import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useEffect, useMemo, useState } from 'react';
@@ -30,7 +30,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const formMode = useForm(false).formMode;
 
-  const { executeBooleanExpression, executeAction } = useFormExpression();
+  const { executeBooleanExpression, executeActionViaPayload } = useFormExpression();
 
   const {
     componentName: actionOwnerName,
@@ -41,10 +41,10 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     sequence,
   } = (model as IWizardComponentProps) || {};
 
-  const getDefaultStepIndex = (i) => {
+  const getDefaultStepIndex = (i): number => {
     if (i) {
-      const t = tabs[i]
-        ?? tabs?.find((item) => item?.id === i); // for backward compatibility
+      const t = tabs[i] ??
+        tabs?.find((item) => item?.id === i); // for backward compatibility
       return !!t ? tabs.indexOf(t) : 0;
     }
     return 0;
@@ -54,7 +54,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     return getDefaultStepIndex(defaultActiveStep);
   });
 
-  //Remove every tab from the equation that isn't visible either by customVisibility or permissions
+  // Remove every tab from the equation that isn't visible either by customVisibility or permissions
   const visibleSteps = useMemo(
     () =>
       tabs
@@ -64,7 +64,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
           return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
         }),
-    [tabs]
+    [tabs],
   );
 
   const currentStep = visibleSteps[current];
@@ -76,7 +76,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     for (const comp in flat.allComponents)
       if (Object.hasOwn(flat.allComponents, comp)) {
         const component = flat.allComponents[comp];
-        if (component.propertyName && !component.context)
+        if (isConfigurableFormComponent(component) && component.propertyName && !component.context)
           properties.push(component.propertyName.split("."));
       }
     return properties;
@@ -88,8 +88,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         id: model.id,
         validate: () => {
           var formInstance = allData?.form?.formInstance;
-          return formInstance?.validateFields(componentsNames, {recursive: false})
-            .catch(e => {
+          return formInstance?.validateFields(componentsNames, { recursive: false })
+            .catch((e) => {
               if (e.errorFields?.length > 0)
                 throw e;
               return null;
@@ -108,14 +108,14 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
 
     if (!!actionConfiguration?.actionName) {
-      executeAction({
+      executeActionViaPayload({
         actionConfiguration: actionConfiguration,
-        argumentsEvaluationContext
+        argumentsEvaluationContext,
       });
     }
   }, [current]);
 
-  const onAfterCallback = (callback: () => void, after?: (step: IWizardStepProps) => void) => {
+  const onAfterCallback = (callback: () => void, after?: (step: IWizardStepProps) => void): void => {
     try {
       callback();
     } finally {
@@ -123,7 +123,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const successCallback = (type: 'back' | 'next' | 'reset') => {
+  const successCallback = (type: 'back' | 'next' | 'reset'): void => {
     setTimeout(() => {
       const step = getWizardStep(visibleSteps, current, type);
 
@@ -138,8 +138,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     beforeAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     afterAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     success?: (actionResponse: any) => void,
-  ) => {
-
+  ): void => {
     if (!formMode || formMode === 'designer') {
       if (success) success(null);
       return;
@@ -147,7 +146,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
     const beforeAction = beforeAccessor(currentStep);
 
-    const successFunc = (response: any) => {
+    const successFunc = (response: any): void => {
       onAfterCallback(
         () => {
           if (success) success(response);
@@ -155,11 +154,11 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         () => {
           const afterAction = afterAccessor(currentStep);
           if (!!afterAction?.actionName)
-            executeAction({
+            executeActionViaPayload({
               actionConfiguration: afterAction,
-              argumentsEvaluationContext
+              argumentsEvaluationContext,
             });
-        }
+        },
       );
     };
 
@@ -168,20 +167,20 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       return;
     }
 
-    executeAction({
+    executeActionViaPayload({
       actionConfiguration: beforeAction,
       argumentsEvaluationContext,
       success: successFunc,
     });
   };
 
-  const next = async () => {
+  const next = (): void => {
     try {
       if (current < tabs.length - 1) {
         executeActionIfConfigured(
           (tab) => tab.beforeNextActionConfiguration,
           (tab) => tab.afterNextActionConfiguration,
-          () => successCallback('next')
+          () => successCallback('next'),
         );
       }
     } catch (errInfo) {
@@ -189,7 +188,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const back = () => {
+  const back = (): void => {
     if (current > 0)
       executeActionIfConfigured(
         (tab) => tab.beforeBackActionConfiguration,
@@ -198,24 +197,24 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       );
   };
 
-  const cancel = () =>
+  const cancel = (): void =>
     executeActionIfConfigured(
       (tab) => tab.beforeCancelActionConfiguration,
-      (tab) => tab.afterCancelActionConfiguration
+      (tab) => tab.afterCancelActionConfiguration,
     );
 
-  const done = async () => {
+  const done = (): void => {
     try {
       executeActionIfConfigured(
         (tab) => tab.beforeDoneActionConfiguration,
-        (tab) => tab.afterDoneActionConfiguration
+        (tab) => tab.afterDoneActionConfiguration,
       );
     } catch (errInfo) {
       console.error("Couldn't Proceed", errInfo);
     }
   };
 
-  const setStep = (stepIndex) => {
+  const setStep = (stepIndex): void => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
       throw `Step with index ${stepIndex} is not available`;
     setCurrent(stepIndex);
@@ -235,7 +234,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -249,7 +248,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -263,7 +262,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -277,7 +276,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -291,7 +290,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -301,14 +300,14 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
       hasArguments: false,
-      executer: async (_, actionContext) => {
+      executer: (_, actionContext) => {
         if (actionContext?.validate) {
           return actionContext.validate();
         }
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
   //#endregion
 

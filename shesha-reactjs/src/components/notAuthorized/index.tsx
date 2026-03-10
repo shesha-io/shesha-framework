@@ -2,9 +2,7 @@ import React, { FC } from 'react';
 import { Result, Button } from 'antd';
 import { useShaRouting } from '@/providers/shaRouting';
 
-export interface INotAuthorizedProps {}
-
-export const NotAuthorized: FC<INotAuthorizedProps> = () => {
+export const NotAuthorized: FC = () => {
   const { router } = useShaRouting();
 
   return (
@@ -13,11 +11,11 @@ export const NotAuthorized: FC<INotAuthorizedProps> = () => {
         status="403"
         title="403"
         subTitle="Sorry, you are not authorized to access this page."
-        extra={
+        extra={(
           <Button type="primary" onClick={() => router?.push('/')}>
             Back Home
           </Button>
-        }
+        )}
       />
     </div>
   );

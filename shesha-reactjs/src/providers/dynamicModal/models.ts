@@ -13,7 +13,7 @@ export interface IModalBaseProps {
   /**
    * Title to display on the modal
    */
-  title?: string;
+  title?: string | undefined;
 
   /**
    * Whether the modal is visible
@@ -25,11 +25,13 @@ export interface IModalBaseProps {
   width?: number | string;
 
   onCancel?: () => void;
+
+  showCloseIcon?: boolean;
 }
 
 export type ModalFooterButtons = 'default' | 'custom' | 'none';
 
-export interface IModalWithConfigurableFormProps extends IModalBaseProps {
+export interface IModalWithConfigurableFormProps<Values = any> extends IModalBaseProps {
   /**
    * Id of the form to be rendered on the markup
    */
@@ -65,29 +67,34 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
   /**
    * A callback to execute when the form has been submitted
    */
-  onSubmitted?: (values?: any) => void;
+  onSubmitted?: (values?: Values) => void;
 
   onFailed?: (errorInfo: ValidateErrorEntity<any>) => void;
 
-  footerButtons?: ModalFooterButtons;
+  footerButtons?: ModalFooterButtons | undefined;
 
   buttons?: ButtonGroupItemProps[];
 
   wrapper?: (props: PropsWithChildren) => React.ReactNode;
+  /**
+   * Whether to show the close icon in the modal header
+   * @default true
+   */
+  showCloseIcon?: boolean;
 }
 
-export interface IModalWithContentProps extends IModalBaseProps {
+export interface IModalWithContentProps<Values = any> extends IModalBaseProps {
   footer?: ReactNode;
   content: ReactNode;
-  onClose?: (positive?: boolean, result?: any) => void;
+  onClose?: (positive?: boolean, result?: Values) => void;
 }
 /**
  * Dynamic Modal properties
  */
-export interface IModalProps extends IModalWithConfigurableFormProps {
-  onClose?: (positive?: boolean, result?: any) => void;
+export interface IModalProps<Values = any> extends IModalWithConfigurableFormProps<Values> {
+  onClose?: (positive?: boolean, result?: Values) => void;
 };
-export type ICommonModalProps = IModalWithContentProps | IModalWithConfigurableFormProps;
+export type ICommonModalProps<Values = any> = IModalWithContentProps<Values> | IModalWithConfigurableFormProps<Values>;
 
 /**
  * Modal dialog instance
@@ -116,4 +123,5 @@ export interface IModalProperties {
   additionalProperties?: IKeyValue[];
   modalWidth?: number;
   showModalFooter?: boolean;
+  showCloseIcon?: boolean;
 }

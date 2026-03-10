@@ -16,7 +16,7 @@ export const STACKED_NAVIGATION_CONTEXT_INITIAL_STATE: IStackedNavigationStateCo
 
 export const StackedNavigationStateContext = createNamedContext<IStackedNavigationStateContext>(
   STACKED_NAVIGATION_CONTEXT_INITIAL_STATE,
-  "StackedNavigationStateContext"
+  "StackedNavigationStateContext",
 );
 
 export const StackedNavigationActionsContext = createNamedContext<IStackedNavigationActionsContext>(undefined, "StackedNavigationActionsContext");

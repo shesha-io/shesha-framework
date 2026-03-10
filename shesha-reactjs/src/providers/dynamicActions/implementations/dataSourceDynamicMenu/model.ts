@@ -1,15 +1,14 @@
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-
-export interface IWorkflowInstanceStartActionsProps { }
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 export interface IDataSourceArguments {
-    dataSourceUrl?: any;
-    queryParams?: any;
-    actionConfiguration?: IConfigurableActionConfiguration;
-    filter?: string;
-    entityTypeShortAlias?: string;
-    labelProperty?: string;
-    tooltipProperty?: string;
-    maxResultCount?: number;
-    buttonType?: string;
+  dataSourceUrl?: any;
+  queryParams?: any;
+  actionConfiguration?: IConfigurableActionConfiguration;
+  filter?: string;
+  entityType?: string | IEntityTypeIdentifier;
+  labelProperty?: string;
+  tooltipProperty?: string;
+  maxResultCount?: number;
+  buttonType?: string;
 }

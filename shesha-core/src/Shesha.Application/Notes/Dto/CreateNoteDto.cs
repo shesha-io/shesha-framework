@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
+using Shesha.DynamicEntities.Dtos;
 
 namespace Shesha.Notes.Dto
 {
@@ -16,7 +17,7 @@ namespace Shesha.Notes.Dto
         /// Type short alias of the owner entity
         /// </summary>
         [Required]
-        public string OwnerType { get; set; }
+        public EntityTypeIdInput OwnerType { get; set; }
 
         /// <summary>
         /// Category of the note. Is used to split notes into groups

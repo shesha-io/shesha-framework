@@ -22,8 +22,8 @@ namespace Shesha.Services.StoredFiles
         private readonly IConfigurationRoot _configuration;
         private BlobContainerClient? _blobContainerClient;
 
-        public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IocManager iocManager)
-            : base(fileService, versionService)
+        public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService, IocManager iocManager)
+            : base(fileService, versionService, storedFileVersionDownloadService)
         {
             _iocManager = iocManager;
             _configuration = GetConfiguration();
@@ -71,7 +71,7 @@ namespace Shesha.Services.StoredFiles
 
         private async Task<Stream> GetStreamInternalAsync(string filePath)
         {
-            var blob = GetBlobClient(filePath.ToLower());
+            var blob = GetBlobClient(filePath);
             var stream = new MemoryStream();
 
             var props = await blob.GetPropertiesAsync();

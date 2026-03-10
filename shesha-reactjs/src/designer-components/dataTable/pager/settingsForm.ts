@@ -1,9 +1,9 @@
-import { fontTypes, fontWeights, textAlign } from '@/designer-components/_settings/utils/font/utils';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '@/designer-components/_settings/utils/font/utils';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
-export const getSettings = (data: any) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: 'W_m7doMyCpCYwAYDfRh6I',
         propertyName: 'settingsTabs',
@@ -18,7 +18,7 @@ export const getSettings = (data: any) => {
             title: 'Common',
             id: 's4gmBg31azZC0UjZjpfTm',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -39,23 +39,19 @@ export const getSettings = (data: any) => {
                   inputs: [
                     {
                       id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                      inputType: 'switch',
                       type: 'switch',
                       propertyName: 'showSizeChanger',
                       label: 'Show Size Changer',
                       size: 'small',
                       jsSetting: true,
-                      defaultValue: true,
                     },
                     {
                       id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                       type: 'switch',
-                      inputType: 'switch',
                       propertyName: 'showTotalItems',
                       label: 'Show Total Items',
                       size: 'small',
                       jsSetting: true,
-                      defaultValue: true,
                     },
                   ],
                 })
@@ -75,7 +71,7 @@ export const getSettings = (data: any) => {
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: 'styleRouter',
                   propertyName: 'propertyRouter1',
@@ -88,9 +84,9 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: 'fontStyleCollapsiblePanel',
                         propertyName: 'pnlFontStyle',
@@ -102,7 +98,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: 'fontStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'try26voxhs-HxJ5k5ngYE',
                                 parentId: 'fontStylePnl',
@@ -132,7 +128,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {
@@ -149,7 +145,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'font.align',
                                     hideLabel: true,
                                     width: 60,
-                                    dropdownOptions: textAlign,
+                                    dropdownOptions: textAlignOptions,
                                   },
                                 ],
                               })
@@ -167,7 +163,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: 'stylePnl-M5-911',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addStyleBox({
                                 id: 'styleBoxPnl',
                                 label: 'Margin Padding',
@@ -189,7 +185,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: 'stylePnl-M500-911MFR',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
@@ -214,12 +210,13 @@ export const getSettings = (data: any) => {
             title: 'Security',
             id: '6Vw9iiDw9d0MD_Rh5cbIn',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
                 })

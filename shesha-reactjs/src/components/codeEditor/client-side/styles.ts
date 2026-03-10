@@ -1,16 +1,16 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
-    const sider = "sha-code-editor-sider";
-    const menu = "sha-code-editor-menu";
-    const workspace = "sha-code-editor-workspace";
-    const workspaceSplit = "sha-code-editor-workspace-split";
-    const code = "sha-code-editor-code";
-    const tree = "sha-code-editor-tree";
+  const sider = "sha-code-editor-sider";
+  const menu = "sha-code-editor-menu";
+  const workspace = "sha-code-editor-workspace";
+  const workspaceSplit = "sha-code-editor-workspace-split";
+  const code = "sha-code-editor-code";
+  const tree = "sha-code-editor-tree";
 
-    const background = "#2e3138";
+  const background = "#2e3138";
 
-    const codeEditor = cx("sha-code-editor", css`
+  const codeEditor = cx("sha-code-editor", css`
         position: relative;
         flex-grow: 1;
         display: flex;
@@ -95,13 +95,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             }
         }
   `);
-    return {
-        codeEditor,
-        sider,
-        menu,
-        workspace,
-        workspaceSplit,
-        code,
-        tree,
-    };
+  return {
+    codeEditor,
+    sider,
+    menu,
+    workspace,
+    workspaceSplit,
+    code,
+    tree,
+  };
 });

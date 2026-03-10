@@ -2,14 +2,13 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import { CollapsiblePanel } from '@/components/panel';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IToolboxComponent } from '@/interfaces';
 import { useFormData } from '@/providers';
 import { useForm } from '@/providers/form';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import React, { useMemo } from 'react';
-import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
+import { CollapsiblePanelComponentDefinition, ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
@@ -18,7 +17,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultHeaderStyles, defaultStyles } from './utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
-const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentProps> = {
+const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   type: 'collapsiblePanel',
   isInput: false,
   name: 'Panel',
@@ -52,7 +51,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const headerComponents = model?.header?.components ?? [];
 
-    const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles.border } }).fullStyle;
+    const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles?.border } }).fullStyle;
 
     const isIconHidden = expandIconPosition === 'hide';
     const extra = ((headerComponents?.length > 0 || formMode === 'designer') && !hasCustomHeader) ? (
@@ -96,8 +95,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       </ParentProvider>
     );
   },
-  settingsFormMarkup: () => getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<ICollapsiblePanelComponentPropsV0>(0, (prev) => {
@@ -143,7 +142,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
       .add<ICollapsiblePanelComponentProps>(7, (prev) => ({
         ...prev,
-        customHeader: { id: nanoid(), components: [] }
+        customHeader: { id: nanoid(), components: [] },
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => {
         const accentStyle = prev?.overflow === undefined;
@@ -151,7 +150,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         return {
           ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
           tablet: { ...prev.tablet, accentStyle },
-          mobile: { ...prev.mobile, accentStyle }
+          mobile: { ...prev.mobile, accentStyle },
         };
       })
       .add<ICollapsiblePanelComponentProps>(9, (prev) => {
@@ -161,7 +160,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         return {
           ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
           tablet: { ...newModel.tablet, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle }
+          mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
         };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],

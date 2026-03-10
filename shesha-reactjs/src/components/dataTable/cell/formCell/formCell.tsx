@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Result } from 'antd';
 import { useCrud } from "@/providers/crudContext/index";
 import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
-import { ComponentsContainer, ConfigurableItemFullName, FormIdentifier, FormItemProvider, isFormFullName, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/index';
+import { ComponentsContainer, ConfigurableItemFullName, FormIdentifier, FormItemProvider, isFormFullName, ROOT_COMPONENT_KEY } from '@/index';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import ParentProvider from '@/providers/parentProvider/index';
 import { ITableFormColumn } from '@/providers/dataTable/interfaces';
@@ -13,6 +13,7 @@ import { useFormById } from '@/providers/formManager/hooks';
 import { UpToDateForm } from '@/providers/formManager/interfaces';
 import { getFormForbiddenMessage, getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
 import AttributeDecorator from '@/components/attributeDecorator';
+import axios from 'axios';
 
 const MODE_READONLY_TRUE = { readOnly: true };
 const MODE_READONLY_FALSE = { readOnly: false };
@@ -22,25 +23,32 @@ interface FormCellRenderProps {
   children: (form: UpToDateForm) => React.ReactElement;
 }
 
+const getFormLoadingErorr = (formId: FormIdentifier, error: unknown): React.ReactElement => {
+  if (axios.isAxiosError(error)) {
+    switch (error.status) {
+      case 404: return <Result status="404" title="404" subTitle={getFormNotFoundMessage(formId)} />;
+      case 401:
+      case 403: return <Result status="403" title="403" subTitle={getFormForbiddenMessage(formId)} />;
+    }
+  }
+  return <>Form loading error</>;
+};
+
+
 const FormCellRender: FC<FormCellRenderProps> = ({ formId, children }) => {
   if (!formId)
     throw new Error('FormId is required');
 
-  const { configurationItemMode } = useAppConfigurator();
-  const formLoading = useFormById({ formId: formId, skipCache: false, configurationItemMode });
+  const formLoading = useFormById({ formId: formId, skipCache: false });
 
   return formLoading.state === 'loading'
     ? <LoadingOutlined />
     : formLoading.state === 'error'
-      ? formLoading.error?.code === 404
-        ? <Result status="404" title="404" subTitle={getFormNotFoundMessage(formId)} />
-        : formLoading.error?.code === 401 || formLoading.error?.code === 403
-          ? <Result status="403" title="403" subTitle={getFormForbiddenMessage(formId)} />
-          : <>Form loading error</>
+      ? getFormLoadingErorr(formId, formLoading.error)
       : children(formLoading.form);
 };
 
-const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D, V>) => {
+const ReadFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): JSX.Element => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
@@ -65,7 +73,7 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
-                <ParentProvider model={MODE_READONLY_TRUE} formMode='readonly' formFlatMarkup={form.flatStructure} isScope>
+                <ParentProvider model={MODE_READONLY_TRUE} formMode="readonly" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                   </ComponentsContainerProvider>
@@ -85,7 +93,7 @@ export interface ICreateFormCellProps extends IConfigurableCellProps<ITableFormC
   parentFormName?: string;
 }
 
-export const CreateFormCell = (props: ICreateFormCellProps) => {
+export const CreateFormCell = (props: ICreateFormCellProps): JSX.Element => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
@@ -112,7 +120,7 @@ export const CreateFormCell = (props: ICreateFormCellProps) => {
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight} data-sha-form-name={`${(props.columnConfig.createFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.createFormId as ConfigurableItemFullName)?.name}`}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
-                <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
+                <ParentProvider model={MODE_READONLY_FALSE} formMode="edit" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                   </ComponentsContainerProvider>
@@ -125,7 +133,7 @@ export const CreateFormCell = (props: ICreateFormCellProps) => {
     );
 };
 
-const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D, V>) => {
+const EditFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): JSX.Element => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
@@ -150,7 +158,7 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
-                <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
+                <ParentProvider model={MODE_READONLY_FALSE} formMode="edit" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                   </ComponentsContainerProvider>
@@ -163,7 +171,7 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
     );
 };
 
-export const FormCell = <D extends object = {}, V = number>(props: IFormCellProps<D, V>) => {
+export const FormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): JSX.Element => {
   const { mode } = useCrud();
 
   switch (mode) {

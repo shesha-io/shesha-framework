@@ -1,6 +1,6 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import { IContainerComponentProps, IToolboxComponent } from '@/interfaces';
+import { ICommonContainerProps, IContainerComponentProps } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -13,10 +13,10 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './data';
 import { removeUndefinedProps } from '@/utils/object';
 import { addPx } from '@/utils/style';
-import classNames from 'classnames';
 import { useStyles } from './styles';
+import { ContainerComponentDefinition } from './interfaces';
 
-const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
+const ContainerComponent: ContainerComponentDefinition = {
   type: 'container',
   isInput: false,
   name: 'Container',
@@ -24,14 +24,14 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const { styles } = useStyles();
+    const { styles, cx } = useStyles();
+
     const {
       dimensionsStyles,
       borderStyles,
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
-      overflowStyles
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
@@ -39,7 +39,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
-      ...stylingBoxAsCSS
+      ...stylingBoxAsCSS,
     });
 
     if (model.hidden) return null;
@@ -58,8 +58,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
       gap: addPx(model.gap),
-      width: '100%',
-      height: '100%',
     };
 
     return (
@@ -68,30 +66,30 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           containerId={model.id}
           wrapperStyle={{
             ...wrapperStyles,
-            ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
+            alignSelf: model.alignSelf,
+            justifySelf: model.justifySelf,
+            ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
           }}
           style={{
             ...getStyle(model?.style, formData),
-            overflow: model.overflow,
-            ...overflowStyles,
-            ...flexAndGridStyles as any
           }}
           noDefaultStyling={model.noDefaultStyling}
-          className={classNames(model.className, styles.container)}
+          className={cx(model.className, styles.container)}
           dynamicComponents={model?.isDynamic ? model?.components : []}
+          {...flexAndGridStyles}
         />
       </ParentProvider>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IContainerComponentProps>(0, (prev) => ({
         ...prev,
         direction: prev['direction'] ?? 'vertical',
         justifyContent: prev['justifyContent'] ?? 'left',
-        display: prev['display'] /* ?? 'block'*/,
+        display: prev['display'],
         flexWrap: prev['flexWrap'] ?? 'wrap',
         components: prev['components'] ?? [],
         editMode: 'inherited',
@@ -117,13 +115,13 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           minWidth: prev.minWidth,
           minHeight: prev.minHeight,
           maxHeight: prev.maxHeight,
-          maxWidth: prev.maxWidth
+          maxWidth: prev.maxWidth,
         };
         const showAdvanced = prev.showAdvanced ?? false;
         return { ...prev, showAdvanced: showAdvanced, desktop: { ...styles, showAdvanced }, tablet: { ...styles, showAdvanced }, mobile: { ...styles, showAdvanced } };
       })
       .add<IContainerComponentProps>(6, (prev) => {
-        const flexAndGridStyles = {
+        const flexAndGridStyles: ICommonContainerProps = {
           display: prev?.display,
           flexDirection: prev?.flexDirection,
           direction: prev?.direction,
@@ -142,7 +140,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
 
         return {
           ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
-          tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
+          tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles },
         };
       })
       .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),

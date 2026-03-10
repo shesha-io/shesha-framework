@@ -1,30 +1,34 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
-import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponent } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
+import { isDefined } from '@/utils/nullables';
 
-export interface IProps {}
-
-export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
-  const selectedComponentId = useFormDesignerStateSelector(x => x.selectedComponentId);
-  const readOnly = useFormDesignerStateSelector(x => x.readOnly);
-  const { deleteComponent, duplicateComponent } = useFormDesignerActions();
+export const ComponentPropertiesTitle: FC = ({}) => {
+  const component = useFormDesignerSelectedComponent();
+  const readOnly = useFormDesignerReadOnly();
+  const { deleteComponent, duplicateComponent } = useFormDesigner();
   const { styles } = useStyles();
 
-  const onDeleteClick = () => {
-    if (!readOnly)
-      deleteComponent({ componentId: selectedComponentId });
+  // TODO: calculate actual component label
+  const componentLabel = isDefined(component) && typeof (component.label) === 'string'
+    ? component.label
+    : 'Properties';
+
+  const onDeleteClick = (): void => {
+    if (!readOnly && component)
+      deleteComponent({ componentId: component.id });
   };
-  const onDuplicateClick = () => {
-    if (!readOnly)
-      duplicateComponent({ componentId: selectedComponentId });
+  const onDuplicateClick = (): void => {
+    if (!readOnly && component)
+      duplicateComponent({ componentId: component.id });
   };
 
   return (
     <div className={styles.componentPropertiesActions}>
-      Properties
-      {selectedComponentId && !readOnly && (
+      {componentLabel}
+      {component && !readOnly && (
         <div className="action-buttons">
           <Button
             icon={<CopyOutlined />}

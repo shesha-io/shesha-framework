@@ -1,55 +1,70 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { useTemplates } from '../utils';
-import { useAppConfigurator } from '@/providers/appConfigurator';
-import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
-import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup, useDataContextManagerActions, useFormData, useGlobalState } from '@/providers';
 import { useGet } from '@/hooks';
-import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
+import { DynamicActionsProvider, DynamicItemsEvaluationHook } from '@/providers';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { ButtonGroupItemProps, IButtonGroupItem } from '@/providers/buttonGroupConfigurator';
+import { IDataSourceArguments } from '../model';
+import { useUrlTemplates } from '../utils';
 import { getSettings } from './urlSettings';
+import { IAjaxResponse } from '@/interfaces';
+import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
+import { ButtonType } from 'antd/lib/button';
+import { useFormViaFactory } from '@/form-factory/hooks';
 
-const settingsMarkup = getSettings() as FormMarkup;
+type ArrayOrObjectWithItems<T> = T[] | {
+  items: T[];
+};
+type FetchResponse = ArrayOrObjectWithItems<IButtonGroupItem>;
 
 const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, labelProperty, tooltipProperty, buttonType } = settings ?? {};
-  const { refetch } = useGet({ path: '', lazy: true });
-  const { getTemplateState } = useTemplates(settings);
-  const [data, setData] = useState(null);
-  const pageContext = useDataContextManagerActions(false)?.getPageContext();
-  const { data: FormData } = useFormData();
-  const { globalState } = useGlobalState();
+  const { actionConfiguration, labelProperty, tooltipProperty, buttonType: buttonTypeSetting } = settings ?? {};
+  const { refetch } = useGet<IAjaxResponse<FetchResponse>>({ path: '', lazy: true });
+  const { getUrlTemplateState } = useUrlTemplates(settings);
+  const [data, setData] = useState<IButtonGroupItem[] | undefined>(undefined);
 
   useEffect(() => {
-    refetch(getTemplateState()).then((response) => {
-      const result = Array.isArray(response.result) ? response.result : response.result.items;
-      setData(result);
-    });
-  }, [item, settings, pageContext, FormData, globalState]);
+    const templateState = getUrlTemplateState();
+    if (templateState) {
+      refetch(templateState).then((response) => {
+        const responseData = extractAjaxResponse(response);
+        const result = Array.isArray(responseData) ? responseData : responseData.items;
 
-
-  const { configurationItemMode } = useAppConfigurator();
+        setData(result);
+      });
+    }
+  }, [getUrlTemplateState, refetch]);
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
-    const result = data?.map((p) => ({
+    const result = data.map<ButtonGroupItemProps>((p) => ({
       id: p.id,
       name: p.name,
-      label: p[`${labelProperty}`] || 'Not Configured Properly',
+      label: p[`${labelProperty}`] ?? 'Not Configured Properly',
       tooltip: p[`${tooltipProperty}`],
       itemType: 'item',
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType: buttonType,
+      buttonType: p.buttonType ?? item.buttonType ?? (buttonTypeSetting as ButtonType),
+      size: item.size,
+      background: p.background ?? item.background,
+      border: p.border ?? item.border,
+      shadow: p.shadow ?? item.shadow,
+      font: p.font ?? item.font,
+      stylingBox: p.stylingBox ?? item.stylingBox,
+      style: p.style ?? item.style,
+      dimensions: p.dimensions ?? item.dimensions,
       actionConfiguration: actionConfiguration,
+      permissions: p.permissions ?? item.permissions,
     }));
 
     return result;
-  }, [item, data, configurationItemMode]);
+  }, [item, data]);
 
   return operations;
 };
 
-export const UrlActions: FC<PropsWithChildren<IWorkflowInstanceStartActionsProps>> = ({ children }) => {
+export const UrlActions: FC<PropsWithChildren> = ({ children }) => {
+  const settingsMarkup = useFormViaFactory(getSettings);
   return (
     <DynamicActionsProvider
       id="Url"

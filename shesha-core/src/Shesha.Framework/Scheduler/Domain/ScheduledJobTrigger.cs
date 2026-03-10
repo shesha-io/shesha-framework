@@ -19,17 +19,17 @@ namespace Shesha.Scheduler.Domain
     [Table("Core_ScheduledJobTriggers")]
     public class ScheduledJobTrigger : FullAuditedEntity<Guid>
     {
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string CronString { get; set; }
 
-        [StringLength(1000)]
+        [MaxLength(1000)]
         [DataType(DataType.MultilineText)]
         public virtual string Description { get; set; }
 
         /// <summary>
         /// Json string to pass parameters to a scheduled job in case want to reuse the same scheduled job but different input parameters         
         /// </summary>
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string ParametersJson { get; set; }
 
         /// <summary>

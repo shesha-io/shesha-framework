@@ -1,6 +1,6 @@
 import React, {
   FC,
-  useState
+  useState,
 } from 'react';
 import {
   Alert,
@@ -8,7 +8,7 @@ import {
   Button,
   Modal,
   Tabs,
-  Typography
+  Typography,
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
@@ -18,6 +18,7 @@ import { Show } from '@/components';
 import { useSourcesFolder } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import type { TabsProps } from 'antd';
 import { useStyles } from './styles';
+import classNames from 'classnames';
 
 type TabItem = TabsProps['items'][number];
 
@@ -37,7 +38,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const src = useSourcesFolder(false);
   const { styles } = useStyles();
 
-  const onChange = (_value) => {
+  const onChange = (_value): void => {
     switch (mode) {
       case 'inline': {
         if (props.onChange) props.onChange(_value);
@@ -52,7 +53,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 
-  const onClear = () => {
+  const onClear = (): void => {
     if (hasValue) {
       modal.confirm({
         title: 'Clear code editor?',
@@ -65,19 +66,19 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           setInternalValue(null);
           setShowDialog(false);
           if (props.onChange) props.onChange(null);
-        }
+        },
       });
     }
   };
 
-  const onDialogSave = () => {
+  const onDialogSave = (): void => {
     if (props.onChange) props.onChange(internalValue);
     setShowDialog(false);
   };
 
-  const openEditorDialog = () => setShowDialog(true);
+  const openEditorDialog = (): void => setShowDialog(true);
 
-  const onDialogCancel = () => {
+  const onDialogCancel = (): void => {
     if (!readOnly && (value ?? "").trim() !== (internalValue ?? "").trim()) {
       modal.confirm({
         title: 'Close code editor?',
@@ -89,7 +90,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         onOk() {
           setInternalValue(value);
           setShowDialog(false);
-        }
+        },
       });
     } else {
       setInternalValue(value);
@@ -99,7 +100,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
-  const renderCodeEditor = () => (
+  const renderCodeEditor = (): JSX.Element => (
     <BaseCodeEditor
       value={effectiveValue}
       onChange={onChange}
@@ -113,7 +114,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       fileName={props.fileName ?? props.propertyName}
       availableConstants={props.availableConstants}
       resultType={props.resultType}
-      style={mode === 'dialog' ? { height: "100%" } : undefined}
+      style={mode === 'dialog' ? { height: "100%" } : { marginTop: "5px" }}
       environment={environment}
     />
   );
@@ -131,29 +132,29 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           <div className={styles.codeEditorContainer}>
             {renderCodeEditor()}
           </div>
-        )
+        ),
       },
       {
         key: "variable",
         label: "Variables",
-        children: (<CodeVariablesTables data={exposedVariables} />)
-      }
+        children: (<CodeVariablesTables data={exposedVariables} />),
+      },
     ]
     : undefined;
 
-  const buttonValue = value?.replace('return', '').replace(/;+$/, "");;
+  const buttonValue = value?.replace('return', '').replace(/;+$/, ""); ;
 
   return readOnly && !hasValue
     ? (<Typography.Text disabled>No Code</Typography.Text>)
     : (
       <>
         <Button
-          className={props.className}
+          className={classNames(props.className, styles.button)}
           size="small"
           onClick={openEditorDialog}
           style={hasValue ? { fontFamily: 'monospace', fontSize: '12px', width: '100%' } : { width: '100%' }}
         >
-          {<><CodeOutlined /> {hasValue ? buttonValue : '...'}</>}
+          <><CodeOutlined /> {hasValue ? buttonValue : '...'}</>
         </Button>
         {showDialog && (
           <Modal
@@ -164,14 +165,17 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
             title={props.label}
             okButtonProps={{ hidden: readOnly }}
             cancelText={readOnly ? 'Close' : undefined}
-            destroyOnClose={true}
+            destroyOnHidden={true}
             classNames={{ body: styles.codeEditorModalBody }}
             className={styles.codeEditorModal}
-            width={null}
+            width="80vw"
+            centered
             footer={[
-              hasValue && <Button key="clear" danger onClick={onClear} disabled={readOnly}>
-                Clear
-              </Button>,
+              hasValue && (
+                <Button key="clear" danger onClick={onClear} disabled={readOnly}>
+                  Clear
+                </Button>
+              ),
               <Button key="cancel" onClick={onDialogCancel}>
                 {readOnly ? 'Close' : 'Cancel'}
               </Button>,

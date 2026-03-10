@@ -15,13 +15,13 @@ namespace Shesha.Domain
     [Discriminator]
     public class Area : FullAuditedEntity<Guid>, IMayHaveTenant
     {
-        [Required(AllowEmptyStrings = false), StringLength(100)]
+        [Required(AllowEmptyStrings = false), MaxLength(100)]
         public virtual string Name { get; set; }
 
-        [Required(AllowEmptyStrings = false), StringLength(10)]
+        [Required(AllowEmptyStrings = false), MaxLength(10)]
         public virtual string ShortName { get; set; }
 
-        [StringLength(200)]
+        [MaxLength(200)]
         public virtual string Comments { get; set; }
 
         public virtual Area? ParentArea { get; set; }

@@ -8,7 +8,7 @@ export const FormComponentStringDisplay: FC<IFormComponent> = ({ name, isEdittin
   const [val, changeVal] = useState(value as string);
 
   if (isEditting) {
-    const handleChange = ({ target: { value: text = '' } }: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = ({ target: { value: text = '' } }: React.ChangeEvent<HTMLInputElement>): void => {
       changeVal(text);
 
       if (onChange) {

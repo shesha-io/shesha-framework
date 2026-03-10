@@ -34,7 +34,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
   name: 'Checkbox group',
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  calculateModel: (model, allData) => ({ 
+  calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
     dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
     defaultValue: evaluateValue(model.defaultValue, allData.data),
@@ -44,8 +44,8 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (e: any) => {
-            if (e.target) 
+          const onChangeInternal = (e: any): void => {
+            if (e.target)
               customEvents.onChange({ value: e.target.value }, e);
             else
               customEvents.onChange({ value: e }, null);
@@ -55,10 +55,9 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
           return (
             <RefListCheckboxGroup
               {...model}
-              style={model.allStyles.fullStyle}
+              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
               dataSourceUrl={calculatedModel.dataSourceUrl}
               value={value}
-              defaultValue={model.defaultValue}
               {...calculatedModel.eventHandlers}
               onChange={onChangeInternal}
             />
@@ -67,8 +66,8 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
     const customProps: IEnhancedICheckboxGoupProps = {
       ...model,

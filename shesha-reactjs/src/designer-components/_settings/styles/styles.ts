@@ -1,13 +1,12 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) => {
-
-    const contentJs = cx(css`
+export const useStyles = createStyles(({ css, cx, responsive, token }) => {
+  const contentJs = cx(css`
         position: relative;
         top: 0px;
     `);
 
-    const contentCode = cx(css`
+  const contentCode = cx(css`
         position: relative;
         top: 0px;
         ${responsive.mobile} {
@@ -16,7 +15,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) 
 
     `);
 
-    const jsContent = cx(css`
+  const jsContent = cx(css`
         position: relative;
         ${responsive.mobile} {
             margin-left: 28px;
@@ -28,7 +27,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) 
         }
     `);
 
-    const label = cx("properties-label", css`
+  const label = cx("properties-label", css`
             font-size: 12px;
             color: darkslategrey;
             font-weight: 500;
@@ -37,20 +36,14 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) 
             +.ant-form-item-tooltip {
             align-self: end !important;
             position: relative;
-            bottom: -2px;
-            margin-right: 8px;
-            }
-
-            +.sha-required-mark {
-                position: relative;
-                bottom: -8px;
+            top: 4px;
             }
     `);
 
-    const bindingOptionsBtn = cx(css`
+  const bindingOptionsBtn = cx(css`
         top: -8px;
         `);
-    const jsSwitch = cx(css`
+  const jsSwitch = cx(css`
             position: absolute;
             right: 0;
             top: 4px;
@@ -78,17 +71,17 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) 
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
                 left: auto;
-                top: ${hasCode ? '-38px' : '-25px'};
+                top: -25px;
             }
         
     `);
 
-    return {
-        contentJs,
-        contentCode,
-        jsContent,
-        label,
-        bindingOptionsBtn,
-        jsSwitch
-    };
+  return {
+    contentJs,
+    contentCode,
+    jsContent,
+    label,
+    bindingOptionsBtn,
+    jsSwitch,
+  };
 });

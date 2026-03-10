@@ -2,12 +2,10 @@ import React, { FC } from 'react';
 import { useDataTable } from '@/providers';
 import ColumnsFilterSelectBase from '@/components/columnsFilterSelectBase';
 
-export interface IColumnsFilterSelectProps {}
-
-export const ColumnsFilterSelect: FC<IColumnsFilterSelectProps> = () => {
+export const ColumnsFilterSelect: FC = () => {
   const { columns, toggleColumnFilter, getCurrentFilter } = useDataTable();
 
-  const appliedFiltersColumnIds = getCurrentFilter().map(f => f.columnId);
+  const appliedFiltersColumnIds = getCurrentFilter().map((f) => f.columnId);
   return <ColumnsFilterSelectBase {...{ columns, appliedFiltersColumnIds, toggleColumnFilter }} />;
 };
 

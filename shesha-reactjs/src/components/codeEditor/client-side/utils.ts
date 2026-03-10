@@ -1,30 +1,30 @@
 import { IPosition, IRange, editor } from "monaco-editor";
 
 export interface ConstrainedInstance {
-    initializeIn(editor: editor.IStandaloneCodeEditor): void;
-    addRestrictionsTo(model: editor.ITextModel, restrictions: any[]): void;
-    removeRestrictionsIn(model: editor.ITextModel): void;
+  initializeIn(editor: editor.IStandaloneCodeEditor): void;
+  addRestrictionsTo(model: editor.ITextModel, restrictions: any[]): void;
+  removeRestrictionsIn(model: editor.ITextModel): void;
 }
 
 export interface CodeRestriction {
-    // startLine, startColumn, endLine, endColumn
-    range: Array<number>[4];
-    allowMultiline?: boolean;
+  // startLine, startColumn, endLine, endColumn
+  range: Array<number>[4];
+  allowMultiline?: boolean;
 }
 
 interface TextPosition {
-    line: number;
-    column: number;    
+  line: number;
+  column: number;
 }
 
 export interface TextRange {
-    start: TextPosition;
-    end: TextPosition;
+  start: TextPosition;
+  end: TextPosition;
 }
 
 export interface TextTemplate {
-    content: string;
-    editableRanges: TextRange[];
+  content: string;
+  editableRanges: TextRange[];
 }
 
 /**
@@ -34,21 +34,21 @@ export interface TextTemplate {
  * @return {TextPosition} the position of the last character
  */
 const getLastCharPosition = (content: string): TextPosition => {
-    if (!content)
-        return { line: 0, column: 0 };
+  if (!content)
+    return { line: 0, column: 0 };
 
-    const lines = content.split('\n');
-    const lastLine = lines[lines.length - 1];
+  const lines = content.split('\n');
+  const lastLine = lines[lines.length - 1];
 
-    return { line: lines.length, column: lastLine.length + 1 };
+  return { line: lines.length, column: lastLine.length + 1 };
 };
 
 export const getLeadingWhiteSpaces = (text: string): string => {
-    if (!text)
-        return '';
+  if (!text)
+    return '';
 
-    const count = text.search(/\S|$/);
-    return text.slice(0, count);
+  const count = text.search(/\S|$/);
+  return text.slice(0, count);
 };
 
 
@@ -59,27 +59,27 @@ export const getLeadingWhiteSpaces = (text: string): string => {
  * @return {Placeholder} the placeholder
  */
 export type Placeholder = {
-    value: string;
-    readOnly: boolean;
-    toString: () => string;
+  value: string;
+  readOnly: boolean;
+  toString: () => string;
 };
 
 /**
  * The placeholder evaluation context
  */
 export type PlaceholderEvaluatorContext = {
-    /**
-     * Current text position in a template, can be used for formatting of multiline placeholders (e.g. comments)
-     */
-    position: TextPosition;
-    /**
-     * Utility function that returns editable placeholder
-     */
-    editable: (text: string) => Placeholder;
-    /**
-     * Utility function that returns read-only placeholder
-     */
-    readOnly: (text: string) => Placeholder;
+  /**
+   * Current text position in a template, can be used for formatting of multiline placeholders (e.g. comments)
+   */
+  position: TextPosition;
+  /**
+   * Utility function that returns editable placeholder
+   */
+  editable: (text: string) => Placeholder;
+  /**
+   * Utility function that returns read-only placeholder
+   */
+  readOnly: (text: string) => Placeholder;
 };
 
 /**
@@ -90,7 +90,7 @@ export type PlaceholderEvaluatorContext = {
  */
 export type PlaceholderEvaluator = (ctx: PlaceholderEvaluatorContext) => string | Placeholder;
 const isPlaceholderEvaluator = (value: string | PlaceholderEvaluator): value is PlaceholderEvaluator => {
-    return typeof(value) === 'function';
+  return typeof (value) === 'function';
 };
 
 /**
@@ -102,51 +102,51 @@ const isPlaceholderEvaluator = (value: string | PlaceholderEvaluator): value is 
  * @return {TextTemplate} the generated text template with editable ranges
  */
 export const makeCodeTemplate = (strings: TemplateStringsArray, ...expr: (string | PlaceholderEvaluator)[]): TextTemplate => {
-    let content = '';
+  let content = '';
 
-    const ranges: TextRange[] = [];
-    strings.forEach((line, i) => {
-        const item = expr[i];
-        
-        content += line;
-        const startPosition = getLastCharPosition(content);
+  const ranges: TextRange[] = [];
+  strings.forEach((line, i) => {
+    const item = expr[i];
 
-        if (item){
-            const placeholderContent = isPlaceholderEvaluator(item)
-                ? item({ 
-                    position: getLastCharPosition(content),
-                    editable: text => ({ value: text, readOnly: false, toString: () => text }),
-                    readOnly: text => ({ value: text, readOnly: true, toString: () => text }),
-                })
-                : item;
-            // note: string values are always read-only
-            const readonly = typeof(placeholderContent) === 'string' || placeholderContent.readOnly;
+    content += line;
+    const startPosition = getLastCharPosition(content);
 
-            const placeholderText = placeholderContent?.toString();
-            if (placeholderText)
-                content += placeholderContent?.toString();
+    if (item) {
+      const placeholderContent = isPlaceholderEvaluator(item)
+        ? item({
+          position: getLastCharPosition(content),
+          editable: (text) => ({ value: text, readOnly: false, toString: () => text }),
+          readOnly: (text) => ({ value: text, readOnly: true, toString: () => text }),
+        })
+        : item;
+      // note: string values are always read-only
+      const readonly = typeof (placeholderContent) === 'string' || placeholderContent.readOnly;
 
-            const endPosition = getLastCharPosition(content);
-    
-            if (!readonly)
-                ranges.push({ start: startPosition, end: endPosition });
-        }
-    });
-    
-    const response: TextTemplate = {
-        content: content,
-        editableRanges: ranges,
-    };
+      const placeholderText = placeholderContent?.toString();
+      if (placeholderText)
+        content += placeholderContent?.toString();
 
-    return response;
+      const endPosition = getLastCharPosition(content);
+
+      if (!readonly)
+        ranges.push({ start: startPosition, end: endPosition });
+    }
+  });
+
+  const response: TextTemplate = {
+    content: content,
+    editableRanges: ranges,
+  };
+
+  return response;
 };
 
 export type TemplateEvaluator = (code: string) => TextTemplate;
 
 export const isRange = (value: IRange | IPosition): value is IRange => {
-    return value && (value as IRange).startColumn !== undefined;
+  return value && (value as IRange).startColumn !== undefined;
 };
 
 export const isPosition = (value: IRange | IPosition): value is IPosition => {
-    return value && (value as IPosition).column !== undefined;
+  return value && (value as IPosition).column !== undefined;
 };

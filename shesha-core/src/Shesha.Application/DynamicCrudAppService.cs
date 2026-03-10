@@ -16,8 +16,10 @@ using System.Threading.Tasks;
 namespace Shesha
 {
     [DynamicControllerNameConvention]
-    public class DynamicCrudAppService<TEntity, TDynamicDto, TCreateDynamicDto, TUpdateDynamicDto, TPrimaryKey> : SheshaCrudServiceBase<TEntity,
-        TDynamicDto, TPrimaryKey, PropsFilteredPagedAndSortedResultRequestDto, TCreateDynamicDto, TUpdateDynamicDto, GetDynamicEntityInput<TPrimaryKey>>, IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>, ITransientDependency
+    public class DynamicCrudAppService<TEntity, TDynamicDto, TCreateDynamicDto, TUpdateDynamicDto, TPrimaryKey> : 
+        SheshaCrudServiceBase<TEntity, TDynamicDto, TPrimaryKey, PropsFilteredPagedAndSortedResultRequestDto, TCreateDynamicDto, TUpdateDynamicDto, GetDynamicEntityInput<TPrimaryKey>>,
+        IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>,
+        ITransientDependency
         where TEntity : class, IEntity<TPrimaryKey>
         where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         where TCreateDynamicDto: class, TDynamicDto

@@ -1,6 +1,9 @@
-﻿using Abp.Domain.Entities;
+﻿using Abp.Application.Services.Dto;
+using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using Shesha.Utilities;
 using System;
@@ -11,8 +14,14 @@ using System.Text.Json.Serialization;
 
 namespace Shesha.Metadata.Dtos
 {
-    public class PropertyMetadataDto
+    public class PropertyMetadataDto: EntityDto<string>
     {
+        public string? ColumnName { get; set; }
+        public bool CreatedInDb { get; set; }
+        public Guid? InheritedFromId { get; set; }
+
+        public string ContainerType { get; set; }
+
         public bool? CascadeCreate { get; set; }
         public bool? CascadeUpdate { get; set; }
         public bool? CascadeDeleteUnreferenced { get; set; }
@@ -39,7 +48,12 @@ namespace Shesha.Metadata.Dtos
         /// <summary>
         /// Validation message
         /// </summary>
-        public virtual string? ValidationMessage { get; set; }
+        public string? ValidationMessage { get; set; }
+
+        /// <summary>
+        /// DataType specific formatting
+        /// </summary>
+        public JObject? Formatting { get; set; }
 
         public string Path { get; set; }
         public string? Label { get; set; }
@@ -47,6 +61,11 @@ namespace Shesha.Metadata.Dtos
 
         public string DataType { get; set; }
         public string? DataFormat { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? EntityFullClassName { get; set; }
 
         /// <summary>
         /// Type of the entity. Applicable when DataType = <seealso cref="DataTypes.EntityReference"/>
@@ -97,12 +116,16 @@ namespace Shesha.Metadata.Dtos
         /// </summary>
         public PropertyMetadataDto? ItemsType { get; set; }
 
+        public bool IsItemsType { get; set; }
+
         public MetadataSourceType Source { get; set; }
 
         /// <summary>
         /// If true, indicates that the property is nullable
         /// </summary>
         public bool IsNullable { get; set; }
+
+        public EntityPropertyListConfiguration? ListConfiguration { get; set; }
 
         public static string GetPropertiesMD5(List<PropertyMetadataDto> dtos)
         {
@@ -138,6 +161,11 @@ namespace Shesha.Metadata.Dtos
                 sb.AppendLine();
             }
             return sb.ToString().ToMd5Fingerprint();
+        }
+
+        public override string ToString()
+        {
+            return $"{Path} {DataType} ({DataFormat} {EntityFullClassName})";
         }
     }
 }

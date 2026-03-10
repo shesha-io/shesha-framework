@@ -3,7 +3,6 @@ using Abp.Authorization;
 using Abp.Localization;
 using Abp.MultiTenancy;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

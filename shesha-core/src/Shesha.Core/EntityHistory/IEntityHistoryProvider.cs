@@ -5,6 +5,6 @@ namespace Shesha.EntityHistory
 {
     public interface IEntityHistoryProvider
     {
-        Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string entityTypeFullName, bool includeEventsOnChildEntities);
+        Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string? moduleName, string entityType, bool includeEventsOnChildEntities);
     }
 }

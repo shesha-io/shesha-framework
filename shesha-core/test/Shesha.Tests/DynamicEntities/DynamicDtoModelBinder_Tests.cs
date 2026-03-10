@@ -261,7 +261,7 @@ namespace Shesha.Tests.DynamicEntities
                     return schema.NotNull();
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = LocalIocManager.Resolve<IEntityTypeConfigurationStore>();
             var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
             var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
             var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);

@@ -21,7 +21,7 @@ export interface ITabPaneProps
   tooltip?: string;
 }
 
-export interface ITabsComponentProps extends IConfigurableFormComponent {
+export interface IPropertiesTabsComponentProps extends IConfigurableFormComponent {
   tabs: ITabPaneProps[];
   size?: SizeType;
   defaultActiveKey?: string;

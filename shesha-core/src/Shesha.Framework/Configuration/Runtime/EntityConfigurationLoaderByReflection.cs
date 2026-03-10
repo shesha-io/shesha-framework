@@ -20,7 +20,7 @@ namespace Shesha.Configuration.Runtime
     /// </summary>
     public class EntityConfigurationLoaderByReflection
     {
-        public void LoadConfiguration([NotNull]EntityConfiguration config)
+        public void LoadConfiguration([NotNull]EntityTypeConfiguration config)
         {
             LoadEntityConfiguration(config);
 
@@ -55,16 +55,13 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        private void LoadEntityConfiguration(EntityConfiguration config)
+        private void LoadEntityConfiguration(EntityTypeConfiguration config)
         {
             var entityAtt = config.EntityType.GetUniqueAttribute<EntityAttribute>();
 
-            if (entityAtt != null)
-            {
-                config.FriendlyName = string.IsNullOrEmpty(entityAtt.FriendlyName)
-                                          ? config.EntityType.Name // Fall back to type name when friendly name is not specified
-                                          : entityAtt.FriendlyName;
-            }
+            config.FriendlyName = entityAtt != null && !string.IsNullOrEmpty(entityAtt.FriendlyName)
+                ? entityAtt.FriendlyName
+                : config.EntityType.GetDisplayName();
 
             config.Accessor = config.EntityType.GetTypeAccessor();
             config.SetTypeShortAlias(config.EntityType.GetTypeShortAliasOrNull());
@@ -135,7 +132,7 @@ namespace Shesha.Configuration.Runtime
             return propConfig;
         }
 
-        private void LoadChangeLoggingConfiguration(EntityConfiguration config)
+        private void LoadChangeLoggingConfiguration(EntityTypeConfiguration config)
         {
             return;
             /* todo: check ABP audit logging and uncomment/remove

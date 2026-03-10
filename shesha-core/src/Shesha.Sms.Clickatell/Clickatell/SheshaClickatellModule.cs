@@ -20,7 +20,7 @@ namespace Shesha.Sms.Clickatell
         {
             FriendlyName = "Shesha Clickatell",
             Publisher = "Shesha",
-#if DisableEditModule
+#if !DEBUG
             IsEditable = false,
 #endif
         };

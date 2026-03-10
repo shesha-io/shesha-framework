@@ -4,7 +4,7 @@ import React, {
   Fragment,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from 'react';
 import {
   Checkbox,
@@ -13,7 +13,7 @@ import {
   InputNumber,
   MenuProps,
   Select,
-  Spin
+  Spin,
 } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ColumnFilter, IndexColumnFilterOption } from '@/providers/dataTable/interfaces';
@@ -21,9 +21,9 @@ import { DatePicker, TimePicker, TimeRangePicker } from '@/components/antd';
 import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
 import { EntityData } from '@/interfaces/gql';
 import { humanizeString } from '@/utils/string';
-import { IDictionary } from '@/interfaces';
+import { DataTypes, IDictionary } from '@/interfaces';
 import { Moment } from 'moment';
-import { ProperyDataType } from '@/interfaces/metadata';
+import { IEntityMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { useEntityAutocomplete } from '@/utils/autocomplete';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { useStyles } from './styles/styles';
@@ -33,15 +33,17 @@ import {
   getMoment,
   ADVANCEDFILTER_TIME_FORMAT,
 } from '@/providers/dataTable/utils';
+import { useMetadataDispatcher } from '@/providers';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 
 type MenuItem = MenuProps['items'][number];
 
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
-  date: ['equals', 'between', 'before', 'after'],
+  "date": ['equals', 'between', 'before', 'after'],
   'date-time': ['equals', 'between', 'before', 'after'],
-  time: ['equals', 'between', 'before', 'after'],
-  number: ['lessThan', 'greaterThan', 'equals', 'between'],
-  string: ['contains', 'startsWith', 'endsWith', 'equals'],
+  "time": ['equals', 'between', 'before', 'after'],
+  "number": ['lessThan', 'greaterThan', 'equals', 'between'],
+  "string": ['contains', 'startsWith', 'endsWith', 'equals'],
 };
 
 export const getFilterOptions = (dataType: string): IndexColumnFilterOption[] => {
@@ -53,7 +55,7 @@ interface IFilterBaseProps {
   onPressEnter: () => void;
 }
 
-interface ISingleValueFilterProps extends IFilterBaseProps { }
+type ISingleValueFilterProps = IFilterBaseProps;
 
 interface IStringFilterProps extends ISingleValueFilterProps {
   value: string;
@@ -99,14 +101,14 @@ const NumberRangeFilter: FC<INumberRangeFilterProps> = (props) => {
   const [minNumber, setMinNumber] = useState<number>(0);
   const [maxNumber, setMaxNumber] = useState<number>(0);
 
-  const handleMinNumberChange = (value: number | string | undefined) => {
+  const handleMinNumberChange = (value: number | string | undefined): void => {
     if (typeof value === 'number') {
       setMinNumber(value);
       props.onChange([value, maxNumber]);
     }
   };
 
-  const handleMaxNumberChange = (value: number | string | undefined) => {
+  const handleMaxNumberChange = (value: number | string | undefined): void => {
     if (typeof value === 'number') {
       setMaxNumber(value);
       props.onChange([minNumber, value]);
@@ -173,14 +175,38 @@ interface IEntityFilterProps extends IFilterBaseProps {
   value: string;
   onChange: (changeValue: string | undefined) => void;
   autocompleteUrl?: string;
-  entityType: string;
+  entityTypeName: string;
+  entityTypeModule: string | null;
 }
-const EntityFilter: FC<IEntityFilterProps> = (props) => {
-  const { data, loading, search } = useEntityAutocomplete({ entityType: props.entityType, value: props.value });
 
+// ToDo: AS - V1 review and replace with new EntityTypeAutocomplete
+
+const EntityFilter: FC<IEntityFilterProps> = (props) => {
+  const { getMetadata } = useMetadataDispatcher();
+
+  const entityType = useAsyncMemo(async () => {
+    try {
+      return await getMetadata({
+        dataType: DataTypes.entityReference,
+        modelType: { name: props.entityTypeName, module: props.entityTypeModule },
+      }) as IEntityMetadata;
+    } catch (e) {
+      console.error('Failed to fetch entity metadata:', e);
+      return undefined;
+    }
+  }, [props.entityTypeName, props.entityTypeModule]);
+
+  const { data, loading, search } = useEntityAutocomplete({
+    entityType: entityType?.fullClassName,
+    value: props.value,
+  });
+  const isLoadingMetadata = !entityType;
+  const isLoading = loading || isLoadingMetadata;
   const dataLoaded = data && data.length > 0;
   const selectValue = props.value && dataLoaded ? props.value : undefined;
-  const selectPlaceholder = props.value && !dataLoaded ? 'Loading...' : 'Type to search';
+  const selectPlaceholder = isLoadingMetadata
+    ? 'Loading metadata...'
+    : (props.value && !dataLoaded ? 'Loading...' : 'Type to search');
 
   return (
     <Select
@@ -194,9 +220,10 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
       onSelect={() => search('')}
       allowClear={true}
       placeholder={selectPlaceholder}
-      loading={loading}
+      loading={isLoading}
+      disabled={isLoadingMetadata}
       value={selectValue}
-      notFoundContent={loading ? <Spin size="small" /> : null}
+      notFoundContent={isLoading ? <Spin size="small" /> : null}
     >
       {dataLoaded &&
         data.map((d: EntityData) => (
@@ -219,7 +246,7 @@ interface DateTimeFilterProps extends BaseFilterProps {
   showTime: boolean;
 }
 const DateTimeFilter: FC<DateTimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format, showTime }) => {
-  const onChange = (_dateEvent: any, dateString: string | string[]) => {
+  const onChange = (_dateEvent: any, dateString: string | string[]): void => {
     onChangeFilter(id, dateString);
   };
 
@@ -254,7 +281,7 @@ interface TimeFilterProps extends BaseFilterProps {
   format: string;
 }
 const TimeFilter: FC<TimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format }) => {
-  const onChange = (_dateEvent: any, dateString: string | string[]) => {
+  const onChange = (_dateEvent: any, dateString: string | string[]): void => {
     onChangeFilter(id, dateString);
   };
 
@@ -285,7 +312,8 @@ export interface IColumnItemFilterProps {
   accessor: string;
   referenceListName: string;
   referenceListModule: string;
-  entityReferenceTypeShortAlias: string;
+  entityTypeName: string;
+  entityTypeModule: string | null;
   autocompleteUrl?: string;
   dataType: ProperyDataType;
   filter: ColumnFilter;
@@ -308,7 +336,8 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   applyFilters,
   referenceListName,
   referenceListModule,
-  entityReferenceTypeShortAlias,
+  entityTypeName,
+  entityTypeModule,
   autocompleteUrl,
 }) => {
   const { styles } = useStyles();
@@ -324,7 +353,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
   const [showDeleteIcon, setShowIconVisibility] = useState<boolean>(true);
 
-  const toggleShowIconVisibility = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const toggleShowIconVisibility = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     event.stopPropagation();
     setShowIconVisibility(!showDeleteIcon);
   };
@@ -340,25 +369,25 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     }
   }, []);
 
-  const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>) => {
+  const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>): void => {
     const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
     onChangeFilter(id, value);
   };
 
-  const handleRawFilter = (changeValue: ColumnFilter) => {
+  const handleRawFilter = (changeValue: ColumnFilter): void => {
     onChangeFilter(id, changeValue);
   };
 
-  const handlePressEnter = () => {
+  const handlePressEnter = (): void => {
     if (applyFilters) applyFilters();
   };
 
-  const handleDeleteFilter = () => {
+  const handleDeleteFilter = (): void => {
     onRemoveFilter(id);
   };
 
-  const renderBooleanInput = () => {
-    const onChange = (e: CheckboxChangeEvent) => {
+  const renderBooleanInput = (): JSX.Element => {
+    const onChange = (e: CheckboxChangeEvent): void => {
       onChangeFilter(id, e.target.checked);
     };
     return (
@@ -368,13 +397,13 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     );
   };
 
-  const hideFilterOptions = () => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
+  const hideFilterOptions = (): boolean => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
 
   const baseProps: BaseFilterProps = {
     id,
     filter,
     filterOption,
-    onChangeFilter
+    onChangeFilter,
   };
 
   return (
@@ -442,7 +471,8 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
             onChange={handleRawFilter}
             onPressEnter={handlePressEnter}
             value={filter as string}
-            entityType={entityReferenceTypeShortAlias}
+            entityTypeName={entityTypeName}
+            entityTypeModule={entityTypeModule}
             autocompleteUrl={autocompleteUrl}
           />
         )}

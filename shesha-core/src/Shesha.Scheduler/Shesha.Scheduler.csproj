@@ -23,6 +23,8 @@
     <Compile Remove="Example\**" />
     <EmbeddedResource Remove="Example\**" />
     <None Remove="Example\**" />
+    <None Remove="ConfigMigrations\package20260130_1052.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20260130_1052.shaconfig" />
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 

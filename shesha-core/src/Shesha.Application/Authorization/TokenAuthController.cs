@@ -40,6 +40,7 @@ namespace Shesha.Authorization
         private readonly UserRegistrationManager _userRegistrationManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<MobileDevice, Guid> _mobileDeviceRepository;
+        private readonly ITokenBlacklistService _tokenBlacklistService;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -51,7 +52,8 @@ namespace Shesha.Authorization
             UserRegistrationManager userRegistrationManager,
             IRepository<Person, Guid> personRepository,
             IRepository<ShaUserRegistration, Guid> userRegistration,
-            IRepository<MobileDevice, Guid> mobileDeviceRepository)
+            IRepository<MobileDevice, Guid> mobileDeviceRepository,
+            ITokenBlacklistService tokenBlacklistService)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -63,6 +65,7 @@ namespace Shesha.Authorization
             _personRepository = personRepository;
             _mobileDeviceRepository = mobileDeviceRepository;
             _userRegistration = userRegistration;
+            _tokenBlacklistService = tokenBlacklistService;
         }
 
         [HttpPost]
@@ -101,9 +104,11 @@ namespace Shesha.Authorization
             if (!loginResult.IsSuccess)
                 throw new ArgumentException("Can't create token for invalid login result", nameof(loginResult));
 
-            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
-
+            var validFrom = DateTime.UtcNow;
+            var expiresOn = validFrom.Add(_configuration.Expiration);
             var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
+
+            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity), validFrom, expiresOn);
 
             var personId = loginResult.User != null
                 ? await _personRepository.GetAll()
@@ -121,7 +126,7 @@ namespace Shesha.Authorization
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = expireInSeconds,
-                ExpireOn = DateTime.Now.AddSeconds(expireInSeconds),
+                ExpireOn = expiresOn,
                 UserId = loginResult.User?.Id,
                 PersonId = personId,
                 DeviceName = device?.Name,
@@ -130,8 +135,12 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public bool SignOff()
+        public async Task<bool> SignOffAsync()
         {
+            var jti = User.GetTokenId();
+            if (jti != null)
+                await _tokenBlacklistService.BlacklistTokenAsync(jti, User.GetTokenExpirationDate());
+
             return true;
         }
 
@@ -309,16 +318,21 @@ namespace Shesha.Authorization
             }
         }
 
-        private string CreateAccessToken(IEnumerable<Claim> claims, TimeSpan? expiration = null)
+        private string CreateAccessToken(IEnumerable<Claim> claims) 
         {
-            var now = DateTime.UtcNow;
+            var validFrom = DateTime.UtcNow;
+            var expiresOn = validFrom.Add(_configuration.Expiration);
+            return CreateAccessToken(claims, validFrom, expiresOn);
+        }
 
+        private string CreateAccessToken(IEnumerable<Claim> claims, DateTime validFrom, DateTime? expiresOn = null)
+        {
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _configuration.Issuer,
                 audience: _configuration.Audience,
                 claims: claims,
-                notBefore: now,
-                expires: now.Add(expiration ?? _configuration.Expiration),
+                notBefore: validFrom,
+                expires: expiresOn,
                 signingCredentials: _configuration.SigningCredentials
             );
 

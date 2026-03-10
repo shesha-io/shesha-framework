@@ -1,9 +1,9 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -12,7 +12,7 @@ export const getSettings = (data: any) => {
   const fontStylePnlId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -27,7 +27,7 @@ export const getSettings = (data: any) => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -138,7 +138,7 @@ export const getSettings = (data: any) => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: 'direction-options-row',
                   parentId: 'styleRouter',
@@ -155,7 +155,6 @@ export const getSettings = (data: any) => {
                       label: 'Direction',
                       jsSetting: true,
                       layout: 'horizontal',
-                      defaultValue: 'vertical',
                       dropdownOptions: [
                         {
                           label: 'Horizontal',
@@ -181,9 +180,9 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -200,7 +199,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: fontStylePnlId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: fontStylePnlId,
@@ -230,7 +229,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {
@@ -484,7 +483,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 inputType: 'codeEditor',
@@ -509,7 +508,7 @@ export const getSettings = (data: any) => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',
@@ -517,6 +516,7 @@ export const getSettings = (data: any) => {
                   label: 'Permissions',
                   size: 'small',
                   parentId: securityTabId,
+                  jsSetting: true,
                 })
                 .toJson(),
             ],

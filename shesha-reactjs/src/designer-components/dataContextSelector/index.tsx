@@ -6,7 +6,6 @@ import { IConfigurableFormComponent } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { Select } from 'antd';
 import { useDataContextManager } from '@/providers/dataContextManager';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IDataContextSelectorProps<TValue = any> {
@@ -20,10 +19,9 @@ const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   const dcm = useDataContextManager();
   const { getDataContexts } = dcm.getParent() ?? dcm.getRoot();
 
-  const dataContext = useDataContext(false);
-  const dataContexts = getDataContexts(dataContext?.id);
+  const dataContexts = getDataContexts('all');
 
-  const onChange = (value: any) => {
+  const onChange = (value: any): void => {
     props?.onChange(value);
   };
 
@@ -36,7 +34,7 @@ const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   );
 };
 
-interface IDataContextSelectorComponentProps extends IConfigurableFormComponent { }
+type IDataContextSelectorComponentProps = IConfigurableFormComponent;
 
 const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorComponentProps> = {
   type: 'dataContextSelector',

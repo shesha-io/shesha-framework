@@ -1,23 +1,30 @@
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { IEntityTypesMap } from "./models";
 
-type ClassNamesMap = Map<string, IEntityTypeIndentifier>;
+type ClassNamesMap = Map<string, IEntityTypeIdentifier>;
 
 export class EntityTypesMap implements IEntityTypesMap {
-    #namesMap: ClassNamesMap;
-    constructor(){
-        this.#namesMap = new Map();
-    }
+  #namesMap: ClassNamesMap;
 
-    register = (className: string, accessor: IEntityTypeIndentifier) => {
-        this.#namesMap.set(className, accessor);
-    };
+  constructor() {
+    this.#namesMap = new Map();
+  }
 
-    resolve = (className: string): IEntityTypeIndentifier => {
-        return this.#namesMap.get(className)!;
-    };
+  register = (className: string, accessor: IEntityTypeIdentifier): void => {
+    this.#namesMap.set(className, accessor);
+  };
 
-    clear = () => {
-        this.#namesMap.clear();
-    };
+  resolve = (className: string): IEntityTypeIdentifier | undefined => {
+    return this.#namesMap.get(className);
+  };
+
+  identifierExists = (model: IEntityTypeIdentifier): boolean => {
+    return Array.from(this.#namesMap.values()).some((m) => {
+      return m.name === model.name && m.module === model.module;
+    });
+  };
+
+  clear = (): void => {
+    this.#namesMap.clear();
+  };
 }

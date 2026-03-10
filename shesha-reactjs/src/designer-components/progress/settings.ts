@@ -1,15 +1,16 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
   const styleRouterId = nanoid();
+  const securityTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -24,7 +25,7 @@ export const getSettings = (data: any) => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -43,7 +44,6 @@ export const getSettings = (data: any) => {
                   label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
-                  defaultValue: false,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -54,7 +54,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'description',
                       label: 'Tooltip',
                       type: 'textArea',
-                      jsSetting: true
+                      jsSetting: true,
                     },
                     {
                       type: 'numberField',
@@ -65,8 +65,8 @@ export const getSettings = (data: any) => {
                       min: 0,
                       max: 100,
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -78,7 +78,6 @@ export const getSettings = (data: any) => {
                       propertyName: 'progressType',
                       label: 'Type',
                       tooltip: 'To specify the type of progress bar',
-                      defaultValue: 'line',
                       dropdownOptions: [
                         { label: 'Line', value: 'line' },
                         { label: 'Circle', value: 'circle' },
@@ -99,8 +98,8 @@ export const getSettings = (data: any) => {
                         { label: 'Active', value: 'active' },
                       ],
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -112,7 +111,6 @@ export const getSettings = (data: any) => {
                       propertyName: 'showInfo',
                       label: 'Show Info',
                       tooltip: 'Whether to display the progress info',
-                      defaultValue: true,
                       jsSetting: true,
                     },
                     {
@@ -121,8 +119,8 @@ export const getSettings = (data: any) => {
                       propertyName: 'hidden',
                       label: 'Hide',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .toJson(),
             ],
@@ -132,7 +130,7 @@ export const getSettings = (data: any) => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -144,10 +142,10 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
-                  },
+                    _value: "",
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'progressStyle',
@@ -159,7 +157,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -179,8 +177,8 @@ export const getSettings = (data: any) => {
                                     label: 'Trail Color',
                                     tooltip: "The color of progress bar background",
                                     jsSetting: true,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -197,7 +195,6 @@ export const getSettings = (data: any) => {
                                       { label: 'Butt', value: 'butt' },
                                       { label: 'Square', value: 'square' },
                                     ],
-                                    defaultValue: 'round',
                                     jsSetting: true,
                                   },
                                   {
@@ -206,10 +203,9 @@ export const getSettings = (data: any) => {
                                     propertyName: 'strokeWidth',
                                     label: 'Stroke Width',
                                     tooltip: 'The width of the progress bar, unit: percentage of the canvas width',
-                                    defaultValue: 6,
                                     jsSetting: true,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInput({
                                 id: nanoid(),
@@ -221,9 +217,9 @@ export const getSettings = (data: any) => {
                                 jsSetting: true,
                                 parentId: styleRouterId,
                               })
-                              .toJson()
-                          ]
-                        }
+                              .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -237,7 +233,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'steps',
@@ -248,20 +244,56 @@ export const getSettings = (data: any) => {
                                 jsSetting: true,
                                 parentId: styleRouterId,
                               })
+                              // .addSettingsInputRow({
+                              //   id: nanoid(),
+                              //   parentId: styleRouterId,
+                              //   hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
+                              //   inputs: [
+                              //     {
+                              //       type: 'colorPicker',
+                              //       id: nanoid(),
+                              //       propertyName: 'lineStrokeColor',
+                              //       label: 'Line Stroke Color',
+                              //       tooltip: "The color of line progress bar",
+                              //       jsSetting: true,
+                              //     }
+                              //   ]
+                              // })
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
-                                hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
+                                hidden: { _code: 'return getSettingValue(data?.progressType) !== "circle";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
-                                    type: 'colorPicker',
+                                    type: 'numberField',
                                     id: nanoid(),
-                                    propertyName: 'lineStrokeColor',
-                                    label: 'Stroke Color',
-                                    tooltip: "The color of progress bar",
+                                    propertyName: 'gapDegree',
+                                    label: 'Gap Degree',
+                                    tooltip: "The gap degree of half circle, 0 ~ 295",
                                     jsSetting: true,
-                                  }
-                                ]
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                hidden: { _code: 'return !["circle", "dashboard"].includes(getSettingValue(data?.progressType));', _mode: 'code', _value: false },
+                                inputs: [
+                                  {
+                                    type: 'dropdown',
+                                    id: nanoid(),
+                                    propertyName: 'gapPosition',
+                                    label: 'Gap Position',
+                                    tooltip: "The gap position",
+                                    dropdownOptions: [
+                                      { label: 'Top', value: 'top' },
+                                      { label: 'Bottom', value: 'bottom' },
+                                      { label: 'Left', value: 'left' },
+                                      { label: 'Right', value: 'right' },
+                                    ],
+                                    jsSetting: true,
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -276,25 +308,11 @@ export const getSettings = (data: any) => {
                                     tooltip: "The gap degree of half circle, 0 ~ 295",
                                     jsSetting: true,
                                   },
-                                  {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    propertyName: 'gapPosition',
-                                    label: 'Gap Position',
-                                    tooltip: "The gap position",
-                                    dropdownOptions: [
-                                      { label: 'Top', value: 'top' },
-                                      { label: 'Bottom', value: 'bottom' },
-                                      { label: 'Left', value: 'left' },
-                                      { label: 'Right', value: 'right' },
-                                    ],
-                                    jsSetting: true,
-                                  }
-                                ]
+                                ],
                               })
-                              .toJson()
-                          ]
-                        }
+                              .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -306,16 +324,16 @@ export const getSettings = (data: any) => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addStyleBox({
                               id: nanoid(),
                               label: 'Margin Padding',
                               hideLabel: true,
                               propertyName: 'stylingBox',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -327,7 +345,7 @@ export const getSettings = (data: any) => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -335,16 +353,33 @@ export const getSettings = (data: any) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
                   ],
                 })
                 .toJson(),
             ],
-          }
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [...fbf()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityTabId,
+                jsSetting: true,
+              })
+              .toJson(),
+            ],
+          },
         ],
       })
       .toJson(),

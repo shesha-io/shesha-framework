@@ -1,15 +1,14 @@
-import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, ReactElement } from 'react';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { ITextAreaComponentProps } from './interfaces';
+import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -23,6 +22,7 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
+import { getOverflowStyle } from '../_settings/utils/overflow/util';
 
 interface IJsonTextAreaProps {
   value?: any;
@@ -36,12 +36,7 @@ const JsonTextArea: React.FC<IJsonTextAreaProps> = (props) => {
   );
 };
 
-interface ITextFieldComponentCalulatedValues {
-  defaultValue?: string;
-  eventHandlers?: IEventHandlers;
-}
-
-const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldComponentCalulatedValues> = {
+const TextAreaComponent: TextAreaComponentDefinition = {
   type: 'textArea',
   name: 'Text Area',
   isInput: true,
@@ -51,10 +46,10 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   calculateModel: (model, allData) => ({
-      defaultValue: model.initialValue
-        ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
-        : undefined,
-      eventHandlers: getAllEventHandlers(model, allData)
+    defaultValue: model.initialValue
+      ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
+      : undefined,
+    eventHandlers: getAllEventHandlers(model, allData),
   }),
   Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles({
@@ -85,16 +80,17 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
       className: `sha-text-area ${styles.textArea}`,
       placeholder: model.placeholder,
       autoSize: model.autoSize ? { minRows: 2 } : false,
-      showCount: model.showCount,
+      showCount: false, // will use a custom counter outside the textarea
       maxLength: model.validate?.maxLength,
       allowClear: model.allowClear,
       variant: model?.border?.hideBorder ? 'borderless' : undefined,
       size: model?.size,
       style: {
         ...finalStyle,
+        ...getOverflowStyle(true, false),
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
-          ? { marginBottom: model?.showCount ? '16px' : '0px' }
-          : {})
+          ? { marginBottom: model?.showCount ? '4px' : '0px' }
+          : {}),
       },
       spellCheck: model.spellCheck,
     };
@@ -105,20 +101,60 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
         initialValue={calculatedModel.defaultValue}
       >
         {(value, onChange) => {
+          // Character count display component
+          const renderCharCounter = (): ReactElement => {
+            if (!model.showCount) return null;
+
+            const currentLength = typeof value === 'string' ? value.length : 0;
+            const maxLength = model.validate?.maxLength;
+
+            return (
+              <div style={{
+                textAlign: 'right',
+                fontSize: '14px',
+                color: maxLength && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
+                marginTop: '0px',
+                marginBottom: '0px',
+              }}
+              >
+                {currentLength}
+                {maxLength ? `/${maxLength}` : ''}
+              </div>
+            );
+          };
           const showAsJson = Boolean(value) && typeof value === 'object';
 
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange({value: args[0].currentTarget.value}, args[0]);
+          const onChangeInternal = (...args: any[]): void => {
+            customEvents.onChange({ value: args[0].currentTarget.value }, args[0]);
             if (typeof onChange === 'function') onChange(...args);
           };
 
-          return showAsJson 
-            ? <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
-            : model.readOnly 
-              ? <ReadOnlyDisplayFormItem value={value} />
-              : <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal}/>
-          ;
+          const finalStyle = !model.enableStyleOnReadonly && model.readOnly
+            ? {
+              ...model.allStyles.fontStyles,
+              ...model.allStyles.dimensionsStyles,
+              ...getOverflowStyle(true, false),
+            }
+            : { ...model.allStyles.fullStyle, ...getOverflowStyle(true, false) };
+
+          return (
+            <>
+              {showAsJson ? (
+                <>
+                  <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
+                  {renderCharCounter()}
+                </>
+              ) : model.readOnly ? ( // no need to show counter in read only mode
+                <ReadOnlyDisplayFormItem value={value} style={{ padding: 8, ...finalStyle }} type="textArea" />
+              ) : (
+                <>
+                  <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal} />
+                  {renderCharCounter()}
+                </>
+              )}
+            </>
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -157,15 +193,14 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+      .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, _): ITextAreaComponentProps => {
     return {
       ...model,
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default TextAreaComponent;

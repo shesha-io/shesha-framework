@@ -1,28 +1,26 @@
-import React, { FC, PropsWithChildren } from 'react';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import { MetadataProvider } from '@/providers';
+import { FormProvider, ShaForm } from '@/providers/form';
+import { FormIdentifier } from '@/providers/form/models';
+import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
+import { useShaForm } from '@/providers/form/store/shaFormInstance';
+import { FormDesignerProvider, useFormDesignerMarkup, useFormDesignerSettings } from '@/providers/formDesigner';
+import { FormPersisterProvider, useFormPersisterState } from '@/providers/formPersisterProvider';
 import {
   Form,
   FormInstance,
   Result,
-  Skeleton
+  Skeleton,
 } from 'antd';
-import { FormDesignerProvider, useFormDesignerStateSelector } from '@/providers/formDesigner';
-import { FormIdentifier } from '@/providers/form/models';
-import { FormPersisterProvider } from '@/providers/formPersisterProvider';
-import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/contexts';
-import { FormProvider, ShaForm } from '@/providers/form';
-import { MetadataProvider } from '@/providers';
 import { ResultStatusType } from 'antd/lib/result';
-import { useShaForm } from '@/providers/form/store/shaFormInstance';
-import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
+import React, { FC, PropsWithChildren } from 'react';
 
-export interface IFormProviderWrapperProps extends PropsWithChildren {
+export interface IFormProviderWrapperProps {
   formId: FormIdentifier;
 }
 
 const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
-  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
-  const formFlatMarkup = useFormDesignerStateSelector(x => x.formFlatMarkup);
+  const formSettings = useFormDesignerSettings();
+  const formFlatMarkup = useFormDesignerMarkup();
 
   const [shaForm] = useShaForm({
     form: undefined,
@@ -34,7 +32,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
         formFlatMarkup,
         formArguments: undefined,
       });
-    }
+    },
   });
 
   return (
@@ -63,41 +61,47 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
   );
 };
 
-export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, children }) => {
+const FormPersisterStateConsumer: FC<PropsWithChildren> = ({ children }) => {
   const [form] = Form.useForm();
+  const formStore = useFormPersisterState();
+
+  if (formStore.loading)
+    return (<Skeleton loading active />);
+
+  if (formStore.loaded) {
+    const { flatStructure, settings, readOnly } = formStore.formProps;
+    return (
+      <FormDesignerProvider
+        flatMarkup={flatStructure}
+        formSettings={settings}
+        readOnly={readOnly}
+      >
+        <FormProviderWrapperInner form={form}>
+          {children}
+        </FormProviderWrapperInner>
+      </FormDesignerProvider>
+    );
+  }
+
+  if (formStore.loadError)
+    return (
+      <Result
+        status={formStore.loadError.code as ResultStatusType}
+        title={formStore.loadError.code}
+        subTitle={formStore.loadError.message}
+      />
+    );
+
+  return null;
+};
+
+export const FormProviderWrapper: FC<PropsWithChildren<IFormProviderWrapperProps>> = ({ children, ...props }) => {
+  const { formId } = props;
 
   return (
-    <FormPersisterProvider formId={formId} skipCache={true}>
+    <FormPersisterProvider formId={formId}>
       <FormPersisterStateConsumer>
-        {formStore => {
-          if (formStore.loading)
-            return (<Skeleton loading active />);
-
-          if (formStore.loaded) {
-            const { flatStructure, settings } = formStore.formProps;
-            return (
-              <FormDesignerProvider
-                flatMarkup={flatStructure}
-                formSettings={settings}
-                readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
-              >
-                <FormProviderWrapperInner form={form}>
-                  {children}
-                </FormProviderWrapperInner>
-              </FormDesignerProvider>
-            );
-          }
-
-          if (formStore.loadError)
-            return (
-              <Result
-                status={formStore.loadError.code as ResultStatusType}
-                title={formStore.loadError.code}
-                subTitle={formStore.loadError.message}
-              />);
-
-          return null;
-        }}
+        {children}
       </FormPersisterStateConsumer>
     </FormPersisterProvider>
   );

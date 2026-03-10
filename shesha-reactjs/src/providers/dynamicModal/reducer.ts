@@ -23,7 +23,7 @@ export default handleActions<IDynamicModalStateContext, any>(
 
     [DynamicModalActionEnums.CreateModal]: (
       state: IDynamicModalStateContext,
-      action: ReduxActions.Action<ICreateModalPayload>
+      action: ReduxActions.Action<ICreateModalPayload>,
     ) => {
       const { payload } = action;
       const { instances } = state;
@@ -55,5 +55,5 @@ export default handleActions<IDynamicModalStateContext, any>(
     },
   },
 
-  DYNAMIC_MODAL_CONTEXT_INITIAL_STATE
+  DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
 );

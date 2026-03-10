@@ -8,7 +8,7 @@ import { GlobalState } from './globalState';
 const GlobalStateProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, forceUpdate] = React.useState({});
 
-  //ToDo: AS - need to review and implement a mechanism for subscribing to changes
+  // ToDo: AS - need to review and implement a mechanism for subscribing to changes
 
   const [globalState] = useState<IGlobalState>(() => {
     // init new instance of global state
@@ -18,13 +18,13 @@ const GlobalStateProvider: FC<PropsWithChildren> = ({ children }) => {
   });
 
   return (
-    <GlobalStateContext.Provider value={{globalState, state}}>
+    <GlobalStateContext.Provider value={{ globalState, state }}>
       {children}
     </GlobalStateContext.Provider>
   );
 };
 
-function useGlobalState() {
+function useGlobalState(): IGlobalState {
   const context = useContext(GlobalStateContext);
 
   if (context === undefined) {

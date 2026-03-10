@@ -1,8 +1,8 @@
 import { findLastIndex } from 'lodash';
 import { nanoid } from '@/utils/uuid';
-import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IWizardSequence, IWizardStepProps } from './models';
 import { IStyleType } from '@/index';
+import { CSSProperties } from 'react';
 
 export const EXPOSED_VARIABLES = [
   { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
@@ -25,8 +25,9 @@ export const EXPOSED_VARIABLES = [
   { id: nanoid(), name: 'moment', description: 'The moment.js object', type: 'object' },
 ];
 
+type StepDescriptionGetter = (description: string, index: number) => string;
 export const getStepDescritpion =
-  (show: boolean, sequence: IWizardSequence, currentIndex: number) => (description: string, index: number) => {
+  (show: boolean, sequence: IWizardSequence, currentIndex: number): StepDescriptionGetter => (description: string, index: number): string => {
     if (show) {
       switch (true) {
         case index === currentIndex:
@@ -46,8 +47,9 @@ export const getStepDescritpion =
     return description;
   };
 
+type ButtonStyleGetter = (type: 'back' | 'cancel' | 'next') => CSSProperties;
 export const getWizardButtonStyle =
-  (buttonsLayout: 'left' | 'right' | 'spaceBetween') => (type: 'back' | 'cancel' | 'next') => {
+  (buttonsLayout: 'left' | 'right' | 'spaceBetween'): ButtonStyleGetter => (type: 'back' | 'cancel' | 'next') => {
     const left = { marginLeft: '8px' };
     const right = { marginRight: '8px' };
 
@@ -83,7 +85,7 @@ export const getWizardButtonStyle =
   };
 
 
-export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next' | 'reset') => {
+export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next' | 'reset'): number => {
   switch (type) {
     case 'reset':
       return 0;
@@ -99,18 +101,7 @@ export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 
   }
 };
 
-export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
-  if (!args)
-    return true;
-
-  const fields = Object.getOwnPropertyNames(args)
-    .filter((key) => !['handleSuccess', 'handleFail'].includes(key));
-  return fields?.length > 0
-    ? fields.some((key) => !args[key])
-    : true;
-};
-
-export const onAddNewItem = (items: IWizardStepProps[]) => {
+export const onAddNewItem = (items: IWizardStepProps[]): IWizardStepProps => {
   const count = (items ?? []).length;
   const id = nanoid();
   const buttonProps: IWizardStepProps = {
@@ -141,10 +132,10 @@ export const defaultStyles = (): IStyleType => {
         all: {
           width: '1px',
           style: 'none',
-          color: '#d9d9d9'
-        }
+          color: '#d9d9d9',
+        },
       },
-      radius: { all: 8 }
+      radius: { all: 8 },
     },
     stylingBox: "{\"marginBottom\":\"5\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingLeft\":\"16\",\"paddingRight\":\"16\"}",
   };

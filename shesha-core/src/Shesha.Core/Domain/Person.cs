@@ -1,4 +1,5 @@
 ﻿using Abp.Auditing;
+using Abp.Domain.Entities;
 using Abp.Localization;
 using Abp.Timing;
 using JetBrains.Annotations;
@@ -23,58 +24,58 @@ namespace Shesha.Domain
         [StoredFile(IsVersionControlled = true)]
         public virtual StoredFile Photo { get; set; }
 
-        [StringLength(13)]
+        [MaxLength(13)]
         [Display(Name = "Identity Number")]
         public virtual string? IdentityNumber { get; set; }
 
         public virtual RefListPersonTitle? Title { get; set; }
 
-        [StringLength(50)]
+        [MaxLength(50)]
         [Display(Name = "First Name")]
         [Audited]
         public virtual string? FirstName { get; set; }
 
-        [StringLength(50)]
+        [MaxLength(50)]
         [Display(Name = "Last Name")]
         [Audited]
         public virtual string? LastName { get; set; }
 
 		[Display(Name = "Middle Name")]
-		[StringLength(50)]
+		[MaxLength(50)]
 		[Audited]
 		public virtual string? MiddleName { get; set; }
 
 		/// <summary>
 		/// Initials override. If empty, the first letter of FirstName is taken.
 		/// </summary>
-		[StringLength(10), Display(Name = "Initials")]
+		[MaxLength(10), Display(Name = "Initials")]
         public virtual string? Initials { get; set; }
 
         /// <summary>
         /// Custom short name (overrides calculated short name)
         /// </summary>
-        [StringLength(60)]
+        [MaxLength(60)]
         [Display(Name = "Custom Short Name")]
         public virtual string? CustomShortName { get; set; }
 
-        [StringLength(20)]
+        [MaxLength(20)]
         public virtual string? HomeNumber { get; set; }
 
-        [StringLength(20)]
+        [MaxLength(20)]
         [Display(Name = "Mobile Number")]
         [Audited]
         public virtual string? MobileNumber1 { get; set; }
 
-        [StringLength(20)]
+        [MaxLength(20)]
         [Display(Name = "Alternate Mobile Number")]
         public virtual string? MobileNumber2 { get; set; }
 
-        [StringLength(100), EmailAddress]
+        [MaxLength(100), EmailAddress]
         [Display(Name = "Email Address")]
         [Audited]
         public virtual string? EmailAddress1 { get; set; }
 
-        [StringLength(100), EmailAddress]
+        [MaxLength(100), EmailAddress]
         [Display(Name = "Alternative Email Address")]
         public virtual string? EmailAddress2 { get; set; }
 

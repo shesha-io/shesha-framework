@@ -1,0 +1,214 @@
+import { FormFullName } from "@/interfaces";
+import { DataNode } from "antd/lib/tree";
+import { PropsWithChildren, ReactNode } from "react";
+import { isDefined } from "../utils/nullables";
+import { ModalFooterButtons } from "@/providers/dynamicModal/models";
+import { MenuItemType } from "./menu-utils";
+import { IConfigurationStudio } from "./cs/interfaces";
+
+export type ForceRenderFunc = () => void;
+
+export enum TreeNodeType {
+  Module = 1,
+  ConfigurationItem = 2,
+  Folder = 3,
+  Special = 4,
+}
+
+export type DocumentFlags = {
+  isCodeBased: boolean;
+  isCodegenPending: boolean;
+  isUpdated: boolean;
+  isUpdatedByMe: boolean;
+  isExposed: boolean;
+};
+
+export type TreeNode = DataNode & {
+  id: string;
+  parentId?: string | undefined;
+  moduleId: string;
+  name: string;
+  label: string;
+  description?: string | undefined;
+  nodeType: TreeNodeType;
+};
+
+export type ConfigItemTreeNode = TreeNode & {
+  itemType: string;
+  discriminator: string;
+  flags: DocumentFlags;
+  lastModifierUser?: string | undefined;
+  lastModificationTime?: string | undefined;
+  moduleName: string;
+  baseModule?: string | undefined;
+};
+
+export type NodeWithChilds = {
+  children: TreeNode[];
+};
+
+export type ModuleTreeNode = TreeNode & NodeWithChilds & {
+};
+
+export type FolderTreeNode = TreeNode & NodeWithChilds & {
+};
+
+export type SpecialTreeNode = TreeNode & {
+  itemType: string;
+};
+
+
+export type FlatTreeNode = DocumentFlags & {
+  id: string;
+  parentId: string | null;
+  moduleId: string;
+  name: string;
+  label: string;
+  nodeType: number;
+  itemType?: string;
+  discriminator?: string;
+  description: string | null | undefined;
+  lastModifierUser: string | null;
+  lastModificationTime: string | null;
+  baseModule: string | null;
+};
+
+export const isTreeNode = (node?: DataNode): node is TreeNode => {
+  const casted = node as TreeNode | undefined;
+  return isDefined(casted?.nodeType);
+};
+
+export const isSpecialTreeNode = (node?: DataNode): node is SpecialTreeNode => {
+  return isTreeNode(node) && node.nodeType === TreeNodeType.Special;
+};
+
+export const isConfigItemTreeNode = (node?: DataNode): node is ConfigItemTreeNode => {
+  return isTreeNode(node) && node.nodeType === TreeNodeType.ConfigurationItem;
+};
+
+export const isFolderTreeNode = (node?: DataNode): node is FolderTreeNode => {
+  return isTreeNode(node) && node.nodeType === TreeNodeType.Folder;
+};
+
+export const isModuleTreeNode = (node?: DataNode): node is ModuleTreeNode => {
+  return isTreeNode(node) && node.nodeType === TreeNodeType.Module;
+};
+
+export const isNodeWithChildren = (node?: DataNode): node is ModuleTreeNode | FolderTreeNode => {
+  return isModuleTreeNode(node) || isFolderTreeNode(node);
+};
+
+export const TREE_NODE_TYPES = {
+  Module: 1,
+  ConfigurationItem: 2,
+  Folder: 3,
+  Special: 4,
+};
+
+export const ITEM_TYPES = {
+  FORM: 'form',
+  ROLE: 'role',
+  ENTITY: 'entity',
+  PERMISSION: 'permission-definition',
+  REFLIST: 'reference-list',
+  SETTING: 'setting-configuration',
+  NOTIFICATION: 'notification-type',
+  NOTIFICATION_CHANNEL: 'notification-channel',
+};
+
+export type ItemTypeBackendDefinition = {
+  itemType: string;
+  discriminator: string;
+  entityClassName: string;
+  friendlyName: string;
+  createFormId: FormFullName | null;
+  renameFormId: FormFullName | null;
+};
+
+export type ItemTypeDefinition = ItemTypeBackendDefinition & {
+  // front-end specific
+  editor: DocumentDefinition | undefined;
+  icon: ReactNode | undefined;
+};
+
+export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
+
+export type DocumentType = 'ci' | 'custom';
+
+export type StoredDocumentInfo = {
+  itemId: string;
+  label: string;
+  type: DocumentType;
+};
+
+export type DocumentBase = StoredDocumentInfo;
+
+export type CIDocument = DocumentBase & {
+  itemType: string;
+  discriminator: string;
+  definition: DocumentDefinition;
+  loadingState: LoadingStatus;
+  isDataModified: boolean;
+  isHistoryVisible: boolean;
+  flags: DocumentFlags;
+  moduleId: string;
+  moduleName: string;
+};
+
+export type CustomDocument = DocumentBase & {
+
+};
+
+export const isCIDocument = (doc?: StoredDocumentInfo): doc is CIDocument => {
+  return isDefined(doc) && doc.type === 'ci';
+};
+
+export const isCustomDocument = (doc?: StoredDocumentInfo): doc is CustomDocument => {
+  return isDefined(doc) && doc.type === 'custom';
+};
+
+export type ItemEditorProps<TDoc extends IDocumentInstance = IDocumentInstance> = {
+  doc: TDoc;
+};
+export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEditorProps<TDoc>) => ReactNode;
+
+export type ProviderRendererProps<TDoc extends IDocumentInstance = IDocumentInstance> = PropsWithChildren<ItemEditorProps<TDoc>>;
+export type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;
+
+export type DocumentLoader = () => Promise<void>;
+export type DocumentSaver = () => Promise<void>;
+
+export interface IDocumentInstance extends CIDocument {
+  toolbarForceRender?: ForceRenderFunc;
+  setLoader: (loader: DocumentLoader | undefined) => void;
+  reloadDocumentAsync: () => Promise<void>;
+  setSaver: (saver: DocumentSaver | undefined) => void;
+  saveAsync: () => Promise<void>;
+};
+
+export type DocumentInstanceFactoryArgs = {
+  itemId: string;
+  discriminator: string;
+  label: string;
+  moduleId: string;
+  moduleName: string;
+  flags?: DocumentFlags;
+};
+export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
+export type ContextMenuBuilder = (menuItems: MenuItemType[], configurationStudio: IConfigurationStudio) => MenuItemType[];
+
+export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
+  documentType: string;
+  Editor: ItemEditorRenderer<TDoc>;
+  Provider?: ProviderRenderer<TDoc> | undefined;
+  Toolbar?: ItemEditorRenderer<TDoc> | undefined;
+  documentInstanceFactory: DocumentInstanceFactory;
+  contextMenuBuilder?: ContextMenuBuilder;
+  createModalFooterButtons?: ModalFooterButtons;
+  icon?: ReactNode | undefined;
+};
+
+export type DocumentDefinitions = Map<string, DocumentDefinition>;
+
+export type SaveDocumentResponse = 'save' | 'dont-save' | 'cancel';
+export type CloseDocumentResponse = 'closed' | 'cancelled';

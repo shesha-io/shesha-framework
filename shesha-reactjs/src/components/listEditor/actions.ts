@@ -15,5 +15,5 @@ export interface ISwitchModeActionPayload {
 
 export const switchModeAction = createAction<ISwitchModeActionPayload, ISwitchModeActionPayload>(
   ListActionEnums.SwitchMode,
-  p => p
+  (p) => p,
 );

@@ -22,7 +22,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
   const executionContext = useAvailableConstantsData();
-  
+
   const { styles } = useStyles();
 
   const currentUrl = normalizeUrl(router?.fullPath);
@@ -31,11 +31,11 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const initialSelection = useRef<string>(undefined);
 
-  const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => {
+  const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration): void => {
     setSelectedKey(itemId);
     executeAction({
       actionConfiguration: actionConfiguration,
-      argumentsEvaluationContext: executionContext
+      argumentsEvaluationContext: executionContext,
     });
   };
 
@@ -64,13 +64,13 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
             }
           }
         },
-      })
+      }),
     );
-  }, [items, {...executionContext}]); // use spread to get the values of the ObservableProxy fields
+  }, [items, { ...executionContext }]); // use spread to get the values of the ObservableProxy fields
 
   if (menuItems.length === 0) return null;
 
-  const onOpenChange = (openKeys: React.Key[]) => {
+  const onOpenChange = (openKeys: React.Key[]): void => {
     setOpenedKeys(openKeys);
   };
 

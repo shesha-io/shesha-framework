@@ -19,10 +19,10 @@ namespace Shesha.Services.VersionedFields
     {
         private readonly IRepository<VersionedField, Guid> _fieldRepository;
         private readonly IRepository<VersionedFieldVersion, Guid> _fieldVersionRepository;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly ICurrentUnitOfWorkProvider _currentUowProvider;
 
-        public VersionedFieldManager(IRepository<VersionedField, Guid> fieldRepository, IRepository<VersionedFieldVersion, Guid> fieldVersionRepository, IEntityConfigurationStore entityConfigurationStore, ICurrentUnitOfWorkProvider currentUowProvider)
+        public VersionedFieldManager(IRepository<VersionedField, Guid> fieldRepository, IRepository<VersionedFieldVersion, Guid> fieldVersionRepository, IEntityTypeConfigurationStore entityConfigurationStore, ICurrentUnitOfWorkProvider currentUowProvider)
         {
             _fieldRepository = fieldRepository;
             _fieldVersionRepository = fieldVersionRepository;

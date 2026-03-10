@@ -4,6 +4,9 @@ using Abp.EntityHistory;
 using Abp.Runtime.Session;
 using Abp.Transactions.Extensions;
 using NHibernate;
+using Shesha.ConfigurationItems;
+using Shesha.Domain;
+using Shesha.NHibernate.Session;
 using System;
 using System.Data.Common;
 using System.Diagnostics;
@@ -14,7 +17,7 @@ namespace Shesha.NHibernate.UoW
     /// <summary>
     /// Implements Unit of work for NHibernate.
     /// </summary>
-    public class NhUnitOfWork : UnitOfWorkBase, ITransientDependency
+    public class NhUnitOfWork : UnitOfWorkBase, IUnitOfWorkHasAfterTransactionHandler, ITransientDependency
     {
         /// <summary>
         /// NHibernate session factory
@@ -67,6 +70,8 @@ namespace Shesha.NHibernate.UoW
         /// </summary>
         public EntityHistoryHelperBase EntityHistoryHelper { get; set; } = default!;
 
+        private readonly IConfigurationFrameworkRuntime _cfRuntime;
+
         /// <summary>
         /// Creates a new instance of <see cref="NhUnitOfWork"/>.
         /// </summary>
@@ -75,13 +80,15 @@ namespace Shesha.NHibernate.UoW
             ISessionFactory sessionFactory,
             IConnectionStringResolver connectionStringResolver,
             IUnitOfWorkDefaultOptions defaultOptions,
-            IUnitOfWorkFilterExecuter filterExecuter)
+            IUnitOfWorkFilterExecuter filterExecuter,
+            IConfigurationFrameworkRuntime cfRuntime)
             : base(
                   connectionStringResolver,
                   defaultOptions,
                   filterExecuter)
         {
             _sessionFactory = sessionFactory;
+            _cfRuntime = cfRuntime;
         }
 
         /// <summary>
@@ -101,6 +108,11 @@ namespace Shesha.NHibernate.UoW
                 _transaction = Options.IsolationLevel.HasValue
                     ? session.BeginTransaction(Options.IsolationLevel.Value.ToSystemDataIsolationLevel())
                     : session.BeginTransaction();
+            }
+
+            if (!string.IsNullOrWhiteSpace(_cfRuntime.CurrentModuleOrNull)) 
+            {
+                //session.CreateSQLQuery("DBCC traceon (1222, -1)").ExecuteUpdate();
             }
 
             return session;
@@ -249,6 +261,15 @@ namespace Shesha.NHibernate.UoW
                 _session.Dispose();
                 _session = null;
             }            
+        }
+
+        /// <summary>
+        /// Adds action to be executed after transaction is committed
+        /// </summary>
+        /// <param name="action"></param>
+        public void AddAfterTransactionAction(Action action)
+        {
+            GetSession().DoAfterTransaction(action);
         }
     }
 }

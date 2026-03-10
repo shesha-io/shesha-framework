@@ -3,6 +3,9 @@ import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { TableSelectionMode } from '../dataTable/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/index';
 
 export interface IColumnWidth {
   id: React.Key;
@@ -26,6 +29,8 @@ export interface OnRowsReorderedArgs {
   getOld: () => object[];
   getNew: () => object[];
   applyOrder: (orderedItems: object[]) => void;
+  oldIndex?: number;
+  newIndex?: number;
 }
 
 export interface ITableRowDragProps {
@@ -79,14 +84,19 @@ export interface IReactTableProps extends ITableRowDragProps {
    */
   useMultiSelect?: boolean;
 
-    /**
-     * Whether the table's headers should be frozen and you scroll under them
-     */
+  /**
+   * Selection mode for the table
+   */
+  selectionMode?: TableSelectionMode;
+
+  /**
+   * Whether the table's headers should be frozen and you scroll under them
+   */
   freezeHeaders?: boolean;
 
-/**
- * Whether the table's columns should be frozen and you scroll under them on the left or right
- */
+  /**
+   * Whether the table's columns should be frozen and you scroll under them on the left or right
+   */
   anchored?: IAnchoredDirection;
 
   /**
@@ -121,7 +131,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   onFetchData?: () => void;
   /**
    * Required if manualPagination is set to true
-   * If manualPagination is true, then this value used to determine the amount of pages available. 
+   * If manualPagination is true, then this value used to determine the amount of pages available.
    * This amount is then used to materialize the pageOptions and also compute the canNextPage values on the table instance.
    * Set to -1 if you don't know or don't want to present the number of pages available. canNextPage will return false if page data length is less than pageSize, otherwise true.
    */
@@ -160,6 +170,16 @@ export interface IReactTableProps extends ITableRowDragProps {
   onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
 
   /**
+   * A callback for clicking the rows
+   */
+  onRowClick?: (rowIndex: number, row: any) => void;
+
+  /**
+   * A callback for hovering over the rows
+   */
+  onRowHover?: (rowIndex: number, row: any) => void;
+
+  /**
    * A callback for when ids are selected. Required if useMultiSelect is true
    */
   onSelectedIdsChanged?: (ids: string[]) => void;
@@ -168,6 +188,51 @@ export interface IReactTableProps extends ITableRowDragProps {
    * A callback for when multiple rows are selected with checkbox. Applicable if useMultiSelect is true
    */
   onMultiRowSelect?: (rows: Array<Row> | Row) => void;
+
+  /**
+   * Configurable action for row click event
+   */
+  onRowClickAction?: IConfigurableActionConfiguration;
+
+  /**
+   * Configurable action for row hover event
+   */
+  onRowHoverAction?: IConfigurableActionConfiguration;
+
+  /**
+   * Configurable action for row select event (fires only when row is selected, not deselected)
+   */
+  onRowSelectAction?: IConfigurableActionConfiguration;
+
+  /**
+   * Configurable action for selection change event (fires on both select and deselect)
+   */
+  onSelectionChangeAction?: IConfigurableActionConfiguration;
+
+  // Cell-specific styling
+  /** @deprecated Use bodyFontColor instead. Cell text color duplicates body font color. */
+  cellTextColor?: string;
+  /** @deprecated Use rowBackgroundColor instead. Cell background color duplicates row background color. */
+  cellBackgroundColor?: string;
+  cellBorderColor?: string;
+  /** @deprecated Use rowStylingBox instead. This property is migrated to rowStylingBox in migration v19 */
+  cellPadding?: string;
+  cellBorder?: IBorderValue;
+
+  // Footer styling
+  footerBackgroundColor?: string;
+  footerTextColor?: string;
+  footerBorder?: IBorderValue;
+
+  // Additional borders and shadows
+  headerBorder?: IBorderValue;
+  headerShadow?: IShadowValue;
+  rowShadow?: IShadowValue;
+
+  // Layout features
+  cellBorders?: boolean;
+  rowDividers?: boolean;
+  responsiveMode?: 'scroll' | 'stack' | 'collapse';
 
   /**
    * Selected row index
@@ -208,6 +273,61 @@ export interface IReactTableProps extends ITableRowDragProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  showExpandedView?: boolean;
+
+  // Header styling
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
+  headerBackgroundColor?: string;
+
+  // Text alignment
+  headerTextAlign?: string; // Alignment for header cells
+  bodyTextAlign?: string; // Alignment for body cells
+
+  // Deprecated - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
+  headerTextColor?: string;
+  /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
+  textAlign?: string;
+
+  // Table body styling
+  rowBackgroundColor?: string;
+  rowAlternateBackgroundColor?: string;
+  rowHoverBackgroundColor?: string;
+  rowSelectedBackgroundColor?: string;
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string; // Deprecated: use rowBorderStyle for full border control
+  rowBorderStyle?: IBorderValue; // Full border configuration with per-side control
+
+  // Body font styling
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: number & {} | string;
+  bodyFontColor?: string;
+
+  // Action column icon styling
+  actionIconSize?: string | number;
+  actionIconColor?: string;
+
+  // Overall table styling
+  borderRadius?: string;
+  border?: IBorderValue;
+  backgroundColor?: string;
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
+  striped?: boolean;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

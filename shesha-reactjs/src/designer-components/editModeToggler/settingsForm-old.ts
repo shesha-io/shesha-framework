@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = (data: any) =>
-  new DesignerToolbarSettings(data)
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+  return fbf()
     .addCollapsiblePanel({
       id: nanoid(),
       parentId: 'root',
@@ -15,7 +15,7 @@ export const getSettings = (data: any) =>
       content: {
         id: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
         components: [
-          ...new DesignerToolbarSettings()
+          ...fbf()
             .addContextPropertyAutocomplete({
               id: nanoid(),
               propertyName: 'propertyName',
@@ -47,7 +47,7 @@ export const getSettings = (data: any) =>
       content: {
         id: 'fccb6b17-656d-43c0-8144-0b91c454da1d',
         components: [
-          ...new DesignerToolbarSettings()
+          ...fbf()
             .addPermissionAutocomplete({
               id: nanoid(),
               propertyName: 'permissions',
@@ -62,3 +62,4 @@ export const getSettings = (data: any) =>
       },
     })
     .toJson();
+};

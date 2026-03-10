@@ -12,7 +12,6 @@ export { type IOverlayLoaderPayload } from './overlayLoaderPayload';
 export { type ICancelIncidentPayload } from './cancelIncidentPayload';
 export { type IDesktopNotificationAction } from './desktopNotificationAction';
 export { type ILoginForm } from './loginForm';
-export { type IRoute } from './route';
 export { type ICoords } from './coords';
 export { type IUserInfo } from './userInfo';
 export { type ILegend } from './legend';
@@ -23,31 +22,31 @@ export { type IFlagsSetters } from './flagsSetters';
 export { type IPasswordValidation } from './passwordValidation';
 export { type IAnyObject } from './anyObject';
 export { type IToolbarItem } from './toolbar';
-export { DesignerToolbarSettings } from './toolbarSettings';
 export { type IShaDataTableProps } from '../components/dataTable/interfaces';
 export { type IValuable } from './valuable';
 export { type IChangeable } from './changeable';
 export { type IFormItem } from './formItem';
 export { type INamed } from './named';
 export { type IStylable } from './stylable';
-export { type ITableColumn, type IDataTableInstance } from '../providers/dataTable/interfaces';
+export { type ITableColumn, type IDataTableInstance, type IStoredFilter, type FilterExpression } from '../providers/dataTable/interfaces';
 export type { PageWithLayout } from './pageWithLayout';
 export type { InsertMode } from './insertMode';
 export type { IColor, IHsl, IHsv, IRgb } from './color';
-export type { 
-    IApiEndpoint, 
-    IObjectMetadata, 
-    IModelMetadata, 
-    IEntityMetadata, 
-    IPropertyMetadata, 
-    IHasEntityType,
-    TypeDefinition,
-    SourceFile,
-    ITypeDefinitionLoadingContext,
+export type {
+  IApiEndpoint,
+  IObjectMetadata,
+  IModelMetadata,
+  IEntityMetadata,
+  IPropertyMetadata,
+  IHasEntityType,
+  TypeDefinition,
+  SourceFile,
+  ITypeDefinitionLoadingContext,
+  IEntityReferencePropertyMetadata,
 } from './metadata';
-export { isPropertiesArray, isEntityReferencePropertyMetadata } from './metadata';
-export { isEntityMetadata } from './metadata';
-export type { IAjaxResponse, IAjaxResponseBase } from './ajaxResponse';
+export { isEntityMetadata, isPropertiesArray, isEntityReferencePropertyMetadata } from './metadata';
+export { type NestedPropertyMetadatAccessor } from '../providers/metadataDispatcher/contexts';
+export { type IAjaxResponse, type IAjaxResponseBase, type IAjaxErrorResponse, type IAjaxSuccessResponse, isAjaxSuccessResponse, isAjaxErrorResponse, extractAjaxResponse } from './ajaxResponse';
 export type { ICommonContainerProps, IContainerComponentProps } from '../designer-components/container/interfaces';
 export { DataTypes, StringFormats } from './dataTypes';
 export { type IReferenceListIdentifier } from './referenceList';
@@ -55,9 +54,9 @@ export { type IReferenceListIdentifier } from './referenceList';
 export * from './formDesigner';
 export * from './shesha';
 export * from '@/providers/form/models';
-export { type IStoredFile } from '@/providers/storedFile/contexts';
 export { type IShaFormInstance } from '@/providers/form/store/interfaces';
-export { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 export * from './errorInfo';
 export * from './publicApis';
 export * from './configurableItems';
+export { type ISettingsComponent, type ISettingsComponentGroup } from '@/designer-components/settingsInput/settingsInput';
+export * from './gql';

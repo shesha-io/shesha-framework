@@ -1,4 +1,6 @@
 ﻿using NetTopologySuite.Geometries;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Reflection;
@@ -69,7 +71,7 @@ namespace Shesha.Extensions
         /// <summary>
         /// Indicates is the specified type a type of Json entity
         /// </summary>
-        public static bool IsJsonEntityType(this Type type)
+        public static bool IsJsonEntityType(this Type? type)
         {
             return MappingHelper.IsJsonEntity(type);
         }
@@ -119,5 +121,23 @@ namespace Shesha.Extensions
         {
             return type.GetRequiredProperty(SheshaDatabaseConsts.IdColumn).PropertyType;
         }
+
+        public static T? GetFullCopyViaJson<T>(this object? obj)
+        {
+            if (obj == null) return default(T);
+
+            var serialized = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+
+            return JsonConvert.DeserializeObject<T>(serialized);
+        }
+
+        public static T? GetFullCopyViaJson<T>(this T? obj)
+        {
+            return GetFullCopyViaJson<T>(obj as object);
+        }
+
     }
 }

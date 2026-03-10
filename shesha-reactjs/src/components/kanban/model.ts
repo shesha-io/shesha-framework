@@ -1,16 +1,16 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IButtonGroupItem, IButtonItem, IStyleType } from '@/providers';
 import { CSSProperties } from 'styled-components';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
-export interface IRefListGroupItemBase extends IButtonItem{
+export interface IRefListGroupItemBase extends IButtonItem {
   referenceList?: any;
   item?: string;
 }
 
-export interface IRefListItemFormModel extends IRefListGroupItemBase {
-}
+export type IRefListItemFormModel = IRefListGroupItemBase;
 
 export interface IRefListItemGroup extends IRefListGroupItemBase {
   childItems?: RefListGroupItemProps[];
@@ -26,7 +26,7 @@ export interface IKanbanProps extends IConfigurableFormComponent, IStyleType {
   fontColor?: string;
   showIcons?: boolean;
   fontSize?: number;
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   allowNewRecord?: boolean;
   readonly?: boolean;
   collapsible?: boolean;

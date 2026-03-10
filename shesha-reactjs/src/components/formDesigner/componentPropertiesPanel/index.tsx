@@ -1,23 +1,21 @@
 import React, { FC } from 'react';
 import { Empty } from 'antd';
-import { useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 
-export interface IProps { }
-
-const ComponentPropertiesPanelInner: FC<IProps> = () => {
-  const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
+const ComponentPropertiesPanelInner: FC = () => {
+  const { settingsPanelRef } = useFormDesigner();
+  const readOnly = useFormDesignerReadOnly();
+  const selectedComponentId = useFormDesignerSelectedComponentId();
 
   return (
     <>
       {!selectedComponentId && (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'
-          }
+          description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
         />
       )}
-      <div style={{paddingBottom: '50px'}} ref={settingsPanelRef}></div>
+      <div ref={settingsPanelRef}></div>
     </>
   );
 };

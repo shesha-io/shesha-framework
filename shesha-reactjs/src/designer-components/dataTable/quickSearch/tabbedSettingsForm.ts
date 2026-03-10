@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings } from "@/index";
+import { SettingsFormMarkupFactory } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 
-export const getSettings = (data: any) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const commonTabId = nanoid();
   const searchableTabsId = nanoid();
   const appearanceId = nanoid();
@@ -11,7 +11,7 @@ export const getSettings = (data: any) => {
   const dimensionsStylePnlId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -25,23 +25,37 @@ export const getSettings = (data: any) => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
+            components: [...fbf()
+              .addSettingsInputRow({
                 id: nanoid(),
-                inputType: 'switch',
-                propertyName: 'block',
-                parentId: 'root',
-                label: 'Block',
-                defaultValue: false,
-              }).toJson()
-            ]
+                parentId: commonTabId,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'hidden',
+                    label: 'Hide',
+                    parentId: 'root',
+                    jsSetting: true,
+                  },
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'block',
+                    parentId: 'root',
+                    label: 'Block',
+                    jsSetting: true,
+                  },
+                ],
+              }).toJson(),
+            ],
           },
           {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -53,10 +67,10 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
-                  },
+                    _value: "",
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
@@ -67,7 +81,7 @@ export const getSettings = (data: any) => {
                         collapsible: 'header',
                         content: {
                           id: dimensionsStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
@@ -81,7 +95,6 @@ export const getSettings = (data: any) => {
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                  defaultValue: '360px'
                                 },
                                 {
                                   type: 'textField',
@@ -91,7 +104,6 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.minWidth",
                                   icon: "minWidthIcon",
-                                  defaultValue: '0px',
                                 },
                                 {
                                   type: 'textField',
@@ -101,44 +113,44 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
-                                  defaultValue: '100%',
-                                }
-                              ]
+                                },
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
-                  ]
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
             title: 'Security',
             id: securityId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',
                 label: 'Permissions',
+                jsSetting: true,
                 size: 'small',
-                parentId: securityId
+                parentId: securityId,
               })
-              .toJson()
-            ]
-          }
-        ]
+              .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

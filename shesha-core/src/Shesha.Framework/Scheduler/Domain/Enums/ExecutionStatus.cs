@@ -9,5 +9,6 @@ namespace Shesha.Scheduler.Domain.Enums
         Completed = 2,
         Failed = 3,
         Enqueued = 4,
+        Cancelled = 5,
     }
 }

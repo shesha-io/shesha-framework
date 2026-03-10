@@ -28,8 +28,7 @@ const ToolbarComponent: IToolboxComponent<ToolbarButtonGroupProps> = {
       .add<IToolbarProps>(1, migrateV0toV1)
       .add<IToolbarProps>(2, migrateV1toV2)
       .add<IToolbarProps>(3, (prev) => migratePropertyName(prev))
-      .add<ToolbarButtonGroupProps>(4, (prev) => migrateToButtonGroup(prev))
-  ,
+      .add<ToolbarButtonGroupProps>(4, (prev) => migrateToButtonGroup(prev)),
   settingsFormFactory: () => {
     throw new Error('Toolbar component was removed');
   },

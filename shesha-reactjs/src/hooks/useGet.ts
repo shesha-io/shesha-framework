@@ -16,15 +16,15 @@ export interface GetState<TData, TError> {
   loading: boolean;
 }
 interface IQueryParams {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export interface UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams> {
+export interface UseGetProps<TData, TQueryParams, TPathParams> {
   /**
    * The path at which to request data,
    * typically composed by parent Gets or the RestfulProvider.
    */
-  path: string | ((pathParams: TPathParams) => string);
+  path: string | ((pathParams?: TPathParams) => string);
   /**
    * Path Parameters
    */
@@ -37,7 +37,7 @@ export interface UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams> {
    * A function to resolve data return from the backend, most typically
    * used when the backend response needs to be adapted in some way.
    */
-  resolve?: (data: any) => TData;
+  resolve?: (data: unknown) => TData;
   /**
    * Should we fetch data at a later stage?
    */
@@ -52,19 +52,19 @@ export interface UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams> {
   headers?: IHttpHeadersDictionary;
 }
 
-type RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams> = Partial<
-  Omit<UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>, 'lazy'>
+type RefetchOptions<TData, TQueryParams, TPathParams> = Partial<
+  Omit<UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>, 'lazy'>
 >;
 
-export interface UseGetReturn<TData, TError, TQueryParams = {}, TPathParams = unknown> extends GetState<TData, TError> {
+export interface UseGetReturn<TData, TError, TQueryParams = IQueryParams, TPathParams = unknown> extends GetState<TData, TError> {
   /**
    * Refetch
    */
-  refetch: (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams>) => Promise<TData | null>;
+  refetch: (options?: RefetchOptions<TData, /* TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }) => Promise<TData | null>;
 }
 
-export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
-  props: UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>
+export const useGetInternal = <TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
+  props: UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams> => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
@@ -76,30 +76,32 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
   });
 
   const refetch = useDeepCompareCallback(
-    (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams>): Promise<TData | null> => {
+    (options?: RefetchOptions<TData, /* TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }): Promise<TData | null> => {
       setState((prev) => ({ ...prev, loading: true }));
 
       const finalOptions = { ...props, ...options, httpHeaders: httpHeaders };
 
-      const path =
-        typeof finalOptions.path === 'string' ? finalOptions.path : finalOptions.path(finalOptions.pathParams);
+      const path = typeof finalOptions.path === 'string'
+        ? finalOptions.path
+        : finalOptions.path(finalOptions.pathParams);
 
       const finalHeaders = { ...httpHeaders, ...(options?.headers ?? {}) };
 
       return RestfulShesha.get<TData, TError, TQueryParams, TPathParams>(path, finalOptions.queryParams, {
-        base: props?.base ?? backendUrl,
+        base: props.base ?? backendUrl,
         headers: finalHeaders,
-      })
+      }, options?.signal)
         .then((data) => {
           setState((prev) => ({ ...prev, loading: false, error: null, data: data }));
           return data;
         })
         .catch((error) => {
-          setState((prev) => ({ ...prev, loading: false, error: error, data: null }));
+          // TODO: convert error
+          setState((prev) => ({ ...prev, loading: false, error: error as GetDataError<TError>, data: null }));
           throw error;
         });
     },
-    [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams, backendUrl, httpHeaders]
+    [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams, backendUrl, httpHeaders],
   );
 
   useDeepCompareEffect(() => {
@@ -112,20 +114,21 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
   };
 };
 
-export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
-  path: UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>['path'],
-  props: Omit<UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>, 'path'>
+export function useGet<TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
+  path: UseGetProps<TData, TQueryParams, TPathParams>['path'],
+  props: Omit<UseGetProps<TData, TQueryParams, TPathParams>, 'path'>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare
-export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
-  props: UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>
+export function useGet<TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
+  props: UseGetProps<TData, TQueryParams, TPathParams>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare
-export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>() {
-  const props: UseGetProps<TData, TQueryParams, TPathParams> =
-    typeof arguments[0] === 'object' ? arguments[0] : { ...arguments[1], path: arguments[0] };
+export function useGet<TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(): UseGetReturn<TData, TError, TQueryParams, TPathParams> {
+  const props: UseGetProps<TData, TQueryParams, TPathParams> = typeof arguments[0] === 'object'
+    ? arguments[0] as UseGetProps<TData, TQueryParams, TPathParams>
+    : { ...arguments[1], path: arguments[0] as string | ((pathParams: TPathParams) => string) } as UseGetProps<TData, TQueryParams, TPathParams>;
   const { path } = props;
 
   return useGetInternal<TData, TError, TQueryParams, TPathParams>({ ...props, path });

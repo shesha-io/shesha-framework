@@ -59,10 +59,10 @@ export const registerFileSaverAction: MetadataBuilderAction = (builder, name = "
 export const registerMomentAction: MetadataBuilderAction = (builder, name = "moment") => {
   builder.addCustom(name, "The moment.js object", () => {
     return fetch("https://unpkg.com/moment@2.25.3/ts3.1-typings/moment.d.ts", { mode: 'no-cors' })
-      .then(response => {
+      .then((response) => {
         return response.text();
       })
-      .then(response => {
+      .then((response) => {
         const momentWrapper = `import moment from 'apis/moment';\r\ntype MomentApi = typeof moment;\r\nexport { MomentApi };`;
         const definition: TypeDefinition = {
           typeName: 'MomentApi',
@@ -73,7 +73,7 @@ export const registerMomentAction: MetadataBuilderAction = (builder, name = "mom
         };
         return definition;
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Failed to fetch moment.d.ts", error);
         throw error;
       });
@@ -114,7 +114,7 @@ export const registerPageContextAction: MetadataBuilderAction = (builder, name =
   builder.addCustom(name, "Contexts data of current page", () => {
     const definition: TypeDefinition = {
       typeName: 'IPageContext',
-      files: [{content: 'export interface IPageContext { [key: string]: any }', fileName: 'apis/pageContext.ts'}],
+      files: [{ content: 'export interface IPageContext { [key: string]: any }', fileName: 'apis/pageContext.ts' }],
     };
     return Promise.resolve(definition);
   });
@@ -146,7 +146,7 @@ export const registerMetadataBuilderAction: MetadataBuilderAction = (builder, na
       typeName: 'IMetadataBuilder',
       files: [
         { content: metadataBuilderSourceCode, fileName: CODE.METADATA_BUILDER_PATH },
-        { content: metadataSourceCode, fileName: CODE.METADATA_PATH }
+        { content: metadataSourceCode, fileName: CODE.METADATA_PATH },
       ],
     };
     return Promise.resolve(definition);
@@ -159,7 +159,7 @@ export const registerConstantsBuilderAction: MetadataBuilderAction = (builder, n
       typeName: 'IObjectMetadataBuilder',
       files: [
         { content: metadataBuilderSourceCode, fileName: 'apis/metadataBuilder.d.ts' },
-        { content: metadataSourceCode, fileName: 'apis/metadata.d.ts' }
+        { content: metadataSourceCode, fileName: 'apis/metadata.d.ts' },
       ],
     };
     return Promise.resolve(definition);

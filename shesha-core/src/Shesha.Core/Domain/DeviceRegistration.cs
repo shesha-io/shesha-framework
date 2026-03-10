@@ -15,12 +15,12 @@ namespace Shesha.Domain
         /// <summary>
         /// Registration Token
         /// </summary>
-        [StringLength(1000)]
+        [MaxLength(1000)]
         public virtual string DeviceRegistrationId { get; set; }
         /// <summary>
         /// Application ID
         /// </summary>
-        [StringLength(1000)]
+        [MaxLength(1000)]
         public virtual string AppId { get; set; }
     }
 }

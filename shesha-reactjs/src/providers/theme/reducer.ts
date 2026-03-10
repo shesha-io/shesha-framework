@@ -6,7 +6,7 @@ export const uiReducer = handleActions<IThemeStateContext, any>(
   {
     [ThemeActionEnums.SetTheme]: (
       state: IThemeStateContext,
-      action: ReduxActions.Action<IConfigurableTheme>
+      action: ReduxActions.Action<IConfigurableTheme>,
     ) => {
       const { payload } = action;
 
@@ -17,5 +17,5 @@ export const uiReducer = handleActions<IThemeStateContext, any>(
     },
   },
 
-  THEME_CONTEXT_INITIAL_STATE
+  THEME_CONTEXT_INITIAL_STATE,
 );

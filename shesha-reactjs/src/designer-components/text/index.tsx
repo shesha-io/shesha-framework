@@ -1,19 +1,19 @@
-import { LineHeightOutlined } from '@ant-design/icons';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import React, { CSSProperties } from 'react';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
-import { IToolboxComponent } from '@/interfaces/formDesigner';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { ITextTypographyProps } from './models';
-import TypographyComponent from './typography';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './settingsForm';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { removeUndefinedProps } from '@/utils/object';
+import { LineHeightOutlined } from '@ant-design/icons';
+import React, { CSSProperties } from 'react';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
+import { FONT_SIZES, ITextTypographyProps, TextComponentDefinition } from './models';
+import { getSettings } from './settingsForm';
+import TypographyComponent from './typography';
+import { defaultStyles, remToPx } from './utils';
 
-const TextComponent: IToolboxComponent<ITextTypographyProps> = {
+
+const TextComponent: TextComponentDefinition = {
   type: 'text',
   name: 'Text',
   icon: <LineHeightOutlined />,
@@ -52,8 +52,8 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => ({
     code: false,
     copyable: false,
@@ -64,6 +64,8 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     underline: false,
     level: 1,
     textType: 'span',
+    content: 'Your text here...',
+    contentDisplay: 'content',
     ...model,
   }),
   migrator: (m) =>
@@ -75,7 +77,17 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
         backgroundColor: legacyColor2Hex(prev.backgroundColor),
       }))
       .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) })),
+      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) }))
+      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: prev.contentType }))
+      .add<ITextTypographyProps>(5, (prev) => {
+        const fontSizeEntry = FONT_SIZES[prev.fontSize as keyof typeof FONT_SIZES];
+        const rem = fontSizeEntry ? fontSizeEntry.fontSize : prev.fontSize;
+        const px = remToPx(rem);
+        return {
+          ...prev,
+          desktop: { ...prev?.desktop, font: { ...prev?.desktop?.font, size: px } },
+        };
+      }),
 };
 
 export default TextComponent;

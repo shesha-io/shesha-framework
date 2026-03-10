@@ -15,7 +15,7 @@ export interface IOverlayProps {
 
 export type ConfigurableComponentChildrenFn<TSettings = any> = (
   componentState: IComponentStateProps<TSettings>,
-  BlockOverlay: (props: IOverlayProps) => React.ReactElement
+  BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
 export interface IConfigurableComponentProps<TSettings = any> {
@@ -44,7 +44,7 @@ export const ConfigurableComponent = <TSettings extends any>({
   children,
   canConfigure = true,
   onStartEdit,
-}: IConfigurableComponentProps<TSettings>) => {
+}: IConfigurableComponentProps<TSettings>): JSX.Element => {
   const { mode } = useAppConfigurator();
   const { styles } = useStyles();
 
@@ -67,7 +67,7 @@ export const ConfigurableComponent = <TSettings extends any>({
     settings: null,
   };
 
-  const onOverlayClick = () => {
+  const onOverlayClick = (): void => {
     onStartEdit?.();
   };
 
