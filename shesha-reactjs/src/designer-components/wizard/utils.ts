@@ -115,7 +115,7 @@ const WIZARD_STEP_STORAGE_PREFIX = 'shesha_wizard_step_';
  * Gets the storage key for a wizard instance
  */
 export const getWizardStorageKey = (wizardId: string, componentName?: string): string => {
-  const key = componentName || wizardId;
+  const key = componentName ? `${wizardId}:${componentName}` : wizardId;
   return `${WIZARD_STEP_STORAGE_PREFIX}${key}`;
 };
 

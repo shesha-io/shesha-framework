@@ -127,7 +127,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
             label="Default Active Step"
             tooltip="This will be the default step that is active on initial load"
           >
-            <Select allowClear ref={selectRef} value={model?.defaultActiveStep} disabled={readOnly}>
+            <Select allowClear ref={selectRef} disabled={readOnly}>
               {stepList?.map(({ id, title }) => (
                 <Option value={id} key={id}>
                   {title}

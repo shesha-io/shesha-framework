@@ -77,15 +77,17 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     [tabs, componentRelations, allComponents]
   );
 
-  const getDefaultStepIndex = (i) => {
-    if (i) {
-      const t = tabs[i]
-        ?? tabs?.find((item) => item?.id === i); // for backward compatibility
-      if (t) {
-        // Find the index in visibleSteps, not tabs
-        const visibleIndex = visibleSteps.findIndex(step => step.id === t.id);
-        return visibleIndex !== -1 ? visibleIndex : 0;
-      }
+  const getDefaultStepIndex = (value: string | number | undefined): number => {
+    if (value === undefined || value === null || value === '') {
+      return 0;
+    }
+    const t =
+      typeof value === 'number'
+        ? tabs[value]
+        : tabs?.find((item) => item?.id === value); // for backward compatibility
+    if (t) {
+      const visibleIndex = visibleSteps.findIndex((step) => step.id === t.id);
+      return visibleIndex !== -1 ? visibleIndex : 0;
     }
     return 0;
   };
@@ -268,7 +270,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const setStep = (stepIndex) => {
+  const setStep = (stepIndex: number): void => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
       throw `Step with index ${stepIndex} is not available`;
     setCurrent(stepIndex);

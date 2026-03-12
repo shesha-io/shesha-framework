@@ -130,10 +130,16 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           }
         })) ?? []
       }))
-      .add<IWizardComponentProps>(10, (prev) => ({
-        ...prev,
-        persistStep: prev.persistStep ?? true,
-      })),
+      .add<IWizardComponentProps>(10, (prev) => {
+        const hasDefaultActiveStep =
+          prev.defaultActiveStep !== undefined &&
+          prev.defaultActiveStep !== null &&
+          prev.defaultActiveStep !== '';
+        return {
+          ...prev,
+          persistStep: prev.persistStep ?? !hasDefaultActiveStep,
+        };
+      }),
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],
