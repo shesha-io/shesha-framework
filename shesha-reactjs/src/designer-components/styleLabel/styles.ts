@@ -8,8 +8,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         gap: 8px;
         position: absolute;
         justify-content: flex-end;
-        top: 0px;
         right: 30px;
+        top: 4px;
+        z-index: 2;
     `);
 
   const hidelLabelIcon = cx("", css`
@@ -23,8 +24,22 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     border: 1px solid ${token.colorPrimary};
     `);
 
+  const formItem = cx("", css`
+      .ant-form-item {
+        margin: 0px !important;
+      }
+      .sha-js-label {
+        margin: 0px !important;
+      }
+
+      .ant-form-item-control-input {
+        min-height: 0px !important;
+      }
+    `);
+
   return {
     flexWrapper,
     hidelLabelIcon,
+    formItem,
   };
 });

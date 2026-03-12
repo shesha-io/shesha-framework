@@ -33,6 +33,10 @@ export const useStyles = createStyles(({ css, cx, token }) => {
       }
     }
 
+    .ant-form-item {
+      margin: 0px !important;
+    }
+
     * > .sha-required-mark {
       margin-left: 4px;
       color: ${token.colorErrorText};

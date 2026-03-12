@@ -33,6 +33,11 @@ const CheckboxComponent: CheckboxComponentDefinition = {
   canBeJsSetting: true,
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
+  /**
+   * Checkbox dimensions apply to the checkbox element itself via CSS,
+   * not to the Form.Item wrapper. The wrapper should fill normally.
+   */
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
@@ -75,7 +80,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles()))),
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles(prev)))),
 };
 
 export default CheckboxComponent;

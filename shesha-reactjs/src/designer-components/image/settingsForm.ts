@@ -352,10 +352,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       value: "fill",
                                       label: "Fill",
                                     },
-                                    {
-                                      value: "auto",
-                                      label: "Auto",
-                                    },
                                   ],
                                 },
                                 {

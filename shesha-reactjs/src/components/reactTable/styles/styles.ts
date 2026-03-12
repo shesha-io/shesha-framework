@@ -196,7 +196,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
        */
       display: inline-block;
       width: calc(100% - 16px);
-      overflow-x: auto;
       /* These styles are required for a horizontaly scrollable table overflow */
       /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
       overflow-y: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
@@ -230,6 +229,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
+        overflow-x: auto;
+        
         /* Background applied to table ensures it covers all rows when scrolling with freezeHeaders */
         ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}
 

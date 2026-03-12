@@ -764,6 +764,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       default:
         return {
           ...containerStyles,
+          width: '100%',
           display: 'grid',
           gridTemplateColumns: '1fr',
           alignItems: 'stretch',

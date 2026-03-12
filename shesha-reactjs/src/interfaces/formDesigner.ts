@@ -12,7 +12,7 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
+import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -187,6 +187,36 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   actualModelPropertyFilter?: (name: string, value: any) => boolean;
 
   editorAdapter?: IEditorAdapter;
+
+  /**
+   * Controls dimension preservation in designer mode.
+   * - `true`: Preserve all original dimensions (width, height, min/max)
+   * - `false` or `undefined`: Fill 100% of wrapper (default behavior)
+   * - Array of dimension names: Preserve only specified dimensions (e.g., ['height'] preserves only height)
+   *
+   * Use this for components that need to preserve specific dimensions in designer mode,
+   * such as textArea which typically needs to preserve height while filling width.
+   *
+   * @example
+   * ```typescript
+   * preserveDimensionsInDesigner: true,        // Preserve all dimensions
+   * preserveDimensionsInDesigner: ['height'],  // Preserve only height
+   * preserveDimensionsInDesigner: ['width', 'height'], // Preserve width and height
+   * ```
+   */
+  preserveDimensionsInDesigner?: boolean | Array<'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight'>;
+  /**
+   * Optional function to customize how component dimensions are calculated in designer mode.
+   * This allows components to define their own sizing behavior instead of relying on generic logic.
+   *
+   * @param originalDims - The original dimensions from the component model
+   * @param deviceDims - The default device dimensions (usually 100% width/height)
+   * @returns The calculated dimensions for designer mode, or undefined to use default behavior
+   */
+  getDesignerDimensions?: (
+    originalDims: IDimensionsValue | undefined,
+    deviceDims: IDimensionsValue | undefined,
+  ) => IDimensionsValue | undefined;
 } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =
