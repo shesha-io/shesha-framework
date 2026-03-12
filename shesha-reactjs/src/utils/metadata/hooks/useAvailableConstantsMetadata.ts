@@ -19,6 +19,7 @@ const ALL_STANDARD_CONSTANTS = [
   /* SheshaConstants.http,
   SheshaConstants.message,
   SheshaConstants.modal,
+  SheshaConstants.loader,
   SheshaConstants.moment,
   SheshaConstants.fileSaver,
   SheshaConstants.globalState,

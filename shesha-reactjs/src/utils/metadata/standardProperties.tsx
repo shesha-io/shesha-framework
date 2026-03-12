@@ -1,6 +1,7 @@
 import { TypeDefinition } from '@/interfaces/metadata';
 import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
 import { modalApiDefinition } from "@/providers/sourceFileManager/api-utils/modal";
+import { loaderApiDefinition } from "@/providers/sourceFileManager/api-utils/loader";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, pageCode, formCode, storageCode } from '@/publicJsApis/apis';
 
@@ -11,6 +12,7 @@ export const SheshaConstants = {
   http: "shesha:http",
   message: "shesha:message",
   modal: "shesha:modal",
+  loader: "shesha:loader",
   fileSaver: "shesha:fileSaver",
   moment: "shesha:moment",
   globalState: "shesha:globalState",
@@ -54,6 +56,16 @@ export const registerModalAction: MetadataBuilderAction = (builder, name = "moda
     const definition: TypeDefinition = {
       typeName: 'ModalApi',
       files: [{ content: modalApiDefinition, fileName: 'apis/modal.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerLoaderAction: MetadataBuilderAction = (builder, name = "loader") => {
+  builder.addCustom(name, "API for showing and hiding blocking loaders", () => {
+    const definition: TypeDefinition = {
+      typeName: 'LoaderApi',
+      files: [{ content: loaderApiDefinition, fileName: 'apis/loader.ts' }],
     };
     return Promise.resolve(definition);
   });

@@ -47,6 +47,7 @@ export const useMetadataBuilderFactory = (makeComponentsNullable: boolean = fals
     // builder.registerStandardProperty(SheshaConstants.http, registerHttpAction);
     // builder.registerStandardProperty(SheshaConstants.message, registerMessageAction);
     // builder.registerStandardProperty(SheshaConstants.modal, registerModalAction);
+    // builder.registerStandardProperty(SheshaConstants.loader, registerLoaderAction);
     // builder.registerStandardProperty(SheshaConstants.moment, registerMomentAction);
     // builder.registerStandardProperty(SheshaConstants.fileSaver, registerFileSaverAction);
     // builder.registerStandardProperty(SheshaConstants.globalState, registerGlobalStateAction);
