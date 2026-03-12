@@ -7,6 +7,7 @@ import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IReplaceFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { normalizeFileName } from '@/providers/storedFiles/utils';
 import { addPx } from '@/utils/style';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
@@ -136,6 +137,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 }) => {
   const { message, notification } = App.useApp();
   const { httpHeaders } = useSheshaApplication();
+  const allData = useAvailableConstantsData();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
@@ -192,8 +194,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     downloadedFileStyles: downloadedFileStyles,
     containerStyles: {
       ...(containerDimensionsStyles ?? {}),
-      width: layout === 'vertical' && listType === 'thumbnail' ? undefined : addPx(containerDimensionsStyles?.width),
-      height: layout === 'horizontal' && listType === 'thumbnail' ? undefined : addPx(containerDimensionsStyles?.height),
+      width: layout === 'vertical' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles?.width, allData) ?? undefined),
+      height: layout === 'horizontal' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles?.height, allData) ?? undefined),
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
@@ -201,7 +203,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
       : { ...(model?.allStyles?.fullStyle ?? {}) },
     model: {
-      gap: addPx(gap),
+      gap: addPx(gap, allData) ?? '0px',
       layout: listType === 'thumbnail' && !isDragger,
       hideFileName: hideFileName && listType === 'thumbnail',
       isDragger,

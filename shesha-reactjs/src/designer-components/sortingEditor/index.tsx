@@ -26,6 +26,7 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
   isOutput: true,
   canBeJsSetting: true,
   icon: <GroupOutlined />,
+  preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({ modelType: typeof model.modelType === 'string' ? evaluateString(model.modelType, { data: allData.data }) : model.modelType }),
   Factory: ({ model, calculatedModel }) => {
     return (

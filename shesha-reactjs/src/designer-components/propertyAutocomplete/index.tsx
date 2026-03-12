@@ -19,6 +19,7 @@ export const PropertyAutocompleteComponent: PropertyAutocompleteComponentDefinit
   icon: <FileSearchOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({
     modelType: typeof model.modelType === 'string' ? evaluateString(model.modelType, { data: allData.data }) : model.modelType,
     dropdownStyle: getStyle(model.dropdownStyle, allData.data),

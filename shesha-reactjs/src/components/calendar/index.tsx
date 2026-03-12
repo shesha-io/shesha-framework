@@ -343,7 +343,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
           onDoubleClickEvent={handleCustomDoubleClick}
           onSelectSlot={handleSlotClick}
           eventPropGetter={(event: any) => ({
-            style: { backgroundColor: event.color || primaryColor, height: '100%' },
+            style: { backgroundColor: event.color || primaryColor },
           })}
           components={{
             event: EventComponent,

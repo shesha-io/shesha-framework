@@ -25,6 +25,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   canBeJsSetting: true,
   name: 'Text field',
   icon: <CodeOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string &&
     (!dataFormat ||

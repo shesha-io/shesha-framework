@@ -17,6 +17,7 @@ const SliderComponent: SliderComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.number && [NumberFormats.int64, NumberFormats.int32].includes(dataFormat),
   Factory: ({ model }) => {
     const { data: formData } = useFormData();

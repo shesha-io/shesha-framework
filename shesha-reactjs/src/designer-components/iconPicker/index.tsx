@@ -19,6 +19,7 @@ const IconPickerComponent: IconPickerComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
 

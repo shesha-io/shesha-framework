@@ -161,14 +161,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
 
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    margin-top: ${marginTop};
-    margin-left: ${marginLeft};
-    margin-right: ${marginRight};
-    margin-bottom: ${marginBottom};
-    padding-top: ${paddingTop ?? '2px'};
-    padding-left: ${paddingLeft ?? '2px'};
-    padding-right: ${paddingRight ?? '2px'};
-    padding-bottom: ${paddingBottom ?? '2px'};
     height: ${containerHeight ?? 'auto'} !important;
     width: ${containerWidth ?? '100%'} !important;
     max-height: ${containerMaxHeight ?? 'auto'} !important;

@@ -17,6 +17,7 @@ const ColorPickerComponent: ColorPickerComponentDefinition = {
   isInput: true,
   isOutput: true,
   icon: <FormatPainterOutlined />,
+  preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
   }),

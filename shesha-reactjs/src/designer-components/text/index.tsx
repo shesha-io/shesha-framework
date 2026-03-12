@@ -38,6 +38,8 @@ const TextComponent: TextComponentDefinition = {
       textShadow: `${shadow?.offsetX}px ${shadow?.offsetY}px ${shadow?.blurRadius}px ${shadow?.color}`,
       ...dimensionsStyles,
       ...jsStyle,
+      width: '100%',
+      height: '100%',
     });
 
     return (

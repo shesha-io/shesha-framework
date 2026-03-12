@@ -1,6 +1,6 @@
 import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
 import { ComponentsContainer, isValidGuid, StyleBoxValue, useFormData, useSheshaApplication, ValidationErrors } from '@/index';
-import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
+import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { Flex } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { useStyles } from './style';
@@ -28,6 +28,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     alignItems,
   } = props;
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const allData = useAvailableConstantsData();
 
   const dimensions = props?.dimensions;
   const border = props?.border;
@@ -81,7 +82,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     ...shadowStyles,
   });
 
-  const dimensionStyles = getDimensionsStyle(dimensions, additionalStyles);
+  const dimensionStyles = getDimensionsStyle(dimensions);
 
   const { styles } = useStyles({ dimensions: dimensionStyles });
 
@@ -113,10 +114,10 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     textOverflow: 'ellipsis',
   });
 
-  const divThickness = addPx(dividerThickness || '0.62px');
-  const width = addPx(dividerWidth || '100%');
-  const height = addPx(dividerHeight || '100%');
-  const margin = dividerMargin ? addPx(dividerMargin || 0) : 0;
+  const divThickness = addPx(dividerThickness || '0.62px', allData);
+  const width = addPx(dividerWidth || '100%', allData);
+  const height = addPx(dividerHeight || '100%', allData);
+  const margin = dividerMargin ? addPx(dividerMargin || 0, allData) : 0;
 
   const dividerStyle = {
     backgroundColor: dividerColor ?? '#b4b4b4',
@@ -136,7 +137,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
       }}
     >
       {columns?.map((item, i) => {
-        const itemWidth = vertical ? addPx(item.width) || '100%' : addPx(item.width);
+        const itemWidth = vertical ? addPx(item.width, allData) || '100%' : addPx(item.width, allData);
         return (
           <div
             key={item.id}
@@ -151,8 +152,8 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
                 containerId={item.id}
                 gap={gap}
                 wrapperStyle={{
-                  padding: addPx(item.padding || 0),
-                  maxWidth: vertical ? '100%' : addPx(item.width),
+                  padding: addPx(item.padding || 0, allData),
+                  maxWidth: vertical ? '100%' : addPx(item.width, allData),
                   boxSizing: 'border-box',
                 }}
                 style={containerStyle(item)}

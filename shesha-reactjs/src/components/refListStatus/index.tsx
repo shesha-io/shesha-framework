@@ -15,6 +15,7 @@ export interface IRefListStatusProps {
   showReflistName?: boolean;
   style?: CSSProperties;
   value?: any;
+  isDesigner?: boolean;
 }
 
 const Icon = ({ type, ...rest }): JSX.Element => {
@@ -31,6 +32,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     solidBackground,
     showReflistName,
     style = {},
+    isDesigner = false,
   } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
   const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };
@@ -54,9 +56,26 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
   const canShowIcon = showIcon && itemData?.icon;
 
-  if (typeof itemData?.itemValue === 'undefined' && !listItem?.loading) return null;
+  // In designer mode, show a placeholder when there's no value or data
+  if (typeof itemData?.itemValue === 'undefined' && !listItem?.loading) {
+    if (isDesigner) {
+      return (
+        <div className={styles.shaStatusTagContainer}>
+          <RefTag
+            color="#d9d9d9"
+            icon={null}
+            style={style}
+            styles={styles}
+          >
+            {showReflistName ? 'Reference List Item' : 'N/A'}
+          </RefTag>
+        </div>
+      );
+    }
+    return null;
+  }
 
-  return listItem?.loading ? (
+  return listItem?.loading || !itemData ? (
     <Skeleton.Button />
   ) : (
 

@@ -330,6 +330,16 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     overflow: hidden;
   `);
 
+  const formItem = cx(css`
+    &.ant-form-item,
+    & .ant-form-item-row,
+    & .ant-form-item-control,
+    & .ant-form-item-control-input,
+    & .ant-form-item-control-input-content {
+      height: 100%;
+    }
+  `);
+
   return {
     responsiveChartContainer,
     chartContainerWithBorder,
@@ -346,6 +356,8 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     line,
     dot,
     segment,
+
+    formItem,
   };
 });
 

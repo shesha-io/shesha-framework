@@ -46,8 +46,8 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dispatch(setDesignerDeviceAction(deviceType));
   }, []);
 
-  const setCanvasWidth = useCallback((width: number, deviceType: string) => {
-    dispatch(setCanvasWidthAction({ width, deviceType }));
+  const setCanvasWidth = useCallback((width: number | string, deviceType: IDeviceTypes) => {
+    dispatch(setCanvasWidthAction({ width: typeof width === 'string' ? width : `${width}px`, deviceType }));
   }, []);
 
   const setCanvasZoom = useCallback((zoom: number) => {

@@ -24,6 +24,7 @@ export const TimeFieldComponent: TimeFieldComponentDefinition = {
   isOutput: true,
   canBeJsSetting: true,
   icon: <ClockCircleOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
   calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
