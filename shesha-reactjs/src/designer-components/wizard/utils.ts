@@ -108,3 +108,42 @@ export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
     ? fields.some((key) => !args[key])
     : true;
 };
+
+const WIZARD_STEP_STORAGE_PREFIX = 'shesha_wizard_step_';
+
+
+export const getWizardStorageKey = (wizardId: string, componentName?: string): string => {
+  const key = componentName ? `${wizardId}:${componentName}` : wizardId;
+  return `${WIZARD_STEP_STORAGE_PREFIX}${key}`;
+};
+
+export const saveWizardStep = (wizardId: string, stepId: string, componentName?: string): void => {
+  try {
+    const key = getWizardStorageKey(wizardId, componentName);
+    sessionStorage.setItem(key, stepId);
+  } catch (error) {
+    console.warn('Failed to save wizard step to sessionStorage:', error);
+  }
+};
+
+
+export const loadWizardStep = (wizardId: string, componentName?: string): string | null => {
+  try {
+    const key = getWizardStorageKey(wizardId, componentName);
+    const saved = sessionStorage.getItem(key);
+    return saved;
+  } catch (error) {
+    console.warn('Failed to load wizard step from sessionStorage:', error);
+  }
+  return null;
+};
+
+
+export const clearWizardStep = (wizardId: string, componentName?: string): void => {
+  try {
+    const key = getWizardStorageKey(wizardId, componentName);
+    sessionStorage.removeItem(key);
+  } catch (error) {
+    console.warn('Failed to clear wizard step from sessionStorage:', error);
+  }
+};
