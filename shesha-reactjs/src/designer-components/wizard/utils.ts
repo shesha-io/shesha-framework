@@ -111,18 +111,12 @@ export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
 
 const WIZARD_STEP_STORAGE_PREFIX = 'shesha_wizard_step_';
 
-/**
- * Gets the storage key for a wizard instance
- */
+
 export const getWizardStorageKey = (wizardId: string, componentName?: string): string => {
   const key = componentName ? `${wizardId}:${componentName}` : wizardId;
   return `${WIZARD_STEP_STORAGE_PREFIX}${key}`;
 };
 
-/**
- * Saves the current wizard step ID to sessionStorage
- * Using sessionStorage instead of localStorage to automatically clear stale data when browser tab closes
- */
 export const saveWizardStep = (wizardId: string, stepId: string, componentName?: string): void => {
   try {
     const key = getWizardStorageKey(wizardId, componentName);
@@ -132,10 +126,7 @@ export const saveWizardStep = (wizardId: string, stepId: string, componentName?:
   }
 };
 
-/**
- * Loads the saved wizard step ID from sessionStorage
- * Returns null if no saved step exists
- */
+
 export const loadWizardStep = (wizardId: string, componentName?: string): string | null => {
   try {
     const key = getWizardStorageKey(wizardId, componentName);
@@ -147,9 +138,7 @@ export const loadWizardStep = (wizardId: string, componentName?: string): string
   return null;
 };
 
-/**
- * Clears the saved wizard step from sessionStorage
- */
+
 export const clearWizardStep = (wizardId: string, componentName?: string): void => {
   try {
     const key = getWizardStorageKey(wizardId, componentName);
