@@ -17,8 +17,8 @@ export const useGlobalLoader = (): LoaderApi => {
   if (!context) {
     // Return a no-op implementation if provider is not found
     return {
-      show: () => () => {},
-      hide: () => {},
+      show: () => () => { /* no-op */ },
+      hide: () => { /* no-op */ },
     };
   }
   return context.loaderApi;
