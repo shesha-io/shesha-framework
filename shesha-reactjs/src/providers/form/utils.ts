@@ -70,6 +70,7 @@ import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { IParentProviderProps, useParent } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
+import { useGlobalLoader } from '../globalLoader';
 import { toCamelCase } from '@/utils/string';
 import { IFormApi } from './formApi';
 import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
@@ -101,6 +102,8 @@ export interface IApplicationContext<Value = any> {
   http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
+  /** Loader API */
+  loader: LoaderApi;
   /** File Saver API */
   fileSaver: typeof FileSaver;
 
@@ -129,6 +132,11 @@ export type GetAvailableConstantsDataArgs = {
   queryStringGetter?: () => QueryStringParams;
 };
 
+export interface LoaderApi {
+  show: (message?: string) => () => void;
+  hide: () => void;
+}
+
 export type AvailableConstantsContext = {
   closestShaFormApi: IFormApi;
   selectedRow?: ISelectionProps;
@@ -137,6 +145,7 @@ export type AvailableConstantsContext = {
   globalState: IAnyObject;
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
+  loader: LoaderApi;
   httpClient: HttpClientApi;
 };
 
@@ -209,6 +218,9 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   const httpClient = useHttpClient();
 
+  // Get loader API from global loader provider
+  const loader = useGlobalLoader();
+
   const result: AvailableConstantsContext = {
     closestShaFormApi,
     selectedRow,
@@ -218,6 +230,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
     setGlobalState,
     httpClient,
     message,
+    loader,
   };
   return result;
 };
@@ -237,7 +250,8 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     globalState,
     setGlobalState,
     httpClient,
-    message
+    message,
+    loader
   } = fullContext;
   const shaFormInstance = shaForm?.getPublicFormApi() ?? closestShaForm;
 
@@ -265,6 +279,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     moment: () => moment,
     http: () => httpClient,
     message: () => message,
+    loader: () => loader,
     fileSaver: () => FileSaver,
     data: () => {
       if (!shaFormInstance?.data || isEmpty(shaFormInstance.data))

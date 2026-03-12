@@ -7,6 +7,7 @@ import {
     registerGlobalStateAction,
     registerHttpAction,
     registerMessageAction,
+    registerLoaderAction,
     registerMomentAction,
     registerSelectedRowAction,
     registerSetGlobalStateAction,
@@ -31,6 +32,7 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         // register standard constants
         builder.registerStandardProperty(SheshaConstants.http, registerHttpAction);
         builder.registerStandardProperty(SheshaConstants.message, registerMessageAction);
+        builder.registerStandardProperty(SheshaConstants.loader, registerLoaderAction);
         builder.registerStandardProperty(SheshaConstants.moment, registerMomentAction);
         builder.registerStandardProperty(SheshaConstants.fileSaver, registerFileSaverAction);
         builder.registerStandardProperty(SheshaConstants.globalState, registerGlobalStateAction);

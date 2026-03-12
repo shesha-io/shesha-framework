@@ -1,6 +1,7 @@
 import { TypeDefinition } from '@/interfaces/metadata';
 import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
 import { fileSaverApiDefinition } from "@/providers/sourceFileManager/api-utils/fileSaver";
+import { loaderApiDefinition } from "@/providers/sourceFileManager/api-utils/loader";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
@@ -10,6 +11,7 @@ import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CO
 export const SheshaConstants = {
   http: "shesha:http",
   message: "shesha:message",
+  loader: "shesha:loader",
   fileSaver: "shesha:fileSaver",
   moment: "shesha:moment",
   globalState: "shesha:globalState",
@@ -51,6 +53,16 @@ export const registerFileSaverAction: MetadataBuilderAction = (builder, name = "
     const definition: TypeDefinition = {
       typeName: 'FileSaverApi',
       files: [{ content: fileSaverApiDefinition, fileName: 'apis/fileSaver.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerLoaderAction: MetadataBuilderAction = (builder, name = "loader") => {
+  builder.addCustom(name, "API for showing and hiding blocking loaders", () => {
+    const definition: TypeDefinition = {
+      typeName: 'LoaderApi',
+      files: [{ content: loaderApiDefinition, fileName: 'apis/loader.ts' }],
     };
     return Promise.resolve(definition);
   });

@@ -44,5 +44,6 @@ export * from './dataContextProvider';
 export * from './canvas';
 export * from './sourceFileManager/sourcesFolderProvider';
 export * from './chartData';
+export * from './globalLoader';
 
 export { useApplicationContextData, useApplicationContextMetadata };
