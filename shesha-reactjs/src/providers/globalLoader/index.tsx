@@ -24,44 +24,37 @@ export const useGlobalLoader = (): LoaderApi => {
   return context.loaderApi;
 };
 
-interface LoaderState {
-  visible: boolean;
+interface LoaderInstance {
+  id: string;
   message: string;
-  count: number;
+  dismissed: boolean;
 }
 
 export const GlobalLoaderProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
-  const [loaderState, setLoaderState] = useState<LoaderState>({
-    visible: false,
-    message: 'Loading...',
-    count: 0,
-  });
+  const [activeLoaders, setActiveLoaders] = useState<LoaderInstance[]>([]);
 
   const show = useCallback((message?: string) => {
-    setLoaderState((prev) => ({
-      visible: true,
+    const loaderId = `loader-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const loaderInstance: LoaderInstance = {
+      id: loaderId,
       message: message || 'Loading...',
-      count: prev.count + 1,
-    }));
+      dismissed: false,
+    };
 
+    setActiveLoaders((prev) => [...prev, loaderInstance]);
+
+    // Return cleanup function for this specific instance
     return () => {
-      setLoaderState((prev) => {
-        const newCount = Math.max(0, prev.count - 1);
-        return {
-          ...prev,
-          visible: newCount > 0,
-          count: newCount,
-        };
-      });
+      setActiveLoaders((prev) =>
+        prev.map((loader) =>
+          loader.id === loaderId ? { ...loader, dismissed: true } : loader
+        ).filter((loader) => !loader.dismissed)
+      );
     };
   }, []);
 
   const hide = useCallback(() => {
-    setLoaderState({
-      visible: false,
-      message: 'Loading...',
-      count: 0,
-    });
+    setActiveLoaders([]);
   }, []);
 
   const loaderApi: LoaderApi = {
@@ -69,10 +62,13 @@ export const GlobalLoaderProvider: FC<PropsWithChildren<{}>> = ({ children }) =>
     hide,
   };
 
+  // Get the most recent active loader's message
+  const currentLoader = activeLoaders.length > 0 ? activeLoaders[activeLoaders.length - 1] : null;
+
   return (
     <GlobalLoaderContext.Provider value={{ loaderApi }}>
       {children}
-      {loaderState.visible && <LoaderOverlay message={loaderState.message} />}
+      {currentLoader && <LoaderOverlay message={currentLoader.message} />}
     </GlobalLoaderContext.Provider>
   );
 };
