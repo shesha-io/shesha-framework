@@ -90,7 +90,6 @@ export interface IStyleType {
   background?: IBackgroundValue | undefined;
   font?: IFontValue | undefined;
   shadow?: IShadowValue | undefined;
-  menuItemShadow?: IShadowValue | undefined;
   dimensions?: IDimensionsValue | undefined;
   size?: SizeType | undefined;
   style?: string | undefined;
