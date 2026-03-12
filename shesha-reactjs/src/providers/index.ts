@@ -46,5 +46,6 @@ export * from './sheshaApplication/hooks/useSettingsComponents';
 export * from './monacoLoader';
 export { type MonacoLoaderSettings } from './monacoLoader/models';
 export { type IHttpHeadersDictionary } from './sheshaApplication/contexts';
+export * from './globalLoader';
 
 export { useApplicationContextData, useApplicationContextMetadata };
