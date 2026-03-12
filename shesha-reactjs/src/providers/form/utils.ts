@@ -70,7 +70,7 @@ import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { IParentProviderProps, useParent } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
-import { useGlobalLoader } from '../globalLoader';
+import { useGlobalLoader, LoaderApi } from '../globalLoader';
 import { toCamelCase } from '@/utils/string';
 import { IFormApi } from './formApi';
 import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
@@ -131,11 +131,6 @@ export type GetAvailableConstantsDataArgs = {
   shaForm?: IShaFormInstance;
   queryStringGetter?: () => QueryStringParams;
 };
-
-export interface LoaderApi {
-  show: (message?: string) => () => void;
-  hide: () => void;
-}
 
 export type AvailableConstantsContext = {
   closestShaFormApi: IFormApi;
