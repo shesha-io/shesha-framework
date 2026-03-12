@@ -92,7 +92,11 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     return 0;
   };
 
-  // Compute initial step only once, combining all sources
+  // Compute initial step only once on mount
+  // Note: Empty dependency array is intentional. We compute the initial step only once
+  // based on the initial state (persisted step or defaultActiveStep). After that,
+  // the wizard's current position is managed via setCurrent() calls from user navigation.
+  // Re-computing when dependencies change would incorrectly reset the wizard position.
   const getInitialStep = useMemo(() => {
     // If persistStep is enabled and we're not in designer mode, try to load from sessionStorage
     if (persistStep && formMode !== 'designer') {
@@ -109,6 +113,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
     // When persistence is OFF, use the configured defaultActiveStep
     return getDefaultStepIndex(defaultActiveStep);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty deps - only compute once on mount
 
   const [current, setCurrent] = useState(getInitialStep);
@@ -151,7 +156,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     if (persistStep && formMode !== 'designer' && currentStep?.id) {
       saveWizardStep(actionsOwnerId, currentStep.id, actionOwnerName);
     }
-  }, [current, persistStep, actionsOwnerId, actionOwnerName, formMode, currentStep]);
+  }, [currentStep?.id, persistStep, actionsOwnerId, actionOwnerName, formMode]);
 
   useEffect(() => {
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
