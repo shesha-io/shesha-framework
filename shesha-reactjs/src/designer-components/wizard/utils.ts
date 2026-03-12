@@ -108,3 +108,53 @@ export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
     ? fields.some((key) => !args[key])
     : true;
 };
+
+const WIZARD_STEP_STORAGE_PREFIX = 'shesha_wizard_step_';
+
+/**
+ * Gets the storage key for a wizard instance
+ */
+export const getWizardStorageKey = (wizardId: string, componentName?: string): string => {
+  const key = componentName || wizardId;
+  return `${WIZARD_STEP_STORAGE_PREFIX}${key}`;
+};
+
+/**
+ * Saves the current wizard step ID to sessionStorage
+ * Using sessionStorage instead of localStorage to automatically clear stale data when browser tab closes
+ */
+export const saveWizardStep = (wizardId: string, stepId: string, componentName?: string): void => {
+  try {
+    const key = getWizardStorageKey(wizardId, componentName);
+    sessionStorage.setItem(key, stepId);
+  } catch (error) {
+    console.warn('Failed to save wizard step to sessionStorage:', error);
+  }
+};
+
+/**
+ * Loads the saved wizard step ID from sessionStorage
+ * Returns null if no saved step exists
+ */
+export const loadWizardStep = (wizardId: string, componentName?: string): string | null => {
+  try {
+    const key = getWizardStorageKey(wizardId, componentName);
+    const saved = sessionStorage.getItem(key);
+    return saved;
+  } catch (error) {
+    console.warn('Failed to load wizard step from sessionStorage:', error);
+  }
+  return null;
+};
+
+/**
+ * Clears the saved wizard step from sessionStorage
+ */
+export const clearWizardStep = (wizardId: string, componentName?: string): void => {
+  try {
+    const key = getWizardStorageKey(wizardId, componentName);
+    sessionStorage.removeItem(key);
+  } catch (error) {
+    console.warn('Failed to clear wizard step from sessionStorage:', error);
+  }
+};

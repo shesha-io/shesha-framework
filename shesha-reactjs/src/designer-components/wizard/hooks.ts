@@ -1,5 +1,5 @@
 import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
-import { getStepDescritpion, getWizardStep } from './utils';
+import { clearWizardStep, getStepDescritpion, getWizardStep, loadWizardStep, saveWizardStep } from './utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, useForm, useSheshaApplication, ShaForm } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
@@ -41,20 +41,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     defaultActiveStep = 0,
     showStepStatus,
     sequence,
+    persistStep = true,
   } = (model as IWizardComponentProps) || {};
-
-  const getDefaultStepIndex = (i) => {
-    if (i) {
-      const t = tabs[i]
-        ?? tabs?.find((item) => item?.id === i); // for backward compatibility
-      return !!t ? tabs.indexOf(t) : 0;
-    }
-    return 0;
-  };
-
-  const [current, setCurrent] = useState(() => {
-    return getDefaultStepIndex(defaultActiveStep);
-  });
 
   const { componentRelations, allComponents } = ShaForm.useMarkup();
 
@@ -89,6 +77,40 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     [tabs, componentRelations, allComponents]
   );
 
+  const getDefaultStepIndex = (i) => {
+    if (i) {
+      const t = tabs[i]
+        ?? tabs?.find((item) => item?.id === i); // for backward compatibility
+      if (t) {
+        // Find the index in visibleSteps, not tabs
+        const visibleIndex = visibleSteps.findIndex(step => step.id === t.id);
+        return visibleIndex !== -1 ? visibleIndex : 0;
+      }
+    }
+    return 0;
+  };
+
+  // Compute initial step only once, combining all sources
+  const getInitialStep = useMemo(() => {
+    // If persistStep is enabled and we're not in designer mode, try to load from sessionStorage
+    if (persistStep && formMode !== 'designer') {
+      const savedStepId = loadWizardStep(actionsOwnerId, actionOwnerName);
+      if (savedStepId) {
+        // Find the index of the saved step in visibleSteps array (not tabs)
+        const stepIndex = visibleSteps.findIndex(step => step.id === savedStepId);
+        if (stepIndex !== -1) {
+          return stepIndex;
+        }
+      }
+      // When persistence is ON, always start at Step 1 (ignore defaultActiveStep)
+      return 0;
+    }
+    // When persistence is OFF, use the configured defaultActiveStep
+    return getDefaultStepIndex(defaultActiveStep);
+  }, []); // Empty deps - only compute once on mount
+
+  const [current, setCurrent] = useState(getInitialStep);
+
   const currentStep = visibleSteps[current];
   const components = currentStep?.components;
   const componentsNames = useMemo(() => {
@@ -122,9 +144,12 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const argumentsEvaluationContext = { ...allData, fieldsToValidate: componentsNames, validate: validator?.validate };
 
+  // Persist current step to sessionStorage when it changes
   useEffect(() => {
-    setCurrent(getDefaultStepIndex(defaultActiveStep));
-  }, [defaultActiveStep]);
+    if (persistStep && formMode !== 'designer' && currentStep?.id) {
+      saveWizardStep(actionsOwnerId, currentStep.id, actionOwnerName);
+    }
+  }, [current, persistStep, actionsOwnerId, actionOwnerName, formMode, currentStep]);
 
   useEffect(() => {
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
@@ -230,7 +255,13 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     try {
       executeActionIfConfigured(
         (tab) => tab.beforeDoneActionConfiguration,
-        (tab) => tab.afterDoneActionConfiguration
+        (tab) => tab.afterDoneActionConfiguration,
+        () => {
+          // Clear persisted step when wizard is completed
+          if (persistStep) {
+            clearWizardStep(actionsOwnerId, actionOwnerName);
+          }
+        }
       );
     } catch (errInfo) {
       console.error("Couldn't Proceed", errInfo);
@@ -309,6 +340,10 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       ownerUid: actionsOwnerId,
       hasArguments: false,
       executer: () => {
+        // Clear persisted step when wizard is reset
+        if (persistStep) {
+          clearWizardStep(actionsOwnerId, actionOwnerName);
+        }
         successCallback('reset');
         return Promise.resolve();
       },
