@@ -112,8 +112,8 @@ export const useStyles = createStyles(
 
         .${prefixCls}-menu-item {
           ${itemStyle
-            ? `padding: ${padding?.y ? `${Math.max(0, padding.y - 1)}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;`
-            : `padding: ${padding?.y ? `${padding.y}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;`
+              ? `padding: ${padding?.y ? `${Math.max(0, padding.y - 1)}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;`
+              : `padding: ${padding?.y ? `${padding.y}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;`
           }
           ${!itemStyle ? `color: ${colors?.itemColor ?? BLACK_CLR} !important;` : `color: ${colors?.itemColor ?? BLACK_CLR};`}
           ${!itemStyle ? (colors?.itemBackground ? `background: ${colors.itemBackground} !important;` : 'background: transparent !important;') : (colors?.itemBackground ? `background: ${colors.itemBackground};` : 'background: transparent;')}
@@ -149,8 +149,8 @@ export const useStyles = createStyles(
             display: flex !important;
             align-items: center !important;
             ${itemStyle
-              ? `padding: ${padding?.y ? `${Math.max(0, padding.y - 1)}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;`
-              : `padding: ${padding?.y ? `${padding.y}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;`
+                ? `padding: ${padding?.y ? `${Math.max(0, padding.y - 1)}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;`
+                : `padding: ${padding?.y ? `${padding.y}px` : '0'} ${padding?.x ? `${padding.x}px` : '3px'} !important;`
             }
             margin-bottom: 0;
             border-radius: 0;
@@ -532,7 +532,11 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   }
 
   /* Top-level drawer submenu titles - apply itemStyle */
-  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} > .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
     padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
     height: 40px !important;
     line-height: 40px !important;
@@ -737,8 +741,8 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
     text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
     ${(p: GlobalMenuType) => p?.itemStyle
-      ? `padding: ${p?.padding?.y ? `${Math.max(0, p.padding.y - 1)}px` : '0'} ${p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;`
-      : `padding: ${p?.padding?.y ? `${p.padding.y}px` : '0'} ${p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;`
+        ? `padding: ${p?.padding?.y ? `${Math.max(0, p.padding.y - 1)}px` : '0'} ${p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;`
+        : `padding: ${p?.padding?.y ? `${p.padding.y}px` : '0'} ${p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;`
     }
     margin-bottom: 0;
     border-radius: 0;
@@ -785,8 +789,8 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
     text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
     ${(p: GlobalMenuType) => p?.itemStyle
-      ? `padding: ${p?.padding?.y ? `${Math.max(0, p.padding.y - 1)}px` : '0'} ${p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;`
-      : `padding: ${p?.padding?.y ? `${p.padding.y}px` : '0'} ${p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;`
+        ? `padding: ${p?.padding?.y ? `${Math.max(0, p.padding.y - 1)}px` : '0'} ${p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;`
+        : `padding: ${p?.padding?.y ? `${p.padding.y}px` : '0'} ${p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;`
     }
     margin-bottom: 0;
     border-radius: 0;
@@ -815,11 +819,17 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     }
 
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-arrow {
-      ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};` : ''}
+      ${(p: GlobalMenuType) =>
+          !p?.styleOnHover
+            ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR};`
+            : ''
+      }
     }
   }
 
-  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-horizontal > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-selected > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+  .horizontal-menu-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-horizontal
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-selected
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
     color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
     background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'white'} !important;
     ${(p: GlobalMenuType) => p?.styleOnSelected || ''}
@@ -972,7 +982,11 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   }
 
   /* Top-level drawer submenu titles - apply itemStyle */
-  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} > .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu
+    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
     padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
     height: 40px !important;
     line-height: 40px !important;
