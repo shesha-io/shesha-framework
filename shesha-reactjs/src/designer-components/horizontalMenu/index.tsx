@@ -4,7 +4,6 @@ import { filterObjFromKeys } from "@/utils";
 import { EditOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import {
   ConfigurableComponentRenderer,
-  getShadowStyle,
   getStyle,
   IConfigurableFormComponent,
   ISidebarMenuItem,
@@ -33,13 +32,6 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   styleOnSelected?: string;
   styleOnSubMenu?: string;
   width?: string;
-  menuItemShadow?: {
-    color: string;
-    offsetX?: number;
-    offsetY?: number;
-    blurRadius?: number;
-    spreadRadius?: number;
-  };
 }
 
 type MenuOverflowValue = "dropdown" | "menu" | "scroll";
@@ -63,6 +55,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   name: "Menu List",
   isInput: false,
   isOutput: false,
+  preserveDimensionsInDesigner: true,
   icon: <MenuUnfoldOutlined />,
   Factory: ({ model }) => {
     const { data } = useFormData();
@@ -151,10 +144,6 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       };
     }, [model.font, fontSize]);
 
-    const menuItemShadowStyle = useMemo(() => {
-      return getShadowStyle(model?.menuItemShadow);
-    }, [model?.menuItemShadow]);
-
     if (model.hidden) return null;
 
     return (
@@ -183,7 +172,6 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 styleOnHover={getStyle(model?.styleOnHover, data)}
                 styleOnSelected={getStyle(model?.styleOnSelected, data)}
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
-                menuItemStyle={menuItemShadowStyle}
                 overflow={resolveMenuOverflow(model.menuOverflow)}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
@@ -201,10 +189,15 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     .add<IMenuListProps>(0, (prev) => ({
       ...migratePrevStyles(prev, defaultStyles()),
     }))
-    .add<IMenuListProps>(1, (prev) => ({
-      ...prev,
-      menuOverflow: prev.menuOverflow ?? resolveMenuOverflow(prev.overflow as MenuOverflowValue | string | undefined),
-    })),
+    .add<IMenuListProps>(1, (prev) => {
+      const overflow = prev.menuOverflow ?? prev.overflow;
+      return {
+        ...prev,
+        menuOverflow: typeof overflow === 'string' && (overflow === 'dropdown' || overflow === 'menu' || overflow === 'scroll')
+          ? overflow
+          : 'dropdown',
+      };
+    }),
 };
 
 export default MenuListComponent;
