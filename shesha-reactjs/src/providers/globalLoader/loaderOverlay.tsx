@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
+import { Spin } from 'antd';
 import { useStyles } from './styles';
 
 export interface LoaderOverlayProps {
@@ -7,16 +8,32 @@ export interface LoaderOverlayProps {
 
 export const LoaderOverlay: FC<LoaderOverlayProps> = ({ message }) => {
   const { styles } = useStyles();
+  const [useSpinFallback, setUseSpinFallback] = useState(false);
+
+  const handleImageError = () => {
+    setUseSpinFallback(true);
+  };
 
   return (
-    <div className={styles.globalLoaderOverlay}>
+    <div
+      className={styles.globalLoaderOverlay}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label={message}
+    >
       <div className={styles.contentContainer}>
-        <img
-          src="/images/SheshaLoadingAnimation.gif"
-          alt="Loading..."
-          className={styles.loaderImage}
-        />
-        <div className={styles.loaderMessage}>
+        {!useSpinFallback ? (
+          <img
+            src="/images/SheshaLoadingAnimation.gif"
+            alt="Loading..."
+            className={styles.loaderImage}
+            onError={handleImageError}
+          />
+        ) : (
+          <Spin size="large" className={styles.loaderImage} />
+        )}
+        <div className={styles.loaderMessage} aria-hidden="true">
           {message}
         </div>
       </div>
