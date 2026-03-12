@@ -37,7 +37,6 @@ export const useHorizontalMenuDropdownStyles = ({
       existingStyle.remove();
     }
 
-    const customItemStyle = convertJsonToCss(itemStyle);
     const customStyleOnHover = convertJsonToCssWithImportant(styleOnHover);
     const customStyleOnSelected = convertJsonToCssWithImportant(styleOnSelected);
     const customStyleOnSubMenu = convertJsonToCss(styleOnSubMenu);
