@@ -133,6 +133,8 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
 
   const getFull: ContextGetFull = () => {
     const data = getData();
+    // Create a shallow copy to avoid mutating the original data object
+    const fullData = { ...(data ?? {}) };
     const api = getApi();
     if (!!api) {
       // Reserved property names: API properties (e.g., 'showLoader', 'hideLoaders') and 'setFieldValue'
@@ -148,8 +150,8 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
           );
         }
       });
-      // Spread api properties directly onto data for easy access (e.g., pageContext.showLoader())
-      Object.assign(data, api);
+      // Spread api properties directly onto fullData for easy access (e.g., pageContext.showLoader())
+      Object.assign(fullData, api);
     }
     if (includeSetFieldValue) {
       if (data && Object.prototype.hasOwnProperty.call(data, 'setFieldValue')) {
@@ -159,9 +161,9 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
           `Please rename this field in your data model to avoid conflicts.`
         );
       }
-      data.setFieldValue = setFieldValue;
+      fullData.setFieldValue = setFieldValue;
     }
-    return data;
+    return fullData;
   };
 
   const actionContext: IDataContextProviderActionsContext ={
