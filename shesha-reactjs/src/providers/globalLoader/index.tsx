@@ -1,9 +1,12 @@
-import React, { FC, PropsWithChildren, createContext, useContext, useState, useCallback } from 'react';
+import { FC, PropsWithChildren, createContext, useContext, useState, useCallback } from 'react';
+import { nanoid } from '@/utils/uuid';
 import { LoaderOverlay } from './loaderOverlay';
 
+export type LoaderMode = 'blocking' | 'non-blocking';
+
 export interface LoaderApi {
-  show: (message?: string) => () => void;
-  hide: () => void;
+  showLoader: (message?: string, mode?: LoaderMode) => string;
+  hideLoaders: () => void;
 }
 
 interface GlobalLoaderContextValue {
@@ -17,62 +20,54 @@ export const useGlobalLoader = (): LoaderApi => {
   if (!context) {
     // Return a no-op implementation if provider is not found
     return {
-      show: () => () => {},
-      hide: () => {},
+      showLoader: () => '',
+      hideLoaders: () => { /* no-op */ },
     };
   }
   return context.loaderApi;
 };
 
-interface LoaderState {
-  visible: boolean;
+interface LoaderInstance {
+  id: string;
   message: string;
-  count: number;
+  dismissed: boolean;
+  mode: LoaderMode;
 }
 
-export const GlobalLoaderProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
-  const [loaderState, setLoaderState] = useState<LoaderState>({
-    visible: false,
-    message: 'Loading...',
-    count: 0,
-  });
+export const GlobalLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
+  const [activeLoaders, setActiveLoaders] = useState<LoaderInstance[]>([]);
 
-  const show = useCallback((message?: string) => {
-    setLoaderState((prev) => ({
-      visible: true,
+  const showLoader = useCallback((message?: string, mode: LoaderMode = 'non-blocking') => {
+    const loaderId = nanoid();
+    const loaderInstance: LoaderInstance = {
+      id: loaderId,
       message: message || 'Loading...',
-      count: prev.count + 1,
-    }));
-
-    return () => {
-      setLoaderState((prev) => {
-        const newCount = Math.max(0, prev.count - 1);
-        return {
-          ...prev,
-          visible: newCount > 0,
-          count: newCount,
-        };
-      });
+      dismissed: false,
+      mode,
     };
+
+    setActiveLoaders((prev) => [...prev, loaderInstance]);
+    return loaderId;
   }, []);
 
-  const hide = useCallback(() => {
-    setLoaderState({
-      visible: false,
-      message: 'Loading...',
-      count: 0,
-    });
+  const hideLoaders = useCallback(() => {
+    setActiveLoaders([]);
   }, []);
 
   const loaderApi: LoaderApi = {
-    show,
-    hide,
+    showLoader,
+    hideLoaders,
   };
+
+  // Get the most recent active loader's message and determine if any loader is blocking
+  const currentLoader = activeLoaders.length > 0 ? activeLoaders[activeLoaders.length - 1] : null;
+  const hasBlockingLoader = activeLoaders.some((loader) => loader.mode === 'blocking');
+  const effectiveMode = hasBlockingLoader ? 'blocking' : 'non-blocking';
 
   return (
     <GlobalLoaderContext.Provider value={{ loaderApi }}>
       {children}
-      {loaderState.visible && <LoaderOverlay message={loaderState.message} />}
+      {currentLoader && <LoaderOverlay message={currentLoader.message} mode={effectiveMode} />}
     </GlobalLoaderContext.Provider>
   );
 };

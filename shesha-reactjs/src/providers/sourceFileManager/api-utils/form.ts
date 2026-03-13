@@ -58,7 +58,7 @@ export interface FormInstance<Values> {
  */
 export interface FormApi<Values = any> {
   /**
-   * Add deferred update data to 'data' object 
+   * Add deferred update data to 'data' object
    * @param data model data object for updating
    * @returns The deferred update data
    */
@@ -71,7 +71,7 @@ export interface FormApi<Values = any> {
   setFieldValue: (name: string, value: any) => void;
   /**
    * Set fields value
-   * @param values 
+   * @param values
    */
   setFieldsValue: (values: Values) => void;
   /**
@@ -96,6 +96,19 @@ export interface FormApi<Values = any> {
   /** Set validation errors. Need for display validation errors in the ValidationErrors component */
   setValidationErrors: (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error) => void;
 
+  /**
+   * Show loader overlay
+   * @param message Optional message to display
+   * @param mode Loader mode: 'blocking' prevents interaction, 'non-blocking' allows navigation
+   * @returns Loader ID for tracking
+   */
+  showLoader: (message?: string) => string;
+
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
+
   /** antd form instance */
   formInstance?: FormInstance<Values>;
   /** Configurable form settings */
@@ -104,7 +117,7 @@ export interface FormApi<Values = any> {
   formMode: FormMode;
   /** Form data */
   data: Values;
-  
+
   /** Form arguments passed by caller */
   formArguments?: any;
 

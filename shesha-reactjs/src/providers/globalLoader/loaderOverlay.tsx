@@ -1,22 +1,24 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Spin } from 'antd';
 import { useStyles } from './styles';
+import { LoaderMode } from './index';
 
 export interface LoaderOverlayProps {
   message: string;
+  mode?: LoaderMode;
 }
 
-export const LoaderOverlay: FC<LoaderOverlayProps> = ({ message }) => {
+export const LoaderOverlay: FC<LoaderOverlayProps> = ({ message, mode = 'non-blocking' }) => {
   const { styles } = useStyles();
   const [useSpinFallback, setUseSpinFallback] = useState(false);
 
-  const handleImageError = () => {
+  const handleImageError = (): void => {
     setUseSpinFallback(true);
   };
 
   return (
     <div
-      className={styles.globalLoaderOverlay}
+      className={mode === 'blocking' ? styles.globalLoaderOverlayBlocking : styles.globalLoaderOverlay}
       role="status"
       aria-live="polite"
       aria-busy="true"
