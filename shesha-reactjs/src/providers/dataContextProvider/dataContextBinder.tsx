@@ -22,12 +22,24 @@ import {
 import ConditionalWrap from "@/components/conditionalWrapper/index";
 import { useDeepCompareCallback, useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
 
-export interface IDataContextBinderProps { 
+/**
+ * DataContextBinder props
+ *
+ * IMPORTANT: Reserved Property Names
+ * The following property names are reserved and will be injected by DataContextBinder:
+ * - 'setFieldValue': Method to update a single field in the context (if includeSetFieldValue is true)
+ * - All properties from the 'api' prop (e.g., 'showLoader', 'hideLoaders')
+ *
+ * Do not use these names as field names in your data model to avoid property name collisions.
+ * If a collision is detected, a console warning will be logged and the data field will be overwritten.
+ */
+export interface IDataContextBinderProps {
   id: string;
   name: string;
   description?: string;
   type: DataContextType;
   data?: any;
+  /** API methods that will be merged into the context data. Keys in this object become reserved property names. */
   api?: any;
   metadata?: Promise<IModelMetadata>;
   distributeMetadata?: boolean;
@@ -123,11 +135,32 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     const data = getData();
     const api = getApi();
     if (!!api) {
+      // Reserved property names: API properties (e.g., 'showLoader', 'hideLoaders') and 'setFieldValue'
+      // These are injected by DataContextBinder and should not be used as data field names
+      // Warn if collision detected
+      const apiKeys = Object.keys(api);
+      apiKeys.forEach(apiKey => {
+        if (data && Object.prototype.hasOwnProperty.call(data, apiKey)) {
+          console.warn(
+            `[DataContextBinder] Property name collision detected: '${apiKey}' is a reserved API property name. ` +
+            `The data field '${apiKey}' will be overwritten by the DataContext API method. ` +
+            `Please rename this field in your data model to avoid conflicts.`
+          );
+        }
+      });
       // Spread api properties directly onto data for easy access (e.g., pageContext.showLoader())
       Object.assign(data, api);
     }
-    if (includeSetFieldValue)
+    if (includeSetFieldValue) {
+      if (data && Object.prototype.hasOwnProperty.call(data, 'setFieldValue')) {
+        console.warn(
+          `[DataContextBinder] Property name collision detected: 'setFieldValue' is a reserved property name. ` +
+          `The data field 'setFieldValue' will be overwritten by the DataContext API method. ` +
+          `Please rename this field in your data model to avoid conflicts.`
+        );
+      }
       data.setFieldValue = setFieldValue;
+    }
     return data;
   };
 

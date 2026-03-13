@@ -8,7 +8,19 @@ import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { useAvailableConstantsData } from "../form/utils";
 import { useGlobalLoader } from "../globalLoader";
 
-export interface IDataContextProviderProps { 
+/**
+ * DataContextProvider props
+ *
+ * IMPORTANT: Reserved Property Names
+ * The following property names are reserved and will be injected by DataContextProvider:
+ * - 'setFieldValue': Method to update a single field in the context
+ * - 'showLoader': Method to display a loader overlay
+ * - 'hideLoaders': Method to hide loader overlays
+ *
+ * Do not use these names as field names in your data model to avoid property name collisions.
+ * If a collision is detected, a console warning will be logged and the data field will be overwritten.
+ */
+export interface IDataContextProviderProps {
   id: string;
   name: string;
   description?: string;
@@ -70,6 +82,20 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     const setFieldValueinternal = (name: string, value: any) => {
       setFieldValue(name, value);
     };
+
+    // Reserved property names: 'setFieldValue', 'showLoader', 'hideLoaders'
+    // These are injected by DataContextProvider and should not be used as data field names
+    // Warn if collision detected
+    const RESERVED_NAMES = ['setFieldValue', 'showLoader', 'hideLoaders'];
+    RESERVED_NAMES.forEach(reservedName => {
+      if (data && Object.prototype.hasOwnProperty.call(data, reservedName)) {
+        console.warn(
+          `[DataContextProvider] Property name collision detected: '${reservedName}' is a reserved property name. ` +
+          `The data field '${reservedName}' will be overwritten by the DataContext API method. ` +
+          `Please rename this field in your data model to avoid conflicts.`
+        );
+      }
+    });
 
     // Create a new object with both data and API methods
     return {
