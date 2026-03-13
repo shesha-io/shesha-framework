@@ -4,6 +4,8 @@ import { useDelayedUpdateOrUndefined } from '@/providers/delayedUpdateProvider';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { FormLoader } from '@/providers/form/formLoader';
+import { useFormLoader } from '@/providers/form/formLoaderProvider';
 import { Button, Form, Result } from 'antd';
 import classNames from 'classnames';
 import Link from 'next/link';
@@ -35,6 +37,7 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
 
   const { styles } = useStyles();
   const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { activeLoaders } = useFormLoader();
 
   const onValuesChangeInternal = (_changedValues: Partial<Values>, values: Values): void => {
     shaForm.setFormData({ values: values, mergeValues: true });
@@ -84,30 +87,36 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
 
   const { dataSubmitState } = shaForm;
 
+  // Get the most recent active loader
+  const currentLoader = activeLoaders.length > 0 ? activeLoaders[activeLoaders.length - 1] : null;
+
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
-      <ShaSpin spinning={showDataSubmitIndicator && dataSubmitState.status === 'loading'} tip="Saving data...">
-        <Form
-          {...(form ? { form } : {})}
-          labelWrap
-          size={props.size}
-          onFinish={onFinishInternal}
-          onFinishFailed={onFinishFailedInternal}
-          onValuesChange={onValuesChangeInternal}
-          {...(initialValues ? { initialValues } : {})}
-          className={classNames(styles.shaForm, props.className)}
-          {...mergedProps}
-          {...(shaForm.form
-            ? {
-              "data-sha-form-id": shaForm.form.id,
-              "data-sha-form-name": `${shaForm.form.module}/${shaForm.form.name}`,
-            }
-            : {})}
-        >
-          <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
-          {children}
-        </Form>
-      </ShaSpin>
+      <div style={{ position: 'relative' }}>
+        <ShaSpin spinning={showDataSubmitIndicator && dataSubmitState.status === 'loading'} tip="Saving data...">
+          <Form
+            {...(form ? { form } : {})}
+            labelWrap
+            size={props.size}
+            onFinish={onFinishInternal}
+            onFinishFailed={onFinishFailedInternal}
+            onValuesChange={onValuesChangeInternal}
+            {...(initialValues ? { initialValues } : {})}
+            className={classNames(styles.shaForm, props.className)}
+            {...mergedProps}
+            {...(shaForm.form
+              ? {
+                "data-sha-form-id": shaForm.form.id,
+                "data-sha-form-name": `${shaForm.form.module}/${shaForm.form.name}`,
+              }
+              : {})}
+          >
+            <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+            {children}
+          </Form>
+        </ShaSpin>
+        {currentLoader && <FormLoader message={currentLoader.message} />}
+      </div>
     </ComponentsContainerProvider>
   );
 };

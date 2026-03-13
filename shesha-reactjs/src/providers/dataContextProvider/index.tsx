@@ -11,6 +11,7 @@ import { Path } from "@/utils/dotnotation";
 import { GetShaDataContextAccessor, useShaDataContextAccessor } from "./contexts/contextDataAccessor";
 import { WebStorageType } from "./contexts/webStorageProxy";
 import { useDataContextManagerActions } from "../dataContextManager/hooks";
+import { useGlobalLoader } from "../globalLoader";
 
 export interface IDataContextProviderProps<TData extends object> {
   id: string;
@@ -44,6 +45,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useAvailableConstantsDataNoRefresh({ topContextId: id });
   const initialDataRef = useRef<Promise<TData> | undefined>(undefined);
+  const loaderApi = useGlobalLoader();
 
   const onChangeAction = (changedData?: Partial<TData>): void => {
     if (props.onChangeAction?.actionName) {
@@ -123,6 +125,10 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
       getFieldValue={getFieldValue}
       setData={setData}
       getData={getData}
+      api={{
+        showLoader: loaderApi.showLoader,
+        hideLoaders: loaderApi.hideLoaders,
+      }}
     >
       {children}
     </DataContextBinder>

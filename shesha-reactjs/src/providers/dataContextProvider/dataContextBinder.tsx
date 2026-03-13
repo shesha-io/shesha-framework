@@ -136,9 +136,11 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
   const getFull: ContextGetFull = () => {
     const data: IDataContextFull = getData();
     const api = getApi();
-    return api
-      ? { ...data, api }
-      : data;
+    if (api) {
+      // Spread api properties directly onto data for easy access (e.g., pageContext.showLoader())
+      Object.assign(data, api);
+    }
+    return data;
   };
 
   const actionContext: IDataContextProviderActionsContext = {

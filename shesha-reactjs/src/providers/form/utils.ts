@@ -74,7 +74,6 @@ import {
 } from './models';
 import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { useShaFormDataUpdate, useShaFormInstanceOrUndefined } from './providers/shaFormProvider';
-import { useGlobalLoader } from '../globalLoader';
 import { IShaFormInstance } from './store/interfaces';
 import { isHasDataGetter } from './touchableProperty';
 import { getActualModel, updateActualPropertyValue } from './utils/js-settings';
@@ -158,8 +157,6 @@ export interface IApplicationContext<Value extends object = object> {
   message: MessageInstance;
   /** Modal API - for displaying dialogs and forms in modals (limited functionality if DynamicModalProvider is not available) */
   modal: IModalApi;
-  /** Loader API */
-  loader: LoaderApi;
   /** File Saver API */
   fileSaver: (data: Blob | string, filename?: string) => void;
 
@@ -197,11 +194,6 @@ export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
   queryStringGetter?: () => QueryStringParams;
 };
 
-export interface LoaderApi {
-  show: (message?: string) => () => void;
-  hide: () => void;
-}
-
 export type AvailableConstantsContext = {
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
@@ -212,7 +204,6 @@ export type AvailableConstantsContext = {
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
   modal: IModalApi;
-  loader: LoaderApi;
   httpClient: HttpClientApi;
 };
 
@@ -234,9 +225,6 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
 
-  // Get loader API from global loader provider
-  const loader = useGlobalLoader();
-
   const result: AvailableConstantsContext = {
     closestShaFormApi: undefined,
     selectedRow,
@@ -248,7 +236,6 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
     httpClient,
     message,
     modal,
-    loader,
   };
   return result;
 };
@@ -320,7 +307,6 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message,
     metadataDispatcher,
     modal,
-    loader,
   } = fullContext;
   const shaFormApi = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
@@ -371,7 +357,6 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     http: () => httpClient,
     message: () => message,
     modal: () => modal,
-    loader: () => loader,
     fileSaver: () => FileSaver,
     data: () => (shaFormApi?.data ?? EMPTY_DATA) as TValues,
     form: () => shaFormApi,
