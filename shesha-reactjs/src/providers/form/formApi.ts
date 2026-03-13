@@ -28,7 +28,7 @@ type PublicFormSettings = Pick<IFormSettings, 'modelType'>;
  */
 export interface IFormApi<Values = any> {
   /**
-   * Add deferred update data to `data` object 
+   * Add deferred update data to `data` object
    * @param data model data object for updating
    * @returns The deferred update data
    */
@@ -41,7 +41,7 @@ export interface IFormApi<Values = any> {
   setFieldValue: (name: string, value: any) => void;
   /**
    * Set fields value
-   * @param values 
+   * @param values
    */
   setFieldsValue: (values: Values) => void;
   /**
@@ -59,6 +59,18 @@ export interface IFormApi<Values = any> {
    * @param payload data payload
    */
   setFormData: (payload: ISetFormDataPayload) => void;
+
+  /**
+   * Show blocking loader overlay scoped to this form
+   * @param message Optional message to display
+   * @returns Loader ID for tracking
+   */
+  showLoader: (message?: string) => string;
+
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
 
   /** antd form instance */
   formInstance?: FormInstance<Values>;
@@ -79,6 +91,10 @@ export interface IFormApi<Values = any> {
 
 export type ConfigurableFormPublicApi = Pick<ConfigurableFormInstance, 'setFormData' | 'form' | 'formSettings' | 'formMode' | 'formData' | 'modelMetadata'> & {
   shaForm?: IShaFormInstance;
+  loaderApi?: {
+    showLoader: (message?: string) => string;
+    hideLoaders: () => void;
+  };
 };
 
 class PublicFormApiWrapper implements IFormApi {
@@ -109,6 +125,12 @@ class PublicFormApiWrapper implements IFormApi {
   };
   setFormData = (payload: ISetFormDataPayload) => {
     this.#form?.setFormData(payload);
+  };
+  showLoader = (message?: string): string => {
+    return this.#form?.loaderApi?.showLoader(message) || '';
+  };
+  hideLoaders = () => {
+    this.#form?.loaderApi?.hideLoaders();
   };
   get shaForm(): IShaFormInstance {
     return this.#form?.shaForm;

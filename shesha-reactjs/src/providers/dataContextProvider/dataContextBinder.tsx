@@ -122,8 +122,10 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const getFull: ContextGetFull = () => {
     const data = getData();
     const api = getApi();
-    if (!!api) 
-      data.api = api;
+    if (!!api) {
+      // Spread api properties directly onto data for easy access (e.g., pageContext.showLoader())
+      Object.assign(data, api);
+    }
     if (includeSetFieldValue)
       data.setFieldValue = setFieldValue;
     return data;

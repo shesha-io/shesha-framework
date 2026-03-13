@@ -13,6 +13,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { ConfigurableFormInstance } from '@/interfaces';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { IShaFormInstance } from '@/providers/form/store/interfaces';
+import { FormLoaderProvider } from '@/providers/form/formLoaderProvider';
 
 export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
@@ -22,7 +23,7 @@ export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Va
   isSettingsForm?: boolean;
 } & SheshaFormProps;
 
-export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
+const ConfigurableFormInternal: FC<ConfigurableFormProps> = (props) => {
   const {
     formId,
     markup,
@@ -162,5 +163,13 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
         )}
       </ConfigurableComponent>
     </Spin>
+  );
+};
+
+export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
+  return (
+    <FormLoaderProvider>
+      <ConfigurableFormInternal {...props} />
+    </FormLoaderProvider>
   );
 };

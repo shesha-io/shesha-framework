@@ -6,6 +6,7 @@ import {  DataContextType, ContextOnChangeData, ContextGetFull } from "./context
 import DataContextBinder from "./dataContextBinder";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { useAvailableConstantsData } from "../form/utils";
+import { useGlobalLoader } from "../globalLoader";
 
 export interface IDataContextProviderProps { 
   id: string;
@@ -20,13 +21,13 @@ export interface IDataContextProviderProps {
 }
 
 export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (props) => {
-    
+
   const {
     children,
     id,
-    name, 
-    description, 
-    type, 
+    name,
+    description,
+    type,
     initialData,
     metadata,
   } = props;
@@ -38,6 +39,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
 
   const dataRef = useRef<any>({});
   const initialDataRef = useRef<any>(undefined);
+  const loaderApi = useGlobalLoader();
 
   const onChangeData = useRef<ContextOnChangeData>();
   if (props.onChangeData) {
@@ -57,7 +59,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const setFieldValue = (name: string, value: any) => {
     setValueByPropertyName(dataRef.current, name, value, false);
     const changedData = setValueByPropertyName({}, name, value, false);
-    
+
     onChangeContextData();
     onChangeAction(changedData);
   };
@@ -68,8 +70,14 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     const setFieldValueinternal = (name: string, value: any) => {
       setFieldValue(name, value);
     };
-    data.setFieldValue = setFieldValueinternal;
-    return data;
+
+    // Create a new object with both data and API methods
+    return {
+      ...data,
+      setFieldValue: setFieldValueinternal,
+      showLoader: loaderApi.showLoader,
+      hideLoaders: loaderApi.hideLoaders,
+    };
   };
 
   onChangeAction = (changedData: any) => {
@@ -121,6 +129,10 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
       getFieldValue={getFieldValue}
       setData={setData}
       getData={getData}
+      api={{
+        showLoader: loaderApi.showLoader,
+        hideLoaders: loaderApi.hideLoaders,
+      }}
     >
       {children}
     </DataContextBinder>
