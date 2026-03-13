@@ -90,4 +90,16 @@ export interface IFormApi<Values extends object = object> {
    * @param payload data payload
    */
   setFormData: (payload: ISetFormDataPayload<Values>) => void;
+
+  /**
+   * Show blocking loader overlay scoped to this form
+   * @param message Optional message to display
+   * @returns Loader ID for tracking
+   */
+  showLoader: (message?: string) => string;
+
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
 };
