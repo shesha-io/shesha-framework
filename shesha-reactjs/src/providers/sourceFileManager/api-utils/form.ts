@@ -66,7 +66,6 @@ export interface FormApi<Values = any> {
   /**
    * Show loader overlay
    * @param message Optional message to display
-   * @param mode Loader mode: 'blocking' prevents interaction, 'non-blocking' allows navigation
    * @returns Loader ID for tracking
    */
   showLoader: (message?: string) => string;
