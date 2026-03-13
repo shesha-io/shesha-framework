@@ -6,8 +6,21 @@ import {  DataContextType, ContextOnChangeData, ContextGetFull } from "./context
 import DataContextBinder from "./dataContextBinder";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { useAvailableConstantsData } from "../form/utils";
+import { useGlobalLoader } from "../globalLoader";
 
-export interface IDataContextProviderProps { 
+/**
+ * DataContextProvider props
+ *
+ * IMPORTANT: Reserved Property Names
+ * The following property names are reserved and will be injected by DataContextProvider:
+ * - 'setFieldValue': Method to update a single field in the context
+ * - 'showLoader': Method to display a loader overlay
+ * - 'hideLoaders': Method to hide loader overlays
+ *
+ * Do not use these names as field names in your data model to avoid property name collisions.
+ * If a collision is detected, a console warning will be logged and the data field will be overwritten.
+ */
+export interface IDataContextProviderProps {
   id: string;
   name: string;
   description?: string;
@@ -20,13 +33,13 @@ export interface IDataContextProviderProps {
 }
 
 export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (props) => {
-    
+
   const {
     children,
     id,
-    name, 
-    description, 
-    type, 
+    name,
+    description,
+    type,
     initialData,
     metadata,
   } = props;
@@ -38,6 +51,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
 
   const dataRef = useRef<any>({});
   const initialDataRef = useRef<any>(undefined);
+  const loaderApi = useGlobalLoader();
 
   const onChangeData = useRef<ContextOnChangeData>();
   if (props.onChangeData) {
@@ -57,7 +71,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const setFieldValue = (name: string, value: any) => {
     setValueByPropertyName(dataRef.current, name, value, false);
     const changedData = setValueByPropertyName({}, name, value, false);
-    
+
     onChangeContextData();
     onChangeAction(changedData);
   };
@@ -68,8 +82,28 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     const setFieldValueinternal = (name: string, value: any) => {
       setFieldValue(name, value);
     };
-    data.setFieldValue = setFieldValueinternal;
-    return data;
+
+    // Reserved property names: 'setFieldValue', 'showLoader', 'hideLoaders'
+    // These are injected by DataContextProvider and should not be used as data field names
+    // Warn if collision detected
+    const RESERVED_NAMES = ['setFieldValue', 'showLoader', 'hideLoaders'];
+    RESERVED_NAMES.forEach(reservedName => {
+      if (data && Object.prototype.hasOwnProperty.call(data, reservedName)) {
+        console.warn(
+          `[DataContextProvider] Property name collision detected: '${reservedName}' is a reserved property name. ` +
+          `The data field '${reservedName}' will be overwritten by the DataContext API method. ` +
+          `Please rename this field in your data model to avoid conflicts.`
+        );
+      }
+    });
+
+    // Create a new object with both data and API methods
+    return {
+      ...data,
+      setFieldValue: setFieldValueinternal,
+      showLoader: loaderApi.showLoader,
+      hideLoaders: loaderApi.hideLoaders,
+    };
   };
 
   onChangeAction = (changedData: any) => {
@@ -121,6 +155,10 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
       getFieldValue={getFieldValue}
       setData={setData}
       getData={getData}
+      api={{
+        showLoader: loaderApi.showLoader,
+        hideLoaders: loaderApi.hideLoaders,
+      }}
     >
       {children}
     </DataContextBinder>

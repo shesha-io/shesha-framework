@@ -18,6 +18,8 @@ import Link from 'next/link';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { FormLoader } from '@/providers/form/formLoader';
+import { useFormLoader } from '@/providers/form/formLoaderProvider';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -40,6 +42,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { styles } = useStyles();
   const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { activeLoaders } = useFormLoader();
   
 
   const { isDragging = false } = useFormDesignerState(false) ?? {};
@@ -97,28 +100,34 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { /*dataLoadingState,*/ dataSubmitState } = shaForm ?? {};
 
+  // Get the most recent active loader
+  const currentLoader = activeLoaders.length > 0 ? activeLoaders[activeLoaders.length - 1] : null;
+
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
-      <Spin
-        spinning={showDataSubmitIndicator && dataSubmitState?.status === 'loading'}
-        tip="Saving data..."
-        indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
-      >
-        <Form
-          form={form}
-          labelWrap
-          size={props.size}
-          onFinish={onFinishInternal}
-          onFinishFailed={onFinishFailedInternal}
-          onValuesChange={onValuesChangeInternal}
-          initialValues={initialValues}
-          className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
-          {...mergedProps}
+      <div style={{ position: 'relative' }}>
+        <Spin
+          spinning={showDataSubmitIndicator && dataSubmitState?.status === 'loading'}
+          tip="Saving data..."
+          indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
         >
-          <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
-          {children}
-        </Form>
-      </Spin>
+          <Form
+            form={form}
+            labelWrap
+            size={props.size}
+            onFinish={onFinishInternal}
+            onFinishFailed={onFinishFailedInternal}
+            onValuesChange={onValuesChangeInternal}
+            initialValues={initialValues}
+            className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
+            {...mergedProps}
+          >
+            <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+            {children}
+          </Form>
+        </Spin>
+        {currentLoader && <FormLoader message={currentLoader.message} />}
+      </div>
     </ComponentsContainerProvider>
   );
 };

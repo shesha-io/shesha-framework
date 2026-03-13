@@ -45,6 +45,7 @@ import { Result } from 'antd';
 import { EntityActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
 import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
 import { WebStorageContextProvider } from '../dataContextProvider/webStorageContext';
+import { GlobalLoaderProvider } from '../globalLoader';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -131,7 +132,8 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                             <FormDataSubmittersProvider>
                                               <CanvasProvider>
                                                 <DataSourcesProvider>
-                                                  <DynamicModalProvider>
+                                                  <GlobalLoaderProvider>
+                                                    <DynamicModalProvider>
                                                     {(status === 'inprogress' || status === 'waiting') && (
                                                       <SheshaLoader message={hint || 'Initializing...'} />
                                                     )}
@@ -150,7 +152,8 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                         //extra={<Button type="primary">Back Home</Button>}
                                                       />
                                                     )}
-                                                  </DynamicModalProvider>
+                                                    </DynamicModalProvider>
+                                                  </GlobalLoaderProvider>
                                                 </DataSourcesProvider>
                                               </CanvasProvider>
                                             </FormDataSubmittersProvider>
