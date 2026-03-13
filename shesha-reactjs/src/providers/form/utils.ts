@@ -1240,18 +1240,32 @@ export const pickStyleFromModel = (model: StyleBoxValue, ...args: unknown[]): CS
 };
 
 const emptyStyle = {};
-type StyleFunction = (data: object, globalState: object) => CSSProperties;
+type StyleFunction = (data: object, globalState: object) => CSSProperties | undefined;
 export const getStyle = (
   style: string,
   formData: object = {},
   globalState: object = {},
   defaultStyle: object = emptyStyle,
+  excludeMargin: boolean = false,
 ): CSSProperties => {
   if (!style)
     return defaultStyle;
 
-  const evaluator: StyleFunction = new Function('data, globalState', style) as StyleFunction;
-  return evaluator(formData, globalState);
+  const evaluator = new Function('data, globalState', style) as StyleFunction;
+  const allStyle = evaluator(formData, globalState);
+
+  if (!allStyle || typeof allStyle !== 'object')
+    return defaultStyle;
+  const { margin, marginTop, marginBottom, marginLeft, marginRight, ...rest } = allStyle;
+  return excludeMargin
+    ? rest : {
+      margin,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      ...rest,
+    };
 };
 
 export const getLayoutStyle = (model: Pick<IConfigurableFormComponent, "style" | "stylingBox">, args: { [key: string]: unknown }): CSSProperties => {

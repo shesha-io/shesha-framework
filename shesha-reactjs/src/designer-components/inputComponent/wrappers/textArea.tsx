@@ -13,7 +13,6 @@ export const TextAreaWrapper: FCUnwrapped<ITextAreaSettingsInputProps> = (props)
       rows={2}
       placeholder={placeholder}
       size={size}
-      style={{ top: '4px' }}
     />
   );
 };

@@ -53,6 +53,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   name: "Menu List",
   isInput: false,
   isOutput: false,
+  preserveDimensionsInDesigner: true,
   icon: <MenuUnfoldOutlined />,
   Factory: ({ model }) => {
     const { data } = useFormData();

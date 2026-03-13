@@ -246,6 +246,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 isDynamic={model.isDynamic}
                 extraFormId={model.extraFormId}
                 {...model}
+                container={model.container}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
                 downloadedFileStyles={model.styleDownloadedFiles ? downloadedFileFullStyle : {}}

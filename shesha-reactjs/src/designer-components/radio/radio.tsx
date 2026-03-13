@@ -24,6 +24,8 @@ const RadioComponent: RadioComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  // Radio has its own intrinsic size and should not be forced to fill wrapper
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
   calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
@@ -31,10 +33,8 @@ const RadioComponent: RadioComponentDefinition = {
     defaultValue: evaluateValue(model.defaultValue, allData.data),
   }),
   Factory: ({ model, calculatedModel }) => {
-    const { style, ...restProps } = model;
-
     return (
-      <ConfigurableFormItem model={restProps}>
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (e: any): void => {
@@ -44,7 +44,7 @@ const RadioComponent: RadioComponentDefinition = {
 
           return (
             <RadioGroup
-              {...restProps}
+              {...model}
               style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
               value={value}
               dataSourceUrl={calculatedModel.dataSourceUrl}

@@ -13,10 +13,6 @@ const SettingsInput: SettingsInputDefinition = {
   Factory: ({ model }) => {
     const { label, propertyName: property, tooltip: description, readOnly } = model;
 
-    // if (model.inputType === "dropdown") {
-    //   const dd = model.dropdownOptions;
-    // }
-
     return (
       model.hidden ? null
         : (

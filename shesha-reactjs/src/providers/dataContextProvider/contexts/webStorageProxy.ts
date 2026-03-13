@@ -19,13 +19,18 @@ export class WebStorageProxy {
   }
 
   private deserialize(value: string | null | undefined): unknown {
-    return isDefined(value)
-      ? value === 'undefined'
-        ? undefined
-        : value === 'null'
-          ? null
-          : JSON.parse(value)
-      : value;
+    try {
+      return isDefined(value)
+        ? value === 'undefined'
+          ? undefined
+          : value === 'null'
+            ? null
+            : JSON.parse(value)
+        : value;
+    } catch {
+      // hide error and return original value becsuse it's not json
+      return value;
+    }
   }
 
   setItem(key: string, value: unknown): void {

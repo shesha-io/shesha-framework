@@ -265,6 +265,8 @@ namespace Shesha.Scheduler
 
             await UpdateExecutionInfoAsync(execution =>
             {
+                this.TriggerId = execution.Trigger?.Id;
+
                 execution.Status = ExecutionStatus.InProgress;
 
                 LogFileName = !string.IsNullOrWhiteSpace(execution.LogFilePath) ? Path.GetFileName(execution.LogFilePath) : null;

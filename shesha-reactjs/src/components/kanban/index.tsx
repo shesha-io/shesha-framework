@@ -9,12 +9,14 @@ import { useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 import { jsonSafeParse } from '@/utils/object';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
 
   const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
+  const allData = useAvailableConstantsData();
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState([]);
@@ -163,7 +165,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       {!columns || columns.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex style={{ ...stylingBoxAsCSS, ...overflowStyle, overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
+        <Flex style={{ ...stylingBoxAsCSS, ...overflowStyle, overflowY: 'hidden', display: 'flex', gap: addPx(gap, allData) ?? '0px' }}>
           {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}

@@ -260,7 +260,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some((p) => p.key === 'id')
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
-        modalWidth: addPx(props.modalWidth),
+        modalWidth: addPx(props.modalWidth, executionContext),
         skipFetchData: props.skipFetchData ?? false,
         submitHttpVerb: props.submitHttpVerb ?? 'PUT',
       },
@@ -357,7 +357,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           entityId={entityId}
           entityType={entityType}
           getEntityUrl={props.getEntityUrl}
-          width={addPx(cappedWidth)}
+          width={addPx(cappedWidth, executionContext)}
           formIdentifier={formIdentifier}
           formType={formType}
           // Pass formArguments with entity ID to enable form's data loader (same algorithm as dialog mode)
@@ -376,7 +376,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>{displayTextByType}</span>
       </Button>
     );
-  }, [fetched, styles, props, displayText, formIdentifier, entityId, displayTextByType, dialogExecute, properties, entityType, formType]);
+  }, [fetched, styles, props, displayText, formIdentifier, entityId, displayTextByType, dialogExecute, properties, entityType, formType, executionContext]);
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (

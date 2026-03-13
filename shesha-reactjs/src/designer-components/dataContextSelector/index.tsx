@@ -42,6 +42,7 @@ const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorCompon
   isOutput: true,
   name: 'DataContext selector',
   icon: <CodeOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.string && dataFormat === StringFormats.singleline,
   Factory: ({ model }) => {
     return (

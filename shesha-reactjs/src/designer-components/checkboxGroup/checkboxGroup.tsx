@@ -32,6 +32,8 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
   isOutput: true,
   canBeJsSetting: true,
   name: 'Checkbox group',
+  // Checkbox has its own intrinsic size and should not be forced to fill wrapper
+  preserveDimensionsInDesigner: true,
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   calculateModel: (model, allData) => ({

@@ -57,6 +57,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   isOutput: true,
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.entityReference ||
     (dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),

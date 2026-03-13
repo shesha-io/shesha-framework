@@ -47,6 +47,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   icon: <BarChartOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: ["height"],
   Factory: ({ model: passedModel }) => {
     const { style, valueStyle, titleStyle, prefix, suffix, prefixIcon, suffixIcon, ...model } = passedModel;
     const allData = useAvailableConstantsData();

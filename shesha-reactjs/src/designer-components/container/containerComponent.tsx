@@ -1,7 +1,7 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ICommonContainerProps, IContainerComponentProps } from '@/interfaces';
-import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, useAvailableConstantsData } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { useFormData, useGlobalState } from '@/providers';
@@ -15,16 +15,23 @@ import { removeUndefinedProps } from '@/utils/object';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
 import { ContainerComponentDefinition } from './interfaces';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 const ContainerComponent: ContainerComponentDefinition = {
   type: 'container',
   isInput: false,
   name: 'Container',
   icon: <GroupOutlined />,
+  // Static empty array to prevent unnecessary re-renders when isDynamic is false
+  emptyComponents: [],
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
+    const allData = useAvailableConstantsData();
     const { styles, cx } = useStyles();
+
+    // For containers, use wrapperStyle instead of style for margins/dimensions
+    const containerStyles = useFormComponentStyles(model, { useWrapperStyle: true });
 
     const {
       dimensionsStyles,
@@ -32,19 +39,17 @@ const ContainerComponent: ContainerComponentDefinition = {
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
-    } = model.allStyles;
+    } = containerStyles;
 
-    const wrapperStyles = removeUndefinedProps({
+    const wrapperStyles = useMemo(() => removeUndefinedProps({
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
       ...stylingBoxAsCSS,
-    });
+    }), [dimensionsStyles, borderStyles, backgroundStyles, shadowStyles, stylingBoxAsCSS]);
 
-    if (model.hidden) return null;
-
-    const flexAndGridStyles = {
+    const flexAndGridStyles = useMemo(() => ({
       display: model.display,
       flexDirection: model.flexDirection,
       direction: model.direction,
@@ -57,25 +62,47 @@ const ContainerComponent: ContainerComponentDefinition = {
       noDefaultStyling: model.noDefaultStyling,
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
-      gap: addPx(model.gap),
-    };
+      gap: addPx(model.gap, allData),
+    }), [
+      model.display,
+      model.flexDirection,
+      model.direction,
+      model.justifyContent,
+      model.alignItems,
+      model.alignSelf,
+      model.justifyItems,
+      model.textJustify,
+      model.justifySelf,
+      model.noDefaultStyling,
+      model.gridColumnsCount,
+      model.flexWrap,
+      model.gap,
+      allData,
+    ]);
+
+    const wrapperStyle = useMemo(() => ({
+      ...wrapperStyles,
+      alignSelf: model.alignSelf,
+      justifySelf: model.justifySelf,
+      ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
+    }), [model, formData, globalState]);
+
+    const style = useMemo(() => ({
+      ...getStyle(model?.style, formData),
+      height: '100%',
+    }), [model?.style, formData]);
+
+    if (model.hidden) return null;
 
     return (
       <ParentProvider model={model} name={`ContainerComponent-${model.id}`}>
         <ComponentsContainer
           containerId={model.id}
-          wrapperStyle={{
-            ...wrapperStyles,
-            alignSelf: model.alignSelf,
-            justifySelf: model.justifySelf,
-            ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
-          }}
-          style={{
-            ...getStyle(model?.style, formData),
-          }}
+          wrapperStyle={wrapperStyle}
+          style={style}
           noDefaultStyling={model.noDefaultStyling}
           className={cx(model.className, styles.container)}
-          dynamicComponents={model?.isDynamic ? model?.components : []}
+          dynamicComponents={model?.isDynamic ? model?.components : ContainerComponent.emptyComponents}
           {...flexAndGridStyles}
         />
       </ParentProvider>

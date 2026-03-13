@@ -99,6 +99,8 @@ export interface IStyleType {
   secondaryTextColor?: string | undefined;
   overflow?: boolean | "dropdown" | "menu" | "scroll" | "auto"; // TODO V1: check and fix values, it look slike a mix of css and component specific values
   hideScrollBar?: boolean;
+  autoWidth?: boolean;
+  autoHeight?: boolean;
 }
 
 export interface IInputStyles extends IStyleType {
@@ -218,6 +220,8 @@ export interface IFormComponentStyles {
   appearanceStyle: CSSProperties;
   /** Styles assempled from {...appearanceStyle, ...jsStyle} */
   fullStyle: CSSProperties;
+  /** Margin styles extracted from fullStyle for wrapper use */
+  margins: CSSProperties;
 }
 
 /**
@@ -229,7 +233,8 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   IComponentBindingProps,
   IComponentLabelProps,
   IComponentVisibilityProps,
-  IComponentRuntimeProps {
+  IComponentRuntimeProps,
+  IStyleType {
   /** Type of the component */
   type: string;
 
@@ -266,6 +271,8 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   /** Default css style applied as string */
   stylingBox?: string | undefined;
 
+  wrapperStyle?: string;
+
   noDataText?: string;
 
   noDataIcon?: string;
@@ -291,6 +298,7 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   enableStyleOnReadonly?: boolean | undefined;
 
   listType?: 'text' | 'thumbnail';
+
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
@@ -516,3 +524,12 @@ export type GenericDictionary = { [key: string]: unknown };
 export const STYLE_BOX_CSS_POPERTIES = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
 export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];
 export type StyleBoxValue = Pick<CSSProperties, StyleBoxCssProperties>;
+
+export interface IContainerConfig {
+  dimensions?: IDimensionsValue;
+  stylingBox?: string;
+  style?: string;
+}
+export interface IComponentModelProps extends IConfigurableFormComponent {
+  container?: IContainerConfig;
+}

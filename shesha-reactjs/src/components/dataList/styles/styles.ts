@@ -21,10 +21,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             margin: unset !important;
         }
 
-       .ant-collapse>.ant-collapse-item >.ant-collapse-header {
-             margin: 4px !important;
-        }
-
         .ant-divider-horizontal{
             min-width: unset !important;
         }

@@ -12,5 +12,6 @@ export const defaultStyles = (prev: IImageProps): IStyleType => {
       },
       radius: { all: borderRadius },
     },
+    dimensions: { width: '100%', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
   };
 };
