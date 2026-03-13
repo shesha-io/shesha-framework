@@ -38,8 +38,8 @@ type ModalWarningArgs = {
 };
 
 export interface IModalApi {
-  showModalFormAsync: <TResponse = void>(args: ShowModalFormArgs) => Promise<TResponse | undefined>;
-  showModalContentAsync: <TResponse = void>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings) => Promise<TResponse | undefined>;
+  showModalFormAsync: <TResponse extends object = object>(args: ShowModalFormArgs) => Promise<TResponse | undefined>;
+  showModalContentAsync: <TResponse extends object = object>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings) => Promise<TResponse | undefined>;
   confirmYesNoAsync: (args: ConfirmArgs) => Promise<boolean>;
   warning: (args: ModalWarningArgs) => Promise<void>;
 };
@@ -100,7 +100,7 @@ export class ModalApi implements IModalApi {
     });
   };
 
-  showModalFormAsync = <TResponse = void>(args: ShowModalFormArgs): Promise<TResponse | undefined> => {
+  showModalFormAsync = <TResponse extends object = object>(args: ShowModalFormArgs): Promise<TResponse | undefined> => {
     const modalId = nanoid();
 
     return new Promise((resolve, reject) => {
@@ -131,10 +131,10 @@ export class ModalApi implements IModalApi {
     });
   };
 
-  showModalContentAsync = <TResponse = void>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings): Promise<TResponse | undefined> => {
+  showModalContentAsync = <TResponse extends object = object>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings): Promise<TResponse | undefined> => {
     const modalId = nanoid();
 
-    return new Promise((resolve, reject) => {
+    return new Promise<TResponse | undefined>((resolve, reject) => {
       const removeModal = (): void => {
         this._removeModal(modalId);
       };

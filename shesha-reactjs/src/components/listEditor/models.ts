@@ -4,12 +4,11 @@ export type ListMode = 'create' | 'read' | 'update';
 
 export interface ListItem {
   id?: string;
-  itemType?: 'item' | 'group';
-  itemSubType?: 'button' | 'item' | 'divider' | 'dynamic' | 'separator' | 'line';
 }
 
-export interface ListItemWithId extends ListItem {
+export interface ListItemWithId {
   childItems?: ListItemWithId[];
+  itemType?: 'item' | 'group';
   id: string;
 }
 

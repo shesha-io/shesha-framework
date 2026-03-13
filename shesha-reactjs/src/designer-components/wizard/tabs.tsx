@@ -71,7 +71,10 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         // render only current step
         content: current === index
           ? (
-            <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
+            <ParentProvider
+              name="WizardStep"
+              model={{ ...model, readOnly: isDisabledByCondition }}
+            >
               <ComponentsContainer wrapperStyle={{ height: '100%', display: 'grid', ...getOverflowStyle(model.overflow ?? true, model.hideScrollBar ?? false) }} containerId={id} dynamicComponents={isDynamic ? components : []} />
             </ParentProvider>
           )
@@ -98,7 +101,10 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
       data={{ current, currentStep, visibleSteps }}
       api={{ back, cancel, content, done, next, setStep }}
     >
-      <ParentProvider model={model}>
+      <ParentProvider
+        name="Wizard"
+        model={model}
+      >
         <div className={styles.shaWizard}>
           <div className={classNames(styles.shaWizardContainer, { vertical: direction === 'vertical' })}>
             <Steps

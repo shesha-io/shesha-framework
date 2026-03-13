@@ -4,7 +4,7 @@ import { Popover, Skeleton, Button } from 'antd';
 import { DateDisplay } from '@/components/';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import filesize from 'filesize';
-import { useStoredFile } from '@/providers';
+import { useFileUpload } from '@/providers';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 interface IProps {
@@ -21,7 +21,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
     lazy: true,
   });
 
-  const { downloadFile } = useStoredFile();
+  const { downloadFile } = useFileUpload();
 
   if (fileId == null) return null;
 

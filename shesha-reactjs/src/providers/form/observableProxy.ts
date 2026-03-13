@@ -1,9 +1,11 @@
-export type ValueAccessor<TValue = any> = () => TValue;
+import { isDefined } from "@/utils/nullables";
+
+export type ValueAccessor<TValue = unknown> = () => TValue;
 
 export interface ProxyWithRefresh<T> {
   refreshAccessors: (accessors: ProxyPropertiesAccessors<T>) => void;
   addAccessor: (key: string, accessor: ValueAccessor<T>) => void;
-  setAdditionalData: (data: any) => void;
+  setAdditionalData: (data: object) => void;
 };
 
 export type ProxyPropertiesAccessors<Type> = {
@@ -15,9 +17,9 @@ export type TypedProxy<T> = T & ProxyWithRefresh<T>;
 export class ObservableProxy<T> implements ProxyWithRefresh<T> {
   private _touchedProps: Set<string>;
 
-  private _propAccessors: Map<string, ValueAccessor<any>>;
+  private _propAccessors: Map<string, ValueAccessor<unknown>>;
 
-  getPropertyValue(propName: string): any {
+  getPropertyValue(propName: string): unknown {
     if (!this._propAccessors.has(propName))
       return undefined;
 
@@ -47,9 +49,9 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
   };
 
   setAdditionalData = (data: object): void => {
-    for (let key in data)
+    for (const key in data)
       if (Object.hasOwn(data, key))
-        this.addAccessor(key, () => data[key]);
+        this.addAccessor(key, () => (data as Record<string, unknown>)[key]);
   };
 
   constructor(accessors: ProxyPropertiesAccessors<T>) {
@@ -71,8 +73,8 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
         if (target._propAccessors.has(propertyName))
           return target.getPropertyValue(propertyName);
 
-        if (propertyName in target) {
-          const result = target[name];
+        if (name in target) {
+          const result = target[name as keyof typeof target];
           return typeof result === 'function' ? result.bind(target) : result;
         }
 
@@ -95,5 +97,11 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
 
 export const makeObservableProxy = <T = object>(accessors: ProxyPropertiesAccessors<T>): TypedProxy<T> => {
   const result = new ObservableProxy(accessors);
-  return (result as any) as TypedProxy<T>;
+  return result as unknown as TypedProxy<T>; // TODO V1: review types
 };
+
+export type HasPropsAccessor = {
+  _propAccessors: Map<string, ValueAccessor<unknown>>;
+};
+
+export const isHasPropsAccessor = (obj: unknown): obj is HasPropsAccessor => isDefined(obj) && typeof (obj) === "object" && "_propAccessors" in obj && obj._propAccessors instanceof Map;

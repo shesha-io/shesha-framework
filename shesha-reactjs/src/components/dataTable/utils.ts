@@ -45,7 +45,7 @@ export const getAnchoredCellStyleAccessor = (
     // use first row cell values to calculate the left shift
 
     if (anchored?.direction === 'right') {
-      const totalColumns = row?.length;
+      const totalColumns = row.length;
 
       rightColumn.shadowPosition = totalColumns - calculateTotalColumnsOnFixed(row, 'right');
       rightColumn.shift = calculatePositionShift(row, index, totalColumns - 1)?.reduce(

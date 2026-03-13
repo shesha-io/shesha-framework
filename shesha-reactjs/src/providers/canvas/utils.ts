@@ -98,7 +98,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   // 2 elements: sizes[0] is main area (no left panel)
   // 3 elements: sizes[1] is main area (standard case)
   const mainAreaIndex = sizes.length <= 2 ? 0 : 1;
-  const availableWidthPercent = sizes[mainAreaIndex];
+  const availableWidthPercent = sizes[mainAreaIndex] ?? 50;
 
   if (typeof window === 'undefined') {
     return 100;
@@ -113,10 +113,8 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     offset = configTreePanelSize;
   } else if (viewType === 'page') {
     offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
-  } else if (viewType === 'modal') {
-    offset = DEFAULT_OPTIONS.modalMargins;
   } else {
-    offset = SIDEBAR_WIDTH.MINIMAL;
+    offset = DEFAULT_OPTIONS.modalMargins;
   }
 
   const viewportWidth = Math.max(0, windowWidth - offset - guttersAndScrollersSize);
@@ -195,7 +193,7 @@ export const usePinchZoom = (
 
 
   useEffect(() => {
-    const element = elementRef?.current;
+    const element = elementRef.current;
     if (!element) return undefined;
 
     // Wheel zoom (ctrl + wheel)

@@ -1,4 +1,4 @@
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import camelcase from 'camelcase';
 
 /* tslint:disable:no-empty-character-class */
@@ -85,13 +85,16 @@ export function getLastSection(separator: string, value: string): string {
     : '';
 }
 
-export const getNumericValue = (localValue: number | string): number => {
+
+export const getNumberOrUndefined = (value: unknown | undefined): number | undefined => {
   try {
-    return Number(localValue);
+    return isDefined(value) ? Number(value) : undefined;
   } catch {
-    return 0;
+    return undefined;
   }
 };
+
+export const getNumericValue = (localValue: number | string): number => getNumberOrUndefined(localValue) ?? 0;
 
 export interface CamelCaseOptions {
   /** Keep the leading separator: `_foo_bar` → `_fooBar`.

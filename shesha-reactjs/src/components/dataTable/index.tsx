@@ -7,14 +7,13 @@ import {
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
-  useDataTableStore,
+  useDataTableStoreOrUndefined,
   useHttpClient,
   useMetadata,
   useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
-import { removeUndefinedProperties } from '@/utils/array';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
 import { ReactTable } from '@/components/reactTable';
 import {
@@ -152,8 +151,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onMultiRowSelect,
   tableRef,
   onRowsChanged,
-  onExportSuccess,
-  onExportError,
   onFetchDataSuccess,
   onSelectedIdsChanged,
   allowReordering,
@@ -209,7 +206,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   columnsMismatch,
   ...props
 }) => {
-  const store = useDataTableStore(false);
+  const store = useDataTableStoreOrUndefined();
   const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
   const multiSelect = mode === 'multiple';
   const appContext = useAvailableConstantsData();
@@ -245,8 +242,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     changeSelectedIds,
     setRowData,
     setSelectedRow,
-    succeeded: { exportToExcel: exportToExcelSuccess },
-    error: { exportToExcel: exportToExcelError },
     grouping,
     sortMode,
     strictSortBy,
@@ -328,18 +323,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onFetchDataSuccess();
     }
   }, [isFetchingTableData]);
-
-  useEffect(() => {
-    if (exportToExcelSuccess && onExportSuccess) {
-      onExportSuccess();
-    }
-  }, [exportToExcelSuccess]);
-
-  useEffect(() => {
-    if (exportToExcelError && onExportError) {
-      onExportError();
-    }
-  }, [exportToExcelError]);
 
   const handleSelectRow = onSelectRow || onSelectRowDeprecated;
 
@@ -535,8 +518,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
         const cellStyleAccessor = getCellStyleAccessor(columnItem);
         const cellRenderer = getCellRenderer(columnItem, columnItem.metadata, shaForm);
+
         const column: DataTableColumn<any> = {
           ...columnItem,
+          // filter: columnItem.filter, // TODO V1: review and remove if unused
           accessor: camelcaseDotNotation(columnItem.accessor),
           Header: columnItem.header,
           minWidth: Boolean(columnItem.minWidth) ? columnItem.minWidth : undefined,
@@ -550,7 +535,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           originalConfig: columnItem,
           cellStyleAccessor: cellStyleAccessor,
         };
-        return removeUndefinedProperties(column) as DataTableColumn<any>;
+        return column;
       });
     return localPreparedColumns;
   }, [

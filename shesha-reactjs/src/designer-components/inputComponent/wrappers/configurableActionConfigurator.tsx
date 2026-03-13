@@ -1,8 +1,9 @@
 import { IConfigurableActionConfiguratorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 
-export const ConfigurableActionConfiguratorWrapper: FC<IConfigurableActionConfiguratorSettingsInputProps> = (props) => {
+export const ConfigurableActionConfiguratorWrapper: FCUnwrapped<IConfigurableActionConfiguratorSettingsInputProps> = (props) => {
   const { value, onChange, label, hideLabel, allowedActions } = props;
   return (
     <ConfigurableActionConfigurator

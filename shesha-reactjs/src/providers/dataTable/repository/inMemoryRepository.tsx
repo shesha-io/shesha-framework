@@ -1,17 +1,16 @@
 import { IConfigurableColumnsProps, isDataColumn } from "@/providers/datatableColumnsConfigurator/models";
-import React, { ComponentType, useCallback, useMemo, FC } from "react";
-
+import React, { useCallback, useMemo, FC, PropsWithChildren } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
-import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
-import { IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";
-import { wrapDisplayName } from "@/utils/react";
+import { IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
+import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps, IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";
 import { IModelMetadata, isJsonEntityMetadata, isObjectMetadata } from "@/interfaces/metadata";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
+import { unsafeGetValueByPropertyName } from "@/utils/object";
 
 export interface IWithInMemoryRepositoryArgs {
   valueAccessor: () => object[];
   onChange: (value: object[]) => void;
-  metadata?: IModelMetadata;
+  metadata?: IModelMetadata | undefined;
   metadataDispatcher: IMetadataDispatcher;
 }
 
@@ -24,14 +23,11 @@ const filterRows = ({ rows, columns, quickSearch }: FilterRowsArgs): object[] =>
   const lowerQuickSearch = quickSearch.toLowerCase();
 
   return rows.filter((row) => {
-    if (!row)
-      return false;
-
     return columns.some((col) => {
       if (!col.propertyName)
         return false;
 
-      const value = row[col.propertyName];
+      const value = unsafeGetValueByPropertyName(row, col.propertyName);
       return value && typeof (value) === 'string' && value.toLowerCase().includes(lowerQuickSearch);
     });
   });
@@ -69,7 +65,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
   const fetch = (payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
     const { currentPage, pageSize, columns, quickSearch /* , columns, filter,  sorting*/ } = payload;
 
-    const allRows = args.valueAccessor() ?? [];
+    const allRows = args.valueAccessor();
 
     // apply filter
     let filteredRows = filterRows({ rows: allRows, quickSearch, columns });
@@ -106,10 +102,10 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
           const propertyMeta = await metadataDispatcher.getPropertyFromMetadata({ metadata, propertyPath: col.propertyName });
           if (propertyMeta) {
             convertedDataCol.dataType = propertyMeta.dataType;
-            convertedDataCol.dataFormat = propertyMeta.dataFormat;
+            convertedDataCol.dataFormat = propertyMeta.dataFormat ?? null;
             convertedDataCol.metadata = propertyMeta;
-            convertedDataCol.referenceListModule = propertyMeta.referenceListModule;
-            convertedDataCol.referenceListName = propertyMeta.referenceListName;
+            convertedDataCol.referenceListModule = propertyMeta.referenceListModule ?? null;
+            convertedDataCol.referenceListName = propertyMeta.referenceListName ?? null;
           }
         }
 
@@ -120,24 +116,24 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
     return converted;
   };
 
-  const performUpdate = (rowIndex: number, data: any): Promise<any> => {
-    const newRows = [...args.valueAccessor() ?? []];
+  const performUpdate = <TData extends object = object>(rowIndex: number, data: TData): Promise<TData> => {
+    const newRows = [...args.valueAccessor()];
     newRows[rowIndex] = data;
     args.onChange(newRows);
 
     return Promise.resolve(data);
   };
 
-  const performDelete = (rowIndex: number, data: any): Promise<any> => {
-    const newRows = [...args.valueAccessor() ?? []];
+  const performDelete = <TData extends object = object>(rowIndex: number, data: TData): Promise<TData> => {
+    const newRows = [...args.valueAccessor()];
     newRows.splice(rowIndex, 1);
     args.onChange(newRows);
 
     return Promise.resolve(data);
   };
 
-  const performCreate = (_rowIndex: number, data: any): Promise<any> => {
-    const newRows = [...args.valueAccessor() ?? []];
+  const performCreate = <TData extends object = object>(_rowIndex: number, data: TData): Promise<TData> => {
+    const newRows = [...args.valueAccessor()];
     newRows.push(data);
 
     args.onChange(newRows);
@@ -175,38 +171,23 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
   return repository;
 };
 
-export const useInMemoryRepository = (args: IWithInMemoryRepositoryArgs): IRepository => useMemo<IRepository>(() => createRepository(args), []);
-
-export function withInMemoryRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithInMemoryRepositoryArgs): FC<WrappedProps> {
-  const { valueAccessor, onChange } = args;
-
-  return wrapDisplayName((props) => {
-    const metadataDispatcher = useMetadataDispatcher();
-    const repository = useInMemoryRepository({ valueAccessor, onChange, metadataDispatcher });
-
-    return (<WrappedComponent {...props} repository={repository} modelType={null} />);
-  }, "withInMemoryRepository");
-};
-
+export const useInMemoryRepository = (args: IWithInMemoryRepositoryArgs): IRepository => useMemo<IRepository>(() => createRepository(args), [args]);
 
 export interface IWithFormFieldRepositoryArgs {
   propertyName: string;
   getFieldValue?: (propertyName: string) => object[];
-  onChange?: (...args: any[]) => void;
+  onChange?: (...args: unknown[]) => void;
 }
-export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>): FC<WrappedProps> {
-  return wrapDisplayName((props) => {
-    const { propertyName, getFieldValue, onChange, metadata } = props as IHasFormDataSourceConfig;
-    const metadataDispatcher = useMetadataDispatcher();
 
-    const valueAccessor = useCallback(() => getFieldValue(propertyName), [propertyName]);
-    const onChangeAccessor = useCallback((newValue: object[]) => {
-      if (onChange)
-        onChange(newValue);
-    }, [propertyName]);
+export const FormDataSourceTable: FC<IHasFormDataSourceConfig & PropsWithChildren<Omit<IDataTableProviderWithRepositoryProps, 'repository'>>> = (props) => {
+  const { propertyName, getFieldValue, onChange, metadata, ...restProps } = props;
+  const metadataDispatcher = useMetadataDispatcher();
 
-    const repository = useInMemoryRepository({ valueAccessor, onChange: onChangeAccessor, metadata, metadataDispatcher });
+  const valueAccessor = useCallback(() => getFieldValue(propertyName), [getFieldValue, propertyName]);
 
-    return (<WrappedComponent {...props} repository={repository} modelType={null} />);
-  }, "withFormFieldRepository");
+  const repository = useInMemoryRepository({ valueAccessor, onChange, metadata, metadataDispatcher });
+
+  return (
+    <DataTableProviderWithRepository {...restProps} repository={repository} />
+  );
 };

@@ -1,9 +1,5 @@
-import axios from 'axios';
-import { IHasEntityDataSourceConfig, useMetadataDispatcher, useSheshaApplication } from '@/providers';
-import { IResult } from '@/interfaces/result';
-import { IHttpHeadersDictionary } from '@/providers/sheshaApplication/contexts';
-import qs from 'qs';
-import React, { ComponentType, useMemo, FC } from 'react';
+import { DataTableProviderWithRepository, HttpClientApi, IDataTableProviderWithRepositoryProps, IUrlDataSourceConfig, useHttpClient, useMetadataDispatcher } from '@/providers';
+import React, { useMemo, FC, PropsWithChildren } from 'react';
 
 import { camelcaseDotNotation } from '@/utils/string';
 import {
@@ -14,15 +10,15 @@ import {
   ITableDataInternalResponse,
   ITableDataResponse,
 } from '../interfaces';
-import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
+import { IRepository, RowsReorderPayload } from './interfaces';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
-import { getUrlKeyParam } from '@/utils';
-import { wrapDisplayName } from '@/utils/react';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { buildUrl } from '@/utils';
+import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -33,15 +29,14 @@ export const UrlRepositoryType = 'url-repository';
 export type IUrlRepository = IRepository;
 
 interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
-  backendUrl: string;
-  httpHeaders: IHttpHeadersDictionary;
+  httpClient: HttpClientApi;
   metadataDispatcher: IMetadataDispatcher;
   apiHelper: IEntityEndpointsEvaluator;
-  mutator: IUseMutateResponse<any>;
+  mutator: IUseMutateResponse<unknown>;
 }
 
 const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
-  const { backendUrl, httpHeaders, getListUrl } = args;
+  const { httpClient, getListUrl } = args;
 
   const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
     const result: string[] = [];
@@ -87,61 +82,44 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     return result;
   };
 
-  /** Convert back-end response to a form that is used by the data source */
-  const convertListDataResponse = (
-    response: IResult<ITableDataResponse>,
-    pageSize: number,
-  ): ITableDataInternalResponse => {
-    if (!isAjaxSuccessResponse(response))
-      throw 'Failed to parse response';
+  const fetch = async (payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
+    // Check if getListUrl is empty then return empty result
+    if (isNullOrWhiteSpace(getListUrl))
+      return Promise.resolve({ totalRows: 0, totalPages: 1, rows: [], totalRowsBeforeFilter: 0 });
 
-    const items = response.result.items ?? (Array.isArray(response.result) ? response.result : null);
-    const totalCount = response.result.totalCount ?? items?.length;
+    const getDataPayload = convertPayload(payload);
 
-    const internalResult: ITableDataInternalResponse = {
+    const getDataUrl = buildUrl(getListUrl, getDataPayload);
+
+    const response = await httpClient.get<IAjaxResponse<ITableDataResponse>>(getDataUrl);
+    const dataResponse = extractAjaxResponse(response.data);
+
+    const { pageSize } = payload;
+    const { items, totalCount } = dataResponse;
+
+    const result: ITableDataInternalResponse = {
       totalRows: totalCount,
       totalPages: Math.ceil(totalCount / pageSize),
       rows: items,
       totalRowsBeforeFilter: 0,
     };
-
-    return internalResult;
-  };
-
-  const fetch = (payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
-    // Check if getListUrl is empty then return empty result
-    if (getListUrl === null || getListUrl === undefined)
-      return Promise.resolve({ totalRows: 0, totalPages: 1, rows: [], totalRowsBeforeFilter: 0 });
-
-    const getDataPayload = convertPayload(payload);
-    const key = getUrlKeyParam(getListUrl);
-
-    const getDataUrl = `${backendUrl}${getListUrl}${key}${qs.stringify(getDataPayload, { allowDots: true })}`;
-
-    return axios({
-      url: getDataUrl,
-      method: 'GET',
-      headers: httpHeaders,
-    }).then((response) => {
-      const dataResponse = response.data as IResult<ITableDataResponse>;
-      return convertListDataResponse(dataResponse, payload.pageSize);
-    });
+    return result;
   };
 
   const prepareColumns = (_: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
     return Promise.resolve([]);
   };
 
-  const performUpdate = (_rowIndex: number, _: any): Promise<any> => {
-    return Promise.resolve();
+  const performUpdate = <TData extends object = object>(_rowIndex: number, _: TData): Promise<TData> => {
+    throw new Error(`Updating is not supported by the repository '${UrlRepositoryType}'`);
   };
 
-  const performDelete = (_rowIndex: number, _: any): Promise<any> => {
-    return Promise.resolve();
+  const performDelete = <TData extends object = object>(_rowIndex: number, _: TData): Promise<TData> => {
+    throw new Error(`Deleting is not supported by the repository '${UrlRepositoryType}'`);
   };
 
-  const performCreate = (_rowIndex: number, _: any): Promise<any> => {
-    return Promise.resolve();
+  const performCreate = <TData extends object = object>(_rowIndex: number, _: TData): Promise<TData> => {
+    throw new Error(`Creating is not supported by the repository '${UrlRepositoryType}'`);
   };
 
   const exportToExcel = (_: IGetListDataPayload): Promise<void> => {
@@ -166,7 +144,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
 };
 
 export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository => {
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const metadataDispatcher = useMetadataDispatcher();
   const apiHelper = useModelApiHelper();
   const mutator = useMutate();
@@ -174,24 +152,21 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
   const repository = useMemo<IUrlRepository>(() => {
     return createRepository({
       ...args,
-      backendUrl,
-      httpHeaders,
+      httpClient,
       metadataDispatcher,
       apiHelper,
       mutator,
     });
-  }, [args.getListUrl, backendUrl, httpHeaders]);
+  }, [apiHelper, args, httpClient, metadataDispatcher, mutator]);
 
   return repository;
 };
 
-export function withUrlRepository<WrappedProps>(
-  WrappedComponent: ComponentType<WrappedProps & IHasRepository>,
-): FC<WrappedProps> {
-  return wrapDisplayName((props) => {
-    const { getDataPath } = props as IHasEntityDataSourceConfig;
-    const repository = useUrlRepository({ getListUrl: getDataPath });
+export const UrlDataSourceTable: FC<IUrlDataSourceConfig & PropsWithChildren<Omit<IDataTableProviderWithRepositoryProps, 'repository'>>> = (props) => {
+  const { getDataPath = "", ...restProps } = props;
+  const repository = useUrlRepository({ getListUrl: getDataPath });
 
-    return <WrappedComponent {...props} repository={repository} />;
-  }, "withUrlRepository");
-}
+  return (
+    <DataTableProviderWithRepository {...restProps} repository={repository} />
+  );
+};

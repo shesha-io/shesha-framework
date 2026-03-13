@@ -6,6 +6,7 @@ using Abp.ObjectMapping;
 using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Abp.UI;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain;
@@ -14,6 +15,7 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Mvc;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.StoredFiles.Dto;
@@ -93,7 +95,7 @@ namespace Shesha.StoredFiles
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
 
-            return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
+            return new ShaFileStreamResult(fileContents, fileVersion.FileType.GetContentType()) { FileDownloadName = fileVersion.FileName };
         }
 
         [HttpGet, Route("HasDownloaded")]
@@ -540,7 +542,7 @@ namespace Shesha.StoredFiles
                     if (lastVersion != null)
                         await _fileService.MarkDownloadedAsync(lastVersion);
                 }
-                return File(compressedStream, "multipart/x-zip", "files.zip");
+                return new ShaFileStreamResult(compressedStream, "multipart/x-zip") { FileDownloadName = "files.zip" };
             }
 
             throw new AbpValidationException("Files not found");
@@ -868,7 +870,8 @@ namespace Shesha.StoredFiles
             // Always PNG
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileVersion.FileName);
             string fileName = $"{fileNameWithoutExtension}_w{width}h{height}.png";
-            return File(resultStream, "image/png", fileName);
+
+            return new ShaFileStreamResult(resultStream, "image/png") { FileDownloadName = fileName };
         }
 
         private static SKBitmap GenerateThumbnail(SKBitmap originalImage, int width, int height, FitOptions fitOption)

@@ -25,21 +25,26 @@ import {
   ITableRendererColumn,
   SortDirection,
 } from './interfaces';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 // Filters should read properties as camelCase ?:(
 export const hasDynamicFilter = (filters: IStoredFilter[]): boolean => {
-  if (filters?.length === 0) return false;
+  if (filters.length === 0) return false;
 
-  const found = filters?.find(({ expression }) => {
-    const stringExpression = typeof expression === 'string' ? expression : JSON.stringify(expression);
+  const found = filters.some(({ expression }) => {
+    const stringExpression = isDefined(expression)
+      ? typeof expression === 'string'
+        ? expression
+        : JSON.stringify(expression)
+      : undefined;
 
-    return stringExpression?.includes('{{') && stringExpression?.includes('}}');
+    return !isNullOrWhiteSpace(stringExpression) && stringExpression.includes('{{') && stringExpression.includes('}}');
   });
 
-  return Boolean(found);
+  return found;
 };
 
-export const sortDirection2ColumnSorting = (value?: SortDirection): ColumnSorting => {
+export const sortDirection2ColumnSorting = (value?: SortDirection): ColumnSorting | null => {
   switch (value) {
     case 0:
       return 'asc';
@@ -49,7 +54,7 @@ export const sortDirection2ColumnSorting = (value?: SortDirection): ColumnSortin
       return null;
   }
 };
-export const columnSorting2SortDirection = (value?: ColumnSorting): SortDirection => {
+export const columnSorting2SortDirection = (value?: ColumnSorting): SortDirection | null => {
   switch (value) {
     case 'asc':
       return 0;
@@ -64,7 +69,7 @@ export const ADVANCEDFILTER_DATE_FORMAT = 'DD/MM/YYYY';
 export const ADVANCEDFILTER_DATETIME_FORMAT = 'DD/MM/YYYY HH:mm';
 export const ADVANCEDFILTER_TIME_FORMAT = 'HH:mm';
 
-export const getMoment = (value: unknown, format: string): Moment => {
+export const getMoment = (value: unknown, format: string): Moment | undefined => {
   if (value === null || value === undefined) return undefined;
 
   if (isMoment(value)) return value;
@@ -72,7 +77,7 @@ export const getMoment = (value: unknown, format: string): Moment => {
   return moment(value as string, format).isValid() ? moment.utc(value as string, format) : undefined;
 };
 
-export const getDuration = (value: unknown): Duration => {
+export const getDuration = (value: unknown): Duration | undefined => {
   if (value === null || value === undefined) return undefined;
 
   if (isDuration(value)) return value;
@@ -81,8 +86,8 @@ export const getDuration = (value: unknown): Duration => {
   return durationValue.isValid() ? durationValue : undefined;
 };
 
-const convertFilterValue = (value: any, column: ITableDataColumn): any => {
-  switch (column?.dataType) {
+const convertFilterValue = (value: unknown, column: ITableDataColumn): unknown => {
+  switch (column.dataType) {
     case 'date':
       return getMoment(value, ADVANCEDFILTER_DATE_FORMAT)?.format();
     case 'date-time':
@@ -93,22 +98,22 @@ const convertFilterValue = (value: any, column: ITableDataColumn): any => {
   return value;
 };
 
-export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): object[] => {
-  if (!advancedFilter || advancedFilter.length === 0) return null;
+export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): object[] | null => {
+  if (advancedFilter.length === 0) return null;
 
   const filterItems = advancedFilter
-    .map((f) => {
+    .map<object | null>((f) => {
       const property = { var: f.columnId };
-      const column = columns.find((c) => c.id === f.columnId && c.columnType === 'data') as ITableDataColumn;
+      const column = columns.find((c) => c.id === f.columnId);
       // skip incorrect columns
-      if (!column || !column.dataType) return null;
+      if (!column || !isDataColumn(column)) return null;
 
       const filterValues = Array.isArray(f.filter)
         ? f.filter.map((filterValue) => convertFilterValue(filterValue, column))
         : convertFilterValue(f.filter, column);
 
       let filterOption = f.filterOption;
-      if (!filterOption) {
+      if (isNullOrWhiteSpace(filterOption)) {
         if (column.dataType === 'reference-list-item') filterOption = 'contains';
         if (column.dataType === 'entity') filterOption = 'equals';
         if (column.dataType === 'boolean') filterOption = 'equals';
@@ -159,7 +164,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 
       return null;
     })
-    .filter((f) => Boolean(f));
+    .filter((f): f is object => isDefined(f));
 
   return filterItems;
 };
@@ -167,8 +172,8 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 export const prepareColumn = (
   column: IConfigurableColumnsProps,
   columns: DataTableColumnDto[],
-  userConfig: IDataTableUserConfig,
-): ITableColumn => {
+  userConfig: IDataTableUserConfig | undefined,
+): ITableColumn | undefined => {
   const resolvedPropertyName = isDataColumnProps(column)
     ? (column.propertyName || column.accessor || column.id)
     : undefined;
@@ -196,17 +201,16 @@ export const prepareColumn = (
   };
 
   if (isDataColumnProps(column)) {
-    const colVisibility =
-      userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
+    const colVisibility = userColumn && isDefined(userColumn.show) ? userColumn.show : column.isVisible;
 
     const srvColumn = resolvedPropertyName
-      ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
+      ? columns.find((c) => !isNullOrWhiteSpace(c.propertyName) && camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
       : {};
 
     const dataCol: ITableDataColumn = {
       ...baseProps,
       id: resolvedPropertyName || column.id,
-      accessor: resolvedPropertyName ? camelcaseDotNotation(resolvedPropertyName) : column.accessor,
+      accessor: resolvedPropertyName ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
       propertyName: resolvedPropertyName,
 
       propertiesToFetch: resolvedPropertyName,
@@ -217,18 +221,18 @@ export const prepareColumn = (
       displayComponent: column.displayComponent,
 
       dataType: srvColumn?.dataType as ProperyDataType,
-      dataFormat: srvColumn?.dataFormat,
+      dataFormat: srvColumn?.dataFormat ?? undefined,
       isSortable: column.allowSorting && Boolean(srvColumn?.isSortable),
-      isFilterable: srvColumn?.isFilterable,
-      entityTypeName: srvColumn?.entityTypeName,
-      entityTypeModule: srvColumn?.entityTypeModule,
-      referenceListName: srvColumn?.referenceListName,
-      referenceListModule: srvColumn?.referenceListModule,
-      allowInherited: srvColumn?.allowInherited,
-      description: column?.description,
+      isFilterable: srvColumn?.isFilterable ?? false,
+      entityTypeName: srvColumn?.entityTypeName ?? undefined,
+      entityTypeModule: srvColumn?.entityTypeModule ?? undefined,
+      referenceListName: srvColumn?.referenceListName ?? undefined,
+      referenceListModule: srvColumn?.referenceListModule ?? undefined,
+      allowInherited: srvColumn?.allowInherited ?? false,
+      description: column.description,
       allowShowHide: true,
       show: colVisibility,
-      metadata: srvColumn?.metadata,
+      metadata: srvColumn?.metadata ?? undefined,
     };
     return dataCol;
   }
@@ -274,7 +278,7 @@ export const prepareColumn = (
     };
   }
 
-  return null;
+  return undefined;
 };
 
 /**
@@ -297,9 +301,9 @@ export const getTableFormColumns = (columns: ITableColumn[]): ITableDataColumn[]
   return result;
 };
 
-export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn => {
+export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn | undefined => {
   const column = columns.find((c) => c.id === id);
-  return isDataColumn(column) ? column : null;
+  return isDataColumn(column) ? column : undefined;
 };
 
 export const isStandardSortingUsed = (state: IDataTableStateContext): boolean => {
@@ -311,12 +315,12 @@ export const isStandardSortingUsed = (state: IDataTableStateContext): boolean =>
  * @param state Data table state
  * @returns Array of sorting column or null
  */
-const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] => {
-  if (!state.userSorting) return null;
+const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] | undefined => {
+  if (!state.userSorting) return undefined;
 
   return state.userSorting.filter((s) => {
     if (!s.id) return false;
-    const column = state.columns.find((c) => c.id === s.id);
+    const column = state.columns && state.columns.find((c) => c.id === s.id);
     return column && column.isSortable;
   });
 };
@@ -329,7 +333,7 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
           id: item.propertyName,
           desc: item.sorting === 'desc',
         }));
-        if (state.sortMode === 'standard' && state.standardSorting.length > 0) {
+        if (state.standardSorting && state.standardSorting.length > 0) {
           state.standardSorting.forEach((item) => {
             if (!groupSorting.find((c) => c.id === item.id)) groupSorting.push(item);
           });
@@ -338,10 +342,14 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
       }
 
       const userSorting = getEffectiveUserSorting(state);
-      return userSorting && userSorting.length > 0 ? userSorting : state.standardSorting;
+      return userSorting && userSorting.length > 0
+        ? userSorting
+        : state.standardSorting ?? [];
     }
     case 'strict': {
-      return [{ id: state.strictSortBy, desc: state.strictSortOrder === 'desc' }];
+      return !isNullOrWhiteSpace(state.strictSortBy)
+        ? [{ id: state.strictSortBy, desc: state.strictSortOrder === 'desc' }]
+        : [];
     }
   }
   return [];

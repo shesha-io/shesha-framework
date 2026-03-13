@@ -7,7 +7,6 @@ import {
   getShadowStyle,
   getStyle,
   IConfigurableFormComponent,
-  ISidebarMenuItem,
   IToolboxComponent,
   migratePrevStyles,
   useFormData,
@@ -21,6 +20,7 @@ import { ItemType } from "antd/es/menu/interface";
 import Editor from "./modal";
 import { getSettings } from "./settings";
 import { defaultStyles } from "./utils";
+import { ISidebarMenuItem } from "@/interfaces/sidebar";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];

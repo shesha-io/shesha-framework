@@ -8,7 +8,7 @@ import { useRef } from "react";
 import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
 
 interface IMatchDataWithPreparation extends IMatchData {
-  prepare?: (data: any) => any;
+  prepare?: (data: unknown) => unknown;
 }
 
 export interface UseEvaluatedFilterArgs {
@@ -17,41 +17,11 @@ export interface UseEvaluatedFilterArgs {
   metadataAccessor?: NestedPropertyMetadatAccessor;
 };
 
-export const useEvaluatedFilter = (args: UseEvaluatedFilterArgs): string => {
-  const { filter, mappings, metadataAccessor } = args;
-
-  const evaluatedFilters = useAsyncMemo(async () => {
-    if (!filter) return '';
-
-    const preparedMappings: IMatchData[] = [];
-    mappings.forEach((item) => {
-      const { prepare, ...restItemProps } = item;
-      const preparedData = item.prepare
-        ? item.prepare(item.data)
-        : item.data;
-      preparedMappings.push({ ...restItemProps, data: preparedData });
-    });
-
-    const response = await evaluateDynamicFilters(
-      [{ expression: filter } as IStoredFilter],
-      preparedMappings,
-      metadataAccessor,
-    );
-
-    // note: don't return empty filter to take unevaluated filters into account
-    // if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
-
-    return JSON.stringify(response[0]?.expression) || '';
-  }, useDeepCompareMemoize([filter, mappings]));
-
-  return evaluatedFilters;
-};
-
 export interface UseFormEvaluatedFilterArgs {
-  filter?: FilterExpression;
-  metadataAccessor?: NestedPropertyMetadatAccessor;
+  filter?: FilterExpression | undefined;
+  metadataAccessor?: NestedPropertyMetadatAccessor | undefined;
 };
-export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: object): string => {
+export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: object): string | undefined => {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
@@ -70,8 +40,8 @@ export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additio
   if (contextProxyRef.current.changed)
     prevChanged.current = Date.now();
 
-  var keys = Object.keys({ ...contextProxyRef.current });
-  var mappings = keys.map((key) => ({ match: key, data: contextProxyRef.current[key] }));
+  var keys = Object.keys({ ...contextProxyRef.current }) as Array<keyof typeof contextProxyRef.current>;
+  var mappings = keys.map<IMatchData>((key) => ({ match: key, data: contextProxyRef.current?.[key] }));
 
   const evaluatedFilters = useAsyncMemo(async () => {
     if (!args.filter) return '';

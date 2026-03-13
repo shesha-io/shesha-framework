@@ -144,13 +144,16 @@ export interface IStoredFilter {
   name: string;
 
   tooltip?: string;
-  // Exclusive filters cannot be applied on top of other filters. Only one can be selected
 
   expression?: FilterExpression;
 
   selected?: boolean;
 
   defaultSelected?: boolean;
+
+  sortOrder?: number;
+
+  permissions?: string[];
 
   //#region dynamic expressions
   hasDynamicExpression?: boolean;

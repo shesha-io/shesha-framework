@@ -120,7 +120,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
     return (
       <div style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
         <Row gutter={[gutterX || 0, gutterY || 0]} style={{ marginLeft: 0, marginRight: 0 }}>
-          <ParentProvider model={model}>
+          <ParentProvider model={model} name={`Columns-${model.id}`}>
             {validatedColumns &&
               validatedColumns.map((col, index) => (
                 <Col

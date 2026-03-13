@@ -11,6 +11,7 @@ import { EntityPickerModal } from './modal';
 import { getValueByPropertyName } from '@/utils/object';
 import { SheshaError } from '@/utils/errors';
 import { addPx } from '@/utils/style';
+
 const EntityPickerReadOnly = (props: IEntityPickerProps): JSX.Element => {
   const { entityType, displayEntityKey, value } = props;
 
@@ -21,9 +22,11 @@ const EntityPickerReadOnly = (props: IEntityPickerProps): JSX.Element => {
       : typeof (getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
-  const valueId = Array.isArray(value)
-    ? value.map((x) => props.incomeValueFunc(x, {}))
-    : props.incomeValueFunc(value, {});
+  const valueId = useMemo(() => {
+    return Array.isArray(value)
+      ? value.map((x) => props.incomeValueFunc(x, {}))
+      : props.incomeValueFunc(value, {});
+  }, [value, props.incomeValueFunc]);
 
   const selection = useEntitySelectionData({
     entityType: entityType,

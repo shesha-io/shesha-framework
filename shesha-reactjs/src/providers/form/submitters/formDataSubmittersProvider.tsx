@@ -1,27 +1,28 @@
-import React, { FC, PropsWithChildren, useState } from 'react';
+import React, { FC, PropsWithChildren, useContext, useState } from 'react';
 import { IFormDataSubmitter } from './interfaces';
 import { useGqlSubmitter } from './gqlSubmitter';
 import { createNamedContext } from '@/utils/react';
 import { CustomSubmitter } from './customSubmitter';
+import { throwError } from '@/utils/errors';
 
 export interface IFormDataSubmittersContext {
-  getFormDataSubmitter: (type: string) => IFormDataSubmitter;
+  getFormDataSubmitter: <Values extends object = object>(type: string) => IFormDataSubmitter<Values> | undefined;
 }
 
-export const FormDataSubmittersContext = createNamedContext<IFormDataSubmittersContext>(undefined, "FormDataSubmittersContext");
+export const FormDataSubmittersContext = createNamedContext<IFormDataSubmittersContext | undefined>(undefined, "FormDataSubmittersContext");
 
 export const FormDataSubmittersProvider: FC<PropsWithChildren> = ({ children }) => {
   const gqlSubmitter = useGqlSubmitter();
   const [customSubmitter] = useState(() => new CustomSubmitter());
 
-  const getFormDataSubmitter = (type: string): IFormDataSubmitter => {
+  const getFormDataSubmitter = (type: string): IFormDataSubmitter | undefined => {
     switch (type) {
       case 'gql':
         return gqlSubmitter;
       case 'custom':
         return customSubmitter;
       default:
-        return null;
+        return undefined;
     }
   };
 
@@ -34,6 +35,4 @@ export const FormDataSubmittersProvider: FC<PropsWithChildren> = ({ children }) 
   );
 };
 
-export const useFormDataSubmitters = (): IFormDataSubmittersContext => {
-  return React.useContext(FormDataSubmittersContext);
-};
+export const useFormDataSubmitters = (): IFormDataSubmittersContext => useContext(FormDataSubmittersContext) ?? throwError("useFormDataSubmitters must be used within a FormDataSubmittersProvider");

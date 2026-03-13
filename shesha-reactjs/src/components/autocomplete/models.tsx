@@ -1,4 +1,4 @@
-import { FormIdentifier, IEntityReferenceDto } from "@/index";
+import { FormIdentifier, IEntityReferenceDto } from "@/interfaces";
 import { IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 import { Key, ReactNode } from "react";
 import { GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
@@ -73,7 +73,7 @@ export interface IAutocompleteBaseProps {
   /** Permanent filter (json logig) */
   filter?: object;
   /** Read only */
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   /** Disable text search */
   disableSearch?: boolean;
   /** Selection mode */

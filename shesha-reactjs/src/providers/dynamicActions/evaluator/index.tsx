@@ -9,8 +9,6 @@ export interface IDynamicActionsEvaluatorProps {
 }
 
 export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ items, children }) => {
-  const [numResolved, setNumResolved] = useState(0);
-
   const evaluation = useMemo<IDynamicItemsEvaluationStore>(() => {
     const dynamicItems: IResolvedDynamicItem[] = [];
     const preparedItems = getDynamicActionsItemsLevel(items,
@@ -25,14 +23,17 @@ export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ ite
     };
   }, [items]);
 
+  const [evaluatedItems, setEvaluatedItems] = useState<ButtonGroupItemProps[]>(evaluation.items);
+
   // build a resulting tree that includes all resolved items but excludes non resolved ones
   const finalItems = useMemo(() => {
-    return getItemsWithResolved(evaluation.items);
-  }, [evaluation.items, numResolved]);
+    return getItemsWithResolved(evaluatedItems);
+  }, [evaluatedItems]);
 
 
   const onDynamicItemEvaluated = (): void => {
-    setNumResolved((prev) => prev + 1);
+    // trigger recalculation of finalItems manually
+    setEvaluatedItems([...evaluation.items]);
   };
 
   return (

@@ -6,7 +6,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
 import DataListControl from './dataListControl';
-import { useDataTableStore } from '@/providers';
+import { useDataTableStoreOrUndefined } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
@@ -20,7 +20,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   icon: <UnorderedListOutlined />,
   Factory: ({ model }) => {
     const ds = useDataSources();
-    const dts = useDataTableStore(false);
+    const dts = useDataTableStoreOrUndefined();
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource

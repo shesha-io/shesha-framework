@@ -1,4 +1,3 @@
-import { entitiesGet } from '@/apis/entities';
 import { ShaIcon, ShaLink, ValidationErrors } from '@/components';
 import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
@@ -9,7 +8,7 @@ import {
   ButtonGroupItemProps,
   FormIdentifier,
   useConfigurableActionDispatcher,
-  useForm,
+  useFormOrUndefined,
   useGlobalState,
   useHttpClient,
   useMetadataDispatcher,
@@ -19,7 +18,6 @@ import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoade
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { getFormApi } from '@/providers/form/formApi';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { get } from '@/utils/fetchers';
 import { App, Button, Spin } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
@@ -28,6 +26,8 @@ import { addPx, capPercentageWidth } from '@/utils/style';
 import { useStyles } from './styles/styles';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { buildUrl } from '@/utils';
+import { extractAjaxResponse, IAjaxResponse, IAnyObject } from '@/interfaces';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -94,7 +94,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { globalState } = useGlobalState();
   const { notification, message } = App.useApp();
 
-  const localForm = useForm(false);
+  const localForm = useFormOrUndefined();
   const formData = localForm?.formData;
   const formMode = localForm?.formMode;
 
@@ -193,16 +193,17 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (!fetched && needsFetch) {
       const queryParams = {
-        id: String(entityId),
+        id: entityId,
         properties: `id ${props.displayProperty ? props.displayProperty : ''} _displayName`,
       };
-      const fetcher = props.getEntityUrl
-        ? get(props.getEntityUrl, queryParams, { base: backendUrl, headers: httpHeaders })
-        : entitiesGet({ ...queryParams, ...getEntityTypeIdentifierQueryParams(entityType) }, { base: backendUrl, headers: httpHeaders });
 
-      fetcher
+      const url = props.getEntityUrl
+        ? buildUrl(props.getEntityUrl, queryParams)
+        : buildUrl(`/api/services/app/Entities/Get`, { ...queryParams, ...getEntityTypeIdentifierQueryParams(entityType) });
+
+      httpClient.get<IAjaxResponse<IAnyObject>>(url)
         .then((resp) => {
-          const result = resp.result;
+          const result = extractAjaxResponse(resp.data, 'Error fetching entity data');
           const displayValue = result[props.displayProperty] || result._displayName || displayText || 'No Display Name';
           setDisplayText(displayValue);
           setFetched(true);

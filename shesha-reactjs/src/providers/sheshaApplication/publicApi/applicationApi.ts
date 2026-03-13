@@ -12,7 +12,7 @@ import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface IApplicationPlugin {
   name: string;
-  data: any;
+  data: unknown;
 }
 
 export interface IApplicationApi {
@@ -76,6 +76,6 @@ export class ApplicationApi implements IApplicationApi {
     if (!this.#plugins.has(pluginName)) throw new Error(`Plugin with name '${pluginName}' is not registered`);
 
     this.#plugins.delete(pluginName);
-    delete this[pluginName];
+    delete this[pluginName as keyof IApplicationApi];
   }
 }

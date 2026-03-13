@@ -1,6 +1,6 @@
 import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
-import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IActionExecutionContext, IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
@@ -22,13 +22,15 @@ interface IWizardComponent {
   visibleSteps: IWizardStepProps[];
 }
 
+type IValidatable = IActionExecutionContext & { validate: () => Promise<void> };
+
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const allData = useAvailableConstantsData();
   const toolbox = useFormDesignerComponents();
   const validator = useValidator(false);
 
-  const formMode = useForm(false).formMode;
+  const formMode = useForm().formMode;
 
   const { executeBooleanExpression, executeActionViaPayload } = useFormExpression();
 
@@ -293,7 +295,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     actionDependencies,
   );
 
-  useConfigurableAction(
+  useConfigurableAction<object, unknown, IValidatable>(
     {
       name: 'Validate',
       description: 'Validate the Wizard step data and show validation errors if any',

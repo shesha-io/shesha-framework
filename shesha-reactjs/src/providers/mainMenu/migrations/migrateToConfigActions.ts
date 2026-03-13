@@ -9,23 +9,27 @@ import {
 } from '@/interfaces/sidebar';
 import { ISideBarMenuProps } from '../../../components/configurableSidebarMenu/index';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
+import { isDefined } from '@/utils/nullables';
+import { FormIdentifier, isFormFullName } from '@/index';
 
-const getActionConfiguration = (item: ISidebarMenuItemV0): IConfigurableActionConfiguration => {
+const getActionConfiguration = (item: ISidebarMenuItemV0): IConfigurableActionConfiguration | undefined => {
   if (item.buttonAction === 'navigate') {
     const result: IConfigurableActionConfiguration = {
       _type: StandardNodeTypes.ConfigurableActionConfig,
       actionOwner: 'shesha.common',
       actionName: 'Navigate',
-      actionArguments: getNavigationActionArgumentsByUrl(item.target),
+      actionArguments: getNavigationActionArgumentsByUrl(item.target ?? ""),
       handleFail: false,
       handleSuccess: false,
     };
     return result;
   }
   if (item.buttonAction === 'dialogue') {
+    const formId = "modalFormId" in item ? item.modalFormId as FormIdentifier : undefined;
+
     const modalArguments: IShowModalActionArguments = {
-      modalTitle: item['modalTitle'],
-      formId: item["modalFormId"],
+      modalTitle: "modalTitle" in item && typeof (item.modalTitle) === "string" ? item.modalTitle : "",
+      formId: isFormFullName(formId) ? formId : { module: '', name: '' },
       showModalFooter: true,
     };
     return {
@@ -37,17 +41,17 @@ const getActionConfiguration = (item: ISidebarMenuItemV0): IConfigurableActionCo
       handleSuccess: false,
     };
   }
-  return null;
+  return undefined;
 };
 
-const migrateItem = (item: ISidebarMenuItem): ISidebarMenuItem => {
+const migrateItem = (item: ISidebarMenuItem): ISidebarMenuItem | undefined => {
   const oldItem = item as ISidebarMenuItemV0;
   const { id, title, tooltip, itemType, buttonAction, icon, isHidden, visibility, requiredPermissions } = oldItem;
   const commonProps = { id, title, tooltip, itemType, buttonAction, icon, isHidden, visibility, requiredPermissions };
   if (oldItem.itemType === 'group') {
     const group: ISidebarGroup = {
       ...commonProps,
-      childItems: oldItem.childItems?.map(migrateItem)?.filter((childItem) => Boolean(childItem)),
+      childItems: oldItem.childItems?.map(migrateItem).filter((childItem): childItem is ISidebarMenuItem => Boolean(childItem)),
     };
     return group;
   }
@@ -58,11 +62,19 @@ const migrateItem = (item: ISidebarMenuItem): ISidebarMenuItem => {
     };
     return button;
   }
-  return null;
+  return undefined;
 };
 
 export const migrateToConfigActions = (prev: ISideBarMenuProps): ISideBarMenuProps => {
   const { items } = prev;
-  const newItems = items?.map((item) => migrateItem(item)).filter((item) => Boolean(item));
+  const newItems: ISidebarMenuItem[] = [];
+  if (isDefined(items)) {
+    items.forEach((item) => {
+      const newItem = migrateItem(item);
+      if (newItem)
+        newItems.push(newItem);
+    });
+  }
+
   return { ...prev, items: newItems };
 };

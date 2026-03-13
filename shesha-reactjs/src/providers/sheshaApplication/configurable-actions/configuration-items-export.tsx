@@ -36,7 +36,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 
     exporterRef.current.exportExecuter().then(() => {
       hideModal();
-    }).catch((error) => {
+    }).catch((error: unknown) => {
       notification.error({
         message: "Failed to export package",
         icon: null,

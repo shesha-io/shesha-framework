@@ -12,7 +12,7 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
+import { IAjaxResponseBase, IApplicationContext, IErrorInfo, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -54,7 +54,7 @@ export type SettingsFormMarkupFactoryArgs = {
 export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
 export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
-  model: TModel;
+  model: UnwrapCodeEvaluators<TModel>;
   children?: JSX.Element;
   calculatedModel?: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
@@ -164,7 +164,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Return true to indicate that the data type is supported by the component
    */
-  dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string }) => boolean;
+  dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string | undefined }) => boolean;
 
   /**
    * Settings migrations. Returns last version of settings
@@ -174,7 +174,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Returns fields to fetch, used when it is necessary to get additional fields, and not just what is specified in the propertyName field
    */
-  getFieldsToFetch?: (propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[];
+  getFieldsToFetch?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[]) | undefined;
 
   /**
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer

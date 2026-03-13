@@ -61,7 +61,7 @@ const ContainerComponent: ContainerComponentDefinition = {
     };
 
     return (
-      <ParentProvider model={model}>
+      <ParentProvider model={model} name={`ContainerComponent-${model.id}`}>
         <ComponentsContainer
           containerId={model.id}
           wrapperStyle={{

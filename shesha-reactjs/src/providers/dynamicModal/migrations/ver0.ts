@@ -4,6 +4,7 @@ import { IKeyValue } from "@/interfaces/keyValue";
 import { ButtonGroupItemProps } from "@/providers/buttonGroupConfigurator";
 import { ModalFooterButtons } from "../models";
 import { extractJsFieldFromKeyValue } from "@/designer-components/_common-migrations/keyValueUtils";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface IShowModalActionArgumentsV0 {
   modalTitle: string;
@@ -23,13 +24,10 @@ export interface IShowModalActionArgumentsV0 {
 }
 
 const makeEvaluatorFromItems = (items: IKeyValue[]): string => {
-  if (!items)
-    return undefined;
-
   let propsList = "    return {\r\n";
   items.forEach((item) => {
     if (item.key) {
-      const value = extractJsFieldFromKeyValue(item.value?.trim());
+      const value = extractJsFieldFromKeyValue(!isNullOrWhiteSpace(item.value) ? item.value.trim() : "");
       const currentPropLine = `        ${item.key}: ${value},\r\n`;
       propsList += currentPropLine;
     }
@@ -46,6 +44,6 @@ export const migrateToV0 = (prev: IShowModalActionArgumentsV0): IShowModalAction
     ...restProps,
     modalWidth: modalWidth || "60%",
     formMode: formMode || "edit",
-    formArguments: makeEvaluatorFromItems(additionalProperties),
+    formArguments: isDefined(additionalProperties) ? makeEvaluatorFromItems(additionalProperties) : undefined,
   };
 };

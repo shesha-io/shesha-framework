@@ -5,20 +5,16 @@ import { createNamedContext } from '@/utils/react';
 
 export interface IQueryBuilderStateContext {
   fields: IProperty[];
-  id?: string;
-  customWidgets?: Widgets;
+  id?: string | undefined;
+  customWidgets?: Widgets | undefined;
 }
 
 export interface IQueryBuilderActionsContext {
   setFields: (fields: IProperty[]) => void;
   fetchFields: (fieldNames: string[]) => void;
-  fetchContainer: (containerPath: string) => Promise<IModelMetadata>;
+  fetchContainer: (containerPath: string) => Promise<IModelMetadata | null>;
 }
 
-export const QUERY_BUILDER_CONTEXT_INITIAL_STATE: IQueryBuilderStateContext = {
-  fields: [],
-};
+export const QueryBuilderStateContext = createNamedContext<IQueryBuilderStateContext | undefined>(undefined, "QueryBuilderStateContext");
 
-export const QueryBuilderStateContext = createNamedContext<IQueryBuilderStateContext>(QUERY_BUILDER_CONTEXT_INITIAL_STATE, "QueryBuilderStateContext");
-
-export const QueryBuilderActionsContext = createNamedContext<IQueryBuilderActionsContext>(undefined, "QueryBuilderActionsContext");
+export const QueryBuilderActionsContext = createNamedContext<IQueryBuilderActionsContext | undefined>(undefined, "QueryBuilderActionsContext");

@@ -21,19 +21,20 @@ import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { StandaloneTable } from './standaloneTable';
-import { useDataTableStore } from '@/providers/dataTable';
+import { useDataTableStoreOrUndefined } from '@/providers/dataTable';
 import { collectMetadataPropertyPaths, defaultStyles, flattenConfiguredColumns, getDataColumnAccessor, getTableDefaults, getTableSettingsDefaults } from './utils';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { parseFetchError } from '../utils';
 import { useMetadata } from '@/providers/metadata';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.';
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
-  const store = useDataTableStore(false);
+  const store = useDataTableStoreOrUndefined();
   const metadata = useMetadata(false);
   const repositoryType = store?.getRepository?.()?.repositoryType;
   const isEntitySource = repositoryType === BackendRepositoryType;
@@ -91,11 +92,6 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
         errors.push(...parseFetchError(store.fetchTableDataError));
       }
 
-      const exportError = store?.exportToExcelError ?? store?.error?.exportToExcel;
-      if (exportError) {
-        errors.push(...parseFetchError(exportError));
-      }
-
       // Check for missing context error
       if (!store) {
         errors.push({
@@ -122,7 +118,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
 
       return undefined;
     },
-    [store, store?.fetchTableDataError, store?.exportToExcelError, store?.error?.exportToExcel, columnsMismatch],
+    [store, store?.fetchTableDataError, columnsMismatch],
   );
 
   if (model.hidden) return null;
@@ -350,7 +346,7 @@ const TableComponent: TableComponentDefinition = {
         },
       }))
       .add<ITableComponentProps>(28, (prev) => {
-        const updateRowHeight = (dimensions?: { height?: string; minHeight?: string; maxHeight?: string }): { height?: string; minHeight?: string; maxHeight?: string } | undefined => {
+        const updateRowHeight = (dimensions: IDimensionsValue | undefined): IDimensionsValue | undefined => {
           if (dimensions?.height === '40px') {
             return { ...dimensions, height: 'auto' };
           }

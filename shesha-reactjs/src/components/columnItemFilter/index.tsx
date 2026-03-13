@@ -316,7 +316,7 @@ export interface IColumnItemFilterProps {
   entityTypeModule: string | null;
   autocompleteUrl?: string;
   dataType: ProperyDataType;
-  filter: ColumnFilter;
+  filter?: ColumnFilter | undefined;
   filterOption: IndexColumnFilterOption;
   onRemoveFilter?: (id: string) => void;
   onChangeFilterOption?: (filterId: string, filterOption: IndexColumnFilterOption) => void;

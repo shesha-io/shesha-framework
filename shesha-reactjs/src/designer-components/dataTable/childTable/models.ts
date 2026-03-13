@@ -1,5 +1,5 @@
+import { IStoredFilter } from '@/interfaces';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
 
 export interface IChildTableSettingsProps {
   title?: string;
@@ -7,7 +7,7 @@ export interface IChildTableSettingsProps {
   allowQuickSearch?: boolean;
   isInline?: boolean;
   toolbarItems?: ButtonGroupItemProps[];
-  filters?: ITableViewProps[];
+  filters?: IStoredFilter[];
   defaultSelectedFilterId: string;
   defaultPageSize?: number;
   customVisibility?: string;

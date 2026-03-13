@@ -1,5 +1,4 @@
 import { Row } from 'react-table';
-import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
   ColumnFilter,
@@ -17,6 +16,7 @@ import {
   DataFetchDependency,
   ISortingItem,
   FilterExpression,
+  ITableRowData,
 } from './interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IHasModelType, IRepository } from './repository/interfaces';
@@ -28,7 +28,7 @@ import { IModelValidation } from '@/utils/errors';
 export interface ISelectionProps {
   index?: number;
   id?: string;
-  row: any;
+  row: ITableRowData;
 }
 
 /** Table context */
@@ -42,32 +42,33 @@ export type IFlagSucceededFlags = 'exportToExcel' | 'fetchTableData';
 export type IFlagErrorFlags = 'exportToExcel';
 export type IFlagActionedFlags = '__DEFAULT__';
 
-export const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 40, 50, 100];
+export const DEFAULT_PAGE_SIZE: number = 10;
+export const DEFAULT_PAGE_SIZE_OPTIONS = [5, DEFAULT_PAGE_SIZE, 20, 30, 40, 50, 100];
 
 export const MIN_COLUMN_WIDTH = 150;
 
 export interface ITableColumnUserSettings {
   id: string;
-  show?: boolean;
-  width?: number;
+  show?: boolean | undefined;
+  width?: number | undefined;
 }
 export interface IDataTableUserConfig {
-  pageSize?: number;
-  currentPage?: number;
+  pageSize?: number | undefined;
+  currentPage?: number | undefined;
   quickSearch: string;
 
-  columns?: ITableColumnUserSettings[];
+  columns?: ITableColumnUserSettings[] | undefined;
   tableSorting: IColumnSorting[];
 
-  selectedFilterIds?: string[];
-  advancedFilter?: ITableFilter[];
+  selectedFilterIds?: string[] | undefined;
+  advancedFilter?: ITableFilter[] | undefined;
 }
 
 export const DEFAULT_DT_USER_CONFIG: IDataTableUserConfig = {
   pageSize: DEFAULT_PAGE_SIZE_OPTIONS[1],
   currentPage: 1,
   quickSearch: '',
-  tableSorting: undefined,
+  tableSorting: [],
 };
 
 export interface IDataTableStoredConfig {
@@ -78,31 +79,25 @@ export interface IDataTableStoredConfig {
   storedFilters?: IStoredFilter[];
 }
 
-export interface IDataTableStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-  IHasModelType {
-  exportToExcelError?: string;
-
-  exportToExcelWarning?: string;
-
+export interface IDataTableStateContext extends IHasModelType {
   /** Configurable columns. Is used in pair with entityType  */
-  configurableColumns?: IConfigurableColumnsProps[];
+  configurableColumns?: IConfigurableColumnsProps[] | undefined;
   /** Pre-defined stored filters. configurable in the forms designer */
-  predefinedFilters?: IStoredFilter[];
-  permanentFilter?: FilterExpression;
+  predefinedFilters?: IStoredFilter[] | undefined;
+  permanentFilter?: FilterExpression | undefined;
 
   /** table columns */
-  columns?: ITableColumn[];
+  columns?: ITableColumn[] | undefined;
   groupingColumns: ITableDataColumn[];
 
   /** Datatable data (fetched from the back-end) */
-  tableData?: object[];
+  tableData: object[];
   /** Default sort by */
   defaultSortBy?: string;
   /** Default sort order */
   defaultSortOrder?: string;
   /** Selected page size */
-  selectedPageSize?: number;
+  selectedPageSize?: number | undefined;
   /** Data fetching mode (paging or fetch all) */
   dataFetchingMode: DataFetchingMode;
   /** Current page number */
@@ -110,53 +105,52 @@ export interface IDataTableStateContext
   /** Total number of pages */
   totalPages?: number;
   /** Total number of rows */
-  totalRows?: number;
+  totalRows?: number | undefined;
   /** Total number of rows before the filtration */
-  totalRowsBeforeFilter?: number;
+  totalRowsBeforeFilter?: number | undefined;
 
   /** Quick search string */
-  quickSearch?: string;
+  quickSearch?: string | undefined;
   /** Columns sorting */
-  standardSorting?: IColumnSorting[];
+  standardSorting?: IColumnSorting[] | undefined;
   userSorting?: IColumnSorting[];
 
   /** Rows grouping */
-  grouping?: GroupingItem[];
+  grouping?: GroupingItem[] | undefined;
 
   /** Sort mode (standard or strict) */
-  sortMode?: SortMode;
+  sortMode?: SortMode | undefined;
   /** Sort sorting: order by */
-  strictSortBy?: string;
+  strictSortBy?: string | undefined;
   /** Sort sorting: sorting order */
-  strictSortOrder?: ColumnSorting;
+  strictSortOrder?: ColumnSorting | undefined;
 
   /** Available page sizes */
   pageSizeOptions?: number[];
 
   /** Advanced filter: applied values */
-  tableFilter?: ITableFilter[];
+  tableFilter?: ITableFilter[] | undefined;
   /** Advanced filter: current editor state */
-  tableFilterDirty?: ITableFilter[];
+  tableFilterDirty?: ITableFilter[] | undefined;
 
   /** Selected filters (stored or predefined) */
-  selectedStoredFilterIds?: string[];
+  selectedStoredFilterIds?: string[] | undefined;
 
-  /** index of selected row */
-  // selectedRow?: any;
-
-  actionedRow?: any;
+  actionedRow?: unknown;
 
   /** List of Ids of selected rows */
-  selectedIds?: string[];
+  selectedIds?: string[] | undefined;
 
   /** Dblclick handler */
-  onDblClick?: (...params: any[]) => void;
+  onDblClick?: (...params: unknown[]) => void;
   /** Select row handler */
-  onSelectRow?: (index: number, row: any) => void;
+  onSelectRow?: (index: number, row: unknown) => void;
 
-  isFetchingTableData?: boolean;
-  hasFetchTableDataError?: boolean;
-  fetchTableDataError?: any;
+  isAdvancedFilterVisible: boolean;
+  isColumnsSelectorVisible: boolean;
+  isFetchingTableData: boolean;
+  hasFetchTableDataError: boolean;
+  fetchTableDataError?: unknown | undefined;
 
   properties?: string[];
 
@@ -164,28 +158,25 @@ export interface IDataTableStateContext
 
   persistSelectedFilters?: boolean;
 
-  userConfigId?: string;
   //#endregion
 
-  selectedRow?: ISelectionProps;
-  selectedRows?: { [key in string]: string }[];
+  selectedRow?: ISelectionProps | undefined;
+  selectedRows?: ITableRowData[] | undefined;
 
   allowReordering: boolean;
   dragState?: DragState;
 
-  customReorderEndpoint?: string;
-  onBeforeRowReorder?: IConfigurableActionConfiguration;
-  onAfterRowReorder?: IConfigurableActionConfiguration;
+  customReorderEndpoint?: string | undefined;
+  onBeforeRowReorder?: IConfigurableActionConfiguration | undefined;
+  onAfterRowReorder?: IConfigurableActionConfiguration | undefined;
 
   /** Validation result from parent DataContext component */
-  contextValidation?: IModelValidation;
+  contextValidation?: IModelValidation | undefined;
 }
 
 export type DragState = 'started' | 'finished' | null;
 
-export interface IDataTableActionsContext
-  extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-  IPublicDataTableActions {
+export interface IDataTableActionsContext extends IPublicDataTableActions {
   toggleColumnVisibility?: (val: string) => void;
   setCurrentPage?: (page: number) => void;
   changePageSize?: (size: number) => void;
@@ -200,7 +191,7 @@ export interface IDataTableActionsContext
   /** change quick search and refresh table data */
   performQuickSearch?: (val: string) => void;
   toggleSaveFilterModal?: (visible: boolean) => void;
-  changeActionedRow?: (data: any) => void;
+  changeActionedRow?: (data: ITableRowData) => void;
   changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => void;
 
   setPredefinedFilters: (filters: IStoredFilter[]) => void;
@@ -212,6 +203,8 @@ export interface IDataTableActionsContext
   changeSelectedIds?: (selectedIds: string[]) => void;
   getCurrentFilter: () => ITableFilter[];
 
+  toggleAdvancedFilter: (isVisible: boolean) => void;
+  toggleColumnsSelector: (isVisible: boolean) => void;
   /**
    * Register columns in the table context. Is used for configurable tables
    */
@@ -233,11 +226,11 @@ export interface IDataTableActionsContext
   /**
    * Set row data after inline editing
    */
-  setRowData: (rowIndex: number, data: any) => void;
+  setRowData: (rowIndex: number, data: ITableRowData) => void;
 
-  setSelectedRow: (index: number, row: any) => void;
+  setSelectedRow: (index: number, row: ITableRowData) => void;
   setDragState: (dragState: DragState) => void;
-  setMultiSelectedRow: (rows: Row[] | Row) => void;
+  setMultiSelectedRow: (rows: Row<ITableRowData>[] | Row<ITableRowData>) => void;
   setColumnWidths: (widths: IColumnWidth[]) => void;
 }
 
@@ -247,45 +240,42 @@ export interface IColumnWidth {
 }
 
 export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
-  succeeded: {},
-  isInProgress: {},
-  error: {},
-  actioned: {},
   columns: [],
   groupingColumns: [],
   tableData: [],
   isFetchingTableData: false,
-  hasFetchTableDataError: null,
+  hasFetchTableDataError: false,
   fetchTableDataError: undefined,
   pageSizeOptions: DEFAULT_PAGE_SIZE_OPTIONS,
   selectedPageSize: DEFAULT_PAGE_SIZE_OPTIONS[1],
   currentPage: 1,
   totalPages: -1,
-  totalRows: null,
-  totalRowsBeforeFilter: null,
-  quickSearch: null,
+  totalRows: undefined,
+  totalRowsBeforeFilter: undefined,
+  quickSearch: undefined,
   standardSorting: [],
   tableFilter: [],
   saveFilterModalVisible: false,
   selectedIds: [],
   configurableColumns: [],
-  tableFilterDirty: null,
+  tableFilterDirty: undefined,
   persistSelectedFilters: true, // Persist by default
-  userConfigId: null,
-  modelType: null,
+  modelType: "",
   dataFetchingMode: 'paging',
-  selectedRow: null,
+  selectedRow: undefined,
   selectedRows: [],
-  permanentFilter: null,
+  permanentFilter: undefined,
   allowReordering: false,
   onBeforeRowReorder: undefined,
   onAfterRowReorder: undefined,
-  customReorderEndpoint: null,
+  customReorderEndpoint: undefined,
   contextValidation: undefined,
+  isAdvancedFilterVisible: false,
+  isColumnsSelectorVisible: false,
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }
 
-export const DataTableStateContext = createNamedContext<IDataTableStateContext>(DATA_TABLE_CONTEXT_INITIAL_STATE, "DataTableStateContext");
+export const DataTableStateContext = createNamedContext<IDataTableStateContext | undefined>(undefined, "DataTableStateContext");
 
-export const DataTableActionsContext = createNamedContext<IDataTableActionsContext>(undefined, "DataTableActionsContext");
+export const DataTableActionsContext = createNamedContext<IDataTableActionsContext | undefined>(undefined, "DataTableActionsContext");

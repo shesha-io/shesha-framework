@@ -18,7 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 
-interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style'>, IConfigurableFormComponent {
+interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
 
 interface ICheckboxGoupComopnentCalulatedValues {

@@ -3,7 +3,7 @@ import { FormItemProps, FormProps, InputProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/formDesignerUtils';
 import { getStyle } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { IFormSettings, IStyleType, SILENT_KEY } from '@/providers/form/models';
+import { IFormSettings, IStyleType, SILENT_KEY, UnwrapCodeEvaluators } from '@/providers/form/models';
 
 export interface IFormPropOptions {
   hidden: boolean;
@@ -20,8 +20,9 @@ export interface IPasswordComponentProps extends IConfigurableFormComponent, ISt
   message?: string;
   repeatPropertyName?: string;
 }
+export type IPasswordComponentPropsUnwrapped = UnwrapCodeEvaluators<IPasswordComponentProps>;
 
-export const confirmModel = (m: IPasswordComponentProps): IPasswordComponentProps => {
+export const confirmModel = (m: IPasswordComponentPropsUnwrapped): IPasswordComponentPropsUnwrapped => {
   let model = { ...m };
 
   model.description = m.confirmDescription;
@@ -32,7 +33,7 @@ export const confirmModel = (m: IPasswordComponentProps): IPasswordComponentProp
   return model;
 };
 
-export const getConfigModel = ({ id, propertyName: name, type }: IPasswordComponentProps): IPasswordComponentProps => ({
+export const getConfigModel = ({ id, propertyName: name, type }: IPasswordComponentPropsUnwrapped): IPasswordComponentPropsUnwrapped => ({
   id,
   propertyName: name,
   type,
@@ -60,7 +61,7 @@ export const getFormItemProps = (
   style: model?.hidden ? { display: 'none' } : {},
 });
 
-export const getInputProps = (model: IPasswordComponentProps, formData: object): InputProps => ({
+export const getInputProps = (model: IPasswordComponentPropsUnwrapped, formData: object): InputProps => ({
   bordered: !model?.hideBorder,
   size: model?.size,
   readOnly: model.readOnly,
@@ -87,7 +88,7 @@ export const incrementLastChar = (value: string): string => {
   }
 };
 
-export const getDefaultModel = (m: IPasswordComponentProps): IPasswordComponentProps => {
+export const getDefaultModel = (m: IPasswordComponentPropsUnwrapped): IPasswordComponentPropsUnwrapped => {
   try {
     const model = { ...m };
 

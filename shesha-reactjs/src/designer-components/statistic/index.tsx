@@ -19,7 +19,6 @@ import { IFontValue } from '../_settings/utils/font/interfaces';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { IBorderValue } from '../_settings/utils/border/interfaces';
 
 interface IStatisticComponentProps extends Omit<IInputStyles, 'font'>, IConfigurableFormComponent {
   value?: number | string;
@@ -163,7 +162,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
           hideBorder: prev?.hideBorder,
           shadow: defaultStyles().shadow,
           border: {
-            border: defaultStyles().border.border as IBorderValue,
+            border: defaultStyles().border.border,
           },
         };
 

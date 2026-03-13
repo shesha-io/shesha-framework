@@ -1,5 +1,6 @@
 import { FormFullName, IConfigurableFormComponent } from '@/interfaces';
 import { DatatableColumnType, IActionColumnProps, IAnchoredDirection } from '@/providers/dataTable/interfaces';
+import { isDefined } from '@/utils/nullables';
 import { ReactNode } from 'react';
 
 type ColumnsItemType = 'item' | 'group';
@@ -12,9 +13,9 @@ export interface IFieldComponentProps {
 }
 
 export interface IEditableColumnProps {
-  displayComponent?: IFieldComponentProps;
-  editComponent?: IFieldComponentProps;
-  createComponent?: IFieldComponentProps;
+  displayComponent?: IFieldComponentProps | undefined;
+  editComponent?: IFieldComponentProps | undefined;
+  createComponent?: IFieldComponentProps | undefined;
 }
 
 /**
@@ -23,15 +24,15 @@ export interface IEditableColumnProps {
 export interface IConfigurableColumnsBase {
   id: string;
   caption: string;
-  columnType?: DatatableColumnType;
+  columnType?: DatatableColumnType | undefined;
   sortOrder: number;
   itemType: ColumnsItemType;
-  description?: string;
-  minWidth?: number;
-  maxWidth?: number;
+  description?: string | undefined;
+  minWidth?: number | undefined;
+  maxWidth?: number | undefined;
   isVisible: boolean;
-  permissions?: string[];
-  backgroundColor?: string;// IPropertySetting<string>;
+  permissions?: string[] | undefined;
+  backgroundColor?: string | undefined;
 }
 
 /**
@@ -96,22 +97,22 @@ export const standardCellComponentTypes = {
   notEditable: '[not-editable]',
 };
 
-export const isDataColumnProps = (column: IConfigurableColumnsProps): column is IDataColumnsProps => {
-  return column && column.columnType === 'data';
+export const isDataColumnProps = (column: IConfigurableColumnsProps | undefined): column is IDataColumnsProps => {
+  return isDefined(column) && column.columnType === 'data';
 };
 
-export const isActionColumnProps = (column: IConfigurableColumnsProps): column is IConfigurableActionColumnsProps => {
-  return column && column.columnType === 'action';
+export const isActionColumnProps = (column: IConfigurableColumnsProps | undefined): column is IConfigurableActionColumnsProps => {
+  return isDefined(column) && column.columnType === 'action';
 };
 
-export const isCrudOperationsColumnProps = (column: IConfigurableColumnsProps): column is ICrudOperationsColumnProps => {
-  return column && column.columnType === 'crud-operations';
+export const isCrudOperationsColumnProps = (column: IConfigurableColumnsProps | undefined): column is ICrudOperationsColumnProps => {
+  return isDefined(column) && column.columnType === 'crud-operations';
 };
 
-export const isRendererColumnProps = (column: IConfigurableColumnsProps): column is IRendererColumnProps => {
-  return column && column.columnType === 'renderer';
+export const isRendererColumnProps = (column: IConfigurableColumnsProps | undefined): column is IRendererColumnProps => {
+  return isDefined(column) && column.columnType === 'renderer';
 };
 
-export const isFormColumnProps = (column: IConfigurableColumnsProps): column is IFormColumnsProps => {
-  return column && column.columnType === 'form';
+export const isFormColumnProps = (column: IConfigurableColumnsProps | undefined): column is IFormColumnsProps => {
+  return isDefined(column) && column.columnType === 'form';
 };

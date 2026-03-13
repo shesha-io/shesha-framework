@@ -44,3 +44,21 @@ export const splitDotNotation = (path: string): [string, string] => {
 
   return [firstPart, remainingPart];
 };
+
+
+/**
+ * Retrieves a nested property value from an object container using a dot notation path.
+ *
+ * @example
+ * const container = { a: { b: { c: 1 } } };
+ * const value = getNestedPropertyValue(container, 'a.b.c');
+ * console.log(value); // prints 1
+ *
+ * @param {unknown | undefined} container - The object container to retrieve the property value from.
+ * @param {string} propertyPath - The dot notation path to the property value to retrieve.
+ * @returns {unknown} The retrieved property value or undefined if the path does not exist or the container is undefined.
+ */
+export const getNestedPropertyValue = (container: unknown | undefined, propertyPath: string): unknown => {
+  const path = propertyPath.split('.');
+  return path.reduce((prev, part) => (prev && typeof (prev) === 'object' && part in prev ? (prev as Record<string, unknown>)[part] : undefined), container);
+};

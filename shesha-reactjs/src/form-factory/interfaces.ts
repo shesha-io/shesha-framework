@@ -124,9 +124,10 @@ type CustomOmit<T, K extends keyof T> = {
 };
 
 /** Extract settings from component definition */
-export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T, "id" | "type" | "hidden"> & {
+export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T, "id" | "type" | "hidden" | "readOnly"> & {
   id?: string;
-  hidden?: boolean | IPropertySetting<boolean>;
+  hidden?: boolean | IPropertySetting<boolean> | undefined;
+  readOnly?: boolean | IPropertySetting<boolean> | undefined;
 };
 
 /** Extract settings from component definition */

@@ -2,53 +2,56 @@ import { useAxiosRequestConfig } from "@/hooks/useAxiosRequestConfig";
 import { HttpClientApi, HttpRequestConfig, HttpResponse } from "@/publicJsApis/httpClient";
 import { useEffect, useState } from "react";
 import axios, { AxiosRequestConfig } from "axios";
+import { isDefined } from "@/utils/nullables";
 
 export class AxiosHttpClient implements HttpClientApi {
   #axiosConfig: AxiosRequestConfig;
 
   #getRequestConfig = (config?: HttpRequestConfig): AxiosRequestConfig => {
-    if (!config)
+    if (!isDefined(config))
       return this.#axiosConfig;
 
     const headers = { ...(config.omitStandardHeaders ? {} : this.#axiosConfig.headers), ...config.headers };
 
-    const timeout = config.timeout === undefined
-      ? this.#axiosConfig.timeout
-      : config.timeout;
-
-    return {
+    const finalConfig: AxiosRequestConfig = {
       ...this.#axiosConfig,
       headers,
-      timeout,
-      responseType: config.responseType,
     };
+
+    if (config.timeout)
+      finalConfig.timeout = config.timeout;
+
+    if (isDefined(config.responseType))
+      finalConfig.responseType = config.responseType;
+
+    return finalConfig;
   };
 
-  get<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+  get<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
     return axios.get(url, this.#getRequestConfig(config));
   }
 
-  delete<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+  delete<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
     return axios.delete(url, this.#getRequestConfig(config));
   }
 
-  head<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+  head<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
     return axios.head(url, this.#getRequestConfig(config));
   }
 
-  options<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+  options<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
     return axios.options(url, this.#getRequestConfig(config));
   }
 
-  post<T = any, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
+  post<T = unknown, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
     return axios.post(url, data, this.#getRequestConfig(config));
   }
 
-  put<T = any, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
+  put<T = unknown, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
     return axios.put(url, data, this.#getRequestConfig(config));
   }
 
-  patch<T = any, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
+  patch<T = unknown, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
     return axios.patch(url, data, this.#getRequestConfig(config));
   }
 

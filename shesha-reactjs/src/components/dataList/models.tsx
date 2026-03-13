@@ -3,7 +3,7 @@ import { FormIdentifier, IStyleType } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { ISortingItem } from '@/providers/dataTable/interfaces';
+import { ISortingItem, ITableRowData } from '@/providers/dataTable/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export type DataListSelectionMode = 'none' | 'single' | 'multiple';
@@ -16,28 +16,28 @@ export type InlineSaveMode = 'auto' | 'manual';
 export type NewItemInitializer = () => Promise<object>;
 
 export interface IDataListProps extends IDataListBaseProps, IDataListActions {
-  records?: any[];
-  groupingMetadata?: IPropertyMetadata[];
-  selectedRow?: ISelectionProps;
-  selectedRows?: { [key in string]: string }[];
+  records?: any[] | undefined;
+  groupingMetadata?: IPropertyMetadata[] | undefined;
+  selectedRow?: ISelectionProps | undefined;
+  selectedRows?: ITableRowData[] | undefined;
 
   isFetchingTableData?: boolean;
 
-  selectedIds?: string[];
-  showEditIcons?: boolean;
+  selectedIds?: string[] | undefined;
+  showEditIcons?: boolean | undefined;
 
-  canDeleteInline?: boolean;
-  canEditInline?: boolean;
-  canAddInline?: boolean;
+  canDeleteInline?: boolean | undefined;
+  canEditInline?: boolean | undefined;
+  canAddInline?: boolean | undefined;
 
-  allowChangeEditMode?: boolean;
+  allowChangeEditMode?: boolean | undefined;
 
-  actionRef?: MutableRefObject<any>;
+  actionRef?: MutableRefObject<any> | undefined;
 
-  modalWidth?: string;
-  noDataText?: string;
-  noDataSecondaryText?: string;
-  noDataIcon?: string;
+  modalWidth?: string | undefined;
+  noDataText?: string | undefined;
+  noDataSecondaryText?: string | undefined;
+  noDataIcon?: string | undefined;
 }
 
 export interface IDataListBaseProps extends IStyleType {

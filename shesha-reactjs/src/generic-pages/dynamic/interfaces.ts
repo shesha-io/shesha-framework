@@ -1,3 +1,4 @@
+import { IEntity } from '@/interfaces/gql';
 import { FormFullName } from '@/providers/form/models';
 
 export type FormMode = 'designer' | 'edit' | 'readonly';
@@ -40,11 +41,6 @@ export interface EntityAjaxResponse {
   unAuthorizedRequest?: boolean;
   __abp?: boolean;
   result?: IEntity;
-}
-
-export interface IEntity {
-  id: string;
-  [name: string]: unknown;
 }
 
 export interface INavigationState extends IDialogClosable, Omit<IDynamicPageState, 'navigationState'> {

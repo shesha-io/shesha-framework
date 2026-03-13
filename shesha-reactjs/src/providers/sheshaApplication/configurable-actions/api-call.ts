@@ -10,6 +10,7 @@ import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { getQueryParams } from "@/utils/url";
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
+import { IDictionary } from '@/interfaces';
 
 export interface IApiCallArguments {
   url: string;
@@ -91,6 +92,22 @@ const isGlobalUrl = (url: string): boolean => {
   return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|ftp|https):\/\//gi));
 };
 
+const prepareUrlAndData = (url: string, verb: string, parameters: IDictionary<string>): { url: string; data: IDictionary<string> | undefined } => {
+  const encodeAsQueryString = ['get', 'delete'].includes(verb.toLowerCase());
+  if (encodeAsQueryString) {
+    const queryStringData = { ...getQueryParams(url), ...parameters };
+    return {
+      url: `${url}?${qs.stringify(queryStringData, { allowDots: true })}`,
+      data: undefined,
+    };
+  } else {
+    return {
+      url,
+      data: parameters,
+    };
+  }
+};
+
 export const useApiCallAction = (): void => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
@@ -120,27 +137,22 @@ export const useApiCallAction = (): void => {
 
       // validate arguments
       if (!url)
-        return Promise.reject('Expected expression to be defined but it was found to be empty.');
+        return Promise.reject('Url is not specified.');
+      if (!verb)
+        return Promise.reject('Http verb is not specified.');
 
       const baseUrl = isGlobalUrl(url)
         ? undefined
         : backendUrl;
 
-      let preparedUrl = url;
-      let preparedData = { ...parameters };
-      const encodeAsQueryString = ['get', 'delete'].includes(verb?.toLowerCase());
-      if (encodeAsQueryString) {
-        const queryStringData = { ...getQueryParams(preparedUrl), ...preparedData };
-        preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData, { allowDots: true })}`;
-        preparedData = undefined;
-      }
+      const { url: preparedUrl, data: preparedData } = prepareUrlAndData(url, verb, { ...parameters });
 
       return axios({
         url: preparedUrl,
-        baseURL: baseUrl,
         data: preparedData,
         method: verb as Method,
         headers: allHeaders,
+        ...(baseUrl && { baseURL: baseUrl }),
       }).then((response) => unwrapAbpResponse(response.data));
     },
   }, [backendUrl, httpHeaders]);
