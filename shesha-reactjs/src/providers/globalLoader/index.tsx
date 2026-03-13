@@ -1,4 +1,5 @@
 import React, { FC, PropsWithChildren, createContext, useContext, useState, useCallback } from 'react';
+import { nanoid } from 'nanoid';
 import { LoaderOverlay } from './loaderOverlay';
 
 export interface LoaderApi {
@@ -34,7 +35,7 @@ export const GlobalLoaderProvider: FC<PropsWithChildren<{}>> = ({ children }) =>
   const [activeLoaders, setActiveLoaders] = useState<LoaderInstance[]>([]);
 
   const show = useCallback((message?: string) => {
-    const loaderId = `loader-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const loaderId = nanoid();
     const loaderInstance: LoaderInstance = {
       id: loaderId,
       message: message || 'Loading...',
