@@ -3,7 +3,7 @@ import { DEFAULT_ACCESS_TOKEN_NAME } from '../sheshaApplication/contexts';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
 import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
-import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { AuthenticateModel, AuthenticateResultModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
 import { IRouter } from '../shaRouting';
@@ -23,7 +23,7 @@ import {
   URLS,
 } from './models';
 import { ISettingsActionsContext } from '../settings/contexts';
-import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IShaRouter } from '../shaRouting/contexts';
 
@@ -156,7 +156,7 @@ export class Authenticator implements IAuthenticator {
   #checkRegistrationCompletion = (
     response: AuthenticateResultModelAjaxResponse,
   ): void => {
-    const result = extractAjaxResponse(response);
+    const result = extractAjaxResponse<AuthenticateResultModel>(response as IAjaxResponse<AuthenticateResultModel>);
 
     if (result.resultType === AuthenticateResultType.RedirectNoAuth) {
       if (result.redirectUrl) {
@@ -270,16 +270,38 @@ export class Authenticator implements IAuthenticator {
     }
   };
 
-  #logoutUserHttp = async (): Promise<void> => {
-    await this.#httpClient.post<void, void>(URLS.LOGOFF, {});
-  };
-
   logoutUser = async (): Promise<void> => {
     if (!await this.#shaRouter.validateNavigation(this.#unauthorizedRedirectUrl))
       return;
 
-    await this.#logoutUserHttp();
+    // Get the current token before clearing (needed for logout API call)
+    const currentToken = this.#getToken();
+
+    // Clear token from localStorage FIRST - this ensures any component that tries
+    // to read it after this point will not find it
     this.#clearAccessToken();
+
+    // Clear login info to ensure anyOfPermissionsGranted returns false
+    this.#loginInfo = undefined;
+
+    // Immediately refresh auth headers to clear Authorization header
+    // This propagates the cleared state to all components before logout API call
+    this.refreshAuthHeaders();
+
+    // Now make the logout API call with the token we saved earlier
+    // We pass the token explicitly in headers since it's no longer in localStorage
+    try {
+      if (currentToken?.accessToken) {
+        await this.#httpClient.post<void, void>(
+          URLS.LOGOFF,
+          {},
+          { headers: { Authorization: `Bearer ${currentToken.accessToken}` } },
+        );
+      }
+    } catch (error) {
+      // Ignore logout API errors - we've already cleared everything locally
+      console.warn('Logout API call failed, but local session is cleared:', error);
+    }
 
     this.#updateState('waiting');
 
@@ -364,6 +386,19 @@ export class Authenticator implements IAuthenticator {
       }
     } else
       this.#router.push(await getRedirectUrlAsync());
+  };
+
+  updateTokenExpiration = (expireOn: string): void => {
+    // Update the token expiration timer
+    // This is called when a token is refreshed externally (e.g., from idle timer)
+    this.#startTokenExpirationTimer(expireOn);
+  };
+
+  refreshAuthHeaders = (): void => {
+    // Get fresh headers including the updated token from localStorage
+    const headers = this.#getHttpHeaders();
+    // Notify the application to update the httpClient's cached headers
+    this.#onSetRequestHeaders?.(headers);
   };
 
   anyOfPermissionsGranted = (permissions: string[], permissionedEntities?: IEntityReferenceDto[]): boolean => {
