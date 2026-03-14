@@ -16,6 +16,7 @@ import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
 import { useHttpClient } from '@/providers';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface ISecuritySettings {
   autoLogoffTimeout: number;
@@ -175,7 +176,7 @@ class IdleHandler implements IIdleHandler {
   refreshToken = (): Promise<boolean> => {
     return this.httpClient.post<RefreshTokenResultModelAjaxResponse>('/api/TokenAuth/RefreshToken')
       .then(({ data: response }) => {
-        if (response?.result) {
+        if (response && isAjaxSuccessResponse(response) && response.result) {
           saveUserToken(
             {
               accessToken: response.result.accessToken,

@@ -19,7 +19,7 @@ export interface AuthenticateResultModel {
   requireChangePassword?: boolean;
 }
 
-export interface AuthenticateResultModelAjaxResponse extends IAjaxResponse<AuthenticateResultModel> {}
+export type AuthenticateResultModelAjaxResponse = IAjaxResponse<AuthenticateResultModel>;
 
 export interface RefreshTokenResultModel {
   accessToken?: string;
@@ -27,7 +27,7 @@ export interface RefreshTokenResultModel {
   expireOn?: string;
 }
 
-export interface RefreshTokenResultModelAjaxResponse extends IAjaxResponse<RefreshTokenResultModel> {}
+export type RefreshTokenResultModelAjaxResponse = IAjaxResponse<RefreshTokenResultModel>;
 
 export interface AuthenticateModel {
   userNameOrEmailAddress: string;
