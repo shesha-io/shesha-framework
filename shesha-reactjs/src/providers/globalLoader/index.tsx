@@ -59,7 +59,7 @@ interface InternalLoaderInstance {
   isBlocking: boolean;
 }
 
-export const GlobalLoaderProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
+export const GlobalLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
   const [activeLoaders, setActiveLoaders] = useState<InternalLoaderInstance[]>([]);
   const loadersRef = useRef<Map<string, InternalLoaderInstance>>(new Map());
 
