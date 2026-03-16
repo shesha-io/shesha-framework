@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
 import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
@@ -33,14 +33,14 @@ import { useDeepCompareCallback, useDeepCompareEffect } from "@/hooks/useDeepCom
  * Do not use these names as field names in your data model to avoid property name collisions.
  * If a collision is detected, a console warning will be logged and the data field will be overwritten.
  */
-export interface IDataContextBinderProps {
+export interface IDataContextBinderProps<TData = Record<string, unknown>, TApi = Record<string, unknown>> {
   id: string;
   name: string;
   description?: string;
   type: DataContextType;
-  data?: Record<string, unknown>;
+  data?: TData;
   /** API methods that will be merged into the context data. Keys in this object become reserved property names. */
-  api?: Record<string, unknown>;
+  api?: TApi;
   metadata?: Promise<IModelMetadata>;
   distributeMetadata?: boolean;
   getData?: ContextGetData;
@@ -52,7 +52,7 @@ export interface IDataContextBinderProps {
   includeSetFieldValue?: boolean;
 }
 
-const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props) => {
+const DataContextBinder = <TData = Record<string, unknown>, TApi = Record<string, unknown>>(props: PropsWithChildren<IDataContextBinderProps<TData, TApi>>) => {
   const {
     children,
     id,
