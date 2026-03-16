@@ -45,7 +45,7 @@ export const useFormLoader = (): FormLoaderContextValue => {
   return context;
 };
 
-export const FormLoaderProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
+export const FormLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
   const [activeLoaders, setActiveLoaders] = useState<InternalFormLoaderInstance[]>([]);
   const loadersRef = useRef<Map<string, InternalFormLoaderInstance>>(new Map());
 

@@ -38,9 +38,9 @@ export interface IDataContextBinderProps {
   name: string;
   description?: string;
   type: DataContextType;
-  data?: any;
+  data?: Record<string, unknown>;
   /** API methods that will be merged into the context data. Keys in this object become reserved property names. */
-  api?: any;
+  api?: Record<string, unknown>;
   metadata?: Promise<IModelMetadata>;
   distributeMetadata?: boolean;
   getData?: ContextGetData;
