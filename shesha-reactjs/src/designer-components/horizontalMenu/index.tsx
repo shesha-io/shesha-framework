@@ -117,13 +117,9 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         computedStyle.backgroundColor = 'transparent';
       }
 
-      // Ensure overflow is visible to show borders
-      computedStyle.overflow = 'visible';
-
-      // Convert height to minHeight to allow container to grow for borders
-      if (computedStyle.height) {
-        computedStyle.minHeight = computedStyle.height;
-        delete computedStyle.height;
+      // Ensure box-sizing is border-box so borders don't add to dimensions
+      if (!computedStyle.boxSizing) {
+        computedStyle.boxSizing = 'border-box';
       }
 
       return computedStyle;
@@ -154,7 +150,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`} style={{ overflow: 'visible' }}>
+            <div className={`sidebar ${componentState.wrapperClassName}`}>
               <BlockOverlay>
                 <EditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>

@@ -95,7 +95,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     label: 'Overflow',
                     size: 'small',
                     jsSetting: true,
-                    defaultValue: 'dropdown',
                     dropdownOptions: [
                       { label: 'Dropdown', value: 'dropdown' },
                       { label: 'Menu', value: 'menu' },

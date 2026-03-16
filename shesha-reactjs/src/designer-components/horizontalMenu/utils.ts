@@ -1,4 +1,10 @@
-export const defaultStyles = (): any => {
+import { IStyleType } from '@/providers/form/models';
+
+interface IMenuDefaultStyles extends IStyleType {
+  menuOverflow?: 'dropdown' | 'menu' | 'scroll';
+}
+
+export const defaultStyles = (): IMenuDefaultStyles => {
   return {
     background: { type: 'color' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
@@ -24,5 +30,5 @@ export const defaultStyles = (): any => {
     overflow: 'dropdown',
     dimensions: { width: '500px', height: '55px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     menuOverflow: 'dropdown',
-  } as any;
+  };
 };
