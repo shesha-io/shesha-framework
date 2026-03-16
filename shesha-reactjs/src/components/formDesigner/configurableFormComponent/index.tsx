@@ -7,6 +7,8 @@ import React, {
   memo,
   useMemo,
   useRef,
+  useState,
+  useEffect,
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
@@ -38,6 +40,7 @@ export interface IConfigurableFormComponentDesignerProps {
   selectedComponentId?: string;
   readOnly?: boolean;
   settingsPanelRef?: MutableRefObject<HTMLElement>;
+  settingsPanelElement?: HTMLElement;
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
@@ -46,6 +49,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   selectedComponentId,
   readOnly,
   settingsPanelRef,
+  settingsPanelElement,
   hidden,
   componentEditMode,
 }) => {
@@ -125,7 +129,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // when typing in the properties panel. The portal is created once and the component
   // receives updates through its own internal state management.
   const settingsEditor = useMemo(() => {
-    const renderRequired = isSelected && settingsPanelRef?.current;
+    // Use settingsPanelElement if provided (for reactive updates), otherwise fall back to ref
+    const panelElement = settingsPanelElement ?? settingsPanelRef?.current;
+    const renderRequired = isSelected && panelElement;
 
     if (!renderRequired)
       return null;
@@ -142,10 +148,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
           toolboxComponent={component}
         />
       </div>
-    ), settingsPanelRef.current, "propertiesPanel");
+    ), panelElement, "propertiesPanel");
 
     return result;
-  }, [isSelected, settingsPanelRef, readOnly, component]);
+  }, [isSelected, settingsPanelRef, settingsPanelElement, readOnly, component]);
 
   // Extract margins from ORIGINAL component styling (both stylingBox and custom styles)
   // Custom style margins take precedence over stylingBox margins
@@ -321,7 +327,18 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
     };
   }, [props.componentModel, allData]);
 
-  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
+  // Track the settings panel element to force re-render when it changes
+  // This is needed because refs don't trigger re-renders when .current changes
+  const [settingsPanelElement, setSettingsPanelElement] = useState<HTMLElement | undefined>(settingsPanelRef?.current);
+
+  useEffect(() => {
+    // Update the element state when the ref changes
+    // This effect runs when the component re-renders, which happens when
+    // ComponentPropertiesPanel updates its state after mounting
+    setSettingsPanelElement(settingsPanelRef?.current);
+  }, [settingsPanelRef?.current, settingsPanelRef]);
+
+  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, settingsPanelElement, hidden, componentEditMode }} />;
 };
 
 export interface IConfigurableFormComponentProps {
