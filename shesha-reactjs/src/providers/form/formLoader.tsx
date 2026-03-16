@@ -18,7 +18,7 @@ const useStyles = createStyles(({ css, cx }) => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -46,7 +46,7 @@ const useStyles = createStyles(({ css, cx }) => {
 
     .${loaderMessage} {
       font-size: 14px;
-      color: rgba(0, 0, 0, 0.65);
+      color: rgba(255, 255, 255, 0.85);
     }
   `);
 
