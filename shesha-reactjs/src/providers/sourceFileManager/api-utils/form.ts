@@ -66,9 +66,18 @@ export interface FormApi<Values = any> {
   /**
    * Show loader overlay
    * @param message Optional message to display
-   * @returns Loader ID for tracking
+   * @returns Loader instance with methods for progressive feedback
+   * @example
+   * const loader = form.showLoader("Saving...");
+   * try {
+   *   await http.post('/api/save', data);
+   *   loader.close();
+   * } catch (error) {
+   *   loader.updateMessage("Failed to save");
+   *   setTimeout(() => loader.close(), 2000);
+   * }
    */
-  showLoader: (message?: string) => string;
+  showLoader: (message?: string) => { updateMessage(message: string): void; close(): void; };
 
   /**
    * Hide all active loaders

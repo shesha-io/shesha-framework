@@ -16,23 +16,27 @@ export const useStyles = createStyles(({ css, cx }) => {
     padding: 16px 24px;
     z-index: 9999;
     pointer-events: none; /* Don't block clicks */
+    transition: all 0.3s ease-in-out;
 
     .${contentContainer} {
       display: flex;
       flex-direction: row;
       align-items: center;
       gap: 12px;
+      transition: all 0.3s ease-in-out;
     }
 
     .${loaderImage} {
       width: 24px;
       height: 24px;
+      transition: all 0.3s ease-in-out;
     }
 
     .${loaderMessage} {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.85);
       white-space: nowrap;
+      transition: all 0.3s ease-in-out;
     }
   `);
 
@@ -50,6 +54,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     z-index: 9999;
     pointer-events: auto;
     cursor: not-allowed;
+    transition: all 0.3s ease-in-out;
 
     * {
       pointer-events: none;
@@ -62,15 +67,18 @@ export const useStyles = createStyles(({ css, cx }) => {
       align-items: center;
       justify-content: center;
       pointer-events: none;
+      transition: all 0.3s ease-in-out;
     }
 
     .${loaderImage} {
       margin-bottom: 16px;
+      transition: all 0.3s ease-in-out;
     }
 
     .${loaderMessage} {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.65);
+      transition: all 0.3s ease-in-out;
     }
   `);
 

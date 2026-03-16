@@ -486,7 +486,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         onChangeInternal(payload.values);
       }
     },
-    showLoader: function (message?: string): string {
+    showLoader: function (message?: string) {
       return parentFormApi.showLoader(message);
     },
     hideLoaders: function (): void {

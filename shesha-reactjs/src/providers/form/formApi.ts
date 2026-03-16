@@ -7,6 +7,14 @@ import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entity
 import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
 
+/**
+ * Form loader instance with progressive feedback methods
+ */
+export interface IFormLoaderInstanceApi {
+  updateMessage(message: string): void;
+  close(): void;
+}
+
 export interface IFormSettings {
   modelType?: string;
 
@@ -63,9 +71,9 @@ export interface IFormApi<Values = any> {
   /**
    * Show blocking loader overlay scoped to this form
    * @param message Optional message to display
-   * @returns Loader ID for tracking
+   * @returns Loader instance with methods for progressive feedback
    */
-  showLoader: (message?: string) => string;
+  showLoader: (message?: string) => IFormLoaderInstanceApi;
 
   /**
    * Hide all active loaders
@@ -92,7 +100,7 @@ export interface IFormApi<Values = any> {
 export type ConfigurableFormPublicApi = Pick<ConfigurableFormInstance, 'setFormData' | 'form' | 'formSettings' | 'formMode' | 'formData' | 'modelMetadata'> & {
   shaForm?: IShaFormInstance;
   loaderApi?: {
-    showLoader: (message?: string) => string;
+    showLoader: (message?: string) => IFormLoaderInstanceApi;
     hideLoaders: () => void;
   };
 };
@@ -126,8 +134,11 @@ class PublicFormApiWrapper implements IFormApi {
   setFormData = (payload: ISetFormDataPayload) => {
     this.#form?.setFormData(payload);
   };
-  showLoader = (message?: string): string => {
-    return this.#form?.loaderApi?.showLoader(message) || '';
+  showLoader = (message?: string) => {
+    return this.#form?.loaderApi?.showLoader(message) || {
+      updateMessage: () => { /* no-op */ },
+      close: () => { /* no-op */ },
+    };
   };
   hideLoaders = () => {
     this.#form?.loaderApi?.hideLoaders();

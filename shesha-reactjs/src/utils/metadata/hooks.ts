@@ -7,7 +7,6 @@ import {
     registerGlobalStateAction,
     registerHttpAction,
     registerMessageAction,
-    registerLoaderAction,
     registerMomentAction,
     registerSelectedRowAction,
     registerSetGlobalStateAction,
@@ -32,7 +31,7 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         // register standard constants
         builder.registerStandardProperty(SheshaConstants.http, registerHttpAction);
         builder.registerStandardProperty(SheshaConstants.message, registerMessageAction);
-        builder.registerStandardProperty(SheshaConstants.loader, registerLoaderAction);
+        // Note: loader is now accessible via pageContext.showLoader() and pageContext.hideLoaders()
         builder.registerStandardProperty(SheshaConstants.moment, registerMomentAction);
         builder.registerStandardProperty(SheshaConstants.fileSaver, registerFileSaverAction);
         builder.registerStandardProperty(SheshaConstants.globalState, registerGlobalStateAction);
@@ -44,7 +43,7 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.formData, registerFormDataAction);
         builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);
         builder.registerStandardProperty(SheshaConstants.query, registerQueryAction);
-        
+
         builder.registerStandardProperty(SheshaConstants.metadataBuilder, registerMetadataBuilderAction, false);
         //builder.registerStandardProperty(SheshaConstants.constantsBuilder, registerConstantsBuilderAction);
 

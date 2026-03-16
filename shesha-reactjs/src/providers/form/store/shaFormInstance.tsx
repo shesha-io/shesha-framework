@@ -63,8 +63,11 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     setFormData = (payload: ISetFormDataPayload) => {
         this.#form.setFormData(payload);
     };
-    showLoader = (message?: string): string => {
-        return this.#formLoaderContext?.showLoader(message) || '';
+    showLoader = (message?: string) => {
+        return this.#formLoaderContext?.showLoader(message) || {
+            updateMessage: () => { /* no-op */ },
+            close: () => { /* no-op */ },
+        };
     };
     hideLoaders = () => {
         this.#formLoaderContext?.hideLoaders();
