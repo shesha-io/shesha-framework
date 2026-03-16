@@ -9,6 +9,14 @@ import { FieldValueSetter } from "@/utils/dotnotation";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 import { FormData } from "./store/shaFormInstance";
 
+/**
+ * Form loader instance with progressive feedback methods
+ */
+export interface IFormLoaderInstanceApi {
+  updateMessage(message: string): void;
+  close(): void;
+}
+
 export interface IFormSettings {
   modelType?: string | IEntityTypeIdentifier | undefined;
 
@@ -94,9 +102,9 @@ export interface IFormApi<Values extends object = object> {
   /**
    * Show blocking loader overlay scoped to this form
    * @param message Optional message to display
-   * @returns Loader ID for tracking
+   * @returns Loader instance with methods for progressive feedback
    */
-  showLoader: (message?: string) => string;
+  showLoader: (message?: string) => IFormLoaderInstanceApi;
 
   /**
    * Hide all active loaders

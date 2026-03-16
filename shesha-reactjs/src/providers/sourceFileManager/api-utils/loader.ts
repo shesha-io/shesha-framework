@@ -1,36 +1,59 @@
 export const loaderApiDefinition = `
 /**
- * 'blocking' renders a full-page overlay that prevents interaction with the app,
- * 'non-blocking' renders a small indicator in the top-right corner.
+ * Loader instance with methods for progressive feedback and control
+ * @example
+ * const loader = loader.show("Fetching items...");
+ * const items = await getItems();
+ *
+ * loader.updateMessage("Processing...");
+ *
+ * myCollection.forEach((item, index) => {
+ *   loader.updateMessage(\`Processing item \${index}...\`);
+ * });
+ *
+ * loader.close();
  */
-export type LoaderMode = 'blocking' | 'non-blocking';
-
 export interface LoaderInstance {
     /**
-     * Hides the currently displayed loader
+     * Updates the message displayed in the loader
+     * @param message - The new message to display
      */
-    (): void;
+    updateMessage(message: string): void;
+
+    /**
+     * Switches the loader to blocking mode (prevents user interaction)
+     */
+    block(): void;
+
+    /**
+     * Switches the loader to non-blocking mode (allows user interaction)
+     */
+    unblock(): void;
+
+    /**
+     * Closes and removes this specific loader instance
+     */
+    close(): void;
 }
 
 export type LoaderApi = {
     /**
-     * Shows a full-page blocking loader with a spinner overlay
-     * Prevents user interaction until the loader is hidden
+     * Shows a full-page loader with a spinner overlay
      * @param message - The message to display below the spinner (default: 'Loading...')
-     * @param mode - 'blocking' (default) or 'non-blocking'
-     * @returns A function to hide this specific loader instance
+     * @param isBlocking - Whether the loader should prevent user interaction (default: true)
+     * @returns A loader instance with methods for progressive feedback
      * @example
-     * const hideLoader = loader.show('Hang tight whilst we update...');
+     * const loader = loader.show('Hang tight whilst we update...');
      * try {
      *   await http.post('/api/save', data);
-     *   hideLoader();
+     *   loader.close();
      *   message.success('Saved successfully!');
      * } catch (error) {
-     *   hideLoader();
+     *   loader.close();
      *   message.error('Failed to save');
      * }
      */
-    show: (message?: string, mode?: LoaderMode) => LoaderInstance;
+    show: (message?: string, isBlocking?: boolean) => LoaderInstance;
 
     /**
      * Hides all currently displayed loaders immediately

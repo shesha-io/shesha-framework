@@ -366,10 +366,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message: () => message,
     modal: () => modal,
     loader: () => ({
-      show: (text, mode = 'blocking') => {
-        const loaderId = loaderApi.showLoader(text, mode);
-        return () => loaderApi.hideLoader(loaderId);
-      },
+      show: (text, isBlocking = true) => loaderApi.showLoader(text, isBlocking),
       hide: () => loaderApi.hideLoaders(),
     }),
     fileSaver: () => FileSaver,

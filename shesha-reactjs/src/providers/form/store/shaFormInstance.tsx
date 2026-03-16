@@ -26,7 +26,7 @@ import { IFormDataSubmittersContext, useFormDataSubmitters } from "../submitters
 import { FormInfo } from "../api";
 import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContextsNoRefresh, wrapConstantsData } from "../utils";
 import { Form, FormInstance } from "antd";
-import { IFormApi } from "../formApi";
+import { IFormApi, IFormLoaderInstanceApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { deepMergeValues, setValueByPropertyName, unproxyDeep } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
@@ -125,8 +125,11 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     this.#form.setValidationErrors(payload);
   };
 
-  showLoader = (message?: string): string => {
-    return this.#formLoaderContext?.showLoader(message) ?? '';
+  showLoader = (message?: string): IFormLoaderInstanceApi => {
+    return this.#formLoaderContext?.showLoader(message) ?? {
+      updateMessage: () => { /* no-op */ },
+      close: () => { /* no-op */ },
+    };
   };
 
   hideLoaders = (): void => {
