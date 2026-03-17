@@ -59,7 +59,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       onChange={onChange}
       style={model.style}
     >
-      <Space direction={model.direction} style={{ margin: `${DEFAULT_MARGINS.vertical}px ${DEFAULT_MARGINS.horizontal}px` }}>
+      <Space direction={model.direction} style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}>
         {options?.map((checkItem, index) => (
           <Radio key={index} value={`${checkItem.value}`} disabled={model.readOnly}>
             {checkItem.label}

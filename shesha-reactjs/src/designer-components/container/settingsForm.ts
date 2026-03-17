@@ -465,7 +465,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       propertyName: 'flexWrap',
                                       dropdownOptions: FLEX_WRAP,
                                       hidden: {
-                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) !== "row";',
+                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
                                         _mode: 'code',
                                         _value: false,
                                       } as any,
