@@ -31,7 +31,6 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         // register standard constants
         builder.registerStandardProperty(SheshaConstants.http, registerHttpAction);
         builder.registerStandardProperty(SheshaConstants.message, registerMessageAction);
-        // Note: loader is now accessible via pageContext.showLoader() and pageContext.hideLoaders()
         builder.registerStandardProperty(SheshaConstants.moment, registerMomentAction);
         builder.registerStandardProperty(SheshaConstants.fileSaver, registerFileSaverAction);
         builder.registerStandardProperty(SheshaConstants.globalState, registerGlobalStateAction);

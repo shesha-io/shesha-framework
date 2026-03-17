@@ -61,13 +61,6 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
       type: 'object',
     },
     {
-      id: 'e7e15gd2-9f7e-5aae-b5cc-42g444f96cc9',
-      name: 'loader',
-      description:
-        'API for showing and hiding blocking loaders. Use loader.show("message") to display a blocking loader, and loader.hide() to dismiss it.',
-      type: 'object',
-    },
-    {
       id: 'b8a230c7-2cd5-4974-b4ed-c9753ac12c1d',
       name: 'moment',
       description: 'The moment.js object',
