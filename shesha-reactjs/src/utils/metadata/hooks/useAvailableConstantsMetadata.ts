@@ -16,7 +16,6 @@ const ALL_STANDARD_CONSTANTS = [
   SheshaConstants.formData,
   SheshaConstants.components,
   SheshaConstants.webStorage,
-  SheshaConstants.loader,
   /* SheshaConstants.http,
   SheshaConstants.message,
   SheshaConstants.modal,

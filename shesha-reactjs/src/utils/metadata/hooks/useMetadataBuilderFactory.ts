@@ -8,7 +8,6 @@ import {
   registerPageAction,
   registerWebStorageAction,
   registerConstantsBuilderAction,
-  registerLoaderAction,
 } from "@/utils/metadata/standardProperties";
 import { useFormDataRegistration } from "./useFormDataRegistration";
 import { useAppContextRegistration } from "./useAppContextRegistration";
@@ -41,7 +40,6 @@ export const useMetadataBuilderFactory = (makeComponentsNullable: boolean = fals
     builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);
     builder.registerStandardProperty(SheshaConstants.query, registerQueryAction);
     builder.registerStandardProperty(SheshaConstants.webStorage, registerWebStorageAction);
-    builder.registerStandardProperty(SheshaConstants.loader, registerLoaderAction);
 
     builder.registerStandardProperty(SheshaConstants.metadataBuilder, registerMetadataBuilderAction, false);
     builder.registerStandardProperty(SheshaConstants.constantsBuilder, registerConstantsBuilderAction);
