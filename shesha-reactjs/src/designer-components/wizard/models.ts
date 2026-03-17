@@ -92,4 +92,5 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   sequence?: IWizardSequence;
   showBackButton?: boolean;
   showDoneButton?: boolean;
+  persistStep?: boolean;
 }
