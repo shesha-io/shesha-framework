@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { IModelMetadata } from "@/index";
 import { createNamedContext } from '@/utils/react';
+import { ILoaderInstance } from '../globalLoader';
 
 export interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }
 
@@ -19,6 +20,8 @@ export interface IDataContextFull {
   api: any;
   metadata: Promise<IModelMetadata>;
   setFieldValue: ContextSetFieldValue;
+  showLoader?: (message?: string, isBlocking?: boolean) => ILoaderInstance;
+  hideLoaders?: () => void;
 }
 
 export interface IDataContextProviderActionsContext {

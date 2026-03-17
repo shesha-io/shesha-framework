@@ -42,7 +42,7 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.formData, registerFormDataAction);
         builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);
         builder.registerStandardProperty(SheshaConstants.query, registerQueryAction);
-        
+
         builder.registerStandardProperty(SheshaConstants.metadataBuilder, registerMetadataBuilderAction, false);
         //builder.registerStandardProperty(SheshaConstants.constantsBuilder, registerConstantsBuilderAction);
 

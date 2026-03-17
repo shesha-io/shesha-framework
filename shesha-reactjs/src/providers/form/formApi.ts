@@ -7,6 +7,14 @@ import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entity
 import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
 
+/**
+ * Form loader instance with progressive feedback methods
+ */
+export interface IFormLoaderInstanceApi {
+  updateMessage(message: string): void;
+  close(): void;
+}
+
 export interface IFormSettings {
   modelType?: string;
 
@@ -28,7 +36,7 @@ type PublicFormSettings = Pick<IFormSettings, 'modelType'>;
  */
 export interface IFormApi<Values = any> {
   /**
-   * Add deferred update data to `data` object 
+   * Add deferred update data to `data` object
    * @param data model data object for updating
    * @returns The deferred update data
    */
@@ -41,7 +49,7 @@ export interface IFormApi<Values = any> {
   setFieldValue: (name: string, value: any) => void;
   /**
    * Set fields value
-   * @param values 
+   * @param values
    */
   setFieldsValue: (values: Values) => void;
   /**
@@ -59,6 +67,18 @@ export interface IFormApi<Values = any> {
    * @param payload data payload
    */
   setFormData: (payload: ISetFormDataPayload) => void;
+
+  /**
+   * Show blocking loader overlay scoped to this form
+   * @param message Optional message to display
+   * @returns Loader instance with methods for progressive feedback
+   */
+  showLoader: (message?: string) => IFormLoaderInstanceApi;
+
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
 
   /** antd form instance */
   formInstance?: FormInstance<Values>;
@@ -79,6 +99,10 @@ export interface IFormApi<Values = any> {
 
 export type ConfigurableFormPublicApi = Pick<ConfigurableFormInstance, 'setFormData' | 'form' | 'formSettings' | 'formMode' | 'formData' | 'modelMetadata'> & {
   shaForm?: IShaFormInstance;
+  loaderApi?: {
+    showLoader: (message?: string) => IFormLoaderInstanceApi;
+    hideLoaders: () => void;
+  };
 };
 
 class PublicFormApiWrapper implements IFormApi {
@@ -109,6 +133,15 @@ class PublicFormApiWrapper implements IFormApi {
   };
   setFormData = (payload: ISetFormDataPayload) => {
     this.#form?.setFormData(payload);
+  };
+  showLoader = (message?: string) => {
+    return this.#form?.loaderApi?.showLoader(message) || {
+      updateMessage: () => { /* no-op */ },
+      close: () => { /* no-op */ },
+    };
+  };
+  hideLoaders = () => {
+    this.#form?.loaderApi?.hideLoaders();
   };
   get shaForm(): IShaFormInstance {
     return this.#form?.shaForm;

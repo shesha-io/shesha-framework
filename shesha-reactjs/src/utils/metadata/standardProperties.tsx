@@ -5,6 +5,7 @@ import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
 import { queryStringValuesDefinition } from '@/providers/sourceFileManager/api-utils/queryString';
+import { pageContextApiDefinition } from '@/providers/sourceFileManager/api-utils/pageContext';
 import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE } from '@/publicJsApis';
 
 export const SheshaConstants = {
@@ -55,7 +56,6 @@ export const registerFileSaverAction: MetadataBuilderAction = (builder, name = "
     return Promise.resolve(definition);
   });
 };
-
 
 export const registerMomentAction: MetadataBuilderAction = (builder, name = "moment") => {
   builder.addCustom(name, "The moment.js object", () => {
@@ -112,10 +112,10 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder, name =
 };
 
 export const registerPageContextAction: MetadataBuilderAction = (builder, name = "pageContext") => {
-  builder.addCustom(name, "Contexts data of current page", () => {
+  builder.addCustom(name, "Page context with loader API and data access", () => {
     const definition: TypeDefinition = {
-      typeName: 'IPageContexts',
-      files: [{content: 'export interface IPageContexts { [key: string]: any; setFieldValue(key: string, value: any): void; }', fileName: 'apis/pageContext.ts'}],
+      typeName: 'IPageContext',
+      files: [{content: pageContextApiDefinition, fileName: 'apis/pageContext.ts'}],
     };
     return Promise.resolve(definition);
   });

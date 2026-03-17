@@ -22,6 +22,7 @@ import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
+import { FormLoaderContextValue, useFormLoader } from "../formLoaderProvider";
 
 type ForceUpdateTrigger = () => void;
 interface ShaFormInstanceArguments {
@@ -31,12 +32,15 @@ interface ShaFormInstanceArguments {
     dataLoaders: IFormDataLoadersContext;
     dataSubmitters: IFormDataSubmittersContext;
     antdForm: FormInstance;
+    formLoaderContext?: FormLoaderContextValue;
 }
 
 class PublicFormApi<Values = any> implements IFormApi<Values> {
     #form: IShaFormInstance;
-    constructor(form: IShaFormInstance) {
+    #formLoaderContext?: FormLoaderContextValue;
+    constructor(form: IShaFormInstance, formLoaderContext?: FormLoaderContextValue) {
         this.#form = form;
+        this.#formLoaderContext = formLoaderContext;
     }
     addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[] => {
         const delayedUpdateData = this.#form?.getDelayedUpdates();
@@ -58,6 +62,15 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     };
     setFormData = (payload: ISetFormDataPayload) => {
         this.#form.setFormData(payload);
+    };
+    showLoader = (message?: string) => {
+        return this.#formLoaderContext?.showLoader(message) || {
+            updateMessage: () => { /* no-op */ },
+            close: () => { /* no-op */ },
+        };
+    };
+    hideLoaders = () => {
+        this.#formLoaderContext?.hideLoaders();
     };
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
@@ -99,6 +112,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     private expressionExecuter: ExpressionExecuter;
     private events: FormEvents<Values>;
     private dataSubmitContext: IDataSubmitContext;
+    private formLoaderContext?: FormLoaderContextValue;
 
     modelMetadata?: IModelMetadata;
     antdForm: FormInstance;
@@ -146,6 +160,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.dataLoaders = args.dataLoaders;
         this.dataSubmitters = args.dataSubmitters;
         this.expressionExecuter = undefined;
+        this.formLoaderContext = args.formLoaderContext;
 
         this.logEnabled = false;
         this.isSettingsForm = false;
@@ -220,7 +235,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
     #publicFormApi: PublicFormApi;
     getPublicFormApi = (): IFormApi<Values> => {
-        return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this));
+        return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this, this.formLoaderContext));
     };
 
     //#region Antd methods
@@ -613,6 +628,9 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
     const fullContext = useAvailableConstantsContexts();
     const metadataDispatcher = useMetadataDispatcher();
 
+    // Get form loader context if available (returns no-op implementation if provider not found)
+    const formLoaderContext = useFormLoader();
+
     if (!formRef.current) {
         if (form) {
             formRef.current = form;
@@ -629,6 +647,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 dataSubmitters: dataSubmitters,
                 antdForm: antdFormInstance,
                 metadataDispatcher: metadataDispatcher,
+                formLoaderContext: formLoaderContext,
             });
             const accessors = wrapConstantsData({
                 fullContext,

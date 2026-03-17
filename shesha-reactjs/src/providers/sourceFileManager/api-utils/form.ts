@@ -31,7 +31,7 @@ export interface FormInstance<Values> {
  */
 export interface FormApi<Values = any> {
   /**
-   * Add deferred update data to 'data' object 
+   * Add deferred update data to 'data' object
    * @param data model data object for updating
    * @returns The deferred update data
    */
@@ -44,7 +44,7 @@ export interface FormApi<Values = any> {
   setFieldValue: (name: string, value: any) => void;
   /**
    * Set fields value
-   * @param values 
+   * @param values
    */
   setFieldsValue: (values: Values) => void;
   /**
@@ -63,6 +63,27 @@ export interface FormApi<Values = any> {
    */
   setFormData: (payload: ISetFormDataPayload) => void;
 
+  /**
+   * Show loader overlay
+   * @param message Optional message to display
+   * @returns Loader instance with methods for progressive feedback
+   * @example
+   * const loader = form.showLoader("Saving...");
+   * try {
+   *   await http.post('/api/save', data);
+   *   loader.close();
+   * } catch (error) {
+   *   loader.updateMessage("Failed to save");
+   *   setTimeout(() => loader.close(), 2000);
+   * }
+   */
+  showLoader: (message?: string) => { updateMessage(message: string): void; close(): void; };
+
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
+
   /** antd form instance */
   formInstance?: FormInstance<Values>;
   /** Configurable form settings */
@@ -71,7 +92,7 @@ export interface FormApi<Values = any> {
   formMode: FormMode;
   /** Form data */
   data: Values;
-  
+
   /** Form arguments passed by caller */
   formArguments?: any;
 
