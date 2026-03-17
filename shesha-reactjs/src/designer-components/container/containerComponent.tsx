@@ -61,7 +61,7 @@ const ContainerComponent: ContainerComponentDefinition = {
       justifySelf: model.justifySelf,
       noDefaultStyling: model.noDefaultStyling,
       gridColumnsCount: model.gridColumnsCount,
-      flexWrap: model.flexWrap,
+      flexWrap: model?.flexDirection?.includes('row') ? model.flexWrap : 'unset',
       gap: addPx(model.gap, allData),
     }), [
       model.display,

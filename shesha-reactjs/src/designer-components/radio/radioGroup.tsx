@@ -8,6 +8,7 @@ import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { ILabelValue } from '../dropdown/model';
 import { executeScriptSync } from '@/providers/form/utils';
 import { IRadioProps } from './interfaces';
+import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
 
 type FetchResponse = ILabelValue<any>[] | {
   items?: ILabelValue<any>[];
@@ -58,7 +59,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       onChange={onChange}
       style={model.style}
     >
-      <Space direction={model.direction}>
+      <Space direction={model.direction} style={{ margin: `${DEFAULT_MARGINS.vertical}px ${DEFAULT_MARGINS.horizontal}px`}}>
         {options?.map((checkItem, index) => (
           <Radio key={index} value={`${checkItem.value}`} disabled={model.readOnly}>
             {checkItem.label}

@@ -70,8 +70,6 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
         >
         </Button>
       </Row>
-
-      <InputRow inline={true} readOnly={readOnly}>
         <SettingInput
           id={directionInputId}
           propertyName={propertyName.replace('gradient.colors', 'gradient.direction')}
@@ -81,7 +79,6 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
           type="dropdown"
           dropdownOptions={gradientDirectionOptions}
         />
-      </InputRow>
     </>
   );
 };
