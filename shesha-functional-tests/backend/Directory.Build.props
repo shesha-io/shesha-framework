@@ -2,6 +2,6 @@
     <PropertyGroup>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<Nullable>enable</Nullable>
-        <NoWarn>$(NoWarn);CS1591;612;618;809;AsyncFixer01;8618;</NoWarn>
+        <NoWarn>$(NoWarn);CS1591;612;618;809;AsyncFixer01;8618;NU1903;</NoWarn>
     </PropertyGroup>
 </Project>
