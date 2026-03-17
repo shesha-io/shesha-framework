@@ -30,6 +30,7 @@ export interface IPropertySelectProps {
   style?: CSSProperties;
   dropdownStyle?: CSSProperties;
   size?: SizeType;
+  placeholder?: string;
   onChange?: (value: string) => void;
   onSelect?: (value: string, selectedProperty: IPropertyItem) => void;
   readOnly?: boolean;
@@ -239,11 +240,12 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
       size={props.size}
       disabled={readOnly}
       options={state.options}
-      style={{ minWidth: "150px" }}
+      style={{ minWidth: "150px", ...props.style }}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
       allowClear
       onClear={onClear}
+      placeholder={props.placeholder}
     >
     </Select>
   );

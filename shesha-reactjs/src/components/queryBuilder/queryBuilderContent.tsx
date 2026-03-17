@@ -56,10 +56,17 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   }, [value]);
 
   const renderBuilder = (props: BuilderProps): JSX.Element => {
+    const children1 = props.tree?.getIn?.(['children1']);
+    const hasRules = Boolean(children1 && children1?.size > 0);
+
     return (
-      <div className="query-builder-container">
-        <div className={classNames('query-builder', { 'qb-lite': showActionBtnOnHover })}>
-          <Builder {...props} />
+      <div className={classNames('query-builder-container', { 'qb-has-rules': hasRules, 'qb-empty': !hasRules })}>
+        {hasRules && <div className="qb-logic-heading">Show all...</div>}
+        <div className={classNames('qb-rule-layout', { 'qb-rule-layout--active': hasRules })}>
+          {hasRules && <div className="qb-where-label">Where</div>}
+          <div className={classNames('query-builder', { 'qb-lite': showActionBtnOnHover })}>
+            <Builder {...props} />
+          </div>
         </div>
       </div>
     );

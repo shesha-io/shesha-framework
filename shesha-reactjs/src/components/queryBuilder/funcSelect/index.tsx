@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Tooltip, Select } from "antd";
 import { BUILT_IN_PLACEMENTS, SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 const { Option, OptGroup } = Select;
@@ -27,11 +27,26 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
   const items = useMemo<FieldItem[]>(() => {
     // workaround to filter out evaluation from the LHS
     const evaluates = allItems.filter((item) => item.key && item.key.startsWith('EVALUATE_'));
+    const withoutJavaScriptExpression = allItems.filter((item) => item.key !== 'expressionFunc');
 
     return evaluates.length > 1
-      ? allItems.filter((item) => !item.key || !item.key.startsWith('EVALUATE_'))
-      : allItems;
+      ? withoutJavaScriptExpression.filter((item) => !item.key || !item.key.startsWith('EVALUATE_'))
+      : withoutJavaScriptExpression;
   }, [allItems]);
+
+  const flattenItems = (value: FieldItem[]): FieldItem[] => {
+    return value.flatMap((item) => item.items ? flattenItems(item.items) : [item]);
+  };
+
+  const leafItems = useMemo(() => flattenItems(items).filter((item) => Boolean(item.key)), [items]);
+  const singleLeaf = leafItems.length === 1 ? leafItems[0] : null;
+  const singleLeafPath = singleLeaf ? (singleLeaf.path || singleLeaf.key) : null;
+
+  useEffect(() => {
+    if (singleLeafPath && selectedKey !== singleLeafPath) {
+      props.setField(singleLeafPath);
+    }
+  }, [singleLeafPath, selectedKey, props]);
 
   const selectText = selectedLabel || placeholder;
   const selectWidth = calcTextWidth(selectText);
@@ -76,6 +91,10 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
   };
 
   const fieldSelectItems = renderSelectItems(items);
+
+  if (singleLeafPath && selectedKey === singleLeafPath) {
+    return null;
+  }
 
   return (
     <Select

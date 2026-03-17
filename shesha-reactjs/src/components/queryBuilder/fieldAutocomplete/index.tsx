@@ -6,6 +6,7 @@ import { isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
 import { useFieldWidget } from "../widgets/field/fieldWidgetContext";
 import { CustomFieldSettings } from "@/providers/queryBuilder/models";
 import { DataTypes } from "@/interfaces";
+import { PackedSelect } from '../packedControl';
 
 type OnPropertySelect = IPropertySelectProps["onSelect"];
 
@@ -67,15 +68,18 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
   };
 
   return (
-    <PropertySelect
-      readOnly={readOnly}
-      value={text}
-      onChange={onChange}
-      style={{ width }}
-      size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
-      onSelect={onSelect}
-      isPropertyVisible={isPropertyVisible}
-      isPropertySelectable={isPropertySelectable}
-    />
+    <PackedSelect variant="field">
+      <PropertySelect
+        readOnly={readOnly}
+        value={text}
+        onChange={onChange}
+        style={{ width }}
+        size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
+        onSelect={onSelect}
+        placeholder={placeholder}
+        isPropertyVisible={isPropertyVisible}
+        isPropertySelectable={isPropertySelectable}
+      />
+    </PackedSelect>
   );
 };

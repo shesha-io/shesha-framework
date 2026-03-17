@@ -13,6 +13,7 @@ import GuidType from './types/guid';
 import { expressionFunc } from './funcs/expression';
 import { JavaScriptWidget } from './widgets/javascript/index';
 import { FieldWidget } from './widgets/field';
+import { IgnoreIfUnassignedWidget } from './widgets/ignoreIfUnassigned';
 
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
@@ -103,13 +104,92 @@ delete standardOperators.proximity;
 
 const operators = {
   ...standardOperators,
+  equal: {
+    ...standardOperators.equal,
+    label: 'is',
+    labelForFormat: 'is',
+  },
+  not_equal: {
+    ...standardOperators.not_equal,
+    label: 'is not',
+    labelForFormat: 'is not',
+  },
+  less: {
+    ...standardOperators.less,
+    label: 'is less than',
+    labelForFormat: 'is less than',
+  },
+  less_or_equal: {
+    ...standardOperators.less_or_equal,
+    label: 'is less than or equal to',
+    labelForFormat: 'is less than or equal to',
+  },
+  greater: {
+    ...standardOperators.greater,
+    label: 'is greater than',
+    labelForFormat: 'is greater than',
+  },
+  greater_or_equal: {
+    ...standardOperators.greater_or_equal,
+    label: 'is greater than or equal to',
+    labelForFormat: 'is greater than or equal to',
+  },
+  like: {
+    ...standardOperators.like,
+    label: 'contains',
+    labelForFormat: 'contains',
+  },
+  not_like: {
+    ...standardOperators.not_like,
+    label: 'does not contain',
+    labelForFormat: 'does not contain',
+  },
   starts_with: {
     ...standardOperators.starts_with,
+    label: 'starts with',
+    labelForFormat: 'starts with',
     jsonLogic: 'startsWith',
   },
   ends_with: {
     ...standardOperators.ends_with,
+    label: 'ends with',
+    labelForFormat: 'ends with',
     jsonLogic: 'endsWith',
+  },
+  is_empty: {
+    ...standardOperators.is_empty,
+    label: 'is empty',
+    labelForFormat: 'is empty',
+  },
+  is_not_empty: {
+    ...standardOperators.is_not_empty,
+    label: 'is not empty',
+    labelForFormat: 'is not empty',
+  },
+  is_null: {
+    ...standardOperators.is_null,
+    label: 'is blank',
+    labelForFormat: 'is blank',
+  },
+  is_not_null: {
+    ...standardOperators.is_not_null,
+    label: 'is not blank',
+    labelForFormat: 'is not blank',
+  },
+  some: {
+    ...standardOperators.some,
+    label: 'Any of the following are true...',
+    labelForFormat: 'Any of the following are true...',
+  },
+  all: {
+    ...standardOperators.all,
+    label: 'All of the following are true...',
+    labelForFormat: 'All of the following are true...',
+  },
+  none: {
+    ...standardOperators.none,
+    label: 'None of the following are true...',
+    labelForFormat: 'None of the following are true...',
   },
   is_satisfied: {
     label: 'Is satisfied',
@@ -146,6 +226,7 @@ const widgets = {
   specification: SpecificationWidget,
   javascript: JavaScriptWidget,
   field: FieldWidget,
+  ignoreIfUnassigned: IgnoreIfUnassignedWidget,
 };
 
 const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'entityReference', 'refList'];
@@ -154,7 +235,7 @@ evaluateTypes.forEach((type) => {
   evaluateFunctions[`evaluate_${type}`.toUpperCase()] = getEvaluateFunc(type);
 });
 
-const knownFuncNames = ['NOW', 'LOWER', 'NOW', 'UPPER', 'RELATIVE_DATETIME'];
+const knownFuncNames = ['NOW', 'RELATIVE_DATETIME'];
 const knownFuncs: Funcs = {};
 knownFuncNames.forEach((funcName) => {
   if (Object.hasOwn(BasicFuncs, funcName))

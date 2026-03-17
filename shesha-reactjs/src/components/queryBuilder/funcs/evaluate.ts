@@ -3,11 +3,12 @@ import { getEvaluationNodeFromJsonLogicNode, IEvaluateJsonLogicNode } from '@/ut
 import { IHasHideForSelect } from '../interfaces';
 
 const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, JsonLogicValue>): JsonLogicTree => {
+  const ignoreIfUnassigned = Boolean(funcArgs.ignoreIfUnassigned);
   const node: IEvaluateJsonLogicNode = {
     evaluate: [
       {
         expression: funcArgs.expression,
-        required: funcArgs.required,
+        required: !ignoreIfUnassigned,
         type: 'mustache',
       },
     ],
@@ -21,7 +22,10 @@ const jsonLogic2Args: JsonLogicImportFunc = (val): RuleValue[] => {
   if (!node || node.evaluate?.type !== 'mustache')
     throw `Can't parse 'evaluate' function`; // throw exception to skip current function and try to parse others
 
-  return [node.evaluate.expression, node.evaluate.required];
+  const required = node.evaluate.required === true;
+  const ignoreIfUnassigned = !required;
+
+  return [node.evaluate.expression, ignoreIfUnassigned];
 };
 
 type CustomFieldSettings = FieldSettings & {
@@ -34,9 +38,7 @@ type CustomFieldSettings = FieldSettings & {
 
 const requiredFieldSettings: CustomFieldSettings = {
   customProps: {
-    checkedChildren: "Required",
-    unCheckedChildren: "Optional",
-    title: 'Whole filter will be marked as `unevaluated` if the expression is marked as `required` and the evaluation result is empty',
+    title: 'Check this if you want the criteria to be ignored if the expression references any unassigned components.',
   },
 };
 
@@ -47,6 +49,8 @@ export const getEvaluateFunc = (type: string): Func & IHasHideForSelect => {
     label: 'Evaluate (mustache)',
     jsonLogic: args2JsonLogic,
     jsonLogicImport: jsonLogic2Args,
+    renderBrackets: ['', ''],
+    renderSeps: [''],
     args: {
       expression: {
         label: "Expression",
@@ -54,12 +58,18 @@ export const getEvaluateFunc = (type: string): Func & IHasHideForSelect => {
         defaultValue: '',
         valueSources: ['value'],
       },
-      required: {
-        label: 'Allow empty',
+      ignoreIfUnassigned: {
+        label: 'Ignore if unassigned',
         type: 'boolean',
         valueSources: ['value'],
         defaultValue: false,
         fieldSettings: requiredFieldSettings,
+        widgets: {
+          ignoreIfUnassigned: {
+            operators: ['equal'],
+          },
+        },
+        preferWidgets: ['ignoreIfUnassigned'],
       },
     },
   };

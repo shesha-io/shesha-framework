@@ -5,10 +5,12 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { extractVars } from '@/utils/jsonLogic';
 import { FieldAutocomplete } from './fieldAutocomplete';
 import { FuncSelect } from './funcSelect/index';
+import { ValueSources } from './valueSources';
+import { EmptyRulePlaceholders } from './emptyRulePlaceholders';
 import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
 import { IQueryBuilderProps } from './interfaces';
 import { QueryBuilderContent } from './queryBuilderContent';
-import { Skeleton } from 'antd';
+import { Button as AntButton, Skeleton } from 'antd';
 import { useQueryBuilder } from '@/providers';
 import {
   Config,
@@ -36,10 +38,59 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
   // pre-parse tree and extract all used fields
   // load all fields which are missing
 
+  const renderQbButton = (buttonProps): JSX.Element => {
+    const { type, onClick, label, readonly, config, renderIcon } = buttonProps;
+    const renderSize = config?.settings?.renderSize;
+
+    const hideLabelsFor = new Set(['addSubRuleSimple', 'delGroup', 'delRuleGroup', 'delRule']);
+    const actionClassMap = {
+      addRule: 'action action--ADD-RULE',
+      addGroup: 'action action--ADD-GROUP',
+      delRule: 'action action--DELETE',
+      delGroup: 'action action--DELETE',
+      delRuleGroup: 'action action--DELETE',
+      addSubRuleSimple: 'action action--ADD-RULE',
+      addSubRule: 'action action--ADD-RULE',
+      addSubGroup: 'action action--ADD-GROUP',
+    };
+
+    const antTypeMap = {
+      addRule: 'primary',
+      addSubRule: 'primary',
+      addSubRuleSimple: 'primary',
+      delRule: 'text',
+    };
+
+    const dangerTypes = new Set(['delRule', 'delGroup', 'delRuleGroup']);
+    const icon = renderIcon?.({ type, readonly });
+
+    return (
+      <AntButton
+        key={type}
+        className={actionClassMap[type]}
+        type={antTypeMap[type] ?? 'default'}
+        icon={icon}
+        danger={dangerTypes.has(type)}
+        onClick={onClick}
+        size={renderSize === 'medium' ? 'middle' : renderSize}
+        disabled={readonly}
+      >
+        {hideLabelsFor.has(type) ? '' : label}
+      </AntButton>
+    );
+  };
+
   const qbSettings: Settings = {
     ...InitialConfig.settings,
+    addRuleLabel: 'Add Rule',
+    addGroupLabel: 'Add Group',
     addSubRuleLabel: 'Add Rule',
     addSubGroupLabel: 'Add Group',
+    groupActionsPosition: 'bottomRight',
+    fieldPlaceholder: 'Select field',
+    operatorPlaceholder: 'Select operator',
+    fieldLabel: 'Field',
+    operatorLabel: 'Operator',
     renderIcon: (iconProps, ctx) => {
       if (iconProps.type === 'addGroup' || iconProps.type === 'addSubGroup')
         return <FolderOutlined />;
@@ -53,6 +104,10 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
     fieldSources: ["field", "func"],
     renderFunc: (props) => (<FuncSelect {...props} />),
     renderField: (props) => (<FieldAutocomplete {...props} /* fields={fields}*/ />),
+    renderValueSources: (props) => (<ValueSources {...props} variant="value" />),
+    renderFieldSources: (props) => (<ValueSources {...props} variant="field" />),
+    renderBeforeWidget: (ruleProps) => (<EmptyRulePlaceholders {...ruleProps} />),
+    renderButton: (buttonProps) => renderQbButton(buttonProps),
   };
 
   const convertFields = (fields: IProperty[]): Fields => {
@@ -152,6 +207,17 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
       ...InitialConfig,
       widgets: { ...InitialConfig.widgets, ...customWidgets },
       settings: qbSettings,
+      conjunctions: {
+        ...InitialConfig.conjunctions,
+        AND: {
+          ...InitialConfig.conjunctions.AND,
+          label: 'And',
+        },
+        OR: {
+          ...InitialConfig.conjunctions.OR,
+          label: 'Or',
+        },
+      },
       fields: convertFields(fields),
     };
     if (props.readOnly) {
