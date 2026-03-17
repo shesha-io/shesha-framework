@@ -186,12 +186,18 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       ...migratePrevStyles(prev, defaultStyles()),
     }))
     .add<IMenuListProps>(1, (prev) => {
-      const overflow = prev.menuOverflow ?? prev.overflow;
+      const isValidOverflow = (value: unknown): value is MenuOverflowValue =>
+        value === 'dropdown' || value === 'menu' || value === 'scroll';
+
+      const overflow = isValidOverflow(prev.menuOverflow)
+        ? prev.menuOverflow
+        : isValidOverflow(prev.overflow)
+          ? prev.overflow
+          : undefined;
+
       return {
         ...prev,
-        menuOverflow: typeof overflow === 'string' && (overflow === 'dropdown' || overflow === 'menu' || overflow === 'scroll')
-          ? overflow
-          : 'dropdown',
+        menuOverflow: overflow ?? 'dropdown',
       };
     }),
 };
