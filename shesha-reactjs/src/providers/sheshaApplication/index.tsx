@@ -52,6 +52,7 @@ import { ApplicationContextsProvider } from './context';
 import { useApplicationPlugin, usePublicApplicationApi } from './context/applicationContext';
 import { DEFAULT_ACCESS_TOKEN_NAME, IHttpHeadersDictionary, ISheshaRoutes } from './contexts';
 import { ProgressBar } from './progressBar';
+import { GlobalLoaderProvider } from '../globalLoader';
 
 export interface IShaApplicationProviderProps {
   isDebugMode?: boolean;
@@ -148,25 +149,27 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                 <FormDataLoadersProvider>
                                                   <FormDataSubmittersProvider>
                                                     <DataSourcesProvider>
-                                                      <DynamicModalProvider>
-                                                        {(status === 'inprogress' || status === 'waiting') && (
-                                                          <SheshaLoader message={hint ?? 'Initializing...'} />
-                                                        )}
-                                                        {status === 'ready' && (
-                                                          <ApplicationActionsProcessor>
-                                                            <MainMenuProvider>
-                                                              <ProgressBar>{children}</ProgressBar>
-                                                            </MainMenuProvider>
-                                                          </ApplicationActionsProcessor>
-                                                        )}
-                                                        {status === 'failed' && (
-                                                          <Result
-                                                            status="500"
-                                                            title="500"
-                                                            subTitle={error?.message ?? 'Sorry, something went wrong.'}
-                                                          />
-                                                        )}
-                                                      </DynamicModalProvider>
+                                                      <GlobalLoaderProvider>
+                                                        <DynamicModalProvider>
+                                                          {(status === 'inprogress' || status === 'waiting') && (
+                                                            <SheshaLoader message={hint ?? 'Initializing...'} />
+                                                          )}
+                                                          {status === 'ready' && (
+                                                            <ApplicationActionsProcessor>
+                                                              <MainMenuProvider>
+                                                                <ProgressBar>{children}</ProgressBar>
+                                                              </MainMenuProvider>
+                                                            </ApplicationActionsProcessor>
+                                                          )}
+                                                          {status === 'failed' && (
+                                                            <Result
+                                                              status="500"
+                                                              title="500"
+                                                              subTitle={error?.message ?? 'Sorry, something went wrong.'}
+                                                            />
+                                                          )}
+                                                        </DynamicModalProvider>
+                                                      </GlobalLoaderProvider>
                                                     </DataSourcesProvider>
                                                   </FormDataSubmittersProvider>
                                                 </FormDataLoadersProvider>

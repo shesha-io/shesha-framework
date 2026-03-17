@@ -212,13 +212,9 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
 
 export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
   return (
-    <ParentProvider
-      model={null}
-      name={isDefined(props.formId) ? configurableItemIdentifierToString(props.formId) : `form`}
-      isScope
-    >
+    <ParentProvider model={null} name={isDefined(props.formId) ? configurableItemIdentifierToString(props.formId) : `form`} isScope>
       <FormLoaderProvider>
-        <ConfigurableFormInternal {...props} />
+        <ConfigurableFormInner {...props} />
       </FormLoaderProvider>
     </ParentProvider>
   );

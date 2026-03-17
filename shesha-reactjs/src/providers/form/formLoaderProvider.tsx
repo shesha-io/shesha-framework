@@ -1,5 +1,7 @@
-import React, { FC, PropsWithChildren, createContext, useContext, useState, useCallback, useRef } from 'react';
+import { FC, PropsWithChildren, createContext, useContext, useState, useCallback, useRef } from 'react';
 import { nanoid } from '@/utils/uuid';
+import { isNullOrWhiteSpace } from '@/utils';
+import { FormLoader } from './formLoader';
 
 /**
  * Loader instance with methods for progressive feedback
@@ -51,11 +53,9 @@ export const FormLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const updateLoader = useCallback((id: string, updates: Partial<InternalFormLoaderInstance>) => {
     setActiveLoaders((prev) => {
-      const updated = prev.map((loader) =>
-        loader.id === id ? { ...loader, ...updates } : loader
-      );
+      const updated = prev.map((loader) => loader.id === id ? { ...loader, ...updates } : loader);
       // Update ref
-      const loader = updated.find(l => l.id === id);
+      const loader = updated.find((l) => l.id === id);
       if (loader) {
         loadersRef.current.set(id, loader);
       }
@@ -72,7 +72,7 @@ export const FormLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
     const loaderId = nanoid();
     const loaderInstance: InternalFormLoaderInstance = {
       id: loaderId,
-      message: message || 'Loading...',
+      message: isNullOrWhiteSpace(message) ? 'Loading...' : message,
     };
 
     setActiveLoaders((prev) => [...prev, loaderInstance]);
@@ -102,9 +102,15 @@ export const FormLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
     hideLoaders,
   };
 
+  // Get the most recent active loader
+  const currentLoader = activeLoaders.length > 0 ? activeLoaders[activeLoaders.length - 1] : null;
+
   return (
     <FormLoaderContext.Provider value={value}>
-      {children}
+      <div style={{ position: 'relative' }}>
+        {children}
+        {currentLoader && <FormLoader message={currentLoader.message} />}
+      </div>
     </FormLoaderContext.Provider>
   );
 };

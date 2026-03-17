@@ -54,6 +54,16 @@ export interface IFormApi<Values extends object = object> {
    * @returns The deferred update data
    */
   addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
+  /**
+   * Show blocking loader overlay scoped to this form
+   * @param message Optional message to display
+   * @returns Loader instance with methods for progressive feedback
+   */
+  showLoader: (message?: string) => IFormLoaderInstanceApi;
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
   /** antd form instance */
   readonly formInstance?: FormInstance<Values> | undefined;
   readonly shaForm?: IShaFormInstance<Values> | undefined;
@@ -98,16 +108,4 @@ export interface IFormApi<Values extends object = object> {
    * @param payload data payload
    */
   setFormData: (payload: ISetFormDataPayload<Values>) => void;
-
-  /**
-   * Show blocking loader overlay scoped to this form
-   * @param message Optional message to display
-   * @returns Loader instance with methods for progressive feedback
-   */
-  showLoader: (message?: string) => IFormLoaderInstanceApi;
-
-  /**
-   * Hide all active loaders
-   */
-  hideLoaders: () => void;
 };
