@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
 
 namespace Shesha.Metadata
 {
@@ -34,6 +32,7 @@ namespace Shesha.Metadata
             DataFormat = dataFormat;
         }
 
+        [JsonConstructor]
         public DataTypeInfo(string dataType, string dataFormat, string objectType) : this(dataType, dataFormat)
         {
             ObjectType = objectType;

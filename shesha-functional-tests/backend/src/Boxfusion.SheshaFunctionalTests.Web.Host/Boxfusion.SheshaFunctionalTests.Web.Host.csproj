@@ -13,6 +13,8 @@
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <Nullable>enable</Nullable>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<DockerfileContext>..\..\docker</DockerfileContext>
+	<DockerComposeProjectPath>..\..\docker\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
