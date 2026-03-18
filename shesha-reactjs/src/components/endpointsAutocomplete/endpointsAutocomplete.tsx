@@ -6,6 +6,8 @@ import { useDebouncedCallback } from 'use-debounce';
 import { IApiEndpoint } from '@/interfaces';
 import { DefaultOptionType } from 'antd/lib/select';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { useFormData } from '@/providers';
+import { evaluateValueAsString } from '@/index';
 
 export interface IHttpVerb {
   id: string;
@@ -82,6 +84,9 @@ const getVerbFromValue = (value?: EndpointsAutocompleteValue): string | null => 
 
 export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, mode = 'url', ...props }) => {
   const endpointsFetcher = useApiEndpoints({ lazy: true });
+  const { data: formData } = useFormData();
+  const verb = props.httpVerb ? evaluateValueAsString(props.httpVerb, { data: formData }) : props.httpVerb;
+
 
   const doFetchItems = (term: string, verb: string): void => {
     endpointsFetcher.refetch({ queryParams: { term, verb: verb } });
@@ -94,7 +99,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     200,
   );
 
-  const currentVerb = mode === 'url' ? props.httpVerb : getVerbFromValue(props.value);
+  const currentVerb = mode === 'url' ? verb : getVerbFromValue(props.value);
   useEffect(() => {
     const url = getUrlFromValue(props.value);
     debouncedFetchItems(url, currentVerb);

@@ -82,9 +82,9 @@ export const GlobalSheshaStyles = createGlobalStyle`
       height: auto !important; 
     }
   }
+    
   .${(p) => p.theme.prefixCls}-form-item {
     margin: 0 !important;
-
   
     .${(p) => p.theme.prefixCls}-row {
       &.${(p) => p.theme.prefixCls}-form-item-row {

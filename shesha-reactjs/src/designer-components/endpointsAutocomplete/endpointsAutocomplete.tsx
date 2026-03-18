@@ -20,15 +20,13 @@ const EndpointsAutocompleteComponent: EndpointsAutocompleteComponentDefinition =
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-    const { data: formData } = useFormData();
-    const verb = model.httpVerb ? evaluateValueAsString(model.httpVerb, { data: formData }) : model.httpVerb;
 
     return (
       <ConfigurableFormItem model={model}>
         {
           (value, onChange) => {
             return (
-              <EndpointsAutocomplete {...model} httpVerb={verb} value={value} onChange={onChange} />
+              <EndpointsAutocomplete {...model} httpVerb={model?.httpVerb} value={value} onChange={onChange} />
             );
           }
         }
