@@ -24,7 +24,7 @@ const EndpointsAutocompleteComponent: EndpointsAutocompleteComponentDefinition =
         {
           (value, onChange) => {
             return (
-              <EndpointsAutocomplete {...model} httpVerb={model?.httpVerb} value={value} onChange={onChange} />
+              <EndpointsAutocomplete {...model} value={value} onChange={onChange} />
             );
           }
         }
