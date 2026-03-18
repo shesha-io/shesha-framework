@@ -72,7 +72,7 @@ namespace Shesha.Authorization
             //    throw new AbpAuthorizationException($"Service for entity type `{config.FullClassName}` is not configured");
             //}
 
-            // ToDo: add RequireAll flag
+            // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
             await _objectPermissionChecker.AuthorizeAsync(false, config.FullClassName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue);
         }
     }
