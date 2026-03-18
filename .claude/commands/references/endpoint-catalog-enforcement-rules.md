@@ -79,6 +79,11 @@ At application startup, a two-phase process determines which entities get dynami
 The bootstrapper scans all loaded assemblies for types where `MappingHelper.IsEntity(t)` returns true (i.e., types inheriting from `Entity<T>`, `FullPowerEntity`, or other NHibernate-mapped entity base classes). For each discovered entity type:
 
 - **New entity** (no DB record yet): Creates an `EntityConfig` record with `GenerateAppService = true` by DEFAULT, unless the entity class has `[Entity(GenerateApplicationService = DisableGenerateApplicationService)]` attribute.
+[IH: IMPLEMENT CHANGES to ensure that by default CRUD end-points do not get generated unless explicitly requested:
+1. If an entity does not have the [Entity(...)]` applied, set `GenerateAppService = false` ]
+2. For a new entity where `[Entity(GenerateApplicationService = UseConfiguration)]` set  `GenerateAppService = false`
+]
+
 - **Existing entity** (DB record exists): Updates metadata (FriendlyName, TableName, etc.). Only changes `GenerateAppService` if the code attribute explicitly forces it (`AlwaysGenerateApplicationService` or `DisableGenerateApplicationService`). If `UseConfiguration` (default), the existing DB value is preserved.
 
 **Source:** `shesha-core/src/Shesha.Framework/DynamicEntities/EntityConfigsBootstrapper.cs`
@@ -92,6 +97,15 @@ This runs during MVC startup. It:
 4. If the entity type exists AND no manually-coded app service was already registered for it, creates a `DynamicCrudAppService<TEntity, TDynamicDto, TCreateDynamicDto, TUpdateDynamicDto, TPrimaryKey>` and registers it as an MVC controller
 
 **Critical:** The `GenerateAppService` flag is **NOT checked** during controller registration. Every entity with an `EntityConfig` record gets a dynamic CRUD endpoint, regardless of this flag. The flag is only used by the UI and some commented-out validation code.
+[IH: IMPLEMENT CHANGES TO FILTER OUT ENTITIES WHERE:
+-  `EntityConfig.GenerateAppService` = false, OR
+-  `PermissionedObject.Access` == 1 (Disable), OR
+-  `PermissionedObject` is missing for the entity
+]
+
+[IH: Additionally, create a database migration to sets `EntityConfig.GenerateAppService` = false for all entities where there is no `PermissionedObject`.
+This is to correct the previous default behavior which generated dynamic CRUD endpoints by default for all entities even if there is no explicit configuration.
+]
 
 **Source:** `shesha-core/src/Shesha.Application/DynamicEntities/DynamicEntityControllerFeatureProvider.cs` (lines 48-81)
 
@@ -271,6 +285,7 @@ one that doesn't skip handles authorization.
   When BOTH skip: standard ABP authorization applies (requires authentication
   by default). DefaultEndpointAccess does NOT apply.
   Catalog classification: "Authenticated (CRUD method bypass)"
+  [IH: IMPLEMENT Change so that this scenario cannot occur and DefaultEndpointAccess applies]
 
   IMPORTANT for CRUD service identification:
   The AbpCrudAppService<> check includes ALL subclasses in the inheritance
