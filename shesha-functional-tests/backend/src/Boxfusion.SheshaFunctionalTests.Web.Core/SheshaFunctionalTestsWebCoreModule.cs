@@ -55,7 +55,7 @@ namespace Boxfusion.SheshaFunctionalTests
         /// </summary>
         public override void PreInitialize()
         {
-            // Configuration.Caching.UseSheshaRedis();
+            Configuration.Caching.UseSheshaRedisIfConfigured();
 
             var hnConfig = Configuration.Modules.ShaNHibernate();
             

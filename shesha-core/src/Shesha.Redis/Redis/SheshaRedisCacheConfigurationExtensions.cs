@@ -18,7 +18,27 @@ namespace Shesha.Redis
     {
         private const string SheshaRedisSection = "SheshaRedis";
         private const string ConnectionStringKey = "ConnectionString";
-        private const string DatabaseIdKey = "DatabaseId";      
+        private const string DatabaseIdKey = "DatabaseId";
+
+        /// <summary>
+        /// Configures caching to use Redis as cache server if it's configured on appsettings. 
+        /// Example of configuration in appsettings.json:
+        /// "SheshaRedis": {
+        ///	    "ConnectionString": "localhost:6379"
+        ///	    "DatabaseId": 1
+        ///	}
+        ///	Example of configuration using environment variables:
+        ///	SheshaRedis__ConnectionString=localhost:6379
+        ///	SheshaRedis__DatabaseId=1
+        /// </summary>
+        /// <param name="cachingConfiguration">The caching configuration.</param>
+        public static void UseSheshaRedisIfConfigured(this ICachingConfiguration cachingConfiguration)
+        {
+            var iocManager = cachingConfiguration.AbpConfiguration.IocManager;
+            var options = GetRedisOptions(iocManager);
+            if (!string.IsNullOrWhiteSpace(options.ConnectionString))
+                cachingConfiguration.UseSheshaRedis(options => { });
+        }
 
         /// <summary>
         /// Configures caching to use Redis as cache server.
@@ -41,10 +61,6 @@ namespace Shesha.Redis
             cachingConfiguration.UseRedis(options => {
                 var sheshaOptions = GetRedisOptions(iocManager);
                 options.ConnectionString = sheshaOptions.ConnectionString;
-                /*
-                if (sheshaOptions.DatabaseId != null)
-                    options.DatabaseId = sheshaOptions.DatabaseId.Value;
-                */
                 options.DatabaseId = sheshaOptions.DatabaseId ?? 0;
 
                 optionsAction.Invoke(options);
