@@ -19,10 +19,6 @@ namespace Shesha.GraphQL.Provider.Schemas
         {
             Query = serviceProvider.GetRequiredService<EntityQuery<TEntity, TId>>();
 
-            /*
-            this.RegisterTypeMapping<TGetOutputDto, GraphQLGenericType<TGetOutputDto>>();
-            this.RegisterTypeMapping<TGetListOutputDto, GraphQLGenericType<TGetListOutputDto>>();
-            */
             this.RegisterTypeMapping<TEntity, GraphQLGenericType<TEntity>>();
             this.RegisterTypeMapping<PagedResultDtoType<TEntity>, GraphQLGenericType<PagedResultDtoType<TEntity>>>();
 

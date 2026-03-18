@@ -1,22 +1,22 @@
 ﻿using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
+using Shesha.Locks;
 using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Shesha.Locks
+namespace Shesha.Redis
 {
     /// <summary>
     /// Redis lock factory
     /// </summary>
-    public class RedisLockFactory: ILockFactory, IDisposable
+    public class RedisLockFactory : ILockFactory, IDisposable
     {
         private readonly RedLockFactory _redLockFactory;
 
-        public RedisLockFactory(string connectionString)
+        public RedisLockFactory(string connectionString, int? databaseId)
         {
-            var multiplexer = ConnectionMultiplexer.Connect(connectionString);
+            var multiplexer = ConnectionMultiplexer.Connect(connectionString, config => {
+                config.DefaultDatabase = databaseId;
+            });
             _redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { multiplexer });
         }
 
@@ -73,6 +73,6 @@ namespace Shesha.Locks
             _redLockFactory.Dispose();
 
             GC.SuppressFinalize(this);
-        }        
+        }
     }
 }
