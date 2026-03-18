@@ -154,11 +154,16 @@ namespace Shesha.Web.Host.Startup
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
             // global cors policy
+            var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(o => o.Trim().TrimEnd('/'))
+                .Where(o => !string.IsNullOrEmpty(o))
+                .ToArray() ?? Array.Empty<string>();
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
+                .WithOrigins(corsOrigins)
+                .AllowCredentials());
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAbpRequestLocalization();
