@@ -222,6 +222,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
 				options.DocumentFilter<SwaggerDocumentFilter>();
+                options.DocumentFilter<SwaggerUiDocumentFilter>();
 
 				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 

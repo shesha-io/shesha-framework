@@ -217,6 +217,7 @@ namespace Shesha.Web.Host.Startup
                 options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
+                options.DocumentFilter<SwaggerUiDocumentFilter>();
 
                 options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
