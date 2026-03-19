@@ -12,6 +12,7 @@ using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization.Models;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Microsoft.Extensions.Configuration;
 using Shesha.Controllers;
 using Shesha.Domain;
 using Shesha.Extensions;
@@ -44,6 +45,7 @@ namespace Shesha.Authorization
         private readonly ITokenBlacklistService _tokenBlacklistService;
         private readonly UserManager<User> _userManager;
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
+        private readonly IConfiguration _appConfiguration;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -58,7 +60,8 @@ namespace Shesha.Authorization
             IRepository<MobileDevice, Guid> mobileDeviceRepository,
             ITokenBlacklistService tokenBlacklistService,
             UserManager<User> userManager,
-            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory)
+            AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
+            IConfiguration appConfiguration)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -73,6 +76,7 @@ namespace Shesha.Authorization
             _tokenBlacklistService = tokenBlacklistService;
             _userManager = userManager;
             _claimsPrincipalFactory = claimsPrincipalFactory;
+            _appConfiguration = appConfiguration;
         }
 
         [HttpPost]
@@ -416,7 +420,8 @@ namespace Shesha.Authorization
 
         private string GetEncryptedAccessToken(string accessToken)
         {
-            return SimpleStringCipher.Instance.Encrypt(accessToken, AppConsts.DefaultPassPhrase);
+            var encryptionPassPhrase = _appConfiguration["Authentication:EncryptionPassPhrase"] ?? AppConsts.DefaultPassPhrase;
+            return SimpleStringCipher.Instance.Encrypt(accessToken, encryptionPassPhrase);
         }
     }
 }
