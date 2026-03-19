@@ -4,6 +4,7 @@ using Abp.Extensions;
 using Abp.Notifications;
 using Abp.Timing;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Configuration.Security;
 using Shesha.Controllers;
 using System.Threading.Tasks;
 
@@ -13,15 +14,21 @@ namespace Shesha.Web.Host.Controllers
     {
         private readonly INotificationPublisher _notificationPublisher;
         private readonly IIocResolver _iocResolver;
+        private readonly ISecuritySettings _securitySettings;
 
-        public HomeController(INotificationPublisher notificationPublisher, IIocResolver iocResolver)
+        public HomeController(INotificationPublisher notificationPublisher, IIocResolver iocResolver, ISecuritySettings securitySettings)
         {
             _notificationPublisher = notificationPublisher;
             _iocResolver = iocResolver;
+            _securitySettings = securitySettings;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var swaggerEnabled = await _securitySettings.SwaggerUiEnabled.GetValueAsync();
+            if (!swaggerEnabled)
+                return Ok();
+
             return Redirect("/swagger");
         }
 

@@ -35,5 +35,12 @@ namespace Shesha.Configuration.Security
         [Display(Name = "Security Settings")]
         [Setting(SheshaSettingNames.SecuritySettings, EditorFormName = "security-settings")]
         ISettingAccessor<SecuritySettings> SecuritySettings { get; set; }
+
+        /// <summary>
+        /// Enable or disable Swagger UI
+        /// </summary>
+        [Display(Name = "Enable Swagger UI", Description = "When disabled, the Swagger UI will not be accessible")]
+        [Setting(SheshaSettingNames.SwaggerUiEnabled, IsClientSpecific = true)]
+        ISettingAccessor<bool> SwaggerUiEnabled { get; }
     }
 }

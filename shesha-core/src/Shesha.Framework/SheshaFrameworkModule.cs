@@ -151,6 +151,7 @@ namespace Shesha
                     ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = 3,
                     DefaultEndpointAccess = Domain.Enums.RefListPermissionedAccess.AllowAnonymous
                 });
+                s.SwaggerUiEnabled.WithDefaultValue(true);
             });
 
             IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
