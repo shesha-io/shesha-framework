@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Shesha.Otp.Configuration;
 using System;
+using System.Security.Cryptography;
 
 namespace Shesha.Otp
 {
@@ -15,7 +16,6 @@ namespace Shesha.Otp
 
         public string GeneratePin()
         {
-            var random = new Random();
             var password = string.Empty;
 
             var alphabet = _settings.OneTimePins.GetValue().Alphabet;
@@ -23,7 +23,7 @@ namespace Shesha.Otp
 
             for (int i = 0; i < passwordLength; i++)
             {
-                password += alphabet[random.Next(alphabet.Length)];
+                password += alphabet[RandomNumberGenerator.GetInt32(alphabet.Length)];
             }
 
             return password;
