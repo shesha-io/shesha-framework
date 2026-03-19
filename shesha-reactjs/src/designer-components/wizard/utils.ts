@@ -153,11 +153,26 @@ export const clearWizardStep = (wizardId: string, componentName?: string): void 
 
 export interface IWizardPersistedState {
   stepId: string;              // Current step ID
-  formData: any;               // Complete form field values
+  formData: unknown;           // Complete form field values
   visitedSteps?: string[];     // Optional: Completed steps tracking
 }
 
 const WIZARD_STATE_STORAGE_PREFIX = 'shesha_wizard_state_';
+
+const isWizardPersistedState = (value: unknown): value is IWizardPersistedState => {
+  if (typeof value !== 'object' || value === null) return false;
+
+  const state = value as Record<string, unknown>;
+  return typeof state.stepId === 'string'
+    && 'formData' in state
+    && (
+      state.visitedSteps === undefined
+      || (
+        Array.isArray(state.visitedSteps)
+        && state.visitedSteps.every((step): step is string => typeof step === 'string')
+      )
+    );
+};
 
 export const getWizardStateStorageKey = (wizardId: string, componentName?: string): string => {
   const key = componentName ? `${wizardId}:${componentName}` : wizardId;
@@ -167,7 +182,7 @@ export const getWizardStateStorageKey = (wizardId: string, componentName?: strin
 export const saveWizardState = (
   wizardId: string,
   stepId: string,
-  formData: any,
+  formData: unknown,
   componentName?: string,
   visitedSteps?: string[]
 ): void => {
@@ -197,10 +212,10 @@ export const loadWizardState = (
       return null;
     }
 
-    const state: IWizardPersistedState = JSON.parse(saved);
+    const state: unknown = JSON.parse(saved);
 
     // Validate state structure
-    if (!state.stepId || state.formData === undefined) {
+    if (!isWizardPersistedState(state)) {
       console.warn('Invalid wizard state structure. Clearing corrupted data.');
       sessionStorage.removeItem(key);
       return null;

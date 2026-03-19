@@ -158,6 +158,25 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     return properties;
   }, [currentStep]);
 
+  // Get all field names across ALL wizard steps (for reset functionality)
+  const allWizardFieldNames = useMemo(() => {
+    const allFields: string[] = [];
+    visibleSteps.forEach(step => {
+      if (step.components) {
+        const flat = componentsTreeToFlatStructure(toolbox, step.components);
+        for (const comp in flat.allComponents) {
+          if (Object.hasOwn(flat.allComponents, comp)) {
+            const component = flat.allComponents[comp];
+            if (component.propertyName && !component.context) {
+              allFields.push(component.propertyName);
+            }
+          }
+        }
+      }
+    });
+    return allFields;
+  }, [visibleSteps, toolbox]);
+
   useEffect(() => {
     if (validator)
       validator.registerValidator({
@@ -176,27 +195,30 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const argumentsEvaluationContext = { ...allData, fieldsToValidate: componentsNames, validate: validator?.validate };
 
-  // Track visited steps
+  // Track visited steps and persist state when step changes
   useEffect(() => {
-    if (currentStep?.id) {
-      setVisitedSteps(prev => new Set(prev).add(currentStep.id));
-    }
-  }, [currentStep?.id]);
+    if (!currentStep?.id) return;
 
-  // Persist complete wizard state (step + form data + visited steps) when step changes
-  useEffect(() => {
-    if (persistStep && formMode !== 'designer' && currentStep?.id) {
+    // Update visited steps immediately
+    const nextVisited = new Set(visitedStepsRef.current);
+    nextVisited.add(currentStep.id);
+
+    visitedStepsRef.current = nextVisited;
+    setVisitedSteps(nextVisited);
+
+    // Persist state with fresh visited steps
+    if (persistStep && formMode !== 'designer') {
       saveWizardState(
         actionsOwnerId,
         currentStep.id,
         currentFormDataRef.current,
         actionOwnerName,
-        Array.from(visitedStepsRef.current)
+        Array.from(nextVisited)
       );
     }
   }, [currentStep?.id, persistStep, actionsOwnerId, actionOwnerName, formMode]);
 
-  // Save state before page unload (catch mid-step data)
+  // Save state before page unload or component unmount (catch mid-step data)
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (persistStep && formMode !== 'designer' && currentStep?.id) {
@@ -211,7 +233,19 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      // Save state before unmounting (SPA navigation)
+      if (persistStep && formMode !== 'designer' && currentStep?.id) {
+        saveWizardState(
+          actionsOwnerId,
+          currentStep.id,
+          currentFormDataRef.current,
+          actionOwnerName,
+          Array.from(visitedStepsRef.current)
+        );
+      }
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, [persistStep, formMode, currentStep?.id, actionsOwnerId, actionOwnerName]);
 
   useEffect(() => {
@@ -409,9 +443,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         }
         // Clear visited steps
         setVisitedSteps(new Set());
-        // Clear form data
-        if (setFormData) {
-          setFormData({ values: {}, mergeValues: false });
+        // Clear only wizard fields, preserve other form fields
+        if (setFormData && allWizardFieldNames.length > 0) {
+          const clearedWizardData: Record<string, unknown> = {};
+
+          // Set wizard fields to undefined to clear them
+          allWizardFieldNames.forEach(fieldName => {
+            clearedWizardData[fieldName] = undefined;
+          });
+
+          setFormData({ values: clearedWizardData, mergeValues: true });
         }
         successCallback('reset');
         return Promise.resolve();
