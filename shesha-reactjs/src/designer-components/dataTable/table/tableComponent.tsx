@@ -148,6 +148,7 @@ const TableComponent: TableComponentDefinition = {
   isInput: true,
   isOutput: true,
   name: 'Data Table',
+  preserveDimensionsInDesigner: true,
   icon: <TableOutlined />,
   Factory: ({ model }) => {
     return <TableComponentFactory model={model} />;

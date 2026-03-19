@@ -20,7 +20,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csDocEditor = 'sha-cs-doc-editor';
 
   const headerHeight = 60;
-  const tabCardHeight = 40;
 
   const configStudio = cx("sha-config-studio", css`
 
@@ -102,8 +101,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         }
             .${csDocEditor}{
                 padding: 0;
-                overflow: auto;
-                height: calc(100vh - ${headerHeight}px - ${tabCardHeight}px);
             }
   `);
 
