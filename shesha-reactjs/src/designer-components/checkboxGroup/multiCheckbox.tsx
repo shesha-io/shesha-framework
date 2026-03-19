@@ -29,7 +29,14 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     if (Array.isArray(data)) return data;
     if (typeof data === 'object' && 'success' in data) {
       const response = data as IAjaxResponse<RawOptionsPayload>;
-      if (isAjaxSuccessResponse(response)) return response.result;
+      if (isAjaxSuccessResponse(response)) {
+        const result = response.result;
+        if (result && !Array.isArray(result) && typeof result === 'object' && 'configuration' in result) {
+          const config = (result as { configuration?: { items?: ILabelValue<unknown>[] } }).configuration;
+          if (config?.items && Array.isArray(config.items)) return config.items;
+        }
+        return result;
+      }
       return undefined;
     }
     if (typeof data === 'object' && Array.isArray((data as { items?: unknown }).items)) {
