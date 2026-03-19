@@ -45,7 +45,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     return undefined;
   }, [data]);
 
-  const reducedData = useMemo<ILabelValue<unknown>[]>(() => {
+  const reducedData = useMemo<ILabelValue<unknown>[] | undefined>(() => {
     if (!fetchedData) return undefined;
 
     const list = Array.isArray(fetchedData)
