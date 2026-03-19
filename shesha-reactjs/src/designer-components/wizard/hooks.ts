@@ -16,6 +16,7 @@ import { useFormExpression } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
+import { set } from 'lodash';
 
 interface IWizardComponent {
   back: () => void;
@@ -454,9 +455,9 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         if (setFormData && allWizardFieldNames.length > 0) {
           const clearedWizardData: Record<string, unknown> = {};
 
-          // Set wizard fields to undefined to clear them
+          // Set wizard fields to undefined to clear them (handle nested paths)
           allWizardFieldNames.forEach(fieldName => {
-            clearedWizardData[fieldName] = undefined;
+            set(clearedWizardData, fieldName, undefined);
           });
 
           setFormData({ values: clearedWizardData, mergeValues: true });
