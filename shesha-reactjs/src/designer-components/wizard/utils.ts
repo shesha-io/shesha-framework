@@ -163,15 +163,21 @@ const isWizardPersistedState = (value: unknown): value is IWizardPersistedState 
   if (typeof value !== 'object' || value === null) return false;
 
   const state = value as Record<string, unknown>;
-  return typeof state.stepId === 'string'
-    && 'formData' in state
-    && (
-      state.visitedSteps === undefined
-      || (
-        Array.isArray(state.visitedSteps)
-        && state.visitedSteps.every((step): step is string => typeof step === 'string')
-      )
-    );
+
+  // Validate stepId is a non-empty string
+  if (typeof state.stepId !== 'string' || state.stepId === '') return false;
+
+  // Validate formData exists and is an object (not a primitive, null is allowed)
+  if (!('formData' in state)) return false;
+  if (state.formData !== null && typeof state.formData !== 'object') return false;
+
+  // Validate visitedSteps if present
+  if (state.visitedSteps !== undefined) {
+    if (!Array.isArray(state.visitedSteps)) return false;
+    if (!state.visitedSteps.every((step): step is string => typeof step === 'string')) return false;
+  }
+
+  return true;
 };
 
 export const getWizardStateStorageKey = (wizardId: string, componentName?: string): string => {
@@ -187,9 +193,12 @@ export const saveWizardState = (
   visitedSteps?: string[]
 ): void => {
   try {
+    // Normalize formData to ensure it's always serialized (undefined -> null)
+    const normalizedFormData = formData === undefined ? null : formData;
+
     const state: IWizardPersistedState = {
       stepId,
-      formData,
+      formData: normalizedFormData,
       visitedSteps,
     };
 

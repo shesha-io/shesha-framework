@@ -138,6 +138,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   // Use refs to capture latest values without causing effect re-runs
   const currentFormDataRef = useRef(currentFormData);
   const visitedStepsRef = useRef(visitedSteps);
+  // Flag to prevent re-saving after intentional clears (done/reset)
+  const hasBeenClearedRef = useRef(false);
 
   useEffect(() => {
     currentFormDataRef.current = currentFormData;
@@ -159,9 +161,10 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   }, [currentStep]);
 
   // Get all field names across ALL wizard steps (for reset functionality)
+  // Use tabs (all steps) not visibleSteps to include hidden steps
   const allWizardFieldNames = useMemo(() => {
     const allFields: string[] = [];
-    visibleSteps.forEach(step => {
+    tabs.forEach(step => {
       if (step.components) {
         const flat = componentsTreeToFlatStructure(toolbox, step.components);
         for (const comp in flat.allComponents) {
@@ -175,7 +178,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       }
     });
     return allFields;
-  }, [visibleSteps, toolbox]);
+  }, [tabs, toolbox]);
 
   useEffect(() => {
     if (validator)
@@ -221,7 +224,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   // Save state before page unload or component unmount (catch mid-step data)
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (persistStep && formMode !== 'designer' && currentStep?.id) {
+      if (persistStep && formMode !== 'designer' && currentStep?.id && !hasBeenClearedRef.current) {
         saveWizardState(
           actionsOwnerId,
           currentStep.id,
@@ -234,8 +237,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
-      // Save state before unmounting (SPA navigation)
-      if (persistStep && formMode !== 'designer' && currentStep?.id) {
+      // Save state before unmounting (SPA navigation), but only if not intentionally cleared
+      if (persistStep && formMode !== 'designer' && currentStep?.id && !hasBeenClearedRef.current) {
         saveWizardState(
           actionsOwnerId,
           currentStep.id,
@@ -357,6 +360,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           // Clear persisted state when wizard is completed
           if (persistStep) {
             clearWizardState(actionsOwnerId, actionOwnerName);
+            // Prevent cleanup from re-saving after intentional clear
+            hasBeenClearedRef.current = true;
           }
         }
       );
@@ -440,6 +445,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         // Clear persisted state when wizard is reset
         if (persistStep) {
           clearWizardState(actionsOwnerId, actionOwnerName);
+          // Prevent cleanup from re-saving after intentional clear
+          hasBeenClearedRef.current = true;
         }
         // Clear visited steps
         setVisitedSteps(new Set());
