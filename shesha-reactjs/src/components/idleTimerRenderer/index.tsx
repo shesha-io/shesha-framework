@@ -99,6 +99,8 @@ class IdleHandler implements IIdleHandler {
   private activateFn: (() => void) | null = null;
   private warningVisible: boolean = false;
   private logoutInProgress: boolean = false;
+  private lastRefreshAttempt: number = 0;
+  private static readonly REFRESH_COOLDOWN_MS = 30_000;
 
   constructor(
     private authenticator: ReturnType<typeof useAuth>,
@@ -229,7 +231,13 @@ class IdleHandler implements IIdleHandler {
       return;
     }
 
+    const now = Date.now();
+    if (now - this.lastRefreshAttempt < IdleHandler.REFRESH_COOLDOWN_MS) {
+      return;
+    }
+
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
+      this.lastRefreshAttempt = now;
       this.refreshToken();
     }
   };
@@ -310,9 +318,11 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     new IdleHandler(authenticator, httpClient, logoutUser, setState)
   );
 
-  // Auto-logoff (prompt + logout on idle) is active only when the timeout is configured
-  // and greater than the warning duration. Token refresh on user action always runs.
+  // Auto-logoff (prompt + logout on idle) is active only when explicitly enabled,
+  // the timeout is configured and greater than the warning duration, and the user is logged in.
+  // Token refresh on user action always runs regardless.
   const isAutoLogoffActive =
+    !!securitySettings?.useAutoLogoff &&
     autoLogoffTimeout !== undefined &&
     autoLogoffTimeout > WARNING_DURATION &&
     !!loginInfo;
