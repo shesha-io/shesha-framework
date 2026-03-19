@@ -109,6 +109,8 @@ export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
     : true;
 };
 
+// ========== New Wizard State Persistence (Form Data + Step) ==========
+
 const WIZARD_STEP_STORAGE_PREFIX = 'shesha_wizard_step_';
 
 
@@ -145,5 +147,84 @@ export const clearWizardStep = (wizardId: string, componentName?: string): void 
     sessionStorage.removeItem(key);
   } catch (error) {
     console.warn('Failed to clear wizard step from sessionStorage:', error);
+  }
+};
+
+
+export interface IWizardPersistedState {
+  stepId: string;              // Current step ID
+  formData: any;               // Complete form field values
+  visitedSteps?: string[];     // Optional: Completed steps tracking
+}
+
+const WIZARD_STATE_STORAGE_PREFIX = 'shesha_wizard_state_';
+
+export const getWizardStateStorageKey = (wizardId: string, componentName?: string): string => {
+  const key = componentName ? `${wizardId}:${componentName}` : wizardId;
+  return `${WIZARD_STATE_STORAGE_PREFIX}${key}`;
+};
+
+export const saveWizardState = (
+  wizardId: string,
+  stepId: string,
+  formData: any,
+  componentName?: string,
+  visitedSteps?: string[]
+): void => {
+  try {
+    const state: IWizardPersistedState = {
+      stepId,
+      formData,
+      visitedSteps,
+    };
+
+    const key = getWizardStateStorageKey(wizardId, componentName);
+    sessionStorage.setItem(key, JSON.stringify(state));
+  } catch (error) {
+    console.warn('Failed to save wizard state to sessionStorage:', error);
+  }
+};
+
+export const loadWizardState = (
+  wizardId: string,
+  componentName?: string
+): IWizardPersistedState | null => {
+  try {
+    const key = getWizardStateStorageKey(wizardId, componentName);
+    const saved = sessionStorage.getItem(key);
+
+    if (!saved) {
+      return null;
+    }
+
+    const state: IWizardPersistedState = JSON.parse(saved);
+
+    // Validate state structure
+    if (!state.stepId || state.formData === undefined) {
+      console.warn('Invalid wizard state structure. Clearing corrupted data.');
+      sessionStorage.removeItem(key);
+      return null;
+    }
+
+    return state;
+  } catch (error) {
+    console.warn('Failed to load wizard state from sessionStorage:', error);
+    // Try to clear corrupted data
+    try {
+      const key = getWizardStateStorageKey(wizardId, componentName);
+      sessionStorage.removeItem(key);
+    } catch (clearError) {
+      // Ignore clear errors
+    }
+    return null;
+  }
+};
+
+export const clearWizardState = (wizardId: string, componentName?: string): void => {
+  try {
+    const stateKey = getWizardStateStorageKey(wizardId, componentName);
+    sessionStorage.removeItem(stateKey);
+  } catch (error) {
+    console.warn('Failed to clear wizard state from sessionStorage:', error);
   }
 };
