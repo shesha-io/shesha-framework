@@ -154,7 +154,7 @@ namespace Shesha
             });
 
             IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
-                s.RequiredLength.WithDefaultValue(3);
+                s.RequiredLength.WithDefaultValue(6);
             });
             IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
                 s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
