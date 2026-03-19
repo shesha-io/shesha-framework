@@ -2,12 +2,14 @@
 using Shesha.Authorization.Settings.Dto;
 using Shesha.Configuration;
 using Shesha.Configuration.Security;
+using Shesha.Domain.Enums;
 using System;
 using System.Threading.Tasks;
 
 namespace Shesha.Authorization.Settings
 {
     [Obsolete("To be removed, is used for backward compatibility only")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class AuthorizationSettingsAppService: ApplicationService
     {
         private readonly IPasswordComplexitySettings _passwordComplexitySettings;
