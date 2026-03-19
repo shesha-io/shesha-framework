@@ -14,19 +14,14 @@ const securitySettingsId: ISettingIdentifier = {
  * and additionally handles idle logout/warning when auto-logoff is enabled.
  */
 export const IdleTimerWrapper: FC<PropsWithChildren> = ({ children }) => {
-  const { value: securitySettings, loadingState } = useSettingValue<ISecuritySettings>(
+  const { value: securitySettings } = useSettingValue<ISecuritySettings>(
     securitySettingsId
   );
 
-  // While settings are loading, render children without idle timer
-  // This prevents blocking the UI while settings load
-  if (loadingState !== 'ready') {
-    return <>{children}</>;
-  }
-
-  // Always render IdleTimerRenderer so token refresh on user activity works
-  // regardless of whether auto-logoff is enabled. IdleTimerRenderer gates
-  // the logout/warning behavior on useAutoLogoff internally.
+  // Always render IdleTimerRenderer so activity-based token refresh works even
+  // while settings are loading or when auto-logoff is disabled. IdleTimerRenderer
+  // treats undefined securitySettings as "auto-logoff off" and gates logout/warning
+  // behaviour on the configured timeout internally.
   return <IdleTimerRenderer securitySettings={securitySettings}>{children}</IdleTimerRenderer>;
 };
 

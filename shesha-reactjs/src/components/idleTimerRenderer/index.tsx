@@ -16,6 +16,7 @@ import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
 import { useHttpClient } from '@/providers';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { URLS } from '@/providers/auth/models';
 
 export interface ISecuritySettings {
   autoLogoffTimeout: number;
@@ -100,6 +101,7 @@ class IdleHandler implements IIdleHandler {
   private warningVisible: boolean = false;
   private logoutInProgress: boolean = false;
   private lastRefreshAttempt: number = 0;
+  private refreshInFlight: boolean = false;
   private static readonly REFRESH_COOLDOWN_MS = 30_000;
 
   constructor(
@@ -173,8 +175,10 @@ class IdleHandler implements IIdleHandler {
   };
 
   refreshToken = (): Promise<boolean> => {
-    return this.httpClient.post<RefreshTokenResultModelAjaxResponse>('/api/TokenAuth/RefreshToken')
+    this.refreshInFlight = true;
+    return this.httpClient.post<RefreshTokenResultModelAjaxResponse>(URLS.REFRESH_TOKEN)
       .then(({ data: response }) => {
+        this.refreshInFlight = false;
         if (response?.result) {
           saveUserToken(
             {
@@ -192,12 +196,14 @@ class IdleHandler implements IIdleHandler {
             this.broadcastTokenRefresh(response.result.expireOn);
           }
 
+          this.lastRefreshAttempt = Date.now();
           this.activateFn?.();
           return true;
         }
         return false;
       })
       .catch((error) => {
+        this.refreshInFlight = false;
         console.error('Failed to refresh token:', error);
         return false;
       });
@@ -227,7 +233,7 @@ class IdleHandler implements IIdleHandler {
   };
 
   onAction = () => {
-    if (this.warningVisible || this.logoutInProgress) {
+    if (this.warningVisible || this.logoutInProgress || this.refreshInFlight) {
       return;
     }
 
@@ -237,7 +243,6 @@ class IdleHandler implements IIdleHandler {
     }
 
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
-      this.lastRefreshAttempt = now;
       this.refreshToken();
     }
   };
