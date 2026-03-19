@@ -10,7 +10,6 @@ using Abp.Events.Bus;
 using Abp.Events.Bus.Exceptions;
 using Abp.Web.Models;
 using Castle.Core.Logging;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -39,13 +38,6 @@ namespace Shesha.Authorization
 
         public virtual async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            var endpoint = context?.HttpContext?.GetEndpoint();
-            // Allow Anonymous skips all authorization
-            if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
-            {
-                return;
-            }
-
             if (!context.ActionDescriptor.IsControllerAction())
             {
                 return;
