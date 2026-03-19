@@ -203,6 +203,9 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   useEffect(() => {
     if (!currentStep?.id) return;
 
+    // Re-enable persistence for new session after reset/done
+    hasBeenClearedRef.current = false;
+
     // Update visited steps immediately
     const nextVisited = new Set(visitedStepsRef.current);
     nextVisited.add(currentStep.id);
