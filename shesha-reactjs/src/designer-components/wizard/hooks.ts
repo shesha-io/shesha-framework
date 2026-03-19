@@ -99,18 +99,24 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     return 0;
   };
 
+  // Load wizard state once and cache it for both initial step and visited steps
+  const initialSavedState = useMemo(() => {
+    if (persistStep && formMode !== 'designer') {
+      return loadWizardState(actionsOwnerId, actionOwnerName);
+    }
+    return null;
+  }, []); // Empty deps - only load once on mount
 
   const getInitialStep = useMemo(() => {
-    // If persistStep is enabled and we're not in designer mode, try to load from sessionStorage
+    // If persistStep is enabled and we're not in designer mode, use cached state
     if (persistStep && formMode !== 'designer') {
-      const savedState = loadWizardState(actionsOwnerId, actionOwnerName);
-      if (savedState) {
-        // Restore form data
-        if (savedState.formData && setFormData) {
-          setFormData({ values: savedState.formData, mergeValues: false });
+      if (initialSavedState) {
+        // Restore form data using merge to preserve unrelated fields
+        if (initialSavedState.formData && setFormData) {
+          setFormData({ values: initialSavedState.formData, mergeValues: true });
         }
         // Find the index of the saved step in visibleSteps array
-        const stepIndex = visibleSteps.findIndex(step => step.id === savedState.stepId);
+        const stepIndex = visibleSteps.findIndex(step => step.id === initialSavedState.stepId);
         if (stepIndex !== -1) {
           return stepIndex;
         }
@@ -120,16 +126,13 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
     // When persistence is OFF, use the configured defaultActiveStep
     return getDefaultStepIndex(defaultActiveStep);
-  }, []); 
+  }, []);
 
   const [current, setCurrent] = useState(getInitialStep);
   const [visitedSteps, setVisitedSteps] = useState<Set<string>>(() => {
-    // Try to restore visited steps from persisted state
-    if (persistStep && formMode !== 'designer') {
-      const savedState = loadWizardState(actionsOwnerId, actionOwnerName);
-      if (savedState?.visitedSteps) {
-        return new Set(savedState.visitedSteps);
-      }
+    // Use cached saved state for visited steps
+    if (initialSavedState?.visitedSteps) {
+      return new Set(initialSavedState.visitedSteps);
     }
     return new Set();
   });
