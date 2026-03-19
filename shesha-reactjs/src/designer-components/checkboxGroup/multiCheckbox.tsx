@@ -6,34 +6,53 @@ import React, { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { getDataSourceList } from '../radio/utils';
 import { ICheckboxGroupProps } from './utils';
 import { executeScriptSync } from '@/providers/form/utils';
-import { IAjaxResponse } from '@/interfaces';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { ILabelValue } from '../dropdown/model';
 
-type FetchResponse = ILabelValue<any>[] | {
-  items?: ILabelValue<any>[];
-};
+type RawOptionsPayload = ILabelValue<unknown>[] | { items: ILabelValue<unknown>[] };
+type FetchResponse = IAjaxResponse<RawOptionsPayload> | RawOptionsPayload;
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items, referenceListId, direction, value, onChange } = model;
 
   const { data: refList } = useReferenceList(referenceListId);
-  const { refetch, data } = useGet<IAjaxResponse<FetchResponse>>({ path: model.dataSourceUrl, lazy: true });
+  const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl, lazy: true });
 
   useEffect(() => {
     if (model.dataSourceType === 'url' && model.dataSourceUrl) {
       refetch();
     }
-  }, [model.dataSourceType, model.dataSourceUrl]);
+  }, [model.dataSourceType, model.dataSourceUrl, refetch]);
 
-  const fetchedData = isAjaxSuccessResponse(data) ? data.result : undefined;
+  const fetchedData = useMemo<RawOptionsPayload | undefined>(() => {
+    if (!data) return undefined;
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'object' && 'success' in data) {
+      const response = data as IAjaxResponse<RawOptionsPayload>;
+      if (isAjaxSuccessResponse(response)) {
+        const result = response.result;
+        if (result && !Array.isArray(result) && typeof result === 'object' && 'configuration' in result) {
+          const config = (result as { configuration?: { items?: ILabelValue<unknown>[] } }).configuration;
+          if (config?.items && Array.isArray(config.items)) return config.items;
+        }
+        return result;
+      }
+      return undefined;
+    }
+    if (typeof data === 'object' && Array.isArray((data as { items?: unknown }).items)) {
+      return data as { items: ILabelValue<unknown>[] };
+    }
+    return undefined;
+  }, [data]);
 
-  const reducedData = useMemo<ILabelValue<any>[]>(() => {
-    const list = fetchedData
-      ? Array.isArray(fetchedData)
-        ? fetchedData
-        : fetchedData.items ?? []
-      : undefined;
+  const reducedData = useMemo<ILabelValue<unknown>[]>(() => {
+    if (!fetchedData) return undefined;
+
+    const list = Array.isArray(fetchedData)
+      ? fetchedData
+      : (typeof fetchedData === 'object' && 'items' in fetchedData && Array.isArray(fetchedData.items))
+        ? fetchedData.items
+        : [];
 
     if (Array.isArray(list) && model.reducerFunc) {
       return executeScriptSync(model.reducerFunc, { data: list });
