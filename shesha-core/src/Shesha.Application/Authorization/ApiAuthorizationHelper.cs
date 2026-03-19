@@ -66,7 +66,7 @@ namespace Shesha.Authorization
             if (settings == null)
                 throw new NullReferenceException("Cannot get DefaultEndpointAccess");
 
-            // ToDo: add RequireAll flag
+            // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
             await _objectPermissionChecker.AuthorizeAsync(
                 false,
                 typeName,
