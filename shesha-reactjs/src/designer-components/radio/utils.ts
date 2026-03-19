@@ -15,12 +15,19 @@ export const getDataSourceList = (
     case 'referenceList':
       return (refList || [])?.map(({ id, item, itemValue }) => ({ id, value: itemValue, label: item }));
     case 'url':
-      return urlList?.map((props) => {
-        const raw = props as ILabelValue & Partial<ReferenceListItemDto>;
-        const label = raw.label ?? raw.item;
-        const value = raw.value ?? raw.itemValue;
-        const id = raw.id ?? nanoid();
-        return { id, label, value };
-      });
+      return urlList
+        ?.filter((props): props is ILabelValue & Partial<ReferenceListItemDto> => {
+          if (!props || typeof props !== 'object') return false;
+          const raw = props as unknown as Record<string, unknown>;
+          const hasLabel = raw.label != null || raw.item != null;
+          const hasValue = raw.value != null || raw.itemValue != null;
+          return hasLabel && hasValue;
+        })
+        .map((props) => {
+          const label = props.label ?? props.item;
+          const value = props.value ?? props.itemValue;
+          const id = props.id ?? nanoid();
+          return { id, label, value };
+        });
   }
 };
