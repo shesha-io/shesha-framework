@@ -8,12 +8,15 @@ import { ILabelValue } from '../dropdown/model';
 import { executeScriptSync } from '@/providers/form/utils';
 import { IRadioProps } from './interfaces';
 
+type RawOptionsPayload = ILabelValue<unknown>[] | { items: ILabelValue<unknown>[] };
+type FetchResponse = IAjaxResponse<RawOptionsPayload> | RawOptionsPayload;
+
 const RadioGroup: FC<IRadioProps> = (model) => {
   const { referenceListId, items = [], value, onChange } = model;
   const { data: refListItems } = useReferenceList(referenceListId);
 
   //#region Data source is url
-  const { refetch, data } = useGet({ path: model.dataSourceUrl, lazy: true });
+  const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl, lazy: true });
 
   useEffect(() => {
     if (model.dataSourceType === 'url' && model.dataSourceUrl) {
@@ -21,20 +24,28 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     }
   }, [model.dataSourceType, model.dataSourceUrl, refetch]);
 
-  const fetchedData = useMemo(() => {
+  const fetchedData = useMemo<RawOptionsPayload | undefined>(() => {
     if (!data) return undefined;
-    const response = data as IAjaxResponse<unknown>;
-    if (isAjaxSuccessResponse(response)) return response.result;
-    if (Array.isArray(data) || (typeof data === 'object' && !('success' in data))) return data;
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'object' && 'success' in data) {
+      const response = data as IAjaxResponse<RawOptionsPayload>;
+      if (isAjaxSuccessResponse(response)) return response.result;
+      return undefined;
+    }
+    if (typeof data === 'object' && Array.isArray((data as { items?: unknown }).items)) {
+      return data as { items: ILabelValue<unknown>[] };
+    }
     return undefined;
   }, [data]);
 
-  const reducedData = useMemo<ILabelValue<any>[]>(() => {
-    const list = fetchedData
-      ? Array.isArray(fetchedData)
-        ? fetchedData
-        : (fetchedData as any).items ?? []
-      : undefined;
+  const reducedData = useMemo<ILabelValue<unknown>[]>(() => {
+    if (!fetchedData) return undefined;
+
+    const list = Array.isArray(fetchedData)
+      ? fetchedData
+      : (typeof fetchedData === 'object' && 'items' in fetchedData && Array.isArray(fetchedData.items))
+        ? fetchedData.items
+        : [];
 
     if (Array.isArray(list) && model.reducerFunc) {
       return executeScriptSync(model.reducerFunc, { data: list });
