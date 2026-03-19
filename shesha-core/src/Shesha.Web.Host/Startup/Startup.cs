@@ -107,9 +107,6 @@ namespace Shesha.Web.Host.Startup
                 var dbms = _appConfiguration.GetDbmsType();
                 var connStr = _appConfiguration.GetDefaultConnectionString();
 
-                if (string.IsNullOrWhiteSpace(connStr))
-                    throw new InvalidOperationException("Hangfire requires a default connection string but none was configured. Check your appsettings ConnectionStrings section.");
-
                 switch (dbms)
                 {
                     case DbmsType.SQLServer:
@@ -124,6 +121,7 @@ namespace Shesha.Web.Host.Startup
                             });
                             break;
                         }
+                    case DbmsType.NotSpecified:
                     default:
                         throw new InvalidOperationException($"Unsupported DbmsType '{dbms}' for Hangfire storage configuration. Supported types are SQLServer and PostgreSQL.");
                 }
