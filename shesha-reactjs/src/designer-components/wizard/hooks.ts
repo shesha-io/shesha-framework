@@ -9,7 +9,7 @@ import { useDeepCompareMemo } from '@/hooks';
 import { useFormExpression } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
-import { useClosestModal } from '@/providers/dynamicModal';
+import { useDynamicModals } from '@/providers/dynamicModal';
 
 interface IWizardComponent {
   back: () => void;
@@ -30,7 +30,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const allData = useAvailableConstantsData();
   const toolbox = useFormDesignerComponents();
   const validator = useValidator(false);
-  const closestModal = useClosestModal();
+  const { instances, removeModal } = useDynamicModals();
 
   const formMode = useForm(false).formMode;
 
@@ -201,7 +201,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   };
 
   const close = (): void => {
-    closestModal?.close();
+    const keys = Object.keys(instances);
+    let latestInstance = null;
+    for (const key of keys) {
+      const instance = instances[key];
+      if (instance?.isVisible && (!latestInstance || instance.index > latestInstance.index))
+        latestInstance = instance;
+    }
+    if (latestInstance) {
+      removeModal(latestInstance.id);
+    }
   };
 
   const cancel = (): void =>
