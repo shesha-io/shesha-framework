@@ -4,7 +4,7 @@ export interface IWizardActions {
   cancel: () => void;
   close: () => void;
   done: () => Promise<void>;
-  setStep: (stepIndex) => void;
+  setStep: (stepIndex: number) => void;
   content: (description: string, index: number) => string;
 }
 

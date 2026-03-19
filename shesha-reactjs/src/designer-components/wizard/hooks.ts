@@ -10,6 +10,7 @@ import { useFormExpression } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
 import { useDynamicModals } from '@/providers/dynamicModal';
+import { IModalInstance } from '@/providers/dynamicModal/models';
 
 interface IWizardComponent {
   back: () => void;
@@ -201,13 +202,17 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   };
 
   const close = (): void => {
+    if (!instances) return;
+
     const keys = Object.keys(instances);
-    let latestInstance = null;
+    let latestInstance: IModalInstance | null = null;
+
     for (const key of keys) {
       const instance = instances[key];
       if (instance?.isVisible && (!latestInstance || instance.index > latestInstance.index))
         latestInstance = instance;
     }
+
     if (latestInstance) {
       removeModal(latestInstance.id);
     }
