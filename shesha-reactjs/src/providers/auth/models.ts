@@ -21,6 +21,7 @@ export const DEFAULT_HOME_PAGE = '/';
 export const URLS = {
     LOGIN: '/api/TokenAuth/Authenticate',
     LOGOFF: '/api/TokenAuth/SignOff',
+    REFRESH_TOKEN: '/api/TokenAuth/RefreshToken',
     GET_CURRENT_LOGIN_INFO: '/api/services/app/Session/GetCurrentLoginInfo',
 };
 
