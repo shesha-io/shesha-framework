@@ -310,38 +310,33 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     new IdleHandler(authenticator, httpClient, logoutUser, setState)
   );
 
-  // Fallback value (WARNING_DURATION + 5 = 65s) is only used to satisfy hook validation
-  // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
-  // by the isTimeoutSet condition below. The timeoutSeconds variable uses autoLogoffTimeout
-  // when valid, otherwise defaults to WARNING_DURATION + 5. Small margin prevents validation
-  // failure since hook requires timeout > promptBeforeIdle (WARNING_DURATION = 60s).
-  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 5;
-
-  // Idle timer is enabled only when:
-  // 1. Settings are loaded (autoLogoffTimeout !== undefined)
-  // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
-  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 60s warning)
-  // 4. User is logged in (loginInfo exists)
-  // Note: useAutoLogoff check is now handled by IdleTimerWrapper
-  const isTimeoutSet =
+  // Auto-logoff (prompt + logout on idle) is active only when the timeout is configured
+  // and greater than the warning duration. Token refresh on user action always runs.
+  const isAutoLogoffActive =
     autoLogoffTimeout !== undefined &&
     autoLogoffTimeout > WARNING_DURATION &&
     !!loginInfo;
-  const timeout = secondsToMilliseconds(timeoutSeconds);
-  const visible = isWarningVisible && isTimeoutSet;
 
-  // Configure idle timer hook
+  // When auto-logoff is active, use the configured timeout.
+  // Otherwise use a 24-hour fallback so the timer never triggers logout,
+  // while still allowing onAction to fire for token refresh.
+  const timeoutSeconds = isAutoLogoffActive ? autoLogoffTimeout : 24 * 60 * 60;
+  const timeout = secondsToMilliseconds(timeoutSeconds);
+  const visible = isWarningVisible && isAutoLogoffActive;
+
+  // Configure idle timer hook — always enabled when logged in so onAction fires.
+  // Logout/prompt handlers are gated on isAutoLogoffActive.
   const { activate } = useIdleTimer({
     timeout,
-    promptBeforeIdle: WARNING_DURATION * ONE_SECOND,
+    promptBeforeIdle: isAutoLogoffActive ? WARNING_DURATION * ONE_SECOND : 0,
     crossTab: true,
-    onPrompt: idleHandler.handlePrompt,
-    onIdle: idleHandler.handleIdle,
-    onActive: idleHandler.handleActive,
+    onPrompt: () => { if (isAutoLogoffActive) idleHandler.handlePrompt(); },
+    onIdle: () => { if (isAutoLogoffActive) idleHandler.handleIdle(); },
+    onActive: () => { if (isAutoLogoffActive) idleHandler.handleActive(); },
     onAction: idleHandler.onAction,
     stopOnIdle: false,
     startOnMount: true,
-    disabled: !isTimeoutSet
+    disabled: !loginInfo
   });
 
   // Provide activate function to the handler
@@ -409,10 +404,6 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     // Close warning modal
     setState(INIT_STATE);
   }, [idleHandler, activate]);
-
-  if (!isTimeoutSet) {
-    return <>{children}</>;
-  }
 
   return (
     <div className={styles.shaIdleTimerRenderer}>

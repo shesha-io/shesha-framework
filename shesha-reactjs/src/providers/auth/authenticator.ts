@@ -365,7 +365,7 @@ export class Authenticator implements IAuthenticator {
 
     updateTokenExpiration = (expireOn: string): void => {
         // Update the token expiration timer
-        // This is called when a token is refreshed externally (e.g., from idle timer)
+        // Called when a token is refreshed externally (e.g., from idle timer or cross-tab sync)
         this.#startTokenExpirationTimer(expireOn);
     };
 
