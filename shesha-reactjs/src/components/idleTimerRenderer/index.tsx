@@ -103,6 +103,7 @@ class IdleHandler implements IIdleHandler {
   private logoutInProgress: boolean = false;
   private lastRefreshAttempt: number = 0;
   private refreshInFlight: boolean = false;
+  private refreshPromise: Promise<boolean> | null = null;
   private autoLogoffActive: boolean = false;
   private static readonly REFRESH_COOLDOWN_MS = 30_000;
 
@@ -195,10 +196,13 @@ class IdleHandler implements IIdleHandler {
   };
 
   refreshToken = (): Promise<boolean> => {
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
     this.refreshInFlight = true;
-    return this.httpClient.post<RefreshTokenResultModelAjaxResponse>(URLS.REFRESH_TOKEN)
+    this.refreshPromise = this.httpClient.post<RefreshTokenResultModelAjaxResponse>(URLS.REFRESH_TOKEN)
       .then(({ data: response }) => {
-        this.refreshInFlight = false;
         if (response?.result) {
           saveUserToken(
             {
@@ -223,10 +227,15 @@ class IdleHandler implements IIdleHandler {
         return false;
       })
       .catch((error) => {
-        this.refreshInFlight = false;
         console.error('Failed to refresh token:', error);
         return false;
+      })
+      .finally(() => {
+        this.refreshInFlight = false;
+        this.refreshPromise = null;
       });
+
+    return this.refreshPromise;
   };
 
   handlePrompt = () => {
