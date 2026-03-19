@@ -86,6 +86,7 @@ const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
 
 interface IIdleHandler {
   setActivate: (activate: () => void) => void;
+  setAutoLogoffActive: (active: boolean) => void;
   logout: () => void;
   refreshToken: () => Promise<boolean>;
   handlePrompt: () => void;
@@ -102,6 +103,7 @@ class IdleHandler implements IIdleHandler {
   private logoutInProgress: boolean = false;
   private lastRefreshAttempt: number = 0;
   private refreshInFlight: boolean = false;
+  private autoLogoffActive: boolean = false;
   private static readonly REFRESH_COOLDOWN_MS = 30_000;
 
   constructor(
@@ -113,6 +115,24 @@ class IdleHandler implements IIdleHandler {
 
   setActivate = (activate: () => void) => {
     this.activateFn = activate;
+  };
+
+  setAutoLogoffActive = (active: boolean) => {
+    const wasActive = this.autoLogoffActive;
+    this.autoLogoffActive = active;
+
+    // When transitioning off (or initialising as off) while a warning is visible,
+    // reset warning state and clear the persisted cross-tab key so no other tab
+    // picks up stale state.
+    if (!active && (wasActive || this.warningVisible)) {
+      this.warningVisible = false;
+      this.setStateFn?.(INIT_STATE);
+      try {
+        getLocalStorage()?.removeItem(STORAGE_KEYS.IDLE_TIMER_WARNING_STATE);
+      } catch (err) {
+        console.error('Failed to clear warning state from storage', err);
+      }
+    }
   };
 
   private broadcastLogout = () => {
@@ -252,7 +272,7 @@ class IdleHandler implements IIdleHandler {
       this.logout();
     }
 
-    if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue) {
+    if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue && this.autoLogoffActive) {
       try {
         const parsed: unknown = JSON.parse(e.newValue);
         if (!isWarningState(parsed)) {
@@ -364,6 +384,13 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   useEffect(() => {
     idleHandler.setActivate(activate);
   }, [idleHandler, activate]);
+
+  // Keep the handler aware of whether auto-logoff is active.
+  // When it transitions to false, setAutoLogoffActive resets any lingering
+  // warning state and clears the cross-tab storage key.
+  useEffect(() => {
+    idleHandler.setAutoLogoffActive(isAutoLogoffActive);
+  }, [idleHandler, isAutoLogoffActive]);
 
   // Countdown logic - pure state updater without side effects
   const doCountdown = () => {
