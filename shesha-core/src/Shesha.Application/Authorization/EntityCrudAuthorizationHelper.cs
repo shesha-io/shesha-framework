@@ -5,6 +5,7 @@ using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Configuration.Security;
 using Shesha.DynamicEntities.Cache;
 using Shesha.Extensions;
 using Shesha.Permissions;
@@ -22,18 +23,21 @@ namespace Shesha.Authorization
         private readonly IAuthorizationConfiguration _authConfiguration;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
         private readonly IEntityConfigCache _entityConfigCache;
+        private readonly ISecuritySettings _securitySettings;
 
         public EntityCrudAuthorizationHelper(
             IFeatureChecker featureChecker,
             IAuthorizationConfiguration authConfiguration,
             IObjectPermissionChecker objectPermissionChecker,
             IEntityConfigCache entityConfigCache,
-            ILocalizationManager localizationManager
+            ILocalizationManager localizationManager,
+            ISecuritySettings securitySettings
             ): base(featureChecker, authConfiguration)
         {
             _entityConfigCache = entityConfigCache;
             _authConfiguration = authConfiguration;
             _objectPermissionChecker = objectPermissionChecker;
+            _securitySettings = securitySettings;
         }
 
         public override async Task AuthorizeAsync(MethodInfo methodInfo, Type type)
@@ -72,8 +76,11 @@ namespace Shesha.Authorization
             //    throw new AbpAuthorizationException($"Service for entity type `{config.FullClassName}` is not configured");
             //}
 
-            // ToDo: add RequireAll flag
-            await _objectPermissionChecker.AuthorizeAsync(false, config.FullClassName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue);
+            var securitySettings = await _securitySettings?.SecuritySettings?.GetValueAsync();
+            var defaultAccess = securitySettings?.DefaultEndpointAccess;
+
+            // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
+            await _objectPermissionChecker.AuthorizeAsync(false, config.FullClassName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue, defaultAccess);
         }
     }
 }
