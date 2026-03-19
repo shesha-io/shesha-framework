@@ -81,7 +81,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   // `showModalFooter` for now is for backward compatibility
-  const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
+  // If `footerButtons` is explicitly set, it takes precedence over the legacy `showModalFooter` flag
+  const showDefaultSubmitButtons = footerButtons ? footerButtons === 'default' : (showModalFooter ?? false);
 
   const closeModal = (): void => {
     removeModal(id);

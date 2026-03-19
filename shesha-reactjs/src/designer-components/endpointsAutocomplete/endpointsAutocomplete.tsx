@@ -3,8 +3,7 @@ import { ApiOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { evaluateValueAsString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useFormData } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { EndpointsAutocompleteComponentDefinition, IEndpointsAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -20,15 +19,12 @@ const EndpointsAutocompleteComponent: EndpointsAutocompleteComponentDefinition =
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-    const { data: formData } = useFormData();
-    const verb = model.httpVerb ? evaluateValueAsString(model.httpVerb, { data: formData }) : model.httpVerb;
-
     return (
       <ConfigurableFormItem model={model}>
         {
           (value, onChange) => {
             return (
-              <EndpointsAutocomplete {...model} httpVerb={verb} value={value} onChange={onChange} />
+              <EndpointsAutocomplete {...model} value={value} onChange={onChange} />
             );
           }
         }

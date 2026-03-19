@@ -54,6 +54,7 @@ import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
 import { StandaloneTable } from '@/designer-components/dataTable/table/standaloneTable';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/index';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -137,6 +138,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
 
   // Overall table styling
   boxShadow?: string;
+  dimensions?: IDimensionsValue;
   sortableIndicatorColor?: string;
 }
 
@@ -200,6 +202,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowBorder,
   rowBorderStyle,
   boxShadow,
+  dimensions,
   sortableIndicatorColor,
   bodyFontFamily,
   bodyFontSize,
@@ -1007,6 +1010,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowBorder,
     rowBorderStyle,
     boxShadow,
+    dimensions,
     sortableIndicatorColor,
 
     onRowClickAction: onRowClick,

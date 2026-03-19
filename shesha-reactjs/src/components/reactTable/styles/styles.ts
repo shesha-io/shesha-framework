@@ -3,6 +3,7 @@ import { IBorderValue } from '@/designer-components/_settings/utils/border/inter
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/index';
 
 const tableClassNames = {
   shaTable: 'sha-table',
@@ -46,6 +47,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
   border,
+  dimensions,
   backgroundColor,
   headerFontFamily,
   headerFontSize,
@@ -94,6 +96,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowBorder?: string;
   rowBorderStyle?: IBorderValue;
   boxShadow?: string;
+  dimensions?: IDimensionsValue;
   sortableIndicatorColor?: string;
   striped?: boolean;
   cellBorderColor?: string;
@@ -215,6 +218,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         position: relative;
       ` : ''}
 
+
+      ${dimensions?.height ? `height: ${dimensions.height};` : ''}
+      ${dimensions?.minHeight ? `min-height: ${dimensions.minHeight};` : ''}
+      ${dimensions?.maxHeight ? `max-height: ${dimensions.maxHeight};` : ''}
+
       .${shaSpanCenterVertically} {
         display: flex;
         align-items: center;
@@ -229,7 +237,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
-        overflow-x: auto;
         
         /* Background applied to table ensures it covers all rows when scrolling with freezeHeaders */
         ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}

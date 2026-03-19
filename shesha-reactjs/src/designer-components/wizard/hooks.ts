@@ -5,6 +5,7 @@ import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSh
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useEffect, useMemo, useState } from 'react';
+import { useDeepCompareMemo } from '@/hooks';
 import { useFormExpression } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
@@ -54,8 +55,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     return getDefaultStepIndex(defaultActiveStep);
   });
 
-  // Remove every tab from the equation that isn't visible either by customVisibility or permissions
-  const visibleSteps = useMemo(
+  const visibleSteps = useDeepCompareMemo(
     () =>
       tabs
         .filter(({ customVisibility, permissions }) => {

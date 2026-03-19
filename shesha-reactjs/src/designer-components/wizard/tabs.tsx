@@ -32,6 +32,11 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
   const { components, current, currentStep, visibleSteps, back, cancel, content, done, next, setStep } = useWizard(model);
   useEffect(() => onChangeContextData(), [current]);
 
+  const contextData = useMemo(
+    () => ({ current, currentStep, visibleSteps }),
+    [current, currentStep, visibleSteps],
+  );
+
   const {
     buttonsLayout = 'spaceBetween',
     direction,
@@ -95,7 +100,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
       description={`Wizard context for ${model.componentName}`}
       type="control"
       metadata={contextMetadata}
-      data={{ current, currentStep, visibleSteps }}
+      data={contextData}
       api={{ back, cancel, content, done, next, setStep }}
     >
       <ParentProvider model={model}>

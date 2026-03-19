@@ -164,6 +164,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
   isInput: true,
   name: 'File list',
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.advanced && dataFormat === AdvancedFormats.fileList,
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
