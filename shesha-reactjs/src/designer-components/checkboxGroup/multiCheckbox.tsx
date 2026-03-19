@@ -6,33 +6,34 @@ import React, { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { getDataSourceList } from '../radio/utils';
 import { ICheckboxGroupProps } from './utils';
 import { executeScriptSync } from '@/providers/form/utils';
-import { IAjaxResponse } from '@/interfaces';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { ILabelValue } from '../dropdown/model';
-
-type FetchResponse = ILabelValue<any>[] | {
-  items?: ILabelValue<any>[];
-};
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items, referenceListId, direction, value, onChange } = model;
 
   const { data: refList } = useReferenceList(referenceListId);
-  const { refetch, data } = useGet<IAjaxResponse<FetchResponse>>({ path: model.dataSourceUrl, lazy: true });
+  const { refetch, data } = useGet({ path: model.dataSourceUrl, lazy: true });
 
   useEffect(() => {
     if (model.dataSourceType === 'url' && model.dataSourceUrl) {
       refetch();
     }
-  }, [model.dataSourceType, model.dataSourceUrl]);
+  }, [model.dataSourceType, model.dataSourceUrl, refetch]);
 
-  const fetchedData = isAjaxSuccessResponse(data) ? data.result : undefined;
+  const fetchedData = useMemo(() => {
+    if (!data) return undefined;
+    const response = data as IAjaxResponse<unknown>;
+    if (isAjaxSuccessResponse(response)) return response.result;
+    if (Array.isArray(data) || (typeof data === 'object' && !('success' in data))) return data;
+    return undefined;
+  }, [data]);
 
   const reducedData = useMemo<ILabelValue<any>[]>(() => {
     const list = fetchedData
       ? Array.isArray(fetchedData)
         ? fetchedData
-        : fetchedData.items ?? []
+        : (fetchedData as any).items ?? []
       : undefined;
 
     if (Array.isArray(list) && model.reducerFunc) {
