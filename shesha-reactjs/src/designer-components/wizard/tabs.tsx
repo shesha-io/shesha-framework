@@ -29,7 +29,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
   const { executeBooleanExpression } = useFormExpression();
   const onChangeContextData = useDataContextManager()?.onChangeContextData;
 
-  const { components, current, currentStep, visibleSteps, back, cancel, content, done, next, setStep } = useWizard(model);
+  const { components, current, currentStep, visibleSteps, back, cancel, close, content, done, next, setStep } = useWizard(model);
   useEffect(() => onChangeContextData(), [current]);
 
   const contextData = useMemo(
@@ -101,7 +101,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
       type="control"
       metadata={contextMetadata}
       data={contextData}
-      api={{ back, cancel, content, done, next, setStep }}
+      api={{ back, cancel, close, content, done, next, setStep }}
     >
       <ParentProvider model={model}>
         <div className={styles.shaWizard}>

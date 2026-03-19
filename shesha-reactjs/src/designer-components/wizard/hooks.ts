@@ -9,9 +9,11 @@ import { useDeepCompareMemo } from '@/hooks';
 import { useFormExpression } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
+import { useClosestModal } from '@/providers/dynamicModal';
 
 interface IWizardComponent {
   back: () => void;
+  close: () => void;
   components: IConfigurableFormComponent[];
   current: number;
   currentStep: IWizardStepProps;
@@ -28,6 +30,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const allData = useAvailableConstantsData();
   const toolbox = useFormDesignerComponents();
   const validator = useValidator(false);
+  const closestModal = useClosestModal();
 
   const formMode = useForm(false).formMode;
 
@@ -197,10 +200,15 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       );
   };
 
+  const close = (): void => {
+    closestModal?.close();
+  };
+
   const cancel = (): void =>
     executeActionIfConfigured(
       (tab) => tab.beforeCancelActionConfiguration,
       (tab) => tab.afterCancelActionConfiguration,
+      () => close(),
     );
 
   const done = (): void => {
@@ -267,6 +275,20 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   useConfigurableAction(
     {
+      name: 'Close',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: () => {
+        close();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies,
+  );
+
+  useConfigurableAction(
+    {
       name: 'Done',
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
@@ -313,5 +335,5 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 
-  return { components, current, currentStep, visibleSteps, back, cancel, done, content, next, setStep };
+  return { components, current, currentStep, visibleSteps, back, cancel, close, done, content, next, setStep };
 };
