@@ -345,9 +345,15 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     timeout,
     promptBeforeIdle: isAutoLogoffActive ? WARNING_DURATION * ONE_SECOND : 0,
     crossTab: true,
-    onPrompt: () => { if (isAutoLogoffActive) idleHandler.handlePrompt(); },
-    onIdle: () => { if (isAutoLogoffActive) idleHandler.handleIdle(); },
-    onActive: () => { if (isAutoLogoffActive) idleHandler.handleActive(); },
+    onPrompt: () => {
+      if (isAutoLogoffActive) idleHandler.handlePrompt();
+    },
+    onIdle: () => {
+      if (isAutoLogoffActive) idleHandler.handleIdle();
+    },
+    onActive: () => {
+      if (isAutoLogoffActive) idleHandler.handleActive();
+    },
     onAction: idleHandler.onAction,
     stopOnIdle: false,
     startOnMount: true,
