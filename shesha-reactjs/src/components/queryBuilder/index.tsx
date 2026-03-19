@@ -6,7 +6,10 @@ import { extractVars } from '@/utils/jsonLogic';
 import { FieldAutocomplete } from './fieldAutocomplete';
 import { FuncSelect } from './funcSelect/index';
 import { ValueSources } from './valueSources';
+import { ItemWithRelation } from './itemWithRelation';
 import { EmptyRulePlaceholders } from './emptyRulePlaceholders';
+import { GroupEmptyState } from './groupEmptyState';
+import { GroupDragAction } from './groupDragAction';
 import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
 import { IQueryBuilderProps } from './interfaces';
 import { QueryBuilderContent } from './queryBuilderContent';
@@ -91,6 +94,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
     operatorPlaceholder: 'Select operator',
     fieldLabel: 'Field',
     operatorLabel: 'Operator',
+    showNot: false,
     renderIcon: (iconProps, ctx) => {
       if (iconProps.type === 'addGroup' || iconProps.type === 'addSubGroup')
         return <FolderOutlined />;
@@ -103,11 +107,15 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
     removeInvalidMultiSelectValuesOnLoad: false,
     fieldSources: ["field", "func"],
     renderFunc: (props) => (<FuncSelect {...props} />),
+    renderConjs: () => null,
     renderField: (props) => (<FieldAutocomplete {...props} /* fields={fields}*/ />),
     renderValueSources: (props) => (<ValueSources {...props} variant="value" />),
     renderFieldSources: (props) => (<ValueSources {...props} variant="field" />),
     renderBeforeWidget: (ruleProps) => (<EmptyRulePlaceholders {...ruleProps} />),
+    renderBeforeActions: (groupProps) => (<GroupEmptyState {...groupProps} />),
+    renderAfterActions: (groupProps) => (<GroupDragAction {...groupProps} />),
     renderButton: (buttonProps) => renderQbButton(buttonProps),
+    renderItem: (itemProps) => (<ItemWithRelation {...itemProps} />),
   };
 
   const convertFields = (fields: IProperty[]): Fields => {

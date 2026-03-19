@@ -25,13 +25,19 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
   const { showSearch } = customProps || {};
 
   const items = useMemo<FieldItem[]>(() => {
-    // workaround to filter out evaluation from the LHS
-    const evaluates = allItems.filter((item) => item.key && item.key.startsWith('EVALUATE_'));
-    const withoutJavaScriptExpression = allItems.filter((item) => item.key !== 'expressionFunc');
+    const isTextCaseFunction = (item: FieldItem): boolean => {
+      if (!item?.key && !item?.label)
+        return false;
 
-    return evaluates.length > 1
-      ? withoutJavaScriptExpression.filter((item) => !item.key || !item.key.startsWith('EVALUATE_'))
-      : withoutJavaScriptExpression;
+      const normalizedKey = String(item?.key ?? '').toUpperCase();
+      const normalizedLabel = String(item?.label ?? '').toUpperCase();
+      return /(LOWER|LOWERCASE|UPPER|UPPERCASE|TOLOWER|TOUPPER)/.test(normalizedKey) ||
+        /(LOWER|LOWERCASE|UPPER|UPPERCASE|TOLOWER|TOUPPER)/.test(normalizedLabel);
+    };
+
+    return allItems
+      .filter((item) => item.key !== 'expressionFunc')
+      .filter((item) => !isTextCaseFunction(item));
   }, [allItems]);
 
   const flattenItems = (value: FieldItem[]): FieldItem[] => {

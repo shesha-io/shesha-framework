@@ -1,8 +1,10 @@
 import classNames from 'classnames';
 import React, { FC, useMemo, useRef } from 'react';
+import { QueryBuilderRenderContext } from './renderContext';
 import { IQueryBuilderProps } from './interfaces';
 import { usePrevious } from 'react-use';
 import { useStyles } from './styles/styles';
+import { getRootLogicLabel, normalizeTreeForJsonLogic } from './treeRelations';
 import {
   Query,
   Builder,
@@ -58,14 +60,17 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   const renderBuilder = (props: BuilderProps): JSX.Element => {
     const children1 = props.tree?.getIn?.(['children1']);
     const hasRules = Boolean(children1 && children1?.size > 0);
+    const plainTree = props.tree ? QbUtils.getTree(props.tree) : undefined;
+    const logicHeading = getRootLogicLabel(plainTree);
 
     return (
       <div className={classNames('query-builder-container', { 'qb-has-rules': hasRules, 'qb-empty': !hasRules })}>
-        {hasRules && <div className="qb-logic-heading">Show all...</div>}
+        {hasRules && <div className="qb-logic-heading sha-query-builder-group-footer-logic">{logicHeading}</div>}
         <div className={classNames('qb-rule-layout', { 'qb-rule-layout--active': hasRules })}>
-          {hasRules && <div className="qb-where-label">Where</div>}
           <div className={classNames('query-builder', { 'qb-lite': showActionBtnOnHover })}>
-            <Builder {...props} />
+            <QueryBuilderRenderContext.Provider value={{ tree: props.tree }}>
+              <Builder {...props} />
+            </QueryBuilderRenderContext.Provider>
           </div>
         </div>
       </div>
@@ -74,7 +79,8 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 
   const handleChange = (_tree: ImmutableTree, _config: Config): void => {
     if (onChange) {
-      const jsonLogicResult = QbUtils.jsonLogicFormat(_tree, _config);
+      const normalizedTree = QbUtils.loadTree(normalizeTreeForJsonLogic(QbUtils.getTree(_tree)));
+      const jsonLogicResult = QbUtils.jsonLogicFormat(normalizedTree, _config);
 
       lastLocallyChangedValue.current = jsonLogicResult.logic;
       onChange(jsonLogicResult);

@@ -35,9 +35,25 @@ const getSourceIcon = (sourceKey: string): React.ReactNode => {
 export const ValueSources = (props: IValueSourcesProps): JSX.Element => {
   const { valueSources, valueSrc, setValueSrc, readonly, title, variant = 'value' } = props;
 
-  const selectedValueSource = valueSrc ?? valueSources?.[0]?.[0] ?? 'value';
+  const preferredOrder = ['func', 'field', 'value'];
+  const getSourceOrder = (sourceKey: string): number => {
+    const preferredIndex = preferredOrder.indexOf(sourceKey);
+    return preferredIndex >= 0 ? preferredIndex : preferredOrder.length + 1;
+  };
 
-  const menuItems: MenuProps['items'] = valueSources.map(([sourceKey, info]) => {
+  const orderedSources = [...valueSources]
+    .sort(([leftKey], [rightKey]) => getSourceOrder(leftKey) - getSourceOrder(rightKey));
+
+  const fallbackSource = variant === 'field' ? 'field' : 'value';
+  const selectedValueSource = orderedSources.some(([sourceKey]) => sourceKey === valueSrc)
+    ? valueSrc
+    : (
+      orderedSources.find(([sourceKey]) => sourceKey === fallbackSource)?.[0] ??
+      orderedSources?.[0]?.[0] ??
+      fallbackSource
+    );
+
+  const menuItems: MenuProps['items'] = orderedSources.map(([sourceKey, info]) => {
     return {
       key: sourceKey,
       label: info.label,
@@ -50,17 +66,30 @@ export const ValueSources = (props: IValueSourcesProps): JSX.Element => {
     selectable: true,
     selectedKeys: [selectedValueSource],
     items: menuItems,
-    onClick: ({ key }) => setValueSrc(key),
+    onClick: ({ key, domEvent }) => {
+      domEvent?.stopPropagation();
+      setValueSrc(String(key));
+    },
+  };
+
+  const stopEventPropagation = (event: React.MouseEvent<HTMLSpanElement> | React.PointerEvent<HTMLSpanElement>): void => {
+    event.stopPropagation();
   };
 
   return (
     <Dropdown menu={menu} trigger={['click']} placement="bottomLeft" disabled={readonly}>
-      <PackedSourceTrigger
-        variant={variant}
-        title={title}
-        disabled={readonly}
-        icon={getSourceIcon(selectedValueSource)}
-      />
+      <span
+        className="sha-query-builder-source-dropdown-trigger"
+        onMouseDown={stopEventPropagation}
+        onPointerDown={stopEventPropagation}
+      >
+        <PackedSourceTrigger
+          variant={variant}
+          title={title}
+          disabled={readonly}
+          icon={getSourceIcon(selectedValueSource)}
+        />
+      </span>
     </Dropdown>
   );
 };

@@ -19,10 +19,13 @@ const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, JsonLogicV
 
 const jsonLogic2Args: JsonLogicImportFunc = (val): RuleValue[] => {
   const node = getEvaluationNodeFromJsonLogicNode(val);
-  if (!node || node.evaluate?.type !== 'mustache')
+  if (!node || (node.evaluate?.type !== 'mustache' && node.evaluate?.type !== 'javascript'))
     throw `Can't parse 'evaluate' function`; // throw exception to skip current function and try to parse others
 
-  const required = node.evaluate.required === true;
+  // Keep backward compatibility for legacy javascript evaluate nodes.
+  const required = node.evaluate.type === 'javascript'
+    ? true
+    : node.evaluate.required === true;
   const ignoreIfUnassigned = !required;
 
   return [node.evaluate.expression, ignoreIfUnassigned];
@@ -57,6 +60,12 @@ export const getEvaluateFunc = (type: string): Func & IHasHideForSelect => {
         type: 'text',
         defaultValue: '',
         valueSources: ['value'],
+        widgets: {
+          mustacheExpression: {
+            operators: ['equal'],
+          },
+        },
+        preferWidgets: ['mustacheExpression'],
       },
       ignoreIfUnassigned: {
         label: 'Ignore if unassigned',

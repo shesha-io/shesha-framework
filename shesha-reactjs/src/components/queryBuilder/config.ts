@@ -10,10 +10,10 @@ import { StrictBoolean } from './types/strictBoolean';
 import { IDictionary } from '@/interfaces';
 import { getEvaluateFunc } from './funcs/evaluate';
 import GuidType from './types/guid';
-import { expressionFunc } from './funcs/expression';
 import { JavaScriptWidget } from './widgets/javascript/index';
 import { FieldWidget } from './widgets/field';
 import { IgnoreIfUnassignedWidget } from './widgets/ignoreIfUnassigned';
+import { MustacheExpressionWidget } from './widgets/mustacheExpression';
 
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
@@ -225,11 +225,12 @@ const widgets = {
   date: custonDateWidget,
   specification: SpecificationWidget,
   javascript: JavaScriptWidget,
+  mustacheExpression: MustacheExpressionWidget,
   field: FieldWidget,
   ignoreIfUnassigned: IgnoreIfUnassignedWidget,
 };
 
-const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'entityReference', 'refList'];
+const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'guid', 'entityReference', 'refList'];
 const evaluateFunctions = {};
 evaluateTypes.forEach((type) => {
   evaluateFunctions[`evaluate_${type}`.toUpperCase()] = getEvaluateFunc(type);
@@ -246,7 +247,6 @@ knownFuncNames.forEach((funcName) => {
 const funcs: Funcs = {
   ...knownFuncs,
   ...evaluateFunctions,
-  expressionFunc,
 };
 
 export const config: Config = {

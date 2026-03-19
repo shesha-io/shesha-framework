@@ -23,9 +23,85 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             }
         }
 
-        .query-builder-container.qb-has-rules {
-            padding: 16px !important;
+        .query-builder-container.qb-has-rules,
+        .query-builder-container.qb-empty {
+            background: #f5f5f5;
+            border: 1px solid #ececec;
+            border-radius: 8px;
+            padding: 12px !important;
             box-sizing: border-box;
+        }
+
+        .query-builder .sha-query-builder-empty-state-message {
+            display: block;
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.43;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        .query-builder .group--footer:has(> .sha-query-builder-empty-state) {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state {
+            margin: 0;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions,
+        .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions.group--actions--br,
+        .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions.group--actions--tr {
+            margin: 0 !important;
+            width: auto !important;
+            flex: 0 0 auto !important;
+            justify-content: flex-start !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions .ant-btn-group {
+            display: inline-flex !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: 12px;
+        }
+
+        .query-builder .sha-query-builder-group-footer-logic {
+            display: inline-flex;
+            align-items: center;
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.43;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.88);
+            white-space: nowrap;
+        }
+
+        .query-builder-container > .qb-logic-heading.sha-query-builder-group-footer-logic {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 0 12px;
+            font-size: 14px;
+            line-height: 1.43;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.88);
+            white-space: nowrap;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-group-footer-logic {
+            flex: 0 0 auto;
+            align-self: center;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-group-footer-logic ~ .group--actions,
+        .query-builder .group--footer > .sha-query-builder-group-footer-logic ~ .group--actions.group--actions--br,
+        .query-builder .group--footer > .sha-query-builder-group-footer-logic ~ .group--actions.group--actions--tr {
+            margin-left: auto !important;
+            width: auto !important;
+            flex: 1 1 auto !important;
+            justify-content: flex-end !important;
         }
     
         .${shaQueryBuilderBtns} {
@@ -37,10 +113,152 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             }
         }
 
-        .query-builder > .group-or-rule-container > .group {
-            background: #f5f5f5;
-            border: 1px solid #ececec;
-            border-radius: 8px;
+        .query-builder > .group-or-rule-container > .group,
+        .query-builder .group {
+            background: transparent !important;
+            border: 0 !important;
+            border-radius: 0;
+        }
+
+        .query-builder .group--header:not(.no--children):not(.hide--conjs)::before,
+        .query-builder .group--children > .group-or-rule-container > .group-or-rule::before,
+        .query-builder .group--children > .group-or-rule-container > .group-or-rule::after {
+            display: none !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group {
+            background: #a9c3e6 !important;
+            border: 1px solid #7fa8dc !important;
+            border-radius: 10px;
+            padding: 8px;
+            position: relative;
+            padding-top: 38px;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--header {
+            margin: 0 !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+            display: none !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer {
+            margin: 0;
+            min-height: 0;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .sha-query-builder-group-footer-logic {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            margin: 0 !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--header.no--children + .group--children.one--child {
+            display: none;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--header.no--children + .group--children.one--child + .group--footer .sha-query-builder-empty-state-message {
+            margin-bottom: 8px;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions {
+            position: absolute !important;
+            top: 8px !important;
+            right: 38px !important;
+            width: auto !important;
+            margin: 0 !important;
+            justify-content: flex-start !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions .ant-btn-group {
+            gap: 6px !important;
+            height: 24px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions .ant-btn {
+            width: 24px !important;
+            min-width: 24px !important;
+            height: 24px !important;
+            padding: 0 !important;
+            border-radius: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0 !important;
+            line-height: 1 !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions .ant-btn .ant-btn-icon {
+            margin: 0 !important;
+            font-size: 12px !important;
+            line-height: 1 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions .ant-btn > span:not(.ant-btn-icon) {
+            display: none !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions .action--ADD-RULE.ant-btn,
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions .action--ADD-GROUP.ant-btn {
+            background: #fff !important;
+            border: 1px solid #d0d5dd !important;
+            color: ${token.colorPrimary} !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions .action--DELETE.ant-btn {
+            background: #fff !important;
+            border: 1px solid #ffd1cc !important;
+            color: ${token.colorError} !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .sha-query-builder-group-extra-actions {
+            position: absolute !important;
+            top: 8px !important;
+            right: 8px !important;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .sha-query-builder-group-extra-action {
+            width: 24px;
+            min-width: 24px;
+            height: 24px;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            background: #fff;
+            color: #667085;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            margin: 0 !important;
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            flex-shrink: 0;
+            cursor: grab;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .sha-query-builder-group-extra-action .anticon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            font-size: 12px;
         }
     
         .rule--value {
@@ -53,32 +271,210 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             }
         }
 
+        .query-builder .rule--field-wrapper {
+            flex: 3 1 0 !important;
+            min-width: 0;
+        }
+
+        .query-builder .rule--operator {
+            flex: 3 1 0 !important;
+            min-width: 0;
+        }
+
+        .query-builder .rule--value {
+            flex: 4 1 0 !important;
+            width: auto !important;
+            min-width: 0;
+        }
+
+        .query-builder .rule--body.can--shrink--value .rule--value {
+            flex: 4 1 0 !important;
+        }
+
         .query-builder > .group-or-rule-container > .group > .group--header {
             margin: 0 0 20px;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            min-height: 32px;
         }
 
         .query-builder > .group-or-rule-container > .group > .group--header::before {
             content: "Show all...";
             display: block;
             width: 100%;
-            font-size: 20px;
-            line-height: 1.3;
-            font-weight: 600;
-            color: rgba(0, 0, 0, 0.73);
-            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.43;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.88);
+            margin-bottom: 12px;
         }
 
-        .query-builder > .group-or-rule-container > .group > .group--header:not(.no--children) .group--conjunctions .ant-btn-group {
+        .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--header::before {
             display: none;
         }
 
-        .query-builder > .group-or-rule-container > .group > .group--header:not(.no--children) .group--conjunctions::before {
-            content: "Where";
+        .query-builder > .group-or-rule-container > .group > .group--header:not(.no--children) .group--conjunctions .ant-btn-group {
+            display: inline-flex;
+            gap: 6px;
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--header .group--conjunctions .group--drag-handler {
+            width: 24px;
+            min-width: 24px;
+            height: 24px;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            background: #fff;
+            color: #667085;
+            padding: 0;
             display: inline-flex;
             align-items: center;
-            color: ${token.colorPrimary};
+            justify-content: center;
+            line-height: 1;
+            margin: 0 !important;
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            flex-shrink: 0;
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--header .group--conjunctions .group--drag-handler .anticon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            font-size: 12px;
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--header:not(.no--children) .group--conjunctions .sha-query-builder-conjunction-select {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--header:not(.no--children) .group--conjunctions .sha-query-builder-conjunction-select .${prefixCls}-select {
+            width: 84px;
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--header:not(.no--children) .group--conjunctions .sha-query-builder-conjunction-select .${prefixCls}-select-selector {
+            min-height: 24px;
+            border: 1px solid #c7ced8 !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            padding: 0 8px !important;
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--header:not(.no--children) .group--conjunctions .sha-query-builder-conjunction-select .${prefixCls}-select-selection-item {
+            line-height: 22px !important;
             font-weight: 500;
-            line-height: 32px;
+            color: ${token.colorPrimary};
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--header:not(.no--children) .group--conjunctions::before {
+            content: none;
+        }
+
+        .query-builder .group--header:not(.no--children) + .group--children {
+            position: relative;
+            padding-left: 0 !important;
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--children {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .query-builder > .group-or-rule-container > .group > .group--children > .group-or-rule-container {
+            margin: 0;
+            padding: 0;
+        }
+
+        .query-builder .group--header:not(.no--children) + .group--children::before {
+            content: none;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: var(--qb-relation-gap);
+            width: 100%;
+            min-width: 0;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .sha-query-builder-item-prefix {
+            width: var(--qb-relation-width);
+            min-width: var(--qb-relation-width);
+            flex: 0 0 var(--qb-relation-width);
+            min-height: 28px;
+            padding-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .sha-query-builder-item-prefix--where .sha-query-builder-item-prefix-label {
+            color: ${token.colorPrimary};
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            white-space: nowrap;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .sha-query-builder-item-prefix--relation .sha-query-builder-item-relation {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation--has-relation .sha-query-builder-item-relation .${prefixCls}-select {
+            width: 100%;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation--has-relation .sha-query-builder-item-relation .${prefixCls}-select-selector {
+            min-height: 24px;
+            border: 1px solid #c7ced8 !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            padding: 0 6px !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation--has-relation .sha-query-builder-item-relation .${prefixCls}-select-selection-item {
+            line-height: 22px !important;
+            font-size: 12px;
+            font-weight: 500;
+            color: ${token.colorPrimary};
+        }
+
+        .query-builder {
+            --qb-relation-width: 64px;
+            --qb-relation-gap: 8px;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation--has-relation .sha-query-builder-item-relation .${prefixCls}-select {
+            width: 100%;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation--has-relation .sha-query-builder-item-relation .${prefixCls}-select-selector {
+            min-height: 28px;
+            padding: 0 8px !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation--has-relation .sha-query-builder-item-relation .${prefixCls}-select-selection-item {
+            line-height: 26px !important;
+            font-size: 13px;
         }
 
         .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--footer .group--actions,
@@ -129,8 +525,78 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             margin-right: 8px;
         }
 
+        .query-builder .group .group--footer .group--actions,
+        .query-builder .group .group--footer .group--actions.group--actions--br,
+        .query-builder .group .group--footer .group--actions.group--actions--tr {
+            margin: 0 !important;
+            width: 100% !important;
+            justify-content: flex-end !important;
+        }
+
+        .query-builder .group .group--footer .group--actions .ant-btn-group {
+            display: inline-flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .query-builder .group .group--footer .group--actions .ant-btn-group .ant-btn + .ant-btn {
+            margin-left: 0;
+        }
+
+        .query-builder .group .group--footer .action--ADD-RULE.ant-btn,
+        .query-builder .group .group--footer .action--ADD-GROUP.ant-btn {
+            height: 36px;
+            min-width: 160px;
+            border-radius: 10px;
+            box-shadow: none;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .query-builder .group .group--footer .action--ADD-GROUP.ant-btn {
+            border-color: ${token.colorPrimary};
+            color: ${token.colorPrimary};
+            background: #fff;
+        }
+
+        .query-builder .group .group--footer .action--ADD-GROUP.ant-btn:hover,
+        .query-builder .group .group--footer .action--ADD-GROUP.ant-btn:focus-visible {
+            border-color: ${token.colorPrimaryHover};
+            color: ${token.colorPrimaryHover};
+            background: #fff;
+        }
+
+        .query-builder .group .group--footer .action--ADD-RULE.ant-btn .anticon,
+        .query-builder .group .group--footer .action--ADD-GROUP.ant-btn .anticon {
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
         .query-builder > .group-or-rule-container > .group > .group--footer {
             margin-top: 12px;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--header,
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--children {
+            display: none !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer .group--actions,
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer .group--actions.group--actions--br,
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer .group--actions.group--actions--tr {
+            margin: 0 !important;
+            width: 100% !important;
+            justify-content: flex-start !important;
         }
 
         .query-builder > .group-or-rule-container > .group > .group--header.no--children {
@@ -151,16 +617,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             flex-direction: column;
             align-items: flex-start;
             gap: 12px;
-        }
-
-        .query-builder > .group-or-rule-container > .group > .group--header.no--children + .group--children.one--child + .group--footer::before {
-            content: "No filter conditions are applied";
-            display: block;
-            margin: 0;
-            font-size: 14px;
-            line-height: 1.43;
-            font-weight: 400;
-            color: rgba(0, 0, 0, 0.45);
         }
 
         .query-builder > .group-or-rule-container > .group > .group--header.no--children + .group--children.one--child + .group--footer .group--actions,
@@ -219,6 +675,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             visibility: visible !important;
         }
 
+        .query-builder.qb-lite:not(.qb-dragging) .group .group--drag-handler,
+        .query-builder.qb-lite:not(.qb-dragging) .group .group--actions {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .query-builder.qb-lite .rule .rule--drag-handler,
+        .query-builder.qb-lite .group .group--drag-handler {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
         .sha-query-builder-source-trigger {
             height: 24px;
             min-width: 32px;
@@ -247,6 +715,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             opacity: 0.55;
         }
 
+        .sha-query-builder-source-dropdown-trigger {
+            display: inline-flex;
+            pointer-events: auto !important;
+            position: relative;
+            z-index: 2;
+        }
+
+        .query-builder .widget--valuesrc,
+        .query-builder .widget--valuesrc * {
+            pointer-events: auto !important;
+        }
+
         .sha-query-builder-source-trigger-icon,
         .sha-query-builder-source-trigger-arrow {
             line-height: 1;
@@ -266,7 +746,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .rule--before-widget:has(.sha-query-builder-empty-rule-placeholders) {
-            flex: 1.85 1 0;
+            flex: 7 1 0;
             min-width: 0;
         }
 
@@ -279,7 +759,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .sha-query-builder-empty-operator {
-            flex: 0.65 1 0;
+            flex: 3 1 0;
             min-width: 0;
             min-height: 20px;
             padding: 0 12px;
@@ -299,7 +779,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .sha-query-builder-empty-value {
-            flex: 1.2 1 0;
+            flex: 4 1 0;
             min-width: 0;
             min-height: 20px;
             border: 1px solid #c7ced8;
@@ -341,6 +821,68 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             font-size: 9px;
         }
 
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input {
+            width: 100%;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .query-builder .rule--value .${prefixCls}-input-number {
+            width: 100% !important;
+            min-width: 0;
+            min-height: 20px;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .query-builder .rule--func {
+            display: none;
+        }
+
+        .query-builder .rule--func--bracket-before,
+        .query-builder .rule--func--bracket-after,
+        .query-builder .rule--func--arg-sep {
+            display: none;
+        }
+
+        .query-builder .rule--value .widget--widget .rule--func--arg--expression {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .query-builder .rule--value .widget--widget .rule--func--arg--expression .rule--widget,
+        .query-builder .rule--value .widget--widget .rule--func--arg--expression .rule--widget > * {
+            flex: 1 1 auto;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .query-builder .rule--value .widget--widget .rule--func--arg--ignoreIfUnassigned {
+            flex: 0 0 auto;
+            margin: 0;
+            padding: 0 8px;
+            border-left: 1px solid #d0d5dd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+        }
+
+        .query-builder .rule--value .widget--widget .rule--func--arg--ignoreIfUnassigned .rule--widget {
+            width: auto;
+            margin: 0;
+        }
+
+        .query-builder .rule--value .widget--widget .rule--func--arg--ignoreIfUnassigned .sha-query-builder-ignore-unassigned {
+            padding-right: 0;
+        }
+
         .sha-query-builder-source-option .${prefixCls}-dropdown-menu-title-content {
             display: inline-flex;
             align-items: center;
@@ -366,6 +908,218 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-query-builder-ignore-unassigned-icon {
             color: #52c41a;
             font-size: 11px;
+        }
+
+        .query-builder .action--ADD-RULE.ant-btn:not(.ant-btn-icon-only),
+        .query-builder .action--ADD-GROUP.ant-btn:not(.ant-btn-icon-only) {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+        }
+
+        .query-builder .action--ADD-RULE.ant-btn:not(.ant-btn-icon-only) .ant-btn-icon,
+        .query-builder .action--ADD-GROUP.ant-btn:not(.ant-btn-icon-only) .ant-btn-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+        }
+
+        .query-builder .action--ADD-RULE.ant-btn:not(.ant-btn-icon-only) .ant-btn-icon .anticon,
+        .query-builder .action--ADD-GROUP.ant-btn:not(.ant-btn-icon-only) .ant-btn-icon .anticon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+        }
+
+        .query-builder .rule.group-or-rule {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .query-builder .rule.group-or-rule > .sha-query-builder-rule-drag-placeholder.rule--drag-handler {
+            order: -1;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .query-builder .rule.group-or-rule > .rule--drag-handler {
+            margin: 0 !important;
+            padding: 0 6px !important;
+            border: 0 !important;
+            align-self: center !important;
+            flex: 0 0 auto;
+        }
+
+        .query-builder .rule.group-or-rule > .rule--body--wrapper {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin: 0 !important;
+            padding: 0 8px !important;
+            border-left: 1px solid #d0d5dd;
+            border-right: 1px solid #d0d5dd;
+        }
+
+        .query-builder .rule.group-or-rule > .rule--header {
+            margin: 0 !important;
+            padding: 0 6px !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
+            display: inline-flex;
+            align-items: center;
+            align-self: center;
+            flex: 0 0 auto;
+        }
+
+        .query-builder .rule.group-or-rule > .rule--header::before,
+        .query-builder .rule.group-or-rule > .rule--header::after {
+            content: none !important;
+            display: none !important;
+        }
+
+        .query-builder .rule.group-or-rule > .rule--header .ant-btn-group {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 !important;
+        }
+
+        .query-builder .rule.group-or-rule > .rule--header .ant-btn-group > .ant-btn {
+            margin-left: 0 !important;
+        }
+
+        .query-builder .rule.group-or-rule > .rule--header .action--DELETE.ant-btn {
+            width: 16px !important;
+            min-width: 16px !important;
+            height: 16px !important;
+            padding: 0 !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions,
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions.group--actions--br,
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions.group--actions--tr {
+            margin: 0 !important;
+            width: auto !important;
+            flex: 0 0 auto !important;
+            justify-content: flex-start !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions .ant-btn-group {
+            display: inline-flex !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: 12px;
+        }
+
+        .query-builder .rule--field,
+        .query-builder .rule--operator,
+        .query-builder .rule--value {
+            display: flex;
+            align-items: stretch;
+            min-height: 20px;
+            min-width: 0;
+        }
+
+        .query-builder .rule--field > *,
+        .query-builder .rule--operator > *,
+        .query-builder .rule--value > * {
+            min-width: 0;
+        }
+
+        .query-builder .rule--value .rule--widget,
+        .query-builder .rule--value .widget--widget,
+        .query-builder .rule--value .widget--widget > *:not(.widget--valuesrc) {
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .query-builder .rule--field .${prefixCls}-select,
+        .query-builder .rule--operator .${prefixCls}-select,
+        .query-builder .rule--value .${prefixCls}-select,
+        .query-builder .rule--value .${prefixCls}-input-number,
+        .query-builder .rule--value .${prefixCls}-input,
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input {
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 0;
+        }
+
+        .query-builder .rule--field .${prefixCls}-select-selector,
+        .query-builder .rule--operator .${prefixCls}-select-selector,
+        .query-builder .rule--value .${prefixCls}-select-selector {
+            height: 100% !important;
+            min-height: 20px !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .query-builder .rule--field .${prefixCls}-select-selection-wrap,
+        .query-builder .rule--operator .${prefixCls}-select-selection-wrap,
+        .query-builder .rule--value .${prefixCls}-select-selection-wrap {
+            align-items: center !important;
+        }
+
+        .query-builder .rule--field .${prefixCls}-select-single .${prefixCls}-select-selection-item,
+        .query-builder .rule--field .${prefixCls}-select-single .${prefixCls}-select-selection-placeholder,
+        .query-builder .rule--operator .${prefixCls}-select-single .${prefixCls}-select-selection-item,
+        .query-builder .rule--operator .${prefixCls}-select-single .${prefixCls}-select-selection-placeholder,
+        .query-builder .rule--value .${prefixCls}-select-single .${prefixCls}-select-selection-item,
+        .query-builder .rule--value .${prefixCls}-select-single .${prefixCls}-select-selection-placeholder {
+            display: flex !important;
+            align-items: center !important;
+            line-height: 20px !important;
+        }
+
+        .query-builder .rule--field .${prefixCls}-select-single .${prefixCls}-select-selection-search,
+        .query-builder .rule--operator .${prefixCls}-select-single .${prefixCls}-select-selection-search,
+        .query-builder .rule--value .${prefixCls}-select-single .${prefixCls}-select-selection-search {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .query-builder .rule--field .${prefixCls}-select-single .${prefixCls}-select-selection-search-input,
+        .query-builder .rule--operator .${prefixCls}-select-single .${prefixCls}-select-selection-search-input,
+        .query-builder .rule--value .${prefixCls}-select-single .${prefixCls}-select-selection-search-input {
+            height: 100% !important;
+        }
+
+        .query-builder .rule--value .${prefixCls}-input,
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input {
+            height: 100% !important;
+            min-height: 20px !important;
+            line-height: 20px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            display: block;
+        }
+
+        .query-builder .rule--value .${prefixCls}-input-number-input-wrap {
+            height: 100% !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .query-builder .rule--value .${prefixCls}-input-number-input {
+            height: 100% !important;
+            min-height: 20px !important;
+            line-height: 20px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
     `);
 
