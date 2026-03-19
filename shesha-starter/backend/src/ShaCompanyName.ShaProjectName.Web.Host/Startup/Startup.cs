@@ -1,7 +1,6 @@
 ﻿using Abp.AspNetCore;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
 using Abp.PlugIns;
 using Castle.Facilities.Logging;
 using ElmahCore;
@@ -28,7 +27,6 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
 using Shesha.Exceptions;
 using Shesha.Extensions;
-using Shesha.FluentMigrator;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.Identity;
@@ -72,7 +70,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			services.AddMvcCore(options =>
 			{
 				options.EnableEndpointRouting = false;
-				options.Conventions.Add(new Shesha.Swagger.ApiExplorerGroupPerControllerConvention());
+				options.Conventions.Add(new ApiExplorerGroupPerControllerConvention());
 
 				options.EnableDynamicDtoBinding();
 				options.AddDynamicAppServices(services);
@@ -118,7 +116,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
                         }
                 }
             });
-            services.AddHangfireServer(config => {
+            services.AddHangfireServer(_ => {
             });
 
             // add Shesha GraphQL
@@ -169,7 +167,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			app.UseCors(x => x
 				.AllowAnyMethod()
 				.AllowAnyHeader()
-				.SetIsOriginAllowed(origin => true) // allow any origin
+				.SetIsOriginAllowed(_ => true) // allow any origin
 				.AllowCredentials()); // allow credentials​
 			app.UseStaticFiles();
 
