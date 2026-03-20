@@ -25,8 +25,8 @@ namespace Shesha.Web.Host.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var swaggerEnabled = await _securitySettings.SwaggerUiEnabled.GetValueAsync();
-            if (!swaggerEnabled)
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            if (!securitySettings.SwaggerUiEnabled)
                 return Ok();
 
             return Redirect("/swagger");

@@ -178,6 +178,9 @@ namespace Shesha.Web.Host.Startup
                 endpoints.MapSignalRHubs();
             });
 
+            // Block access to Swagger UI when the setting is disabled
+            app.UseMiddleware<SwaggerUiAccessMiddleware>();
+
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger();
 
@@ -217,8 +220,6 @@ namespace Shesha.Web.Host.Startup
                 options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
-                options.DocumentFilter<SwaggerUiDocumentFilter>();
-
                 options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
                 options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
