@@ -1,5 +1,6 @@
 import { createGlobalStyle } from "antd-style";
 import { sheshaStyles } from '@/styles';
+import { DEFAULT_MARGINS } from "@/components/formDesigner/utils/designerConstants";
 
 
 export const GlobalTableStyles = createGlobalStyle`
@@ -62,7 +63,7 @@ export const GlobalTableStyles = createGlobalStyle`
     overflow: auto;
     .td {
       .${(p) => p.theme.prefixCls}-form-item {
-        width: 100%;
+        width: calc(100% - (2 * ${DEFAULT_MARGINS.horizontal}));
     
         .${(p) => p.theme.prefixCls}-row {
           &.${(p) => p.theme.prefixCls}-form-item-row {
