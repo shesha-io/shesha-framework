@@ -149,7 +149,7 @@ namespace Shesha
                     MobileLoginPinLifetime = 60,
                     UseResetPasswordViaSecurityQuestions = true,
                     ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = 3,
-                    SwaggerUiEnabled = true
+                    SwaggerUiEnabled = true,
                     DefaultEndpointAccess = Domain.Enums.RefListPermissionedAccess.AnyAuthenticated
                 });
             });
