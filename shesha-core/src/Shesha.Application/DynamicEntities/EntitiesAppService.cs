@@ -10,6 +10,7 @@ using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
 using Shesha.Metadata.Dtos;
@@ -155,6 +156,8 @@ namespace Shesha.DynamicEntities
                 if (entityConfig == null)
                     throw new EntityTypeNotFoundException(input.EntityType);
 
+                await CheckPermissionAsync(entityConfig, "Get");
+
                 var typeName = entityConfig.EntityType.FullName;
 
                 /* we MUST NOT disable it here
@@ -216,7 +219,8 @@ namespace Shesha.DynamicEntities
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
-        public Task<List<SpecificationDto>> SpecificationsAsync(string entityType) 
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+        public Task<List<SpecificationDto>> SpecificationsAsync(string entityType)
         {
             var entityConfig = _entityConfigStore.Get(entityType);
             if (entityConfig == null)
@@ -246,6 +250,8 @@ namespace Shesha.DynamicEntities
             var entityConfig = _entityConfigStore.Get(input.EntityType);
             if (entityConfig == null)
                 throw new EntityTypeNotFoundException(input.EntityType);
+
+            await CheckPermissionAsync(entityConfig, "Update");
 
             var property = ReflectionHelper.GetProperty(entityConfig.EntityType, input.PropertyName, true);
             if (property == null)
