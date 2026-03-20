@@ -43,7 +43,7 @@ namespace Shesha.GraphQL.Middleware
 
         private bool IsGraphQLRequest(HttpContext context, out string schemaName)
         {
-            if (context.Request.Path.StartsWithSegments(_settings.Path) && string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase)) 
+            if (context.Request.Path.StartsWithSegments(_settings.Path) && string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase))
             {
                 schemaName = context.Request.Path.HasValue
                     ? context.Request.Path.Value.RemovePrefix(_settings.Path).Trim('/')
@@ -56,6 +56,12 @@ namespace Shesha.GraphQL.Middleware
 
         private async Task ExecuteAsync(HttpContext context, string schemaName = null)
         {
+            if (context.User?.Identity?.IsAuthenticated != true)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                return;
+            }
+
             var request = await _serializer.ReadAsync<GraphQLRequest>(context.Request.Body, context.RequestAborted);
 
             var start = DateTime.UtcNow;
