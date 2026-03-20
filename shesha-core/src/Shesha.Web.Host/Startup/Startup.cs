@@ -122,6 +122,9 @@ namespace Shesha.Web.Host.Startup
                             });
                             break;
                         }
+                    case DbmsType.NotSpecified:
+                    default:
+                        throw new InvalidOperationException($"Unsupported DbmsType '{dbms}' for Hangfire storage configuration. Supported types are SQLServer and PostgreSQL.");
                 }
             });
             services.AddHangfireServer(config => {
@@ -153,6 +156,9 @@ namespace Shesha.Web.Host.Startup
             app.UseConfigurationFramework();
 
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
+
+            // Security headers
+            app.UseSecurityHeaders();
 
             // global cors policy
             var corsOrigins = _appConfiguration["App:CorsOrigins"]?
