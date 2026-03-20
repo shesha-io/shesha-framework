@@ -111,6 +111,7 @@ namespace Shesha.Permissions
         }
 
         [HttpPost]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
         public async Task<PermissionDto> CreateAsync(PermissionDto permission)
         {
             var dbp = new PermissionDefinition()
@@ -130,6 +131,7 @@ namespace Shesha.Permissions
         }
 
         [HttpPut, HttpPost] // ToDo: temporary - Allow HttpPost because permission can be created from edit mode
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
         public async Task<PermissionDto> UpdateAsync(PermissionDto permission)
         {
             if (permission?.Id == emptyId)
@@ -154,7 +156,8 @@ namespace Shesha.Permissions
             return ObjectMapper.Map<PermissionDto>(res);
         }
 
-        [HttpPut] 
+        [HttpPut]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
         public async Task UpdateParentAsync(PermissionDto permission)
         {
             var module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null;
@@ -162,6 +165,7 @@ namespace Shesha.Permissions
         }
 
         [HttpDelete]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
         public async Task DeleteAsync(string name)
         {
             await _shaPermissionManager.DeletePermissionAsync(name);

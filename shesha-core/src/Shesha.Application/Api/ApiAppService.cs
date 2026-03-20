@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Api.Dto;
+using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
+using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,7 @@ namespace Shesha.Api
     /// <summary>
     /// API application service
     /// </summary>
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class ApiAppService: SheshaAppServiceBase//, IApiAppService
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;

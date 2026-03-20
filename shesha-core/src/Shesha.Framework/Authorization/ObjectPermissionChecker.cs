@@ -90,7 +90,7 @@ namespace Shesha.Authorization
             }
 
             var ty = _permissionChecker.GetType();// (_permissionChecker as IProxyTargetAccessor).DynProxyGetTarget().GetType();
-            // ToDo: add RequireAll flag
+            // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
             await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions.ToArray());
         }
     }

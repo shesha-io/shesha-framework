@@ -29,6 +29,7 @@ using PackageImportResult = Shesha.ConfigurationItems.Dtos.PackageImportResult;
 namespace Shesha.ConfigurationItems
 {
     /// inheritedDoc
+    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class ConfigurationItemAppService: SheshaCrudServiceBase<ConfigurationItem, EntityDto<Guid>, Guid, FilteredPagedAndSortedResultRequestDto, EntityDto<Guid>, EntityDto<Guid>>, IConfigurationItemAppService, ITransientDependency
         
     {

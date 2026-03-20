@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.AutoMapper.Dto;
+using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
@@ -34,6 +35,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationDto, UpdateFormConfigurationDto, GetFormByIdInput>
     {
 
@@ -80,6 +82,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// Gets all permissioned shesha forms with anonymous access
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         public async Task<List<PermissionedObjectDto>> GetAnonymousFormsAsync()
         {
             return await _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
