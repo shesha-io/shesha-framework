@@ -39,6 +39,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
@@ -155,11 +156,16 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			}); // Initializes ABP framework.​
 				//app.UseCors(_defaultCorsPolicyName); // Enable CORS!
 				// global cors policy
+			var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+				.Split(",", StringSplitOptions.RemoveEmptyEntries)
+				.Select(o => o.Trim().TrimEnd('/'))
+				.Where(o => !string.IsNullOrEmpty(o))
+				.ToArray() ?? Array.Empty<string>();
 			app.UseCors(x => x
 				.AllowAnyMethod()
 				.AllowAnyHeader()
-				.SetIsOriginAllowed(origin => true) // allow any origin
-				.AllowCredentials()); // allow credentials​
+				.WithOrigins(corsOrigins)
+				.AllowCredentials());
 			app.UseStaticFiles();
 
 			app.UseAuthentication();
