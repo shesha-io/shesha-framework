@@ -238,7 +238,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
           striped
           rowDividers
           rowAlternateBackgroundColor={getTableDefaults().rowAlternateBackgroundColor}
-          headerBackgroundColor='#ffffff'
+          headerBackgroundColor="#ffffff"
           headerFontSize={getTableDefaults().headerFontSize}
           headerFontWeight={getTableDefaults().headerFontWeight}
           headerFontFamily={getTableDefaults().headerFontFamily}
