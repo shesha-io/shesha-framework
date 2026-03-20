@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using Shesha.Configuration.Security;
+using System;
 using System.Threading.Tasks;
 
 namespace Shesha.Swagger
 {
     /// <summary>
-    /// Middleware that blocks access to Swagger UI and Swagger JSON endpoints
-    /// when the Swagger UI setting is disabled, returning a blank page instead.
+    /// Middleware that blocks access to Swagger UI when the Swagger UI setting is disabled,
+    /// returning a 403 Forbidden response. JSON spec endpoints are not blocked.
     /// </summary>
     public class SwaggerUiAccessMiddleware
     {
@@ -19,16 +20,18 @@ namespace Shesha.Swagger
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments("/swagger"))
+            var path = context.Request.Path;
+            var isSwaggerUi = path.StartsWithSegments("/swagger", StringComparison.OrdinalIgnoreCase)
+                && !path.Value.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
+
+            if (isSwaggerUi)
             {
                 if (context.RequestServices.GetService(typeof(ISecuritySettings)) is ISecuritySettings securitySettings)
                 {
                     var settings = await securitySettings.SecuritySettings.GetValueAsync();
                     if (!settings.SwaggerUiEnabled)
                     {
-                        context.Response.StatusCode = StatusCodes.Status200OK;
-                        context.Response.ContentType = "text/html";
-                        await context.Response.WriteAsync("<!DOCTYPE html><html><head></head><body></body></html>");
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
                         return;
                     }
                 }

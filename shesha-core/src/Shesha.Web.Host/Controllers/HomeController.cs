@@ -27,7 +27,7 @@ namespace Shesha.Web.Host.Controllers
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
             if (!securitySettings.SwaggerUiEnabled)
-                return Ok();
+                return Content("API is running", "text/plain");
 
             return Redirect("/swagger");
         }
