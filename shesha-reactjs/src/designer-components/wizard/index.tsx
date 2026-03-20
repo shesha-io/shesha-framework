@@ -47,6 +47,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     stylingBox: "{\"marginBottom\":\"5\"}",
     showBackButton: true,
     showDoneButton: true,
+    persistStep: true,
   }),
   migrator: (m) =>
     m
@@ -128,7 +129,17 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
             components: step.stepFooter?.components ?? [],
           }
         })) ?? []
-      })),
+      }))
+      .add<IWizardComponentProps>(10, (prev) => {
+        const hasDefaultActiveStep =
+          prev.defaultActiveStep !== undefined &&
+          prev.defaultActiveStep !== null &&
+          prev.defaultActiveStep !== '';
+        return {
+          ...prev,
+          persistStep: prev.persistStep ?? !hasDefaultActiveStep,
+        };
+      }),
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],

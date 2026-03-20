@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Bootstrappers;
 using Shesha.Controllers.Dtos;
 using Shesha.DynamicEntities;
-using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Settings;
@@ -17,11 +16,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Abp.AspNetCore.Mvc.Authorization;
+using Shesha.Authorization;
 
 namespace Shesha.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [AbpMvcAuthorize(ShaPermissionNames.Pages_Maintenance)]
     public class FrameworkController: ControllerBase, ITransientDependency
     {
         public ILogger Logger { get; set; } = new NullLogger();

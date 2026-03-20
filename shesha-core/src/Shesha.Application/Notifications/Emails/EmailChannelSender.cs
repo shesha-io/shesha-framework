@@ -75,7 +75,6 @@ namespace Shesha.Notifications
                     return SendStatus.Failed(e.Message);
                 }
             }
-            ;
         }
 
         #region private methods

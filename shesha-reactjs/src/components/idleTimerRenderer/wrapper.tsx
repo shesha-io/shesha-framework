@@ -9,29 +9,19 @@ const securitySettingsId: ISettingIdentifier = {
 };
 
 /**
- * Wrapper component that checks if auto-logoff is enabled before rendering IdleTimerRenderer.
- * Loads security settings once and passes them to IdleTimerRenderer to avoid duplicate fetches.
- * When useAutoLogoff is false, children render directly without any idle timer overhead.
- * When useAutoLogoff is true, renders IdleTimerRenderer with pre-loaded security settings.
+ * Loads security settings and renders IdleTimerRenderer.
+ * IdleTimerRenderer handles token refresh on user activity regardless of auto-logoff setting,
+ * and additionally handles idle logout/warning when auto-logoff is enabled.
  */
 export const IdleTimerWrapper: FC<PropsWithChildren> = ({ children }) => {
-  const { value: securitySettings, loadingState } = useSettingValue<ISecuritySettings>(
+  const { value: securitySettings } = useSettingValue<ISecuritySettings>(
     securitySettingsId
   );
 
-  // While settings are loading, render children without idle timer
-  // This prevents blocking the UI while settings load
-  if (loadingState !== 'ready') {
-    return <>{children}</>;
-  }
-
-  // If auto-logoff is disabled, render children directly without any idle timer overhead
-  const useAutoLogoff = securitySettings?.useAutoLogoff ?? false;
-  if (!useAutoLogoff) {
-    return <>{children}</>;
-  }
-
-  // Auto-logoff is enabled, render with idle timer monitoring
+  // Always render IdleTimerRenderer so activity-based token refresh works even
+  // while settings are loading or when auto-logoff is disabled. IdleTimerRenderer
+  // treats undefined securitySettings as "auto-logoff off" and gates logout/warning
+  // behaviour on the configured timeout internally.
   return <IdleTimerRenderer securitySettings={securitySettings}>{children}</IdleTimerRenderer>;
 };
 

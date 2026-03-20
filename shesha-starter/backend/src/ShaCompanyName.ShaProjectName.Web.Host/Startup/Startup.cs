@@ -1,7 +1,6 @@
 ﻿using Abp.AspNetCore;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
 using Abp.PlugIns;
 using Castle.Facilities.Logging;
 using ElmahCore;
@@ -17,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -28,7 +28,6 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
 using Shesha.Exceptions;
 using Shesha.Extensions;
-using Shesha.FluentMigrator;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.Identity;
@@ -39,6 +38,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
@@ -72,7 +72,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			services.AddMvcCore(options =>
 			{
 				options.EnableEndpointRouting = false;
-				options.Conventions.Add(new Shesha.Swagger.ApiExplorerGroupPerControllerConvention());
+				options.Conventions.Add(new ApiExplorerGroupPerControllerConvention());
 
 				options.EnableDynamicDtoBinding();
 				options.AddDynamicAppServices(services);
@@ -118,7 +118,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
                         }
                 }
             });
-            services.AddHangfireServer(config => {
+            services.AddHangfireServer(_ => {
             });
 
             // add Shesha GraphQL
@@ -153,13 +153,29 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			{
 				options.UseAbpRequestLocalization = false;
 			}); // Initializes ABP framework.​
+			// Security headers
+			app.Use(async (context, next) =>
+			{
+				context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+				context.Response.Headers["X-Frame-Options"] = "DENY";
+				context.Response.Headers["X-XSS-Protection"] = "0";
+				context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+				context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+				await next();
+			});
+
 				//app.UseCors(_defaultCorsPolicyName); // Enable CORS!
 				// global cors policy
+			var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+				.Split(",", StringSplitOptions.RemoveEmptyEntries)
+				.Select(o => o.Trim().TrimEnd('/'))
+				.Where(o => !string.IsNullOrEmpty(o))
+				.ToArray() ?? Array.Empty<string>();
 			app.UseCors(x => x
 				.AllowAnyMethod()
 				.AllowAnyHeader()
-				.SetIsOriginAllowed(origin => true) // allow any origin
-				.AllowCredentials()); // allow credentials​
+				.WithOrigins(corsOrigins)
+				.AllowCredentials());
 			app.UseStaticFiles();
 
 			app.UseAuthentication();
@@ -199,7 +215,10 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 					Authorization = new[] { new HangfireAuthorizationFilter() }
 				});
 			app.UseMiddleware<GraphQLMiddleware>();
-			app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			if (_hostEnvironment.IsDevelopment())
+			{
+				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			}
 		}
 
 		private void AddApiVersioning(IServiceCollection services)

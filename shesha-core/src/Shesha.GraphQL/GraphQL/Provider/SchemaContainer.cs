@@ -3,7 +3,7 @@ using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Extensions;
 using Abp.Reflection;
-using Abp.Runtime.Caching;
+using Abp.Runtime.Caching.Memory;
 using GraphQL.Types;
 using Shesha.Cache;
 using Shesha.Domain;
@@ -19,7 +19,6 @@ namespace Shesha.GraphQL.Provider
 {
     public class SchemaContainer : CacheHolder<string, ISchema>, ISchemaContainer, ISingletonDependency, IEventHandler<EntityChangedEventData<EntityProperty>>
     {
-        private readonly ICacheManager _cacheManager;
         private readonly ITypeFinder _typeFinder;
         private readonly IServiceProvider _serviceProvider;
         private readonly Schema _defaultSchema;
@@ -33,12 +32,11 @@ namespace Shesha.GraphQL.Provider
             IServiceProvider serviceProvider,
             IEnumerable<ISchema> customSchemas,
             ITypeFinder typeFinder,
-            ICacheManager cacheManager): base($"{nameof(SchemaContainer)}Cache", cacheManager)
+            AbpMemoryCacheManager cacheManager) : base($"{nameof(SchemaContainer)}Cache", cacheManager)
         {
             _defaultSchema = new Schema();
             _defaultSchema.Query = new EmptyQuery();
             _typeFinder = typeFinder;
-            _cacheManager = cacheManager;
             _serviceProvider = serviceProvider;
 
             CustomSchemas = customSchemas.ToDictionary(

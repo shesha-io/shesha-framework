@@ -16,6 +16,7 @@ import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
 import { useHttpClient } from '@/providers';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { URLS } from '@/providers/auth/models';
 
 export interface ISecuritySettings {
   autoLogoffTimeout: number;
@@ -85,6 +86,7 @@ const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
 
 interface IIdleHandler {
   setActivate: (activate: () => void) => void;
+  setAutoLogoffActive: (active: boolean) => void;
   logout: () => void;
   refreshToken: () => Promise<boolean>;
   handlePrompt: () => void;
@@ -99,6 +101,11 @@ class IdleHandler implements IIdleHandler {
   private activateFn: (() => void) | null = null;
   private warningVisible: boolean = false;
   private logoutInProgress: boolean = false;
+  private lastRefreshAttempt: number = 0;
+  private refreshInFlight: boolean = false;
+  private refreshPromise: Promise<boolean> | null = null;
+  private autoLogoffActive: boolean = false;
+  private static readonly REFRESH_COOLDOWN_MS = 30_000;
 
   constructor(
     private authenticator: ReturnType<typeof useAuth>,
@@ -109,6 +116,24 @@ class IdleHandler implements IIdleHandler {
 
   setActivate = (activate: () => void) => {
     this.activateFn = activate;
+  };
+
+  setAutoLogoffActive = (active: boolean) => {
+    const wasActive = this.autoLogoffActive;
+    this.autoLogoffActive = active;
+
+    // When transitioning off (or initialising as off) while a warning is visible,
+    // reset warning state and clear the persisted cross-tab key so no other tab
+    // picks up stale state.
+    if (!active && (wasActive || this.warningVisible)) {
+      this.warningVisible = false;
+      this.setStateFn?.(INIT_STATE);
+      try {
+        getLocalStorage()?.removeItem(STORAGE_KEYS.IDLE_TIMER_WARNING_STATE);
+      } catch (err) {
+        console.error('Failed to clear warning state from storage', err);
+      }
+    }
   };
 
   private broadcastLogout = () => {
@@ -171,7 +196,12 @@ class IdleHandler implements IIdleHandler {
   };
 
   refreshToken = (): Promise<boolean> => {
-    return this.httpClient.post<RefreshTokenResultModelAjaxResponse>('/api/TokenAuth/RefreshToken')
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshInFlight = true;
+    this.refreshPromise = this.httpClient.post<RefreshTokenResultModelAjaxResponse>(URLS.REFRESH_TOKEN)
       .then(({ data: response }) => {
         if (response?.result) {
           saveUserToken(
@@ -190,6 +220,7 @@ class IdleHandler implements IIdleHandler {
             this.broadcastTokenRefresh(response.result.expireOn);
           }
 
+          this.lastRefreshAttempt = Date.now();
           this.activateFn?.();
           return true;
         }
@@ -198,7 +229,13 @@ class IdleHandler implements IIdleHandler {
       .catch((error) => {
         console.error('Failed to refresh token:', error);
         return false;
+      })
+      .finally(() => {
+        this.refreshInFlight = false;
+        this.refreshPromise = null;
       });
+
+    return this.refreshPromise;
   };
 
   handlePrompt = () => {
@@ -225,7 +262,12 @@ class IdleHandler implements IIdleHandler {
   };
 
   onAction = () => {
-    if (this.warningVisible || this.logoutInProgress) {
+    if (this.warningVisible || this.logoutInProgress || this.refreshInFlight) {
+      return;
+    }
+
+    const now = Date.now();
+    if (now - this.lastRefreshAttempt < IdleHandler.REFRESH_COOLDOWN_MS) {
       return;
     }
 
@@ -239,7 +281,7 @@ class IdleHandler implements IIdleHandler {
       this.logout();
     }
 
-    if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue) {
+    if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue && this.autoLogoffActive) {
       try {
         const parsed: unknown = JSON.parse(e.newValue);
         if (!isWarningState(parsed)) {
@@ -310,44 +352,54 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     new IdleHandler(authenticator, httpClient, logoutUser, setState)
   );
 
-  // Fallback value (WARNING_DURATION + 5 = 65s) is only used to satisfy hook validation
-  // when isTimeoutSet is false (idle timer disabled). Actual enable/disable is controlled
-  // by the isTimeoutSet condition below. The timeoutSeconds variable uses autoLogoffTimeout
-  // when valid, otherwise defaults to WARNING_DURATION + 5. Small margin prevents validation
-  // failure since hook requires timeout > promptBeforeIdle (WARNING_DURATION = 60s).
-  const timeoutSeconds = (autoLogoffTimeout !== undefined && autoLogoffTimeout > WARNING_DURATION) ? autoLogoffTimeout : WARNING_DURATION + 5;
-
-  // Idle timer is enabled only when:
-  // 1. Settings are loaded (autoLogoffTimeout !== undefined)
-  // 2. Auto logoff is not explicitly disabled (autoLogoffTimeout > 0)
-  // 3. Timeout is greater than warning duration (> WARNING_DURATION seconds to allow 60s warning)
-  // 4. User is logged in (loginInfo exists)
-  // Note: useAutoLogoff check is now handled by IdleTimerWrapper
-  const isTimeoutSet =
+  // Auto-logoff (prompt + logout on idle) is active only when explicitly enabled,
+  // the timeout is configured and greater than the warning duration, and the user is logged in.
+  // Token refresh on user action always runs regardless.
+  const isAutoLogoffActive =
+    !!securitySettings?.useAutoLogoff &&
     autoLogoffTimeout !== undefined &&
     autoLogoffTimeout > WARNING_DURATION &&
     !!loginInfo;
-  const timeout = secondsToMilliseconds(timeoutSeconds);
-  const visible = isWarningVisible && isTimeoutSet;
 
-  // Configure idle timer hook
+  // When auto-logoff is active, use the configured timeout.
+  // Otherwise use a 24-hour fallback so the timer never triggers logout,
+  // while still allowing onAction to fire for token refresh.
+  const timeoutSeconds = isAutoLogoffActive ? autoLogoffTimeout : 24 * 60 * 60;
+  const timeout = secondsToMilliseconds(timeoutSeconds);
+  const visible = isWarningVisible && isAutoLogoffActive;
+
+  // Configure idle timer hook — always enabled when logged in so onAction fires.
+  // Logout/prompt handlers are gated on isAutoLogoffActive.
   const { activate } = useIdleTimer({
     timeout,
-    promptBeforeIdle: WARNING_DURATION * ONE_SECOND,
+    promptBeforeIdle: isAutoLogoffActive ? WARNING_DURATION * ONE_SECOND : 0,
     crossTab: true,
-    onPrompt: idleHandler.handlePrompt,
-    onIdle: idleHandler.handleIdle,
-    onActive: idleHandler.handleActive,
+    onPrompt: () => {
+      if (isAutoLogoffActive) idleHandler.handlePrompt();
+    },
+    onIdle: () => {
+      if (isAutoLogoffActive) idleHandler.handleIdle();
+    },
+    onActive: () => {
+      if (isAutoLogoffActive) idleHandler.handleActive();
+    },
     onAction: idleHandler.onAction,
     stopOnIdle: false,
     startOnMount: true,
-    disabled: !isTimeoutSet
+    disabled: !loginInfo
   });
 
   // Provide activate function to the handler
   useEffect(() => {
     idleHandler.setActivate(activate);
   }, [idleHandler, activate]);
+
+  // Keep the handler aware of whether auto-logoff is active.
+  // When it transitions to false, setAutoLogoffActive resets any lingering
+  // warning state and clears the cross-tab storage key.
+  useEffect(() => {
+    idleHandler.setAutoLogoffActive(isAutoLogoffActive);
+  }, [idleHandler, isAutoLogoffActive]);
 
   // Countdown logic - pure state updater without side effects
   const doCountdown = () => {
@@ -409,10 +461,6 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     // Close warning modal
     setState(INIT_STATE);
   }, [idleHandler, activate]);
-
-  if (!isTimeoutSet) {
-    return <>{children}</>;
-  }
 
   return (
     <div className={styles.shaIdleTimerRenderer}>

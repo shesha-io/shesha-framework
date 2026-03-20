@@ -6,6 +6,7 @@ using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using NHibernate.Spatial.Linq.Functions;
 using Shesha;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
@@ -13,6 +14,7 @@ using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Elmah;
 using Shesha.Import;
+using Shesha.Redis;
 using Shesha.Sms.Clickatell;
 using Shesha.Web.FormsDesigner;
 using System;
@@ -32,7 +34,8 @@ namespace Boxfusion.SheshaFunctionalTests
         typeof(SheshaClickatellModule),
         typeof(SheshaFunctionalTestsCommonModule),
         typeof(SheshaElmahModule),
-        typeof(SheshaFunctionalTestsCommonApplicationModule)
+        typeof(SheshaFunctionalTestsCommonApplicationModule),
+        typeof(SheshaRedisModule)
      )]
     public class SheshaFunctionalTestsWebCoreModule : AbpModule
     {
@@ -52,9 +55,11 @@ namespace Boxfusion.SheshaFunctionalTests
         /// </summary>
         public override void PreInitialize()
         {
-            var config = Configuration.Modules.ShaNHibernate();
+            Configuration.Caching.UseSheshaRedisIfConfigured();
+
+            var hnConfig = Configuration.Modules.ShaNHibernate();
             
-            config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
+            hnConfig.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
 
             ConfigureTokenAuth();
         }

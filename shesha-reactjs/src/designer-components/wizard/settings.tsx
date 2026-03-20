@@ -8,7 +8,8 @@ import {
   Checkbox,
   Input,
   RefSelectProps,
-  Select
+  Select,
+  Switch
 } from 'antd';
 import { CodeEditor } from '@/components';
 import { getSettings } from './itemSettings';
@@ -110,19 +111,31 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
         </SettingsFormItem>
 
         <SettingsFormItem
-          name="defaultActiveStep"
-          jsSetting
-          label="Default Active Step"
-          tooltip="This will be the default step tha"
+          name="persistStep"
+          label="Persist Current Step"
+          valuePropName="checked"
+          initialValue={true}
+          tooltip="When enabled, the wizard will remember the current step even after page refresh."
         >
-          <Select allowClear ref={selectRef} value={model?.defaultActiveStep} disabled={readOnly}>
-            {stepList?.map(({ id, title }) => (
-              <Option value={id} key={id}>
-                {title}
-              </Option>
-            ))}
-          </Select>
+          <Switch disabled={readOnly} />
         </SettingsFormItem>
+
+        {!model?.persistStep && (
+          <SettingsFormItem
+            name="defaultActiveStep"
+            jsSetting
+            label="Default Active Step"
+            tooltip="This will be the default step that is active on initial load"
+          >
+            <Select allowClear ref={selectRef} disabled={readOnly}>
+              {stepList?.map(({ id, title }) => (
+                <Option value={id} key={id}>
+                  {title}
+                </Option>
+              ))}
+            </Select>
+          </SettingsFormItem>
+        )}
 
         <SettingsFormItem
           name="buttonsLayout"

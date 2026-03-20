@@ -19,6 +19,12 @@ type RerenderTrigger = () => void;
 
 const RETURN_URL_KEY = 'returnUrl';
 
+const isAccessToken = (value: unknown): value is IAccessToken =>
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as IAccessToken).accessToken === 'string' &&
+    Boolean((value as IAccessToken).accessToken);
+
 export interface AuthenticatorArgs {
     httpClient: HttpClientApi;
     router: IRouter;
@@ -152,10 +158,10 @@ export class Authenticator implements IAuthenticator {
 
         await this.#checkRegistrationCompletion(response); // Check if registration completion redirect is needed
 
-        const token = response.success && response.result
-            ? (response.result as IAccessToken)
+        const token = response.success && isAccessToken(response.result)
+            ? response.result
             : null;
-        if (token && token.accessToken) {
+        if (token) {
             // save token to the localStorage
             this.#saveUserToken(token);
         } else {
@@ -274,7 +280,7 @@ export class Authenticator implements IAuthenticator {
         this.#clearTokenExpirationTimer();
 
         if (expireOn) {
-            const expirationDate = expireOn && new Date(expireOn);
+            const expirationDate = new Date(expireOn);
             const timeUntilExpiration = expirationDate.getTime() - Date.now();
             if (timeUntilExpiration > 0) {
                 this.#timer = setTimeout(() => {
@@ -365,7 +371,7 @@ export class Authenticator implements IAuthenticator {
 
     updateTokenExpiration = (expireOn: string): void => {
         // Update the token expiration timer
-        // This is called when a token is refreshed externally (e.g., from idle timer)
+        // Called when a token is refreshed externally (e.g., from idle timer or cross-tab sync)
         this.#startTokenExpirationTimer(expireOn);
     };
 

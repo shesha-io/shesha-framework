@@ -149,13 +149,13 @@ namespace Shesha
                     MobileLoginPinLifetime = 60,
                     UseResetPasswordViaSecurityQuestions = true,
                     ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = 3,
-                    DefaultEndpointAccess = Domain.Enums.RefListPermissionedAccess.AllowAnonymous,
                     SwaggerUiEnabled = true
+                    DefaultEndpointAccess = Domain.Enums.RefListPermissionedAccess.AnyAuthenticated
                 });
             });
 
             IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
-                s.RequiredLength.WithDefaultValue(3);
+                s.RequiredLength.WithDefaultValue(6);
             });
             IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
                 s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
