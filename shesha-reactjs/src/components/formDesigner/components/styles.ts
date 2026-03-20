@@ -32,8 +32,8 @@ export const useStyles = createStyles(({ css, cx }, { autoAlignLabel = true }) =
         }
     }
 `);
-return {
-formItem,
+  return {
+    formItem,
     settingsFormItem,
   };
 });
