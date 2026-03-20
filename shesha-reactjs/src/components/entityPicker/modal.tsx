@@ -231,7 +231,18 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
           <TablePager />
         </div>
 
-        <DataTable onSelectRow={onSelectRow} onDblClick={onDblClick} options={{ omitClick: true }} striped rowDividers rowAlternateBackgroundColor={getTableDefaults().rowAlternateBackgroundColor} />
+        <DataTable
+          onSelectRow={onSelectRow}
+          onDblClick={onDblClick}
+          options={{ omitClick: true }}
+          striped
+          rowDividers
+          rowAlternateBackgroundColor={getTableDefaults().rowAlternateBackgroundColor}
+          headerBackgroundColor="#ffffff"
+          headerFontSize={getTableDefaults().headerFontSize}
+          headerFontWeight={getTableDefaults().headerFontWeight}
+          headerFontFamily={getTableDefaults().headerFontFamily}
+        />
       </>
     </Modal>
   );
