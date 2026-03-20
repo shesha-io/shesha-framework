@@ -201,7 +201,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
+      <ConfigurableFormItem 
+        model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}
+        autoAlignLabel={false}
+        >
         {(value, onChange) => {
           const onFileListChanged = (fileList, isUserAction = false): void => {
             onChange(fileList);

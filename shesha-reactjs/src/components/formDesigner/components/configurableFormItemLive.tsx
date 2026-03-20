@@ -8,6 +8,7 @@ import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
+import { useStyles } from './styles';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -17,6 +18,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   className,
   labelCol,
   wrapperCol,
+  autoAlignLabel = true,
 }) => {
   const { getPublicFormApi } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
@@ -25,6 +27,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const shaForm = useShaFormInstance();
   const isInDesigner = shaForm.formMode === 'designer';
   const allData = useAvailableConstantsData();
+  const { styles } = useStyles({ autoAlignLabel })
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -55,7 +58,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className),
+    className: classNames(className, styles.formItem),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
