@@ -1,8 +1,5 @@
 import { createStyles } from '@/styles';
 
-export interface UseStylesProps {
-  autoAlignLabel?: boolean;
-}
 export const useStyles = createStyles(({ css, cx, token }, { autoAlignLabel = true }) => {
   const settingsFormItem = cx(css`
         margin: 0px !important;
