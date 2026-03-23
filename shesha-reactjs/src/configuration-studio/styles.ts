@@ -84,24 +84,33 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
         }
         .${csWorkArea}{
-            height: calc(100vh - ${headerHeight}px);
-            overflow: auto;
-            flex-grow: 1 !important;
-            .${csDocTabs}{
-                height: 100%;
-                >.ant-tabs-content-holder{
-                    height: 100%;
-                    ${sheshaStyles.thinScrollbars}
-                    >.ant-tabs-content{
-                        height: 100%;
-                        overflow: hidden;
-                    }
+             height: calc(100vh - ${headerHeight}px);
+             overflow: auto;
+             flex-grow: 1 !important;
+             .${csDocTabs}{
+                 height: 100%;
+                display: flex;
+                flex-direction: column;
+                >.ant-tabs-nav{
+                    flex: 0 0 auto;
                 }
-            }
-        }
-            .${csDocEditor}{
-                padding: 0;
-            }
+                 >.ant-tabs-content-holder{
+                    flex: 1 1 auto;
+                    min-height: 0;
+                     ${sheshaStyles.thinScrollbars}
+                     >.ant-tabs-content{
+                         height: 100%;
+                         overflow: hidden;
+                     }
+                 }
+             }
+         }
+         .${csDocEditor}{
+             padding: 0;
+             overflow: auto;
+            height: 100%;
+            min-height: 0;
+         }
   `);
 
   return {
