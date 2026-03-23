@@ -1,6 +1,5 @@
 import { createGlobalStyle } from "antd-style";
 import { sheshaStyles } from '@/styles';
-import { DEFAULT_MARGINS } from "@/components/formDesigner/utils/designerConstants";
 
 
 export const GlobalTableStyles = createGlobalStyle`

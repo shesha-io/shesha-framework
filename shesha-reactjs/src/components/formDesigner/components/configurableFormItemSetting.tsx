@@ -15,7 +15,7 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   autoAlignLabel = true,
 }) => {
   const { formData } = useShaFormInstance();
-  const { styles } = useStyles({autoAlignLabel});
+  const { styles } = useStyles({ autoAlignLabel });
   if (model.hidden) return null;
 
   const { _mode: mode } = getPropertySettingsFromData(formData, model.propertyName);
