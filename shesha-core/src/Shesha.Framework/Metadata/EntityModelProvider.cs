@@ -54,8 +54,7 @@ namespace Shesha.Metadata
                 {
                     var config = _entityConfigurationStore.GetOrNull(t.FullClassName);
 
-                    if (t.Source == Domain.Enums.MetadataSourceType.ApplicationCode
-                        && (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/))
+                    if (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/)
                         return null;
 
                     var metadata = await _metadataProvider.GetAsync(config.EntityType, t.FullClassName);
