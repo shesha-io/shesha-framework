@@ -72,7 +72,6 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     flexDirection: direction === 'vertical' ? 'column' : 'row',
     flexWrap: direction === 'vertical' ? 'nowrap' : 'wrap',
     gap: '8px',
-    marginTop: '5px',
   };
 
   return (

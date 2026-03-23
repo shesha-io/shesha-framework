@@ -20,9 +20,6 @@ export const useStyles = createStyles(({ css, cx }) => {
             display: flex;
             flex-direction: column;
 
-            .jodit-toolbar__box {
-             z-index: 2;
-            }
         }
 
         .jodit-workplace {
