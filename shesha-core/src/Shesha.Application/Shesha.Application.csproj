@@ -155,7 +155,7 @@
         <EmbeddedResource Include="ConfigMigrations\package20260318_0850.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20260318_1254.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20260323_1136.shaconfig">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </EmbeddedResource>
         <EmbeddedResource Include="Excel\template.xlsx" />
     </ItemGroup>
