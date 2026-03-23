@@ -25,9 +25,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     `);
 
   const formItem = cx("", css`
-      .ant-form-item {
-        margin: 0px !important;
-      }
+
       .sha-js-label {
         margin: 0px !important;
       }
