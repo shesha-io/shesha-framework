@@ -8,6 +8,7 @@ import { ICheckboxGroupProps } from './utils';
 import { executeScriptSync } from '@/providers/form/utils';
 import { IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { ILabelValue } from '../dropdown/model';
+import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
 
 type RawOptionsPayload = ILabelValue<unknown>[] | { items: ILabelValue<unknown>[] };
 type FetchResponse = IAjaxResponse<RawOptionsPayload> | RawOptionsPayload;
@@ -79,6 +80,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
       tabIndex={0}
       onFocus={(e) => model.onFocus?.({ ...e, target: { value: value, ...e.target } })}
       onBlur={(e) => model.onBlur?.({ ...e, target: { value: value, ...e.target } })}
+      style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
     >
       <Checkbox.Group
         className="sha-multi-checkbox"

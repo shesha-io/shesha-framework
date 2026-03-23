@@ -63,7 +63,7 @@ export const GlobalTableStyles = createGlobalStyle`
     overflow: auto;
     .td {
       .${(p) => p.theme.prefixCls}-form-item {
-        width: calc(100% - (2 * ${DEFAULT_MARGINS.horizontal}));
+        width: 100%;
     
         .${(p) => p.theme.prefixCls}-row {
           &.${(p) => p.theme.prefixCls}-form-item-row {

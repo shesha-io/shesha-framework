@@ -12,9 +12,10 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   children,
   model,
   valuePropName,
+  autoAlignLabel = true,
 }) => {
   const { formData } = useShaFormInstance();
-  const { styles } = useStyles();
+  const { styles } = useStyles({autoAlignLabel});
   if (model.hidden) return null;
 
   const { _mode: mode } = getPropertySettingsFromData(formData, model.propertyName);
@@ -56,6 +57,7 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
       className={classNames(styles.settingsFormItem, "sha-js-label")}
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
+      autoAlignLabel={autoAlignLabel}
     >
       {(value, onChange) => {
         return (

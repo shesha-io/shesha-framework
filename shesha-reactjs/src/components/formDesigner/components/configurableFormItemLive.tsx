@@ -27,7 +27,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const shaForm = useShaFormInstance();
   const isInDesigner = shaForm.formMode === 'designer';
   const allData = useAvailableConstantsData();
-  const { styles } = useStyles({ autoAlignLabel });
+  const { styles } = useStyles({ autoAlignLabel, labelAlign: model.labelAlign });
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
