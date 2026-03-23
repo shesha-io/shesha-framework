@@ -369,7 +369,7 @@ export const loadWizardState = (
       const key = getWizardStateStorageKey(wizardId, componentName);
       sessionStorage.removeItem(key);
     } catch (clearError) {
-      // Ignore clear errors
+      console.warn('Failed to clear corrupted wizard state:', clearError);
     }
     return null;
   }
