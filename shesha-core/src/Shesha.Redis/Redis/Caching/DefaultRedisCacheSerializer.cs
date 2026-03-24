@@ -40,12 +40,6 @@ namespace Shesha.Redis.Caching
         {
             var json = AbpCacheData.Serialize(value);
             return JsonConvert.SerializeObject(json);
-            /*
-            return JsonSerializer.Serialize(json, new JsonSerializerOptions
-            {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            });
-            */
         }
     }
 }

@@ -4,8 +4,11 @@ using Abp.Data;
 using Abp.Domain.Entities;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Caching;
+using Newtonsoft.Json;
 using StackExchange.Redis;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Shesha.Redis.Caching
 {
@@ -48,31 +51,48 @@ namespace Shesha.Redis.Caching
             );
         }
 
-        public override bool TryGetValue(string key, out object? value) // TODO: review nullability of value
+        public override bool TryGetValue(string key, [NotNullWhen(true)] out object? value) // TODO: review nullability of value
         {
-            var redisValue = _database.StringGet(NormalizeKey(key));
-            value = redisValue.HasValue ? Deserialize(redisValue) : null;
-            return redisValue.HasValue;
+            var normalizedKey = NormalizeKey(key);
+            var redisValue = _database.StringGet(normalizedKey);
+            if (!redisValue.HasValue) { 
+                value = null;
+                return false;
+            }
+
+            try
+            {
+                value = Deserialize(redisValue);
+                return true;
+            }
+            catch (Exception ex) when (ex is JsonException || ex is SerializationException || ex is FileNotFoundException)
+            {
+                Logger.Warn($"Failed to deserialize value for key: {key}, removed from cache", ex);
+                SafeDeleteKey(normalizedKey);                
+                value = null;
+                return false;
+            }            
         }
 
         public override ConditionalValue<object>[] TryGetValues(string[] keys)
         {
             var redisKeys = keys.Select(NormalizeKey);
             var redisValues = _database.StringGet(redisKeys.ToArray());
-            return redisValues.Select(CreateConditionalValue).ToArray();
+            return redisValues.Select((value, idx) => CreateConditionalValue(keys[idx], value)).ToArray();
         }
 
         public override async Task<ConditionalValue<object>> TryGetValueAsync(string key)
         {
-            var redisValue = await _database.StringGetAsync(NormalizeKey(key));
-            return CreateConditionalValue(redisValue);
+            var normalizedKey = NormalizeKey(key);
+            var redisValue = await _database.StringGetAsync(normalizedKey);
+            return CreateConditionalValue(normalizedKey, redisValue);
         }
 
         public override async Task<ConditionalValue<object>[]> TryGetValuesAsync(string[] keys)
         {
             var redisKeys = keys.Select(NormalizeKey);
             var redisValues = await _database.StringGetAsync(redisKeys.ToArray());
-            return redisValues.Select(CreateConditionalValue).ToArray();
+            return redisValues.Select((value, idx) => CreateConditionalValue(keys[idx], value)).ToArray();
         }
 
         public override void Set(string key, object value, TimeSpan? slidingExpireTime = null, DateTimeOffset? absoluteExpireTime = null)
@@ -387,10 +407,35 @@ namespace Shesha.Redis.Caching
             return type;
         }
 
-        protected ConditionalValue<object> CreateConditionalValue(RedisValue redisValue)
+        protected ConditionalValue<object> CreateConditionalValue(RedisKey key, RedisValue redisValue)
         {
-            // NOTE: ABP does not support nullability, have to use null forgiving
-            return new ConditionalValue<object>(redisValue.HasValue, redisValue.HasValue ? Deserialize(redisValue) : null!);
+            if (!redisValue.HasValue)
+                return new ConditionalValue<object>(false, null!);
+
+            try
+            {
+                var deserialized = Deserialize(redisValue);
+                return new ConditionalValue<object>(true, deserialized);
+            }
+            catch (Exception ex) when (ex is JsonException || ex is SerializationException || ex is FileNotFoundException)
+            {
+                SafeDeleteKey(key);
+
+                Logger.Warn($"Failed to deserialize value for key: {key} - skipped", ex);
+                return new ConditionalValue<object>(false, null!);
+            }
+        }
+
+        private void SafeDeleteKey(RedisKey key)
+        {
+            try
+            {
+                _database.KeyDelete(key);
+            }
+            catch
+            { 
+                // noop
+            }
         }
 
         protected virtual string? Serialize(object value, Type type)
