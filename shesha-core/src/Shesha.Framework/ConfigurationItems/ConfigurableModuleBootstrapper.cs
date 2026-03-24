@@ -50,7 +50,7 @@ namespace Shesha.ConfigurationItems
             await DoProcessAsync();
         }
 
-        private async Task<List<ModuleItem>> GetCodeModulesAsync() 
+        private async Task<List<ModuleItem>> GetCodeModulesAsync()
         {
             var result = new List<ModuleItem>();
             using (var unitOfWork = _unitOfWorkManager.Begin())
@@ -61,7 +61,7 @@ namespace Shesha.ConfigurationItems
                     var moduleTypes = _typeFinder
                         .Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type))
                         .ToList();
-                    foreach (var type in moduleTypes) 
+                    foreach (var type in moduleTypes)
                     {
                         var instance = _iocManager.Resolve(type) as SheshaModule;
 
@@ -71,7 +71,11 @@ namespace Shesha.ConfigurationItems
                             : moduleInfo.VersionNo;
                         var accessor = moduleInfo.GetModuleAccessor();
 
-                        var dbModule = dbModules.FirstOrDefault(m => m.Name.ToLower() == moduleInfo.Name.ToLower());
+                        // Match on both Name and Version — each unique version gets its own record
+                        var dbModule = dbModules.FirstOrDefault(m =>
+                            m.Name.ToLower() == moduleInfo.Name.ToLower() &&
+                            m.CurrentVersionNo == version);
+
                         var isNew = dbModule == null;
                         if (dbModule == null)
                         {
@@ -87,6 +91,7 @@ namespace Shesha.ConfigurationItems
                                 IsEnabled = true,
 
                                 CurrentVersionNo = version,
+                                ReleaseDate = Clock.Now,
                                 FirstInitializedDate = Clock.Now,
                             };
                             await _moduleRepo.InsertAsync(dbModule);
@@ -101,7 +106,7 @@ namespace Shesha.ConfigurationItems
                             Accessor = accessor,
                             Id = dbModule.Id,
                             IsNewModule = isNew,
-                        });                        
+                        });
                     }
                 }
                 await unitOfWork.CompleteAsync();
@@ -122,11 +127,12 @@ namespace Shesha.ConfigurationItems
 
             foreach (var codeModule in codeModules)
             {
-                using (var unitOfWork = _unitOfWorkManager.Begin()) 
+                using (var unitOfWork = _unitOfWorkManager.Begin())
                 {
                     var dbModule = await _moduleRepo.GetAsync(codeModule.Id);
 
-                    if (!codeModule.IsNewModule) 
+                    // Only update metadata fields on existing records; never change Name+Version (that would lose history)
+                    if (!codeModule.IsNewModule)
                     {
                         dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
                         dbModule.Accessor = codeModule.Accessor;
@@ -135,7 +141,6 @@ namespace Shesha.ConfigurationItems
                         dbModule.Publisher = codeModule.ModuleInfo.Publisher;
                         dbModule.IsEditable = codeModule.ModuleInfo.IsEditable;
                         dbModule.IsRootModule = codeModule.ModuleInfo.IsRootModule;
-                        dbModule.CurrentVersionNo = codeModule.Version;
                         dbModule.FirstInitializedDate = dbModule.FirstInitializedDate ?? Clock.Now;
                         await _moduleRepo.UpdateAsync(dbModule);
                     }

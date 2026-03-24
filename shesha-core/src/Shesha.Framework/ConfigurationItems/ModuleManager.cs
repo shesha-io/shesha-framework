@@ -26,18 +26,24 @@ namespace Shesha.ConfigurationItems
         }
 
         /// inheritedDoc
-        public async Task<Module> GetOrCreateModuleAsync(string moduleName) 
+        public async Task<Module> GetOrCreateModuleAsync(string moduleName)
         {
             if (string.IsNullOrWhiteSpace(moduleName))
                 throw new ArgumentNullException(nameof(moduleName));
 
-            var module = _moduleRepository.GetAll().FirstOrDefault(m => m.Name == moduleName);
-            if (module == null) 
+            // Return the most recently released version for this module name
+            var module = await _moduleRepository.GetAll()
+                .Where(m => m.Name == moduleName)
+                .OrderByDescending(m => m.ReleaseDate)
+                .FirstOrDefaultAsync();
+
+            if (module == null)
             {
                 module = new Module
                 {
                     Name = moduleName,
                     IsEnabled = true,
+                    ReleaseDate = Abp.Timing.Clock.Now,
                 };
                 await _moduleRepository.InsertAsync(module);
                 await _unitOfWorkManager.Current.SaveChangesAsync();
