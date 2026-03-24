@@ -1,4 +1,4 @@
-﻿namespace Shesha.Redis
+﻿namespace Shesha.Redis.Locking
 {
     /// <summary>
     /// Redis lock factory holder

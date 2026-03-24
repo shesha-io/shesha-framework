@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Abp" Version="9.0.0" />
-    <PackageReference Include="Abp.RedisCache" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.12.4" />
   </ItemGroup>
 
   <ItemGroup>
