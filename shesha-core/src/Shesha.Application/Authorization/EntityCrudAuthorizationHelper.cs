@@ -53,9 +53,8 @@ namespace Shesha.Authorization
             // It is not a Crud method
             if (method == null) return;
 
-            var shaServiceType = typeof(ApplicationService);
-            var controllerType = typeof(ControllerBase);
-            if (type == null || !shaServiceType.IsAssignableFrom(type) && !controllerType.IsAssignableFrom(type))
+            var isCrud = type?.IsSheshaDynamicCrudAppService() ?? false;
+            if (type == null || !isCrud)
                 return;
 
             var entityType = type.FindBaseGenericType(typeof(AbpCrudAppService<,,,,,>))?.GetGenericArguments()?[0];
