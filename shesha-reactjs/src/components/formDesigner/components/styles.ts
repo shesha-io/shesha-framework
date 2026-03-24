@@ -7,8 +7,6 @@ export const useStyles = createStyles(({ css, cx, token }, { autoAlignLabel = tr
 
 
   const formItem = cx(css`
-        width: 100% !important;
-        margin-bottom: 0 !important;
 
         .ant-row {
             width: 100% !important;
