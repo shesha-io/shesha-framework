@@ -1,12 +1,13 @@
-﻿using Abp.Modules;
-using Abp.Runtime.Caching.Redis;
+﻿using Abp;
+using Abp.Modules;
 using Castle.MicroKernel.Registration;
+using Shesha.Redis.Caching;
+using Shesha.Redis.Locking;
+using System.Reflection;
 
 namespace Shesha.Redis
 {
-    [DependsOn(
-        typeof(AbpRedisCacheModule)
-     )]
+    [DependsOn(typeof(AbpKernelModule))]
     public class SheshaRedisModule : AbpModule
     {
         private LockFactoryHolder _redisLockFactoryHolder;
@@ -18,11 +19,15 @@ namespace Shesha.Redis
 
         public override void PreInitialize()
         {
+            IocManager.Register<ShaRedisCacheOptions>();
+
             // initialize distributed locks using Redis
             IocManager.IocContainer.Register(Component.For<ILockFactoryHolder>().UsingFactoryMethod(() => _redisLockFactoryHolder));
+        }
 
-            // note: for test purposes only
-            // Configuration.ReplaceService<IRedisCacheSerializer, SheshaRedisCacheSerializer>(DependencyLifeStyle.Transient);
+        public override void Initialize()
+        {
+            IocManager.RegisterAssemblyByConvention(typeof(SheshaRedisModule).GetTypeInfo().Assembly);
         }
 
         public override void Shutdown()

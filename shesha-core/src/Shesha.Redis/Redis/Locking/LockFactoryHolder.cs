@@ -1,4 +1,4 @@
-﻿namespace Shesha.Redis
+﻿namespace Shesha.Redis.Locking
 {
     public class LockFactoryHolder : IDisposable, ILockFactoryHolder
     {
