@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using StackExchange.Redis;
+using StackExchange.Redis.Resilience;
 
 namespace Shesha.Redis.Caching
 {
@@ -9,7 +10,7 @@ namespace Shesha.Redis.Caching
     public class ShaRedisCacheDatabaseProvider : IShaRedisCacheDatabaseProvider, ISingletonDependency
     {
         private readonly ShaRedisCacheOptions _options;
-        private readonly Lazy<ConnectionMultiplexer> _connectionMultiplexer;
+        private readonly IResilientConnectionMultiplexer _connectionMultiplexer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaRedisCacheDatabaseProvider"/> class.
@@ -17,7 +18,7 @@ namespace Shesha.Redis.Caching
         public ShaRedisCacheDatabaseProvider(ShaRedisCacheOptions options)
         {
             _options = options;
-            _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
+            _connectionMultiplexer = CreateMultiplexer();
         }
 
         /// <summary>
@@ -25,12 +26,13 @@ namespace Shesha.Redis.Caching
         /// </summary>
         public IDatabase GetDatabase()
         {
-            return _connectionMultiplexer.Value.GetDatabase(_options.DatabaseId);
+            return _connectionMultiplexer.GetDatabase(_options.DatabaseId);
         }
 
-        private ConnectionMultiplexer CreateConnectionMultiplexer()
+        private IResilientConnectionMultiplexer CreateMultiplexer()
         {
-            return ConnectionMultiplexer.Connect(_options.ConnectionString);
+            var multiplexer = new ResilientConnectionMultiplexer(() => ConnectionMultiplexer.Connect(_options.ConnectionString));
+            return multiplexer;
         }
     }
 }
