@@ -42,6 +42,7 @@ const allOptions: IDictionary<IndexColumnFilterOption[]> = {
   time: ['equals', 'between', 'before', 'after'],
   number: ['lessThan', 'greaterThan', 'equals', 'between'],
   string: ['contains', 'startsWith', 'endsWith', 'equals'],
+  array: ['contains'],
 };
 
 export const getFilterOptions = (dataType: string): IndexColumnFilterOption[] => {
@@ -288,6 +289,7 @@ export interface IColumnItemFilterProps {
   entityReferenceTypeShortAlias: string;
   autocompleteUrl?: string;
   dataType: ProperyDataType;
+  dataFormat?: string;
   filter: ColumnFilter;
   filterOption: IndexColumnFilterOption;
   onRemoveFilter?: (id: string) => void;
@@ -300,6 +302,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   id,
   filterName,
   dataType = 'string',
+  dataFormat,
   filterOption,
   onRemoveFilter,
   onChangeFilterOption,
@@ -368,7 +371,10 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     );
   };
 
-  const hideFilterOptions = () => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
+  const hideFilterOptions = () => {
+    const isArrayRefList = dataType === 'array' && dataFormat === 'reference-list-item';
+    return ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType) || isArrayRefList;
+  };
 
   const baseProps: BaseFilterProps = {
     id,
@@ -447,7 +453,8 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
           />
         )}
 
-        {['reference-list-item', 'multiValueRefList'].includes(dataType) && (
+        {(['reference-list-item', 'multiValueRefList'].includes(dataType) ||
+          (dataType === 'array' && dataFormat === 'reference-list-item')) && (
           <RefListFilter
             onChange={handleRawFilter}
             onPressEnter={handlePressEnter}
