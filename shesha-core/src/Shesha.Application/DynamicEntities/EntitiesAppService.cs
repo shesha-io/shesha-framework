@@ -91,7 +91,7 @@ namespace Shesha.DynamicEntities
                 if (method == null)
                     throw new NotSupportedException($"{methodName} is missing in the {typeName}");
 
-                await CheckPermissionAsync(entityConfig, methodName);
+                await CheckPermissionAsync(entityConfig, "Get");
 
                 // invoke query
                 var convertedInputType = typeof(GetDynamicEntityInput<>).MakeGenericType(entityConfig.IdType) ?? throw new Exception($"Failed to create generic type '{typeof(GetDynamicEntityInput<>).FullName}', id type: '{entityConfig.IdType.FullName}'");
@@ -133,7 +133,7 @@ namespace Shesha.DynamicEntities
                 if (appService == null)
                     throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.ApplicationServiceType.FullName}");
 
-                await CheckPermissionAsync(entityConfig, nameof(IEntityAppService<Entity<Int64>, Int64>.QueryAllAsync));
+                await CheckPermissionAsync(entityConfig, "Get");
 
                 return await appService.QueryAllAsync(input);
             }
