@@ -557,6 +557,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             rowBorder={effectiveRowBorder}
             rowBorderStyle={props.rowBorderStyle}
             boxShadow={finalBoxShadow}
+            dimensions={props.dimensions}
             sortableIndicatorColor={props.sortableIndicatorColor}
             cellTextColor={props.cellTextColor}
             cellBackgroundColor={props.cellBackgroundColor}

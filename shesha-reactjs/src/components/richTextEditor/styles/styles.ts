@@ -19,6 +19,7 @@ export const useStyles = createStyles(({ css, cx }) => {
             height: 100% !important;
             display: flex;
             flex-direction: column;
+
         }
 
         .jodit-workplace {

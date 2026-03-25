@@ -16,6 +16,7 @@ const LinkComponent: LinkComponentDefinition = {
   type: 'link',
   isInput: false,
   name: 'link',
+  preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,
   calculateModel: (model, allData) => ({
     isDesignerMode: allData.form.formMode === 'designer',
