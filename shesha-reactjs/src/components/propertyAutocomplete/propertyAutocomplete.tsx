@@ -1,13 +1,13 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { AutoComplete, Button, Select, Space, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useEntityMetadataFetcher, useForm, useMetadata, useMetadataDispatcher } from '@/providers';
+import { useEntityMetadataFetcher, useFormOrUndefined, useMetadata, useMetadataDispatcher } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { camelCase } from 'lodash';
 import { IPropertyMetadata, asPropertiesArray, isIHasEntityType } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
-import { useConfigurableFormActions } from '@/providers/form/actions';
+import { useConfigurableFormActionsOrUndefined } from '@/providers/form/actions';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { DataTypes } from '@/interfaces';
 
@@ -69,8 +69,8 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   const [state, setState] = useState<IAutocompleteState>({ options: properties2options(initialProperties, null), properties: initialProperties });
   const [multipleValue, setMultipleValue] = useState('');
 
-  const form = useForm(false);
-  const { linkToModelMetadata } = useConfigurableFormActions(false) ?? {};
+  const form = useFormOrUndefined();
+  const { linkToModelMetadata } = useConfigurableFormActionsOrUndefined() ?? {};
 
   const containerPath = useMemo(() => {
     if (!props.value || Array.isArray(props.value))

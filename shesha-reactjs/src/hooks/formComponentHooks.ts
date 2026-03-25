@@ -18,7 +18,7 @@ import {
   wrapConstantsData,
 } from "..";
 import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
-import { useParent } from "@/providers/parentProvider";
+import { useParentOrUndefined } from "@/providers/parentProvider";
 import { isEqual } from "lodash";
 import { getBorderStyle } from "@/designer-components/_settings/utils/border/utils";
 import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
@@ -41,7 +41,7 @@ export function useActualContextData<T extends object = object>(
   propertyFilter?: (name: string, value: unknown) => boolean,
   executor?: (data: T, context: TouchableProxy<IApplicationContext>) => T,
 ): T {
-  const parent = useParent(false);
+  const parent = useParentOrUndefined();
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
 

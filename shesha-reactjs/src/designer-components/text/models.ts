@@ -94,3 +94,5 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
 }
 
 export type TextComponentDefinition = ComponentDefinition<"text", ITextTypographyProps>;
+
+export const isTextComponent = (component: IConfigurableFormComponent): component is ITextTypographyProps => component.type === 'text';

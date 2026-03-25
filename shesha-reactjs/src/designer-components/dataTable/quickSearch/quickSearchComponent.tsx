@@ -7,7 +7,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './tabbedSettingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import Search from 'antd/lib/input/Search';
-import { useDataTableStore } from '@/index';
+import { useDataTableStoreOrUndefined } from '@/index';
 import { useStyles } from '../tableContext/styles';
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { removeUndefinedProps } from '@/utils/object';
@@ -25,7 +25,7 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
   icon: <SearchOutlined />,
   Factory: ({ model }) => {
     const { block, hidden, dimensions, size: modelSize } = model;
-    const store = useDataTableStore(false);
+    const store = useDataTableStoreOrUndefined();
     const { styles } = useStyles();
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 

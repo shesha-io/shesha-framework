@@ -28,7 +28,7 @@ export interface IObjectMetadataBuilder {
   addStandard(args: StandardConstantInclusionArgs | StandardConstantInclusionArgs[]): this;
   build(): IObjectMetadata;
 
-  addObject(path: string, label: string, propertiesBuilder?: PropertiesBuilder<this>): this;
+  addObject(path: string, label: string | undefined, propertiesBuilder?: PropertiesBuilder<this>): this;
 
   addMetadataBuilder(): this;
 }

@@ -3,25 +3,24 @@ import { FormMarkupWithSettings, IChangeable, IValuable } from '@/interfaces';
 import { FormIdentifier } from '../form/models';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
-export interface ISubFormProviderProps extends IValuable, IChangeable {
+export interface ISubFormProviderProps<TValue extends object = object> extends IValuable<TValue>, IChangeable {
   context?: string;
 
   propertyName?: string;
   markup?: FormMarkupWithSettings;
-  value?: string | { id: string; [key: string]: any };
+  // value?: string | { id: string; [key: string]: unknown };
 
   dataSourceUrl?: string;
   id: string;
   componentName?: string;
 
   formSelectionMode?: 'name' | 'dynamic';
-  formType?: string;
+  formType?: string | undefined;
 
-  formId?: FormIdentifier;
+  formId?: FormIdentifier | undefined;
 
-  buttons?: any[];
-  labelCol?: ColProps;
-  wrapperCol?: ColProps;
+  labelCol?: ColProps | undefined;
+  wrapperCol?: ColProps | undefined;
   dataSource?: 'form' | 'api';
   apiMode?: 'entityName' | 'url';
   entityType?: string | IEntityTypeIdentifier;

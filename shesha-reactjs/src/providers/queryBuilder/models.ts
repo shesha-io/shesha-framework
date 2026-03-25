@@ -1,15 +1,16 @@
 import { FieldOrGroup, FieldSettings } from '@react-awesome-query-builder/antd';
 import { IPropertyMetadata } from '@/interfaces/metadata';
+import { isDefined } from '@/utils/nullables';
 
 // Fields
 
 export interface CustomFieldSettings {
   typeShortAlias?: string;
 
-  entityTypeName?: string;
-  entityTypeModule?: string;
-  referenceListName?: string;
-  referenceListModule?: string;
+  entityTypeName?: string | undefined;
+  entityTypeModule?: string | undefined;
+  referenceListName?: string | undefined;
+  referenceListModule?: string | undefined;
   allowInherited?: boolean;
   propertyMetadata: IPropertyMetadata;
 }
@@ -20,8 +21,8 @@ export interface IProperty {
   dataType: string;
   visible: boolean;
   fieldSettings?: FieldSettings | CustomFieldSettings;
-  childProperties?: IProperty[];
-  [key: string]: any;
+  childProperties: IProperty[];
+  preferWidgets?: string[] | undefined;
 }
 
 export interface IHasQueryBuilderConfig extends IProperty {
@@ -29,7 +30,7 @@ export interface IHasQueryBuilderConfig extends IProperty {
 }
 
 export const propertyHasQBConfig = (property: IProperty): property is IHasQueryBuilderConfig => {
-  return property && typeof ((property as IHasQueryBuilderConfig).convert) === 'function';
+  return "convert" in property && typeof (property.convert) === 'function';
 };
 
 export interface IHasCustomQBSettings {
@@ -44,5 +45,5 @@ export interface IPropertyWithCustomQBSettings extends IProperty, IHasCustomQBSe
 }
 
 export const hasCustomQBSettings = (property: unknown): property is IHasCustomQBSettings => {
-  return property && typeof ((property as IPropertyMetadataWithQBSettings).toQueryBuilderField) === 'function';
+  return isDefined(property) && typeof (property) === "object" && "toQueryBuilderField" in property && typeof (property.toQueryBuilderField) === 'function';
 };

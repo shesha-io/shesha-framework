@@ -16,8 +16,8 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 
 export interface ISubFormComponentProps
-  extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,
-  Omit<IConfigurableFormComponent, 'queryParams'> {
+  extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol' | 'readOnly'>,
+  IConfigurableFormComponent {
   labelCol?: number;
   wrapperCol?: number;
   queryParams?: ISubFormProviderProps['queryParams'];

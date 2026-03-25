@@ -160,5 +160,5 @@ export const INITIAL_STATE: IChartDataContext = {
   },
 };
 
-export const ChartDataStateContext = createContext<IChartDataContext>(INITIAL_STATE);
-export const ChartDataActionsContext = createContext<IChartDataAtionsContext>(undefined);
+export const ChartDataStateContext = createContext<IChartDataContext | undefined>(undefined);
+export const ChartDataActionsContext = createContext<IChartDataAtionsContext | undefined>(undefined);

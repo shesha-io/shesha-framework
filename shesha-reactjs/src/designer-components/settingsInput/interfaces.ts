@@ -4,7 +4,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { ComponentType } from '@/components/formComponentSelector';
-import { ComponentDefinition, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting } from '@/interfaces';
+import { ComponentDefinition, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting, ValueOrCodeEvaluator } from '@/interfaces';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
@@ -28,7 +28,7 @@ export interface IDropdownOption {
 }
 
 export interface IHasModelType {
-  modelType?: string | IEntityTypeIdentifier;
+  modelType?: string | IEntityTypeIdentifier | IPropertySetting<string>;
 }
 
 // Base interface without type-specific properties
@@ -37,7 +37,7 @@ export interface ISettingsInputBase extends IComponentLabelProps,
   id?: string;
   label: string;
   propertyName: string;
-  readOnly?: boolean;
+  readOnly?: ValueOrCodeEvaluator<boolean>;
   value?: any;
   onChange?: (value: any) => void;
   onChangeSetting?: (value: any, data?: any, setFormData?: (data: ISetFormDataPayload) => void) => void;
@@ -48,7 +48,7 @@ export interface ISettingsInputBase extends IComponentLabelProps,
   style?: string;
   placeholder?: string;
   className?: string;
-  hidden?: boolean | IPropertySetting;
+  hidden?: boolean | IPropertySetting<boolean>;
 
   width?: string | number;
   inline?: boolean;
@@ -151,6 +151,7 @@ export interface ICodeEditorSettingsInputProps extends ISettingsInputBase {
   availableConstants?: IObjectMetadata;
   exposedVariables?: string[] | ICodeExposedVariable[];
 }
+
 export const isCodeEditorProps = (value: ISettingsInputBase): value is ICodeEditorSettingsInputProps => value.type === 'codeEditor';
 
 // Button
@@ -399,7 +400,7 @@ export interface IQueryBuilderSettingsInputProps extends ISettingsInputBase, IHa
   type: 'queryBuilder';
   fields?: string[];
   fieldsUnavailableHint?: string;
-  modelType?: string | IEntityTypeIdentifier;
+  modelType?: string | IEntityTypeIdentifier | IPropertySetting<string>;
 }
 export const isQueryBuilderProps = (value: ISettingsInputBase): value is IQueryBuilderSettingsInputProps => value.type === 'queryBuilder';
 

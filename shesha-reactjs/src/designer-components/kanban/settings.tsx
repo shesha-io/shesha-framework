@@ -6,14 +6,14 @@ import SettingsForm, { useSettingsForm } from '../_settings/settingsForm';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsFormItem from '../_settings/settingsFormItem';
 import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
-import { MetadataProvider } from '@/providers';
+import { MetadataProvider, UnwrapCodeEvaluators } from '@/providers';
 import { IKanbanProps } from '@/components/kanban/model';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
-  const { values } = useSettingsForm<IKanbanProps>();
+  const { values } = useSettingsForm<UnwrapCodeEvaluators<IKanbanProps>>();
   const { readOnly } = props;
 
   const getStyleConstants = useAvailableConstantsMetadata({

@@ -1,10 +1,11 @@
 import { INumberFieldSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { useStyles } from '../styles';
 import Icon from '@/components/icon/Icon';
 import { InputNumber } from 'antd';
 
-export const NumberFieldWrapper: FC<INumberFieldSettingsInputProps> = (props) => {
+export const NumberFieldWrapper: FCUnwrapped<INumberFieldSettingsInputProps> = (props) => {
   const { styles } = useStyles();
   const { value, onChange, readOnly, size, icon, variant, placeholder, tooltip, label, min } = props;
   return (

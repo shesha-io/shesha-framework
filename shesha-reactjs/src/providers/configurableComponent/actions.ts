@@ -1,4 +1,4 @@
-import { createAction } from 'redux-actions';
+import { createAction } from '@reduxjs/toolkit';
 import {
   IComponentLoadErrorPayload,
   IComponentLoadSuccessPayload,
@@ -19,23 +19,11 @@ export enum ConfigurableComponentActionEnums {
 }
 
 export const loadRequestAction = createAction(ConfigurableComponentActionEnums.LoadRequest);
-export const loadSuccessAction = createAction<IComponentLoadSuccessPayload, IComponentLoadSuccessPayload>(
-  ConfigurableComponentActionEnums.LoadSuccess,
-  (p) => p,
-);
-export const loadErrorAction = createAction<IComponentLoadErrorPayload, IComponentLoadErrorPayload>(
-  ConfigurableComponentActionEnums.LoadError,
-  (p) => p,
-);
+export const loadSuccessAction = createAction<IComponentLoadSuccessPayload>(ConfigurableComponentActionEnums.LoadSuccess);
+export const loadErrorAction = createAction<IComponentLoadErrorPayload>(ConfigurableComponentActionEnums.LoadError);
 
 export const saveRequestAction = createAction(ConfigurableComponentActionEnums.SaveRequest);
-export const saveSuccessAction = createAction<IComponentSaveSuccessPayload, IComponentSaveSuccessPayload>(
-  ConfigurableComponentActionEnums.SaveSuccess,
-  (p) => p,
-);
-export const saveErrorAction = createAction<IComponentSaveErrorPayload, IComponentSaveErrorPayload>(
-  ConfigurableComponentActionEnums.SaveError,
-  (p) => p,
-);
+export const saveSuccessAction = createAction<IComponentSaveSuccessPayload>(ConfigurableComponentActionEnums.SaveSuccess);
+export const saveErrorAction = createAction<IComponentSaveErrorPayload>(ConfigurableComponentActionEnums.SaveError);
 
 /* NEW_ACTION_GOES_HERE */

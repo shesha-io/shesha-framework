@@ -1,6 +1,6 @@
-import { asPropertiesArray, IApiEndpoint, IModelMetadata, isPropertiesArray, StandardEntityActions } from "@/interfaces/metadata";
+import { asPropertiesArray, IApiEndpoint, IModelMetadata, isApiEndpoint, isPropertiesArray, StandardEntityActions } from "@/interfaces/metadata";
 import { GetGqlFieldsPayload, IFieldData, IFormDataLoader, GetFormFieldsPayload, FormDataLoadingPayload, isGqlLoaderSettings, GqlLoaderSettings } from "./interfaces";
-import { DataTypes, extractAjaxResponse, IAjaxResponse, IToolboxComponents } from "@/interfaces";
+import { DataTypes, extractAjaxResponse, IAjaxResponse, IAnyObject, IToolboxComponents } from "@/interfaces";
 import { HttpClientApi, useHttpClient } from "@/providers/sheshaApplication/publicApi";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
@@ -9,8 +9,9 @@ import { constructUrl } from "@/utils/fetchers";
 import { useState } from "react";
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { IFormSettings, isConfigurableFormComponent, useMetadataDispatcher } from "@/providers";
-import { IEntity } from "@/generic-pages/dynamic/interfaces";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { getIdOrUndefined } from "@/utils/entity";
+import { extractErrorInfo } from "@/utils/errors";
 
 export interface GqlLoaderArguments {
   httpClient: HttpClientApi;
@@ -21,7 +22,7 @@ export interface GqlLoaderArguments {
 
 // register loader factory and accept only form-specific parameters
 
-export class GqlLoader implements IFormDataLoader {
+export class GqlLoader<Values extends object = object> implements IFormDataLoader<Values> {
   #httpClient: HttpClientApi;
 
   #metadataDispatcher: IMetadataDispatcher;
@@ -43,11 +44,11 @@ export class GqlLoader implements IFormDataLoader {
 
   #getGqlSettings = (formSettings: IFormSettings): GqlLoaderSettings => {
     const { dataLoadersSettings = {} } = formSettings;
-    const loaderSettings = dataLoadersSettings?.['gql'];
+    const loaderSettings = dataLoadersSettings['gql'];
     return isGqlLoaderSettings(loaderSettings) ? loaderSettings : { endpointType: 'default' };
   };
 
-  getEndpointAsync = async (payload: FormDataLoadingPayload): Promise<IApiEndpoint> => {
+  getEndpointAsync = async (payload: FormDataLoadingPayload): Promise<IApiEndpoint | undefined> => {
     const { formSettings } = payload;
     const gqlSettings = this.#getGqlSettings(formSettings);
     const { endpointType, staticEndpoint, dynamicEndpoint } = gqlSettings;
@@ -57,28 +58,32 @@ export class GqlLoader implements IFormDataLoader {
         return await this.#endpointsEvaluator.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: formSettings, mappings: [] });
       }
       case 'static': {
-        return { ...staticEndpoint, httpVerb: staticEndpoint?.httpVerb || 'get' };
+        return staticEndpoint
+          ? { ...staticEndpoint, httpVerb: staticEndpoint.httpVerb || 'get' }
+          : undefined;
       }
       case 'dynamic': {
+        if (isNullOrWhiteSpace(dynamicEndpoint))
+          return undefined;
         const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { });
-        return dynamicEvaluated;
+        return isApiEndpoint(dynamicEvaluated) ? dynamicEvaluated : undefined;
       }
       default:
-        return null;
+        return undefined;
     }
   };
 
-  loadAsync = async (payload: FormDataLoadingPayload): Promise<any> => {
+  loadAsync = async (payload: FormDataLoadingPayload): Promise<Values | undefined> => {
     const { loadingCallback, formSettings, formArguments, formFlatStructure } = payload;
     try {
-      const dataId = formArguments?.id;
+      const dataId = getIdOrUndefined(formArguments);
       if (!dataId)
         throw new Error('Data id is missing');
 
       const endpoint = await this.getEndpointAsync(payload);
 
       // TODO: implement data loading using different http verbs
-      const getDataUrl = endpoint && endpoint.httpVerb?.toLowerCase() === 'get' // note: support get only here
+      const getDataUrl = endpoint && endpoint.httpVerb.toLowerCase() === 'get' // note: support get only here
         ? endpoint.url
         : null;
       if (isNullOrWhiteSpace(getDataUrl))
@@ -91,13 +96,13 @@ export class GqlLoader implements IFormDataLoader {
       });
       var gqlFields = gqlFieldsToString(gqlFieldsList);
 
-      const queryParams = { properties: gqlFields };
+      const queryParams: IAnyObject = { properties: gqlFields };
       if (dataId) queryParams['id'] = dataId;
-      const finalUrl = constructUrl(null, getDataUrl, queryParams);
+      const finalUrl = constructUrl(undefined, getDataUrl, queryParams);
 
       loadingCallback?.({ loadingState: 'loading', loaderHint: 'Fetching data...' });
 
-      const response = await this.#httpClient.get<IAjaxResponse<IEntity>>(finalUrl);
+      const response = await this.#httpClient.get<IAjaxResponse<Values>>(finalUrl);
 
       const responseData = extractAjaxResponse(response.data, 'Failed to load data');
 
@@ -105,30 +110,29 @@ export class GqlLoader implements IFormDataLoader {
 
       return responseData;
     } catch (error) {
-      loadingCallback?.({ loadingState: 'failed', error: error });
+      loadingCallback?.({ loadingState: 'failed', error: extractErrorInfo(error) });
       return undefined;
     }
   };
 
-  #getFieldsFromCustomEvents = (code: string): string[] => {
-    if (!code) return [];
+  #getFieldsFromCustomEvents = (code: string | undefined): string[] => {
+    if (isNullOrWhiteSpace(code))
+      return [];
     const reg = new RegExp('(?<![_a-zA-Z0-9.])data.[_a-zA-Z0-9.]+', 'g');
     const matchAll = code.matchAll(reg);
-    if (!matchAll) return [];
     const match = Array.from(matchAll);
     return match.map((item) => item[0].replace('data.', ''));
   };
 
   #getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata): string[] => {
     const { formFlatStructure, formSettings } = payload;
-    if (!formFlatStructure) return null;
 
     const gqlSettings = this.#getGqlSettings(formSettings);
 
     const toolboxComponents = this.#toolboxComponents;
 
     const { allComponents: components } = formFlatStructure;
-    let fieldNames = [];
+    let fieldNames: string[] = [];
     for (const key in components) {
       if (components.hasOwnProperty(key) && isConfigurableFormComponent(components[key])) {
         var model = components[key];
@@ -141,9 +145,9 @@ export class GqlLoader implements IFormDataLoader {
 
           // TODO: AS - calc actual propName from JS setting
           if (typeof propName === 'string') {
-            const fieldsFunc = component?.getFieldsToFetch;
-            if (typeof fieldsFunc === 'function')
-              fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata) ?? []);
+            const fieldsFunc = component.getFieldsToFetch;
+            if (isDefined(fieldsFunc))
+              fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata));
             else
               fieldNames.push(propName);
           }
@@ -151,7 +155,7 @@ export class GqlLoader implements IFormDataLoader {
       }
     }
 
-    fieldNames = fieldNames.concat(gqlSettings?.fieldsToFetch ?? []);
+    fieldNames = fieldNames.concat(gqlSettings.fieldsToFetch ?? []);
 
     for (const id in components) {
       if (components.hasOwnProperty(id) && isConfigurableFormComponent(components[id])) {
@@ -190,7 +194,7 @@ export class GqlLoader implements IFormDataLoader {
     const metaProperties = asPropertiesArray(metadata.properties, []);
 
     // create list of promises
-    const promises: Promise<any>[] = [];
+    const promises: Promise<void>[] = [];
 
     fieldNames.forEach((item) => {
       if (item) {
@@ -198,43 +202,47 @@ export class GqlLoader implements IFormDataLoader {
         const pathParts = item.split('.');
 
         if (pathParts.length === 1) {
+          const propertyName = pathParts[0]?.toLowerCase();
+          if (isNullOrWhiteSpace(propertyName))
+            throw new Error(`Invalid field name: ${item}`);
+
           fields.push({
             name: item,
             child: [],
-            property: metaProperties.find((p) => p.path.toLowerCase() === pathParts[0].toLowerCase()),
+            property: metaProperties.find((p) => p.path.toLowerCase() === propertyName),
           });
           return;
         }
 
-        let parent: IFieldData = null;
+        let parent: IFieldData | null = null;
         let containerPath = '';
         pathParts.forEach((part, idx) => {
           let levelChilds = parent?.child ?? fields;
           let field = levelChilds.find((f) => f.name === part);
           if (!field) {
-            field = {
+            const newField: IFieldData = {
               name: part,
               child: [],
-              property:
-                                idx === 0
-                                  ? metaProperties.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                                  : parent?.property?.dataType === 'object' && isPropertiesArray(parent.property.properties)
-                                    ? parent.property.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                                    : null,
+              property: idx === 0
+                ? metaProperties.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                : parent?.property?.dataType === 'object' && isPropertiesArray(parent.property.properties)
+                  ? parent.property.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                  : undefined,
             };
+            field = newField;
             // If property metadata is not set - fetch it using dispatcher.
             // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests
-            if (!field.property) {
+            if (!newField.property) {
               const metaPromise = getContainerProperties({ metadata: metadata, containerPath: containerPath }).then(
                 (response) => {
-                  field.property = response.find((p) => p.path.toLowerCase() === field.name.toLowerCase());
+                  newField.property = response.find((p) => p.path.toLowerCase() === newField.name.toLowerCase());
                 },
               );
               // add promise to list
               promises.push(metaPromise);
             }
 
-            levelChilds.push(field);
+            levelChilds.push(newField);
           }
           containerPath += (Boolean(containerPath) ? '.' : '') + part;
           parent = field;

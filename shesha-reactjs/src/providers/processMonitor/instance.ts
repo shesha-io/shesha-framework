@@ -114,8 +114,6 @@ export class ProcessMonitorInstance implements IProcessMonitor {
   onLogEvent = (data: SignalLogEventDto): void => {
     this.log('LOG: 🚦 LogEvent', data);
 
-    if (!data)
-      return;
     const { level, message, timeStamp } = data;
 
     const event: ILogEvent = {

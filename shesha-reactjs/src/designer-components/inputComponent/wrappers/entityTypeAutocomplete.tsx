@@ -1,8 +1,9 @@
 import { IEntityTypeAutocompleteSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
-export const EntityTypeAutocompleteWrapper: FC<IEntityTypeAutocompleteSettingsInputProps> = (props) => {
+export const EntityTypeAutocompleteWrapper: FCUnwrapped<IEntityTypeAutocompleteSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size, entityAutocompleteType } = props;
   return (
     <EntityTypeAutocomplete

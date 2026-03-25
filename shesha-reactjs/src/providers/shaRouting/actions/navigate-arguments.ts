@@ -26,7 +26,7 @@ export const getNavigateArgumentsForm: FormMarkupFactory = ({ fbf }) => {
         hidden: {
           _mode: 'code',
           _code: 'return data?.navigationType !== "url"',
-        } as any,
+        },
       },
       {
         id: nanoid(),
@@ -40,7 +40,7 @@ export const getNavigateArgumentsForm: FormMarkupFactory = ({ fbf }) => {
         hidden: {
           _mode: 'code',
           _code: 'return data?.navigationType !== "form"',
-        } as any,
+        },
       },
     ],
   })

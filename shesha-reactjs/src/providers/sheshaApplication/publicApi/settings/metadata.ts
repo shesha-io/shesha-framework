@@ -5,13 +5,14 @@ import { SettingConfigurationDto } from "./models";
 import { SettingsManager } from "./manager";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { StringBuilder } from "@/utils/metadata/stringBuilder";
+import { isDefined } from "@/utils/nullables";
 
 type SettingItemType = 'module' | 'category' | 'setting';
 
 export interface ISettingPropertyMetadata extends IPropertyMetadata {
   settingItemType: SettingItemType;
 }
-
+const isSettingPropertyMetadata = (value: IPropertyMetadata): value is ISettingPropertyMetadata => isDefined(value) && 'settingItemType' in value;
 /**
  * Convert the given settings configuration to an array of property metadata.
  *
@@ -35,7 +36,7 @@ const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]):
     if (!isPropertiesArray(moduleProp.properties))
       throw new Error("Something went wrong. Expected array of properties");
 
-    let categoryProp = moduleProp.properties.find((p) => p.path === setting.category.accessor) as ISettingPropertyMetadata;
+    let categoryProp = moduleProp.properties.find((p): p is ISettingPropertyMetadata => isSettingPropertyMetadata(p) && p.path === setting.category.accessor);
     if (!categoryProp) {
       categoryProp = {
         path: setting.category.accessor,
@@ -51,8 +52,8 @@ const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]):
       path: setting.accessor,
       label: setting.name,
       description: setting.description,
-      dataType: setting.dataType?.dataType,
-      dataFormat: setting.dataType?.dataFormat,
+      dataType: setting.dataType.dataType,
+      dataFormat: setting.dataType.dataFormat ?? null,
       settingItemType: 'setting',
     };
     if (!isPropertiesArray(categoryProp.properties))

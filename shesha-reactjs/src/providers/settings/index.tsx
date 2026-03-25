@@ -1,79 +1,103 @@
-import { useSheshaApplication } from '@/providers/sheshaApplication';
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
-import { settingsGetValue } from '@/apis/settings';
+import React, { FC, PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { ISettingsActionsContext, ISettingsContext, SettingsContext } from './contexts';
+import { ISettingsClientContext, SettingsClientContext } from './contexts';
 import { ISettingIdentifier, ISettingsDictionary } from './models';
+import { throwError } from '@/utils/errors';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { HttpClientApi, useHttpClient } from '../sheshaApplication/publicApi';
+import { buildUrl } from '@/utils';
+import { extractAjaxResponse, IAjaxResponse } from '@/interfaces';
+import { settingIdentifiersEqual } from '@/utils/settings';
+import { UpdateSettingValueInput } from './api-models';
 
-const SettingsProvider: FC<PropsWithChildren> = ({ children }) => {
-  const settings = useRef<ISettingsDictionary>({});
+const SETTINGS_URLS = {
+  GET_VALUE: "/api/services/app/Settings/GetValue",
+  SET_VALAUE: "/api/services/app/Settings/UpdateValue",
+};
 
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+class SettingsClient implements ISettingsClientContext {
+  #httpClient: HttpClientApi;
 
-  const makeFormLoadingKey = (payload: ISettingIdentifier): string => {
-    const { module, name } = payload;
-    return `${module}:${name}`.toLowerCase();
+  #settings: ISettingsDictionary;
+
+  constructor(httpClient: HttpClientApi) {
+    this.#settings = {};
+    this.#httpClient = httpClient;
+  }
+
+  setSetting = async <TValue = unknown>(settingId: ISettingIdentifier, value: TValue, applicationKey?: string): Promise<void> => {
+    if (!isDefined(settingId) || isNullOrWhiteSpace(settingId.name)) return Promise.reject('settingId is not specified');
+
+    const payload: UpdateSettingValueInput = {
+      name: settingId.name,
+      module: settingId.module,
+      appKey: applicationKey,
+      value: value,
+    };
+    const response = await this.#httpClient.post<IAjaxResponse<void>>(SETTINGS_URLS.SET_VALAUE, payload);
+    extractAjaxResponse(response.data);
   };
 
-  const getSetting = (settingId: ISettingIdentifier): Promise<any> => {
-    if (!settingId || !settingId.name) return Promise.reject('settingId is not specified');
+  getSetting = <TValue = unknown>(settingId: ISettingIdentifier): Promise<TValue> => {
+    if (!isDefined(settingId) || isNullOrWhiteSpace(settingId.name)) return Promise.reject('settingId is not specified');
 
     // create a key
-    const key = makeFormLoadingKey(settingId);
+    const key = this.makeFormLoadingKey(settingId);
 
-    const loadedValue = settings.current[key];
-    if (loadedValue) return loadedValue; // TODO: check for rejection
+    const loadedValue = this.#settings[key];
+    if (loadedValue) return loadedValue as Promise<TValue>; // TODO: check for rejection
 
-    const settingPromise = settingsGetValue(
-      { name: settingId.name, module: settingId.module },
-      { base: backendUrl, headers: httpHeaders },
-    ).then((response) => {
-      return response.success ? response.result : null;
+    const url = buildUrl(SETTINGS_URLS.GET_VALUE, { name: settingId.name, module: settingId.module });
+    const settingPromise = this.#httpClient.get<IAjaxResponse<TValue>>(url).then((response) => {
+      return extractAjaxResponse(response.data);
     });
 
-    settings.current[key] = settingPromise;
+    this.#settings[key] = settingPromise;
 
     return settingPromise;
   };
 
-  const contextValue: ISettingsContext = {
-    getSetting,
+  makeFormLoadingKey = (payload: ISettingIdentifier): string => {
+    const { module, name } = payload;
+    return `${module}:${name}`.toLowerCase();
   };
+};
 
-  return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
+const SettingsProvider: FC<PropsWithChildren> = ({ children }) => {
+  const httpClient = useHttpClient();
+  const [settingsClient] = useState<ISettingsClientContext>(() => {
+    return new SettingsClient(httpClient);
+  });
+
+  return <SettingsClientContext.Provider value={settingsClient}>{children}</SettingsClientContext.Provider>;
 };
 
 
-function useSettingsOrUndefined(): ISettingsActionsContext | undefined {
-  return useContext(SettingsContext);
-}
+const useSettingsOrUndefined = (): ISettingsClientContext | undefined => useContext(SettingsClientContext);
 
-function useSettings(): ISettingsActionsContext {
-  const context = useSettingsOrUndefined();
-  if (context === undefined) {
-    throw new Error('useSettings must be used within a SettingsProvider');
-  }
-
-  return context;
-}
+const useSettings = (): ISettingsClientContext => useSettingsOrUndefined() ?? throwError('useSettings must be used within a SettingsProvider');
 
 export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
 
-export interface SettingValueLoadingState<TValue = any> {
+export interface SettingValueLoadingState<TValue = unknown> {
+  settingId: ISettingIdentifier;
   loadingState: LoadingState;
-  value?: TValue;
-  error?: IErrorInfo;
+  value?: TValue | undefined;
+  error?: IErrorInfo | undefined;
 }
 
-const useSettingValue = <TValue = any>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
+const useSettingValue = <TValue = unknown>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
   const settings = useSettings();
-  const [state, setState] = useState<SettingValueLoadingState>({ loadingState: 'waiting' });
+  const [state, setState] = useState<SettingValueLoadingState<TValue>>({ loadingState: 'waiting', settingId });
 
   useEffect(() => {
-    settings.getSetting(settingId).then((response) => {
-      setState((prev) => ({ ...prev, error: null, value: response as TValue, loadingState: 'ready' }));
+    if (settingIdentifiersEqual(state.settingId, settingId) && state.loadingState !== 'waiting')
+      return;
+
+    settings.getSetting<TValue>(settingId).then((response) => {
+      setState((prev) => ({ ...prev, error: undefined, value: response, loadingState: 'ready' }));
     });
-  }, [settingId?.module, settingId?.name]);
+  }, [settingId, settings, state.loadingState, state.settingId]);
 
   return state;
 };

@@ -1,128 +1,80 @@
-import { handleActions } from 'redux-actions';
-import { IErrorInfo } from '@/interfaces/errorInfo';
-import { CrudActionEnums, ISwitchModeActionPayload } from './actions';
-import { CRUD_CONTEXT_INITIAL_STATE, ICrudStateContext } from './contexts';
+import { createReducer } from '@reduxjs/toolkit';
+import {
+  switchModeAction,
+  setAutoSaveAction,
+  setInitialValuesLoadingAction,
+  setInitialValuesAction,
+  setAllowEditAction,
+  setAllowDeleteAction,
+  resetErrorsAction,
+  saveStartedAction,
+  saveFailedAction,
+  saveSuccessAction,
+  deleteStartedAction,
+  deleteFailedAction,
+  deleteSuccessAction,
+} from './actions';
+import { CRUD_CONTEXT_INITIAL_STATE } from './contexts';
 
-const reducer = handleActions<ICrudStateContext, any>(
-  {
-    [CrudActionEnums.SwitchMode]: (state: ICrudStateContext, action: ReduxActions.Action<ISwitchModeActionPayload>) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        mode: payload.mode,
-        allowChangeMode: payload.allowChangeMode,
-      };
-    },
-
-    [CrudActionEnums.SetInitialValuesLoading]: (state: ICrudStateContext, action: ReduxActions.Action<boolean>) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        initialValuesLoading: payload,
-      };
-    },
-
-    [CrudActionEnums.SetInitialValues]: (state: ICrudStateContext, action: ReduxActions.Action<object>) => {
-      const { payload } = action;
-
+export const reducer = createReducer(CRUD_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(switchModeAction, (state, { payload }) => {
+      state.mode = payload.mode;
+      state.allowChangeMode = payload.allowChangeMode;
+    })
+    .addCase(setAutoSaveAction, (state, { payload }) => {
+      state.autoSave = payload;
+    })
+    .addCase(setInitialValuesLoadingAction, (state, { payload }) => {
+      state.initialValuesLoading = payload;
+    })
+    .addCase(setInitialValuesAction, (state, { payload }) => {
       return {
         ...state,
         initialValuesLoading: false,
         initialValues: payload,
       };
-    },
-
-    [CrudActionEnums.SetAllowEdit]: (state: ICrudStateContext, action: ReduxActions.Action<boolean>) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        allowEdit: payload,
-      };
-    },
-
-    [CrudActionEnums.SetAutoSave]: (state: ICrudStateContext, action: ReduxActions.Action<boolean>) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        autoSave: payload,
-      };
-    },
-
-    [CrudActionEnums.SetAllowDelete]: (state: ICrudStateContext, action: ReduxActions.Action<boolean>) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        allowDelete: payload,
-      };
-    },
-
-    [CrudActionEnums.ResetErrors]: (state: ICrudStateContext) => {
-      return {
-        ...state,
-        saveError: null,
-        deletingError: null,
-      };
-    },
-
-    [CrudActionEnums.SaveStarted]: (state: ICrudStateContext) => {
-      return {
-        ...state,
-        isSaving: true,
-        saveError: null,
-      };
-    },
-
-    [CrudActionEnums.SaveFailed]: (state: ICrudStateContext, action: ReduxActions.Action<IErrorInfo>) => {
-      const { payload } = action;
-
+    })
+    .addCase(setAllowEditAction, (state, { payload }) => {
+      state.allowEdit = payload;
+    })
+    .addCase(setAllowDeleteAction, (state, { payload }) => {
+      state.allowDelete = payload;
+    })
+    .addCase(resetErrorsAction, (state) => {
+      state.saveError = undefined;
+      state.deletingError = undefined;
+    })
+    .addCase(saveStartedAction, (state) => {
+      state.isSaving = true;
+      state.saveError = undefined;
+    })
+    .addCase(saveFailedAction, (state, { payload }) => {
       return {
         ...state,
         saveError: payload,
         isSaving: false,
       };
-    },
-
-    [CrudActionEnums.SaveSuccess]: (state: ICrudStateContext) => {
-      return {
-        ...state,
-        isSaving: false,
-        saveError: null,
-      };
-    },
-
-    [CrudActionEnums.DeleteStarted]: (state: ICrudStateContext) => {
-      return {
-        ...state,
-        isDeleting: true,
-        deletingError: null,
-      };
-    },
-
-    [CrudActionEnums.DeleteFailed]: (state: ICrudStateContext, action: ReduxActions.Action<IErrorInfo>) => {
-      const { payload } = action;
-
+    })
+    .addCase(saveSuccessAction, (state) => {
+      state.isSaving = false;
+      state.saveError = undefined;
+    })
+    .addCase(deleteStartedAction, (state) => {
+      state.isDeleting = true;
+      state.deletingError = undefined;
+    })
+    .addCase(deleteFailedAction, (state, { payload }) => {
       return {
         ...state,
         deletingError: payload,
         isDeleting: false,
       };
-    },
-
-    [CrudActionEnums.DeleteSuccess]: (state: ICrudStateContext) => {
-      return {
-        ...state,
-        isDeleting: false,
-        deletingError: null,
-      };
-    },
-  },
-
-  CRUD_CONTEXT_INITIAL_STATE,
-);
+    })
+    .addCase(deleteSuccessAction, (state) => {
+      state.isDeleting = false;
+      state.deletingError = undefined;
+    });
+});
 
 export default reducer;

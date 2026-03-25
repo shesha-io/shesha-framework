@@ -14,7 +14,7 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   collapsedByDefault?: boolean;
   expandIconPosition?: ExpandIconPosition | 'hide';
   header?: ICollapsiblePanelContent;
-  content?: ICollapsiblePanelContent;
+  content?: ICollapsiblePanelContent | undefined;
   collapsible?: CollapsibleType;
   ghost?: boolean;
   accentStyle?: boolean;
@@ -32,9 +32,6 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   customHeader?: ICollapsiblePanelContent;
   panelHeadType?: headerType;
   headerStyles?: IStyleType;
-  desktop?: any;
-  mobile?: any;
-  tablet?: any;
 };
 
 // TODO: implement generic guard on the component level

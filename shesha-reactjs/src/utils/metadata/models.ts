@@ -5,7 +5,7 @@ export interface TypeAndLocation {
   /** Type name */
   typeName: string;
   /** Absolute path to the file */
-  filePath?: string;
+  filePath?: string | undefined;
 }
 
 export const EOL = '\r\n';

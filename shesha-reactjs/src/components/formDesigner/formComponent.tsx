@@ -7,7 +7,7 @@ import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
+import { IStyleType, isValidGuid, UnwrapCodeEvaluators, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { useStyles } from './styles/styles';
@@ -28,11 +28,6 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   const { getValidation } = useValidationErrorsActionsOrDefault();
   const { errors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
   const errorCount = errors.size; // Track size to trigger useMemo
-
-  // Early return if componentModel is undefined
-  if (!componentModel) {
-    return null;
-  }
 
   // Default to 'desktop' when there's no canvas context (e.g., in datatables)
   const effectiveDevice = activeDevice || 'desktop';
@@ -64,7 +59,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
     undefined,
     (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
-  );
+  ) as UnwrapCodeEvaluators<IConfigurableFormComponent & IStyleType>; // TODO: move type cast to useActualContextData after refactoring
 
   actualModel.hidden = shaForm.formMode !== 'designer' &&
     (

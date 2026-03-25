@@ -1,10 +1,12 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useCallback } from 'react';
-import CanvasReducer from './reducer';
-import { SetCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, SetConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction, setViewTypeAction } from './actions';
+import { reducer } from './reducer';
+import { setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction, setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, IDeviceTypes, IViewType } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { DataTypes, IObjectMetadata } from '@/index';
 import { canvasContextCode } from '@/publicJsApis';
+import { isDefined } from '@/utils/nullables';
+import { throwError } from '@/utils/errors';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,
@@ -29,7 +31,7 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
-  const [state, dispatch] = useReducer(CanvasReducer, {
+  const [state, dispatch] = useReducer(reducer, {
     ...CANVAS_CONTEXT_INITIAL_STATE,
   });
 
@@ -55,11 +57,11 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   }, []);
 
   const setCanvasAutoZoom = useCallback(() => {
-    dispatch(SetCanvasAutoZoomAction());
+    dispatch(setCanvasAutoZoomAction());
   }, []);
 
   const setConfigTreePanelSize = useCallback((size: number) => {
-    dispatch(SetConfigTreePanelSizeAction(size));
+    dispatch(setConfigTreePanelSizeAction(size));
   }, []);
 
   const setViewType = useCallback((viewType: IViewType) => {
@@ -67,9 +69,9 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   }, []);
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const actions = useMemo(() => ({
+  const actions = useMemo<ICanvasActionsContext>(() => ({
     setDesignerDevice,
-    setCanvasWidth,
+    setCanvasWidth: setCanvasWidth,
     setCanvasZoom,
     setCanvasAutoZoom,
     setConfigTreePanelSize,
@@ -77,8 +79,8 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     /* NEW_ACTION_GOES_HERE */
   }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setCanvasAutoZoom, setConfigTreePanelSize, setViewType]);
 
-  const contextOnChangeData = useCallback((_data: any, changedData: ICanvasStateContext) => {
-    if (!changedData)
+  const contextOnChangeData = useCallback((_: unknown, changedData: ICanvasStateContext) => {
+    if (!isDefined(changedData))
       return;
 
     if (changedData.designerDevice !== undefined && changedData.designerDevice !== state.designerDevice) {
@@ -107,30 +109,15 @@ const CanvasProvider: FC<PropsWithChildren> = ({
 };
 
 const useCanvasStateOrUndefined = (): ICanvasStateContext | undefined => useContext(CanvasStateContext);
-const useCanvasState = (): ICanvasStateContext => {
-  const context = useCanvasStateOrUndefined();
-  if (context === undefined)
-    throw new Error('useCanvasState must be used within a CanvasProvider');
-
-  return context;
-};
+const useCanvasState = (): ICanvasStateContext => useCanvasStateOrUndefined() ?? throwError('useCanvasState must be used within a CanvasProvider');
 
 const useCanvasActionsOrUndefined = (): ICanvasActionsContext | undefined => useContext(CanvasActionsContext);
-const useCanvasActions = (): ICanvasActionsContext => {
-  const context = useCanvasActionsOrUndefined();
-  if (context === undefined)
-    throw new Error('useCanvasActions must be used within a CanvasProvider');
-
-  return context;
-};
+const useCanvasActions = (): ICanvasActionsContext => useCanvasActionsOrUndefined() ?? throwError('useCanvasActions must be used within a CanvasProvider');
 
 const useCanvasOrUndefined = (): ICanvasStateContext & ICanvasActionsContext | undefined => {
   const actionsContext = useCanvasActionsOrUndefined();
   const stateContext = useCanvasStateOrUndefined();
 
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;

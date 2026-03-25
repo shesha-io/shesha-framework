@@ -29,7 +29,7 @@ export const getDynamicActionsItemsLevel = (
   items: ButtonGroupItemProps[],
   onDynamicItem: (dynamicItem: IResolvedDynamicItem) => void,
 ): ButtonGroupItemProps[] => {
-  const result = items.map((item) => {
+  const result = items.map<ButtonGroupItemProps>((item) => {
     if (isDynamicItem(item)) {
       if (isResolvedDynamicItem(item)) {
         return item;
@@ -42,13 +42,13 @@ export const getDynamicActionsItemsLevel = (
           resolvedItems: [],
         };
         onDynamicItem(dynamicItem);
-        return dynamicItem;
+        return dynamicItem satisfies ButtonGroupItemProps;
       }
     } else if (isGroup(item)) {
       return {
         ...item,
-        childItems: item.childItems ? getDynamicActionsItemsLevel(item.childItems, onDynamicItem) : null,
-      };
+        childItems: item.childItems ? getDynamicActionsItemsLevel(item.childItems, onDynamicItem) : undefined,
+      } satisfies ButtonGroupItemProps;
     } else return item;
   });
 
@@ -62,7 +62,7 @@ export const getItemsWithResolved = (items: ButtonGroupItemProps[]): ButtonGroup
     if (isDynamicItem(item)) {
       if (isResolvedDynamicItem(item) && item.isResolved) result.push(...item.resolvedItems);
     } else if (isGroup(item)) {
-      result.push({ ...item, childItems: getItemsWithResolved(item.childItems) });
+      result.push({ ...item, childItems: item.childItems ? getItemsWithResolved(item.childItems) : undefined });
     } else result.push(item);
   });
 

@@ -52,6 +52,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     groupingColumns,
     setRowData,
     fetchTableDataError,
+    selectedRow,
+    selectedRows,
+    setSelectedRow,
+    setMultiSelectedRow,
   } = dataSource || {
     tableData: [],
     isFetchingTableData: false,
@@ -65,7 +69,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     fetchTableDataError: null,
   };
   const { styles } = useStyles();
-  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource || { selectedRow: null, selectedRows: [], setSelectedRow: () => { /* noop */ }, setMultiSelectedRow: () => { /* noop */ } };
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';

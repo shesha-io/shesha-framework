@@ -83,7 +83,10 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     return (
-      <ParentProvider model={model}>
+      <ParentProvider
+        name={`Columns-${model.id}`}
+        model={model}
+      >
         <SizableColumns
           key={`split-${columns?.length}`}
           cursor="col-resize"

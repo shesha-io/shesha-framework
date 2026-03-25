@@ -13,7 +13,7 @@ import { MetadataDispatcherProvider, useMetadataDispatcher } from './provider';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 
-const useNestedPropertyMetadatAccessor = (modelType: string | IEntityTypeIdentifier): NestedPropertyMetadatAccessor => {
+const useNestedPropertyMetadatAccessor = (modelType: string | IEntityTypeIdentifier | undefined): NestedPropertyMetadatAccessor => {
   const dispatcher = useMetadataDispatcher();
 
   const accessor: NestedPropertyMetadatAccessor = (propertyPath: string) => modelType

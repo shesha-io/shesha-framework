@@ -22,9 +22,11 @@ const EntityPickerReadOnly = (props: IEntityPickerProps): JSX.Element => {
       : typeof (getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
-  const valueId = Array.isArray(value)
-    ? value.map((x) => props.incomeValueFunc(x, {}))
-    : props.incomeValueFunc(value, {});
+  const valueId = useMemo(() => {
+    return Array.isArray(value)
+      ? value.map((x) => props.incomeValueFunc(x, {}))
+      : props.incomeValueFunc(value, {});
+  }, [value, props.incomeValueFunc]);
 
   const selection = useEntitySelectionData({
     entityType: entityType,

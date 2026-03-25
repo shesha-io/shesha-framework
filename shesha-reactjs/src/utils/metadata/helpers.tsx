@@ -9,7 +9,7 @@ import { camelcaseDotNotation, getNumberFormat, toCamelCase } from '@/utils/stri
 import React, { ReactNode } from 'react';
 import { ProductOutlined } from '@ant-design/icons';
 
-export const getIconTypeByDataType = (dataType: string): IconType => {
+export const getIconTypeByDataType = (dataType: string): IconType | null => {
   switch (dataType) {
     case DataTypes.array:
       return 'DatabaseOutlined';
@@ -42,7 +42,7 @@ export const getIconTypeByDataType = (dataType: string): IconType => {
   }
 };
 
-export const getIconByDataType = (dataType: string, dataFormat: string): React.ReactNode => {
+export const getIconByDataType = (dataType: string, dataFormat: string | undefined | null): React.ReactNode => {
   if (dataType === DataTypes.advanced) return <ProductOutlined />;
   if (dataType === DataTypes.object && dataFormat === ObjectFormats.interface) return <JsonOutlined />;
   if (dataType === DataTypes.entityReference && dataFormat === EntityFormats.genericEntity) return <GenericOutlined />;
@@ -66,7 +66,7 @@ export const getDataProperty = <TProp extends keyof IPropertyMetadata = keyof IP
   properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName] as TValue | undefined;
 
 export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>): string => {
-  const { dataType, dataFormat } = metadata || {};
+  const { dataType, dataFormat } = metadata;
 
   switch (dataType) {
     case 'boolean':
@@ -83,16 +83,16 @@ export const getFormatContent = (content: string, metadata: Pick<IContent, 'data
   }
 };
 
-export const getEntityIdType = (metadata: IModelMetadata): string => {
+export const getEntityIdType = (metadata: IModelMetadata): string | undefined => {
   if (!isEntityMetadata(metadata))
     return undefined;
 
   return isPropertiesArray(metadata.properties)
-    ? metadata.properties.find((p) => p.path?.toLowerCase() === "id")?.dataType
+    ? metadata.properties.find((p) => p.path.toLowerCase() === "id")?.dataType
     : undefined;
 };
 
-export const getEntityIdJsType = (metadata: IModelMetadata): string => {
+export const getEntityIdJsType = (metadata: IModelMetadata): string | undefined => {
   const idType = getEntityIdType(metadata);
   return idType === DataTypes.guid ? "string" : idType;
 };

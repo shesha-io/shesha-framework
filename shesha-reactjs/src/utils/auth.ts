@@ -7,7 +7,7 @@ import { IAccessToken } from '@/interfaces';
  */
 export const AUTHORIZATION_HEADER_NAME = 'Authorization';
 
-export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAccessToken, tokenName?: string): void => {
+export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAccessToken, tokenName: string): void => {
   const token = {
     accessToken,
     expireInSeconds,
@@ -19,7 +19,7 @@ export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAcces
   getLocalStorage()?.setItem(tokenName, encodedToken);
 };
 
-const parseToken = (token: string): IAccessToken => {
+const parseToken = (token: string): IAccessToken | null => {
   try {
     return JSON.parse(jseu.encoder.decodeBase64(token) as string) as IAccessToken;
   } catch (error) {

@@ -16,19 +16,19 @@ import { useFormBuilderFactory } from '@/form-factory/hooks';
 export interface ApplicationPluginRegistration {
   name: string;
   buildMetadata: (apiBuilder: IObjectMetadataBuilder, metadataBuilder: IMetadataBuilder) => void;
-  data: any;
+  data: unknown;
 }
 
 export interface IApplicationActionsContext {
   registerPlugin: (plugin: ApplicationPluginRegistration) => void;
   unregisterPlugin: (pluginName: string) => void;
-  getPlugin: (pluginName: string) => ApplicationPluginRegistration;
+  getPlugin: (pluginName: string) => ApplicationPluginRegistration | undefined;
 }
-export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext>(
+export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext | undefined>(
   undefined,
   'ApplicationActionsContext',
 );
-export const ApplicationPublicApiContext = createNamedContext<IApplicationApi>(
+export const ApplicationPublicApiContext = createNamedContext<IApplicationApi | undefined>(
   undefined,
   'ApplicationPublicApiContext',
 );
@@ -49,9 +49,9 @@ export const ApplicationDataProvider: FC<PropsWithChildren> = ({ children }) => 
 
   const { loginInfo } = useAuthOrUndefined() ?? {};
   useEffect(() => {
-    const profile: IUserProfileInfo = loginInfo
+    const profile: IUserProfileInfo | undefined = loginInfo
       ? {
-        id: loginInfo.id?.toString(),
+        id: loginInfo.id.toString(),
         userName: loginInfo.userName,
         firstName: loginInfo.firstName,
         lastName: loginInfo.lastName,
@@ -69,7 +69,7 @@ export const ApplicationDataProvider: FC<PropsWithChildren> = ({ children }) => 
       // register property
       contextData.addPlugin({ name: plugin.name, data: plugin.data });
     },
-    [setPlugins],
+    [contextData, setPlugins],
   );
 
   const unregisterPlugin = useCallback(
@@ -81,7 +81,7 @@ export const ApplicationDataProvider: FC<PropsWithChildren> = ({ children }) => 
 
   const contextMetadata = useApplicationContextMetadata({ plugins }); // inject meta from plugins
 
-  const getPlugin = (name: string): ApplicationPluginRegistration => {
+  const getPlugin = (name: string): ApplicationPluginRegistration | undefined => {
     return plugins.find((p) => p.name === name);
   };
 
@@ -121,7 +121,7 @@ export const useApplicationPlugin = (plugin: ApplicationPluginRegistration): voi
     return () => {
       unregisterPlugin(plugin.name);
     };
-  }, [registerPlugin, unregisterPlugin, plugin.name]);
+  }, [registerPlugin, unregisterPlugin, plugin, plugin.name]);
 };
 
 export const usePublicApplicationApi = (): IApplicationApi => {

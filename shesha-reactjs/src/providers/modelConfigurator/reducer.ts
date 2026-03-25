@@ -1,9 +1,19 @@
-import { handleActions } from 'redux-actions';
 import { EntityInitFlags, ModelConfigurationDto } from '@/apis/modelConfigurations';
-import { ModelActionEnums } from './actions';
-import { IModelConfiguratorStateContext, IPropertyErrors, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
+import {
+  loadErrorAction,
+  loadRequestAction,
+  loadSuccessAction,
+  saveErrorAction,
+  saveRequestAction,
+  saveSuccessAction,
+  setErrorsAction,
+  setModifiedAction,
+  setShowErrorsAction } from './actions';
+import { IModelConfiguratorStateContext, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE, ModelConfigurationError } from './contexts';
 import { DataTypes, IErrorInfo } from '@/interfaces';
 import { EntityFormats } from '@/interfaces/dataTypes';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { createReducer } from '@reduxjs/toolkit';
 
 const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
   return {
@@ -20,190 +30,101 @@ const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto =
   };
 };
 
-const extractInitErrors = (payload: ModelConfigurationDto, preparedData: ModelConfigurationDto): (IPropertyErrors | string)[] => {
-  if (payload.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) { // eslint-disable-line no-bitwise
-    return [
-      payload.initMessage,
-      ...(preparedData.properties
-        .filter((p) => p.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) // eslint-disable-line no-bitwise
-        ?.map((p) => ({ propertyName: p.name, errors: [p.initMessage] } as IPropertyErrors)) ?? []),
-    ] as (IPropertyErrors | string)[];
+const extractInitErrors = (payload: ModelConfigurationDto, preparedData: ModelConfigurationDto): ModelConfigurationError[] => {
+  const errors: ModelConfigurationError[] = [];
+  if (isDefined(payload.initStatus) && payload.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) { // eslint-disable-line no-bitwise
+    if (!isNullOrWhiteSpace(payload.initMessage))
+      errors.push(payload.initMessage);
+    preparedData.properties.forEach((p) => {
+      if (isDefined(p.initStatus) && p.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed))// eslint-disable-line no-bitwise
+        errors.push({ propertyName: p.name, errors: [p.initMessage ?? "Unknown error"] });
+    });
   }
-  return [];
+  return errors;
 };
 
-const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
-  {
-    [ModelActionEnums.CreateNew]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>,
-    ) => {
-      return {
-        ...state,
-        isCreateNew: true,
-        modelConfiguration: prepareLoadedData(action.payload),
-        initialConfiguration: prepareLoadedData(action.payload),
-        showErrors: false,
-        id: '',
-      };
-    },
+const errorIntoToModelErrors = (errorInfo: IErrorInfo): ModelConfigurationError[] => {
+  const errors: ModelConfigurationError[] = [];
+  if (!isNullOrWhiteSpace(errorInfo.message))
+    errors.push(errorInfo.message);
+  if (errorInfo.validationErrors)
+    errorInfo.validationErrors.forEach((e) => {
+      if (!isNullOrWhiteSpace(e.message))
+        errors.push(e.message);
+    });
+  return errors;
+};
 
-    [ModelActionEnums.ChangeModelId]: (state: IModelConfiguratorStateContext, action: ReduxActions.Action<string>) => {
-      if (action.payload) {
-        return {
-          ...state,
-          id: action.payload,
-        };
-      }
-      return {
-        ...state,
-        isCreateNew: false,
-        modelConfiguration: {},
-        id: action.payload,
-      };
-    },
 
-    [ModelActionEnums.LoadRequest]: (state: IModelConfiguratorStateContext) => {
-      return {
-        ...state,
-        isLoading: true,
-        // id: payload
-      };
-    },
-
-    [ModelActionEnums.LoadSuccess]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>,
-    ) => {
-      const { payload } = action;
-
+export const modelReducer = createReducer(MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(loadRequestAction, (state) => {
+      state.isLoading = true;
+    })
+    .addCase(loadSuccessAction, (state, { payload }) => {
       const preparedData = prepareLoadedData(payload);
-
+      const initErrors = extractInitErrors(payload, preparedData);
       const newState = {
         ...state,
         isCreateNew: false,
         modelConfiguration: preparedData,
         initialConfiguration: preparedData,
         isLoading: false,
-        showErrors: false,
-        errors: [],
+        showErrors: initErrors.length > 0,
+        errors: initErrors.length > 0 ? initErrors : [],
       };
 
-      const initErrors = extractInitErrors(payload, preparedData);
-      if (initErrors.length > 0) {
-        newState.errors = initErrors;
-        newState.showErrors = true;
-      }
-
-
       return newState;
-    },
-
-    [ModelActionEnums.LoadError]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<IErrorInfo>,
-    ) => {
+    })
+    .addCase(loadErrorAction, (state, { payload }) => {
       return {
         ...state,
         isLoading: false,
-        errors: [action.payload?.message, ...(action.payload?.validationErrors?.map((e) => e.message) ?? [])],
+        errors: errorIntoToModelErrors(payload),
         showErrors: true,
       };
-    },
-
-    [ModelActionEnums.SaveRequest]: (state: IModelConfiguratorStateContext) => {
-      return {
-        ...state,
-        isSaving: true,
-        // id: payload
-      };
-    },
-
-    [ModelActionEnums.SaveSuccess]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>,
-    ) => {
-      const { payload } = action;
-
+    })
+    .addCase(saveRequestAction, (state) => {
+      state.isSaving = true;
+    })
+    .addCase(saveSuccessAction, (state, { payload }) => {
       const preparedData = prepareLoadedData(payload);
+      const initErrors = extractInitErrors(payload, preparedData);
       const newState = {
         ...state,
-        isCreateNew: false,
         isModified: false,
         isSaving: false,
         id: payload.id,
         initialConfiguration: preparedData,
         modelConfiguration: preparedData,
-        showErrors: false,
-        errors: [],
-      };
-
-      const initErrors = extractInitErrors(payload, preparedData);
-      if (initErrors.length > 0) {
-        newState.errors = initErrors;
-        newState.showErrors = true;
-      }
+        showErrors: initErrors.length > 0,
+        errors: initErrors.length > 0 ? initErrors : [],
+      } satisfies IModelConfiguratorStateContext;
 
       return newState;
-    },
-
-    [ModelActionEnums.SaveError]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<IErrorInfo>,
-    ) => {
+    })
+    .addCase(saveErrorAction, (state, { payload }) => {
       return {
         ...state,
         isSaving: false,
-        errors: [action.payload?.message, ...(action.payload?.validationErrors?.map((e) => e.message) ?? [])],
+        errors: errorIntoToModelErrors(payload),
         showErrors: true,
       };
-    },
-
-
-    [ModelActionEnums.Cancel]: (
-      state: IModelConfiguratorStateContext,
-    ) => {
+    })
+    .addCase(setModifiedAction, (state, { payload }) => {
+      state.isModified = payload;
+    })
+    .addCase(setErrorsAction, (state, { payload }) => {
       return {
         ...state,
-        isCreateNew: false,
+        errors: payload,
+        showErrors: payload.length > 0,
       };
-    },
-
-    [ModelActionEnums.SetModified]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<boolean>,
-    ) => {
-      return {
-        ...state,
-        isModified: action.payload,
-      };
-    },
-
-    [ModelActionEnums.SetErrors]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<(IPropertyErrors | string)[]>,
-    ) => {
-      return {
-        ...state,
-        errors: action.payload,
-        showErrors: action.payload.length ? state.showErrors : false,
-      };
-    },
-
-    [ModelActionEnums.SetShowErrors]: (
-      state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<boolean>,
-    ) => {
-      return {
-        ...state,
-        showErrors: action.payload,
-      };
-    },
-
-
-  },
-
-  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
-);
+    })
+    .addCase(setShowErrorsAction, (state, { payload }) => {
+      state.showErrors = payload;
+    })
+  ;
+});
 
 export default modelReducer;

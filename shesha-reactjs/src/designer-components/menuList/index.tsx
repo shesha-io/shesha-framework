@@ -2,7 +2,6 @@ import {
   ConfigurableComponentRenderer,
   getStyle,
   IConfigurableFormComponent,
-  ISidebarMenuItem,
   IStyleType,
   IToolboxComponent,
   useFormData,
@@ -21,6 +20,7 @@ import LayoutMenu from "@/components/menu";
 import { MenuUnfoldOutlined } from "@ant-design/icons";
 import { useFormComponentStyles } from "@/hooks/formComponentHooks";
 import { migratePrevStyles } from "../_common-migrations/migrateStyles";
+import { ISidebarMenuItem } from "@/interfaces/sidebar";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];

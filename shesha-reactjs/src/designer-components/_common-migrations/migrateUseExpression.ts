@@ -1,4 +1,4 @@
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
+import { IStoredFilter } from '@/providers/dataTable/interfaces';
 
 interface IArgumentEvaluationResult {
   handled: boolean;
@@ -68,7 +68,7 @@ export const migrateDynamicExpression = (expression: string | object): object =>
   }
 };
 
-export const migrateFilterMustacheExpressions = (filter: ITableViewProps): ITableViewProps => {
+export const migrateFilterMustacheExpressions = (filter: IStoredFilter): IStoredFilter => {
   const useExpression = Boolean(filter['useExpression']);
   if (!useExpression) return filter;
 

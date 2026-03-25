@@ -87,7 +87,10 @@ const TabsComponent: TabsComponentDefinition = {
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
           disabled: selectMode === 'readOnly' || (selectMode === 'inherited' && readOnly),
           children: (
-            <ParentProvider model={item}>
+            <ParentProvider
+              name={`Tab-${key}`}
+              model={item}
+            >
               <ComponentsContainer
                 containerId={id}
                 dynamicComponents={model?.isDynamic ? components : []}

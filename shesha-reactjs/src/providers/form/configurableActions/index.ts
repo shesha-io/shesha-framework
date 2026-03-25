@@ -2,19 +2,21 @@ import { useConfigurableAction } from "@/providers/configurableActionsDispatcher
 import { IShaFormInstance } from "../store/interfaces";
 import { SheshaActionOwners } from "@/providers/configurableActionsDispatcher/models";
 import { hasPreviousActionError } from "@/interfaces/configurableAction";
-import { ISubmitActionArguments } from "../models";
+import { ISubmitActionArguments, ISubmitActionExecutionContext, IValidateActionExecutionContext } from "../models";
 import { useRef } from "react";
+import { isDefined } from "@/utils/nullables";
+import { extractErrorInfo } from "@/utils/errors";
 
 
-export type UseShaFormActionsArgs = {
+export type UseShaFormActionsArgs<TData extends object = object> = {
   name: string;
   isActionsOwner: boolean;
-  shaForm: IShaFormInstance;
+  shaForm: IShaFormInstance<TData>;
 };
-export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormActionsArgs): void => {
-  const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : null;
+export const useShaFormActions = <TData extends object = object>({ name, isActionsOwner, shaForm }: UseShaFormActionsArgs<TData>): void => {
+  const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : "";
   const actionDependencies = [actionsOwnerUid];
-  const prevFormData = useRef(null);
+  const prevFormData = useRef<TData>();
 
   useConfigurableAction(
     {
@@ -39,7 +41,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
       hasArguments: false,
       executer: () => {
         shaForm.resetFields();
-        shaForm.setFormData({ values: prevFormData?.current, mergeValues: true });
+        shaForm.setFormData({ values: prevFormData.current ?? {} as TData, mergeValues: true });
         shaForm.setFormMode('readonly');
         return Promise.resolve();
       },
@@ -47,26 +49,25 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
     actionDependencies,
   );
 
-  useConfigurableAction(
+  useConfigurableAction<ISubmitActionArguments, unknown, ISubmitActionExecutionContext>(
     {
       name: 'Submit',
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
       executer: async (args: ISubmitActionArguments, actionContext) => {
-        var formInstance = (actionContext?.form?.formInstance ?? shaForm.antdForm);
+        var formInstance = (actionContext.form?.formInstance ?? shaForm.antdForm);
 
-        var skipValidation = args?.validateFields === false;
+        var skipValidation = args.validateFields === false;
         if (!skipValidation) {
-          var customFieldsToValidate = actionContext?.fieldsToValidate ?? null;
-          if (customFieldsToValidate?.length > 0) {
-            await formInstance.validateFields(customFieldsToValidate);
-          } else {
+          if (isDefined(actionContext.fieldsToValidate)) {
+            if (actionContext.fieldsToValidate.length > 0)
+              await formInstance.validateFields(actionContext.fieldsToValidate);
+          } else
             await formInstance.validateFields();
-          }
         }
 
-        const realShaForm = actionContext?.form?.shaForm ?? shaForm;
+        const realShaForm = actionContext.form?.shaForm ?? shaForm;
         await realShaForm.submitData();
       },
     },
@@ -101,7 +102,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
     actionDependencies,
   );
 
-  useConfigurableAction(
+  useConfigurableAction<object, unknown, IValidateActionExecutionContext>(
     {
       name: 'Validate',
       description: 'Validate the form data and show validation errors if any',
@@ -109,10 +110,13 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
       ownerUid: actionsOwnerUid,
       hasArguments: false,
       executer: async (_, actionContext) => {
-        var formInstance = actionContext?.form?.formInstance ?? shaForm.antdForm;
-        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
-        await formInstance.validateFields(fieldsToValidate);
-        return Promise.resolve();
+        var formInstance = actionContext.form?.formInstance ?? shaForm.antdForm;
+
+        if (isDefined(actionContext.fieldsToValidate)) {
+          if (actionContext.fieldsToValidate.length > 0)
+            await formInstance.validateFields(actionContext.fieldsToValidate);
+        } else
+          await formInstance.validateFields();
       },
     },
     actionDependencies,
@@ -127,9 +131,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
       hasArguments: false,
       executer: (_args, actionContext) => {
         if (hasPreviousActionError(actionContext)) {
-          const error = actionContext.actionError instanceof Error
-            ? { message: actionContext.actionError.message }
-            : actionContext.actionError;
+          const error = extractErrorInfo(actionContext.actionError);
 
           shaForm.setValidationErrors(error);
         }

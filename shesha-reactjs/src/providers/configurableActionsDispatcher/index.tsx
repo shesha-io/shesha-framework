@@ -13,6 +13,7 @@ import {
   ConfigurableActionArgumentsMigrationContext,
   DynamicContextHook,
   EMPTY_DYNAMIC_CONTEXT_HOOK,
+  IActionExecutionContext,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
@@ -20,14 +21,14 @@ import {
 import { genericActionArgumentsEvaluator } from '../form/utils';
 import { ActionParametersDictionary, GenericDictionary } from '@/interfaces';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IConfigurableActionDescriptor<TArguments>, actionArguments: TArguments | undefined): TArguments | undefined => {
   const { migrator } = action;
   if (!migrator)
     return actionArguments;
 
-  const migratorInstance = new Migrator<unknown, TArguments, ConfigurableActionArgumentsMigrationContext>();
+  const migratorInstance = new Migrator<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>();
   const fluent = migrator(migratorInstance);
   const versionedValue = { ...actionArguments } as IHasVersion;
   if (versionedValue.version === undefined)
@@ -127,7 +128,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
     }
   };
 
-  const prepareArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IPrepareActionArgumentsPayload<TArguments>): Promise<TArguments> => {
+  const prepareArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IPrepareActionArgumentsPayload<TArguments>): Promise<TArguments | undefined> => {
     const { actionConfiguration, argumentsEvaluationContext } = payload;
     const { actionOwner, actionName, actionArguments } = actionConfiguration;
     const action = getConfigurableAction<TArguments>({ owner: actionOwner, name: actionName });
@@ -135,7 +136,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
     return actionArguments
       ? argumentsEvaluator(actionArguments, argumentsEvaluationContext)
-      : Promise.resolve({} as TArguments);
+      : Promise.resolve(undefined);
   };
 
   const executeAction = (payload: IExecuteActionPayload): Promise<void> => {
@@ -153,7 +154,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
       : undefined;
 
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
-    const executionContext = argumentsEvaluationContext;
+    const executionContext = argumentsEvaluationContext satisfies IActionExecutionContext;
 
     return argumentsEvaluator({ ...actualArguments }, argumentsEvaluationContext)
       .then((preparedActionArguments) => {
@@ -242,14 +243,14 @@ const ConfigurableActionDispatcherConsumer = ConfigurableActionDispatcherActions
 /**
  * Register configurable action
  */
-function useConfigurableAction<TArguments extends object = object, TResponse = unknown>(
-  payload: IRegisterActionPayload<TArguments, TResponse>,
+function useConfigurableAction<TArguments extends object = object, TResponse = unknown, TExecutionContext extends IActionExecutionContext = IActionExecutionContext>(
+  payload: IRegisterActionPayload<TArguments, TResponse, TExecutionContext>,
   deps?: DependencyList,
 ): void {
   const { registerAction, unregisterAction } = useConfigurableActionDispatcher();
 
   useEffect(() => {
-    if (!payload.owner || !payload.ownerUid) return undefined;
+    if (isNullOrWhiteSpace(payload.owner) || isNullOrWhiteSpace(payload.ownerUid)) return undefined;
 
     registerAction(payload);
 

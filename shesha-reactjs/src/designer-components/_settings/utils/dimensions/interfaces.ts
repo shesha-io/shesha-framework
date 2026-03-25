@@ -6,12 +6,12 @@ export interface IDimensionsProps extends IConfigurableFormComponent {
 }
 
 export interface IDimensionsValue {
-  width?: string | number;
-  height?: string | number;
-  minWidth?: string | number;
-  minHeight?: string | number;
-  maxWidth?: string | number;
-  maxHeight?: string | number;
+  width?: string | number | undefined;
+  height?: string | number | undefined;
+  minWidth?: string | number | undefined;
+  minHeight?: string | number | undefined;
+  maxWidth?: string | number | undefined;
+  maxHeight?: string | number | undefined;
 }
 
 export interface IDimensionsType {

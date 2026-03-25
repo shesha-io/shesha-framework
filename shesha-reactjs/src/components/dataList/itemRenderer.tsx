@@ -59,7 +59,7 @@ export interface IDataListItemProps {
   allowEdit: boolean;
   updater?: (data: any) => Promise<any>;
   allowDelete: boolean;
-  deleter?: () => Promise<any>;
+  deleter?: () => Promise<void>;
   editMode: CrudMode;
   data?: any;
   markup: FormRawMarkup;

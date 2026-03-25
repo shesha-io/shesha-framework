@@ -82,7 +82,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
       return (
         <ShaFormProvider shaForm={shaForm}>
           <ParentProvider
-            model={null}
+            model={undefined}
             formMode={shaForm.formMode}
             formFlatMarkup={shaForm.flatStructure}
             formApi={shaForm.getPublicFormApi()}

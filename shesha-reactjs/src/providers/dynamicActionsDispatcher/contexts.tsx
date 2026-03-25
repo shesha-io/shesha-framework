@@ -2,32 +2,20 @@ import { IProvidersDictionary } from './models';
 import { IDynamicActionsContext } from '../dynamicActions/contexts';
 import { createNamedContext } from '@/utils/react';
 
-export interface IDynamicActionsDispatcherStateContext {
-  activeProvider?: string;
-}
-
-export interface IRegisterProviderPayload {
+export interface IRegisterProviderPayload<TSettings extends object = object> {
   id: string;
-  contextValue: IDynamicActionsContext;
+  contextValue: IDynamicActionsContext<TSettings>;
 }
 
-export interface IDynamicActionsDispatcherActionsContext {
-  registerProvider: (payload: IRegisterProviderPayload) => void;
+export interface IDynamicActionsDispatcher {
+  registerProvider: <TSettings extends object = object>(payload: IRegisterProviderPayload<TSettings>) => void;
   getProviders: () => IProvidersDictionary;
   getProvider: (providerUid: string) => IDynamicActionsContext | undefined;
 }
-
-export interface IDynamicActionsDispatcherFullInstance extends IDynamicActionsDispatcherStateContext, IDynamicActionsDispatcherActionsContext {}
 
 export interface IDynamicActionsRegistration {
   id: string;
   contextValue: IDynamicActionsContext;
 }
 
-/** initial state */
-export const DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE: IDynamicActionsDispatcherStateContext = {
-};
-
-export const DynamicActionsDispatcherStateContext = createNamedContext<IDynamicActionsDispatcherStateContext>({ ...DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE }, "DynamicActionsDispatcherStateContext");
-
-export const DynamicActionsDispatcherActionsContext = createNamedContext<IDynamicActionsDispatcherActionsContext>(undefined, "DynamicActionsDispatcherActionsContext");
+export const DynamicActionsDispatcherContext = createNamedContext<IDynamicActionsDispatcher | undefined>(undefined, "DynamicActionsDispatcherContext");
