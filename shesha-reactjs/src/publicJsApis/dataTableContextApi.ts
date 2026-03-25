@@ -59,9 +59,8 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
   changeQuickSearch?: (val: string) => void;
   /** change quick search and refresh table data */
   performQuickSearch?: (val: string) => void;
-  toggleSaveFilterModal?: (visible: boolean) => void;
   changeActionedRow?: (data: any) => void;
-  changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => void;
+  changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => Promise<void>;
 
   setPredefinedFilters: (filters: IStoredFilter[]) => void;
   setPermanentFilter: (filter: IStoredFilter) => void;
@@ -71,9 +70,6 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
 
   changeSelectedIds?: (selectedIds: string[]) => void;
   getCurrentFilter: () => ITableFilter[];
-
-  changeDisplayColumn: (displayColumnName: string) => void;
-  changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
 
   /**
    * Get current repository of the datatable

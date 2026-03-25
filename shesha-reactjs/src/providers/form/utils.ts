@@ -44,7 +44,7 @@ import {
 import moment from 'moment';
 import FileSaver from 'file-saver';
 import { App } from 'antd';
-import { ISelectionProps } from '@/providers/dataTable/contexts';
+import { ISelectionProps } from '@/providers/dataTable/interfaces';
 import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import {
   FormMode,

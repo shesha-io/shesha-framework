@@ -16,6 +16,7 @@ import {
   IColumnSorting,
   isDataColumn,
   isFormColumn,
+  ISortingItem,
   IStoredFilter,
   ITableActionColumn,
   ITableColumn,
@@ -26,6 +27,7 @@ import {
   SortDirection,
 } from './interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 // Filters should read properties as camelCase ?:(
 export const hasDynamicFilter = (filters: IStoredFilter[]): boolean => {
@@ -320,7 +322,7 @@ const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[
 
   return state.userSorting.filter((s) => {
     if (!s.id) return false;
-    const column = state.columns && state.columns.find((c) => c.id === s.id);
+    const column = state.columns.find((c) => c.id === s.id);
     return column && column.isSortable;
   });
 };
@@ -333,7 +335,7 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
           id: item.propertyName,
           desc: item.sorting === 'desc',
         }));
-        if (state.standardSorting && state.standardSorting.length > 0) {
+        if (isNonEmptyArray(state.standardSorting)) {
           state.standardSorting.forEach((item) => {
             if (!groupSorting.find((c) => c.id === item.id)) groupSorting.push(item);
           });
@@ -344,7 +346,7 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
       const userSorting = getEffectiveUserSorting(state);
       return userSorting && userSorting.length > 0
         ? userSorting
-        : state.standardSorting ?? [];
+        : state.standardSorting;
     }
     case 'strict': {
       return !isNullOrWhiteSpace(state.strictSortBy)
@@ -353,4 +355,10 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
     }
   }
   return [];
+};
+
+export const sortingItems2ColumnSorting = (items: ISortingItem[] | undefined): IColumnSorting[] => {
+  return items
+    ? items.map<IColumnSorting>((item) => ({ id: item.propertyName, desc: item.sorting === 'desc' }))
+    : [];
 };

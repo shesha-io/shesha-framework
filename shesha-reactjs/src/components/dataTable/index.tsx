@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import {
@@ -13,7 +13,8 @@ import {
   useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
-import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
+import { DataTableFullInstance } from '@/providers/dataTable/contexts';
+import { IColumnWidth } from '@/providers/dataTable/interfaces';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
 import { RowReorderValidationError } from '@/utils/errors';
 import { ReactTable } from '@/components/reactTable';
@@ -52,7 +53,7 @@ import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
-import { StandaloneTable } from '@/designer-components/dataTable/table/standaloneTable';
+import { removeUndefinedProperties } from '@/utils/array';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -227,7 +228,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     isFetchingTableData,
     totalPages,
     columns,
-    configurableColumns,
     groupingColumns,
     pageSizeOptions,
     currentPage,
@@ -536,7 +536,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           originalConfig: columnItem,
           cellStyleAccessor: cellStyleAccessor,
         };
-        return column;
+
+        return removeUndefinedProperties(column);
       });
     return localPreparedColumns;
   }, [
@@ -1017,24 +1018,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     actionIconColor,
   };
 
-  // Always render ReactTable - it handles empty columns gracefully
-  // Only show StandaloneTable in designer mode when there are truly no configured columns
-  // Only show StandaloneTable when:
-  // 1. In designer mode
-  // 2. configurableColumns has been initialized (not undefined) AND is empty
-  // 3. columns (from store) is also empty
-  // This prevents showing StandaloneTable during initial load before columns are registered
-  const shouldShowStandaloneTable =
-    configurableColumns !== undefined && configurableColumns.length === 0 &&
-    (!columns || columns.length === 0);
-
   return (
-    <Fragment>
-      {shouldShowStandaloneTable ? (
-        <StandaloneTable items={[]} type="" id="" />
-      ) : (
-        <ReactTable {...tableProps} />
-      )}
-    </Fragment>
+    <ReactTable {...tableProps} />
   );
 };

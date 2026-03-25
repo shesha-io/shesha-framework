@@ -93,13 +93,13 @@ export interface ITableDataColumn extends ITableColumn, ITableDataFetchColumn, I
 }
 
 export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {
-  propertiesNames?: string;
+  propertiesNames?: string | undefined;
 
-  displayFormId?: FormFullName;
-  createFormId?: FormFullName;
-  editFormId?: FormFullName;
+  displayFormId?: FormFullName | undefined;
+  createFormId?: FormFullName | undefined;
+  editFormId?: FormFullName | undefined;
 
-  minHeight?: number;
+  minHeight?: number | undefined;
 }
 
 export const isDataColumn = (column: ITableColumn | undefined): column is ITableDataColumn => {
@@ -174,7 +174,7 @@ export interface IGetListDataPayload {
   /** Data columns to fetch  */
   readonly columns: ITableDataColumn[];
   /** Sorting */
-  readonly sorting: IColumnSorting[];
+  readonly sorting: IColumnSorting[] | undefined;
   /** Filter in JsonLogic format */
   readonly filter?: string | undefined;
   /** Quick search (simple text search by all text columns) */
@@ -223,19 +223,19 @@ export interface IStoredFilter {
 
 export interface ITableDataResponse {
   readonly totalCount: number;
-  readonly items: object[];
+  readonly items: ITableRowData[];
 }
 
 export interface ITableDataInternalResponse {
   readonly totalPages: number;
   readonly totalRows: number;
   readonly totalRowsBeforeFilter: number;
-  readonly rows: object[];
+  readonly rows: ITableRowData[];
 }
 
 export interface IPublicDataTableActions {
-  refreshTable: () => void;
-  exportToExcel?: () => void;
+  refreshTable: () => Promise<void>;
+  exportToExcel: () => Promise<void>;
 }
 
 export type IDataTableInstance = IPublicDataTableActions;
@@ -308,3 +308,23 @@ export interface ITableRowData {
   id: string;
   [key: string]: unknown;
 }
+
+export interface IColumnWidth {
+  id: string;
+  width: number;
+}
+
+export type DragState = 'started' | 'finished' | null;
+
+export interface ISelectionProps {
+  index?: number;
+  id?: string;
+  row: ITableRowData;
+}
+
+/** Type guard to check if an object has the required row data shape */
+export const isTableRowData = (obj: unknown): obj is ITableRowData => {
+  return typeof obj === 'object' && obj !== null && 'id' in obj;
+};
+
+export type DatasetEvents = 'data';

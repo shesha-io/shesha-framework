@@ -477,7 +477,9 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const shouldShowStandalone = hasNoColumns && hasAutoConfiguredRef.current;
 
   if (isDesignMode && (shouldShowStandalone || hasContextConfigErrorsOrWarnings)) {
-    return <StandaloneTable {...props} />;
+    return (
+      <StandaloneTable {...props} />
+    );
   }
 
   return (

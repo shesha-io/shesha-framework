@@ -23,12 +23,9 @@ export interface IColumnResizing {
 }
 
 export interface OnRowsReorderedArgs {
-  // allRows: object[];
-  // reorderedRows: object[];
-
-  getOld: () => object[];
-  getNew: () => object[];
-  applyOrder: (orderedItems: object[]) => void;
+  getOld: () => ITableRowData[];
+  getNew: () => ITableRowData[];
+  applyOrder: (orderedItems: ITableRowData[]) => void;
   oldIndex?: number;
   newIndex?: number;
 }

@@ -133,7 +133,9 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   if (store) {
     return <TableWrapper {...model} columnsMismatch={columnsMismatch} />;
   } else {
-    return <StandaloneTable {...model} />;
+    return (
+      <StandaloneTable {...model} />
+    );
   }
 };
 

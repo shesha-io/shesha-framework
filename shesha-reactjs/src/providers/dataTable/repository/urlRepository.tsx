@@ -1,4 +1,4 @@
-import { DataTableProviderWithRepository, HttpClientApi, IDataTableProviderWithRepositoryProps, IUrlDataSourceConfig, useHttpClient, useMetadataDispatcher } from '@/providers';
+import { HttpClientApi, IUrlDataSourceConfig, useHttpClient, useMetadataDispatcher } from '@/providers';
 import React, { useMemo, FC, PropsWithChildren } from 'react';
 
 import { camelcaseDotNotation } from '@/utils/string';
@@ -19,6 +19,8 @@ import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { buildUrl } from '@/utils';
 import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from '../provider-with-repo';
+import { isNonEmptyArray } from '@/utils/array';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -72,10 +74,12 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
       skipCount: (payload.currentPage - 1) * payload.pageSize,
       properties: convertDotNotationPropertiesToGraphQL(properties),
       quickSearch: payload.quickSearch,
-      sorting: payload.sorting
-        .filter((s) => Boolean(s.id))
-        .map((s) => camelcaseDotNotation(s.id) + (s.desc ? ' desc' : ''))
-        .join(','),
+      sorting: isNonEmptyArray(payload.sorting)
+        ? payload.sorting
+          .filter((s) => Boolean(s.id))
+          .map((s) => camelcaseDotNotation(s.id) + (s.desc ? ' desc' : ''))
+          .join(',')
+        : undefined,
       filter: payload.filter,
     };
 

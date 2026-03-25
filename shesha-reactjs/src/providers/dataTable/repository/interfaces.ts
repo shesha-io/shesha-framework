@@ -1,13 +1,13 @@
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 import { IDictionary } from "@/interfaces";
-import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, SortMode } from "../interfaces";
+import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, ITableRowData, SortMode } from "../interfaces";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 export interface RowsReorderPayload {
   propertyName: string;
-  getOld: () => object[];
-  getNew: () => object[];
-  applyOrder: (orderedItems: object[]) => void;
+  getOld: () => ITableRowData[];
+  getNew: () => ITableRowData[];
+  applyOrder: (orderedItems: ITableRowData[]) => void;
   customReorderEndpoint?: string;
 }
 
@@ -23,9 +23,9 @@ export interface IRepository<TCreateOptions extends DefaultCreateOptions = Defau
   reorder: (payload: RowsReorderPayload) => Promise<void>;
   supportsReordering?: (args: SupportsReorderingArgs) => boolean | string;
   supportsGrouping?: (args: SupportsGroupingArgs) => boolean;
-  performCreate: <TData extends object = object>(rowIndex: number, data: TData, options?: TCreateOptions) => Promise<TData>;
-  performUpdate: <TData extends object = object>(rowIndex: number, data: TData, options?: TUpdateOptions) => Promise<TData>;
-  performDelete: <TData extends object = object>(rowIndex: number, data: TData, options?: TDeleteOptions) => Promise<TData>;
+  performCreate: <TData extends ITableRowData = ITableRowData>(rowIndex: number, data: TData, options?: TCreateOptions) => Promise<TData>;
+  performUpdate: <TData extends ITableRowData = ITableRowData>(rowIndex: number, data: TData, options?: TUpdateOptions) => Promise<TData>;
+  performDelete: <TData extends ITableRowData = ITableRowData>(rowIndex: number, data: TData, options?: TDeleteOptions) => Promise<TData>;
 };
 
 export interface IHasModelType {

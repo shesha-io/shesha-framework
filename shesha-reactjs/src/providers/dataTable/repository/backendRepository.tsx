@@ -1,4 +1,4 @@
-import { DataTableProviderWithRepository, HttpClientApi, IDataTableProviderWithRepositoryProps, IHasEntityDataSourceConfig, useHttpClient, useMetadataDispatcher } from "@/providers";
+import { HttpClientApi, IHasEntityDataSourceConfig, useHttpClient, useMetadataDispatcher } from "@/providers";
 import React, { useMemo, FC, PropsWithChildren } from "react";
 import { camelcaseDotNotation, getNumberOrUndefined } from "@/utils/string";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
@@ -20,6 +20,9 @@ import { buildUrl } from "@/utils";
 import { isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractErrorInfo } from "@/utils/errors";
 import { callApiEndpoint } from "@/utils/fetchers";
+import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider-with-repo";
+import { DataTableProviderWithRepositoryNew } from "../provider";
+import { isNonEmptyArray } from "@/utils/array";
 
 export interface IWithBackendRepositoryArgs {
   entityType: string | IEntityTypeIdentifier;
@@ -89,10 +92,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
       skipCount: (payload.currentPage - 1) * payload.pageSize,
       properties: convertDotNotationPropertiesToGraphQL(properties),
       quickSearch: payload.quickSearch,
-      sorting: payload.sorting
-        .filter((s) => Boolean(s.id))
-        .map((s) => camelcaseDotNotation(s.id) + (s.desc ? ' desc' : ''))
-        .join(','),
+      sorting: isNonEmptyArray(payload.sorting)
+        ? payload.sorting
+          .filter((s) => Boolean(s.id))
+          .map((s) => camelcaseDotNotation(s.id) + (s.desc ? ' desc' : ''))
+          .join(',')
+        : undefined,
       filter: payload.filter,
     };
 
@@ -346,12 +351,18 @@ export const useBackendRepository = (args: IWithBackendRepositoryArgs): IBackend
   return repository;
 };
 
+const useNew: boolean = true;
 export const BackendDataSourceTable: FC<IHasEntityDataSourceConfig & PropsWithChildren<Omit<IDataTableProviderWithRepositoryProps, 'repository'>>> = (props) => {
   const { entityType, getDataPath, ...restProps } = props;
 
   const repository = useBackendRepository({ entityType, getListUrl: getDataPath ?? "" });
 
-  return (
-    <DataTableProviderWithRepository {...restProps} repository={repository} />
-  );
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return useNew
+    ? (
+      <DataTableProviderWithRepositoryNew {...restProps} repository={repository} />
+    )
+    : (
+      <DataTableProviderWithRepository {...restProps} repository={repository} />
+    );
 };

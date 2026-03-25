@@ -69,7 +69,7 @@ export type ICrudOperationsColumnProps = IConfigurableColumnsProps;
  * Configurable form column (displays form)
  */
 export interface IFormColumnsProps extends IConfigurableColumnsProps, IEditableColumnProps {
-  propertiesNames?: string;
+  propertiesNames?: string | undefined;
 
   displayFormId?: FormFullName;
   createFormId?: FormFullName;

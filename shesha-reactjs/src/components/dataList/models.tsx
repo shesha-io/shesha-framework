@@ -2,7 +2,7 @@ import { MutableRefObject } from 'react';
 import { FormIdentifier, IStyleType } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { ISelectionProps } from '@/providers/dataTable/contexts';
+import { ISelectionProps } from '@/providers/dataTable/interfaces';
 import { ISortingItem, ITableRowData } from '@/providers/dataTable/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 

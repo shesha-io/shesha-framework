@@ -1,9 +1,7 @@
 import { getFilterOptions } from '@/components/columnItemFilter';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
-  DEFAULT_PAGE_SIZE,
   IDataTableStateContext,
-  ISelectionProps,
 } from './contexts';
 import {
   setSelectedRowAction,
@@ -17,7 +15,6 @@ import {
   fetchColumnsSuccessSuccessAction,
   changePageSizeAction,
   changeQuickSearchAction,
-  toggleSaveFilterModalAction,
   setCurrentPageAction,
   toggleColumnVisibilityAction,
   toggleColumnFilterAction,
@@ -33,8 +30,6 @@ import {
   registerConfigurableColumnsAction,
   onSortAction,
   onGroupAction,
-  changeDisplayColumnAction,
-  changePersistedFiltersToggleAction,
   setDataFetchingModeAction,
   fetchGroupingColumnsSuccessAction,
   setSortingSettingsAction,
@@ -48,6 +43,8 @@ import {
   ITableDataColumn,
   ITableFilter,
   ITableRowData,
+  ISelectionProps,
+  isTableRowData,
 } from './interfaces';
 import { getTableDataColumn, prepareColumn } from './utils';
 import { ProperyDataType } from '@/interfaces/metadata';
@@ -56,14 +53,9 @@ import { createReducer } from '@reduxjs/toolkit';
 import { isNonEmptyArray } from '@/utils/array';
 import { getIdOrUndefined } from '@/utils/entity';
 
-/** Type guard to check if an object has the required row data shape */
-const isTableRowData = (obj: unknown): obj is ITableRowData => {
-  return typeof obj === 'object' && obj !== null && 'id' in obj;
-};
-
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
-  return [...(state.tableFilterDirty || state.tableFilter || [])];
+  return [...(state.tableFilterDirty ?? state.tableFilter)];
 };
 
 const getRowSelection = (rows: ITableRowData[], selectedId: string | undefined): ISelectionProps | undefined => {
@@ -94,7 +86,7 @@ const reducer = createReducer(DATA_TABLE_CONTEXT_INITIAL_STATE, (builder) => {
         ...state,
         dragState: payload,
         selectedRow: undefined,
-        selectedIds: undefined,
+        selectedIds: [],
       };
     })
     .addCase(setMultiSelectedRowAction, (state, { payload }) => {
@@ -219,9 +211,9 @@ const reducer = createReducer(DATA_TABLE_CONTEXT_INITIAL_STATE, (builder) => {
         columns: cols,
         // user config
         currentPage: userConfig?.currentPage || 1,
-        selectedPageSize: userConfig?.pageSize ?? state.selectedPageSize ?? DEFAULT_PAGE_SIZE,
-        quickSearch: userConfig?.quickSearch,
-        tableFilter: userConfig?.advancedFilter,
+        selectedPageSize: userConfig?.pageSize ?? state.selectedPageSize,
+        quickSearch: userConfig?.quickSearch ?? "",
+        tableFilter: userConfig?.advancedFilter ?? [],
         tableFilterDirty: userConfig?.advancedFilter,
         selectedStoredFilterIds,
         userSorting: userSorting,
@@ -233,27 +225,22 @@ const reducer = createReducer(DATA_TABLE_CONTEXT_INITIAL_STATE, (builder) => {
     .addCase(changeQuickSearchAction, (state, { payload }) => {
       state.quickSearch = payload;
     })
-    .addCase(toggleSaveFilterModalAction, (state, { payload }) => {
-      state.saveFilterModalVisible = payload;
-    })
     .addCase(setCurrentPageAction, (state, { payload }) => {
       state.currentPage = payload;
     })
     .addCase(toggleColumnVisibilityAction, (state, { payload }) => {
       return {
         ...state,
-        columns: state.columns
-          ? state.columns.map(({ id, show, ...rest }) => {
-            if (id === payload) {
-              return {
-                id,
-                ...rest,
-                show: !show,
-              };
-            }
-            return { id, show, ...rest };
-          })
-          : [],
+        columns: state.columns.map(({ id, show, ...rest }) => {
+          if (id === payload) {
+            return {
+              id,
+              ...rest,
+              show: !show,
+            };
+          }
+          return { id, show, ...rest };
+        }),
       };
     })
     .addCase(toggleColumnFilterAction, (state, { payload: appliedFiltersColumnIds }) => {
@@ -262,7 +249,7 @@ const reducer = createReducer(DATA_TABLE_CONTEXT_INITIAL_STATE, (builder) => {
         const existingFilter = currentFilter.find((f) => f.columnId === id);
         if (existingFilter) return existingFilter;
 
-        const column = getTableDataColumn(state.columns ?? [], id);
+        const column = getTableDataColumn(state.columns, id);
         const filterOptions = column && !isNullOrWhiteSpace(column.dataType)
           ? getFilterOptions(column.dataType)
           : [];
@@ -321,7 +308,7 @@ const reducer = createReducer(DATA_TABLE_CONTEXT_INITIAL_STATE, (builder) => {
     .addCase(applyFilterAction, (state, { payload }) => {
       return {
         ...state,
-        tableFilter: payload,
+        tableFilter: payload ?? [],
         tableFilterDirty: payload,
         currentPage: 1,
       };
@@ -387,18 +374,6 @@ const reducer = createReducer(DATA_TABLE_CONTEXT_INITIAL_STATE, (builder) => {
       return {
         ...state,
         grouping: [...payload],
-      };
-    })
-    .addCase(changeDisplayColumnAction, (state, { payload }) => {
-      return {
-        ...state,
-        displayColumnName: payload,
-      };
-    })
-    .addCase(changePersistedFiltersToggleAction, (state, { payload }) => {
-      return {
-        ...state,
-        persistSelectedFilters: payload,
       };
     })
     .addCase(setDataFetchingModeAction, (state, { payload }) => {

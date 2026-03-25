@@ -1,23 +1,24 @@
 import { IConfigurableColumnsProps, isDataColumn } from "@/providers/datatableColumnsConfigurator/models";
 import React, { useCallback, useMemo, FC, PropsWithChildren } from "react";
-import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
+import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, ITableRowData } from "../interfaces";
 import { IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
-import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps, IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";
+import { IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";
 import { IModelMetadata, isJsonEntityMetadata, isObjectMetadata } from "@/interfaces/metadata";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { unsafeGetValueByPropertyName } from "@/utils/object";
+import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider-with-repo";
 
 export interface IWithInMemoryRepositoryArgs {
-  valueAccessor: () => object[];
-  onChange: (value: object[]) => void;
+  valueAccessor: () => ITableRowData[];
+  onChange: (value: ITableRowData[]) => void;
   metadata?: IModelMetadata | undefined;
   metadataDispatcher: IMetadataDispatcher;
 }
 
 type FilterRowsArgs = Pick<IGetListDataPayload, 'quickSearch' | 'columns'> & {
-  rows: object[];
+  rows: ITableRowData[];
 };
-const filterRows = ({ rows, columns, quickSearch }: FilterRowsArgs): object[] => {
+const filterRows = ({ rows, columns, quickSearch }: FilterRowsArgs): ITableRowData[] => {
   if (!quickSearch)
     return rows;
   const lowerQuickSearch = quickSearch.toLowerCase();
@@ -35,7 +36,7 @@ const filterRows = ({ rows, columns, quickSearch }: FilterRowsArgs): object[] =>
 
 
 type ApplyPagingArgs = Pick<IGetListDataPayload, 'currentPage' | 'pageSize'> & Pick<ITableDataInternalResponse, 'totalRowsBeforeFilter'>;
-const applyPaging = (rows: object[], { pageSize, currentPage, totalRowsBeforeFilter }: ApplyPagingArgs): ITableDataInternalResponse => {
+const applyPaging = (rows: ITableRowData[], { pageSize, currentPage, totalRowsBeforeFilter }: ApplyPagingArgs): ITableDataInternalResponse => {
   if (pageSize < 0)
     return {
       rows: rows,
@@ -116,7 +117,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
     return converted;
   };
 
-  const performUpdate = <TData extends object = object>(rowIndex: number, data: TData): Promise<TData> => {
+  const performUpdate = <TData extends ITableRowData = ITableRowData>(rowIndex: number, data: TData): Promise<TData> => {
     const newRows = [...args.valueAccessor()];
     newRows[rowIndex] = data;
     args.onChange(newRows);
@@ -132,7 +133,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
     return Promise.resolve(data);
   };
 
-  const performCreate = <TData extends object = object>(_rowIndex: number, data: TData): Promise<TData> => {
+  const performCreate = <TData extends ITableRowData = ITableRowData>(_rowIndex: number, data: TData): Promise<TData> => {
     const newRows = [...args.valueAccessor()];
     newRows.push(data);
 

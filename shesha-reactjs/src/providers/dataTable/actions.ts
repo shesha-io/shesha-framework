@@ -1,8 +1,10 @@
 import { Row } from 'react-table';
 import { createAction } from '@reduxjs/toolkit';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
-import { DragState, IDataTableUserConfig, ISelectionProps } from './contexts';
+import { IDataTableUserConfig } from './contexts';
 import {
+  DragState,
+  ISelectionProps,
   DataFetchingMode,
   DataTableColumnDto,
   IColumnSorting,
@@ -41,7 +43,6 @@ export enum DataTableActionEnums {
   ChangeFilter = 'CHANGE_FILTER',
   ApplyFilter = 'APPLY_FILTER',
   ChangeQuickSearch = 'CHANGE_QUICK_SEARCH',
-  ToggleSaveFilterModal = 'TOGGLE_SAVE_FILTER_MODAL',
   ChangeActionedRow = 'CHANGE_ACTIONED_ROW',
   ChangeSelectedStoredFilterIds = 'CHANGE_SELECTED_STORED_FILTER_IDS',
   SetPredefinedFilters = 'REGISTER_STORED_FILTER',
@@ -53,9 +54,6 @@ export enum DataTableActionEnums {
   OnGroup = 'ON_GROUP',
   SetModelType = 'SET_MODEL_TYPE',
   SetDataFetchingMode = 'SET_DATA_FETCHING_MODE',
-
-  ChangeDisplayColumn = 'CHANGE_DISPLAY_COLUMN',
-  ChangePersistedFiltersToggle = 'CHANGE_PERSISTED_FILTERS_TOGGLE',
 
   // selections
   SetSelectedRow = 'SET_SELECTED_ROW',
@@ -105,8 +103,6 @@ export const fetchColumnsSuccessSuccessAction = createAction<IFetchColumnsSucces
 export const changePageSizeAction = createAction<number>(DataTableActionEnums.ChangePageSize);
 
 export const changeQuickSearchAction = createAction<string, string>(DataTableActionEnums.ChangeQuickSearch);
-
-export const toggleSaveFilterModalAction = createAction<boolean>(DataTableActionEnums.ToggleSaveFilterModal);
 
 export const setCurrentPageAction = createAction<number>(DataTableActionEnums.SetCurrentPage);
 
@@ -160,10 +156,6 @@ export const onSortAction = createAction<IColumnSorting[]>(DataTableActionEnums.
 export const onGroupAction = createAction<ISortingItem[]>(DataTableActionEnums.OnGroup);
 
 /* NEW_ACTION_GOES_HERE */
-
-export const changeDisplayColumnAction = createAction<string>(DataTableActionEnums.ChangeDisplayColumn);
-
-export const changePersistedFiltersToggleAction = createAction<boolean>(DataTableActionEnums.ChangePersistedFiltersToggle);
 
 export const setDataFetchingModeAction = createAction<DataFetchingMode>(DataTableActionEnums.SetDataFetchingMode);
 
