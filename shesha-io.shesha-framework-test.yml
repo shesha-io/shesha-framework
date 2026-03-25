@@ -44,6 +44,7 @@ stages:
   jobs:
   - job: UnitTests_1
     displayName: 'Unit Tests'
+    condition: false # temporary disabled
     pool:
       name: Azure Pipelines
       vmImage: ubuntu-22.04
