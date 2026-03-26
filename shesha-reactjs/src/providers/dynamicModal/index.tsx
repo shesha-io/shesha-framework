@@ -1,5 +1,5 @@
 import { App } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
@@ -24,6 +24,7 @@ import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
 import { DynamicModalRenderer } from './renderer';
 import { showDialogArgumentsFormFactory } from './configurable-actions/show-dialog-arguments';
+import { createModalApi, createFallbackModalApi, IModalApi } from './modalApi';
 
 const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(DynamicModalReducer, {
@@ -212,6 +213,10 @@ function useDynamicModalState(): IDynamicModalStateContext {
   return context;
 }
 
+function useDynamicModalStateOrUndefined(): IDynamicModalStateContext | undefined {
+  return useContext(DynamicModalStateContext);
+}
+
 function useDynamicModalActions(): IDynamicModalActionsContext {
   const context = useContext(DynamicModalActionsContext);
 
@@ -222,8 +227,21 @@ function useDynamicModalActions(): IDynamicModalActionsContext {
   return context;
 }
 
+function useDynamicModalActionsOrUndefined(): IDynamicModalActionsContext | undefined {
+  return useContext(DynamicModalActionsContext);
+}
+
 function useDynamicModals(): IDynamicModalStateContext & IDynamicModalActionsContext {
   return { ...useDynamicModalState(), ...useDynamicModalActions() };
+}
+
+function useDynamicModalsOrUndefined(): (IDynamicModalStateContext & IDynamicModalActionsContext) | undefined {
+  const state = useDynamicModalStateOrUndefined();
+  const actions = useDynamicModalActionsOrUndefined();
+
+  if (!state || !actions) return undefined;
+
+  return { ...state, ...actions };
 }
 
 interface SimpleModal {
@@ -252,4 +270,66 @@ function useClosestModal(): IDynamicModalInstanceContext {
   return context;
 }
 
-export { DynamicModalProvider, useClosestModal, useDynamicModals, useModal };
+/**
+ * Hook to get the modal API for use in scripts and code
+ * @returns Modal API instance with methods to show dialogs, forms, and confirmations
+ * @example
+ * const modalApi = useModalApi();
+ *
+ * // Show a form in a modal
+ * const result = await modalApi.showForm({
+ *   formId: { name: 'my-form', module: 'app' },
+ *   title: 'Edit Record'
+ * });
+ *
+ * // Show a confirmation
+ * const confirmed = await modalApi.confirm({
+ *   title: 'Delete',
+ *   content: 'Are you sure?'
+ * });
+ */
+function useModalApi(): IModalApi {
+  const { createModal, removeModal } = useDynamicModals();
+  const { modal: antModalApi } = App.useApp();
+
+  // Memoize the modal API to prevent unnecessary re-creations
+  const modalApi = useMemo(
+    () => createModalApi(createModal, removeModal, antModalApi),
+    [createModal, removeModal, antModalApi]
+  );
+
+  return modalApi;
+}
+
+/**
+ * Hook to get the modal API with fallback if provider is not available
+ * Use this in contexts where DynamicModalProvider may not be available
+ * @returns Modal API instance (with limited functionality if provider is not available)
+ */
+function useModalApiOrUndefined(): IModalApi {
+  const modals = useDynamicModalsOrUndefined();
+  const { modal: antModalApi } = App.useApp();
+
+  // Memoize the modal API to prevent unnecessary re-creations
+  const modalApi = useMemo(() => {
+    if (!modals) {
+      // Return fallback API with only static methods when provider is not available
+      return createFallbackModalApi(antModalApi);
+    }
+
+    return createModalApi(modals.createModal, modals.removeModal, antModalApi);
+  }, [modals, antModalApi]);
+
+  return modalApi;
+}
+
+export {
+  DynamicModalProvider,
+  useClosestModal,
+  useDynamicModals,
+  useDynamicModalsOrUndefined,
+  useModal,
+  useModalApi,
+  useModalApiOrUndefined,
+};
+export type { IModalApi };
