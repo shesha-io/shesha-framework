@@ -9,4 +9,8 @@ export enum MainMenuActionEnums {
 
 export const setLoadedMenuAction = createAction<IConfigurableMainMenu>(MainMenuActionEnums.SetLoadedMenu);
 
-export const setItemsAction = createAction<ISidebarMenuItem[]>(MainMenuActionEnums.SetItems);
+export type SetItemsActionPayload = {
+  items: ISidebarMenuItem[];
+  originalItems: ISidebarMenuItem[];
+};
+export const setItemsAction = createAction<SetItemsActionPayload>(MainMenuActionEnums.SetItems);
