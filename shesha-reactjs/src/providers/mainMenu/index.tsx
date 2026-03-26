@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useReducer } from 'react';
 import { setItemsAction, setLoadedMenuAction } from './actions';
 import { IConfigurableMainMenu, IMainMenuActionsContext, IMainMenuStateContext, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
 import { reducer } from './reducer';
@@ -12,6 +12,7 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { isDefined } from '@/utils/nullables';
 import { throwError } from '@/utils/errors';
+import cloneDeep from 'lodash/cloneDeep';
 
 export interface MainMenuProviderProps {
   mainMenuConfigKey?: string;
@@ -44,6 +45,14 @@ const getItemsWithFormNavigation = (items: ISidebarMenuItem[]): ISidebarMenuItem
   return itemsToCheck;
 };
 
+const EMPTY_ITEMS: ISidebarMenuItem[] = [];
+
+const getItemsMap = (items: ISidebarMenuItem[]): Map<string, ISidebarMenuItem> => {
+  const result = new Map<string, ISidebarMenuItem>();
+  items.forEach((item) => result.set(item.id, item));
+  return result;
+};
+
 const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, { ...MAIN_MENU_CONTEXT_INITIAL_STATE });
 
@@ -54,8 +63,6 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
   const { applicationKey, anyOfPermissionsGranted } = useSheshaApplication();
   const httpClient = useHttpClient();
   const allData = useAvailableConstantsData();
-
-  const formPermissionedItems = useRef<ISidebarMenuItem[]>([]);
 
   const getActualItemsModel = useCallback((items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
     const actualItems = items.map((item) => {
@@ -74,7 +81,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     return actualItems;
   }, [allData, anyOfPermissionsGranted]);
 
-  const updatetFormNavigationVisible = useCallback((item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): void => {
+  const getNewHiddenOrUndefined = useCallback((item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): boolean | undefined => {
     const formId = tryExtractNavigationValidForm(item.actionConfiguration);
     if (formId) {
       // form navigation, check form permissions
@@ -82,24 +89,32 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
         x.module === formId.module &&
         x.name === formId.name,
       );
-      item.hidden = isDefined(form) && isDefined(form.permissions) && !anyOfPermissionsGranted(form.permissions);
+      const newHidden = isDefined(form) && isDefined(form.permissions) && !anyOfPermissionsGranted(form.permissions);
+      return newHidden !== item.hidden ? newHidden : undefined;
     }
+    return undefined;
   }, [anyOfPermissionsGranted]);
 
-  const getFormPermissions = useCallback((items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]): void => {
+  const setItemsWithPermissions = useCallback((items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]): void => {
     if (itemsToCheck.length > 0) {
       const forms = getFormsFromMenuItems(itemsToCheck);
       httpClient.post<IAjaxResponse<FormPermissionsDto[]>>("/api/services/Shesha/FormConfiguration/CheckPermissions", forms)
         .then((response) => {
           const data = extractAjaxResponse(response.data);
+          const itemsMap = getItemsMap(items);
           itemsToCheck.forEach((item) => {
-            return updatetFormNavigationVisible(item, data);
+            const newHidden = getNewHiddenOrUndefined(item, data);
+            if (newHidden !== undefined) {
+              const originalItem = itemsMap.get(item.id);
+              if (originalItem)
+                originalItem.hidden = newHidden;
+            }
           });
-          formPermissionedItems.current = [...items];
-          dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+
+          dispatch(setItemsAction({ items: getActualItemsModel(items), originalItems: items }));
         });
     }
-  }, [getActualItemsModel, httpClient, updatetFormNavigationVisible]);
+  }, [httpClient, getActualItemsModel, getNewHiddenOrUndefined]);
 
   const updateMainMenu = useCallback((value: IConfigurableMainMenu): void => {
     const migratorInstance = new Migrator<IConfigurableMainMenu, IConfigurableMainMenu>();
@@ -112,15 +127,15 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
 
     const itemsToCheck = getItemsWithFormNavigation(model.items);
     if (itemsToCheck.length > 0) {
-      getFormPermissions(model.items, itemsToCheck);
+      setItemsWithPermissions(cloneDeep(model.items), itemsToCheck);
     } else {
-      formPermissionedItems.current = Array.isArray(model.items) ? [...model.items] : [model.items];
-      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+      const newItems = Array.isArray(model.items) ? [...model.items] : [model.items];
+      dispatch(setItemsAction({ items: getActualItemsModel(newItems), originalItems: newItems }));
     }
-  }, [getActualItemsModel, getFormPermissions]);
+  }, [getActualItemsModel, setItemsWithPermissions]);
 
   useDeepCompareEffect(() => {
-    dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+    dispatch(setItemsAction({ items: getActualItemsModel(state.items ?? EMPTY_ITEMS), originalItems: state.items ?? EMPTY_ITEMS }));
   }, [allData]);
 
   useEffect(() => {

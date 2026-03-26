@@ -13,7 +13,8 @@ export const reducer = createReducer(MAIN_MENU_CONTEXT_INITIAL_STATE, (builder) 
     .addCase(setItemsAction, (state, { payload }) => {
       return {
         ...state,
-        items: payload,
+        items: payload.items,
+        originalItems: payload.originalItems,
       };
     })
   ;
