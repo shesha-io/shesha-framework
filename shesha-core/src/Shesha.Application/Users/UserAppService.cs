@@ -43,6 +43,7 @@ namespace Shesha.Users
     {
         // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
         public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
+        private const int MinPasswordLength = 6;
 
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
@@ -573,12 +574,12 @@ namespace Shesha.Users
 
             // todo: add new setting for the PasswordRegex and error message
             // validate password length
-            var requiredPasswordLength = await _passwordComplexitySettings.RequiredLength.GetValueAsync();
+            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync(), MinPasswordLength);
             if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
             {
                 throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
             }
-            
+
             user.AddHistoryEvent("Password reset", "Password reset");
             _personRepository.GetAll().FirstOrDefault(x => x.User == user)?.AddHistoryEvent("Password reset", "Password reset");
 
@@ -632,24 +633,29 @@ namespace Shesha.Users
 
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
-            long userId = _abpSession.UserId.Value;
-            var user = await _userManager.GetUserByIdAsync(userId);
-            var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
-            if (loginAsync.Result != ShaLoginResultType.Success)
+            if (_abpSession.UserId != null)
             {
-                throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
-            }
-            // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
-            {
-                throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
+                var userId = _abpSession.UserId.Value;
+                var user = await _userManager.GetUserByIdAsync(userId);
+                var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
+                if (loginAsync.Result != ShaLoginResultType.Success)
+                {
+                    throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
+                }
+                // todo: add new setting for the PasswordRegex and error message
+                var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync(), MinPasswordLength);
+                if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
+                {
+                    throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
+                }
+
+                user.AddHistoryEvent("Password changed", "Password changed");
+                _personRepository.GetAll().FirstOrDefault(x => x.User == user)?.AddHistoryEvent("Password changed", "Password changed");
+
+                user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
+                user.RequireChangePassword = false;
             }
 
-            user.AddHistoryEvent("Password changed", "Password changed");
-            _personRepository.GetAll().FirstOrDefault(x => x.User == user)?.AddHistoryEvent("Password changed", "Password changed");
-
-            user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
-            user.RequireChangePassword = false;
             await CurrentUnitOfWork.SaveChangesAsync();
             return true;
         }
@@ -674,12 +680,12 @@ namespace Shesha.Users
             }
             
             // validate password length
-            var requiredPasswordLength = await _passwordComplexitySettings.RequiredLength.GetValueAsync();
+            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync(), MinPasswordLength);
             if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
             {
                 throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
             }
-            
+
             var user = await _userManager.GetUserByIdAsync(input.UserId);
             if (user != null)
             {
