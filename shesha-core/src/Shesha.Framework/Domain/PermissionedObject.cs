@@ -71,6 +71,7 @@ namespace Shesha.Domain
 
         public virtual bool Hidden { get; set; }
 
+        // code based persmission Md5
         public virtual string Md5 { get; set; }
     }
 }
