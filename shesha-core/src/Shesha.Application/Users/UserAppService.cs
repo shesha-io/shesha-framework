@@ -574,7 +574,7 @@ namespace Shesha.Users
 
             // todo: add new setting for the PasswordRegex and error message
             // validate password length
-            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync(), MinPasswordLength);
+            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueAsync(), MinPasswordLength);
             if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
             {
                 throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
@@ -641,7 +641,7 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
             }
             // todo: add new setting for the PasswordRegex and error message
-            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync(), MinPasswordLength);
+            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueAsync(), MinPasswordLength);
             if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
             {
                 throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
@@ -673,7 +673,7 @@ namespace Shesha.Users
             }
             
             // validate password length
-            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync(), MinPasswordLength);
+            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueAsync(), MinPasswordLength);
             if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
             {
                 throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
