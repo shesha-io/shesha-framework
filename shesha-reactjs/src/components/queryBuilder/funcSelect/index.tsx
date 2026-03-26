@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { Tooltip, Select } from "antd";
-import { BUILT_IN_PLACEMENTS, SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
+import { BUILT_IN_PLACEMENTS } from "../domUtils";
 const { Option, OptGroup } = Select;
 import { FactoryWithContext, FieldItem, FieldProps } from '@react-awesome-query-builder/antd';
 
@@ -22,7 +22,6 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
     config, customProps, items: allItems, placeholder,
     selectedKey, selectedLabel, /* selectedOpts,*/ selectedAltLabel, selectedFullLabel, readonly,
   } = props;
-  const { showSearch } = customProps || {};
 
   const items = useMemo<FieldItem[]>(() => {
     const isTextCaseFunction = (item: FieldItem): boolean => {
@@ -54,12 +53,8 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
     }
   }, [singleLeafPath, selectedKey, props]);
 
-  const selectText = selectedLabel || placeholder;
-  const selectWidth = calcTextWidth(selectText);
-  const isFieldSelected = !!selectedKey;
   const dropdownPlacement = config.settings.dropdownPlacement;
   const dropdownAlign = dropdownPlacement ? BUILT_IN_PLACEMENTS[dropdownPlacement] : undefined;
-  const width = isFieldSelected && !showSearch ? null : selectWidth + SELECT_WIDTH_OFFSET_RIGHT;
   let tooltipText = selectedAltLabel || selectedFullLabel;
   if (tooltipText === selectedLabel)
     tooltipText = null;
@@ -106,7 +101,7 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
     <Select
       dropdownAlign={dropdownAlign}
       popupMatchSelectWidth={false}
-      style={{ width }}
+      style={{ width: '100%', minWidth: 0 }}
       placeholder={placeholder}
       size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
       onChange={onChange}

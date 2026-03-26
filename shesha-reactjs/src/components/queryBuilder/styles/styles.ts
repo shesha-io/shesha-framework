@@ -13,7 +13,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: unset !important;
     
             .query-builder {
-                margin: ${sheshaStyles.paddingLG}px 0px ${sheshaStyles.paddingLG}px 0px !important;
+                margin: 0 !important;
             }
     
             .ant-btn-group {
@@ -28,8 +28,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             background: #f5f5f5;
             border: 1px solid #ececec;
             border-radius: 8px;
-            padding: 12px !important;
             box-sizing: border-box;
+        }
+
+        .query-builder-container.qb-has-rules {
+            min-height: 218px;
+            padding: 20px 10px !important;
+        }
+
+        .query-builder-container.qb-empty {
+            min-height: 88px;
+            padding: 10px !important;
         }
 
         .query-builder-container.qb-empty .query-builder {
@@ -74,16 +83,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .sha-query-builder-empty-state-content {
             width: 100%;
             max-width: 100%;
-            height: 88px;
+            min-height: 68px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 10px;
             padding: 0;
-            background: #f7f7f7;
-            border-radius: 5px;
+            background: transparent;
+            border-radius: 0;
         }
 
         .query-builder .sha-query-builder-empty-state-actions {
@@ -99,10 +108,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            height: 36px !important;
-            min-width: 160px !important;
-            padding: 10px !important;
-            border-radius: 10px !important;
+            height: 32px !important;
+            min-width: 0 !important;
+            padding: 0 16px !important;
+            border-radius: 4px !important;
             font-size: 14px !important;
             font-weight: 500 !important;
             box-shadow: none !important;
@@ -150,7 +159,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: inline-flex !important;
             justify-content: flex-start !important;
             align-items: center !important;
-            gap: 12px;
+            gap: 10px;
         }
 
         .query-builder .sha-query-builder-group-footer-logic {
@@ -370,23 +379,39 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .rule--field-wrapper {
-            flex: 3 1 0 !important;
-            min-width: 0;
+            flex: 0 0 calc((100% - 20px) * 0.24498) !important;
+            width: calc((100% - 20px) * 0.24498) !important;
+            max-width: calc((100% - 20px) * 0.24498) !important;
+            min-width: 0 !important;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .query-builder .rule--operator {
-            flex: 3 1 0 !important;
-            min-width: 0;
+            flex: 0 0 calc((100% - 20px) * 0.20750) !important;
+            width: calc((100% - 20px) * 0.20750) !important;
+            max-width: calc((100% - 20px) * 0.20750) !important;
+            min-width: 0 !important;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .query-builder .rule--value {
-            flex: 4 1 0 !important;
-            width: auto !important;
-            min-width: 0;
+            flex: 0 0 calc((100% - 20px) * 0.54752) !important;
+            width: calc((100% - 20px) * 0.54752) !important;
+            max-width: calc((100% - 20px) * 0.54752) !important;
+            min-width: 0 !important;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .query-builder .rule--body.can--shrink--value .rule--value {
-            flex: 4 1 0 !important;
+            flex: 0 0 calc((100% - 20px) * 0.54752) !important;
+            width: calc((100% - 20px) * 0.54752) !important;
+            max-width: calc((100% - 20px) * 0.54752) !important;
+            min-width: 0 !important;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .query-builder > .group-or-rule-container > .group > .group--header {
@@ -589,7 +614,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--footer .group--actions .ant-btn-group {
             display: inline-flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
         }
 
@@ -599,9 +624,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--footer .action--ADD-RULE.ant-btn,
         .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--footer .action--ADD-GROUP.ant-btn {
-            height: 36px;
-            min-width: 160px;
-            border-radius: 10px;
+            height: 32px;
+            min-width: 0;
+            border-radius: 4px;
             box-shadow: none;
             padding: 0 16px;
             font-size: 14px;
@@ -869,71 +894,165 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             flex: 1 1 auto;
         }
 
+        .query-builder .rule--fieldsrc,
+        .query-builder .widget--valuesrc {
+            margin: 0;
+            flex: 0 0 auto;
+        }
+
+        .query-builder .rule--fieldsrc {
+            flex: 0 0 calc(100% * 0.32787);
+            width: calc(100% * 0.32787);
+            max-width: calc(100% * 0.32787);
+            min-width: 0;
+        }
+
+        .query-builder .widget--valuesrc {
+            flex: 0 0 calc(100% * 0.09780);
+            width: calc(100% * 0.09780);
+            max-width: calc(100% * 0.09780);
+            min-width: 0;
+        }
+
+        .query-builder .rule--field .sha-query-builder-packed-select {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger {
+            height: 100%;
+            min-height: 32px;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            border-radius: 0;
+            border: 0;
+            border-right: 1px solid #d0d5dd;
+            background: #f8fafc;
+            padding: 0 6px;
+            color: #344054;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-icon {
+            color: #1d2939;
+            font-size: 16px;
+        }
+
+        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-arrow {
+            color: #98a2b3;
+            font-size: 9px;
+        }
+
+        .query-builder .widget--valuesrc .sha-query-builder-source-trigger {
+            height: 100%;
+            min-height: 32px;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            border-radius: 0;
+            border: 0;
+            border-right: 1px solid #d0d5dd;
+            background: #f8fafc;
+            padding: 0 4px;
+            color: #344054;
+            gap: 2px;
+            justify-content: center;
+        }
+
+        .query-builder .widget--valuesrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-icon {
+            color: #1d2939;
+            font-size: 12px;
+        }
+
+        .query-builder .widget--valuesrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-arrow {
+            color: #98a2b3;
+            font-size: 9px;
+        }
+
         .query-builder .rule--before-widget:empty {
             display: none;
         }
 
         .query-builder .rule--before-widget:has(.sha-query-builder-empty-rule-placeholders) {
-            flex: 7 1 0;
+            flex: 0 0 calc((100% - 20px) * 0.75502 + 10px);
+            width: calc((100% - 20px) * 0.75502 + 10px);
+            max-width: calc((100% - 20px) * 0.75502 + 10px);
             min-width: 0;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .query-builder .rule--before-widget .sha-query-builder-empty-rule-placeholders {
             display: flex;
             align-items: stretch;
-            gap: 4px;
+            gap: 10px;
             width: 100%;
             min-width: 0;
         }
 
         .query-builder .sha-query-builder-empty-operator {
-            flex: 3 1 0;
+            flex: 0 0 calc((100% - 10px) * 0.20750 / 0.75502);
             min-width: 0;
-            min-height: 20px;
+            width: calc((100% - 10px) * 0.20750 / 0.75502);
+            max-width: calc((100% - 10px) * 0.20750 / 0.75502);
+            min-height: 32px;
             padding: 0 12px;
-            border: 1px solid #c7ced8;
+            border: 1px solid #d0d5dd;
             border-radius: 8px;
             background: #fff;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
+            box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .query-builder .sha-query-builder-empty-operator-text,
         .query-builder .sha-query-builder-empty-value-text {
             color: #98a2b3;
-            line-height: 20px;
+            line-height: 32px;
+            font-size: 14px;
         }
 
         .query-builder .sha-query-builder-empty-value {
-            flex: 4 1 0;
+            flex: 0 0 calc((100% - 10px) * 0.54752 / 0.75502);
             min-width: 0;
-            min-height: 20px;
-            border: 1px solid #c7ced8;
+            width: calc((100% - 10px) * 0.54752 / 0.75502);
+            max-width: calc((100% - 10px) * 0.54752 / 0.75502);
+            min-height: 32px;
+            border: 1px solid #d0d5dd;
             border-radius: 8px;
             background: #fff;
             overflow: hidden;
             display: flex;
             align-items: stretch;
+            box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+            box-sizing: border-box;
         }
 
         .query-builder .sha-query-builder-empty-value-type {
-            width: 28px;
-            min-width: 28px;
+            width: 40px;
+            min-width: 40px;
             box-sizing: border-box;
-            padding: 0 3px;
+            padding: 0 4px;
             border-right: 1px solid #d0d5dd;
             background: #f8fafc;
             color: #1d2939;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1px;
+            gap: 2px;
         }
 
         .query-builder .sha-query-builder-empty-value-type-icon {
-            font-size: 9px;
+            font-size: 12px;
         }
 
         .query-builder .sha-query-builder-empty-value-text {
@@ -1095,15 +1214,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .rule.group-or-rule > .sha-query-builder-rule-drag-placeholder.rule--drag-handler {
-            order: -1;
+            order: 3;
             pointer-events: none;
             cursor: default;
         }
 
         .query-builder .rule.group-or-rule > .rule--drag-handler {
+            order: 3;
             margin: 0 !important;
             padding: 0 6px !important;
             border: 0 !important;
+            border-left: 1px solid #f4f5f6 !important;
             align-self: center !important;
             flex: 0 0 auto;
         }
@@ -1113,14 +1234,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             margin: 0 !important;
             padding: 0 8px !important;
-            border-left: 1px solid #d0d5dd;
-            border-right: 1px solid #d0d5dd;
+            border-left: 0 !important;
+            border-right: 0 !important;
         }
 
         .query-builder .rule.group-or-rule > .rule--header {
+            order: 2;
             margin: 0 !important;
             padding: 0 6px !important;
-            border-left: 0 !important;
+            border-left: 1px solid #eaecf0 !important;
             border-right: 0 !important;
             display: inline-flex;
             align-items: center;
@@ -1202,23 +1324,54 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--value {
             display: flex;
             align-items: stretch;
-            min-height: 20px;
+            min-height: 32px;
             min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .query-builder .rule--field > *,
         .query-builder .rule--operator > *,
         .query-builder .rule--value > * {
             min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
+        .query-builder .rule--field .sha-query-builder-packed-select,
+        .query-builder .rule--field .sha-query-builder-packed-select > *,
+        .query-builder .rule--fieldsrc .sha-query-builder-source-dropdown-trigger,
+        .query-builder .rule--operator > *,
         .query-builder .rule--value .rule--widget,
         .query-builder .rule--value .widget--widget,
-        .query-builder .rule--value .widget--widget > *:not(.widget--valuesrc) {
+        .query-builder .rule--value .widget--widget > *:not(.widget--valuesrc),
+        .query-builder .rule--before-widget .sha-query-builder-empty-rule-placeholders,
+        .query-builder .rule--before-widget .sha-query-builder-empty-rule-placeholders > * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .query-builder .rule--value .rule--widget {
             width: 100% !important;
             height: 100% !important;
             min-width: 0;
             flex: 1 1 auto;
+        }
+
+        .query-builder .rule--value .widget--widget {
+            width: auto !important;
+            max-width: 100%;
+            height: 100% !important;
+            min-width: 0;
+            flex: 1 1 0;
+        }
+
+        .query-builder .rule--value .widget--widget > *:not(.widget--valuesrc) {
+            width: auto !important;
+            max-width: 100%;
+            height: 100% !important;
+            min-width: 0;
+            flex: 1 1 0;
         }
 
         .query-builder .rule--field .${prefixCls}-select,
@@ -1236,7 +1389,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--operator .${prefixCls}-select-selector,
         .query-builder .rule--value .${prefixCls}-select-selector {
             height: 100% !important;
-            min-height: 20px !important;
+            min-height: 32px !important;
             display: flex !important;
             align-items: center !important;
         }
@@ -1255,7 +1408,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--value .${prefixCls}-select-single .${prefixCls}-select-selection-placeholder {
             display: flex !important;
             align-items: center !important;
-            line-height: 20px !important;
+            line-height: 32px !important;
+            font-size: 14px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .query-builder .rule--field .${prefixCls}-select-single .${prefixCls}-select-selection-search,
@@ -1275,10 +1432,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--value .${prefixCls}-input,
         .query-builder .rule--value .sha-query-builder-mustache-expression-input {
             height: 100% !important;
-            min-height: 20px !important;
-            line-height: 20px !important;
+            min-height: 32px !important;
+            line-height: 32px !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
+            padding-inline: 12px !important;
+            font-size: 14px !important;
             display: block;
         }
 
@@ -1290,10 +1449,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .query-builder .rule--value .${prefixCls}-input-number-input {
             height: 100% !important;
-            min-height: 20px !important;
-            line-height: 20px !important;
+            min-height: 32px !important;
+            line-height: 32px !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
+            padding-inline: 12px !important;
+            font-size: 14px !important;
         }
     `);
 
