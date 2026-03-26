@@ -30,9 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Shesha.Configuration;
 using EntityExtensions = Shesha.Extensions.EntityExtensions;
 
 namespace Shesha.Users
@@ -41,10 +39,6 @@ namespace Shesha.Users
 
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
-        // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
-        public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
-        private const int MinPasswordLength = 6;
-
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IRepository<Role> _roleRepository;
@@ -56,7 +50,7 @@ namespace Shesha.Users
         private readonly IRepository<User, long> _userRepository;
         private readonly ISecuritySettings _securitySettings;
         private readonly IRepository<QuestionAssignment, Guid> _questionRepository;
-        private readonly IPasswordComplexitySettings _passwordComplexitySettings;
+
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -70,7 +64,6 @@ namespace Shesha.Users
             IOtpManager otpManager,
             ISecuritySettings securitySettings,
             IRepository<User, long> userRepository,
-            IPasswordComplexitySettings passwordComplexitySettings,
             IRepository<QuestionAssignment, Guid> questionRepository)
             : base(repository)
         {
@@ -84,7 +77,6 @@ namespace Shesha.Users
             _otpManager = otpManager;
             _userRepository = userRepository;
             _securitySettings = securitySettings;
-            _passwordComplexitySettings = passwordComplexitySettings;
             _questionRepository = questionRepository;
         }
 
@@ -572,12 +564,11 @@ namespace Shesha.Users
             if (user.PasswordResetCode != input.Token)
                 throw new UserFriendlyException("Your token is invalid or has expired, try to reset password again");
 
-            // todo: add new setting for the PasswordRegex and error message
-            // validate password length
-            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueAsync(), MinPasswordLength);
-            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
+            // validate password against configured policy
+            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+            foreach (var validator in _userManager.PasswordValidators)
             {
-                throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
+                CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
             }
 
             user.AddHistoryEvent("Password reset", "Password reset");
@@ -640,11 +631,11 @@ namespace Shesha.Users
             {
                 throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
             }
-            // todo: add new setting for the PasswordRegex and error message
-            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueAsync(), MinPasswordLength);
-            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
+            // validate password against configured policy
+            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+            foreach (var validator in _userManager.PasswordValidators)
             {
-                throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
+                CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
             }
 
             user.AddHistoryEvent("Password changed", "Password changed");
@@ -672,16 +663,16 @@ namespace Shesha.Users
                 throw new UserFriendlyException("You are not authorized to reset passwords.");
             }
             
-            // validate password length
-            var requiredPasswordLength = Math.Max(await _passwordComplexitySettings.RequiredLength.GetValueAsync(), MinPasswordLength);
-            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword) || input.NewPassword.Length < requiredPasswordLength)
-            {
-                throw new UserFriendlyException($"Passwords must be at least {requiredPasswordLength} characters, contain a lowercase, uppercase, and number.");
-            }
-
             var user = await _userManager.GetUserByIdAsync(input.UserId);
             if (user != null)
             {
+                // validate password against configured policy
+                await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+                foreach (var validator in _userManager.PasswordValidators)
+                {
+                    CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
+                }
+
                 user.AddHistoryEvent("Password reset", "Password reset");
                 var person = await _personRepository.FirstOrDefaultAsync(x => x.User == user);
                 person?.AddHistoryEvent("Password reset", "Password reset");
