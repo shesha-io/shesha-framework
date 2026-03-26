@@ -19,7 +19,7 @@ const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
     return (
-      <ParentProvider model={model}>
+      <ParentProvider model={model} name={`KeyInformationBar-${model.id}`}>
         <KeyInformationBar {...model} />
       </ParentProvider>
     );

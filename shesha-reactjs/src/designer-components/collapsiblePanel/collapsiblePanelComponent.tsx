@@ -61,7 +61,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
     ) : null;
 
     return hidden ? null : (
-      <ParentProvider model={model}>
+      <ParentProvider model={model} name={`CollapsiblePanel-${model.id}`}>
         <CollapsiblePanel
           header={hasCustomHeader ? (
             <ComponentsContainer

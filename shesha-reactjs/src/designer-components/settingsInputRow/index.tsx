@@ -1,8 +1,8 @@
-import { evaluateString, useShaFormInstance } from '@/index';
+import { evaluateString, UnwrapCodeEvaluators, useShaFormInstance } from '@/index';
 import { IConfigurableFormComponent } from "@/interfaces";
 import { isDefined } from '@/utils/nullables';
 import { SettingOutlined } from "@ant-design/icons";
-import React from 'react';
+import React, { FC } from 'react';
 import { useStyles } from '../inputComponent/styles';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
@@ -10,7 +10,9 @@ import { IInputRowProps, ISettingsInputRowProps, SettingsInputRowDefinition } fr
 
 export const isSettingsInputRow = (component: IConfigurableFormComponent): component is ISettingsInputRowProps => isDefined(component) && component.type === 'settingsInputRow';
 
-export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
+type UnwrappedInputRowProps = UnwrapCodeEvaluators<IInputRowProps>;
+
+export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
   const { styles } = useStyles();
   const { formData } = useShaFormInstance();
 
@@ -28,7 +30,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
             key={i + props.label}
             {...props}
             hidden={isHidden as boolean}
-            readOnly={props.readOnly || readOnly}
+            readOnly={Boolean(props.readOnly) || readOnly}
             inline={inline}
             width={width}
           />

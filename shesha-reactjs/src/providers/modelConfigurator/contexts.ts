@@ -1,7 +1,7 @@
-import { FormInstance } from 'antd';
 import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { createNamedContext } from '@/utils/react';
+import { FormInstance } from 'antd';
 
 export interface IUpdateItemSettingsPayload {
   id: string;
@@ -13,33 +13,28 @@ export interface IPropertyErrors {
   errors: string[];
 }
 
+export type ModelConfigurationError = IPropertyErrors | string;
+
 export interface IModelConfiguratorStateContext {
-  id?: string;
-  initialConfiguration?: ModelConfigurationDto;
-  modelConfiguration?: ModelConfigurationDto;
-  form?: FormInstance;
-  isCreateNew?: boolean;
+  id?: string | undefined;
+  initialConfiguration?: ModelConfigurationDto | undefined;
+  modelConfiguration?: ModelConfigurationDto | undefined;
   isModified: boolean;
   isLoading: boolean;
   isSaving: boolean;
-  errors?: (IPropertyErrors | string)[];
+  errors?: ModelConfigurationError[] | undefined;
   showErrors?: boolean;
 }
 
 export interface IModelConfiguratorActionsContext {
-  changeModelId: (id: string) => void;
-  createNew: (model: ModelConfigurationDto) => void;
   load: () => void;
   save: (value: ModelConfigurationDto) => Promise<ModelConfigurationDto>;
+  getForm: () => FormInstance<ModelConfigurationDto>;
   saveForm: () => Promise<ModelConfigurationDto>;
-  cancel: () => void;
-  delete: () => Promise<void>;
   submit: () => void;
   getModelSettings: () => ModelConfigurationDto;
-  setModified: (isModified?: boolean) => void;
+  setModified: (isModified: boolean) => void;
   validateModel: (model: ModelConfigurationDto) => IPropertyErrors[];
-
-  /* NEW_ACTION_ACTION_DECLARATIOS_GOES_HERE */
 }
 
 export const MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE: IModelConfiguratorStateContext = {
@@ -48,9 +43,9 @@ export const MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE: IModelConfiguratorStateCo
   isSaving: false,
 };
 
-export const ModelConfiguratorStateContext = createNamedContext<IModelConfiguratorStateContext>(
-  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
+export const ModelConfiguratorStateContext = createNamedContext<IModelConfiguratorStateContext | undefined>(
+  undefined,
   "ModelConfiguratorStateContext",
 );
 
-export const ModelConfiguratorActionsContext = createNamedContext<IModelConfiguratorActionsContext>(undefined, "ModelConfiguratorActionsContext");
+export const ModelConfiguratorActionsContext = createNamedContext<IModelConfiguratorActionsContext | undefined>(undefined, "ModelConfiguratorActionsContext");

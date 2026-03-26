@@ -18,16 +18,18 @@ import {
   IDynamicModalInstanceContext,
   IDynamicModalStateContext,
 } from './contexts';
-import { IModalInstance, IModalProps } from './models';
-import DynamicModalReducer from './reducer';
+import { IModalProps } from './models';
+import { reducer } from './reducer';
 import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
 import { DynamicModalRenderer } from './renderer';
 import { showDialogArgumentsFormFactory } from './configurable-actions/show-dialog-arguments';
 import { createModalApi, createFallbackModalApi, IModalApi } from './modalApi';
+import { throwError } from '@/utils/errors';
+import { getLatestInstance } from './utils';
 
 const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [state, dispatch] = useReducer(DynamicModalReducer, {
+  const [state, dispatch] = useReducer(reducer, {
     ...DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   });
   const actionDependencies = [state];
@@ -87,18 +89,18 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
 
         const argumentsExpression = actionArgs.formArguments?.trim();
         const argumentsPromise = argumentsExpression
-          ? executeScript(argumentsExpression, context)
+          ? executeScript<object>(argumentsExpression, context)
           : Promise.resolve(undefined);
 
         return argumentsPromise.then((dialogArguments) => {
-          const parentFormValues = context?.data ?? {};
+          const parentFormValues = context.data ?? {};
 
           const { modalWidth, customWidth, widthUnits, showCloseIcon = true } = actionArgs;
 
           return new Promise((resolve, reject) => {
             const modalProps: IModalProps = {
               ...restArguments,
-              mode: formMode,
+              mode: formMode === "edit" ? "edit" : "readonly",
               id: modalId,
               title: actionArgs.modalTitle,
               showCloseIcon: showCloseIcon,
@@ -119,7 +121,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
                 else
                   reject(result);
               },
-              wrapper: context.configurableActionsDispatcherProxy,
+              wrapper: context["configurableActionsDispatcherProxy"] as FC<PropsWithChildren> | undefined,
             };
 
             createModal({ ...modalProps });
@@ -144,19 +146,6 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
     actionDependencies,
   );
 
-  const getLatestVisibleInstance = (): IModalInstance | null => {
-    const { instances = {} } = state;
-    const keys = Object.keys(instances);
-    let highestInstance: IModalInstance = null;
-
-    for (let i = 0; i < keys.length; i++) {
-      const instance = instances[keys[i]];
-      if (instance?.isVisible && (highestInstance === null || instance?.index > highestInstance?.index))
-        highestInstance = instance;
-    };
-    return highestInstance;
-  };
-
   //#region Close the latest Dialog
   useConfigurableAction<ICloseModalActionArguments>(
     {
@@ -167,11 +156,11 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
       hasArguments: true,
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
-          const latestInstance = getLatestVisibleInstance();
+          const latestInstance = getLatestInstance(state.instances, (inst) => inst.isVisible);
 
           if (latestInstance) {
-            removeModal(latestInstance?.id);
-            latestInstance.onClose(actionArgs.showDialogResult === 'true');
+            removeModal(latestInstance.id);
+            latestInstance.onClose?.(actionArgs.showDialogResult === 'true');
             resolve({});
           } else {
             reject('There is no open dialog to close');
@@ -203,37 +192,13 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-function useDynamicModalState(): IDynamicModalStateContext {
-  const context = useContext(DynamicModalStateContext);
+const useDynamicModalState = (): IDynamicModalStateContext => useContext(DynamicModalStateContext) ?? throwError("useDynamicModalState must be used within a DynamicModalProvider");
 
-  if (context === undefined) {
-    throw new Error('useDynamicModalState must be used within a DynamicModalProvider');
-  }
+const useDynamicModalActions = (): IDynamicModalActionsContext => useContext(DynamicModalActionsContext) ?? throwError("useDynamicModalActions must be used within a DynamicModalProvider");
 
-  return context;
-}
-
-function useDynamicModalStateOrUndefined(): IDynamicModalStateContext | undefined {
-  return useContext(DynamicModalStateContext);
-}
-
-function useDynamicModalActions(): IDynamicModalActionsContext {
-  const context = useContext(DynamicModalActionsContext);
-
-  if (context === undefined) {
-    throw new Error('useDynamicModalActions must be used within a DynamicModalProvider');
-  }
-
-  return context;
-}
-
-function useDynamicModalActionsOrUndefined(): IDynamicModalActionsContext | undefined {
-  return useContext(DynamicModalActionsContext);
-}
-
-function useDynamicModals(): IDynamicModalStateContext & IDynamicModalActionsContext {
+const useDynamicModals = (): IDynamicModalStateContext & IDynamicModalActionsContext => {
   return { ...useDynamicModalState(), ...useDynamicModalActions() };
-}
+};
 
 function useDynamicModalsOrUndefined(): (IDynamicModalStateContext & IDynamicModalActionsContext) | undefined {
   const state = useDynamicModalStateOrUndefined();
@@ -248,10 +213,8 @@ interface SimpleModal {
   open: () => void;
   close: () => void;
 }
-function useModal(modalProps: IModalProps): SimpleModal {
+const useModal = (modalProps: IModalProps): SimpleModal => {
   const context = useDynamicModals();
-
-  if (!modalProps) return null;
 
   const instance: SimpleModal = {
     open: () => {
@@ -263,7 +226,7 @@ function useModal(modalProps: IModalProps): SimpleModal {
   };
 
   return instance;
-}
+};
 
 function useClosestModal(): IDynamicModalInstanceContext {
   const context = useContext(DynamicModalInstanceContext);

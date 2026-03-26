@@ -121,7 +121,7 @@ import TableContextComponentLegacy from '@/designer-components/dataTable/tableCo
 
 export const getToolboxComponents = (
   devMode: boolean,
-  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>,
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'> | undefined,
 ): IToolboxComponentGroup[] => {
   return [
     {
@@ -282,7 +282,7 @@ export const getToolboxComponents = (
     },
     {
       name: 'Header Components',
-      visible: getToolboxComponentsVisibility(formMetadata?.formProps, [
+      visible: formMetadata?.formProps && getToolboxComponentsVisibility(formMetadata.formProps, [
         HEADER_CONFIGURATION,
         HEADER_PUB_PORTAL_CONFIGURATION,
       ]),

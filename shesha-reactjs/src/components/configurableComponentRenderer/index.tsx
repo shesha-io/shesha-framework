@@ -16,12 +16,12 @@ export interface IOverlayProps {
   children?: React.ReactElement;
 }
 
-export type ConfigurableComponentChildrenFn<TSettings = any> = (
+export type ConfigurableComponentChildrenFn<TSettings extends object = object> = (
   componentState: IComponentStateProps<TSettings>,
   BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
-export interface IConfigurableComponentRendererProps<TSettings = any> {
+export interface IConfigurableComponentRendererProps<TSettings extends object = object> {
   canConfigure?: boolean;
   children: ConfigurableComponentChildrenFn<TSettings>;
   onStartEdit?: () => void;

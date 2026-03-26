@@ -1,10 +1,9 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
-import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
-import { setThemeAction } from './actions';
+import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
-import { uiReducer } from './reducer';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
+import { isDefined } from '@/utils/nullables';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -17,7 +16,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   iconPrefixCls = 'anticon',
   prefixCls = 'ant',
 }) => {
-  const [state, dispatch] = useReducer(uiReducer, {
+  const [state, setState] = useState<IThemeStateContext>({
     ...THEME_CONTEXT_INITIAL_STATE,
     prefixCls: prefixCls,
     iconPrefixCls: iconPrefixCls,
@@ -29,35 +28,35 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   const application = useSheshaApplication();
   application.registerInitialization('theme', async () => {
     // load theme settings
-    const theme = await settings.getSetting({ module: 'Shesha', name: 'Shesha.ThemeSettings' }) as IConfigurableTheme;
-    dispatch(setThemeAction(theme));
+    const theme = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
+    setState((prev) => ({ ...prev, theme: theme }));
     applicationTheme.current = theme;
   });
 
   const changeTheme = useCallback((theme: IConfigurableTheme, isApplication: boolean = false) => {
     // save theme to the state
-    dispatch(setThemeAction(theme));
+    setState((prev) => ({ ...prev, theme: theme }));
     if (isApplication)
       applicationTheme.current = theme;
-  }, [dispatch, applicationTheme]);
+  }, [applicationTheme]);
 
   const resetToApplicationTheme = useCallback(() => {
     // save theme to the state
-    dispatch(setThemeAction(applicationTheme.current));
-  }, [dispatch]);
+    if (isDefined(applicationTheme.current))
+      setState((prev) => ({ ...prev, theme: applicationTheme.current }));
+  }, []);
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme?.application;
     const themeDefaults: ThemeConfig['token'] = {};
 
-    const theme: ThemeConfig['token'] = appTheme
+    const theme: Partial<ThemeConfig['token']> = appTheme
       ? {
-        colorPrimary: appTheme.primaryColor,
-        colorLink: appTheme.primaryColor,
-        colorInfo: appTheme.infoColor,
-        colorSuccess: appTheme.successColor,
-        colorError: appTheme.errorColor,
-        colorWarning: appTheme.warningColor,
+        ...(appTheme.primaryColor ? { colorPrimary: appTheme.primaryColor, colorLink: appTheme.primaryColor } : {}),
+        ...(appTheme.infoColor ? { colorInfo: appTheme.infoColor } : {}),
+        ...(appTheme.successColor ? { colorSuccess: appTheme.successColor } : {}),
+        ...(appTheme.errorColor ? { colorError: appTheme.errorColor } : {}),
+        ...(appTheme.warningColor ? { colorWarning: appTheme.warningColor } : {}),
       }
       : {};
 
@@ -66,7 +65,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       token: { ...themeDefaults, ...theme },
       components: {
         Menu: {
-          itemHeight: 'clamp(40px, 40px, 100%)' as any,
+          itemHeight: 'clamp(40px, 40px, 100%)',
         },
       },
     };
@@ -123,7 +122,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   );
 };
 
-function useThemeState(): IThemeStateContext | undefined {
+function useThemeState(): IThemeStateContext {
   const context = useContext(UiStateContext);
 
   if (context === undefined) {
@@ -132,7 +131,7 @@ function useThemeState(): IThemeStateContext | undefined {
   return context;
 }
 
-function useThemeActions(): IThemeActionsContext | undefined {
+function useThemeActions(): IThemeActionsContext {
   const context = useContext(UiActionsContext);
 
   if (context === undefined) {

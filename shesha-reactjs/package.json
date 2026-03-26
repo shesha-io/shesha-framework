@@ -19,14 +19,14 @@
   "scripts": {
     "test": "cross-env CI=1 jest --runInBand",
     "test:watch": "jest --watch",
-    "build": "eslint --quiet && rimraf dist && rollup -c && tsc-alias",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint --quiet && rimraf dist && rollup -c && tsc-alias",
     "start": "rollup -c -w",
     "changelog:major": "changelog -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin",
     "changelog:minor": "changelog -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin",
     "changelog:patch": "changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin",
     "commit": "cz",
     "lint": "eslint",
-    "lint-errors": "eslint --quiet",
+    "lint-errors": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint --quiet",
     "lint-fix": "eslint --fix",
     "dev": "next dev",
     "build-next": "next build",
@@ -109,7 +109,7 @@
     "eslint-plugin-import-x": "^4.16.1",
     "eslint-plugin-jsdoc": "^62.0.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^6.1.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "file-saver": "^2.0.5",
     "globals": "^16.5.0",
     "htmlescape": "^1.1.1",
@@ -203,7 +203,8 @@
     "scheduler": "^0.26.0",
     "tree-to-list": "^3.0.2",
     "use-context-selector": "^2.0.0",
-    "use-debounce": "^6.0.1"
+    "use-debounce": "^6.0.1",
+    "use-debugger-hooks": "^1.3.0"
   },
   "config": {
     "commitizen": {

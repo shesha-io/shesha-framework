@@ -39,6 +39,7 @@ const convertModelItemToPropertyMetadata = (item: IModelItem): IPropertyMetadata
     itemsType: itemsType ? convertModelItemToPropertyMetadata(itemsType) : undefined,
     entityType: entityType?.name,
     entityModule: entityType?.module,
+    isVisible: true,
   };
 };
 

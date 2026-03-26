@@ -6,7 +6,7 @@ import { NotesRenderer } from '@/components';
 import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { evaluateValueAsString, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
-import NotesProvider from '@/providers/notes';
+import { NotesEditorProvider, OnNoteCreatedFunc, OnNoteDeletedFunc, OnNoteUpdatedFunc } from '@/providers/notes';
 import {
   migrateCustomFunctions,
   migrateFunctionToProp,
@@ -18,7 +18,6 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getFormApi } from '@/providers/form/formApi';
 import { App } from 'antd';
 import moment from 'moment';
-import { INote } from '@/providers/notes/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
 
@@ -56,11 +55,11 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
     const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
 
-    const handleCreateAction = (createdNotes: Array<any>): void => {
+    const handleCreateAction: OnNoteCreatedFunc = (note) => {
       if (!model.onCreateAction) return;
 
       executeScript<void>(model?.onCreateAction, {
-        createdNotes,
+        createdNotes: [note],
         data,
         form: getFormApi(form),
         globalState,
@@ -70,16 +69,11 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    const handleDeleteAction = (note: INote): void => {
+    const handleDeleteAction: OnNoteDeletedFunc = (note) => {
       if (!model.onDeleteAction) return;
 
       executeScript<void>(model.onDeleteAction, {
-        note: {
-          ...note,
-          creationTime: note.creationTime || null,
-          priority: note.priority || null,
-          parentId: note.parentId || null,
-        },
+        note,
         data,
         form: getFormApi(form),
         globalState,
@@ -89,7 +83,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    const handleUpdateAction = (note: INote): void => {
+    const handleUpdateAction: OnNoteUpdatedFunc = (note) => {
       if (!model.onUpdateAction) return;
 
       executeScript<void>(model.onUpdateAction, {
@@ -105,21 +99,26 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     };
 
     return (
-      <NotesProvider ownerId={ownerId} ownerType={model?.ownerType} category={model?.category}>
+      <NotesEditorProvider
+        ownerId={ownerId}
+        ownerType={model?.ownerType}
+        category={model?.category}
+        onCreatedAction={handleCreateAction}
+        onUpdatedAction={handleUpdateAction}
+        onDeletedAction={handleDeleteAction}
+      >
         <NotesRenderer
-          showCommentBox={!model.readOnly}
+          allowCreate={!model.readOnly}
+          allowUpdate={model.allowEdit}
+          allowDelete={model.allowDelete}
+
           buttonPostion={model?.savePlacement}
           autoSize={model?.autoSize}
-          allowDelete={model.allowDelete}
-          onCreateAction={handleCreateAction}
           showCharCount={model.showCharCount}
           minLength={model.minLength}
           maxLength={model.maxLength}
-          onDeleteAction={handleDeleteAction}
-          allowEdit={model.allowEdit}
-          onUpdateAction={handleUpdateAction}
         />
-      </NotesProvider>
+      </NotesEditorProvider>
     );
   },
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),

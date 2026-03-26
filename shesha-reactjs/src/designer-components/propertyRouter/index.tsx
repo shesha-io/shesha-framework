@@ -16,7 +16,10 @@ const PropertyRouterComponent: PropertyRouterComponentDefinition = {
     return model.hidden
       ? null
       : (
-        <ParentProvider model={model}>
+        <ParentProvider
+          name={`PropertyRouter-${model.id}`}
+          model={model}
+        >
           <FormItemProvider namePrefix={model.propertyRouteName}>
             <ComponentsContainer containerId={model.id} dynamicComponents={model?.isDynamic ? model?.components : []} />
           </FormItemProvider>

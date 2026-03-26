@@ -1,5 +1,5 @@
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { EditMode, IEntityMetadata } from "@/interfaces";
+import { EditMode, IEntityMetadata, IPropertyMetadata, isConfigurableFormComponent } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
@@ -9,6 +9,8 @@ import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson"
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { IEntityTypeIdentifier } from "../../../entities/models";
+import { isDefined } from "@/utils/nullables";
+import { isTextComponent } from "@/designer-components/text/models";
 
 /**
  * Implements generation logic for detail views.
@@ -19,13 +21,13 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
 
   protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null {
     const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
-    return extensionJson?.modelType || null;
+    return extensionJson.modelType || null;
   }
 
   protected async addComponentsToMarkup(
-    markup: unknown,
+    markup: object,
     entity: IEntityMetadata,
-    nonFrameworkProperties: PropertyMetadataDto[],
+    nonFrameworkProperties: IPropertyMetadata[],
     metadataHelper: FormMetadataHelper,
     replacements: object,
   ): Promise<void> {
@@ -61,13 +63,13 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param metadata The properties metadata.
    * @returns The path to a display name property, or null if not found.
    */
-  private findDisplayNameProperty(metadata: PropertyMetadataDto[]): string | null {
+  private findDisplayNameProperty(metadata: IPropertyMetadata[]): string | null {
     // Common property names that typically serve as display names, in order of preference
     const commonDisplayNames = ['fullName', 'name'];
 
     for (const displayName of commonDisplayNames) {
       const property = metadata.find((prop) =>
-        prop.path?.toLowerCase() === displayName.toLowerCase(),
+        prop.path.toLowerCase() === displayName.toLowerCase(),
       );
       if (property) {
         return property.path;
@@ -88,7 +90,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param metadataHelper The metadata helper instance.
    * @returns Array of property paths used in key information bar, empty array if none used
    */
-  private addHeader(entity: IEntityMetadata, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): string[] {
+  private addHeader(entity: IEntityMetadata, metadata: IPropertyMetadata[], markup: object, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): string[] {
     // Try to find a display name property, falling back to static entity type name
     const displayNameProperty = this.findDisplayNameProperty(metadata);
     const title = displayNameProperty
@@ -101,13 +103,17 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       throw new Error("No title container found in the markup.");
     }
 
-    titleContainer[0].content = title;
+    // text
+    const titleComponent = titleContainer[0];
+    if (isConfigurableFormComponent(titleComponent) && isTextComponent(titleComponent))
+      titleComponent.content = title;
 
     // Keep track of property paths used in key information bar
     const usedKeyInfoPropertyPaths: string[] = [];
 
     // Add key information bar if configured
-    if (extensionJson.showKeyInformationBar && extensionJson.keyInformationBarProperties?.length) {
+    const { keyInformationBarProperties } = extensionJson;
+    if (extensionJson.showKeyInformationBar && isDefined(keyInformationBarProperties) && keyInformationBarProperties.length) {
       const keyInfoBarContainer = findContainersWithPlaceholder(markup, "//*KEYINFOBAR*//");
 
       if (keyInfoBarContainer.length === 0) {
@@ -115,16 +121,16 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       }
 
       // Save paths of properties that will be used in the key info bar
-      extensionJson.keyInformationBarProperties.forEach((path) => {
+      keyInformationBarProperties.forEach((path) => {
         usedKeyInfoPropertyPaths.push(path);
       });
 
       const keyInfoProperties = metadata.filter((x) =>
-        extensionJson.keyInformationBarProperties?.includes(x.path || x.label || ''),
+        keyInformationBarProperties.includes(x.path || x.label || ''),
       );
 
       if (keyInfoProperties.length === 0) {
-        console.warn(`No key information properties found for the key information bar. Requested properties: ${extensionJson.keyInformationBarProperties?.join(', ')}`);
+        console.warn(`No key information properties found for the key information bar. Requested properties: ${keyInformationBarProperties.join(', ')}`);
         return usedKeyInfoPropertyPaths;
       } else {
         const keyInfoBarBuilder = this.getFormBuilder();
@@ -177,7 +183,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           }),
         });
 
-        if (keyInfoBarContainer[0].components && Array.isArray(keyInfoBarContainer[0].components)) {
+        if (keyInfoBarContainer[0]) {
           keyInfoBarContainer[0].components.push(...keyInfoBarBuilder.toJson());
         }
       }
@@ -193,16 +199,16 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param metadataHelper The metadata helper instance.
    * @returns An object containing the component type and settings for inline editing.
    */
-  private getColumnEditorConfig(property: PropertyMetadataDto, metadataHelper: FormMetadataHelper): { type: string; settings?: Record<string, unknown> } {
+  private getColumnEditorConfig(property: IPropertyMetadata, metadataHelper: FormMetadataHelper): { type: string; settings?: Record<string, unknown> | undefined } {
     const tempBuilder = this.getFormBuilder();
     metadataHelper.getConfigFields(property, tempBuilder, false);
     const componentConfigs = tempBuilder.toJson();
 
-    if (componentConfigs.length === 0) {
+    const component = componentConfigs[0];
+    if (!component) {
       return { type: 'textField' };
     }
 
-    const component = componentConfigs[0];
     const { id, propertyName, componentName, ...settings } = component;
 
     const typedSettings: Record<string, unknown> = settings;
@@ -221,7 +227,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param extensionJson The extension configuration.
    * @param metadataHelper The metadata helper instance.
    */
-  private async addChildTablesAsync(entity: IEntityMetadata, markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): Promise<void> {
+  private async addChildTablesAsync(entity: IEntityMetadata, markup: object, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): Promise<void> {
     const builder = this.getFormBuilder();
 
     const childTableContainer = findContainersWithPlaceholder(markup, "//*CHILDTABLES*//");
@@ -397,7 +403,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         })),
       });
 
-      if (childTableContainer[0].components && Array.isArray(childTableContainer[0].components)) {
+      if (childTableContainer[0]) {
         childTableContainer[0].components.push(...builder.toJson());
       }
     }

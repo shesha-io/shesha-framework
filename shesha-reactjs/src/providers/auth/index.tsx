@@ -24,14 +24,14 @@ interface IAuthProviderProps {
   /**
    * URL that that the user should be redirected to if they're not authorized. Default is /login
    */
-  unauthorizedRedirectUrl?: string;
+  unauthorizedRedirectUrl?: string | undefined;
 
   /**
    * Home page url. Default is `/`
    */
-  homePageUrl?: string;
+  homePageUrl?: string | undefined;
 
-  authRef?: MutableRefObject<IAuthProviderRefProps>;
+  authRef?: MutableRefObject<IAuthProviderRefProps | undefined> | undefined;
 }
 
 const AuthenticatorContext = React.createContext<IAuthenticator | undefined>(undefined);

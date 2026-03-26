@@ -4,6 +4,7 @@ import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/for
 import { IConfigurableFormComponent, IStyleType } from "@/index";
 import { IModelMetadata, IPropertyMetadata, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
 import { camelcaseDotNotation, toCamelCase, humanizeString } from '@/utils/string';
+import { isDefined } from '@/utils/nullables';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 const MAX_NUMBER_OF_DEFAULT_COLS = 20;
@@ -307,13 +308,10 @@ const addPxUnit = (value?: string | number): string => {
   return strValue;
 };
 
-export const convertRowDimensionsToHeight = (rowDimensions?: {
-  height?: string;
-  minHeight?: string;
-  maxHeight?: string;
-}): string | undefined => {
-  if (!rowDimensions?.height) return undefined;
-  return addPxUnit(rowDimensions.height);
+export const convertRowDimensionsToHeight = (height: string | number | undefined): string | undefined => {
+  return isDefined(height)
+    ? addPxUnit(height)
+    : undefined;
 };
 
 export type RowStylingBoxType = {

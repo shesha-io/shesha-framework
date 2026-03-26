@@ -3,15 +3,19 @@ import { IAnchoredDirection, IStoredFilter } from '@/providers/dataTable/interfa
 import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
 import { IArgumentEvaluationResult, convertJsonLogicNode, convertJsonLogicNodeSync } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
-import { IPropertyMetadata, NestedProperties } from '@/interfaces/metadata';
+import { isPropertiesArray, NestedProperties } from '@/interfaces/metadata';
 import { executeFunction } from '.';
+import { isDefined } from './nullables';
+import { extractErrorMessage } from './errors';
+import { getNestedPropertyValue } from './dotnotation';
+import { DataTableColumn } from '@/components/dataTable/interfaces';
 
 export interface IAnchoredColumn {
   isFixed: boolean;
   direction?: IAnchoredDirection;
 }
 
-export const getColumnAnchored = (anchored: string): IAnchoredColumn => {
+export const getColumnAnchored = (anchored: string | undefined): IAnchoredColumn => {
   if (anchored === 'left') {
     return {
       isFixed: true,
@@ -30,28 +34,39 @@ export const getColumnAnchored = (anchored: string): IAnchoredColumn => {
 };
 
 export const calculateTotalColumnsOnFixed = (row: Cell[], direction: IAnchoredDirection): number => {
-  return row?.filter(({ column }: any) => getColumnAnchored(column?.anchored).direction === direction)?.length ?? 0;
+  return row.filter(({ column }) => getColumnAnchored((column as DataTableColumn).anchored).direction === direction).length;
 };
 
 export const calculatePositionShift = (row: Cell[], start: number, end: number): Array<number> => {
-  return row?.slice(start, end)?.map((col) => {
-    const isLessThanMinWidth = (col?.column?.width as number) < col?.column?.minWidth;
-    return isLessThanMinWidth ? col?.column?.minWidth : col?.column?.width;
+  return row.slice(start, end).map((col) => {
+    // TODO: check type of `col.column.width` and remove string or handle it here
+    return isDefined(col.column.minWidth) && isDefined(col.column.width) && typeof (col.column.width) === 'number' && col.column.width < col.column.minWidth
+      ? col.column.minWidth
+      : col.column.width;
   }) as Array<number>;
 };
 
+type EvaluationData = {
+  hasDynamicExpression: boolean;
+  allFieldsEvaluatedSuccessfully: boolean;
+  unevaluatedExpressions: string[];
+};
+const EMPTY_ARRAY: IStoredFilter[] = [];
+
+// TODO (V1) merge with evaluateDynamicFiltersSync
 export const evaluateDynamicFilters = async (
-  filters: IStoredFilter[],
+  filters: IStoredFilter[] | undefined,
   mappings: IMatchData[],
-  propertyMetadataAccessor: NestedPropertyMetadatAccessor,
+  propertyMetadataAccessor: NestedPropertyMetadatAccessor | undefined,
 ): Promise<IStoredFilter[]> => {
-  if (filters?.length === 0 || !mappings?.length) return filters;
+  if (!isDefined(filters) || !isDefined(mappings)) return EMPTY_ARRAY;
+  if (filters.length === 0 || mappings.length === 0) return EMPTY_ARRAY;
 
   const convertedFilters = await Promise.all(
     filters.map(async (filter) => {
       // correct way of processing JsonLogic rules
       if (typeof filter.expression === 'object') {
-        const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
+        const evaluator = (operator: string, args: unknown[], argIndex: number): IArgumentEvaluationResult => {
           const argValue = args[argIndex];
           // special handling for specifications
           // TODO: move `is_satisfied` operator name to constant
@@ -71,30 +86,32 @@ export const evaluateDynamicFilters = async (
           return { handled: false };
         };
 
-        const evaluationData = {
+        const evaluationData: EvaluationData = {
           hasDynamicExpression: false,
           allFieldsEvaluatedSuccessfully: true,
           unevaluatedExpressions: [],
         };
 
         const getVariableDataType = (variable: string): Promise<string> => {
-          return propertyMetadataAccessor
-            ? propertyMetadataAccessor(variable).then((m) => m?.dataType)
+          return isDefined(propertyMetadataAccessor)
+            ? propertyMetadataAccessor(variable).then((m) => m?.dataType ?? "")
             : Promise.resolve('string');
         };
 
-        const convertedExpression = await convertJsonLogicNode(filter.expression, {
-          argumentEvaluator: evaluator,
-          mappings,
-          getVariableDataType,
-          onEvaluated: (args) => {
-            evaluationData.hasDynamicExpression = true;
-            evaluationData.allFieldsEvaluatedSuccessfully =
-              evaluationData.allFieldsEvaluatedSuccessfully && args.success;
-            if (args.unevaluatedExpressions && args.unevaluatedExpressions.length)
-              evaluationData.unevaluatedExpressions.push(...args.unevaluatedExpressions);
-          },
-        });
+        const convertedExpression = isDefined(filter.expression)
+          ? await convertJsonLogicNode(filter.expression, {
+            argumentEvaluator: evaluator,
+            mappings,
+            getVariableDataType,
+            onEvaluated: (args) => {
+              evaluationData.hasDynamicExpression = true;
+              evaluationData.allFieldsEvaluatedSuccessfully =
+                evaluationData.allFieldsEvaluatedSuccessfully && args.success;
+              if (args.unevaluatedExpressions && args.unevaluatedExpressions.length)
+                evaluationData.unevaluatedExpressions.push(...args.unevaluatedExpressions);
+            },
+          })
+          : undefined;
         return {
           ...filter,
           ...evaluationData,
@@ -109,19 +126,21 @@ export const evaluateDynamicFilters = async (
   return convertedFilters;
 };
 
+// TODO (V1) merge with evaluateDynamicFilters
 // Synchronous version of evaluateDynamicFilters
 export const evaluateDynamicFiltersSync = (
   filters: IStoredFilter[],
   mappings: IMatchData[],
   propertyMetadata: NestedProperties,
 ): IStoredFilter[] => {
-  if (filters?.length === 0 || !mappings?.length) return filters;
+  if (!isDefined(filters) || !isDefined(mappings)) return EMPTY_ARRAY;
+  if (filters.length === 0 || mappings.length === 0) return EMPTY_ARRAY;
 
   const convertedFilters = filters.map((filter) => {
     // Handle string expressions by parsing them to objects
     if (typeof filter.expression === 'string') {
       try {
-        const parsed = JSON.parse(filter.expression);
+        const parsed = JSON.parse(filter.expression) as unknown;
         // Validate the parsed expression has expected structure
         if (typeof parsed !== 'object' || parsed === null) {
           throw new Error('Parsed expression must be an object');
@@ -130,18 +149,18 @@ export const evaluateDynamicFiltersSync = (
       } catch (error) {
         console.error(`Failed to parse filter expression for filter ${filter.id || 'unknown'}:`, error);
         // Mark filter as having an invalid expression
-        return { ...filter, hasInvalidExpression: true, expressionError: error.message };
+        return { ...filter, hasInvalidExpression: true, expressionError: extractErrorMessage(error) };
       }
     }
     // correct way of processing JsonLogic rules
     if (typeof filter.expression === 'object') {
-      const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
-        const argValue: any = args[argIndex];
+      const evaluator = (operator: string, args: unknown[], argIndex: number): IArgumentEvaluationResult => {
+        const argValue = args[argIndex];
 
         // Handle mustache expressions in string values
         if (typeof argValue === 'string' && argValue.includes('{{') && argValue.includes('}}')) {
           const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
-          const evaluatedValue = executeExpression<any>(argValue, evaluationContext, false, (err) => {
+          const evaluatedValue = executeExpression<unknown>(argValue, evaluationContext, false, (err) => {
             console.error('Failed to evaluate mustache expression:', err);
             return null;
           });
@@ -179,7 +198,7 @@ export const evaluateDynamicFiltersSync = (
           const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
 
           // Try to resolve the variable from the context
-          const variableValue = variableName.split('.').reduce((obj, key) => obj?.[key], evaluationContext);
+          const variableValue = getNestedPropertyValue(evaluationContext, variableName);
 
           return { handled: variableValue !== undefined, value: variableValue };
         }
@@ -187,15 +206,15 @@ export const evaluateDynamicFiltersSync = (
         return { handled: false };
       };
 
-      const evaluationData = {
+      const evaluationData: EvaluationData = {
         hasDynamicExpression: false,
         allFieldsEvaluatedSuccessfully: true,
         unevaluatedExpressions: [],
       };
 
       const getVariableDataType = (variable: string): string => {
-        return propertyMetadata
-          ? (propertyMetadata as IPropertyMetadata[]).find((m) => m.label === variable)?.dataType
+        return propertyMetadata && isPropertiesArray(propertyMetadata)
+          ? propertyMetadata.find((m) => m.label === variable)?.dataType ?? ''
           : 'string';
       };
 

@@ -1,14 +1,15 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useRef } from 'react';
 import {
   DataSourcesProviderActionsContext,
   IDataSourcesProviderActionsContext,
 } from './contexts';
 import { IDataSourceDescriptor, IDataSourceDictionary, IGetDataSourcePayload, IRegisterDataSourcePayload } from './models';
+import { throwError } from '@/utils/errors';
 
 const DataSourcesProvider: FC<PropsWithChildren> = ({ children }) => {
   const dataSources = useRef<IDataSourceDictionary>({});
 
-  const registerDataSource = (payload: IRegisterDataSourcePayload): void => {
+  const registerDataSource = useCallback((payload: IRegisterDataSourcePayload): void => {
     dataSources.current = {
       ...dataSources.current,
       [`${payload.id}_${payload.name}`]: {
@@ -17,21 +18,21 @@ const DataSourcesProvider: FC<PropsWithChildren> = ({ children }) => {
         dataSource: payload.dataSource,
       },
     };
-  };
+  }, []);
 
-  const unregisterDataSource = (payload: IRegisterDataSourcePayload): void => {
+  const unregisterDataSource = useCallback((payload: IRegisterDataSourcePayload): void => {
     delete dataSources.current[`${payload.id}_${payload.name}`];
-  };
+  }, []);
 
-  const getDataSources = (): IDataSourceDictionary => {
+  const getDataSources = useCallback((): IDataSourceDictionary => {
     return dataSources.current;
-  };
+  }, []);
 
-  const getDataSource = (payload: IGetDataSourcePayload | string): IDataSourceDescriptor | undefined => {
+  const getDataSource = useCallback((payload: IGetDataSourcePayload | string): IDataSourceDescriptor | undefined => {
     return (typeof (payload) === 'string')
       ? dataSources.current[payload]
       : dataSources.current[`${payload.id}_${payload.name}`];
-  };
+  }, []);
 
   const dataSourcesProviderActions: IDataSourcesProviderActionsContext = {
     registerDataSource,
@@ -47,18 +48,10 @@ const DataSourcesProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-function useDataSources(require: boolean = true): IDataSourcesProviderActionsContext | undefined {
-  const actionsContext = useContext(DataSourcesProviderActionsContext);
-
-  if (actionsContext === undefined && require) {
-    throw new Error('useDataSources must be used within a DataSourcesProvider');
-  }
-  return actionsContext;
-}
+const useDataSources = (): IDataSourcesProviderActionsContext => useContext(DataSourcesProviderActionsContext) ?? throwError('useDataSources must be used within a DataSourcesProvider');
 
 function useDataSource(
   payload: IRegisterDataSourcePayload,
-  deps?: ReadonlyArray<any>,
 ): void {
   const { registerDataSource, unregisterDataSource } = useDataSources();
 
@@ -67,7 +60,7 @@ function useDataSource(
     return () => {
       unregisterDataSource(payload);
     };
-  }, deps);
+  }, [payload, registerDataSource, unregisterDataSource]);
 }
 
 export { DataSourcesProvider, useDataSources, useDataSource };

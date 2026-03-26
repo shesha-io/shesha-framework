@@ -22,7 +22,6 @@ export * from './designer-components/_common-migrations/index';
 export { ConfigurableComponentRenderer } from './components/configurableComponentRenderer';
 
 export { DynamicPage } from './generic-pages/dynamic';
-export { EntityConfiguratorPage } from './generic-pages/entity-config/configurator';
 export { FormsDesignerPage } from './generic-pages/forms-designer';
 export { SettingsPage } from './generic-pages/settings-editor';
 export { ConfigurableThemePage } from './generic-pages/settings/dynamic-theme';

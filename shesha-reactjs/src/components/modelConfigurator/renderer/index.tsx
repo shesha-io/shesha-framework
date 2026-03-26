@@ -12,13 +12,14 @@ import { useStyles } from '../styles/styles';
 import { filter, isEqual, keys, union } from 'lodash';
 import { isDefined } from '@/utils/nullables';
 import { IPropertyErrors } from '@/providers/modelConfigurator/contexts';
+import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 
 const markup = modelSettingsMarkup as FormMarkup;
 
 export const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles({ height: 180 });
   const { message } = App.useApp();
-  const { showErrors, errors, modelConfiguration, initialConfiguration, form, saveForm, setModified, validateModel } = useModelConfigurator();
+  const { showErrors, errors, modelConfiguration, initialConfiguration, getForm, saveForm, setModified, validateModel } = useModelConfigurator();
 
   const errorsText = useMemo((): React.ReactNode => {
     return (
@@ -74,7 +75,7 @@ export const ModelConfiguratorRenderer: FC = () => {
     return newChanged;
   };
 
-  const onValuesChange = (_changedValues: unknown, values: unknown): void => {
+  const onValuesChange = (_changedValues: unknown, values: ModelConfigurationDto): void => {
     const keys = changedKeys(modelConfiguration, values);
     // Modified if there are changed keys
     const modified = keys.length > 0;
@@ -95,7 +96,7 @@ export const ModelConfiguratorRenderer: FC = () => {
           markup={markup}
           onValuesChange={onValuesChange}
           onFinish={onSettingsSave}
-          form={form}
+          form={getForm()}
           initialValues={initialConfiguration}
           sections={{
             properties: () => <PropertiesEditorComponent />,

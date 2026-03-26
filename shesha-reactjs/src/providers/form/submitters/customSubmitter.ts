@@ -4,17 +4,17 @@ import { IFormSettings } from "../models";
 import { executeScript } from "../utils";
 
 interface SubmitCallerArgs {
-  data: any;
+  data: object;
 };
 
 export class CustomSubmitter implements IFormDataSubmitter {
   #getSubmitterSettings = (formSettings: IFormSettings): CustomSubmitterSettings => {
     const { dataSubmittersSettings = {} } = formSettings;
-    const submitterSettings = dataSubmittersSettings?.['custom'];
+    const submitterSettings = dataSubmittersSettings['custom'];
     return isCustomSubmitterSettings(submitterSettings) ? submitterSettings : { onSubmitData: '' };
   };
 
-  submitAsync = async (payload: FormDataSubmitPayload): Promise<any> => {
+  submitAsync = async (payload: FormDataSubmitPayload): Promise<unknown> => {
     const { data } = payload;
     const submitData = removeGhostKeys(data);
 
@@ -30,7 +30,7 @@ export class CustomSubmitter implements IFormDataSubmitter {
         ? (args: SubmitCallerArgs) => {
           return executeScript(settings.onSubmitData, args);
         }
-        : (args: SubmitCallerArgs): Promise<any> => {
+        : (args: SubmitCallerArgs): Promise<object> => {
           return Promise.resolve(args.data);
         };
 

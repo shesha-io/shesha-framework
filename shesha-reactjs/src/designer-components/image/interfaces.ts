@@ -27,7 +27,6 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem, IIma
   dataSource?: ImageSourceType;
   ownerType?: string | IEntityTypeIdentifier;
   ownerId?: string;
-  fileCategory?: string;
   allowPreview?: boolean;
   allowedFileTypes?: string[];
   alt?: string;

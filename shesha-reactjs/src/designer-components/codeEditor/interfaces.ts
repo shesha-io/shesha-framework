@@ -1,4 +1,4 @@
-import { ComponentDefinition, IConfigurableFormComponent, IShaFormInstance } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent, IShaFormInstance, UnwrapCodeEvaluators } from '@/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { CodeLanguages } from './types';
 import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
@@ -18,7 +18,7 @@ export interface IExecutableCodeEditor {
   exposedVariables?: ICodeExposedVariable[];
 }
 
-export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type' | 'id'>, IExecutableCodeEditor {
+export interface ICodeEditorProps extends Omit<UnwrapCodeEvaluators<IConfigurableFormComponent>, 'type' | 'id'>, IExecutableCodeEditor {
   id?: string;
   placeholder?: string;
   value?: string;

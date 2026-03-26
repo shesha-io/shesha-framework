@@ -1,11 +1,11 @@
 import { EditMode, IConfigurableFormComponent } from '@/providers';
 import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils';
 
-export const migrateFunctionToProp = <T extends IConfigurableFormComponent>(
+export const migrateFunctionToProp = <T = unknown>(
   prev: T,
   propName: string,
   funcPropname: string,
-  replaceFunction: (source: string) => string = null,
+  replaceFunction: ((source: string) => string) | undefined = undefined,
   invert: Boolean = false,
 ): T => {
   const model = { ...prev };
@@ -79,6 +79,5 @@ export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
   if (!model['editMode'] && !!defaultValue)
     model['editMode'] = defaultValue;
 
-  // delete model.disabled;
   return model;
 };

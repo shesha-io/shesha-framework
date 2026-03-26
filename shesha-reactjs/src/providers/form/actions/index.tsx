@@ -1,12 +1,13 @@
 import React, { FC, PropsWithChildren, useContext } from 'react';
 import { IFormActions } from '../models';
 import { createNamedContext } from '@/utils/react';
+import { throwError } from '@/utils/errors';
 
 export interface ConfigurableFormActionsProviderProps {
-  actions?: IFormActions;
+  actions?: IFormActions | undefined;
 }
 
-export const ConfigurableFormActionsContext = createNamedContext<IFormActions>(undefined, "ConfigurableFormActionsContext");
+export const ConfigurableFormActionsContext = createNamedContext<IFormActions | undefined>(undefined, "ConfigurableFormActionsContext");
 
 export const ConfigurableFormActionsProvider: FC<PropsWithChildren<ConfigurableFormActionsProviderProps>> = ({ actions, children }) => {
   return (
@@ -16,12 +17,6 @@ export const ConfigurableFormActionsProvider: FC<PropsWithChildren<ConfigurableF
   );
 };
 
-export const useConfigurableFormActions = (required: boolean = true): IFormActions => {
-  const context = useContext(ConfigurableFormActionsContext);
+export const useConfigurableFormActionsOrUndefined = (): IFormActions | undefined => useContext(ConfigurableFormActionsContext);
 
-  if (required && context === undefined) {
-    throw new Error('useConfigurableFormActions must be used within a ConfigurableFormActionsProvider');
-  }
-
-  return context;
-};
+export const useConfigurableFormActions = (): IFormActions => useConfigurableFormActionsOrUndefined() ?? throwError('useConfigurableFormActions must be used within a ConfigurableFormActionsProvider');

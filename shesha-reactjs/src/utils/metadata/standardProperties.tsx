@@ -3,10 +3,8 @@ import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/me
 import { modalApiDefinition } from "@/providers/sourceFileManager/api-utils/modal";
 import { fileSaverApiDefinition } from "@/providers/sourceFileManager/api-utils/fileSaver";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
-import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
-import { queryStringValuesDefinition } from '@/providers/sourceFileManager/api-utils/queryString';
-import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE } from '@/publicJsApis';
+import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, messageCode } from '@/publicJsApis';
 
 export const SheshaConstants = {
   http: "shesha:http",
@@ -61,7 +59,7 @@ export const registerFileSaverAction: MetadataBuilderAction = (builder, name = "
   builder.addCustom(name, "API for saving files", () => {
     const definition: TypeDefinition = {
       typeName: 'FileSaverApi',
-      files: [{ content: fileSaverApiDefinition, fileName: 'apis/fileSaver.ts' }],
+      files: [{ content: fileSaverCode, fileName: 'apis/fileSaver.ts' }],
     };
     return Promise.resolve(definition);
   });
@@ -96,7 +94,7 @@ export const registerGlobalStateAction: MetadataBuilderAction = (builder, name =
   builder.addCustom(name, "The global state of the application", () => {
     const definition: TypeDefinition = {
       typeName: 'GlobalStateType',
-      files: [{ content: globalStateApiDefinition, fileName: 'apis/globalState.ts' }],
+      files: [{ content: globalStateCode, fileName: 'apis/globalState.ts' }],
     };
     return Promise.resolve(definition);
   });
@@ -106,7 +104,7 @@ export const registerSetGlobalStateAction: MetadataBuilderAction = (builder, nam
   builder.addCustom(name, "Setting the global state of the application", () => {
     const definition: TypeDefinition = {
       typeName: 'SetGlobalStateType',
-      files: [{ content: globalStateApiDefinition, fileName: 'apis/globalState.ts' }],
+      files: [{ content: globalStateCode, fileName: 'apis/globalState.ts' }],
     };
     return Promise.resolve(definition);
   });
@@ -146,7 +144,7 @@ export const registerQueryAction: MetadataBuilderAction = (builder, name = "quer
   builder.addCustom(name, "Query string values", () => {
     const definition: TypeDefinition = {
       typeName: 'ParsedQs',
-      files: [{ content: queryStringValuesDefinition, fileName: 'apis/queryString.ts' }],
+      files: [{ content: queryStringCode, fileName: 'apis/queryString.ts' }],
     };
     return Promise.resolve(definition);
   });

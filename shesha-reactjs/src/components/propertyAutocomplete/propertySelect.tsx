@@ -119,7 +119,7 @@ const propertyItems2options = (properties: IPropertyItem[], prefix: string, isSe
   return properties.filter((p) => !(p.itemType === 'property' && (p as IPropertyMetadata).dataType === DataTypes.array)).map((p) => propertyItem2option(p, prefix, isSelectable));
 };
 
-const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem[] => {
+const modelMetadata2Properties = (modelMetadata: IModelMetadata | undefined): IPropertyItem[] => {
   if (!modelMetadata)
     return [];
 

@@ -10,7 +10,9 @@ const ParagraphComponent: IToolboxComponent<ITextTypographyProps> = {
   name: 'Paragraph',
   icon: <FileTextOutlined />,
   tooltip: "Deprecated! Please use 'Text (Full)'",
-  Factory: ({ model }) => <TypographyComponent {...model} />,
+  Factory: ({ model }) => {
+    return <TypographyComponent {...model} />;
+  },
 };
 
 export default ParagraphComponent;

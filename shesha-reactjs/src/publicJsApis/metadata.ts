@@ -1,25 +1,25 @@
 export interface IHasEntityType {
-  entityType?: string;
-  entityModule?: string | null;
+  entityType?: string | undefined;
+  entityModule?: string | undefined;
 }
 
 export interface IMetadata {
   dataType: string;
-  name?: string;
-  description?: string;
-  itemsType?: Omit<IPropertyMetadata, 'path'>;
+  name?: string | undefined;
+  description?: string | undefined;
+  itemsType?: Omit<IPropertyMetadata, 'path'> | undefined;
 }
 
 export interface IMemberType {
-  dataType: string | null;
+  dataType: string;
   dataFormat?: string | null;
   baseType?: IMemberType;
 }
 
 export interface IMemberMetadata extends IMemberType {
   path: string;
-  label?: string | null;
-  description?: string | null;
+  label?: string | null | undefined;
+  description?: string | null | undefined;
 }
 
 export interface IHasDefaultEditor {
@@ -48,12 +48,12 @@ export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   min?: number | null;
   max?: number | null;
   validationMessage?: string | null;
-  referenceListName?: string | null;
-  referenceListModule?: string | null;
+  referenceListName?: string | undefined;
+  referenceListModule?: string | undefined;
   /**
    * Child properties, applicable for complex data types (e.g. object, array)
    */
-  properties?: NestedProperties;
+  properties?: NestedProperties | undefined;
 
   /**
    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
@@ -64,12 +64,15 @@ export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
    */
   isNullable?: boolean;
   prefix?: string;
+  /**
+   * If true, indicates that current property is visible. Treated as true by default
+   */
   isVisible?: boolean;
 
   columnName?: string | null;
   createdInDb?: boolean;
   inheritedFromId?: string | null;
-  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
+  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting) | undefined;
 }
 
 export type PropertiesPromise = Promise<IPropertyMetadata[]>;

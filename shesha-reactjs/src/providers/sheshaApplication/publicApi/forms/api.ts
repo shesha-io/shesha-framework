@@ -1,7 +1,6 @@
 import qs from "qs";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { FormsManager } from "./manager";
-import { AxiosResponse } from "axios";
 import { IAbpWrappedGetEntityResponse } from "@/interfaces/gql";
 import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
@@ -47,7 +46,7 @@ export class FormsApi implements IFormsApi {
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
-  prepareTemplateAsync = (templateId: string, replacements: object): Promise<string> => {
+  prepareTemplateAsync = (templateId: string, replacements: object | undefined): Promise<string> => {
     if (!templateId)
       return Promise.resolve('');
 
@@ -57,7 +56,7 @@ export class FormsApi implements IFormsApi {
 
     const url = `/api/dynamic/Shesha/FormConfiguration/Crud/Get?${qs.stringify(payload)}`;
     return this._httpClient
-      .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url)
+      .get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(url)
       .then(async (response) => {
         const template = response.data.result;
         if (!template) {

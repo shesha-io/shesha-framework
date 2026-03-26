@@ -59,7 +59,10 @@ const LinkComponent: LinkComponentDefinition = {
           }
 
           const containerHolder = (): ReactNode => (
-            <ParentProvider model={model}>
+            <ParentProvider
+              name={`Link-${model.id}`}
+              model={model}
+            >
               <ComponentsContainer
                 style={{ ...linkStyle, ...model.allStyles.fullStyle }}
                 containerId={id}

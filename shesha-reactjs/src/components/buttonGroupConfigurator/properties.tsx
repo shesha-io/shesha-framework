@@ -26,7 +26,6 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
 
   const fbf = useFormBuilderFactory();
 
-  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const editor = useMemo(() => {
     const emptyEditor = null;
     if (!item) return emptyEditor;
@@ -38,7 +37,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
         : [];
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
-        <ConfigurableForm
+        <ConfigurableForm<ButtonGroupItemProps>
           // key={selectedItemId} // rerender for each item to initialize all controls
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
@@ -51,7 +50,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
         />
       </SourceFilesFolderProvider>
     );
-  }, [item]);
+  }, [debouncedSave, fbf, item, readOnly]);
 
   if (!Boolean(item)) {
     return (
