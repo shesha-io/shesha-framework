@@ -64,6 +64,7 @@ namespace Shesha.Permissions
             return $"{Object} -> ({permissions})";
         }
 
+        // code based persmission Md5
         public string Md5 { get; set; } 
     }
 }
