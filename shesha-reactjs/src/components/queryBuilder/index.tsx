@@ -10,7 +10,7 @@ import { ItemWithRelation } from './itemWithRelation';
 import { EmptyRulePlaceholders } from './emptyRulePlaceholders';
 import { GroupEmptyState } from './groupEmptyState';
 import { GroupDragAction } from './groupDragAction';
-import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
+import { hasCustomQBSettings, IProperty, propertyHasQBConfig, type CustomFieldSettings } from '@/providers/queryBuilder/models';
 import { IQueryBuilderProps } from './interfaces';
 import { QueryBuilderContent } from './queryBuilderContent';
 import { Button as AntButton, Skeleton } from 'antd';
@@ -21,6 +21,38 @@ import {
   FieldOrGroup,
   Settings,
 } from '@react-awesome-query-builder/antd';
+
+const normalizeTypeAlias = (value?: string): string => {
+  return value?.replace(/[\s_-]/g, '').toLowerCase() ?? '';
+};
+
+const getTypeOverrideFromAlias = (
+  typeShortAlias?: string,
+): { type?: string; preferWidgets?: string[] } => {
+  const alias = normalizeTypeAlias(typeShortAlias);
+  switch (alias) {
+    case 'text':
+    case 'string':
+      return { type: 'text' };
+    case 'number':
+      return { type: 'number' };
+    case 'date':
+      return { type: 'date' };
+    case 'datetime':
+      return { type: 'datetime' };
+    case 'time':
+      return { type: 'time' };
+    case 'guid':
+      return { type: 'guid' };
+    case 'entityreference':
+      return { type: 'entityReference' };
+    case 'reflist':
+    case 'referencelistitem':
+      return { type: 'refList', preferWidgets: ['refListDropdown'] };
+    default:
+      return {};
+  }
+};
 
 const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
   const { value } = props;
@@ -141,41 +173,47 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
       if (!isVisible)
         return null;
 
-      switch (dataType) {
-        case 'string':
-        case DataTypes.string:
-          type = 'text';
-          break;
+      const typeOverride = getTypeOverrideFromAlias((fieldSettings as CustomFieldSettings | undefined)?.typeShortAlias);
+      if (typeOverride.type) {
+        type = typeOverride.type;
+        defaultPreferWidgets = typeOverride.preferWidgets ?? [];
+      } else {
+        switch (dataType) {
+          case 'string':
+          case DataTypes.string:
+            type = 'text';
+            break;
 
-        case DataTypes.date:
-          type = 'date';
-          break;
-        case DataTypes.dateTime:
-          type = 'datetime';
-          break;
-        case DataTypes.time:
-          type = 'time';
-          break;
+          case DataTypes.date:
+            type = 'date';
+            break;
+          case DataTypes.dateTime:
+            type = 'datetime';
+            break;
+          case DataTypes.time:
+            type = 'time';
+            break;
 
-        case DataTypes.number:
-          type = 'number';
-          break;
+          case DataTypes.number:
+            type = 'number';
+            break;
 
-        case 'entityReference':
-        case DataTypes.entityReference:
-          type = 'entityReference';
-          break;
+          case 'entityReference':
+          case DataTypes.entityReference:
+            type = 'entityReference';
+            break;
 
-        case 'refList':
-        case DataTypes.referenceListItem:
-          type = 'refList';
-          defaultPreferWidgets = ['refListDropdown'];
-          break;
-        case '!struct':
-          type = dataType;
-          break;
-        default:
-          break;
+          case 'refList':
+          case DataTypes.referenceListItem:
+            type = 'refList';
+            defaultPreferWidgets = ['refListDropdown'];
+            break;
+          case '!struct':
+            type = dataType;
+            break;
+          default:
+            break;
+        }
       }
 
       const fieldPreferWidgets = preferWidgets || defaultPreferWidgets || [];

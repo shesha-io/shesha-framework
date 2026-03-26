@@ -1,6 +1,7 @@
 import { FieldSettings, Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue } from '@react-awesome-query-builder/antd';
 import { getEvaluationNodeFromJsonLogicNode, IEvaluateJsonLogicNode } from '@/utils/jsonLogic';
 import { IHasHideForSelect } from '../interfaces';
+import { ignoreIfUnassignedTooltip } from '../widgets/ignoreIfUnassigned/constants';
 
 const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, JsonLogicValue>): JsonLogicTree => {
   const ignoreIfUnassigned = Boolean(funcArgs.ignoreIfUnassigned);
@@ -41,7 +42,7 @@ type CustomFieldSettings = FieldSettings & {
 
 const requiredFieldSettings: CustomFieldSettings = {
   customProps: {
-    title: 'Check this if you want the criteria to be ignored if the expression references any unassigned components.',
+    title: ignoreIfUnassignedTooltip,
   },
 };
 

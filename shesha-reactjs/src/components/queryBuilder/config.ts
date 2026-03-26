@@ -13,7 +13,8 @@ import GuidType from './types/guid';
 import { JavaScriptWidget } from './widgets/javascript/index';
 import { FieldWidget } from './widgets/field';
 import { IgnoreIfUnassignedWidget } from './widgets/ignoreIfUnassigned';
-import { MustacheExpressionWidget } from './widgets/mustacheExpression';
+import { ExpressionEditorWidget } from './widgets/mustacheExpression';
+import { BooleanButtonSelectWidget } from './widgets/booleanButtonSelect';
 
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
@@ -30,8 +31,17 @@ const basicConfig = BasicConfig;
 const standardTypes = AntdConfig.types ?? basicConfig.types;
 const standardOperators = AntdConfig.operators ?? basicConfig.operators;
 const standardWidgets = AntdConfig.widgets ?? basicConfig.widgets;
+const standardTextType = standardTypes.text;
+const standardTextFieldWidget = standardTextType.widgets?.field;
 
 const standardSourceTypes: ValueSource[] = ['value', 'field', 'func'];
+const withoutValueTypes = <T extends Record<string, unknown>>(operator: T): T => {
+  const nextOperator = { ...operator };
+  if ('valueTypes' in nextOperator) {
+    delete nextOperator.valueTypes;
+  }
+  return nextOperator;
+};
 
 const types = {
   ...standardTypes,
@@ -81,6 +91,21 @@ const typeModifiers: IDictionary<TypeModifier> = {
       'starts_with',
       'ends_with',
     ],
+    widgets: {
+      ...standardTextType.widgets,
+      field: {
+        ...standardTextFieldWidget,
+        operators: [
+          'equal',
+          'not_equal',
+          'like',
+          'not_like',
+          'starts_with',
+          'ends_with',
+          'proximity',
+        ],
+      },
+    },
   },
   javascript: {
     valueSources: ['value'],
@@ -135,14 +160,16 @@ const operators = {
     labelForFormat: 'is greater than or equal to',
   },
   like: {
-    ...standardOperators.like,
+    ...withoutValueTypes(standardOperators.like),
     label: 'contains',
     labelForFormat: 'contains',
+    valueSources: standardSourceTypes,
   },
   not_like: {
-    ...standardOperators.not_like,
+    ...withoutValueTypes(standardOperators.not_like),
     label: 'does not contain',
     labelForFormat: 'does not contain',
+    valueSources: standardSourceTypes,
   },
   starts_with: {
     ...standardOperators.starts_with,
@@ -219,13 +246,15 @@ const custonDateWidget: DateTimeWidget<Config> = {
 
 const widgets = {
   ...standardWidgets,
+  boolean: BooleanButtonSelectWidget,
   entityAutocomplete: EntityAutocompleteWidget,
   refListDropdown: RefListDropdownWidget,
   datetime: customDatetimeWidget,
   date: custonDateWidget,
   specification: SpecificationWidget,
   javascript: JavaScriptWidget,
-  mustacheExpression: MustacheExpressionWidget,
+  mustacheExpression: ExpressionEditorWidget,
+  expressionEditor: ExpressionEditorWidget,
   field: FieldWidget,
   ignoreIfUnassigned: IgnoreIfUnassignedWidget,
 };

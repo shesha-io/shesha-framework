@@ -3,6 +3,7 @@ import { FC } from "react";
 
 export interface IQueryBuilderProps {
   jsonExpanded?: boolean;
+  showJsonTestingTools?: boolean;
   modelType?: string | IEntityTypeIdentifier;
   fieldsUnavailableHint?: string;
   value?: object;
@@ -12,6 +13,7 @@ export interface IQueryBuilderProps {
 
 export interface IQueryBuilderFieldProps {
   jsonExpanded?: boolean;
+  showJsonTestingTools?: boolean;
   value?: object;
   onChange?: (value: any) => void;
   readOnly?: boolean;

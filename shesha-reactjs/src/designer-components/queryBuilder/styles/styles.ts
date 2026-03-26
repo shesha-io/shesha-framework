@@ -1,6 +1,12 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
+  const queryBuilderSurfaceWidth = '1158px';
+  const queryBuilderRuleWidth = '880px';
+  const queryBuilderSurfaceRadius = '6px';
+  const queryBuilderControlRadius = '4px';
+  const queryBuilderActionRadius = '4px';
+
   const shaQueryBuilderField = cx("sha-query-builder-field", css`
         .${prefixCls}-collapse-item {
             .${prefixCls}-collapse-header {
@@ -32,34 +38,94 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder > .group-or-rule-container > .group {
             background: #f5f5f5;
             border: 1px solid #ededee;
-            border-radius: 12px;
+            border-radius: ${queryBuilderSurfaceRadius};
             padding: 12px;
         }
 
         .query-builder-container.qb-has-rules .qb-logic-heading {
-            font-size: 20px;
-            line-height: 1.3;
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 22px;
             font-weight: 400;
-            color: rgba(0, 0, 0, 0.73);
-            margin: 0 0 20px;
+            color: #000;
+            margin: 0 0 12px;
         }
 
         .query-builder-container.qb-has-rules,
         .query-builder-container.qb-empty {
             background: #f5f5f5;
             border: 1px solid #ededee;
-            border-radius: 12px;
+            border-radius: ${queryBuilderSurfaceRadius};
+            width: 100%;
+            max-width: ${queryBuilderSurfaceWidth};
+            min-width: 0;
             padding: 12px !important;
             box-sizing: border-box;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container {
+            margin: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group {
+            padding: 0 !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--header,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--children {
+            display: none !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions.group--actions--br,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions.group--actions--tr {
+            margin: 0 !important;
+            width: 100% !important;
+            justify-content: flex-start !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions.group--actions--br,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions.group--actions--tr {
+            margin: 0 !important;
+            width: auto !important;
+            flex: 0 0 auto !important;
+            justify-content: flex-start !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions .ant-btn-group {
+            display: inline-flex !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: 12px;
         }
 
         .query-builder .sha-query-builder-empty-state-message {
             display: block;
             margin: 0;
             font-size: 14px;
-            line-height: 1.43;
+            line-height: 22px;
             font-weight: 400;
-            color: rgba(0, 0, 0, 0.45);
+            color: #585858;
+            width: 239.79px;
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
         }
 
         .query-builder .group--footer:has(> .sha-query-builder-empty-state) {
@@ -73,6 +139,70 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             margin: 0;
         }
 
+        .query-builder .group--footer > .sha-query-builder-empty-state--root {
+            width: 100%;
+        }
+
+        .query-builder .sha-query-builder-empty-state-content {
+            width: 100%;
+            max-width: 100%;
+            height: 88px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 10px;
+            padding: 0;
+            background: #f7f7f7;
+            border-radius: ${queryBuilderControlRadius};
+        }
+
+        .query-builder .sha-query-builder-empty-state-actions {
+            display: inline-flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 12px;
+            flex: 0 0 auto;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 36px !important;
+            min-width: 160px !important;
+            padding: 0 16px !important;
+            border-radius: ${queryBuilderActionRadius} !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            box-shadow: none !important;
+            gap: 8px !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn {
+            background: #1890ff !important;
+            border-color: #1890ff !important;
+            color: #fff !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn {
+            background: #fff !important;
+            border-color: #1890ff !important;
+            color: #1890ff !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn .ant-btn-icon,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn .ant-btn-icon {
+            margin-right: 0 !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn .ant-btn-icon .anticon,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn .ant-btn-icon .anticon {
+            font-size: 16px !important;
+        }
+
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions,
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions.group--actions--br,
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions.group--actions--tr {
@@ -80,6 +210,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             width: auto !important;
             flex: 0 0 auto !important;
             justify-content: flex-start !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root + .group--actions,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root + .group--actions.group--actions--br,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root + .group--actions.group--actions--tr {
+            display: none !important;
         }
 
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions .ant-btn-group {
@@ -187,7 +323,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 24px;
             height: 24px;
             border: 1px solid #d0d5dd;
-            border-radius: 6px;
+            border-radius: ${queryBuilderActionRadius};
             background: #fff;
             color: #667085;
             padding: 0;
@@ -223,10 +359,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .group--children > .sha-query-builder-item-with-relation {
             position: relative;
             display: flex;
-            align-items: flex-start;
-            gap: var(--qb-relation-gap);
             width: 100%;
+            max-width: ${queryBuilderRuleWidth};
             min-width: 0;
+            padding: 0;
+            align-items: flex-start;
+            gap: 10px;
+            flex-shrink: 0;
+            box-sizing: border-box;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .sha-query-builder-item-prefix {
@@ -263,7 +403,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .group--children > .sha-query-builder-item-with-relation--has-relation .sha-query-builder-item-relation .${prefixCls}-select-selector {
             min-height: 24px;
             border: 1px solid #c7ced8 !important;
-            border-radius: 8px !important;
+            border-radius: ${queryBuilderControlRadius} !important;
             box-shadow: none !important;
             padding: 0 6px !important;
         }
@@ -330,7 +470,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--footer .action--ADD-GROUP.ant-btn {
             height: 36px;
             min-width: 160px;
-            border-radius: 10px;
+            border-radius: ${queryBuilderActionRadius};
             box-shadow: none;
             padding: 0 16px;
             font-size: 14px;
@@ -360,11 +500,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             content: "Show all...";
             display: block;
             width: 100%;
-            margin-bottom: 2px;
-            font-size: 20px;
-            line-height: 1.3;
+            margin-bottom: 12px;
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 22px;
             font-weight: 400;
-            color: rgba(0, 0, 0, 0.73);
+            color: #000;
         }
 
         .query-builder > .group-or-rule-container > .group > .group--header.no--children::before {
@@ -404,7 +545,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             height: 40px;
             min-width: 176px;
-            border-radius: 14px;
+            border-radius: ${queryBuilderActionRadius};
             box-shadow: none;
             padding: 0 18px;
             font-size: 14px;
@@ -431,12 +572,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group {
-            background: #a9c3e6 !important;
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            min-height: 133px;
+            padding: 10px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            background: rgba(43, 120, 228, 0.30) !important;
             border: 1px solid #7fa8dc !important;
-            border-radius: 10px;
-            padding: 8px;
+            border-radius: 11px;
             position: relative;
-            padding-top: 38px;
+            box-sizing: border-box;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--header {
@@ -444,6 +592,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: 0 !important;
             min-height: 0 !important;
             display: none !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--children {
+            width: 100%;
+            margin: 28px 0 0;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer {
@@ -482,7 +635,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 24px !important;
             height: 24px !important;
             padding: 0 !important;
-            border-radius: 6px !important;
+            border-radius: ${queryBuilderActionRadius} !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -532,7 +685,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 24px;
             height: 24px;
             border: 1px solid #d0d5dd;
-            border-radius: 6px;
+            border-radius: ${queryBuilderActionRadius};
             background: #fff;
             color: #667085;
             padding: 0;
@@ -574,7 +727,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const shaQueryBuilderModalTitleIcon = cx("sha-query-builder-modal-title-icon", css`
         width: 28px;
         height: 28px;
-        border-radius: 50%;
+        border-radius: ${queryBuilderActionRadius};
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -585,8 +738,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     `);
 
   const shaQueryBuilderModalBody = cx("sha-query-builder-modal-body", css`
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: auto;
+
+        .sha-query-builder {
+            display: block;
+            min-height: 0;
+        }
+
         .query-builder-container {
-            overflow-x: auto;
+            overflow: visible;
         }
 
         .query-builder {
@@ -601,24 +766,30 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder > .group-or-rule-container > .group {
             background: #f5f5f5;
             border: 1px solid #ededee;
-            border-radius: 12px;
+            border-radius: ${queryBuilderSurfaceRadius};
             padding: 12px;
         }
 
         .query-builder-container.qb-has-rules .qb-logic-heading {
-            font-size: 20px;
-            line-height: 1.3;
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 22px;
             font-weight: 400;
-            color: rgba(0, 0, 0, 0.73);
-            margin: 0 0 20px;
+            color: #000;
+            margin: 0 0 12px;
         }
 
         .query-builder-container.qb-has-rules,
         .query-builder-container.qb-empty {
             background: #f5f5f5;
             border: 1px solid #ededee;
-            border-radius: 12px;
-            padding: 12px !important;
+            border-radius: ${queryBuilderSurfaceRadius};
+            width: 100%;
+            max-width: 966px;
+            min-width: 0;
+            min-height: 236px;
+            height: auto;
+            padding: 20px 10px !important;
             box-sizing: border-box;
         }
 
@@ -646,7 +817,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .query-builder-container.qb-has-rules .qb-rule-layout {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 16px;
             width: 100%;
         }
@@ -695,7 +866,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 24px;
             height: 24px;
             border: 1px solid #d0d5dd;
-            border-radius: 6px;
+            border-radius: ${queryBuilderActionRadius};
             background: #fff;
             color: #667085;
             padding: 0;
@@ -731,10 +902,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .group--children > .sha-query-builder-item-with-relation {
             position: relative;
             display: flex;
-            align-items: flex-start;
-            gap: var(--qb-relation-gap);
             width: 100%;
+            max-width: ${queryBuilderRuleWidth};
             min-width: 0;
+            padding: 0;
+            align-items: flex-start;
+            gap: 10px;
+            flex-shrink: 0;
+            box-sizing: border-box;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .sha-query-builder-item-prefix {
@@ -771,7 +946,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .group--children > .sha-query-builder-item-with-relation--has-relation .sha-query-builder-item-relation .${prefixCls}-select-selector {
             min-height: 24px;
             border: 1px solid #c7ced8 !important;
-            border-radius: 8px !important;
+            border-radius: ${queryBuilderControlRadius} !important;
             box-shadow: none !important;
             padding: 0 6px !important;
         }
@@ -838,7 +1013,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--footer .action--ADD-GROUP.ant-btn {
             height: 36px;
             min-width: 160px;
-            border-radius: 10px;
+            border-radius: ${queryBuilderActionRadius};
             box-shadow: none;
             padding: 0 16px;
             font-size: 14px;
@@ -865,7 +1040,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder > .group-or-rule-container > .group > .group--header {
-            margin: 0 0 20px;
+            margin: 0 0 12px;
             padding: 0;
             display: flex;
             flex-wrap: wrap;
@@ -878,11 +1053,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             content: "Show all...";
             display: block;
             width: 100%;
-            font-size: 20px;
-            line-height: 1.3;
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 22px;
             font-weight: 400;
-            color: rgba(0, 0, 0, 0.73);
-            margin-bottom: 20px;
+            color: #000;
+            margin-bottom: 12px;
         }
 
         .query-builder > .group-or-rule-container > .group > .group--header.no--children {
@@ -956,7 +1132,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             height: 36px;
             min-width: 176px;
-            border-radius: 10px;
+            border-radius: ${queryBuilderActionRadius};
             box-shadow: none;
             padding: 0 16px;
             font-size: 14px;
@@ -968,7 +1144,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             height: 36px;
             min-width: 160px;
-            border-radius: 10px;
+            border-radius: ${queryBuilderActionRadius};
             box-shadow: none;
             padding: 0 16px;
             font-size: 14px;
@@ -1052,7 +1228,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             height: 36px;
             padding: 0 16px;
-            border-radius: 10px;
+            border-radius: ${queryBuilderActionRadius};
             font-size: 14px;
             border: 1px solid transparent;
             background: transparent;
@@ -1076,7 +1252,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 10px;
         }
 
         .query-builder .group--header:not(.no--children):not(.hide--conjs)::before,
@@ -1123,7 +1299,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .group--conjunctions .sha-query-builder-conjunction-select .${prefixCls}-select-selector {
             min-height: 24px;
             border: 1px solid #c7ced8 !important;
-            border-radius: 8px !important;
+            border-radius: ${queryBuilderControlRadius} !important;
             box-shadow: none !important;
             padding: 0 8px !important;
         }
@@ -1137,7 +1313,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule {
             background: #fff;
             border: 1px solid #d0d5dd;
-            border-radius: 8px;
+            border-radius: ${queryBuilderControlRadius};
             padding: 4px;
             overflow: hidden;
         }
@@ -1168,7 +1344,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             margin: 2px 0;
             border: 1px solid #c7ced8;
-            border-radius: 8px;
+            border-radius: ${queryBuilderControlRadius};
             background: #fff;
             overflow: hidden;
         }
@@ -1228,7 +1404,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             margin: 2px 0;
             border: 1px solid #c7ced8;
-            border-radius: 8px;
+            border-radius: ${queryBuilderControlRadius};
             background: #fff;
             min-height: 20px;
             padding: 0 12px;
@@ -1251,7 +1427,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             margin: 2px 0;
             border: 1px solid #c7ced8;
-            border-radius: 8px;
+            border-radius: ${queryBuilderControlRadius};
             background: #fff;
             min-height: 20px;
             overflow: hidden;
@@ -1302,7 +1478,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: 0;
             margin: 2px 0;
             border: 1px solid #c7ced8;
-            border-radius: 8px;
+            border-radius: ${queryBuilderControlRadius};
             background: #fff;
             overflow: hidden;
         }
@@ -1320,7 +1496,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: 0;
             margin: 2px 0;
             border: 1px solid #c7ced8;
-            border-radius: 8px;
+            border-radius: ${queryBuilderControlRadius};
             background: #fff;
             overflow: hidden;
         }
@@ -1400,6 +1576,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-source-dropdown-trigger {
             display: inline-flex;
+            width: 100%;
+            min-width: 0;
             pointer-events: auto !important;
             position: relative;
             z-index: 2;
@@ -1609,13 +1787,43 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding-right: 0;
         }
 
+        .query-builder .rule--value .sha-query-builder-boolean-segmented {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-group {
+            width: 100%;
+        }
+
+        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-item {
+            flex: 1 1 50%;
+            min-width: 0;
+        }
+
+        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-item-label {
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            white-space: nowrap;
+        }
+
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group {
-            background: #a9c3e6 !important;
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            min-height: 133px;
+            padding: 10px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            background: rgba(43, 120, 228, 0.30) !important;
             border: 1px solid #7fa8dc !important;
-            border-radius: 10px;
-            padding: 8px;
+            border-radius: 11px;
             position: relative;
-            padding-top: 38px;
+            box-sizing: border-box;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--header {
@@ -1623,6 +1831,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: 0 !important;
             min-height: 0 !important;
             display: none !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--children {
+            width: 100%;
+            margin: 28px 0 0;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer {
@@ -1651,7 +1864,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 24px !important;
             height: 24px !important;
             padding: 0 !important;
-            border-radius: 6px !important;
+            border-radius: ${queryBuilderActionRadius} !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -1701,7 +1914,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 24px;
             height: 24px;
             border: 1px solid #d0d5dd;
-            border-radius: 6px;
+            border-radius: ${queryBuilderActionRadius};
             background: #fff;
             color: #667085;
             padding: 0;

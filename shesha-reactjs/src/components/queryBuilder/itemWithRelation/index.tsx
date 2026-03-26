@@ -6,8 +6,6 @@ import { ItemPrefix } from '../itemPrefix';
 import { RuleDragHandlePlaceholder } from '../ruleDragHandlePlaceholder';
 import type { RuleProps } from '@react-awesome-query-builder/antd';
 
-const NOT_OPTION_VALUE = '__NOT__';
-
 interface IItemWithRelationProps {
   id: string;
   type?: string;
@@ -107,20 +105,16 @@ export const ItemWithRelation = (props: IItemWithRelationProps): JSX.Element => 
     config?.settings?.defaultConjunction ??
     'AND'
   );
-  const not = Boolean(parentProperties?.get?.('not'));
   const relationValue = properties?.get?.('__relation');
   const selectedRelation = typeof relationValue === 'string'
     ? relationValue
-    : (not ? NOT_OPTION_VALUE : selectedConjunction);
+    : selectedConjunction;
 
   const conjunctionOptions = Object.entries(config?.conjunctions ?? {}).map(([key, definition]) => ({
     value: key,
     label: (definition as { label?: string })?.label ?? key,
   }));
-  const selectOptions = [
-    ...conjunctionOptions,
-    { value: NOT_OPTION_VALUE, label: config?.settings?.notLabel ?? 'Not' },
-  ];
+  const selectOptions = conjunctionOptions;
 
   const readonly = Boolean(
     isParentLocked ||

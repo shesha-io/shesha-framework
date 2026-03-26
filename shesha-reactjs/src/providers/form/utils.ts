@@ -89,6 +89,7 @@ import {
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
 import { findToolboxComponent, getToolboxComponent } from './utils/markup';
+import { buildMustacheExpressionContext, tryEvaluateMustacheTemplate } from '@/utils/mustacheExpressionEvaluation';
 
 export {
   // prop settings
@@ -741,8 +742,15 @@ export const evaluateComplexString = (expression: string, mappings: IMatchData[]
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
   let result = expression;
+  const expressionContext = buildMustacheExpressionContext(mappings);
 
   Array.from(matches).forEach((matched) => {
+    const expressionEvaluation = tryEvaluateMustacheTemplate(matched, expressionContext);
+    if (expressionEvaluation.handled) {
+      result = result.replaceAll(matched, expressionEvaluation.value);
+      return;
+    }
+
     mappings.forEach(({ match, data }) => {
       if (matched.includes(`{{${match}`)) {
         // When the match = "", we wanna send data as it is as that would mean that the expression doe nto use dot notation
@@ -820,12 +828,23 @@ export const evaluateComplexStringWithResult = (
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
   let result = expression;
+  const expressionContext = buildMustacheExpressionContext(mappings);
 
   let success = true;
 
   const unevaluatedExpressions = [];
 
   Array.from(matches).forEach((template) => {
+    const expressionEvaluation = tryEvaluateMustacheTemplate(template, expressionContext);
+    if (expressionEvaluation.handled) {
+      if (requireNonEmptyResult && !expressionEvaluation.value?.trim()) {
+        success = false;
+        unevaluatedExpressions.push(template);
+      }
+      result = result.replaceAll(template, expressionEvaluation.value);
+      return;
+    }
+
     mappings.forEach(({ match, data }) => {
       if (template.includes(`{{${match}`)) {
         // When the match = "", we wanna send data as it is as that would mean that the expression doe nto use dot notation

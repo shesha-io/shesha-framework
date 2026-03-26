@@ -2,19 +2,14 @@ import React from 'react';
 import { Select } from 'antd';
 import type { ConjsProps, ConjunctionOption, FactoryWithContext } from '@react-awesome-query-builder/antd';
 
-const NOT_OPTION_VALUE = '__NOT__';
-
 export const ConjunctionSelect: FactoryWithContext<ConjsProps> = (props) => {
   const {
     conjunctionOptions,
     selectedConjunction,
     setConjunction,
-    setNot,
-    not,
     readonly,
     disabled,
     config,
-    notLabel,
   } = props;
 
   const options = Object.values(conjunctionOptions ?? {}) as ConjunctionOption[];
@@ -24,22 +19,9 @@ export const ConjunctionSelect: FactoryWithContext<ConjsProps> = (props) => {
   }));
 
   const selectedFallback = conjunctionItems[0]?.value ?? 'AND';
-  const selectedValue = not ? NOT_OPTION_VALUE : (selectedConjunction ?? selectedFallback);
-
-  const selectOptions = [
-    ...conjunctionItems,
-    { value: NOT_OPTION_VALUE, label: notLabel ?? 'Not' },
-  ];
+  const selectedValue = selectedConjunction ?? selectedFallback;
 
   const handleChange = (value: string): void => {
-    if (value === NOT_OPTION_VALUE) {
-      setNot(true);
-      return;
-    }
-
-    if (not)
-      setNot(false);
-
     setConjunction(value);
   };
 
@@ -55,7 +37,7 @@ export const ConjunctionSelect: FactoryWithContext<ConjsProps> = (props) => {
     >
       <Select
         value={selectedValue}
-        options={selectOptions}
+        options={conjunctionItems}
         onChange={handleChange}
         disabled={Boolean(readonly || disabled)}
         popupMatchSelectWidth={false}
@@ -64,4 +46,3 @@ export const ConjunctionSelect: FactoryWithContext<ConjsProps> = (props) => {
     </div>
   );
 };
-

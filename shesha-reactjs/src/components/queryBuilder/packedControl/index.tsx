@@ -30,6 +30,7 @@ export const PackedSourceTrigger: FC<IPackedSourceTriggerProps> = ({ disabled, i
     <button
       type="button"
       className={classNames('sha-query-builder-source-trigger', `sha-query-builder-source-trigger--${variant}`)}
+      style={{ width: '100%' }}
       title={title}
       aria-label={title}
       disabled={disabled}

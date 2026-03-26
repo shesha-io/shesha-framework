@@ -2,20 +2,19 @@ import React from 'react';
 import { BaseWidget, BasicConfig, BooleanFieldSettings } from '@react-awesome-query-builder/antd';
 import { Checkbox, Tooltip } from 'antd';
 import { DoubleRightOutlined } from '@ant-design/icons';
+import { ignoreIfUnassignedTooltip } from './constants';
 
 type IgnoreIfUnassignedWidgetType = BaseWidget & BooleanFieldSettings;
-
-const defaultTooltip = 'Check this if you want the criteria to be ignored if the expression references any unassigned components.';
 
 export const IgnoreIfUnassignedWidget: IgnoreIfUnassignedWidgetType = {
   ...BasicConfig.widgets.boolean,
   valueSrc: 'value',
   factory: (props) => {
     const checked = Boolean(props.value);
-    const tooltipText = props.customProps?.title || defaultTooltip;
+    const tooltipText = props.customProps?.title || ignoreIfUnassignedTooltip;
 
     return (
-      <Tooltip title={tooltipText}>
+      <Tooltip title={tooltipText} placement="right">
         <span className="sha-query-builder-ignore-unassigned">
           <Checkbox
             checked={checked}

@@ -32,13 +32,28 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-sizing: border-box;
         }
 
+        .query-builder-container.qb-empty .query-builder {
+            margin: 0 !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container {
+            margin: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group {
+            padding: 0 !important;
+        }
+
         .query-builder .sha-query-builder-empty-state-message {
             display: block;
             margin: 0;
             font-size: 14px;
-            line-height: 1.43;
+            line-height: 22px;
             font-weight: 400;
-            color: rgba(0, 0, 0, 0.45);
+            color: #585858;
+            width: 239.79px;
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
         }
 
         .query-builder .group--footer:has(> .sha-query-builder-empty-state) {
@@ -52,6 +67,70 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             margin: 0;
         }
 
+        .query-builder .group--footer > .sha-query-builder-empty-state--root {
+            width: 100%;
+        }
+
+        .query-builder .sha-query-builder-empty-state-content {
+            width: 100%;
+            max-width: 100%;
+            height: 88px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 10px;
+            padding: 0;
+            background: #f7f7f7;
+            border-radius: 5px;
+        }
+
+        .query-builder .sha-query-builder-empty-state-actions {
+            display: inline-flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 12px;
+            flex: 0 0 auto;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 36px !important;
+            min-width: 160px !important;
+            padding: 10px !important;
+            border-radius: 10px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            box-shadow: none !important;
+            gap: 8px !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn {
+            background: #1890ff !important;
+            border-color: #1890ff !important;
+            color: #fff !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn {
+            background: #fff !important;
+            border-color: #1890ff !important;
+            color: #1890ff !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn .ant-btn-icon,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn .ant-btn-icon {
+            margin-right: 0 !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn .ant-btn-icon .anticon,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn .ant-btn-icon .anticon {
+            font-size: 16px !important;
+        }
+
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions,
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions.group--actions--br,
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions.group--actions--tr {
@@ -59,6 +138,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             width: auto !important;
             flex: 0 0 auto !important;
             justify-content: flex-start !important;
+        }
+
+        .query-builder .group--footer > .sha-query-builder-empty-state--root + .group--actions,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root + .group--actions.group--actions--br,
+        .query-builder .group--footer > .sha-query-builder-empty-state--root + .group--actions.group--actions--tr {
+            display: none !important;
         }
 
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions .ant-btn-group {
@@ -83,10 +168,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: inline-flex;
             align-items: center;
             margin: 0 0 12px;
-            font-size: 14px;
-            line-height: 1.43;
-            font-weight: 500;
-            color: rgba(0, 0, 0, 0.88);
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 22px;
+            font-weight: 400;
+            color: #000;
             white-space: nowrap;
         }
 
@@ -127,12 +213,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group {
-            background: #a9c3e6 !important;
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            min-height: 133px;
+            padding: 10px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            background: rgba(43, 120, 228, 0.30) !important;
             border: 1px solid #7fa8dc !important;
-            border-radius: 10px;
-            padding: 8px;
+            border-radius: 11px;
             position: relative;
-            padding-top: 38px;
+            box-sizing: border-box;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--header {
@@ -140,6 +233,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: 0 !important;
             min-height: 0 !important;
             display: none !important;
+        }
+
+        .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--children {
+            width: 100%;
+            margin: 28px 0 0;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer {
@@ -387,7 +485,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 10px;
         }
 
         .query-builder > .group-or-rule-container > .group > .group--children > .group-or-rule-container {
@@ -402,10 +500,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .group--children > .sha-query-builder-item-with-relation {
             position: relative;
             display: flex;
-            align-items: flex-start;
-            gap: var(--qb-relation-gap);
             width: 100%;
+            max-width: 880px;
             min-width: 0;
+            padding: 0;
+            align-items: flex-start;
+            gap: 10px;
+            flex-shrink: 0;
+            box-sizing: border-box;
         }
 
         .query-builder .group--children > .sha-query-builder-item-with-relation > .sha-query-builder-item-prefix {
@@ -582,7 +684,21 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: none !important;
         }
 
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--header,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--children {
+            display: none !important;
+        }
+
         .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer {
             margin: 0;
             padding: 0;
             display: flex;
@@ -594,6 +710,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer .group--actions,
         .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer .group--actions.group--actions--br,
         .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer .group--actions.group--actions--tr {
+            margin: 0 !important;
+            width: 100% !important;
+            justify-content: flex-start !important;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions.group--actions--br,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer .group--actions.group--actions--tr {
             margin: 0 !important;
             width: 100% !important;
             justify-content: flex-start !important;
@@ -689,6 +813,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-source-trigger {
             height: 24px;
+            width: 100%;
             min-width: 32px;
             padding: 0 7px;
             border: 1px solid #d9d9d9;
@@ -701,6 +826,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             gap: 4px;
             cursor: pointer;
             transition: border-color 0.2s ease, color 0.2s ease;
+            box-sizing: border-box;
         }
 
         .sha-query-builder-source-trigger:hover,
@@ -717,6 +843,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-source-dropdown-trigger {
             display: inline-flex;
+            width: 100%;
+            min-width: 0;
             pointer-events: auto !important;
             position: relative;
             z-index: 2;
@@ -910,6 +1038,29 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             font-size: 11px;
         }
 
+        .query-builder .rule--value .sha-query-builder-boolean-segmented {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-group {
+            width: 100%;
+        }
+
+        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-item {
+            flex: 1 1 50%;
+            min-width: 0;
+        }
+
+        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-item-label {
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            white-space: nowrap;
+        }
+
         .query-builder .action--ADD-RULE.ant-btn:not(.ant-btn-icon-only),
         .query-builder .action--ADD-GROUP.ant-btn:not(.ant-btn-icon-only) {
             display: inline-flex !important;
@@ -1007,6 +1158,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             gap: 12px !important;
         }
 
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+        }
+
         .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions,
         .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions.group--actions--br,
         .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions.group--actions--tr {
@@ -1016,7 +1174,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             justify-content: flex-start !important;
         }
 
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions.group--actions--br,
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions.group--actions--tr {
+            margin: 0 !important;
+            width: auto !important;
+            flex: 0 0 auto !important;
+            justify-content: flex-start !important;
+        }
+
         .query-builder-container.qb-empty .query-builder > .group-or-rule-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions .ant-btn-group {
+            display: inline-flex !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: 12px;
+        }
+
+        .query-builder-container.qb-empty .query-builder > .sha-query-builder-item-with-relation > .group-or-rule-container.group-container > .group > .group--footer:has(> .sha-query-builder-empty-state--root) > .group--actions .ant-btn-group {
             display: inline-flex !important;
             justify-content: flex-start !important;
             align-items: center !important;
