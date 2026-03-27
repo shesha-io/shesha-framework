@@ -63,7 +63,7 @@ export const useShaDataContextAccessor = <TData extends object = object>(
 
   const needStore = Boolean(webStorageType);
 
-  const [storedData, setStorageData] = useWebStorage(webStorageType ?? 'sessionStorage', key, {} as TData);
+  const [storedData, setStorageData] = useWebStorage(webStorageType ?? 'sessionStorage', key, emptyData as TData);
 
   const getDataContextAccessor: () => IShaDataWrapper<TData> = () =>
     typeof getShaDataContextAccessor === 'function'

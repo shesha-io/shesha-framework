@@ -1,4 +1,4 @@
-import { ILayerGroup, LayerGroupItemProps } from './models';
+import { ILayerGroup, isLayerGroup, LayerGroupItemProps } from './models';
 
 export interface IItemPosition {
   ownerArray: LayerGroupItemProps[];
@@ -8,16 +8,16 @@ export interface IItemPosition {
 export const getItemPositionById = (items: LayerGroupItemProps[], id: string): IItemPosition | null => {
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
+    if (!item)
+      continue;
     if (item.id === id)
       return {
         ownerArray: items,
         index,
       };
 
-    const children = (item as ILayerGroup)?.childItems;
-
-    if (children) {
-      const itemPosition: IItemPosition | null = getItemPositionById(children, id);
+    if (isLayerGroup(item) && item.childItems) {
+      const itemPosition: IItemPosition | null = getItemPositionById(item.childItems, id);
       if (itemPosition) return itemPosition;
     }
   }
@@ -27,7 +27,7 @@ export const getItemPositionById = (items: LayerGroupItemProps[], id: string): I
 
 export const getItemById = (items: LayerGroupItemProps[], id: string): LayerGroupItemProps | null => {
   const position = getItemPositionById(items, id);
-  return position ? position.ownerArray[position.index] : null;
+  return position ? position.ownerArray[position.index] ?? null : null;
 };
 
 export const getComponentModel = (item: LayerGroupItemProps): LayerGroupItemProps & { visible: boolean; allowChangeVisibility: boolean } => ({

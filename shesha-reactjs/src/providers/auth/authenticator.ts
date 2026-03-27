@@ -22,7 +22,7 @@ import {
   LoginUserResponse,
   URLS,
 } from './models';
-import { ISettingsActionsContext } from '../settings/contexts';
+import { ISettingsClientContext } from '../settings/contexts';
 import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IShaRouter } from '../shaRouting/contexts';
@@ -40,7 +40,7 @@ const enum AuthenticateResultType {
 export interface AuthenticatorArgs {
   httpClient: HttpClientApi;
   shaRouter: IShaRouter;
-  settings: ISettingsActionsContext;
+  settings: ISettingsClientContext;
   tokenName?: string;
   unauthorizedRedirectUrl?: string;
   homePageUrl?: string;
@@ -57,7 +57,7 @@ export interface AuthenticatorArgs {
 export class Authenticator implements IAuthenticator {
   #httpClient: HttpClientApi;
 
-  #settings: ISettingsActionsContext;
+  #settings: ISettingsClientContext;
 
   #shaRouter: IShaRouter;
 

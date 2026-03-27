@@ -7,19 +7,22 @@ import { ActionParametersDictionary, IApplicationApi } from '@/providers';
 import { IFormApi } from '@/providers/form/formApi';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { isDefined } from '@/utils/nullables';
+import { IArgumentsEvaluationContext } from '@/providers/configurableActionsDispatcher/contexts';
 
 export interface IHasPreviousActionResponse {
   actionResponse?: any;
 }
 export interface IHasPreviousActionError {
-  actionError?: any;
+  actionError?: unknown;
 }
 
 export type HasPreviousActionResult = IHasPreviousActionResponse | IHasPreviousActionError;
 
-export type IActionExecutionContext = GenericDictionary & HasPreviousActionResult & {
-  form?: IFormApi;
-  application?: IApplicationApi;
+export type IActionExecutionContext = /* GenericDictionary &*/ HasPreviousActionResult & {
+  form?: IFormApi | undefined;
+  application?: IApplicationApi | undefined;
+  data?: object | undefined;
 };
 
 export const hasPreviousActionError = (value: HasPreviousActionResult): value is IHasPreviousActionError => {
@@ -33,9 +36,9 @@ export const HasPreviousActionResponse = (value: HasPreviousActionResult): value
 /**
  * Configuration action executer
  */
-export type IConfigurableActionExecuter<TArguments, TReponse> = (
+export type IConfigurableActionExecuter<TArguments, TReponse, TExecutionContext extends IActionExecutionContext = IActionExecutionContext> = (
   actionArguments: TArguments,
-  context: IActionExecutionContext,
+  context: TExecutionContext,
 ) => Promise<TReponse>;
 
 export interface ISettingsFormFactoryArgs<TModel extends object = object> {
@@ -87,26 +90,26 @@ export type ConfigurableActionArgumentsMigrationContext = void;
  * Arguments migrator
  */
 export type ConfigurableActionArgumentsMigrator<TArguments> = (
-  migrator: Migrator<unknown, TArguments, ConfigurableActionArgumentsMigrationContext>,
+  migrator: Migrator<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>,
 ) => MigratorFluent<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>;
 
 /**
  * Configurable action descriptor. Is used to define consigurable actions
  */
-export interface IConfigurableActionDescriptor<TArguments extends object = object, TReponse = unknown>
+export interface IConfigurableActionDescriptor<TArguments extends object = object, TReponse = unknown, TExecutionContext extends IActionExecutionContext = IActionExecutionContext>
   extends IConfigurableActionIdentifier {
   /**
    * User friendly name of the action. Action name is displayed if the label is not specified
    */
-  label?: string;
+  label?: string | undefined;
   /**
    * Action description
    */
-  description?: string;
+  description?: string | undefined;
   /**
    * Sort order for displaying actions in the list. Lower numbers appear first.
    */
-  sortOrder?: number;
+  sortOrder?: number | undefined;
   /**
    * If true, indicaes that the action has configurable arguments
    */
@@ -114,28 +117,28 @@ export interface IConfigurableActionDescriptor<TArguments extends object = objec
   /**
    * Arguments form factory. Renders the action arguments editor
    */
-  argumentsFormFactory?: IConfigurableActionArgumentsFormFactory<TArguments>;
+  argumentsFormFactory?: IConfigurableActionArgumentsFormFactory<TArguments> | undefined;
   /**
    * Markup of the arguments editor. Applied when the @argumentsFormFactory is not specified, in this case you can render arguments for in the designer itself
    */
-  argumentsFormMarkup?: FormMarkup | FormMarkupFactory;
+  argumentsFormMarkup?: FormMarkup | FormMarkupFactory | undefined;
 
   /**
    * Argument evaluation function. Default implementation is used when not specified
    */
-  evaluateArguments?: (argumentsConfiguration: TArguments, context: GenericDictionary) => Promise<TArguments>;
+  evaluateArguments?: ((argumentsConfiguration: TArguments, context: IArgumentsEvaluationContext) => Promise<TArguments | undefined>) | undefined;
 
   /**
    * Action executer
    */
-  executer: IConfigurableActionExecuter<TArguments, TReponse>;
+  executer: IConfigurableActionExecuter<TArguments, TReponse, TExecutionContext>;
 
-  useDynamicContextHook?: DynamicContextHook;
+  useDynamicContextHook?: DynamicContextHook | undefined;
 
   /**
    * Arguments migrations. Returns last version of arguments
    */
-  migrator?: ConfigurableActionArgumentsMigrator<TArguments>;
+  migrator?: ConfigurableActionArgumentsMigrator<TArguments> | undefined;
 }
 
 export interface IMayHaveType {
@@ -157,7 +160,7 @@ export interface IConfigurableActionConfiguration<TArguments extends ActionParam
 }
 
 export const isConfigurableActionConfiguration = (actionConfig: unknown): actionConfig is IConfigurableActionConfiguration => {
-  return actionConfig && typeof (actionConfig) === 'object' &&
+  return isDefined(actionConfig) && typeof (actionConfig) === 'object' &&
     'actionOwner' in actionConfig && typeof (actionConfig.actionOwner) === 'string' &&
     'actionName' in actionConfig && typeof (actionConfig.actionName) === 'string';
 };

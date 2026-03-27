@@ -13,6 +13,7 @@ import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
+import { throwError } from '@/utils/errors';
 
 const actionsOwner = 'Configuration Items';
 
@@ -23,20 +24,21 @@ interface IConfigurationItemsImportFooterProps {
 
 export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
-  const { hideModal, importerRef: exporterRef } = props;
+  const { hideModal, importerRef } = props;
   const { message, notification } = App.useApp();
 
   const onImport = (): void => {
     setInProgress(true);
 
-    exporterRef.current.importExecuter().then(() => {
+    const importer = importerRef.current ?? throwError("importerRef is not defined");
+    importer.importExecuter().then(() => {
       message.info('Items imported successfully');
       hideModal();
-    }).catch((error) => {
+    }).catch((error: unknown) => {
       notification.error({
         message: "Failed to import package",
         icon: null,
-        description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+        description: <ValidationErrors error={error} renderMode="raw" defaultMessage="" />,
       });
       setInProgress(false);
     });

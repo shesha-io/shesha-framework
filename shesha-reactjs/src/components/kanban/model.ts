@@ -28,7 +28,6 @@ export interface IKanbanProps extends IConfigurableFormComponent, IStyleType {
   fontSize?: number;
   entityType?: string | IEntityTypeIdentifier;
   allowNewRecord?: boolean;
-  readonly?: boolean;
   collapsible?: boolean;
   gap?: number;
   headerStyles?: CSSProperties | string;

@@ -36,7 +36,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
           _code: 'return !getSettingValue(data?.entityType);',
           _mode: 'code',
           _value: false,
-        } as any,
+        },
         components: [...fbf()
           .addSettingsInputRow({
             id: nanoid(),
@@ -53,8 +53,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               modelType: {
                 _code: 'return getSettingValue(data?.entityType);',
                 _mode: 'code',
-                _value: false,
-              } as any,
+              },
               fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
             }],
           })
@@ -76,8 +75,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 modelType: {
                   _code: 'return getSettingValue(data?.entityType);',
                   _mode: 'code',
-                  _value: false,
-                } as any,
+                },
                 autoFillProps: false,
               }],
           })
@@ -100,8 +98,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             modelType: {
               _code: 'return getSettingValue(data?.entityType);',
               _mode: 'code',
-              _value: false,
-            } as any,
+            },
             autoFillProps: false,
           },
         ],

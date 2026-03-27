@@ -2,13 +2,12 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import React, { CSSProperties, useCallback, useMemo } from 'react';
 import { EntityPicker, ValidationErrors } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
-import { IToolboxComponent } from '@/interfaces';
+import { IStoredFilter, IToolboxComponent } from '@/interfaces';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { ButtonGroupItemProps, IStyleType, useMetadataDispatcher } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -74,7 +73,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     const displayEntityKey = model.displayEntityKey || '_displayName';
 
-    const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
+    const entityPickerFilter = useMemo<IStoredFilter[]>(() => {
       return [
         {
           defaultSelected: true,
@@ -247,7 +246,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         `${propertyName}._className`,
       ];
     }
-    return null;
+    return [];
   },
   validateModel: (model, addModelError) => {
     if (!model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');

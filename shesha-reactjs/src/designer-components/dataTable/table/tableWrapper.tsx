@@ -19,7 +19,6 @@ import {
   DatatableColumnsSelector,
 } from '@/components';
 import {
-  useDataTable,
   useDataTableStore,
   useForm,
   useFormData,
@@ -107,7 +106,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [props?.shadow, shadowStyles?.boxShadow, props?.boxShadow]);
 
   const effectiveRowHeight = useMemo(() => {
-    const converted = convertRowDimensionsToHeight(props?.rowDimensions);
+    const converted = convertRowDimensionsToHeight(props.rowDimensions?.height);
     return converted || props?.rowHeight;
   }, [props?.rowDimensions, props?.rowHeight]);
 
@@ -353,8 +352,10 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [props.enableStyleOnReadonly, props.readOnly, allStyles, props.border]);
 
   const {
-    isInProgress: { isFiltering, isSelectingColumns },
-    setIsInProgressFlag,
+    isAdvancedFilterVisible,
+    isColumnsSelectorVisible,
+    toggleAdvancedFilter,
+    toggleColumnsSelector,
     registerConfigurableColumns,
     selectedRow,
     setMultiSelectedRow,
@@ -365,9 +366,9 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     tableFilter,
     contextValidation,
     getRepository,
+    totalRows,
   } = useDataTableStore();
 
-  const { totalRows } = useDataTable();
   const repositoryType = getRepository?.()?.repositoryType;
   const isEntitySource = repositoryType === BackendRepositoryType;
 
@@ -445,11 +446,11 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id, isEntitySource]);
 
   const renderSidebarContent = (): JSX.Element => {
-    if (isFiltering) {
+    if (isAdvancedFilterVisible) {
       return <DatatableAdvancedFilter />;
     }
 
-    if (isSelectingColumns) {
+    if (isColumnsSelectorVisible) {
       return <DatatableColumnsSelector />;
     }
 
@@ -462,8 +463,12 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const hasContextConfigErrorsOrWarnings = contextValidation?.hasErrors && (contextValidation?.validationType === 'warning' || contextValidation?.validationType === 'error');
 
   const toggleFieldPropertiesSidebar = (): void => {
-    if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
-    else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
+    if (!isColumnsSelectorVisible && !isAdvancedFilterVisible)
+      toggleAdvancedFilter(true);
+    else {
+      toggleAdvancedFilter(false);
+      toggleColumnsSelector(false);
+    }
   };
 
   // In designer mode, show StandaloneTable if:
@@ -472,14 +477,16 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const shouldShowStandalone = hasNoColumns && hasAutoConfiguredRef.current;
 
   if (isDesignMode && (shouldShowStandalone || hasContextConfigErrorsOrWarnings)) {
-    return <StandaloneTable {...props} />;
+    return (
+      <StandaloneTable {...props} />
+    );
   }
 
   return (
     <SidebarContainer
       rightSidebarProps={{
         onOpen: toggleFieldPropertiesSidebar,
-        open: Boolean(isSelectingColumns || isFiltering),
+        open: isAdvancedFilterVisible || isColumnsSelectorVisible,
         onClose: toggleFieldPropertiesSidebar,
         title: 'Table Columns',
         content: renderSidebarContent,
@@ -550,6 +557,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             rowBorder={effectiveRowBorder}
             rowBorderStyle={props.rowBorderStyle}
             boxShadow={finalBoxShadow}
+            dimensions={props.dimensions}
             sortableIndicatorColor={props.sortableIndicatorColor}
             cellTextColor={props.cellTextColor}
             cellBackgroundColor={props.cellBackgroundColor}

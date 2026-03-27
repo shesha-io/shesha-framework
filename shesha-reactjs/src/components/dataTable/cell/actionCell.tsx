@@ -4,7 +4,7 @@ import { IconType, ShaIcon } from '@/components';
 import {
   isNavigationActionConfiguration,
   useConfigurableActionDispatcher,
-  useDataTable,
+  useDataTableStore,
   useShaRouting,
 } from '@/providers';
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
@@ -18,7 +18,7 @@ export type IActionCellProps<D extends object = object, V = any> = ICommonCellPr
 
 export const ActionCell = <D extends object = object, V = any>(props: IActionCellProps<D, V>): JSX.Element => {
   const { columnConfig } = props;
-  const { changeActionedRow } = useDataTable();
+  const { changeActionedRow } = useDataTableStore();
   const { executeAction, prepareArguments, useActionDynamicContext } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
 

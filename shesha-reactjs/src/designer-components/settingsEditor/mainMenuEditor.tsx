@@ -38,7 +38,7 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
     const { applicationKey = null } = useSheshaApplication();
     const { selectedApplication = null, saveStatus, editorMode, saveSetting } = useSettingsEditor(false) ?? {};
     const { changeMainMenu, saveMainMenu } = useMainMenu();
-    const form = useForm();
+    const form = useForm<IConfigurableMainMenu>();
     const initialValues = useRef<IConfigurableMainMenu>();
 
     const updateMenu = (value: IConfigurableMainMenu): void => {

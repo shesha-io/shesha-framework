@@ -22,7 +22,6 @@ export interface IReadOnlyDisplayFormItemProps {
   showItemName?: boolean;
   dateFormat?: string;
   timeFormat?: string;
-  disabled?: boolean;
   checked?: boolean;
   defaultChecked?: boolean;
   quickviewEnabled?: boolean;

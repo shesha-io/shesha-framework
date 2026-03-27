@@ -7,7 +7,6 @@ import {
   useAuth,
   useForm,
   useGlobalState,
-  useSidebarMenu,
   useSheshaApplication,
 } from '@/index';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
@@ -21,12 +20,12 @@ import {
   isItem,
 } from '@/providers/buttonGroupConfigurator/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Popover } from 'antd';
 import React, { CSSProperties, useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
-import { getAccountMenuItems, getMenuItem } from './utils';
+import { getMenuItem } from './utils';
 import {
   getDynamicActionsItemsLevel,
   getItemsWithResolved,
@@ -84,9 +83,6 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const { executeAction } = useConfigurableActionDispatcher();
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
-
-    const sidebar = useSidebarMenu(false);
-    const { accountDropdownListItems } = sidebar || {};
 
     const subTextStyling = {
       color: subTextColor,
@@ -156,7 +152,13 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     const menuItems = getMenuItem(finalItems, executeActionWithDynamicContext, getIsVisible);
 
-    const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
+    const accountMenuItems = [
+      {
+        key: 'logout',
+        onClick: logoutUser,
+        label: <><LoginOutlined /> Logout</>,
+      },
+    ];
 
     const onDynamicItemEvaluated = (): void => {
       setNumResolved((prev) => prev + 1);

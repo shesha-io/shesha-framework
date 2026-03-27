@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { ReactElement, ReactNode } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { ISidebarMenuItem, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
-import { IConfigurableActionConfiguration } from '@/providers/index';
+import { IConfigurableActionConfiguration, isNavigationActionConfiguration } from '@/providers/index';
 import Link from 'next/link';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
@@ -13,13 +13,13 @@ interface IGetItemArgs {
   label: React.ReactNode;
   key: React.Key;
   icon?: React.ReactNode;
-  children?: MenuItem[];
+  children?: MenuItem[] | undefined;
   isParent?: boolean;
   itemType: SidebarItemType;
-  url?: string;
+  url?: string | undefined;
   navigationType?: string;
-  onClick?: () => void;
-  tooltip?: string | ReactNode;
+  onClick?: () => void | undefined;
+  tooltip?: ReactNode;
 }
 
 function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url, tooltip }: IGetItemArgs): MenuItem {
@@ -86,8 +86,6 @@ export interface IProps {
 export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
   const { id, title, icon, itemType } = item;
 
-  const navigationType = item?.actionConfiguration?.actionArguments?.navigationType;
-
   if (item.hidden) return null;
 
   const children = isSidebarGroup(item)
@@ -97,12 +95,17 @@ export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluatio
 
   const actionConfiguration = isSidebarButton(item) ? item.actionConfiguration : undefined;
 
-  let url;
-  if (navigationType === 'form') {
-    url = getFormUrl(actionConfiguration);
-  } else if (navigationType === 'url') {
-    url = getUrl(actionConfiguration?.actionArguments?.url);
-  }
+  const navigationType = isNavigationActionConfiguration(actionConfiguration)
+    ? actionConfiguration.actionArguments?.navigationType
+    : undefined;
+
+  const url = isNavigationActionConfiguration(actionConfiguration)
+    ? navigationType === 'form'
+      ? getFormUrl(actionConfiguration)
+      : navigationType === 'url'
+        ? getUrl(actionConfiguration.actionArguments?.url)
+        : undefined
+    : undefined;
 
   const itemEvaluationArguments: IGetItemArgs = {
     label: title,

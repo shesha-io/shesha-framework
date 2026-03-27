@@ -116,7 +116,6 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return (
       <ReadOnlyDisplayFormItem
         value={wrapValue(value, options)}
-        disabled={disabled}
         showIcon={showIcon}
         showItemName={showItemName}
         solidColor={solidColor}

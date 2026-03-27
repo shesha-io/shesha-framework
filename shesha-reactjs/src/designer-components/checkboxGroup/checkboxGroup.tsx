@@ -18,7 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 
-interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style'>, IConfigurableFormComponent {
+interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
 
 interface ICheckboxGoupComopnentCalulatedValues {
@@ -43,7 +43,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} autoAlignLabel={false}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (e: any): void => {

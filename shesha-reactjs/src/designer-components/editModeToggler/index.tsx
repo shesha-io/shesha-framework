@@ -16,7 +16,7 @@ const HeaderAppControl: IToolboxComponentBase = {
     if (model.hidden) return null;
 
     return (
-      <ParentProvider model={model}>
+      <ParentProvider model={model} name={`headerAppControl-${model.id}`}>
         <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
           <Space className="sha-header-app-control">
             <AppEditModeToggler />

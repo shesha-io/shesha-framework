@@ -12,7 +12,7 @@ export interface ILayoutProps {
   span: number;
 }
 
-export interface IConfigurableComponentStateContext<TSettings = any>
+export interface IConfigurableComponentStateContext<TSettings extends object = object>
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
   IConfigurableComponentProps {
   settings: TSettings;
@@ -30,24 +30,24 @@ export interface IComponentSaveSuccessPayload {
   settings: object;
 }
 
-export interface IComponentLoadSuccessPayload<TSettings = any> {
+export interface IComponentLoadSuccessPayload<TSettings extends object = object> {
   id?: string;
   name?: string;
   description?: string;
   settings: TSettings;
 }
 
-export interface IConfigurableComponentActionsContext<TSettings extends any>
+export interface IConfigurableComponentActionsContext<TSettings extends object>
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   load: () => void;
   save: (settings: TSettings) => Promise<void>;
 }
 
-export interface IConfigurableComponentContext<TSettings>
+export interface IConfigurableComponentContext<TSettings extends object = object>
   extends IConfigurableComponentStateContext<TSettings>,
   IConfigurableComponentActionsContext<TSettings> {}
 
-export const getContextInitialState = <TSettings extends any>(
+export const getContextInitialState = <TSettings extends object = object>(
   defaultSettings: TSettings,
 ): IConfigurableComponentStateContext<TSettings> => {
   return {
@@ -59,9 +59,7 @@ export const getContextInitialState = <TSettings extends any>(
   };
 };
 
-export const getConfigurableComponentStateContext = <TSettings extends any>(
-  initialState: IConfigurableComponentStateContext<TSettings>,
-): Context<IConfigurableComponentStateContext<TSettings>> => createNamedContext<IConfigurableComponentStateContext<TSettings>>(initialState, "ConfigurableComponentStateContext");
+export const getConfigurableComponentStateContext = <TSettings extends object = object>(): Context<IConfigurableComponentStateContext<TSettings> | undefined> => createNamedContext<IConfigurableComponentStateContext<TSettings> | undefined>(undefined, "ConfigurableComponentStateContext");
 
-export const getConfigurableComponentActionsContext = <TSettings extends any>(): Context<IConfigurableComponentActionsContext<TSettings>> =>
-  createNamedContext<IConfigurableComponentActionsContext<TSettings>>(undefined, "ConfigurableComponentActionsContext");
+export const getConfigurableComponentActionsContext = <TSettings extends object = object>(): Context<IConfigurableComponentActionsContext<TSettings> | undefined> =>
+  createNamedContext<IConfigurableComponentActionsContext<TSettings> | undefined>(undefined, "ConfigurableComponentActionsContext");

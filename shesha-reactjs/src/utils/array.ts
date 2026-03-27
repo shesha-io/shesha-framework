@@ -1,27 +1,35 @@
-interface IAnyObject {
-  [value: string]: any;
-}
-
-const removeUndefined = (input: IAnyObject): IAnyObject => {
-  const newObj = {};
-
-  Object.keys(input).forEach((key) => {
-    if (input[key] === Object(input[key])) newObj[key] = removeUndefined(input[key]);
-    else if (input[key] !== undefined) newObj[key] = input[key];
-  });
-
-  return newObj;
+type RemoveUndefined<T> = {
+  [K in keyof T as T[K] extends undefined ? never : K]: T[K];
 };
 
-export const removeUndefinedProperties = (input: IAnyObject, nested = false): IAnyObject => {
-  const obj = { ...input };
+export const removeUndefinedProperties = <T extends object>(obj: T): RemoveUndefined<T> => {
+  const result = {} as T;
 
-  if (nested) {
-    return removeUndefined(input);
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key) && obj[key] !== undefined) {
+      result[key] = obj[key];
+    }
   }
 
-  Object.keys(obj).forEach((key) => (obj[key] === undefined ? delete obj[key] : {}));
-
-  return obj;
+  return result;
 };
 
+export type NonEmptyArray<T> = [T, ...T[]];
+
+/**
+ * Checks if the given value is an array with at least one element.
+ * @returns true if the value is an array with at least one element, false otherwise.
+ */
+export const isNonEmptyArray = <T>(value: Array<T> | null | undefined): value is NonEmptyArray<T> => {
+  return value !== null && value !== undefined && value.length > 0;
+};
+
+/**
+ * Returns the given array if it is not empty, otherwise returns undefined.
+ * @template T
+ * @param value - The array to check.
+ * @returns The array if it is not empty, otherwise undefined.
+ */
+export const undefinedIfEmptyArray = <T>(value: Array<T> | null | undefined): T[] | undefined => {
+  return isNonEmptyArray(value) ? value : undefined;
+};

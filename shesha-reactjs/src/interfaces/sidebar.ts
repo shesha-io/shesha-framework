@@ -21,24 +21,24 @@ export interface ISidebarMenuItemV0 {
 }
 
 export interface ISidebarMenuItem {
-  actionConfiguration?: IConfigurableActionConfiguration;
+  actionConfiguration?: IConfigurableActionConfiguration | undefined;
   id: string;
   title: string;
   tooltip?: ReactNode | string;
   itemType: SidebarItemType;
 
-  icon?: ReactNode | string;
-  hidden?: boolean;
-  visibility?: string;
-  requiredPermissions?: string[];
+  icon?: ReactNode | string | undefined;
+  hidden?: boolean | undefined;
+  visibility?: string | undefined;
+  requiredPermissions?: string[] | undefined;
 }
 
 export interface ISidebarButton extends ISidebarMenuItem {
-  actionConfiguration: IConfigurableActionConfiguration;
+  actionConfiguration: IConfigurableActionConfiguration | undefined;
 }
 
 export interface ISidebarGroup extends ISidebarMenuItem {
-  childItems?: ISidebarMenuItem[];
+  childItems?: ISidebarMenuItem[] | undefined;
 }
 
 export const isSidebarGroup = (item: ISidebarMenuItem): item is ISidebarGroup => {

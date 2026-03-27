@@ -5,14 +5,14 @@ import React from 'react';
 import { CustomFile, IconType } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { DataTypes, IToolboxComponent } from '@/interfaces';
-import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValueAsString,
   executeScriptSync,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
-import StoredFilesProvider from '@/providers/storedFiles';
+import { AttachmentsEditorProvider } from '@/providers/storedFiles';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -25,6 +25,8 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { getIdOrUndefined } from '@/utils/entity';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -164,10 +166,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
   isInput: true,
   name: 'File list',
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.advanced && dataFormat === AdvancedFormats.fileList,
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
-    const { backendUrl } = useSheshaApplication();
     const httpClient = useHttpClient();
     const form = useForm();
     const { data } = useFormData();
@@ -200,7 +202,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
+      <ConfigurableFormItem
+        model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}
+        autoAlignLabel={false}
+      >
         {(value, onChange) => {
           const onFileListChanged = (fileList, isUserAction = false): void => {
             onChange(fileList);
@@ -215,13 +220,12 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           };
 
           return (
-            <StoredFilesProvider
+            <AttachmentsEditorProvider
               name={model.componentName}
-              ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+              ownerId={!isNullOrWhiteSpace(ownerId) ? ownerId : getIdOrUndefined(data) ?? ""}
               ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(form?.formSettings?.modelType) ? form?.formSettings?.modelType : ''}
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
-              baseUrl={backendUrl}
               // used for requered field validation
               onChange={onFileListChanged}
               onDownload={onDownload}
@@ -252,7 +256,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 downloadedFileStyles={model.styleDownloadedFiles ? downloadedFileFullStyle : {}}
                 downloadedIcon={model.styleDownloadedFiles ? model.downloadedIcon : undefined}
               />
-            </StoredFilesProvider>
+            </AttachmentsEditorProvider>
           );
         }}
       </ConfigurableFormItem>

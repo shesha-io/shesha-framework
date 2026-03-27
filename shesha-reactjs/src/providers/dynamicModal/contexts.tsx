@@ -4,13 +4,14 @@ import { createNamedContext } from '@/utils/react';
 //#region modal provider
 
 export interface IDynamicModalStateContext {
-  instances: { [index: string]: IModalInstance };
+  // instances: { [index: string]: IModalInstance };
+  instances: Record<string, IModalInstance>;
 }
 
 export interface IDynamicModalActionsContext {
-  open: (modalProps: ICommonModalProps) => void;
+  open: <TValue extends object = object>(modalProps: ICommonModalProps<TValue>) => void;
   modalExists: (id: string) => boolean;
-  createModal: (modalProps: ICommonModalProps) => void;
+  createModal: <TValue extends object = object>(modalProps: ICommonModalProps<TValue>) => void;
   removeModal: (id: string) => void;
 }
 
@@ -18,9 +19,9 @@ export const DYNAMIC_MODAL_CONTEXT_INITIAL_STATE: IDynamicModalStateContext = {
   instances: {},
 };
 
-export const DynamicModalStateContext = createNamedContext<IDynamicModalStateContext>(DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, "DynamicModalStateContext");
+export const DynamicModalStateContext = createNamedContext<IDynamicModalStateContext | undefined>(undefined, "DynamicModalStateContext");
 
-export const DynamicModalActionsContext = createNamedContext<IDynamicModalActionsContext>(undefined, "DynamicModalActionsContext");
+export const DynamicModalActionsContext = createNamedContext<IDynamicModalActionsContext | undefined>(undefined, "DynamicModalActionsContext");
 
 //#endregion
 
@@ -61,8 +62,8 @@ export const DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE: IDynamicModalRenderer
   },
 };
 
-export const DynamicModalRendererContext = createNamedContext<IDynamicModalRendererContext>(
-  DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE,
+export const DynamicModalRendererContext = createNamedContext<IDynamicModalRendererContext | undefined>(
+  undefined,
   "DynamicModalRendererContext",
 );
 

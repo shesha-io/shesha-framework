@@ -9,16 +9,17 @@ import { useFormDesignerUrl } from '@/providers/form/hooks';
 import { FormWithFlatMarkup } from './formWithFlatMarkup';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
 import { MarkupLoadingError } from './markupLoadingError';
-import { ConfigurableFormInstance, ConfigurableItemIdentifierToString } from '@/interfaces';
+import { ConfigurableItemIdentifierToString } from '@/interfaces';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { IShaFormInstance } from '@/providers/form/store/interfaces';
 import ParentProvider from '@/providers/parentProvider';
 import { ShaSpin } from '..';
 import { DataLoadingError } from './dataLoadingError';
+import { IFormActionsContext } from '@/providers/form/contexts';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
-  formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
+  formRef?: MutableRefObject<IFormActionsContext> | undefined;
   // TODO: merge with formRef
   shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
   isSettingsForm?: boolean;
@@ -134,7 +135,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
     >
       <ConfigurableComponent canConfigure={canConfigure} onStartEdit={openInDesigner}>
         {(componentState, BlockOverlay) => (
-          <div className={classNames(componentState.wrapperClassName, props?.className)}>
+          <div className={classNames(componentState.wrapperClassName, props.className)}>
             <BlockOverlay>
               <EditViewMsg persistedFormProps={showFormInfoOverlay ? shaForm.form : undefined} />
             </BlockOverlay>
@@ -154,7 +155,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
                         <DataLoadingError formId={formId} dataLoadingState={dataLoadingState} />
                       )
                       : (
-                        <FormWithFlatMarkup
+                        <FormWithFlatMarkup<Values>
                           {...props}
                           mode={dataLoadingState.status !== 'ready' ? 'readonly' : props.mode}
                           isActionsOwner={isActionsOwner}

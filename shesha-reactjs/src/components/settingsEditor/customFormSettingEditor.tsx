@@ -8,6 +8,7 @@ import { ISettingIdentifier } from './provider/models';
 import { useSettingsEditor } from './provider';
 
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
+import { unsafeGetValueByPropertyName } from '@/utils/object';
 
 export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
   const { selection, value } = props;
@@ -32,8 +33,9 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
 
       const data = selection.setting.dataType === DataTypes.object
         ? { ...values ?? {} }
-        : values?.value; // extract scalar value
-      delete data._formFields;
+        : unsafeGetValueByPropertyName(values, "value"); // extract scalar value
+      if (typeof (data) === "object" && "_formFields" in data)
+        delete data._formFields;
 
       return saveSettingValue(settingId, data)
         .then(() => {

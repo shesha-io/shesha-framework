@@ -85,7 +85,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     if (model.hidden) return null;
 
     return (
-      <ParentProvider model={model}>
+      <ParentProvider model={model} name={`Card-${model.id}`}>
         <Card
           className={classNames(model.className, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}

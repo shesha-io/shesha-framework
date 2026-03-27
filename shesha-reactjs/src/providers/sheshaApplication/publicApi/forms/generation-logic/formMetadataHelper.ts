@@ -1,12 +1,13 @@
-import { DataTypes, EditMode, IEntityMetadata } from "@/interfaces";
+import { DataTypes, EditMode, IConfigurableFormComponent, IEntityMetadata, IInputStyles } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
-import { PropertyMetadataDto } from "@/apis/metadata";
 import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import { IEntityTypeIdentifier } from "../../entities/models";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
 import { FormBuilder } from "@/form-factory/interfaces";
+import { isDefined } from "@/utils/nullables";
+import { IPropertyMetadata } from "@/publicJsApis/metadata";
 
 /**
  * Helper class for fetching entity metadata and generating form fields based on that metadata.
@@ -44,7 +45,7 @@ export class FormMetadataHelper {
         dataType: DataTypes.entityReference,
       });
 
-      if (!metadata) {
+      if (!isDefined(metadata)) {
         throw new Error(`No metadata found for model type: ${modelType}`);
       }
 
@@ -61,43 +62,12 @@ export class FormMetadataHelper {
    * @returns A promise that resolves to an object containing entity metadata and non-framework properties.
    * @throws Error if the model type is empty or if the request fails.
    */
-  public async fetchEntityMetadataWithPropertiesAsync(modelType: string | IEntityTypeIdentifier): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
+  public async fetchEntityMetadataWithPropertiesAsync(modelType: string | IEntityTypeIdentifier): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: IPropertyMetadata[] }> {
     const entity = await this.fetchEntityMetadataAsync(modelType);
     const nonFrameworkProperties = await this.extractNonFrameworkProperties(entity);
 
     return { entity, nonFrameworkProperties };
   };
-
-  /**
-   * Creates a PropertyMetadataDto with safe non-null values from a property metadata object.
-   * Ensures that all string properties have default values and won't cause type errors.
-   *
-   * @param prop The original property metadata object
-   * @returns A PropertyMetadataDto with non-null string values
-   */
-  private createSafePropertyMetadata(prop: any): PropertyMetadataDto {
-    return {
-      path: prop.path || "",
-      label: prop.label || prop.path || "",
-      description: prop.description || "",
-      dataType: prop.dataType || "",
-      dataFormat: prop.dataFormat || "",
-      entityType: prop.entityType || "",
-      entityModule: prop.entityModule || "",
-      required: !!prop.required,
-      readonly: !!prop.readonly,
-      minLength: prop.minLength || null,
-      maxLength: prop.maxLength || null,
-      min: prop.min || null,
-      max: prop.max || null,
-      validationMessage: prop.validationMessage || "",
-      referenceListName: prop.referenceListName || "",
-      referenceListModule: prop.referenceListModule || "",
-      isFrameworkRelated: !!prop.isFrameworkRelated,
-      isNullable: !!prop.isNullable,
-      isVisible: prop.isVisible !== false, // default to true if not explicitly false
-    };
-  }
 
   /**
    * Safely extracts non-framework properties from an entity metadata object.
@@ -107,8 +77,8 @@ export class FormMetadataHelper {
    * @param entity The entity metadata to extract properties from
    * @returns Array of non-framework properties as PropertyMetadataDto with safe non-null values
    */
-  public async extractNonFrameworkProperties(entity: IEntityMetadata): Promise<PropertyMetadataDto[]> {
-    const nonFrameworkProperties: PropertyMetadataDto[] = [];
+  public async extractNonFrameworkProperties(entity: IEntityMetadata): Promise<IPropertyMetadata[]> {
+    const nonFrameworkProperties: IPropertyMetadata[] = [];
 
     if (isPropertiesArray(entity.properties)) {
       // Handle case when properties is an array
@@ -117,7 +87,7 @@ export class FormMetadataHelper {
       // Filter out framework-related properties and add to our collection with safe values
       for (const prop of propertiesArray) {
         if (!prop.isFrameworkRelated) {
-          nonFrameworkProperties.push(this.createSafePropertyMetadata(prop));
+          nonFrameworkProperties.push(prop);
         }
       }
     } else if (isPropertiesLoader(entity.properties)) {
@@ -128,13 +98,13 @@ export class FormMetadataHelper {
         // Filter out framework-related properties and add to our collection with safe values
         for (const prop of loadedProperties) {
           if (!prop.isFrameworkRelated) {
-            nonFrameworkProperties.push(this.createSafePropertyMetadata(prop));
+            nonFrameworkProperties.push(prop);
           }
         }
       } catch (error) {
         console.error("Error loading properties from loader:", error);
       }
-    } else if (entity.properties === null || entity.properties === undefined) {
+    } else if (!isDefined(entity.properties)) {
       // Handle case when properties is null or undefined
       console.warn("Entity properties are null or undefined");
     } else {
@@ -154,32 +124,35 @@ export class FormMetadataHelper {
    * @param isReadOnly Whether the field should be read-only (default: false).
    * @throws Error if required metadata is missing for certain property types.
    */
-  public getConfigFields(property: PropertyMetadataDto, builder: FormBuilder, isReadOnly: boolean = false): void {
-    const commonProps = {
+  public getConfigFields(property: IPropertyMetadata, builder: FormBuilder, isReadOnly: boolean = false): void {
+    const commonProps: Omit<IConfigurableFormComponent, 'type'> = {
       id: nanoid(),
-      propertyName: toCamelCase(property.path || ""),
+      propertyName: toCamelCase(property.path) || "",
       label: property.label,
       editMode: isReadOnly ? 'readOnly' as EditMode : 'inherited' as EditMode,
       hideLabel: isReadOnly,
       hidden: !property.isVisible,
       validate: {
-        required: property.required,
+        required: property.required ?? false,
       },
+      componentName: toCamelCase(property.path) || "",
+    };
+    const styledProps: Omit<IConfigurableFormComponent, 'type'> & IInputStyles = {
+      ...commonProps,
       hideBorder: isReadOnly,
-      componentName: toCamelCase(property.path || ""),
     };
 
     switch (property.dataType) {
       case DataTypes.string:
         if (property.dataFormat === 'multiline') {
-          builder.addTextArea(commonProps, property);
+          builder.addTextArea(styledProps, property);
         } else {
-          builder.addTextField(commonProps, property);
+          builder.addTextField(styledProps, property);
         }
         break;
 
       case DataTypes.number:
-        builder.addNumberField(commonProps, property);
+        builder.addNumberField(styledProps, property);
         break;
 
       case DataTypes.entityReference:
@@ -190,7 +163,7 @@ export class FormMetadataHelper {
           ...commonProps,
           entityType: property.entityType
             ? { name: property.entityType, module: property.entityModule } as IEntityTypeIdentifier
-            : null,
+            : undefined,
           dataSourceType: 'entitiesList',
         }, property);
         break;
@@ -200,7 +173,7 @@ export class FormMetadataHelper {
           throw new Error('Reference list name and namespace are required for referenceListItem type');
         }
         builder.addDropdown({
-          ...commonProps,
+          ...styledProps,
           dataSourceType: 'referenceList',
           border: {
             hideBorder: false,
@@ -220,16 +193,16 @@ export class FormMetadataHelper {
         break;
 
       case DataTypes.boolean:
-        builder.addCheckbox(commonProps, property);
+        builder.addCheckbox(styledProps, property);
         break;
 
       case DataTypes.date:
       case DataTypes.dateTime:
-        builder.addDateField(commonProps, property);
+        builder.addDateField(styledProps, property);
         break;
 
       case DataTypes.time:
-        builder.addTimePicker(commonProps, property);
+        builder.addTimePicker(styledProps, property);
         break;
 
       case DataTypes.file:

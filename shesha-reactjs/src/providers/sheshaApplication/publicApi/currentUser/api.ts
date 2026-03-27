@@ -2,7 +2,8 @@ import qs from 'qs';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
 import { IAjaxResponse, IEntityReferenceDto } from '@/interfaces';
 import { GrantedPermissionDto } from '@/apis/session';
-import { isAjaxErrorResponse } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse, isAjaxErrorResponse } from '@/interfaces/ajaxResponse';
+import { isDefined } from '@/utils/nullables';
 
 const URLS = {
   IS_PERMISSION_GRANTED: '/api/services/app/Permission/IsPermissionGranted',
@@ -14,35 +15,35 @@ const URLS = {
 export interface IUserProfileInfo {
   readonly id: string;
   readonly userName: string;
-  readonly firstName: string;
-  readonly lastName: string;
+  readonly firstName: string | null;
+  readonly lastName: string | null;
   readonly personId: string;
 }
 
 export interface ICurrentUserApi {
   readonly isLoggedIn: boolean;
-  readonly id: string;
-  readonly userName: string;
-  readonly firstName: string;
-  readonly lastName: string;
-  readonly personId: string;
+  readonly id: string | undefined;
+  readonly userName: string | undefined;
+  readonly firstName: string | undefined;
+  readonly lastName: string | undefined;
+  readonly personId: string | undefined;
   hasPermissionAsync(mpermissionName: string, permissionedEntityId?: IEntityReferenceDto): Promise<boolean>;
   hasRoleAsync(roleName: string): Promise<boolean>;
-  getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any>;
-  updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void>;
+  getUserSettingValueAsync(name: string, module: string, defaultValue?: unknown, dataType?: string): Promise<unknown>;
+  updateUserSettingValueAsync(name: string, module: string, value: unknown, dataType?: string): Promise<void>;
 }
 
 export interface IInternalCurrentUserApi extends ICurrentUserApi {
-  setProfileInfo(profileInfo: IUserProfileInfo): void;
+  setProfileInfo(profileInfo: IUserProfileInfo | undefined): void;
   setGrantedPermissions(permissions: GrantedPermissionDto[]): void;
 }
 
 export class CurrentUserApi implements IInternalCurrentUserApi {
   readonly #httpClient: HttpClientApi;
 
-  #profileInfo: IUserProfileInfo;
+  #profileInfo: IUserProfileInfo | undefined;
 
-  #grantedPermissions: GrantedPermissionDto[];
+  #grantedPermissions: GrantedPermissionDto[] | undefined;
 
   //#region profile data
   get isLoggedIn(): boolean {
@@ -74,7 +75,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     this.#httpClient = httpClient;
   }
 
-  setProfileInfo(profileInfo: IUserProfileInfo): void {
+  setProfileInfo(profileInfo: IUserProfileInfo | undefined): void {
     this.#profileInfo = profileInfo;
   }
 
@@ -85,7 +86,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
   async hasPermissionAsync(permissionName: string, permissionedEntity?: IEntityReferenceDto): Promise<boolean> {
     if (!this.isLoggedIn) return Promise.resolve(false);
 
-    if (this.#grantedPermissions) {
+    if (isDefined(this.#grantedPermissions)) {
       return permissionedEntity
         ? this.#grantedPermissions.some(
           (p) =>
@@ -99,13 +100,13 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
 
     const requestParams = {
       permissionName,
-      permissionedEntityId: permissionedEntity ? permissionedEntity?.id : undefined,
-      permissionedEntityClass: permissionedEntity ? permissionedEntity?._className : undefined,
+      permissionedEntityId: permissionedEntity ? permissionedEntity.id : undefined,
+      permissionedEntityClass: permissionedEntity ? permissionedEntity._className : undefined,
     };
     const response = await this.#httpClient
       .get<IAjaxResponse<boolean>>(`${URLS.IS_PERMISSION_GRANTED}?${qs.stringify(requestParams, { allowDots: true })}`);
 
-    return response.data?.success ? response.data.result : false;
+    return extractAjaxResponse(response.data);
   }
 
   hasRoleAsync(roleName: string): Promise<boolean> {
@@ -116,14 +117,16 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     };
     return this.#httpClient
       .get<IAjaxResponse<boolean>>(`${URLS.IS_ROLE_GRANTED}?${qs.stringify(requestParams, { allowDots: true })}`)
-      .then((response) => (response.data?.success ? response.data.result : false));
+      .then((response) => {
+        return extractAjaxResponse(response.data);
+      });
   }
 
-  getUserSettingValueAsync = <TValue = unknown>(name: string, module: string, defaultValue?: TValue, dataType?: string): Promise<any> => {
+  getUserSettingValueAsync = <TValue = unknown>(name: string, module: string, defaultValue?: TValue, dataType?: string): Promise<TValue | undefined> => {
     return this.#httpClient
       .post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, { name, module, defaultValue, dataType })
       .then((res) => {
-        return res.data.success ? res.data.result : undefined;
+        return res.data.success ? res.data.result as TValue : undefined;
       });
   };
 

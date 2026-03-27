@@ -1,9 +1,10 @@
 import { IEditModeSelectorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import EditModeSelector from '@/components/editModeSelector';
 import { useStyles } from '../styles';
 
-export const EditModeSelectorWrapper: FC<IEditModeSelectorSettingsInputProps> = (props) => {
+export const EditModeSelectorWrapper: FCUnwrapped<IEditModeSelectorSettingsInputProps> = (props) => {
   const { styles } = useStyles();
 
   const { value, onChange, readOnly, size } = props;

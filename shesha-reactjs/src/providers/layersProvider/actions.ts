@@ -1,4 +1,4 @@
-import { createAction } from 'redux-actions';
+import { createAction } from '@reduxjs/toolkit';
 import { IUpdateChildItemsPayload, IUpdateItemSettingsPayload } from './contexts';
 
 export enum LayerGroupActionEnums {
@@ -12,22 +12,12 @@ export enum LayerGroupActionEnums {
 
 export const addLayerAction = createAction(LayerGroupActionEnums.AddLayer);
 
-export const deleteLayerAction = createAction<string, string>(LayerGroupActionEnums.DeleteLayer, (p) => p);
+export const deleteLayerAction = createAction<string>(LayerGroupActionEnums.DeleteLayer);
 
-export const selectItemAction = createAction<string, string>(LayerGroupActionEnums.SelectItem, (p) => p);
+export const selectItemAction = createAction<string>(LayerGroupActionEnums.SelectItem);
 
-export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
-  LayerGroupActionEnums.UpdateItem,
-  (p) => p,
-);
+export const updateItemAction = createAction<IUpdateItemSettingsPayload>(LayerGroupActionEnums.UpdateItem);
 
-export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
-  LayerGroupActionEnums.UpdateChildItems,
-  (p) => p,
-);
+export const updateChildItemsAction = createAction<IUpdateChildItemsPayload>(LayerGroupActionEnums.UpdateChildItems);
 
-export const setRefreshTriggerAction = createAction<{ refreshTrigger: number }, number>(LayerGroupActionEnums.SetRefreshTrigger,
-  (refreshTrigger) => ({
-    refreshTrigger,
-  }),
-);
+export const setRefreshTriggerAction = createAction<number>(LayerGroupActionEnums.SetRefreshTrigger);

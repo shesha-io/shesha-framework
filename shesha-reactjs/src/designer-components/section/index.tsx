@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { useForm, useFormData } from '@/providers';
 import { Alert } from 'antd';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { useConfigurableFormSections } from '@/providers/form/sections';
+import { useConfigurableFormSectionsOrUndefined } from '@/providers/form/sections';
 
 export type ISectionProps = IConfigurableFormComponent;
 
@@ -22,7 +22,7 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
   isOutput: true,
   Factory: ({ model }) => {
     const { formMode } = useForm();
-    const sections = useConfigurableFormSections(false) ?? {};
+    const sections = useConfigurableFormSectionsOrUndefined() ?? {};
     const { data: formData } = useFormData();
 
     if (formMode === 'designer') {

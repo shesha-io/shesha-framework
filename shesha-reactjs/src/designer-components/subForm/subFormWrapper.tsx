@@ -3,10 +3,10 @@ import SubForm from './subForm';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IStylable } from '@/interfaces';
 import { ISubFormProviderProps } from '@/providers/subForm/interfaces';
-import { SubFormProvider } from '@/providers';
+import { SubFormProvider, UnwrapCodeEvaluators } from '@/providers';
 
 export interface ISubFormComponentProps
-  extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,
+  extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol' | 'readOnly'>,
   IConfigurableFormComponent {
   labelCol?: number;
   wrapperCol?: number;
@@ -19,7 +19,7 @@ interface ISubFormWrapperProps
   id: string;
 }
 
-export const SubFormWrapper: FC<ISubFormWrapperProps> = ({ style, ...props }) => {
+export const SubFormWrapper: FC<UnwrapCodeEvaluators<ISubFormWrapperProps>> = ({ style, ...props }) => {
   return (
     <SubFormProvider {...props} key={props.id}>
       <SubForm style={style} readOnly={props.readOnly} />

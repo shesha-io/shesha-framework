@@ -16,6 +16,7 @@ const LinkComponent: LinkComponentDefinition = {
   type: 'link',
   isInput: false,
   name: 'link',
+  preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,
   calculateModel: (model, allData) => ({
     isDesignerMode: allData.form.formMode === 'designer',
@@ -58,7 +59,10 @@ const LinkComponent: LinkComponentDefinition = {
           }
 
           const containerHolder = (): ReactNode => (
-            <ParentProvider model={model}>
+            <ParentProvider
+              name={`Link-${model.id}`}
+              model={model}
+            >
               <ComponentsContainer
                 style={{ ...linkStyle, ...model.allStyles.fullStyle }}
                 containerId={id}

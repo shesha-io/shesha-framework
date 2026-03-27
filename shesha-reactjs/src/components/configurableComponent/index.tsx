@@ -1,6 +1,4 @@
-import React, { ReactElement, ReactNode, useMemo } from 'react';
-import { createConfigurableComponent } from '@/providers';
-import { ConfigurableComponentRenderer } from '@/components/configurableComponentRenderer';
+import React, { ReactNode } from 'react';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 
 export interface IComponentStateProps<TSettings = any> {
@@ -57,33 +55,3 @@ export interface IBlockOverlayProps {
   visible: boolean;
   onClick?: () => void;
 }
-
-export const ConfigurableApplicationComponent = <TSettings extends object>({
-  children,
-  canConfigure = true,
-  defaultSettings,
-  settingsEditor,
-  name,
-  isApplicationSpecific,
-  migrator,
-}: IConfigurableApplicationComponentProps<TSettings>): ReactElement => {
-  const component = useMemo(() => {
-    return createConfigurableComponent<TSettings>(defaultSettings, migrator);
-  }, [defaultSettings]);
-  const { ConfigurableComponentProvider, useConfigurableComponent } = component;
-
-  return (
-    <ConfigurableComponentProvider
-      name={name}
-      isApplicationSpecific={isApplicationSpecific}
-    >
-      <ConfigurableComponentRenderer
-        canConfigure={canConfigure}
-        contextAccessor={useConfigurableComponent}
-        settingsEditor={settingsEditor}
-      >
-        {children}
-      </ConfigurableComponentRenderer>
-    </ConfigurableComponentProvider>
-  );
-};

@@ -11,9 +11,9 @@ import { IBackgroundValue } from '@/designer-components/_settings/utils/backgrou
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
-import { ColorValueType } from 'antd/es/color-picker/interface';
 import { isDefined } from '@/utils/nullables';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IActionExecutionContext } from '@/interfaces/configurableAction';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -23,6 +23,13 @@ export const SILENT_KEY: string = '_#@';
 export interface ISubmitActionArguments {
   validateFields?: boolean;
 }
+export type ISubmitActionExecutionContext = IActionExecutionContext & {
+  fieldsToValidate: string[] | undefined;
+};
+
+export type IValidateActionExecutionContext = IActionExecutionContext & {
+  fieldsToValidate: string[] | undefined;
+};
 
 export type FormMode = 'designer' | 'edit' | 'readonly';
 
@@ -35,6 +42,24 @@ export interface IPropertySetting<Value = unknown> {
   _value?: Value;
   _code?: string;
 }
+
+export type ValueOrCodeEvaluator<Value = unknown> = Value | IPropertySetting<Value>;
+
+export type SafeFunctionType = (...args: unknown[]) => unknown;
+
+export type UnwrapCodeEvaluators<T> = T extends SafeFunctionType
+  ? T
+  : {
+    [Key in keyof T]: T[Key] extends React.ReactNode | SafeFunctionType
+      ? T[Key]
+      : T[Key] extends ValueOrCodeEvaluator<infer Value>
+        ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
+        : T[Key] extends Record<string, unknown> // Check if it's a plain object
+          ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
+          : T[Key]; // Leave everything else
+  };
+
+export type FCUnwrapped<T> = React.FC<UnwrapCodeEvaluators<T>>;
 
 /**
  * Component container
@@ -59,20 +84,20 @@ export interface IComponentValidationRules {
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 export type PositionType = 'relative' | 'fixed';
 export interface IStyleType {
-  border?: IBorderValue;
-  background?: IBackgroundValue;
-  font?: IFontValue;
-  shadow?: IShadowValue;
-  menuItemShadow?: IShadowValue;
-  dimensions?: IDimensionsValue;
-  size?: SizeType;
-  style?: string;
-  stylingBox?: string;
-  primaryTextColor?: ColorValueType;
-  primaryBgColor?: ColorValueType;
-  secondaryBgColor?: ColorValueType;
-  secondaryTextColor?: ColorValueType;
-  overflow?: boolean | "dropdown" | "menu" | "scroll";
+  border?: IBorderValue | undefined;
+  background?: IBackgroundValue | undefined;
+  font?: IFontValue | undefined;
+  shadow?: IShadowValue | undefined;
+  menuItemShadow?: IShadowValue | undefined;
+  dimensions?: IDimensionsValue | undefined;
+  size?: SizeType | undefined;
+  style?: string | undefined;
+  stylingBox?: string | undefined;
+  primaryTextColor?: string | undefined;
+  primaryBgColor?: string | undefined;
+  secondaryBgColor?: string | undefined;
+  secondaryTextColor?: string | undefined;
+  overflow?: boolean | "dropdown" | "menu" | "scroll" | "auto"; // TODO V1: check and fix values, it look slike a mix of css and component specific values
   hideScrollBar?: boolean;
   autoWidth?: boolean;
   autoHeight?: boolean;
@@ -105,6 +130,8 @@ export interface IInputStyles extends IStyleType {
   backgroundBase64?: string;
   backgroundStoredFileId?: string;
   style?: string;
+  enableStyleOnReadonly?: boolean | undefined;
+  container?: IStyleType | undefined;
 };
 
 export type ConfigurableFormComponentTypes =
@@ -141,19 +168,19 @@ export interface IComponentRuntimeProps {
   settingsValidationErrors?: IAsyncValidationError[] | undefined;
 
   /** Custom onBlur handler */
-  onBlurCustom?: string;
+  onBlurCustom?: string | undefined;
 
   /** Custom onChange handler */
-  onChangeCustom?: string;
+  onChangeCustom?: string | undefined;
 
   /** Custom onClick handler */
   onClickCustom?: string;
 
   /** Custom onFocus handler */
-  onFocusCustom?: string;
+  onFocusCustom?: string | undefined;
 
   /** Custom onSelect handler */
-  onSelectCustom?: string;
+  onSelectCustom?: string | undefined;
 }
 
 export interface IComponentBindingProps {
@@ -176,13 +203,7 @@ export interface IComponentVisibilityProps {
 
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */
-  customVisibility?: string;
-}
-
-export interface IComponentMetadata {
-  /** Injectable field from the data cell */
-  injectedTableRow?: { [key in string]?: any };
-  injectedDefaultValue?: any;
+  customVisibility?: string | undefined;
 }
 
 export interface IFormComponentStyles {
@@ -206,20 +227,16 @@ export interface IFormComponentStyles {
 /**
  * Base model of the configurable component
  */
-export interface IConfigurableFormComponent
+export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles = IInputStyles>
   extends IFormComponentContainer,
   IHasVersion,
   IComponentBindingProps,
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
-  IComponentMetadata,
   IStyleType {
   /** Type of the component */
   type: string;
-
-  /** Options added using the dialog*/
-  queryParams?: any;
 
   /** Description of the field, is used for tooltips */
   description?: string;
@@ -228,14 +245,14 @@ export interface IConfigurableFormComponent
   validate?: IComponentValidationRules;
 
   /** Whether the component is read-only */
-  readOnly?: boolean;
+  readOnly?: boolean | IPropertySetting<boolean> | undefined;
 
   /** Component edit/action mode */
   editMode?: EditMode;
 
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */
-  customEnabled?: string;
+  customEnabled?: string | undefined;
 
   /** Control size */
   size?: SizeType;
@@ -249,10 +266,10 @@ export interface IConfigurableFormComponent
   subscribedEventNames?: string[];
 
   /** Default style CSS applied as expression */
-  style?: string;
+  style?: string | undefined;
 
   /** Default css style applied as string */
-  stylingBox?: string;
+  stylingBox?: string | undefined;
 
   wrapperStyle?: string;
 
@@ -270,22 +287,22 @@ export interface IConfigurableFormComponent
 
   inputStyles?: IStyleType;
 
-  desktop?: any;
+  desktop?: TDeviceStyles | undefined;
 
-  tablet?: any;
+  tablet?: TDeviceStyles | undefined;
 
-  mobile?: any;
+  mobile?: TDeviceStyles | undefined;
 
   allStyles?: IFormComponentStyles;
 
-  enableStyleOnReadonly?: boolean;
+  enableStyleOnReadonly?: boolean | undefined;
 
   listType?: 'text' | 'thumbnail';
 
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
-  isDefined(component) && ['id', 'type'].every((key) => (key in component && typeof component[key] === 'string'));
+  isDefined(component) && typeof (component) === "object" && ['id', 'type'].every((key) => (key in component && typeof component[key as keyof typeof component] === 'string'));
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
   /** Whether the component is read-only */
@@ -297,11 +314,18 @@ export interface IComponentsContainer {
   components: IConfigurableFormComponent[];
 }
 
+export type IObjectWithStringId = {
+  id: string;
+};
+export const isObjectWithStringId = (obj: unknown): obj is IObjectWithStringId => isDefined(obj) && typeof (obj) === "object" && "id" in obj && typeof (obj.id) === "string";
+
+export const isComponentsContainer = (obj: unknown): obj is IComponentsContainer =>
+  isDefined(obj) && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
+
 export type IRawComponentsContainer = IFormComponentContainer & {
   components: IConfigurableFormComponent[];
 };
-export const isRawComponentsContainer = (obj: unknown): obj is IRawComponentsContainer =>
-  isDefined(obj) && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
+export const isRawComponentsContainer = (obj: unknown): obj is IRawComponentsContainer => isComponentsContainer(obj);
 
 export interface IComponentsDictionary {
   [index: string]: IConfigurableFormComponent | IRawComponentsContainer;
@@ -315,57 +339,58 @@ export interface IFlatComponentsStructure {
   allComponents: IComponentsDictionary;
   componentRelations: IComponentRelations;
 }
+export const EMPTY_FLAT_COMPONENTS_STRUCTURE: IFlatComponentsStructure = { allComponents: {}, componentRelations: {} };
 
 export interface IFormSettingsCommon {
-  modelType?: IEntityTypeIdentifier | string;
+  modelType?: IEntityTypeIdentifier | string | undefined;
   layout: FormLayout;
   colon: boolean;
   labelCol: ColProps;
   wrapperCol: ColProps;
-  size?: SizeType;
+  size?: SizeType | undefined;
   /** if true then need to update components structure for using Setting component */
-  isSettingsForm?: boolean;
+  isSettingsForm?: boolean | undefined;
   permissions?: string[] | undefined;
   access?: number | undefined;
 }
 
 export interface ILegacyFormSettings extends IFormSettingsCommon {
   version?: -1 | 1 | null | undefined;
-  fieldsToFetch?: string[];
-  excludeFormFieldsInPayload?: string;
+  fieldsToFetch?: string[] | undefined;
+  excludeFormFieldsInPayload?: string | undefined;
 
   //#region urls
-  postUrl?: string;
-  putUrl?: string;
-  deleteUrl?: string;
-  getUrl?: string;
+  postUrl?: string | undefined;
+  putUrl?: string | undefined;
+  deleteUrl?: string | undefined;
+  getUrl?: string | undefined;
   //#endregion
 
   //#region lifecycle
-  initialValues?: IKeyValue[];
-  preparedValues?: string; // replace with onBeforeSubmit(data: TData): TData
-  onInitialized?: string;
-  onDataLoaded?: string;
-  onUpdate?: string;
+  initialValues?: IKeyValue[] | undefined;
+  preparedValues?: string | undefined;
+  onInitialized?: string | undefined;
+  onDataLoaded?: string | undefined;
+  onUpdate?: string | undefined;
   //#endregion
 }
 
 export interface IFormLifecycleSettings {
-  dataLoaderType?: string;
-  dataLoadersSettings?: IDictionary<object>;
-  dataSubmitterType?: string;
-  dataSubmittersSettings?: IDictionary<object>;
+  dataLoaderType?: string | undefined;
+  dataLoadersSettings?: IDictionary<object> | undefined;
+  dataSubmitterType?: string | undefined;
+  dataSubmittersSettings?: IDictionary<object> | undefined;
 
   //#region lifecycle
-  onBeforeDataLoad?: string;
-  onAfterDataLoad?: string;
+  onBeforeDataLoad?: string | undefined;
+  onAfterDataLoad?: string | undefined;
 
-  onValuesUpdate?: string;
+  onValuesUpdate?: string | undefined;
 
-  onPrepareSubmitData?: string;
-  onBeforeSubmit?: string;
-  onSubmitSuccess?: string;
-  onSubmitFailed?: string;
+  onPrepareSubmitData?: string | undefined;
+  onBeforeSubmit?: string | undefined;
+  onSubmitSuccess?: string | undefined;
+  onSubmitFailed?: string | undefined;
   //#endregion lifecycle
 }
 
@@ -380,11 +405,6 @@ export interface IFormProps extends IFlatComponentsStructure {
   formSettings: IFormSettings;
 }
 
-export declare type StoreValue = any;
-export interface Store {
-  [name: string]: StoreValue;
-}
-
 export interface FormMarkupWithSettings {
   formSettings: IFormSettings;
   components: IConfigurableFormComponent[];
@@ -397,12 +417,12 @@ export type FormUid = ConfigurableItemUid;
 export type FormIdentifier = ConfigurableItemIdentifier;
 
 export interface IPersistedFormProps {
-  id?: string;
-  module?: string;
-  name?: string;
-  label?: string;
-  description?: string;
-  markup?: FormRawMarkup;
+  id?: string | undefined;
+  module?: string | undefined;
+  name?: string | undefined;
+  label?: string | undefined;
+  description?: string | undefined;
+  markup?: FormRawMarkup | undefined;
 }
 
 type AllKeys<T> = T extends unknown ? keyof T : never;
@@ -425,14 +445,9 @@ export type HasFormRawMarkup = {
 
 export type HasFormIdOrMarkup = ExclusifyUnion<HasFormId | HasFormFlatMarkup | HasFormRawMarkup>;
 
-export type FormAction = (values?: any, parameters?: any) => void;
+export type FormAction = (values?: object, parameters?: object) => void;
 
-export type FormSection = (data?: any) => ReactNode;
-
-export interface IFormActionDesc {
-  url: string;
-  params: any;
-}
+export type FormSection = (data?: object) => ReactNode;
 
 export interface IFormActions {
   [key: string]: FormAction;
@@ -459,19 +474,19 @@ export interface FormDto {
   /**
    * Form label
    */
-  label?: string | null;
+  label: string | null;
   /**
    * Description
    */
-  description?: string | null;
+  description: string | null | undefined;
   /**
    * Form markup (components) in JSON format
    */
-  markup?: string | null;
+  markup: string | null;
   /**
    * Type of the form model
    */
-  modelType?: string | null;
+  modelType: string | null;
   /**
    * Type
    */
@@ -486,9 +501,9 @@ export interface IFormDto extends Omit<FormDto, 'markup'> {
   readOnly: boolean;
 }
 
-export interface IFormValidationRulesOptions {
-  formData?: any;
-  getFormData?: () => any;
+export interface IFormValidationRulesOptions<TData extends object = object> {
+  formData?: TData;
+  getFormData?: () => TData;
 }
 
 /** Default form settings */
@@ -501,11 +516,10 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
 };
 
 export type ActionParametersJs = string;
-// export type ActionParametersDictionary = [{ key: string; value: string }];
-export type ActionParametersDictionary = { [key: string]: any };
+export type ActionParametersDictionary = object;
 export type ActionParameters = ActionParametersJs | ActionParametersDictionary;
-export type ActionArguments = { [key: string]: any };
-export type GenericDictionary = { [key: string]: any };
+export type ActionArguments = { [key: string]: unknown };
+export type GenericDictionary = { [key: string]: unknown };
 
 export const STYLE_BOX_CSS_POPERTIES = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
 export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];

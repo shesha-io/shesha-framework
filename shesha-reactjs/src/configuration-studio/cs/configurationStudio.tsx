@@ -1015,15 +1015,15 @@ export class ConfigurationStudio implements IConfigurationStudio {
   importPackageAsync = async (_args: ImportPackageArgs): Promise<void> => {
     const importerRef = createManualRef<IImportInterface | undefined>(undefined);
 
-    const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
+    const responseData = await this.modalApi.showModalContentAsync<{ response: boolean }>(({ resolve, removeModal }) => {
       const hideModal = (): void => {
-        resolve(false);
+        resolve({ response: false });
         removeModal();
       };
 
       const onImported = (): void => {
         removeModal();
-        resolve(true);
+        resolve({ response: true });
       };
       return {
         title: 'Import Configuration',
@@ -1032,22 +1032,22 @@ export class ConfigurationStudio implements IConfigurationStudio {
       };
     });
 
-    if (exported === true)
+    if (responseData?.response === true)
       await this.loadTreeAsync();
   };
 
   exportPackageAsync = async (_args: ExportPackageArgs): Promise<void> => {
     const exporterRef = createManualRef<IExportInterface | undefined>(undefined);
 
-    const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
+    const responseData = await this.modalApi.showModalContentAsync<{ response: boolean }>(({ resolve, removeModal }) => {
       const hideModal = (): void => {
-        resolve(false);
+        resolve({ response: false });
         removeModal();
       };
 
       const onExported = (): void => {
         removeModal();
-        resolve(true);
+        resolve({ response: true });
       };
       return {
         title: 'Export Configuration',
@@ -1056,7 +1056,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       };
     });
 
-    if (exported === true)
+    if (responseData?.response === true)
       await this.loadTreeAsync();
   };
 

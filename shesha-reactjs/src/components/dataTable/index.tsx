@@ -1,20 +1,20 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import {
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
-  useDataTableStore,
+  useDataTableStoreOrUndefined,
   useHttpClient,
   useMetadata,
   useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
-import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
-import { removeUndefinedProperties } from '@/utils/array';
+import { DataTableFullInstance } from '@/providers/dataTable/contexts';
+import { IColumnWidth } from '@/providers/dataTable/interfaces';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
 import { RowReorderValidationError } from '@/utils/errors';
 import { ReactTable } from '@/components/reactTable';
@@ -53,7 +53,8 @@ import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
-import { StandaloneTable } from '@/designer-components/dataTable/table/standaloneTable';
+import { removeUndefinedProperties } from '@/utils/array';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/index';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -137,6 +138,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
 
   // Overall table styling
   boxShadow?: string;
+  dimensions?: IDimensionsValue;
   sortableIndicatorColor?: string;
 }
 
@@ -153,8 +155,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onMultiRowSelect,
   tableRef,
   onRowsChanged,
-  onExportSuccess,
-  onExportError,
   onFetchDataSuccess,
   onSelectedIdsChanged,
   allowReordering,
@@ -200,6 +200,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowBorder,
   rowBorderStyle,
   boxShadow,
+  dimensions,
   sortableIndicatorColor,
   bodyFontFamily,
   bodyFontSize,
@@ -210,7 +211,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   columnsMismatch,
   ...props
 }) => {
-  const store = useDataTableStore(false);
+  const store = useDataTableStoreOrUndefined();
   const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
   const multiSelect = mode === 'multiple';
   const appContext = useAvailableConstantsData();
@@ -230,7 +231,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     isFetchingTableData,
     totalPages,
     columns,
-    configurableColumns,
     groupingColumns,
     pageSizeOptions,
     currentPage,
@@ -246,8 +246,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     changeSelectedIds,
     setRowData,
     setSelectedRow,
-    succeeded: { exportToExcel: exportToExcelSuccess },
-    error: { exportToExcel: exportToExcelError },
     grouping,
     sortMode,
     strictSortBy,
@@ -329,18 +327,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onFetchDataSuccess();
     }
   }, [isFetchingTableData]);
-
-  useEffect(() => {
-    if (exportToExcelSuccess && onExportSuccess) {
-      onExportSuccess();
-    }
-  }, [exportToExcelSuccess]);
-
-  useEffect(() => {
-    if (exportToExcelError && onExportError) {
-      onExportError();
-    }
-  }, [exportToExcelError]);
 
   const handleSelectRow = onSelectRow || onSelectRowDeprecated;
 
@@ -536,8 +522,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
         const cellStyleAccessor = getCellStyleAccessor(columnItem);
         const cellRenderer = getCellRenderer(columnItem, columnItem.metadata, shaForm);
+
         const column: DataTableColumn<any> = {
           ...columnItem,
+          // filter: columnItem.filter, // TODO V1: review and remove if unused
           accessor: camelcaseDotNotation(columnItem.accessor),
           Header: columnItem.header,
           minWidth: Boolean(columnItem.minWidth) ? columnItem.minWidth : undefined,
@@ -551,7 +539,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           originalConfig: columnItem,
           cellStyleAccessor: cellStyleAccessor,
         };
-        return removeUndefinedProperties(column) as DataTableColumn<any>;
+
+        return removeUndefinedProperties(column);
       });
     return localPreparedColumns;
   }, [
@@ -1007,6 +996,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowBorder,
     rowBorderStyle,
     boxShadow,
+    dimensions,
     sortableIndicatorColor,
 
     onRowClickAction: onRowClick,
@@ -1032,24 +1022,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     actionIconColor,
   };
 
-  // Always render ReactTable - it handles empty columns gracefully
-  // Only show StandaloneTable in designer mode when there are truly no configured columns
-  // Only show StandaloneTable when:
-  // 1. In designer mode
-  // 2. configurableColumns has been initialized (not undefined) AND is empty
-  // 3. columns (from store) is also empty
-  // This prevents showing StandaloneTable during initial load before columns are registered
-  const shouldShowStandaloneTable =
-    configurableColumns !== undefined && configurableColumns.length === 0 &&
-    (!columns || columns.length === 0);
-
   return (
-    <Fragment>
-      {shouldShowStandaloneTable ? (
-        <StandaloneTable items={[]} type="" id="" />
-      ) : (
-        <ReactTable {...tableProps} />
-      )}
-    </Fragment>
+    <ReactTable {...tableProps} />
   );
 };
