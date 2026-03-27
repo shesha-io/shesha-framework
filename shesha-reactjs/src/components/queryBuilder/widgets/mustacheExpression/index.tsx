@@ -2,7 +2,11 @@ import React from 'react';
 import { BasicConfig } from '@react-awesome-query-builder/antd';
 import type { BaseWidget, TextFieldSettings } from '@react-awesome-query-builder/antd';
 import { ExpressionEditor, buildExpressionContextFromPaths } from '@/components/expressionEditor';
+import { buildExpressionContextFromMetadata, mergeExpressionContexts } from '@/components/expressionEditor/contextMetadata';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { useQueryBuilderState } from '@/providers/queryBuilder';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
+import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 type ExpressionEditorWidgetType = BaseWidget & TextFieldSettings;
 
@@ -18,15 +22,34 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
   readonly,
 }) => {
   const queryBuilderState = useQueryBuilderState(false);
+  const availableConstants = useAvailableConstantsMetadata({
+    standardConstants: [
+      SheshaConstants.globalState,
+      SheshaConstants.pageContext,
+      SheshaConstants.contexts,
+    ],
+  });
   const fieldPaths = React.useMemo(
     () => (queryBuilderState?.fields ?? [])
       .map((field) => field?.propertyName)
       .filter(Boolean),
     [queryBuilderState?.fields],
   );
-  const context = React.useMemo(
+  const fieldContext = React.useMemo(
     () => buildExpressionContextFromPaths(fieldPaths),
     [fieldPaths],
+  );
+  const constantsContext = useAsyncMemo(
+    () => buildExpressionContextFromMetadata(availableConstants),
+    [availableConstants],
+    {},
+  );
+  const context = React.useMemo(
+    () => mergeExpressionContexts(
+      { ...fieldContext },
+      constantsContext ?? {},
+    ),
+    [constantsContext, fieldContext],
   );
 
   return (
