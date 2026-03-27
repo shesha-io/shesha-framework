@@ -22,18 +22,30 @@ namespace Shesha.Swagger
         {
             var path = context.Request.Path;
             var isSwaggerUi = path.StartsWithSegments("/swagger", StringComparison.OrdinalIgnoreCase)
-                && !path.Value.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
+                              && path.Value != null
+                              && !path.Value.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
 
             if (isSwaggerUi)
             {
-                if (context.RequestServices.GetService(typeof(ISecuritySettings)) is ISecuritySettings securitySettings)
+                try
                 {
-                    var settings = await securitySettings.SecuritySettings.GetValueAsync();
-                    if (!settings.SwaggerUiEnabled)
+                    if (context.RequestServices.GetService(typeof(ISecuritySettings)) is not ISecuritySettings securitySettings)
                     {
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
                         return;
                     }
+                    
+                    var settings = await securitySettings.SecuritySettings.GetValueAsync();
+                    if (!settings.SwaggerUiEnabled)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        return;                                                               
+                    }
+                }
+                catch (Exception)
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return;     
                 }
             }
 
