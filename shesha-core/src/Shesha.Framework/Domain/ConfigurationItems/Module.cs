@@ -67,7 +67,7 @@ namespace Shesha.Domain.ConfigurationItems
         /// <summary>
         /// Last initialization date
         /// </summary>
-        public virtual DateTime? LastInitializedDate { get; set; }        
+        public virtual DateTime? LastInitializedDate { get; set; }
 
         /// <summary>
         /// If true, indicates that the module is enabled

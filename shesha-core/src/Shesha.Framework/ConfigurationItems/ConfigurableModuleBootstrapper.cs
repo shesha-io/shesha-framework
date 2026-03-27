@@ -50,7 +50,7 @@ namespace Shesha.ConfigurationItems
             await DoProcessAsync();
         }
 
-        private async Task<List<ModuleItem>> GetCodeModulesAsync() 
+        private async Task<List<ModuleItem>> GetCodeModulesAsync()
         {
             var result = new List<ModuleItem>();
             using (var unitOfWork = _unitOfWorkManager.Begin())
@@ -61,7 +61,7 @@ namespace Shesha.ConfigurationItems
                     var moduleTypes = _typeFinder
                         .Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type))
                         .ToList();
-                    foreach (var type in moduleTypes) 
+                    foreach (var type in moduleTypes)
                     {
                         var instance = _iocManager.Resolve(type) as SheshaModule;
 
@@ -72,6 +72,7 @@ namespace Shesha.ConfigurationItems
                         var accessor = moduleInfo.GetModuleAccessor();
 
                         var dbModule = dbModules.FirstOrDefault(m => m.Name.ToLower() == moduleInfo.Name.ToLower());
+
                         var isNew = dbModule == null;
                         if (dbModule == null)
                         {
@@ -101,7 +102,7 @@ namespace Shesha.ConfigurationItems
                             Accessor = accessor,
                             Id = dbModule.Id,
                             IsNewModule = isNew,
-                        });                        
+                        });
                     }
                 }
                 await unitOfWork.CompleteAsync();
@@ -122,11 +123,11 @@ namespace Shesha.ConfigurationItems
 
             foreach (var codeModule in codeModules)
             {
-                using (var unitOfWork = _unitOfWorkManager.Begin()) 
+                using (var unitOfWork = _unitOfWorkManager.Begin())
                 {
                     var dbModule = await _moduleRepo.GetAsync(codeModule.Id);
 
-                    if (!codeModule.IsNewModule) 
+                    if (!codeModule.IsNewModule)
                     {
                         dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
                         dbModule.Accessor = codeModule.Accessor;
@@ -139,6 +140,10 @@ namespace Shesha.ConfigurationItems
                         dbModule.FirstInitializedDate = dbModule.FirstInitializedDate ?? Clock.Now;
                         await _moduleRepo.UpdateAsync(dbModule);
                     }
+
+                    // Link the module's assembly to this startup so we can audit when each module version was deployed
+                    var assemblyFileName = System.IO.Path.GetFileName(codeModule.ModuleType.Assembly.Location);
+                    await _startupSession.LinkAssemblyToModuleAsync(assemblyFileName, dbModule.Id);
 
                     // initialize main module
                     var mainModuleInitialized = await codeModule.Instance.InitializeConfigurationAsync();
