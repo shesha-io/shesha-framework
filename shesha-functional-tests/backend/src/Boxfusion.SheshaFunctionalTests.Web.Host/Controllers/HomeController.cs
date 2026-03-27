@@ -20,20 +20,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Controllers
 
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
-                if (!securitySettings.SwaggerUiEnabled)
-                    return Content("API is running", "text/plain");
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e.Message, e);
-                return Content("API is running", "text/plain");
-            }
-           
-
-            return Redirect("/swagger");
+            return await RedirectToSwaggerOrDefaultAsync(_securitySettings);
         }
     }
 }

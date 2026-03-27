@@ -10,18 +10,11 @@ namespace Shesha.Swagger
     /// Middleware that blocks access to Swagger UI when the Swagger UI setting is disabled,
     /// returning a 403 Forbidden response. JSON spec endpoints are not blocked.
     /// </summary>
-    public class SwaggerUiAccessMiddleware
+    public class SwaggerUiAccessMiddleware: IMiddleware
     {
-        private readonly RequestDelegate _next;
-        private ILogger Logger { get; set; }
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public SwaggerUiAccessMiddleware(RequestDelegate next)
-        {
-            _next = next;
-            Logger = NullLogger.Instance;
-        }
-
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var path = context.Request.Path;
             var isSwaggerUi = path.StartsWithSegments("/swagger", StringComparison.OrdinalIgnoreCase)
@@ -53,7 +46,7 @@ namespace Shesha.Swagger
                 }
             }
 
-            await _next(context);
+            await next(context);
         }
     }
 }
