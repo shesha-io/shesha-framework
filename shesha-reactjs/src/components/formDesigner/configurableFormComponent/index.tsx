@@ -326,7 +326,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
 
 export interface IConfigurableFormComponentProps {
   id: string;
-  model?: IConfigurableFormComponent;
+  model?: IConfigurableFormComponent | undefined;
 }
 
 export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id, model }) => {

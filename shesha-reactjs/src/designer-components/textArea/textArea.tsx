@@ -84,13 +84,13 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       showCount: false, // will use a custom counter outside the textarea
       maxLength: model.validate?.maxLength,
       allowClear: model.allowClear,
-      variant: model?.border?.hideBorder ? 'borderless' : undefined,
-      size: model?.size,
+      variant: model.border?.hideBorder ? 'borderless' : undefined,
+      size: model.size,
       style: {
         ...finalStyle,
         ...getOverflowStyle(true, false),
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
-          ? { marginBottom: model?.showCount ? '4px' : '0px' }
+          ? { marginBottom: model.showCount ? '4px' : '0px' }
           : {}),
       },
       spellCheck: model.spellCheck,

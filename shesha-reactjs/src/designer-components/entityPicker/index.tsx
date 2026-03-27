@@ -108,7 +108,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       return !!value ? value.id : null;
     }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, metadata]);
 
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -147,8 +147,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
                   modalTitle: model.modalTitle,
                   showModalFooter: model.showModalFooter,
                   modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-                  buttons: model?.buttons,
-                  footerButtons: model?.footerButtons,
+                  buttons: model.buttons,
+                  footerButtons: model.footerButtons,
                 }
                 : undefined}
               name={model?.componentName}

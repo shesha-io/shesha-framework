@@ -102,58 +102,58 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const shadowStyles = useMemo(() => getShadowStyle(props?.shadow), [props?.shadow]);
 
   const finalBoxShadow = useMemo(() => {
-    return props?.shadow ? shadowStyles?.boxShadow : props?.boxShadow;
-  }, [props?.shadow, shadowStyles?.boxShadow, props?.boxShadow]);
+    return props.shadow ? shadowStyles?.boxShadow : props.boxShadow;
+  }, [props?.shadow, shadowStyles?.boxShadow, props.boxShadow]);
 
   const effectiveRowHeight = useMemo(() => {
     const converted = convertRowDimensionsToHeight(props.rowDimensions?.height);
-    return converted || props?.rowHeight;
-  }, [props?.rowDimensions, props?.rowHeight]);
+    return converted || props.rowHeight;
+  }, [props?.rowDimensions, props.rowHeight]);
 
   const effectiveRowPadding = useMemo(() => {
     // Try new individual padding fields first
     const convertedFromFields = convertRowPaddingFieldsToPadding(
-      props?.rowPaddingTop,
-      props?.rowPaddingRight,
-      props?.rowPaddingBottom,
-      props?.rowPaddingLeft,
+      props.rowPaddingTop,
+      props.rowPaddingRight,
+      props.rowPaddingBottom,
+      props.rowPaddingLeft,
     );
 
     // Fall back to deprecated rowStylingBox for backward compatibility
     const convertedFromBox = convertRowStylingBoxToPadding(props?.rowStylingBox);
 
-    return convertedFromFields || convertedFromBox || props?.rowPadding;
-  }, [props?.rowPaddingTop, props?.rowPaddingRight, props?.rowPaddingBottom, props?.rowPaddingLeft, props?.rowStylingBox, props?.rowPadding]);
+    return convertedFromFields || convertedFromBox || props.rowPadding;
+  }, [props?.rowPaddingTop, props.rowPaddingRight, props.rowPaddingBottom, props.rowPaddingLeft, props.rowStylingBox, props.rowPadding]);
 
   const effectiveRowBorder = useMemo(() => {
     const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
-    return converted || props?.rowBorder;
-  }, [props?.rowBorderStyle, props?.rowBorder]);
+    return converted || props.rowBorder;
+  }, [props?.rowBorderStyle, props.rowBorder]);
 
   // Compute effective header font values with backward compatibility
   const effectiveHeaderFontFamily = useMemo(() => {
-    return props?.headerFont?.type ?? props?.headerFontFamily;
-  }, [props?.headerFont?.type, props?.headerFontFamily]);
+    return props.headerFont?.type ?? props.headerFontFamily;
+  }, [props?.headerFont?.type, props.headerFontFamily]);
 
   const effectiveHeaderFontSize = useMemo(() => {
-    return props?.headerFont?.size ? `${props.headerFont.size}px` : props?.headerFontSize;
-  }, [props?.headerFont?.size, props?.headerFontSize]);
+    return props.headerFont?.size ? `${props.headerFont.size}px` : props.headerFontSize;
+  }, [props?.headerFont?.size, props.headerFontSize]);
 
   const effectiveHeaderFontWeight = useMemo(() => {
-    return props?.headerFont?.weight ?? props?.headerFontWeight;
-  }, [props?.headerFont?.weight, props?.headerFontWeight]);
+    return props.headerFont?.weight ?? props.headerFontWeight;
+  }, [props?.headerFont?.weight, props.headerFontWeight]);
 
   const effectiveHeaderTextColor = useMemo(() => {
-    return props?.headerFont?.color ?? props?.headerTextColor;
-  }, [props?.headerFont?.color, props?.headerTextColor]);
+    return props.headerFont?.color ?? props.headerTextColor;
+  }, [props?.headerFont?.color, props.headerTextColor]);
 
   const effectiveHeaderTextAlign = useMemo(() => {
-    return props?.headerFont?.align;
+    return props.headerFont?.align;
   }, [props?.headerFont?.align]);
 
   const effectiveBodyTextAlign = useMemo(() => {
-    return allStyles?.fontStyles?.textAlign ?? props?.font?.align;
-  }, [allStyles?.fontStyles?.textAlign, props?.font?.align]);
+    return allStyles?.fontStyles?.textAlign ?? props.font?.align;
+  }, [allStyles?.fontStyles?.textAlign, props.font?.align]);
 
   // State for stored file background URL
   const [storedFileBackgroundUrl, setStoredFileBackgroundUrl] = useState<string>('');
@@ -163,7 +163,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     let isCancelled = false;
 
     const fetchStoredFileUrl = async (): Promise<void> => {
-      if (props?.background?.type === 'storedFile' && props?.background?.storedFile?.id) {
+      if (props?.background?.type === 'storedFile' && props.background?.storedFile?.id) {
         try {
           const url = await getBackgroundImageUrl(props.background, backendUrl, httpHeaders);
           if (!isCancelled) {
@@ -228,33 +228,33 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
   const { styles } = useStyles({
     // Use resolved font styles from allStyles to properly handle device-specific styling
-    fontFamily: allStyles?.fontStyles?.fontFamily ?? props?.font?.type,
-    fontWeight: allStyles?.fontStyles?.fontWeight ?? props?.font?.weight,
-    textAlign: allStyles?.fontStyles?.textAlign ?? props?.font?.align,
-    color: allStyles?.fontStyles?.color ?? props?.font?.color,
+    fontFamily: allStyles?.fontStyles?.fontFamily ?? props.font?.type,
+    fontWeight: allStyles?.fontStyles?.fontWeight ?? props.font?.weight,
+    textAlign: allStyles?.fontStyles?.textAlign ?? props.font?.align,
+    color: allStyles?.fontStyles?.color ?? props.font?.color,
     fontSize: allStyles?.fontStyles?.fontSize
       ? parseInt(allStyles.fontStyles.fontSize as string, 10)
-      : props?.font?.size,
-    striped: props?.striped,
-    hoverHighlight: props?.hoverHighlight,
-    enableStyleOnReadonly: props?.enableStyleOnReadonly,
-    readOnly: props?.readOnly,
-    rowBackgroundColor: props?.rowBackgroundColor,
-    rowAlternateBackgroundColor: props?.rowAlternateBackgroundColor,
-    rowHoverBackgroundColor: props?.rowHoverBackgroundColor,
-    rowSelectedBackgroundColor: props?.rowSelectedBackgroundColor,
-    border: props?.border,
+      : props.font?.size,
+    striped: props.striped,
+    hoverHighlight: props.hoverHighlight,
+    enableStyleOnReadonly: props.enableStyleOnReadonly,
+    readOnly: props.readOnly,
+    rowBackgroundColor: props.rowBackgroundColor,
+    rowAlternateBackgroundColor: props.rowAlternateBackgroundColor,
+    rowHoverBackgroundColor: props.rowHoverBackgroundColor,
+    rowSelectedBackgroundColor: props.rowSelectedBackgroundColor,
+    border: props.border,
     backgroundColor: effectiveBackground,
     headerFontFamily: effectiveHeaderFontFamily,
     headerFontSize: effectiveHeaderFontSize,
     headerFontWeight: effectiveHeaderFontWeight,
-    headerBackgroundColor: props?.headerBackgroundColor,
+    headerBackgroundColor: props.headerBackgroundColor,
     headerTextColor: effectiveHeaderTextColor,
     rowHeight: effectiveRowHeight,
     rowPadding: effectiveRowPadding,
     rowBorder: effectiveRowBorder,
     boxShadow: finalBoxShadow,
-    sortableIndicatorColor: props?.sortableIndicatorColor,
+    sortableIndicatorColor: props.sortableIndicatorColor,
   });
 
   const finalStyle = useMemo(() => {
@@ -569,12 +569,12 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
-            bodyFontFamily={allStyles?.fontStyles?.fontFamily ?? props?.font?.type as string}
+            bodyFontFamily={allStyles?.fontStyles?.fontFamily ?? props.font?.type as string}
             bodyFontSize={allStyles?.fontStyles?.fontSize
               ? (allStyles.fontStyles.fontSize as string)
               : (props?.font?.size ? `${props.font.size}px` : undefined)}
-            bodyFontWeight={allStyles?.fontStyles?.fontWeight ?? props?.font?.weight as string}
-            bodyFontColor={allStyles?.fontStyles?.color ?? props?.font?.color as string}
+            bodyFontWeight={allStyles?.fontStyles?.fontWeight ?? props.font?.weight as string}
+            bodyFontColor={allStyles?.fontStyles?.color ?? props.font?.color as string}
             actionIconSize={props.actionIconSize}
             actionIconColor={props.actionIconColor}
           />

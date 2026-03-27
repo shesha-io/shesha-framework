@@ -180,8 +180,8 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
       componentName: initialValues.componentName,
       propertyName: initialValues.propertyName,
       contextName: initialValues.context,
-      style: model?.style ? getStyle(model?.style, allData.data, allData.globalState) : emptyObj,
-      dropdownStyle: model?.dropdownStyle ? getStyle(model?.dropdownStyle, allData.data, allData.globalState) : emptyObj,
+      style: model.style ? getStyle(model?.style, allData.data, allData.globalState) : emptyObj,
+      dropdownStyle: model.dropdownStyle ? getStyle(model?.dropdownStyle, allData.data, allData.globalState) : emptyObj,
       modelType: allData.form.formSettings.modelType,
       setFieldsValue: allData.form.setFieldsValue,
     };

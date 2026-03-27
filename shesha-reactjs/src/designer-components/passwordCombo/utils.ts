@@ -51,19 +51,19 @@ export const getFormItemProps = (
   model: IPasswordComponentProps,
   { formData, hidden }: IFormPropOptions,
 ): FormItemProps => ({
-  className: classNames({ 'form-item-hidden': model?.hideLabel }),
+  className: classNames({ 'form-item-hidden': model.hideLabel }),
   name: getFieldNameFromExpression(model?.propertyName),
-  label: model?.hideLabel ? null : model?.label,
-  labelAlign: model?.labelAlign,
+  label: model.hideLabel ? null : model.label,
+  labelAlign: model.labelAlign,
   hidden: hidden,
-  tooltip: model?.description,
+  tooltip: model.description,
   rules: hidden ? [] : getValidationRules(model, { formData }),
-  style: model?.hidden ? { display: 'none' } : {},
+  style: model.hidden ? { display: 'none' } : {},
 });
 
 export const getInputProps = (model: IPasswordComponentPropsUnwrapped, formData: object): InputProps => ({
   bordered: !model?.hideBorder,
-  size: model?.size,
+  size: model.size,
   readOnly: model.readOnly,
   style: getStyle(model?.style, formData),
 });

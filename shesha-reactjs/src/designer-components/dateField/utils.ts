@@ -91,12 +91,12 @@ export const disabledTime = (props: IDateFieldProps, data: object, globalState: 
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]): string => {
   const { propertyName, picker, showTime } = props || {};
 
-  const dateFormat = props?.dateFormat || getDataProperty(properties, propertyName, 'dataFormat') || DATE_TIME_FORMATS.date;
-  const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-  const yearFormat = props?.yearFormat || DATE_TIME_FORMATS.year;
-  const quarterFormat = props?.quarterFormat || DATE_TIME_FORMATS.quarter;
-  const monthFormat = props?.monthFormat || DATE_TIME_FORMATS.month;
-  const weekFormat = props?.weekFormat || DATE_TIME_FORMATS.week;
+  const dateFormat = props.dateFormat || getDataProperty(properties, propertyName, 'dataFormat') || DATE_TIME_FORMATS.date;
+  const timeFormat = props.timeFormat || DATE_TIME_FORMATS.time;
+  const yearFormat = props.yearFormat || DATE_TIME_FORMATS.year;
+  const quarterFormat = props.quarterFormat || DATE_TIME_FORMATS.quarter;
+  const monthFormat = props.monthFormat || DATE_TIME_FORMATS.month;
+  const weekFormat = props.weekFormat || DATE_TIME_FORMATS.week;
 
   switch (picker) {
     case 'date':

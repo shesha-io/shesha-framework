@@ -32,7 +32,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
         case 'custom':
           return activeColor ?? theme.application.primaryColor;
         case 'reflist':
-          return props?.color ?? theme.application.primaryColor;
+          return props.color ?? theme.application.primaryColor;
         default:
           return theme.application.primaryColor;
       }

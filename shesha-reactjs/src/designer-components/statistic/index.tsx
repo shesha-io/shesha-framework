@@ -53,8 +53,8 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const allData = useAvailableConstantsData();
     const { formMode } = useForm();
     const { allStyles } = model;
-    const valueFont = model?.valueFont;
-    const titleFont = model?.titleFont;
+    const valueFont = model.valueFont;
+    const titleFont = model.titleFont;
     const valueStyles = getStyle(valueStyle);
     const titleStyles = getStyle(titleStyle);
     const valueFontStyles = useMemo(() => getFontStyle(valueFont), [valueFont]);

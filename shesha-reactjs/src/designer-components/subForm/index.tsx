@@ -36,7 +36,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
 
     if (model.hidden && formMode !== 'designer') return null;
 
-    const name = namePrefix ? [namePrefix, model?.propertyName]?.join('.') : model?.propertyName;
+    const name = namePrefix ? [namePrefix, model.propertyName]?.join('.') : model.propertyName;
 
     const rerenderKey = `${model?.label || ''}-${model?.hideLabel || false}-${model?.labelCol || 0}`;
 
@@ -44,8 +44,8 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       <ConfigurableFormItem
         key={rerenderKey}
         model={model}
-        labelCol={{ span: model?.hideLabel ? 0 : model?.labelCol }}
-        wrapperCol={{ span: model?.hideLabel ? 24 : model?.wrapperCol }}
+        labelCol={{ span: model.hideLabel ? 0 : model.labelCol }}
+        wrapperCol={{ span: model.hideLabel ? 24 : model.wrapperCol }}
       >
         {(value, onChange) => {
           return <SubFormWrapper {...model} value={value} propertyName={name} style={getStyle(model?.style, formData)} onChange={onChange} />;

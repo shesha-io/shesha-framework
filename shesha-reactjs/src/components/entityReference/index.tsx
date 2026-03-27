@@ -231,7 +231,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       displayValue = (typeof propValue === 'string' ? propValue : '') || props.value._displayName || '';
     }
     setDisplayText(displayValue);
-  }, [entityId, entityType, props?.placeholder, props?.value, props.displayProperty]);
+  }, [entityId, entityType, props.placeholder, props.value, props.displayProperty]);
 
   useEffect(() => {
     if (props.formIdentifier) {
@@ -255,7 +255,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         formId: formIdentifier,
         modalTitle: props.modalTitle,
         buttons: props.buttons,
-        footerButtons: props?.footerButtons,
+        footerButtons: props.footerButtons,
         additionalProperties:
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some((p) => p.key === 'id')
             ? props.additionalProperties

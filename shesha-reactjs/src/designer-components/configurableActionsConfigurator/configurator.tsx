@@ -96,7 +96,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       : null;
   }, [actionName, actionOwner]);
 
-  const filteredActions = props?.allowedActions?.reduce((acc, key) => {
+  const filteredActions = props.allowedActions?.reduce((acc, key) => {
     if (actions[key]) {
       acc[key] = actions[key];
     }

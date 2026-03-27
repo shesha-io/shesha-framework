@@ -84,7 +84,7 @@ const ContainerComponent: ContainerComponentDefinition = {
       ...wrapperStyles,
       alignSelf: model.alignSelf,
       justifySelf: model.justifySelf,
-      ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
+      ...getLayoutStyle({ ...model, style: model.wrapperStyle }, { data: formData, globalState }),
     }), [model, formData, globalState]);
 
     const style = useMemo(() => ({
@@ -102,7 +102,7 @@ const ContainerComponent: ContainerComponentDefinition = {
           style={style}
           noDefaultStyling={model.noDefaultStyling}
           className={cx(model.className, styles.container)}
-          dynamicComponents={model?.isDynamic ? model?.components : ContainerComponent.emptyComponents}
+          dynamicComponents={model?.isDynamic ? model.components : ContainerComponent.emptyComponents}
           {...flexAndGridStyles}
         />
       </ParentProvider>

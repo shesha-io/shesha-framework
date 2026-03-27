@@ -21,7 +21,7 @@ const PropertyRouterComponent: PropertyRouterComponentDefinition = {
           model={model}
         >
           <FormItemProvider namePrefix={model.propertyRouteName}>
-            <ComponentsContainer containerId={model.id} dynamicComponents={model?.isDynamic ? model?.components : []} />
+            <ComponentsContainer containerId={model.id} dynamicComponents={model?.isDynamic ? model.components : []} />
           </FormItemProvider>
         </ParentProvider>
       );
