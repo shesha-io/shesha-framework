@@ -1,10 +1,9 @@
 import { TypeDefinition } from '@/interfaces/metadata';
 import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
 import { modalApiDefinition } from "@/providers/sourceFileManager/api-utils/modal";
-import { fileSaverApiDefinition } from "@/providers/sourceFileManager/api-utils/fileSaver";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
-import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, messageCode } from '@/publicJsApis';
+import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode } from '@/publicJsApis';
 
 export const SheshaConstants = {
   http: "shesha:http",

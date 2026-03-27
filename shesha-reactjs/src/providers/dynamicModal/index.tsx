@@ -24,9 +24,10 @@ import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
 import { DynamicModalRenderer } from './renderer';
 import { showDialogArgumentsFormFactory } from './configurable-actions/show-dialog-arguments';
-import { createModalApi, createFallbackModalApi, IModalApi } from './modalApi';
 import { throwError } from '@/utils/errors';
 import { getLatestInstance } from './utils';
+import { createModalApi, IModalApi, createFallbackModalApi } from './modalApi';
+
 
 const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, {
@@ -194,7 +195,15 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
 
 const useDynamicModalState = (): IDynamicModalStateContext => useContext(DynamicModalStateContext) ?? throwError("useDynamicModalState must be used within a DynamicModalProvider");
 
+function useDynamicModalStateOrUndefined(): IDynamicModalStateContext | undefined {
+  return useContext(DynamicModalStateContext);
+}
+
 const useDynamicModalActions = (): IDynamicModalActionsContext => useContext(DynamicModalActionsContext) ?? throwError("useDynamicModalActions must be used within a DynamicModalProvider");
+
+function useDynamicModalActionsOrUndefined(): IDynamicModalActionsContext | undefined {
+  return useContext(DynamicModalActionsContext);
+}
 
 const useDynamicModals = (): IDynamicModalStateContext & IDynamicModalActionsContext => {
   return { ...useDynamicModalState(), ...useDynamicModalActions() };
@@ -258,7 +267,7 @@ function useModalApi(): IModalApi {
   // Memoize the modal API to prevent unnecessary re-creations
   const modalApi = useMemo(
     () => createModalApi(createModal, removeModal, antModalApi),
-    [createModal, removeModal, antModalApi]
+    [createModal, removeModal, antModalApi],
   );
 
   return modalApi;

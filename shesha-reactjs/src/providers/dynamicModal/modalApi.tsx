@@ -1,4 +1,5 @@
 import { Modal as AntModal, App } from 'antd';
+import { ReactNode } from 'react';
 import { nanoid } from '@/utils/uuid';
 import { FormIdentifier, FormMode } from '../form/models';
 import { IModalProps } from './models';
@@ -27,9 +28,9 @@ export interface ShowFormModalArgs {
   /** Form mode - defaults to 'edit' */
   mode?: FormMode;
   /** Arguments to pass to the form */
-  formArguments?: any;
+  formArguments?: Record<string, unknown>;
   /** Initial values for the form */
-  initialValues?: any;
+  initialValues?: Record<string, unknown>;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
   /** Footer buttons configuration */
@@ -71,13 +72,13 @@ export interface ShowContentModalArgs {
   /** Modal title */
   title?: string;
   /** Modal content (HTML string or React elements) */
-  content: any;
+  content: ReactNode;
   /** Modal width */
   width?: ModalWidth;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
   /** Custom footer content */
-  footer?: any;
+  footer?: ReactNode;
 }
 
 /**
@@ -87,7 +88,7 @@ export interface IModalApi {
   /**
    * Show a form in a modal dialog
    */
-  showForm: <T = any>(args: ShowFormModalArgs) => Promise<T>;
+  showForm: <T = unknown>(args: ShowFormModalArgs) => Promise<T>;
 
   /**
    * Show a confirmation dialog (Yes/No)
@@ -117,7 +118,7 @@ export interface IModalApi {
   /**
    * Show a modal with custom content
    */
-  showContent: <T = any>(args: ShowContentModalArgs) => Promise<T>;
+  showContent: <T = unknown>(args: ShowContentModalArgs) => Promise<T>;
 }
 
 /**
@@ -127,10 +128,10 @@ const getWidthFromPreset = (width?: ModalWidth): string | number | undefined => 
   if (!width) return undefined;
 
   const presets: Record<string, string> = {
-    'small': '40%',
-    'medium': '60%',
-    'large': '80%',
-    'full': '100%'
+    small: '40%',
+    medium: '60%',
+    large: '80%',
+    full: '100%',
   };
 
   return presets[width] || width;
@@ -143,9 +144,9 @@ const getWidthFromPreset = (width?: ModalWidth): string | number | undefined => 
  * @param modalApi - Ant Design modal API from App.useApp()
  */
 export const createFallbackModalApi = (
-  modalApi?: ReturnType<typeof App.useApp>['modal']
+  modalApi?: ReturnType<typeof App.useApp>['modal'],
 ): IModalApi => {
-  const notAvailableError = () => {
+  const notAvailableError = (): never => {
     throw new Error('showForm and showContent require DynamicModalProvider to be available in the component tree');
   };
 
@@ -233,10 +234,10 @@ export const createFallbackModalApi = (
 export const createModalApi = (
   createModal: (props: IModalProps) => void,
   removeModal: (id: string) => void,
-  modalApi?: ReturnType<typeof App.useApp>['modal']
+  modalApi?: ReturnType<typeof App.useApp>['modal'],
 ): IModalApi => {
   return {
-    showForm: <T = any>(args: ShowFormModalArgs): Promise<T> => {
+    showForm: <T = unknown>(args: ShowFormModalArgs): Promise<T> => {
       const modalId = nanoid();
       const { formId, title, width, mode = 'edit', formArguments, initialValues, showCloseIcon = true, footerButtons = 'default' } = args;
 
@@ -252,22 +253,22 @@ export const createModalApi = (
           isVisible: true,
           showCloseIcon,
           footerButtons,
-          onSubmitted: (values: T) => {
+          onSubmitted: ((values: T) => {
             removeModal(modalId);
             resolve(values);
-          },
+          }) as (values?: object) => void,
           onCancel: () => {
             removeModal(modalId);
             reject(new Error('Modal cancelled'));
           },
-          onClose: (positive = false, result?: T) => {
+          onClose: ((positive = false, _result?: T) => {
             removeModal(modalId);
             if (positive) {
-              resolve(result as T);
+              resolve(_result as T);
             } else {
               reject(new Error('Modal closed'));
             }
-          },
+          }) as (positive?: boolean, result?: object) => void,
         };
 
         createModal(modalProps);
@@ -381,9 +382,9 @@ export const createModalApi = (
       });
     },
 
-    showContent: <T = any>(args: ShowContentModalArgs): Promise<T> => {
+    showContent: <T = unknown>(args: ShowContentModalArgs): Promise<T> => {
       const modalId = nanoid();
-      const { title, content, width, showCloseIcon = true, footer } = args;
+      const { title, width, showCloseIcon = true } = args;
 
       return new Promise<T>((resolve, reject) => {
         const modalProps: IModalProps = {
@@ -397,14 +398,14 @@ export const createModalApi = (
             removeModal(modalId);
             reject(new Error('Modal cancelled'));
           },
-          onClose: (positive = false, result?: T) => {
+          onClose: ((positive = false, _result?: T) => {
             removeModal(modalId);
             if (positive) {
-              resolve(result as T);
+              resolve(_result as T);
             } else {
               reject(new Error('Modal closed'));
             }
-          },
+          }) as (positive?: boolean, result?: object) => void,
         };
 
         createModal(modalProps);
