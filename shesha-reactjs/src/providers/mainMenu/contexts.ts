@@ -9,6 +9,7 @@ export interface IConfigurableMainMenu {
 export interface IMainMenuStateContext {
   loadedMenu?: IConfigurableMainMenu;
   items?: ISidebarMenuItem[];
+  originalItems?: ISidebarMenuItem[];
 }
 
 export interface IMainMenuActionsContext {
