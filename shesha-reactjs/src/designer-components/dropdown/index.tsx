@@ -36,7 +36,7 @@ const DropdownComponent: DropdownComponentDefinition = {
         : undefined,
   }),
   Factory: ({ model, calculatedModel }) => {
-    const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
+    const initialValue = model.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
     // When enableStyleOnReadonly is true, apply all configured styles in readonly mode

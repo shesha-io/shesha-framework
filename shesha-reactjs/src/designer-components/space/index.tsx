@@ -30,10 +30,10 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   Factory: ({ model: passedModel }) => {
     const { marginLeft, marginRight, ...model } = passedModel;
     const props: SpaceProps = {
-      align: model?.align,
-      direction: model?.direction,
-      size: model?.size || model?.sizeNumber,
-      wrap: model?.wrap,
+      align: model.align,
+      direction: model.direction,
+      size: model.size || model.sizeNumber,
+      wrap: model.wrap,
     };
 
     return (

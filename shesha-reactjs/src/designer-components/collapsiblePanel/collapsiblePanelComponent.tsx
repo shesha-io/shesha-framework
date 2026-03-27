@@ -47,7 +47,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       typeof label === 'string' ? evaluateString(label, data) : label
     ), [label, data]);
 
-    const headerComponents = model?.header?.components ?? [];
+    const headerComponents = model.header?.components ?? [];
 
     const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles?.border } }).fullStyle;
 

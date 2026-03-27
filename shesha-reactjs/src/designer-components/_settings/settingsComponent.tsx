@@ -28,11 +28,11 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
       return {
         ...actualSourceComponent,
         hideLabel: true,
-        readOnly: model?.readOnly,
+        readOnly: model.readOnly,
         editMode: model.editMode,
         hidden: model.hidden,
       };
-    }, [model.hidden, model?.readOnly, model?.id, actualSourceComponent]);
+    }, [model.hidden, model.readOnly, model.id, actualSourceComponent]);
 
     if (model.hidden) return null;
 

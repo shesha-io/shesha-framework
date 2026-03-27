@@ -25,7 +25,7 @@ export const ActionCell = <D extends object = object, V = any>(props: IActionCel
   const { actionConfiguration, icon, description } = columnConfig ?? {};
   const dynamicContext = useActionDynamicContext(actionConfiguration);
   const evaluationContext = useAvailableConstantsData({}, dynamicContext);
-  (evaluationContext as TypedProxy<any>).addAccessor('selectedRow', () => props?.cell?.row?.original);
+  (evaluationContext as TypedProxy<any>).addAccessor('selectedRow', () => props.cell?.row?.original);
 
   const clickHandler = (event, data): void => {
     event.preventDefault();

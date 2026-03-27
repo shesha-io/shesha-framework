@@ -100,8 +100,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "hoverItemColor",
         "hoverItemBackground",
       ]),
-      itemBackground: model?.itemBackground || 'white',
-      itemColor: model?.itemColor || allStyles?.fontStyles?.color,
+      itemBackground: model.itemBackground || 'white',
+      itemColor: model.itemColor || allStyles?.fontStyles?.color,
     };
 
     if (model.hidden) return null;
@@ -114,7 +114,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           // Only use custom styles for items, not all computed styles
-          const finalItemStyle = model?.style ? getStyle(model.style, data) : undefined;
+          const finalItemStyle = model.style ? getStyle(model.style, data) : undefined;
 
           return (
             <div className={`sidebar ${componentState.wrapperClassName}`}>
