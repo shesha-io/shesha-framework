@@ -624,6 +624,11 @@ namespace Shesha.Users
 
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
+            if (!_abpSession.UserId.HasValue)
+            {
+                throw new UserFriendlyException("You are not logged in.");
+            }
+            
             var userId = _abpSession.UserId.Value;
             var user = await _userManager.GetUserByIdAsync(userId);
             var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
@@ -650,7 +655,14 @@ namespace Shesha.Users
 
         public async Task<bool> ResetPasswordAsync(ResetPasswordDto input)
         {
-            long currentUserId = _abpSession.UserId.Value;
+
+            if (!_abpSession.UserId.HasValue)
+            {
+                throw new UserFriendlyException("You are not logged in.");
+            }
+            
+            var currentUserId = _abpSession.UserId.Value;
+            
             var currentUser = await _userManager.GetUserByIdAsync(currentUserId);
             
             if (currentUser.IsDeleted || !currentUser.IsActive)
