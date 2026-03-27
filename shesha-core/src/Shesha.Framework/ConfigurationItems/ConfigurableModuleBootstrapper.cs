@@ -71,10 +71,7 @@ namespace Shesha.ConfigurationItems
                             : moduleInfo.VersionNo;
                         var accessor = moduleInfo.GetModuleAccessor();
 
-                        // Match on both Name and Version — each unique version gets its own record
-                        var dbModule = dbModules.FirstOrDefault(m =>
-                            m.Name.ToLower() == moduleInfo.Name.ToLower() &&
-                            m.CurrentVersionNo == version);
+                        var dbModule = dbModules.FirstOrDefault(m => m.Name.ToLower() == moduleInfo.Name.ToLower());
 
                         var isNew = dbModule == null;
                         if (dbModule == null)
@@ -91,7 +88,6 @@ namespace Shesha.ConfigurationItems
                                 IsEnabled = true,
 
                                 CurrentVersionNo = version,
-                                ReleaseDate = Clock.Now,
                                 FirstInitializedDate = Clock.Now,
                             };
                             await _moduleRepo.InsertAsync(dbModule);
@@ -131,7 +127,6 @@ namespace Shesha.ConfigurationItems
                 {
                     var dbModule = await _moduleRepo.GetAsync(codeModule.Id);
 
-                    // Only update metadata fields on existing records; never change Name+Version (that would lose history)
                     if (!codeModule.IsNewModule)
                     {
                         dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
@@ -141,9 +136,14 @@ namespace Shesha.ConfigurationItems
                         dbModule.Publisher = codeModule.ModuleInfo.Publisher;
                         dbModule.IsEditable = codeModule.ModuleInfo.IsEditable;
                         dbModule.IsRootModule = codeModule.ModuleInfo.IsRootModule;
+                        dbModule.CurrentVersionNo = codeModule.Version;
                         dbModule.FirstInitializedDate = dbModule.FirstInitializedDate ?? Clock.Now;
                         await _moduleRepo.UpdateAsync(dbModule);
                     }
+
+                    // Link the module's assembly to this startup so we can audit when each module version was deployed
+                    var assemblyFileName = System.IO.Path.GetFileName(codeModule.ModuleType.Assembly.Location);
+                    await _startupSession.LinkAssemblyToModuleAsync(assemblyFileName, dbModule.Id);
 
                     // initialize main module
                     var mainModuleInitialized = await codeModule.Instance.InitializeConfigurationAsync();

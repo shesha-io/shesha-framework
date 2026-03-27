@@ -70,11 +70,6 @@ namespace Shesha.Domain.ConfigurationItems
         public virtual DateTime? LastInitializedDate { get; set; }
 
         /// <summary>
-        /// The date/time this specific module version was first released (bootstrapped)
-        /// </summary>
-        public virtual DateTime? ReleaseDate { get; set; }
-
-        /// <summary>
         /// If true, indicates that the module is enabled
         /// </summary>
         public virtual bool IsEnabled { get; set; }
@@ -99,20 +94,15 @@ namespace Shesha.Domain.ConfigurationItems
         {
             _repository = repository;
 
-            RuleFor(x => x.Name).NotEmpty();
-            RuleFor(x => x).MustAsync(UniqueNameVersionAsync).WithMessage("Module with name '{PropertyValue.Name}' and version '{PropertyValue.CurrentVersionNo}' already exists.");
+            RuleFor(x => x.Name).NotEmpty().MustAsync(UniqueNameAsync).WithMessage("Module with name '{PropertyValue}' already exists.");
         }
 
-        private async Task<bool> UniqueNameVersionAsync(Module module, Module value, CancellationToken cancellationToken)
+        private async Task<bool> UniqueNameAsync(Module module, string name, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(module.Name))
+            if (string.IsNullOrWhiteSpace(name))
                 return true;
 
-            var alreadyExist = await _repository.GetAll()
-                .Where(m => m.Name.ToLower() == module.Name.ToLower()
-                         && m.CurrentVersionNo == module.CurrentVersionNo
-                         && m.Id != module.Id)
-                .AnyAsync();
+            var alreadyExist = await _repository.GetAll().Where(m => m.Name.ToLower() == name.ToLower() && m.Id != module.Id).AnyAsync();
             return !alreadyExist;
         }
     }

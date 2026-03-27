@@ -8,15 +8,10 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Alter.Table("Frwk_Modules").AddColumn("ReleaseDate").AsDateTime().Nullable();
-
-            // Drop the single-column unique index — uniqueness is now enforced on Name + CurrentVersionNo
-            Delete.Index("uq_Frwk_Modules_Name").OnTable("Frwk_Modules");
-            Create.Index("uq_Frwk_Modules_Name_Version")
-                .OnTable("Frwk_Modules")
-                .OnColumn("Name").Ascending()
-                .OnColumn("CurrentVersionNo").Ascending()
-                .WithOptions().Unique();
+            // Link startup assembly records to their Shesha module for deployment auditing
+            Alter.Table("frwk_application_startup_assemblies")
+                .AddColumn("module_id").AsGuid().Nullable()
+                .ForeignKey("fk_frwk_startup_assemblies_module", "Frwk_Modules", "Id");
         }
     }
 }
