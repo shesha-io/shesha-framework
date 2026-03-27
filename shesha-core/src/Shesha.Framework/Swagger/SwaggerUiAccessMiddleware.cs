@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Shesha.Configuration.Security;
 using System;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 
 namespace Shesha.Swagger
 {
@@ -12,10 +13,12 @@ namespace Shesha.Swagger
     public class SwaggerUiAccessMiddleware
     {
         private readonly RequestDelegate _next;
+        private ILogger Logger { get; set; }
 
         public SwaggerUiAccessMiddleware(RequestDelegate next)
         {
             _next = next;
+            Logger = NullLogger.Instance;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -42,8 +45,9 @@ namespace Shesha.Swagger
                         return;                                                               
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Logger.Error("An error occurred while processing request.", e);
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
                     return;     
                 }

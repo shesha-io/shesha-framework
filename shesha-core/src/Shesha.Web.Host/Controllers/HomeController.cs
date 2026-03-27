@@ -1,3 +1,4 @@
+using System;
 using Abp;
 using Abp.Dependency;
 using Abp.Extensions;
@@ -7,27 +8,35 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration.Security;
 using Shesha.Controllers;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 
 namespace Shesha.Web.Host.Controllers
 {
     public class HomeController : SheshaControllerBase
     {
         private readonly INotificationPublisher _notificationPublisher;
-        private readonly IIocResolver _iocResolver;
         private readonly ISecuritySettings _securitySettings;
 
         public HomeController(INotificationPublisher notificationPublisher, IIocResolver iocResolver, ISecuritySettings securitySettings)
         {
             _notificationPublisher = notificationPublisher;
-            _iocResolver = iocResolver;
             _securitySettings = securitySettings;
         }
 
         public async Task<IActionResult> Index()
         {
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
-            if (!securitySettings.SwaggerUiEnabled)
+            try
+            {
+                var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+                if (!securitySettings.SwaggerUiEnabled)
+                    return Content("API is running", "text/plain");
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e.Message, e);
                 return Content("API is running", "text/plain");
+            }
+           
 
             return Redirect("/swagger");
         }

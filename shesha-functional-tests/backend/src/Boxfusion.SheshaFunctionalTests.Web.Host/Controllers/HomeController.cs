@@ -1,34 +1,38 @@
 using System;
 using System.Threading.Tasks;
-using Abp;
-using Abp.Authorization.Users;
-using Abp.Dependency;
-using Abp.Domain.Repositories;
-using Abp.Extensions;
-using Abp.Notifications;
-using Abp.Timing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate;
+using Shesha.Configuration.Security;
 using Shesha.Controllers;
-using Shesha.MultiTenancy;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Controllers
 {
     [AllowAnonymous]
     public class HomeController : SheshaControllerBase
     {
-        private readonly INotificationPublisher _notificationPublisher;
-        private readonly IIocResolver _iocResolver;
+        
+        private readonly ISecuritySettings _securitySettings;
 
-        public HomeController(INotificationPublisher notificationPublisher, IIocResolver iocResolver)
+        public HomeController(ISecuritySettings securitySettings)
         {
-            _notificationPublisher = notificationPublisher;
-            _iocResolver = iocResolver;
+            _securitySettings = securitySettings;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            try
+            {
+                var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+                if (!securitySettings.SwaggerUiEnabled)
+                    return Content("API is running", "text/plain");
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e.Message, e);
+                return Content("API is running", "text/plain");
+            }
+           
+
             return Redirect("/swagger");
         }
     }
