@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EntityExtensions = Shesha.Extensions.EntityExtensions;
 
@@ -40,9 +39,6 @@ namespace Shesha.Users
 
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
-        // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
-        public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
-
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IRepository<Role> _roleRepository;
@@ -54,6 +50,7 @@ namespace Shesha.Users
         private readonly IRepository<User, long> _userRepository;
         private readonly ISecuritySettings _securitySettings;
         private readonly IRepository<QuestionAssignment, Guid> _questionRepository;
+
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -567,12 +564,13 @@ namespace Shesha.Users
             if (user.PasswordResetCode != input.Token)
                 throw new UserFriendlyException("Your token is invalid or has expired, try to reset password again");
 
-            // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
+            // validate password against configured policy
+            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+            foreach (var validator in _userManager.PasswordValidators)
             {
-                throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
+                CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
             }
-            
+
             user.AddHistoryEvent("Password reset", "Password reset");
             _personRepository.GetAll().FirstOrDefault(x => x.User == user)?.AddHistoryEvent("Password reset", "Password reset");
 
@@ -626,17 +624,23 @@ namespace Shesha.Users
 
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
-            long userId = _abpSession.UserId.Value;
+            if (!_abpSession.UserId.HasValue)
+            {
+                throw new UserFriendlyException("You are not logged in.");
+            }
+            
+            var userId = _abpSession.UserId.Value;
             var user = await _userManager.GetUserByIdAsync(userId);
             var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
             if (loginAsync.Result != ShaLoginResultType.Success)
             {
                 throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
             }
-            // todo: add new setting for the PasswordRegex and error message
-            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
+            // validate password against configured policy
+            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+            foreach (var validator in _userManager.PasswordValidators)
             {
-                throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
+                CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
             }
 
             user.AddHistoryEvent("Password changed", "Password changed");
@@ -644,17 +648,21 @@ namespace Shesha.Users
 
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
             user.RequireChangePassword = false;
+
             await CurrentUnitOfWork.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> ResetPasswordAsync(ResetPasswordDto input)
         {
-            if (_abpSession.UserId == null)
+
+            if (!_abpSession.UserId.HasValue)
             {
-                throw new UserFriendlyException("Please log in before attemping to reset password.");
+                throw new UserFriendlyException("You are not logged in.");
             }
-            long currentUserId = _abpSession.UserId.Value;
+            
+            var currentUserId = _abpSession.UserId.Value;
+            
             var currentUser = await _userManager.GetUserByIdAsync(currentUserId);
             
             if (currentUser.IsDeleted || !currentUser.IsActive)
@@ -666,10 +674,17 @@ namespace Shesha.Users
             {
                 throw new UserFriendlyException("You are not authorized to reset passwords.");
             }
-
+            
             var user = await _userManager.GetUserByIdAsync(input.UserId);
             if (user != null)
             {
+                // validate password against configured policy
+                await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+                foreach (var validator in _userManager.PasswordValidators)
+                {
+                    CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
+                }
+
                 user.AddHistoryEvent("Password reset", "Password reset");
                 var person = await _personRepository.FirstOrDefaultAsync(x => x.User == user);
                 person?.AddHistoryEvent("Password reset", "Password reset");
