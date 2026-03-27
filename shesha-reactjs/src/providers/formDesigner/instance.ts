@@ -19,7 +19,6 @@ import {
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { camelcaseDotNotation } from '@/utils/string';
 import { nanoid } from "@/utils/uuid";
-import { MutableRefObject } from "react";
 import { toolbarGroupsToComponents } from "../form/hooks";
 import { componentsFlatStructureToTree, createComponentModelForDataProperty, processRecursive, upgradeComponent } from "../form/utils";
 import {
@@ -42,7 +41,6 @@ export type FormDesignerArgs = {
   toolboxComponentGroups: IToolboxComponentGroup[];
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
-  settingsPanelRef: MutableRefObject<HTMLDivElement | undefined>;
   logEnabled?: boolean;
   formPersister: IFormPersisterContext;
 };
@@ -91,7 +89,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.toolboxComponentGroups = args.toolboxComponentGroups;
     this.toolboxComponents = toolbarGroupsToComponents(args.toolboxComponentGroups);
     this.formPersister = args.formPersister;
-    this.settingsPanelRef = args.settingsPanelRef;
     this.readOnly = args.readOnly;
     this.isDebug = false;
     this.formMode = 'designer';
@@ -149,7 +146,12 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   selectedComponentId: string | undefined;
 
-  settingsPanelRef: MutableRefObject<HTMLDivElement | undefined>;
+  settingsPanelElement: HTMLDivElement | null = null;
+
+  setSettingsPanelElement = (element: HTMLDivElement | null): void => {
+    this.settingsPanelElement = element;
+    this.notifySubscribers(['selection']);
+  };
 
   private getToolboxComponentOrUndefined = (type: string): IToolboxComponent | undefined => {
     return this.toolboxComponents[type];

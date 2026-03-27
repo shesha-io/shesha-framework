@@ -5,7 +5,6 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { createNamedContext } from '@/utils/react';
-import { MutableRefObject } from 'react';
 import { DEFAULT_FORM_SETTINGS, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, ROOT_COMPONENT_KEY } from "../form/models";
 
 /** Named Data Source */
@@ -99,7 +98,7 @@ export type FormDesignerState = {
   readOnly: boolean;
   formMode: FormMode;
 
-  settingsPanelRef: MutableRefObject<HTMLDivElement | undefined>;
+  settingsPanelElement: HTMLDivElement | null;
 };
 
 export type FormDesignerActions = {
@@ -131,6 +130,8 @@ export type FormDesignerActions = {
   getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
 
   subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => void;
+
+  setSettingsPanelElement: (element: HTMLDivElement | null) => void;
 };
 
 

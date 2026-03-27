@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { useFormDesignerComponentGroups } from '../form/hooks';
 import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, isConfigurableFormComponent } from '../form/models';
 import {
@@ -26,7 +26,6 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   } = props;
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const formPersister = useFormPersister();
-  const settingsPanelRef = useRef<HTMLDivElement>();
   const devMode = useIsDevMode();
 
   const [formDesigner] = useState<IFormDesignerInstance>(() => {
@@ -36,7 +35,6 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       formPersister,
       formFlatMarkup: flatMarkup,
       formSettings,
-      settingsPanelRef,
       logEnabled: devMode,
     });
   });
