@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration.Security;
 using Shesha.Controllers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shesha.Web.Host.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : SheshaControllerBase
     {
         private readonly INotificationPublisher _notificationPublisher;
