@@ -83,6 +83,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   formMode: FormMode;
 
+  activeSettingsTabKey: string | undefined;
+
   get state(): FormDesignerFormState {
     return this.undoableState.getState();
   }
@@ -98,6 +100,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.isDragging = false;
     this.hasDragged = false;
     this.isDataModified = false;
+    this.activeSettingsTabKey = undefined;
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
 
     // eslint-disable-next-line no-console
@@ -716,6 +719,12 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     if (this.formMode === value) return;
     this.formMode = value;
     this.notifySubscribers(['mode']);
+  };
+
+  setActiveSettingsTabKey = (key: string): void => {
+    if (this.activeSettingsTabKey === key) return;
+    this.activeSettingsTabKey = key;
+    this.notifySubscribers(['settings-tab']);
   };
 
   componentEditors: IComponentSettingsEditorsCache = {};
