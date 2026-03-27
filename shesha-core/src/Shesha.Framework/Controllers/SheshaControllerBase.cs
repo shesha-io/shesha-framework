@@ -5,6 +5,7 @@ using Abp.IdentityFramework;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration.Security;
+using Shesha.Settings;
 
 namespace Shesha.Controllers
 {
@@ -25,7 +26,7 @@ namespace Shesha.Controllers
             try
             {
                 var settings = await
-                    securitySettings.SecuritySettings.GetValueAsync();
+                    securitySettings.SecuritySettings.GetValueAsync(new SettingManagementContext());
                 if (!settings.SwaggerUiEnabled)
                     return Content("API is running", "text/plain");
             }

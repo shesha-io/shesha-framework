@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Shesha.Configuration.Security;
 using System;
 using System.Threading.Tasks;
+using Abp.Dependency;
 using Castle.Core.Logging;
 
 namespace Shesha.Swagger
@@ -10,7 +11,7 @@ namespace Shesha.Swagger
     /// Middleware that blocks access to Swagger UI when the Swagger UI setting is disabled,
     /// returning a 403 Forbidden response. JSON spec endpoints are not blocked.
     /// </summary>
-    public class SwaggerUiAccessMiddleware: IMiddleware
+    public class SwaggerUiAccessMiddleware: IMiddleware, ITransientDependency
     {
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
