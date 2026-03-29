@@ -101,6 +101,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             align-items: flex-start;
             gap: 12px;
             flex: 0 0 auto;
+            padding-left: calc(var(--qb-relation-width) + 10px);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn,
@@ -526,7 +529,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             position: relative;
             display: flex;
             width: 100%;
-            max-width: 880px;
             min-width: 0;
             padding: 0;
             align-items: flex-start;
@@ -608,7 +610,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--footer .group--actions.group--actions--br,
         .query-builder-container.qb-has-rules .query-builder > .group-or-rule-container > .group > .group--footer .group--actions.group--actions--tr {
             margin: 0 !important;
+            padding-left: calc(var(--qb-relation-width) + 10px) !important;
             width: 100% !important;
+            box-sizing: border-box !important;
             justify-content: flex-end !important;
         }
 
