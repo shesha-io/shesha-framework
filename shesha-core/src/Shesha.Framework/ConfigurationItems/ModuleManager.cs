@@ -26,13 +26,13 @@ namespace Shesha.ConfigurationItems
         }
 
         /// inheritedDoc
-        public async Task<Module> GetOrCreateModuleAsync(string moduleName) 
+        public async Task<Module> GetOrCreateModuleAsync(string moduleName)
         {
             if (string.IsNullOrWhiteSpace(moduleName))
                 throw new ArgumentNullException(nameof(moduleName));
 
             var module = _moduleRepository.GetAll().FirstOrDefault(m => m.Name == moduleName);
-            if (module == null) 
+            if (module == null)
             {
                 module = new Module
                 {
