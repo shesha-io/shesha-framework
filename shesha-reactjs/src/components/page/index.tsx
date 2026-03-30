@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { FC, PropsWithChildren, useEffect } from 'react';
 import { ShaSpin } from '..';
 import Show from '@/components/show';
-import { useSheshaApplication, useTheme } from '@/providers';
+import { useShaRouting, useSheshaApplication, useTheme } from '@/providers';
 import StatusTag, { IStatusTagProps } from '@/components/statusTag';
 import { FormIdentifier } from '@/providers/form/models';
 import Link from 'next/link';
@@ -43,10 +43,9 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
   status,
   requiredPermissions,
 }) => {
-  const { applicationName } = useSheshaApplication();
+  const { applicationName, anyOfPermissionsGranted } = useSheshaApplication();
+  const { router } = useShaRouting();
   const { theme } = useTheme();
-
-  const { anyOfPermissionsGranted } = useSheshaApplication();
 
   useEffect(() => {
     document.title = !!applicationName ? `${applicationName} | ${title}` : title;
@@ -63,6 +62,8 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
 
   const hasAllowedPermission = anyOfPermissionsGranted(requiredPermissions);
 
+  const navigateToUrl = (url: string) => router.push(url);
+
   if (!hasAllowedPermission) {
     return (
       <Result
@@ -70,8 +71,8 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
         title="403"
         subTitle="You are not authorised to access this page"
         extra={
-          <Button type="primary">
-            <Link href={'/'}>Back Home</Link>
+          <Button onClick={() => navigateToUrl('/')} type="primary">
+            Back Home
           </Button>
         }
       />
