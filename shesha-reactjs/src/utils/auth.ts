@@ -68,6 +68,7 @@ export const removeAccessToken = (tokenName: string): boolean => {
 
 export const isTokenAboutToExpire = (tokenName: string, bufferSeconds = 60): boolean => {
   const token = getLocalStorage()?.getItem(tokenName);
+  if (!token) return true;
   const deserializedToken = parseToken(token);
 
   if (!deserializedToken?.expireOn) return true;

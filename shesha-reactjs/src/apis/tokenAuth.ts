@@ -10,7 +10,7 @@ export interface AuthenticateResultModel {
   userId?: number;
   personId?: string | null;
   deviceName?: string | null;
-  redirect?: Boolean;
+  redirect?: boolean;
   url?: string;
   resultType?: AuthenticateResultType;
   redirectUrl?: string;
