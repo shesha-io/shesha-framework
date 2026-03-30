@@ -8,9 +8,7 @@ export interface ISettingsPageProps {
 
 export const SettingsPage: PageWithLayout<ISettingsPageProps> = () => {
   return (
-    <Page
-      title="Application Settings"
-    >
+    <Page title="Application Settings" requiredPermissions={['pages:applicationSettings']}>
       <SettingsEditor />
     </Page>
   );
