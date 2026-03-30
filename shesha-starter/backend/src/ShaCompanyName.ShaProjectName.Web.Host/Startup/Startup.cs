@@ -237,6 +237,9 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
+                // The line below will need to be uncommented when SwaggerUiDocumentFilter
+                // becomes available in Shesha
+                //options.DocumentFilter<SwaggerUiDocumentFilter>();
 
 				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
