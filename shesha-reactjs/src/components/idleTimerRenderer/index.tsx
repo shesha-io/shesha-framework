@@ -367,7 +367,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   const { activate } = useIdleTimer({
     timeout,
-    promptBeforeIdle: isAutoLogoffActive ? WARNING_DURATION * ONE_SECOND : 0,
+    promptBeforeIdle: WARNING_DURATION * ONE_SECOND,
     crossTab: true,
     onPrompt: () => {
       if (isAutoLogoffActive) idleHandler.handlePrompt();
