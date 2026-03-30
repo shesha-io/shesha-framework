@@ -18,9 +18,7 @@ namespace Shesha.Swagger
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var path = context.Request.Path;
-            var isSwaggerUi = path.StartsWithSegments("/swagger", StringComparison.OrdinalIgnoreCase)
-                              && path.Value != null
-                              && !path.Value.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
+            var isSwaggerUi = path.Value != null && path.StartsWithSegments("/swagger", StringComparison.OrdinalIgnoreCase);
 
             if (isSwaggerUi)
             {
