@@ -1,9 +1,9 @@
-import { Breadcrumb, Space } from 'antd';
+import { Breadcrumb, Button, Result, Space } from 'antd';
 import classNames from 'classnames';
 import React, { FC, PropsWithChildren, useEffect } from 'react';
 import { ShaSpin } from '..';
 import Show from '@/components/show';
-import { useSheshaApplication, useTheme } from '@/providers';
+import { useShaRouting, useSheshaApplication, useTheme } from '@/providers';
 import StatusTag, { IStatusTagProps } from '@/components/statusTag';
 import { FormIdentifier } from '@/providers/form/models';
 import { ItemType } from 'antd/lib/breadcrumb/Breadcrumb';
@@ -31,6 +31,7 @@ export interface IPageProps extends IPageHeadProps {
   noPadding?: boolean;
   loadingText?: string;
   status?: IStatusTagProps;
+  requiredPermissions?: string[];
 }
 
 export const Page: FC<PropsWithChildren<IPageProps>> = ({
@@ -42,8 +43,10 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
   loadingText = 'Loading...',
   noPadding = false,
   status,
+  requiredPermissions,
 }) => {
-  const { applicationName } = useSheshaApplication();
+  const { applicationName, anyOfPermissionsGranted } = useSheshaApplication();
+  const { router } = useShaRouting();
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -59,6 +62,25 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
   const showHeading = !!title || hasBackUrl;
 
   const hasStatus = Boolean(status);
+
+  const hasAllowedPermission = anyOfPermissionsGranted(requiredPermissions);
+
+  const navigateToUrl = (url: string) => router.push(url);
+
+  if (!hasAllowedPermission) {
+    return (
+      <Result
+        status="403"
+        title="403"
+        subTitle="You are not authorised to access this page"
+        extra={
+          <Button onClick={() => navigateToUrl('/')} type="primary">
+            Back Home
+          </Button>
+        }
+      />
+    );
+  }
 
   return (
     <section className="sha-page" style={{ background: theme.layoutBackground }}>
