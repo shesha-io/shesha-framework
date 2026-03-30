@@ -1,11 +1,9 @@
-using Abp.AspNetCore;
+﻿using Abp.AspNetCore;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
 using Abp.PlugIns;
 using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Castle.Facilities.Logging;
-using ElmahCore.Mvc;
 using GraphQL;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -189,7 +187,11 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				endpoints.MapControllers();
 				endpoints.MapSignalRHubs();
 			});
-
+			
+			
+			// Block access to Swagger UI when the setting is disabled
+			app.UseMiddleware<SwaggerUiAccessMiddleware>();
+			
 			// Enable middleware to serve generated Swagger as a JSON endpoint
 			app.UseSwagger();
 
@@ -203,6 +205,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.IndexStream = () => Assembly.GetExecutingAssembly()
 					.GetManifestResourceStream("Boxfusion.SheshaFunctionalTests.Web.Host.wwwroot.swagger.ui.index.html");
 			}); // URL: /swagger​
+			
+			
 			
             app.UseHangfireDashboard("/hangfire",
 				new DashboardOptions
@@ -232,7 +236,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
 				options.DocumentFilter<SwaggerDocumentFilter>();
-
+				
 				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
 				options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
