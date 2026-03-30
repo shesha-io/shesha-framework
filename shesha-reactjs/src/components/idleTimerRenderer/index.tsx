@@ -436,7 +436,6 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const onCancel = useCallback(async () => {
     // User chose "Stay Logged In"
 
-    // Refresh token if it's about to expire
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
       const refreshed = await idleHandler.refreshToken();
       if (!refreshed) {
@@ -444,10 +443,11 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
         idleHandler.logout();
         return;
       }
+      // refreshToken() already called activate() internally on success — skip it here
+    } else {
+      // Token not about to expire; reset idle timer manually
+      activate();
     }
-
-    // Reset idle timer
-    activate();
 
     // Close warning modal
     setState(INIT_STATE);
