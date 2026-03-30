@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Shesha.Domain;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
-using Abp.Dependency;
-using Shesha.Domain;
 
 namespace Shesha.Services
 {
@@ -63,7 +62,7 @@ namespace Shesha.Services
                     
                     await using (var fileStream = await fileService.GetStreamAsync(fileToZip.Value))
                     {
-                        using (var dstStream = entry.Open())
+                        using (var dstStream = await entry.OpenAsync())
                         {
                             await fileStream.CopyToAsync(dstStream);
                         }

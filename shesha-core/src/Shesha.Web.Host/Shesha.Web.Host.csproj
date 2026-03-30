@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>Shesha.Web.Host</AssemblyName>
     <OutputType>Exe</OutputType>
@@ -38,24 +38,23 @@
     <ProjectReference Include="..\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Abp.Castle.Log4Net" Version="9.0.0" />
-    <PackageReference Include="Abp.HangFire.AspNetCore" Version="9.0.0" />
-    <PackageReference Include="ElmahCore" Version="2.1.2" />
-    <PackageReference Include="GraphQL.NewtonsoftJson" Version="5.3.0" />
-    <PackageReference Include="GraphQL.Server.All" Version="6.1.0" />
-    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="6.1.0" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.6" />
-    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.10" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0">
+    <PackageReference Include="Abp.Castle.Log4Net" />
+    <PackageReference Include="Abp.HangFire.AspNetCore" />
+    <PackageReference Include="ElmahCore" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" />
+    <PackageReference Include="GraphQL.Server.All" />
+    <PackageReference Include="GraphQL.Server.Ui.Playground" />
+    <PackageReference Include="Hangfire.Core" />
+    <PackageReference Include="Hangfire.PostgreSql" />
+    <PackageReference Include="Hangfire.SqlServer" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Castle.LoggingFacility.MsLogging" Version="3.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.2.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
+    <PackageReference Include="Castle.LoggingFacility.MsLogging" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\swagger\ui\index.html">
@@ -63,7 +62,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0">
+    <PackageReference Update="Microsoft.SourceLink.GitHub">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
