@@ -163,17 +163,7 @@ namespace Shesha.Swagger
                     return modelType.Name;
             }
 
-            if (!modelType.IsConstructedGenericType)
-            {
-                var name = modelType.Name.Replace("[]", "Array");
-
-                // Use full name only when needed to resolve conflicts between types with the same short name
-                // (e.g. System.Reflection.Module vs Shesha.Domain.ConfigurationItems.Module)
-                if (modelType.FullName != null && modelType.Namespace != null && modelType.Namespace.StartsWith("System"))
-                    name = modelType.FullName.Replace("[]", "Array");
-
-                return name;
-            }
+            if (!modelType.IsConstructedGenericType) return (modelType.FullName ?? modelType.Name).Replace("[]", "Array");
 
             var prefix = modelType.GetGenericArguments()
                 .Select(genericArg => GetSchemaId(genericArg))
