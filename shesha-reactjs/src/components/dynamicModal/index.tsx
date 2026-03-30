@@ -23,7 +23,6 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
  * - String (HTML)
  */
 const renderContent = (content: ReactNode | string): ReactNode => {
-
   if (typeof content === 'string') {
     return <div dangerouslySetInnerHTML={{ __html: content }} />;
   }

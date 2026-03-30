@@ -71,7 +71,7 @@ export interface AlertModalArgs {
 export interface ShowContentModalArgs {
   /** Modal title */
   title?: string;
-  /** 
+  /**
    * Modal content - can be:
    * - String (Text)
    * - HTML string (will be rendered as HTML)
@@ -81,7 +81,7 @@ export interface ShowContentModalArgs {
   width?: ModalWidth;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
-  /** 
+  /**
    * Custom footer content - can be:
    * - React elements (JSX)
    * - A function that returns React elements
