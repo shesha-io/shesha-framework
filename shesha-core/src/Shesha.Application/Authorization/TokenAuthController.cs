@@ -190,7 +190,8 @@ namespace Shesha.Authorization
             // 5. Generate new token with fresh expiration
             // Use the same claims principal factory as login to ensure consistent claims handling
             var principal = await _claimsPrincipalFactory.CreateAsync(user);
-            var identity = principal.Identity as ClaimsIdentity ?? new ClaimsIdentity();
+            if (principal.Identity is not ClaimsIdentity identity)
+                throw new UserFriendlyException("Failed to create claims identity for user");
 
             var validFrom = DateTime.UtcNow;
             var expiresOn = validFrom.Add(_configuration.Expiration);

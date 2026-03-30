@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Abp.Runtime.Security;
+using Shesha.Authentication.JwtBearer;
 using Shesha.Configuration;
 
 namespace Shesha.Web.Host.Startup
@@ -47,7 +49,24 @@ namespace Shesha.Web.Host.Startup
 
                     options.Events = new JwtBearerEvents
                     {
-                        OnMessageReceived = QueryStringTokenResolver
+                        OnMessageReceived = QueryStringTokenResolver,
+                        OnTokenValidated = async context =>
+                        {
+                            var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+                            if (string.IsNullOrEmpty(jti))
+                            {
+                                context.Fail("Token is missing JTI claim");
+                                return;
+                            }
+
+                            var blacklistService = context.HttpContext.RequestServices
+                                .GetRequiredService<ITokenBlacklistService>();
+
+                            if (await blacklistService.IsTokenBlacklistedAsync(jti))
+                            {
+                                context.Fail("Token has been revoked");
+                            }
+                        }
                     };
                 });
             }
