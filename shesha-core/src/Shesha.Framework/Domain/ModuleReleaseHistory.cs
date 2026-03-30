@@ -10,13 +10,13 @@ namespace Shesha.Domain
     /// <summary>
     /// Read-only view of module release history derived from application startup logs.
     /// Each row represents a module assembly that was loaded during a specific startup.
-    /// Maps to <c>vw_Frwk_ModuleReleaseHistory</c>.
+    /// Maps to <c>frwk.vw_module_release_history</c>.
     /// </summary>
     [ImMutable]
     [SnakeCaseNaming]
     [Entity(TypeShortAlias = "Shesha.Framework.ModuleReleaseHistory",
             GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService)]
-    [Table("vw_Frwk_ModuleReleaseHistory")]
+    [Table("vw_module_release_history", Schema = "frwk")]
     public class ModuleReleaseHistory : Entity<Guid>
     {
         /// <summary>

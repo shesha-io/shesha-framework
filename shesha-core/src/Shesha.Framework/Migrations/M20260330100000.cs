@@ -41,7 +41,7 @@ namespace Shesha.Migrations
             // Create a view that transforms startup + assembly + module data into a
             // list of applied releases — one row per unique module version per startup.
             IfDatabase("SqlServer").Execute.Sql(@"
-                CREATE VIEW vw_Frwk_ModuleReleaseHistory
+                CREATE VIEW frwk.vw_module_release_history
                 AS
                 SELECT
                     a.id                                        AS id,
@@ -63,7 +63,7 @@ namespace Shesha.Migrations
             ");
 
             IfDatabase("PostgreSql").Execute.Sql(@"
-                CREATE VIEW vw_Frwk_ModuleReleaseHistory
+                CREATE VIEW frwk.vw_module_release_history
                 AS
                 SELECT
                     a.id                                        AS id,

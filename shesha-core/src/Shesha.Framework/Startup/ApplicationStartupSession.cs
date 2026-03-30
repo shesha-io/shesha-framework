@@ -266,19 +266,14 @@ namespace Shesha.Startup
             if (CurrentStartup == null)
                 return;
 
-            using (var uow = _uowManager.Begin())
+            var assembly = await _assemblyRepository.GetAll()
+                .FirstOrDefaultAsync(a => a.ApplicationStartup.Id == CurrentStartup.Id && a.FileName == assemblyFileName);
+
+            if (assembly != null)
             {
-                var assembly = await _assemblyRepository.GetAll()
-                    .FirstOrDefaultAsync(a => a.ApplicationStartup.Id == CurrentStartup.Id && a.FileName == assemblyFileName);
-
-                if (assembly != null)
-                {
-                    var module = await _moduleRepository.GetAsync(moduleId);
-                    assembly.Module = module;
-                    await _assemblyRepository.UpdateAsync(assembly);
-                }
-
-                await uow.CompleteAsync();
+                var module = await _moduleRepository.GetAsync(moduleId);
+                assembly.Module = module;
+                await _assemblyRepository.UpdateAsync(assembly);
             }
         }
     }
