@@ -1,6 +1,7 @@
 using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -75,8 +76,8 @@ namespace Shesha.Domain
         public virtual string Folder { get; set; }
 
         /// <summary>
-        /// Startup status (InProgress = 1, Failed = 2, Success = 3)
+        /// Startup status
         /// </summary>
-        public virtual int Status { get; set; }
+        public virtual ApplicationStartupStatus Status { get; set; }
     }
 }
