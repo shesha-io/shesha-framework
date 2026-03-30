@@ -14,7 +14,7 @@ import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { useSheshaApplication } from '@/providers';
 import { useStyles } from './styles/styles';
 import Link from 'next/link';
-import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { useDelayedUpdateOrUndefined } from '@/providers/delayedUpdateProvider';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { ShaSpin } from '..';
 
@@ -30,7 +30,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   showDataSubmitIndicator = true,
   ...props
 }) => {
-  const { getPayload: getDelayedUpdates } = useDelayedUpdate(false) ?? {};
+  const { getPayload: getDelayedUpdates } = useDelayedUpdateOrUndefined() ?? {};
 
   const shaForm = useShaFormInstance();
   const { settings: formSettings, setValidationErrors } = shaForm;

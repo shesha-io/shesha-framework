@@ -20,7 +20,7 @@ import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { useLocalStorage } from '@/hooks';
 import { useStyles } from './styles/styles';
 import SectionSeparator from '../sectionSeparator';
-import { useConfigurableFormActions } from '@/providers/form/actions';
+import { useConfigurableFormActionsOrUndefined } from '@/providers/form/actions';
 import { ShaSpin } from '..';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
@@ -62,7 +62,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   const [objectId, setObjectId] = useState(null);
   const [refershId, setRefreshId] = useState(props.defaultSelected);
 
-  const { onChangeId } = useConfigurableFormActions(false) ?? {};
+  const { onChangeId } = useConfigurableFormActionsOrUndefined() ?? {};
 
   const { styles } = useStyles();
 

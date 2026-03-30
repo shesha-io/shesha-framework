@@ -1,5 +1,5 @@
-import { isDefined } from '@/utils/nullables';
-import { useState } from 'react';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useCallback, useState } from 'react';
 
 export function useWebStorage<T>(
   storage: 'localStorage' | 'sessionStorage',
@@ -12,7 +12,7 @@ export function useWebStorage<T>(
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       // Get from local storage by key
-      const item = typeof (window) !== 'undefined'
+      const item = typeof (window) !== 'undefined' && !isNullOrWhiteSpace(key)
         ? window[storage].getItem(key)
         : undefined;
       // Parse stored json or if none return initialValue
@@ -25,7 +25,7 @@ export function useWebStorage<T>(
 
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to 'localStorage' | 'sessionStorage'.
-  const setValue = (value: T): void => {
+  const setValue = useCallback((value: T): void => {
     try {
       if (isDefined(ignoredKeys) && ignoredKeys.length && typeof value === 'object') {
         const intermediateValue = { ...value };
@@ -46,7 +46,7 @@ export function useWebStorage<T>(
       // A more advanced implementation would handle the error case
       console.error(error);
     }
-  };
+  }, [key, storage, ignoredKeys]);
 
   return [storedValue, setValue];
 }

@@ -4,7 +4,7 @@ import { IconType, ShaIcon } from '@/components';
 import {
   isNavigationActionConfiguration,
   useConfigurableActionDispatcher,
-  useDataTable,
+  useDataTableStore,
   useShaRouting,
 } from '@/providers';
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
@@ -18,14 +18,14 @@ export type IActionCellProps<D extends object = object, V = any> = ICommonCellPr
 
 export const ActionCell = <D extends object = object, V = any>(props: IActionCellProps<D, V>): JSX.Element => {
   const { columnConfig } = props;
-  const { changeActionedRow } = useDataTable();
+  const { changeActionedRow } = useDataTableStore();
   const { executeAction, prepareArguments, useActionDynamicContext } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
 
   const { actionConfiguration, icon, description } = columnConfig ?? {};
   const dynamicContext = useActionDynamicContext(actionConfiguration);
   const evaluationContext = useAvailableConstantsData({}, dynamicContext);
-  (evaluationContext as TypedProxy<any>).addAccessor('selectedRow', () => props?.cell?.row?.original);
+  (evaluationContext as TypedProxy<any>).addAccessor('selectedRow', () => props.cell?.row?.original);
 
   const clickHandler = (event, data): void => {
     event.preventDefault();

@@ -5,7 +5,7 @@ export interface HttpResponse<T = any> {
   data: T;
   status: number;
   statusText: string;
-  headers: any;
+  headers: Record<string, string>;
   request?: any;
 }
 
@@ -18,6 +18,13 @@ export type ResponseType =
   'stream' |
   'formdata';
 
+export interface GenericAbortSignal {
+  readonly aborted: boolean;
+  onabort?: ((...args: any) => any) | null;
+  addEventListener?: (...args: any) => any;
+  removeEventListener?: (...args: any) => any;
+}
+
 /**
  * Http request configuration
  */
@@ -28,7 +35,10 @@ export interface HttpRequestConfig {
   omitStandardHeaders?: boolean;
   /** Timeout in milliseconds */
   timeout?: number;
+  /** Response type */
   responseType?: ResponseType;
+  /** Abort signal */
+  signal?: GenericAbortSignal;
 }
 
 /**

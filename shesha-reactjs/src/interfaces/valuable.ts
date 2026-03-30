@@ -1,4 +1,4 @@
-export interface IValuable {
-  defaultValue?: any;
-  value?: any;
+export interface IValuable<TValue = unknown> {
+  defaultValue?: TValue;
+  value?: TValue;
 }

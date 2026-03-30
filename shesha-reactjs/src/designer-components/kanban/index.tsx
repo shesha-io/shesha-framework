@@ -4,7 +4,7 @@ import { IKanbanProps } from '@/components/kanban/model';
 import {
   getStyle,
   IToolboxComponent,
-  useDataTableStore,
+  useDataTableStoreOrUndefined,
   useSheshaApplication,
   validateConfigurableComponentSettings,
 } from '@/index';
@@ -27,7 +27,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   icon: <FormOutlined />,
 
   Factory: ({ model }) => {
-    const store = useDataTableStore(false);
+    const store = useDataTableStoreOrUndefined();
     const data = model;
     const { httpHeaders, backendUrl } = useSheshaApplication();
     const { background: columnBackground, border: columnBorder, shadow: columnShadow } = model.columnStyles;

@@ -4,7 +4,7 @@ import { migrateFilterMustacheExpressions } from '@/designer-components/_common-
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { SelectOutlined } from '@ant-design/icons';
 import { TableViewSelector } from './tableViewSelector';
-import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings } from '@/index';
+import { ConfigurableFormItem, useDataTableStoreOrUndefined, validateConfigurableComponentSettings } from '@/index';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
 import { useComponentValidation } from '@/providers/validationErrors';
@@ -18,7 +18,7 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   name: 'Table View Selector',
   icon: <SelectOutlined />,
   Factory: ({ model }) => {
-    const store = useDataTableStore(false);
+    const store = useDataTableStoreOrUndefined();
     const { styles } = useStyles();
 
     useComponentValidation(

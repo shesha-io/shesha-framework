@@ -1,5 +1,5 @@
+import { IStoredFilter } from "@/interfaces";
 import { IConfigurableFormComponent } from "@/providers";
-import { ITableViewProps } from "@/providers/dataTable/filters/models";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 export interface IDataSourceComponentProps extends IConfigurableFormComponent {
@@ -7,6 +7,6 @@ export interface IDataSourceComponentProps extends IConfigurableFormComponent {
   entityType?: string | IEntityTypeIdentifier;
   endpoint?: string;
 
-  filters?: ITableViewProps [];
+  filters?: IStoredFilter [];
   maxResultCount?: number;
 }

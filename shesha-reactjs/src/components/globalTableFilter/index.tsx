@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { SearchProps } from 'antd/lib/input';
 import GlobalTableFilterBase from '@/components/globalTableFilterBase';
-import { useDataTable } from '@/providers';
+import { useDataTableStore } from '@/providers';
 
 export interface IGlobalTableFilterProps {
   searchProps?: SearchProps;
@@ -10,7 +10,7 @@ export interface IGlobalTableFilterProps {
 }
 
 export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, block, style }) => {
-  const { changeQuickSearch, quickSearch, performQuickSearch } = useDataTable();
+  const { changeQuickSearch, quickSearch, performQuickSearch } = useDataTableStore();
 
   const srcProps: SearchProps = {
     allowClear: true,

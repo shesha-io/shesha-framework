@@ -9,5 +9,5 @@ export interface ISettingFullAccessor {
 }
 
 export interface ISettingsDictionary {
-  [key: string]: Promise<any>;
+  [key: string]: Promise<unknown>;
 }

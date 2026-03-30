@@ -8,7 +8,7 @@ import { ListItem } from '@/components/listEditor/models';
 const { Option } = Select;
 
 export interface ISortingEditorProps {
-  value?: SortingItem[];
+  value: SortingItem[];
   onChange: (newValue?: SortingItem[]) => void;
   readOnly?: boolean;
   maxItemsCount?: number;

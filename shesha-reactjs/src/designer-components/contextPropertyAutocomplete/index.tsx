@@ -5,7 +5,7 @@ import { DataContextSelector } from '@/designer-components/dataContextSelector';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { MetadataProvider } from '@/providers';
+import { MetadataProvider, UnwrapCodeEvaluators } from '@/providers';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { useFormDesignerSettings } from '@/providers/formDesigner';
@@ -19,7 +19,7 @@ import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocom
 const settingsForm = settingsFormJson as FormMarkup;
 
 
-export interface IContextPropertyAutocompleteProps extends Omit<IContextPropertyAutocompleteComponentProps, 'style' | 'dropdownStyle' | 'type'> {
+export interface IContextPropertyAutocompleteProps extends Omit<UnwrapCodeEvaluators<IContextPropertyAutocompleteComponentProps>, 'style' | 'dropdownStyle' | 'type'> {
   componentName: string;
   propertyName: string;
   contextName: string;
@@ -180,8 +180,8 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
       componentName: initialValues.componentName,
       propertyName: initialValues.propertyName,
       contextName: initialValues.context,
-      style: model?.style ? getStyle(model?.style, allData.data, allData.globalState) : emptyObj,
-      dropdownStyle: model?.dropdownStyle ? getStyle(model?.dropdownStyle, allData.data, allData.globalState) : emptyObj,
+      style: model.style ? getStyle(model?.style, allData.data, allData.globalState) : emptyObj,
+      dropdownStyle: model.dropdownStyle ? getStyle(model?.dropdownStyle, allData.data, allData.globalState) : emptyObj,
       modelType: allData.form.formSettings.modelType,
       setFieldsValue: allData.form.setFieldsValue,
     };

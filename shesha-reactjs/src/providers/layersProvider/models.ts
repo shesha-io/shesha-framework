@@ -1,5 +1,6 @@
 import { FormIdentifier, IConfigurableActionConfiguration } from '@/providers';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { isDefined } from '@/utils/nullables';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface ICalendarEvent {
@@ -13,7 +14,7 @@ export interface ICalendarEvent {
   iconColor?: string;
   onDblClick?: IConfigurableActionConfiguration;
   onSelect?: IConfigurableActionConfiguration;
-  [key: string]: any; // For additional layer-specific properties
+  [key: string]: unknown; // For additional layer-specific properties
 }
 
 export type LayerGroupItemProps = ILayerFormModel | ILayerGroup;
@@ -59,6 +60,7 @@ export interface ILayerGroup extends ILayerGroupItemBase {
   childItems?: LayerGroupItemProps[];
 }
 
+export const isLayerGroup = (item: ILayerGroupItemBase | undefined): item is ILayerGroup => isDefined(item) && "childItems" in item && isDefined(item.childItems) && Array.isArray(item.childItems);
 
 export interface ICalendarLayersProps {
   id: string;
@@ -79,7 +81,7 @@ export interface ICalendarLayersProps {
   overfetch?: boolean;
   customUrl?: string;
   ownerId?: string;
-  filters: { [key in string]: any };
+  filters: { [key in string]: unknown };
   useQuickView?: boolean;
   quickViewForm?: FormIdentifier;
   events?: ICalendarEvent[];

@@ -3,29 +3,31 @@ import { IRouter } from '../shaRouting';
 import { ThemeProviderProps } from '../theme';
 import { DEFAULT_SHESHA_ROUTES, IHttpHeadersDictionary, ISheshaRoutes } from './contexts';
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import React, { MutableRefObject } from 'react';
+import React, { MutableRefObject, useState } from 'react';
 import { createNamedContext } from '@/utils/react';
 import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/models';
 import { IAuthProviderRefProps } from '../auth';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import { ISettingsComponentGroup } from '@/designer-components/settingsInput/settingsInput';
+import { isDefined } from '@/utils/nullables';
+import { setOrDelete } from '@/utils/dictionary';
 
 export interface IShaApplicationArgs {
   backendUrl: string;
   /**
    * Unique identifier (key) of the front-end application, is used to separate some settings and application parts when use multiple front-ends
    */
-  applicationKey?: string;
-  applicationName?: string;
-  accessTokenName?: string;
+  applicationKey?: string | undefined;
+  applicationName?: string | undefined;
+  accessTokenName?: string | undefined;
 
   themeProps?: ThemeProviderProps;
 
   router?: IRouter;
   routes?: ISheshaRoutes;
-  getFormUrlFunc?: (formId: FormIdentifier) => string;
-  authorizer: MutableRefObject<IAuthProviderRefProps>;
-  buildHttpRequestHeaders?: () => IHttpHeadersDictionary;
+  getFormUrlFunc?: ((formId: FormIdentifier, isLoggedIn: boolean) => string) | undefined;
+  authorizer: MutableRefObject<IAuthProviderRefProps | undefined>;
+  buildHttpRequestHeaders?: (() => IHttpHeadersDictionary) | undefined;
 }
 
 export type InitializationAction = (application: ISheshaApplicationInstance) => Promise<void>;
@@ -35,13 +37,13 @@ export interface ISheshaApplicationInstance {
   httpHeaders: IHttpHeadersDictionary;
   setRequestHeaders: (headers: IRequestHeaders) => void;
 
-  applicationKey?: string;
-  applicationName?: string;
+  applicationKey: string | undefined;
+  applicationName: string | undefined;
 
   routes: ISheshaRoutes;
 
-  globalVariables: Record<string, any>;
-  setGlobalVariables?: (values: Record<string, any>) => void;
+  globalVariables: Record<string, unknown>;
+  setGlobalVariables: (values: Record<string, unknown>) => void;
 
   formDesignerComponentGroups: IToolboxComponentGroup[];
   formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
@@ -56,7 +58,7 @@ export interface ISheshaApplicationInstance {
   init: () => Promise<void>;
   initializationState: ApplicationInitializationState;
   registerInitialization: (uid: string, action: InitializationAction) => void;
-  buildHttpRequestHeaders?: () => IHttpHeadersDictionary;
+  buildHttpRequestHeaders: (() => IHttpHeadersDictionary) | undefined;
 }
 
 type RerenderTrigger = () => void;
@@ -64,8 +66,8 @@ type RerenderTrigger = () => void;
 export type AppInitializationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
 export interface ApplicationInitializationState {
   status: AppInitializationStatus;
-  hint?: string;
-  error?: IErrorInfo;
+  hint?: string | undefined;
+  error?: IErrorInfo | undefined;
 }
 
 export class SheshaApplicationInstance implements ISheshaApplicationInstance {
@@ -79,23 +81,23 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
 
   #httpHeaders: IHttpHeadersDictionary;
 
-  #applicationKey?: string;
+  #applicationKey: string | undefined;
 
-  #applicationName?: string;
+  #applicationName: string | undefined;
 
-  #routes?: ISheshaRoutes;
+  #routes: ISheshaRoutes;
 
-  #getFormUrlFunc?: (formId: FormIdentifier) => string;
+  #getFormUrlFunc: ((formId: FormIdentifier, isLoggedIn: boolean) => string) | undefined;
 
-  #buildHttpRequestHeaders?: () => IHttpHeadersDictionary;
+  #buildHttpRequestHeaders: (() => IHttpHeadersDictionary) | undefined;
 
-  #authorizer: MutableRefObject<IAuthProviderRefProps>;
+  #authorizer: MutableRefObject<IAuthProviderRefProps | undefined>;
 
   #formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
 
-  #formDesignerComponentGroups?: IToolboxComponentGroup[];
+  #formDesignerComponentGroups: IToolboxComponentGroup[];
 
-  #globalVariables: Record<string, any>;
+  #globalVariables: Record<string, unknown>;
 
   #rerender: RerenderTrigger;
 
@@ -111,7 +113,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     return this.#applicationName;
   }
 
-  get getFormUrlFunc(): ((formId: FormIdentifier) => string) | undefined {
+  get getFormUrlFunc(): ((formId: FormIdentifier, isLoggedIn: boolean) => string) | undefined {
     return this.#getFormUrlFunc;
   }
 
@@ -123,7 +125,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     return this.#formDesignerComponentRegistrations;
   }
 
-  get routes(): ISheshaRoutes | undefined {
+  get routes(): ISheshaRoutes {
     return this.#routes;
   }
 
@@ -200,29 +202,31 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
   }
 
   setRequestHeaders = (headers: IRequestHeaders): void => {
-    this.#httpHeaders = {
+    const newHeaders = {
       ...this.#httpHeaders,
       ...this.#buildHttpRequestHeaders?.(),
       ...headers,
-      [FRONT_END_APP_HEADER_NAME]: this.#applicationKey,
     };
+    setOrDelete(newHeaders, FRONT_END_APP_HEADER_NAME, this.#applicationKey);
+
+    this.#httpHeaders = newHeaders;
     this.#rerender();
   };
 
-  get globalVariables(): Record<string, any> {
+  get globalVariables(): Record<string, unknown> {
     return this.#globalVariables;
   }
 
-  setGlobalVariables = (values: Record<string, any>): void => {
-    this.#globalVariables = { ...(this.#globalVariables || {}), ...values };
+  setGlobalVariables = (values: Record<string, unknown>): void => {
+    this.#globalVariables = { ...this.#globalVariables, ...values };
     this.#rerender();
   };
 
   anyOfPermissionsGranted = (permissions: string[]): boolean => {
-    if (permissions?.length === 0) return true;
+    if (permissions.length === 0) return true;
 
-    const authorizer = this.#authorizer?.current?.anyOfPermissionsGranted;
-    return authorizer && authorizer(permissions);
+    const authorizer = this.#authorizer.current?.anyOfPermissionsGranted;
+    return isDefined(authorizer) && authorizer(permissions);
   };
 
   registerFormDesignerComponents = (owner: string, components: IToolboxComponentGroup[]): void => {
@@ -251,23 +255,19 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
 }
 
 export const useSheshaApplicationInstance = (args: IShaApplicationArgs): ISheshaApplicationInstance => {
-  const appRef = React.useRef<ISheshaApplicationInstance>();
   const [, forceUpdate] = React.useState({});
-
-  if (!appRef.current) {
+  const [appInstance] = useState<ISheshaApplicationInstance>(() => {
     const forceReRender = (): void => {
       forceUpdate({});
     };
 
-    const instance = new SheshaApplicationInstance(args, forceReRender);
+    return new SheshaApplicationInstance(args, forceReRender) satisfies ISheshaApplicationInstance;
+  });
 
-    appRef.current = instance;
-  }
-
-  return appRef.current;
+  return appInstance;
 };
 
-export const SheshaApplicationInstanceContext = createNamedContext<ISheshaApplicationInstance>(
+export const SheshaApplicationInstanceContext = createNamedContext<ISheshaApplicationInstance | undefined>(
   undefined,
   'SheshaApplicationInstanceContext',
 );

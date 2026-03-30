@@ -2,13 +2,13 @@ import Checkbox from 'antd/lib/checkbox/Checkbox';
 import Search from 'antd/lib/input/Search';
 import { nanoid } from '@/utils/uuid';
 import React, { ChangeEvent, FC, useState } from 'react';
-import { useDataTable } from '@/providers';
+import { useDataTableStore } from '@/providers';
 import { getSafelyTrimmedString } from '@/utils';
 import { useStyles } from './styles/styles';
 
 export const DatatableColumnsSelector: FC = () => {
   const { styles } = useStyles();
-  const { columns, toggleColumnVisibility } = useDataTable();
+  const { columns, toggleColumnVisibility } = useDataTableStore();
 
   const visibleColumns = columns.filter((c) => c.isVisible === true && c.allowShowHide === true);
 

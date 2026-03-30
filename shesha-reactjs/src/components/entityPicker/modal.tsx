@@ -1,5 +1,6 @@
-import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, useDataContextManagerActionsOrUndefined, useDataTable, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
+import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, useDataContextManagerActionsOrUndefined, useDataTableStore, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
 import { evaluateDynamicFilters } from '@/utils/datatable';
+import { getTableDefaults } from '@/designer-components/dataTable/table/utils';
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
@@ -51,7 +52,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
     selectedStoredFilterIds,
     registerConfigurableColumns,
     setPredefinedFilters,
-  } = useDataTable();
+  } = useDataTableStore();
 
   // ToDo: AS - need to optimize
   useShaFormDataUpdate();
@@ -70,7 +71,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
 
   const isMultiple = mode === 'multiple';
 
-  const onDblClick = (row: IAnyObject): void => {
+  const onDblClick = (row: { id: string }): void => {
     if (!row) return;
     if (onSelect) {
       onSelect(row);
@@ -109,7 +110,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
 
   const hasFilters = filters?.length > 0;
 
-  const foundDynamicFilter = hasDynamicFilter(filters);
+  const foundDynamicFilter = filters && hasDynamicFilter(filters);
 
   const hasFormData = !isEmpty(formData);
   const hasGlobalState = !isEmpty(formData);
@@ -230,7 +231,18 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
           <TablePager />
         </div>
 
-        <DataTable onSelectRow={onSelectRow} onDblClick={onDblClick} options={{ omitClick: true }} />
+        <DataTable
+          onSelectRow={onSelectRow}
+          onDblClick={onDblClick}
+          options={{ omitClick: true }}
+          striped
+          rowDividers
+          rowAlternateBackgroundColor={getTableDefaults().rowAlternateBackgroundColor}
+          headerBackgroundColor="#ffffff"
+          headerFontSize={getTableDefaults().headerFontSize}
+          headerFontWeight={getTableDefaults().headerFontWeight}
+          headerFontFamily={getTableDefaults().headerFontFamily}
+        />
       </>
     </Modal>
   );

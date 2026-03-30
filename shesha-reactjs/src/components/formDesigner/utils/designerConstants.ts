@@ -36,8 +36,8 @@ export const designerConstants = {
   DEFAULT_FORM_ITEM_MARGINS: {
     top: '5px',
     bottom: '5px',
-    left: '3px',
-    right: '3px',
+    left: '0px',
+    right: '0px',
   } as const,
 
   /**
@@ -48,7 +48,7 @@ export const designerConstants = {
    */
   DEFAULT_MARGINS: {
     vertical: '5px',
-    horizontal: '3px',
+    horizontal: '0px',
   } as const,
 
   /**

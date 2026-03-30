@@ -40,7 +40,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
         const matched =
           (Array.isArray(childItems) && childItems.length > 0) ||
           (searchText ?? '') === '' ||
-          (typeof props?.isMatch === 'function' ? props.isMatch(item, props.searchText) : false);
+          (typeof props.isMatch === 'function' ? props.isMatch(item, props.searchText) : false);
 
         if (matched /* || childItems.length > 0*/) {
           const filteredItem: TItem = { ...item, [childFieldName]: [...childItems] };
@@ -56,7 +56,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
     const groups = [] as GrouppedObjects<TItem>[];
     if (Boolean(props?.items)) {
       props.items?.forEach((item) => {
-        let name = typeof props?.onGetGroupName === 'function' ? props?.onGetGroupName(field, item[field]) : "";
+        let name = typeof props.onGetGroupName === 'function' ? props.onGetGroupName(field, item[field]) : "";
         name = name ? name : split ? getLastSection('.', item[field]) : item[field];
         name = name ? name : '-';
         const g = groups.filter((g) => {
@@ -90,8 +90,8 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
   };
 
   const groups = useMemo<GrouppedObjects<TItem>[]>(() => {
-    return Boolean(props?.groupBy) ? grouping(props?.groupBy, false) : [{ groupName: '', visibleItems: getVisible(props?.items, props?.searchText) }];
-  }, [props?.items, props?.searchText, props?.groupBy]);
+    return Boolean(props?.groupBy) ? grouping(props?.groupBy, false) : [{ groupName: '', visibleItems: getVisible(props?.items, props.searchText) }];
+  }, [props?.items, props.searchText, props.groupBy]);
 
   useEffect(() => {
     if (props.defaultSelected) {
@@ -104,7 +104,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
     }
   }, [groups]);
 
-  const defaultExpandAll = props?.searchText.length > 1 && groups[0].visibleItems.length <= 6;
+  const defaultExpandAll = props.searchText.length > 1 && groups[0].visibleItems.length <= 6;
 
   return (
     <>
@@ -117,8 +117,8 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
             onChange={onChangeHandler}
             defaultSelected={props.defaultSelected?.toLowerCase()}
             onRenterItem={props?.onRenterItem}
-            getIcon={groups[0].groupName === '-' ? undefined : props?.getIcon}
-            getIsLeaf={groups[0].groupName === '-' ? undefined : props?.getIsLeaf}
+            getIcon={groups[0].groupName === '-' ? undefined : props.getIcon}
+            getIsLeaf={groups[0].groupName === '-' ? undefined : props.getIsLeaf}
           />
         </div>
       )}
@@ -128,7 +128,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
           accordion
           onChange={onCollapseChange}
           items={groups.map((ds) => {
-            const defaultExpandAll = props?.searchText.length > 1 && ds.visibleItems.length <= 6;
+            const defaultExpandAll = props.searchText.length > 1 && ds.visibleItems.length <= 6;
             return {
               label: <span>{ds.groupName}</span>,
               className: 'sha-toolbox-panel',
@@ -144,8 +144,8 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
                       onChange={onChangeHandler}
                       defaultSelected={props.defaultSelected?.toLowerCase()}
                       onRenterItem={props?.onRenterItem}
-                      getIcon={ds.groupName === '-' ? undefined : props?.getIcon}
-                      getIsLeaf={ds.groupName === '-' ? undefined : props?.getIsLeaf}
+                      getIcon={ds.groupName === '-' ? undefined : props.getIcon}
+                      getIsLeaf={ds.groupName === '-' ? undefined : props.getIsLeaf}
                     />
                   </div>
                 ),

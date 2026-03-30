@@ -22,8 +22,8 @@ import {
   LoginUserResponse,
   URLS,
 } from './models';
-import { ISettingsActionsContext } from '../settings/contexts';
-import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { ISettingsClientContext } from '../settings/contexts';
+import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IShaRouter } from '../shaRouting/contexts';
 
@@ -40,7 +40,7 @@ const enum AuthenticateResultType {
 export interface AuthenticatorArgs {
   httpClient: HttpClientApi;
   shaRouter: IShaRouter;
-  settings: ISettingsActionsContext;
+  settings: ISettingsClientContext;
   tokenName?: string;
   unauthorizedRedirectUrl?: string;
   homePageUrl?: string;
@@ -57,7 +57,7 @@ export interface AuthenticatorArgs {
 export class Authenticator implements IAuthenticator {
   #httpClient: HttpClientApi;
 
-  #settings: ISettingsActionsContext;
+  #settings: ISettingsClientContext;
 
   #shaRouter: IShaRouter;
 
@@ -156,7 +156,7 @@ export class Authenticator implements IAuthenticator {
   #checkRegistrationCompletion = (
     response: AuthenticateResultModelAjaxResponse,
   ): void => {
-    const result = extractAjaxResponse<AuthenticateResultModel>(response as IAjaxResponse<AuthenticateResultModel>);
+    const result = extractAjaxResponse(response);
 
     if (result.resultType === AuthenticateResultType.RedirectNoAuth) {
       if (result.redirectUrl) {

@@ -1,8 +1,9 @@
 import { IColorPickerSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { ColorPicker } from '@/components';
 
-export const ColorPickerWrapper: FC<IColorPickerSettingsInputProps> = ({ value, onChange, readOnly, size, showText }) => {
+export const ColorPickerWrapper: FCUnwrapped<IColorPickerSettingsInputProps> = ({ value, onChange, readOnly, size, showText }) => {
   return (
     <ColorPicker
       value={value}

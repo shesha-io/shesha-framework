@@ -30,11 +30,11 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
 
-  const dimensions = props?.dimensions;
-  const border = props?.border;
-  const font = props?.font;
-  const shadow = props?.shadow;
-  const background = props?.background;
+  const dimensions = props.dimensions;
+  const border = props.border;
+  const font = props.font;
+  const shadow = props.shadow;
+  const background = props.background;
   const jsStyle = getStyle(props.style, data);
 
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
@@ -91,8 +91,8 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   });
 
   if (
-    props?.background?.type === 'storedFile' &&
-    props?.background.storedFile?.id &&
+    props.background?.type === 'storedFile' &&
+    props.background.storedFile?.id &&
     !isValidGuid(props?.background.storedFile.id)
   ) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;

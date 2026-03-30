@@ -34,7 +34,7 @@ const RadioComponent: RadioComponentDefinition = {
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} autoAlignLabel={false}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (e: any): void => {

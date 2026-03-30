@@ -7,7 +7,6 @@ import {
   getShadowStyle,
   getStyle,
   IConfigurableFormComponent,
-  ISidebarMenuItem,
   IToolboxComponent,
   migratePrevStyles,
   useFormData,
@@ -21,6 +20,7 @@ import { ItemType } from "antd/es/menu/interface";
 import Editor from "./modal";
 import { getSettings } from "./settings";
 import { defaultStyles } from "./utils";
+import { ISidebarMenuItem } from "@/interfaces/sidebar";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
@@ -86,13 +86,13 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       resetAllFlag: () => { /* do nothing */ },
     };
 
-    const fontSize = model?.font?.size || model?.fontSize || "14";
+    const fontSize = model.font?.size || model.fontSize || "14";
     const gap = Number(model?.gap || "12");
     const height = Number(model?.height || "6");
     const dropdownPadding = `${gap}px`;
 
     // Normalize width: if no unit provided, append 'px'
-    const rawWidth = (model?.dimensions?.width || model?.width || "500px").toString().trim();
+    const rawWidth = (model?.dimensions?.width || model.width || "500px").toString().trim();
     const width = /^\d+(\.\d+)?$/.test(rawWidth) ? `${rawWidth}px` : rawWidth;
 
     const colors: ILayoutColor = {
@@ -106,8 +106,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "subItemColor",
         "subItemBackground",
       ]),
-      itemBackground: model?.itemBackground || 'white',
-      itemColor: model?.itemColor || model?.font?.color,
+      itemBackground: model.itemBackground || 'white',
+      itemColor: model.itemColor || model.font?.color,
     };
 
     const finalContainerStyle = useMemo(() => {
@@ -129,16 +129,16 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
 
     const finalItemStyle = useMemo(() => {
       // Only use custom styles for items, not all computed styles
-      return model?.style ? getStyle(model.style, data) : undefined;
+      return model.style ? getStyle(model.style, data) : undefined;
     }, [model.style, data]);
 
     const finalFontStyles = useMemo(() => {
       return {
-        fontSize: model?.font?.size ? `${model.font.size}px` : `${fontSize}px`,
-        fontFamily: model?.font?.type,
-        fontWeight: model?.font?.weight as CSSProperties['fontWeight'],
-        color: model?.font?.color,
-        textAlign: model?.font?.align as CSSProperties['textAlign'],
+        fontSize: model.font?.size ? `${model.font.size}px` : `${fontSize}px`,
+        fontFamily: model.font?.type,
+        fontWeight: model.font?.weight as CSSProperties['fontWeight'],
+        color: model.font?.color,
+        textAlign: model.font?.align as CSSProperties['textAlign'],
       };
     }, [model.font, fontSize]);
 

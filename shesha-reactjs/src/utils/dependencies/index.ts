@@ -1,14 +1,4 @@
 /* eslint-disable no-console */
-/*
-export type NestedPropertyPaths<T, Target> = {
-  [K in keyof T]:
-  T[K] extends Target ? K
-    : T[K] extends object ? `${K & string}.${NestedPropertyPaths<T[K], Target>}`
-      : never
-}[keyof T];
-*/
-// type Primitive = string | number | boolean | symbol | bigint | null | undefined;
-
 import { ConfigurableItemIdentifier, FormMarkup, IToolboxComponents } from "@/interfaces";
 import { convertFormMarkupToFlatStructure, getComponentsFromMarkup, getFromSettingsFromMarkup } from "@/providers/form/utils";
 import { isDefined } from "../nullables";
@@ -57,12 +47,8 @@ export const collectDependencies = (formMarkup: FormMarkup, designerComponents: 
 
       for (const propName in component) {
         if (component.hasOwnProperty(propName)) {
-          const propValue = component[propName];
+          const propValue = component[propName as keyof typeof component];
           if (isDefined(propValue) && typeof propValue === 'object') {
-            /*
-            const paths = Object.keys(propValue) as PathsToArray<typeof propValue, string>;
-            console.log('LOG: collectDependencies: ', paths);
-            */
             console.log('LOG: property value is an object: ', propValue);
           }
         }

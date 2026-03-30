@@ -2,6 +2,7 @@ export interface IWizardActions {
   next: () => Promise<void>;
   back: () => void;
   cancel: () => void;
+  close: () => void;
   done: () => Promise<void>;
   setStep: (stepIndex) => void;
   content: (description: string, index: number) => string;

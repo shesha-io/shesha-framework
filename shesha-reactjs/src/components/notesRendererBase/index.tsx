@@ -1,84 +1,75 @@
-import React, { FC, useState, useEffect, CSSProperties, useRef, ReactNode } from 'react';
-import DateDisplay from '@/components/dateDisplay';
-import { Skeleton, Card, List, Empty, Input, App, Button, Typography, Popconfirm } from 'antd';
-import { Comment } from '@/components/antd';
-import { CheckOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { INote, ICreateNotePayload } from '@/providers/notes/contexts';
+import React, { FC, useState, useEffect, CSSProperties, useRef } from 'react';
+import { Skeleton, Card, List, Empty, Input, Button } from 'antd';
+import { CheckOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import ShaDivider from '@/components/shaDivider';
 import classNames from 'classnames';
 import { useStyles } from './styles/index.style';
-import { useAuth } from '@/providers';
-
-const { Paragraph } = Typography;
+import { CreateNoteArgs, DeleteNoteArgs, NoteModel, UpdateNoteArgs } from '@/providers/notes/models';
+import { NoteRenderer } from './noteRenderer';
+import { CharCounter } from './charCounter';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { getNoteValidationError } from './utils';
 
 export interface INotesRendererBaseProps {
+  notes?: NoteModel[];
+
+  allowEdit?: boolean;
+  allowDelete?: boolean;
+
+  createNoteAsync: (args: CreateNoteArgs) => Promise<void>;
+  updateNoteAsync: (args: UpdateNoteArgs) => Promise<void>;
+  deleteNoteAsync: (args: DeleteNoteArgs) => Promise<void>;
+
+  isFetchingNotes?: boolean;
+  isPostingNotes?: boolean;
+
   showSaveBtn?: boolean;
-  showCommentBox?: boolean;
+  allowCreate?: boolean;
   commentListStyles?: CSSProperties;
   className?: string;
   commentListClassName?: string;
   style?: CSSProperties;
-  isFetchingNotes?: boolean;
-  isPostingNotes?: boolean;
-  notes?: INote[];
-  postNotes: (payload: ICreateNotePayload) => Promise<INote> | void;
-  deleteNotes: (selectedCommentId: string) => void;
   buttonFloatRight?: boolean;
   autoSize?: boolean;
-  allowDelete?: boolean;
-  // new props
   showCharCount?: boolean;
   minLength?: number;
   maxLength?: number;
-  onDeleteAction?: (note: INote) => void;
-  onCreateAction?: (createdNotes: INote[]) => void;
-  allowEdit?: boolean;
-  updateNotes?: (payload: ICreateNotePayload) => void;
-  onUpdateAction?: (note: ICreateNotePayload) => void;
 }
 
 export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
-  showCommentBox = true,
-  commentListStyles,
+  notes,
+
+  allowEdit = true,
+  allowDelete,
+
+  createNoteAsync,
+  updateNoteAsync,
+  deleteNoteAsync,
+
   isFetchingNotes,
   isPostingNotes,
-  postNotes,
-  deleteNotes,
+
+  allowCreate: showCommentBox = true,
+  commentListStyles,
   className,
   style,
-  notes,
   showSaveBtn = true,
   commentListClassName,
   buttonFloatRight,
   autoSize,
-  allowDelete,
   showCharCount = false,
   minLength,
   maxLength,
-  onCreateAction,
-  allowEdit = true,
-  updateNotes,
-  onUpdateAction,
-  onDeleteAction,
 }) => {
-  const [newComments, setNewComments] = useState('');
+  const [newComment, setNewComment] = useState('');
   const [charCount, setCharCount] = useState(0);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editedText, setEditedText] = useState('');
-  const [editCharCount, setEditCharCount] = useState(0);
   const [validationError, setValidationError] = useState('');
-  const [editValidationError, setEditValidationError] = useState('');
   const textRef = useRef(null);
   const { styles } = useStyles();
-  const { notification } = App.useApp();
-  const auth = useAuth();
-
-  const userId = auth?.loginInfo?.personId;
 
   useEffect(() => {
-    if (!isPostingNotes && newComments) {
-      setNewComments('');
+    if (!isPostingNotes && newComment) {
+      setNewComment('');
       setCharCount(0);
       setValidationError('');
 
@@ -88,188 +79,32 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     }
   }, [isPostingNotes]);
 
-
   const handleTextChange = (value: string): void => {
-    setNewComments(value);
+    setNewComment(value);
     setCharCount(value.length);
 
     // Validate min and max length
-    let error = '';
-    if (minLength && value.length < minLength) {
-      error = `Minimum ${minLength} characters required`;
-    } else if (maxLength && value.length > maxLength) {
-      error = `Maximum ${maxLength} characters allowed`;
-    }
+    const error = getNoteValidationError(value, minLength, maxLength);
     setValidationError(error);
   };
 
-  const handleEditTextChange = (value: string): void => {
-    setEditedText(value);
-    setEditCharCount(value.length);
-
-    // Validate against max length
-    if (maxLength && value.length > maxLength) {
-      setEditValidationError(`Maximum ${maxLength} characters allowed`);
-    } else {
-      setEditValidationError('');
-    }
-  };
-
   const handleSaveNotes = async (): Promise<void> => {
-    // Validate against min length
-    if (minLength && newComments.length < minLength) {
-      setValidationError(`Minimum ${minLength} characters required`);
+    const error = getNoteValidationError(newComment, minLength, maxLength);
+    if (!isNullOrWhiteSpace(error)) {
+      setValidationError(error);
       return;
     }
 
-    if (!_.isEmpty(newComments?.trim())) {
-      const payload = {
-        noteText: newComments,
-      };
+    try {
+      await createNoteAsync({ noteText: newComment });
 
-      try {
-        const result = postNotes(payload);
-
-        // If postNotes returns a Promise, wait for it and call onCreateAction with the result
-        if (result && typeof result.then === 'function') {
-          const createdNote = await result;
-          if (onCreateAction && createdNote) {
-            onCreateAction([createdNote]);
-          }
-        } else {
-          // For backward compatibility, if postNotes doesn't return a Promise,
-          // call onCreateAction immediately (existing behavior)
-          if (onCreateAction) {
-            // Create a mock note structure for backward compatibility
-            const mockNote: INote = {
-              id: '', // Will be set by the server
-              noteText: payload.noteText,
-              creationTime: new Date().toISOString(),
-              author: null,
-              ownerId: '',
-              ownerType: '',
-              category: '',
-              priority: null,
-              parentId: null,
-            };
-            onCreateAction([mockNote]);
-          }
-        }
-
-        setNewComments('');
-        setCharCount(0);
-        setValidationError('');
-      } catch (error) {
-        // If posting fails, don't call onCreateAction
-        console.error('Failed to save note:', error);
-      }
-    } else {
-      notification.info({
-        message: 'No new comments',
-        description: 'Please make sure you have entered some notes before saving',
-      });
+      setNewComment('');
+      setCharCount(0);
+      setValidationError('');
+    } catch (error) {
+      console.error('Failed to save note:', error);
     }
   };
-
-  const handleEditClick = (note: INote): void => {
-    setEditingId(note.id);
-    setEditedText(note.noteText);
-    setEditCharCount(note.noteText.length);
-    setEditValidationError('');
-  };
-
-  const handleUpdate = (noteId: string): void => {
-    if (minLength && editedText.length < minLength) {
-      setEditValidationError(`Minimum ${minLength} characters required`);
-      return;
-    }
-
-    if (maxLength && editedText.length > maxLength) {
-      setEditValidationError(`Maximum ${maxLength} characters allowed`);
-      return;
-    }
-
-    if (!_.isEmpty(editedText?.trim())) {
-      if (updateNotes) {
-        const payload = {
-          id: noteId,
-          noteText: editedText,
-        };
-        updateNotes(payload);
-
-        // Call onUpdateAction if provided
-        if (onUpdateAction) {
-          onUpdateAction(payload);
-        }
-
-        setEditingId(null);
-        setEditedText('');
-        setEditCharCount(0);
-        setEditValidationError('');
-      }
-    } else {
-      notification.warning({
-        message: 'Empty note',
-        description: 'Please enter some text before saving',
-      });
-    }
-  };
-
-  const handleCancelEdit = (): void => {
-    setEditingId(null);
-    setEditedText('');
-    setEditCharCount(0);
-    setEditValidationError('');
-  };
-
-  const handleDelete = (note: INote): void => {
-    deleteNotes(note.id);
-    if (onDeleteAction) {
-      onDeleteAction({
-        ...note,
-        creationTime: note.creationTime || null,
-        priority: note.priority || null,
-        parentId: note.parentId || null,
-      });
-    }
-  };
-
-  const renderCharCounter = (count: number, error: string): ReactNode => {
-    if (!showCharCount) return null;
-
-    return (
-      <div className={styles.charCounter}>
-        {count}
-        {maxLength ? `/${maxLength}` : ''}
-        {error && <span className={styles.errorText}>{error}</span>}
-      </div>
-    );
-  };
-
-  const renderEditControls = (note: INote): ReactNode => (
-    <div className={styles.editControls}>
-      <Input.TextArea
-        value={editedText}
-        onChange={(e) => handleEditTextChange(e.target.value)}
-        autoSize={{ minRows: 2 }}
-        maxLength={maxLength}
-      />
-      {renderCharCounter(editCharCount, editValidationError)}
-      <div className={styles.editButtons}>
-        <Button
-          size="small"
-          type="primary"
-          onClick={() => handleUpdate(note.id)}
-          disabled={!editedText?.trim() || !!editValidationError}
-        >
-          Save
-        </Button>
-        <Button size="small" onClick={handleCancelEdit}>
-          Cancel
-        </Button>
-      </div>
-    </div>
-  );
 
   return (
     <div className={classNames(styles.notes, className)} style={style}>
@@ -278,7 +113,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
           <Input.TextArea
             ref={textRef}
             rows={2}
-            value={newComments}
+            value={newComment}
             onChange={({ target: { value } }) => handleTextChange(value)}
             disabled={isPostingNotes}
             onPressEnter={handleSaveNotes}
@@ -286,13 +121,13 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
             maxLength={maxLength}
             showCount={false} // We'll implement our own counter
           />
-          {renderCharCounter(charCount, validationError)}
+          {showCharCount && <CharCounter count={charCount} maxLength={maxLength} error={validationError} />}
           {showSaveBtn && (
             <div className={classNames(styles.saveBtn, { right: buttonFloatRight })}>
               <Button
                 size="small"
                 type="primary"
-                disabled={!newComments?.trim() || !!validationError}
+                disabled={!newComment?.trim() || !!validationError}
                 onClick={handleSaveNotes}
                 loading={isPostingNotes}
                 icon={<CheckOutlined />}
@@ -306,65 +141,23 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
 
       <Skeleton loading={isFetchingNotes} active>
         <Card className={classNames(styles.commentListCard, commentListClassName)} size="small">
-          <List
+          <List<NoteModel>
             locale={{ emptyText: <Empty description="There are no notes" /> }}
             className={`${styles.commentList} scroll scroll-y`}
             style={{ ...commentListStyles }}
             itemLayout="horizontal"
-            dataSource={_.orderBy(notes, ['creationTime'], ['desc']).map(({ noteText, author, creationTime, id }) => ({
-              postedBy: author?._displayName || 'Unknown',
-              content: (
-                <div>
-                  <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: 'more' }}>{noteText}</Paragraph>
-                </div>
-              ),
-              postedDate: <DateDisplay date={creationTime} />,
-              id,
-              noteText,
-              author,
-              creationTime,
-            }))}
-            renderItem={({ postedBy, id, content, postedDate, noteText, author, creationTime }) => (
-              <div className={styles.commentItemBody}>
-                {allowDelete && editingId !== id && author?.id === userId && (
-                  <Popconfirm
-                    title="Delete Note"
-                    description="Are you sure you want to delete this note?"
-                    onConfirm={() =>
-                      handleDelete({
-                        id,
-                        noteText,
-                        author,
-                        creationTime,
-                        ownerId: '',
-                        ownerType: '',
-                        category: '',
-                      })}
-                    okText="Yes"
-                    cancelText="No"
-                    okButtonProps={{ type: 'primary', danger: true }}
-                  >
-                    <DeleteOutlined className={styles.deleteIcon} />
-                  </Popconfirm>
-                )}
-                {allowEdit && editingId !== id && author?.id === userId && (
-                  <EditOutlined
-                    className={styles.editIcon}
-                    onClick={() => handleEditClick({ id, noteText, author, creationTime } as INote)}
-                  />
-                )}
-                {editingId === id ? (
-                  renderEditControls({ id, noteText, author, creationTime } as INote)
-                ) : (
-                  <Comment
-                    className={styles.commentItem}
-                    author={postedBy || 'Anonymous'}
-                    content={content}
-                    datetime={postedDate}
-                  />
-                )}
-                <ShaDivider />
-              </div>
+            dataSource={notes}
+            renderItem={(note) => (
+              <NoteRenderer
+                note={note}
+                allowEdit={allowEdit}
+                allowDelete={allowDelete}
+                updateNoteAsync={updateNoteAsync}
+                deleteNoteAsync={deleteNoteAsync}
+                minLength={minLength}
+                maxLength={maxLength}
+                showCharCount={showCharCount}
+              />
             )}
           />
         </Card>

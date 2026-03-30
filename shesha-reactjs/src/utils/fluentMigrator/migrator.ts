@@ -1,8 +1,10 @@
+import { isDefined } from "../nullables";
+
 export interface IHasVersion {
   version?: number | 'latest' | undefined | undefined;
 }
 
-export type Migration<TPrev = IHasVersion, TNext = IHasVersion, TContext = any> = (
+export type Migration<TPrev = IHasVersion, TNext = IHasVersion, TContext = unknown> = (
   prev: TPrev,
   context: TContext,
 ) => TNext;
@@ -12,8 +14,7 @@ export interface MigrationRegistration<TPrev = IHasVersion, TNext = IHasVersion>
 }
 
 export const isHasVersion = (value: unknown): value is IHasVersion => {
-  const version = (value as IHasVersion)?.version;
-  return version && (typeof (version) === 'number' || version === 'latest');
+  return isDefined(value) && "version" in value && (typeof (value.version) === 'number' || value.version === 'latest');
 };
 
 export interface IAddMigrationPayload<TModel = IHasVersion, TNext = IHasVersion> {
@@ -21,16 +22,16 @@ export interface IAddMigrationPayload<TModel = IHasVersion, TNext = IHasVersion>
   migration: Migration<TModel, TNext>;
 }
 
-interface IMigrationRegistrationsOwner<TDst = IHasVersion, TContext = any> {
+interface IMigrationRegistrationsOwner<TDst = IHasVersion, TContext = unknown> {
   addMigration: <TModel, TNext>(payload: IAddMigrationPayload<TModel, TNext>) => void;
   migrations: MigrationRegistration[];
   upgrade: (currentModel: IHasVersion, context: TContext) => TDst;
 }
 
-export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext = any> {
+export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext = unknown> {
   readonly migrator: IMigrationRegistrationsOwner<TDst, TContext>;
 
-  constructor(owner: IMigrationRegistrationsOwner<TDst>) {
+  constructor(owner: IMigrationRegistrationsOwner<TDst, TContext>) {
     this.migrator = owner;
   }
 
@@ -48,7 +49,7 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
 }
 
 export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = unknown>
-implements IMigrationRegistrationsOwner<TDst> {
+implements IMigrationRegistrationsOwner<TDst, TContext> {
   migrations: MigrationRegistration[];
 
   constructor() {

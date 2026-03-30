@@ -224,6 +224,8 @@ export const isEntityTypeIdEmpty = (a: string | IEntityTypeIdentifier | null | u
   (typeof a === 'object' && !isEntityTypeIdentifier(a)) ||
   (isEntityTypeIdentifier(a) && a.name.trim().length === 0);
 
+export const isEntityTypeId = (id: string | IEntityTypeIdentifier | null | undefined): id is string | IEntityTypeIdentifier => !isEntityTypeIdEmpty(id);
+
 export const getEntityTypeName = (modelType: string | IEntityTypeIdentifier | null | undefined): string | null | undefined =>
   isEntityTypeIdentifier(modelType)
     ? Boolean(modelType.module)

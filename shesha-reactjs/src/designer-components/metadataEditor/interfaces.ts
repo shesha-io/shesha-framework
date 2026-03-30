@@ -13,6 +13,6 @@ export interface IMetadataEditorProps extends IMetadataEditorCommonProps {
   baseProperties?: IPropertyMetadata[];
 }
 
-export interface IMetadataEditorComponentProps extends IConfigurableFormComponent, IMetadataEditorCommonProps {
+export interface IMetadataEditorComponentProps extends IConfigurableFormComponent, Omit<IMetadataEditorCommonProps, 'readOnly'> {
   baseProperties?: string;
 }

@@ -10,7 +10,7 @@ import {
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { StoredFileProvider } from '@/providers';
+import { FileUploadProvider } from '@/providers';
 import { ImageField } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -32,9 +32,9 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   isOutput: true,
   preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({
-    ownerId: evaluateValueAsString(model.ownerId, allData),
-    dataId: (allData.data as { Id: string })?.Id, // TODO: review and remove
-    formModelType: allData.form.formSettings?.modelType,
+    ownerId: model.ownerId ? evaluateValueAsString(model.ownerId, allData) : undefined,
+    dataId: allData.data ? (allData.data as { Id: string }).Id : undefined, // TODO: review and remove
+    formModelType: allData.form?.formSettings.modelType,
   }),
   Factory: ({ model, calculatedModel }) => {
     const theme = useTheme();
@@ -70,18 +70,15 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
 
           const fileProvider = (child): ReactElement => {
             return (
-              <StoredFileProvider
+              <FileUploadProvider
                 value={val}
                 onChange={onChange}
-                fileId={val}
                 ownerId={Boolean(calculatedModel.ownerId) ? calculatedModel.ownerId : Boolean(calculatedModel.dataId) ? calculatedModel.dataId : ''}
                 ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(calculatedModel.formModelType) ? calculatedModel.formModelType : ''}
-                fileCategory={model.fileCategory}
                 propertyName={!model.context ? model.propertyName : null}
-                // uploadMode={model.useSync ? 'sync' : 'async'}
               >
                 {child}
-              </StoredFileProvider>
+              </FileUploadProvider>
             );
           };
 

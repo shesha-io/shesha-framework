@@ -37,12 +37,12 @@ export interface IValidationErrorsActionsContext {
   getAllValidations: () => IComponentValidationError[];
 }
 
-const ValidationErrorsStateContext = createNamedContext<IValidationErrorsStateContext>(
+const ValidationErrorsStateContext = createNamedContext<IValidationErrorsStateContext | undefined>(
   undefined,
   "ValidationErrorsStateContext",
 );
 
-const ValidationErrorsActionsContext = createNamedContext<IValidationErrorsActionsContext>(
+const ValidationErrorsActionsContext = createNamedContext<IValidationErrorsActionsContext | undefined>(
   undefined,
   "ValidationErrorsActionsContext",
 );
@@ -123,6 +123,8 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
       componentType,
     }),
 
+    // TODO: remove refs usage and update dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [errorVersion, componentId, componentName, componentType], // errorVersion triggers re-render when errors change
   );
 

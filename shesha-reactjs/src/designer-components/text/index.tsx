@@ -22,7 +22,7 @@ const TextComponent: TextComponentDefinition = {
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
   Factory: ({ model }) => {
     const { allStyles } = model;
-    const shadow = model?.shadow;
+    const shadow = model.shadow;
     const jsStyle = allStyles?.jsStyle;
     const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
     const dimensionsStyles = allStyles?.dimensionsStyles;
@@ -48,7 +48,7 @@ const TextComponent: TextComponentDefinition = {
           <TypographyComponent
             {...model}
             styles={additionalStyles}
-            value={model?.contentDisplay === 'name' ? value : model?.content}
+            value={model?.contentDisplay === 'name' ? value : model.content}
           />
         )}
       </ConfigurableFormItem>

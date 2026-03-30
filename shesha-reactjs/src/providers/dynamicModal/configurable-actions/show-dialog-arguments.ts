@@ -10,7 +10,7 @@ export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf 
         parentId: 'root',
         readOnly: {
           _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
-        } as any,
+        },
         inputs: [
           {
             type: 'textField',
@@ -39,7 +39,7 @@ export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf 
         parentId: 'root',
         readOnly: {
           _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
-        } as any,
+        },
         inputs: [
           {
             type: 'radio',
@@ -102,7 +102,7 @@ export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf 
         resultTypeExpression: '    return metadataBuilder.anyObject();',
         readOnly: {
           _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
-        } as any,
+        },
       })
       .addCollapsiblePanel({
         id: nanoid(),
@@ -121,7 +121,7 @@ export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf 
               parentId: 'root',
               readOnly: {
                 _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
-              } as any,
+              },
               inputs: [
                 {
                   type: 'dropdown',
@@ -158,7 +158,7 @@ export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf 
                   label: 'Configure Modal Buttons',
                   hidden: {
                     _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false,
-                  } as any,
+                  },
                   jsSetting: true,
                 },
               ],

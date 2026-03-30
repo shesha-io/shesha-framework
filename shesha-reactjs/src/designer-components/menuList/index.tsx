@@ -2,7 +2,6 @@ import {
   ConfigurableComponentRenderer,
   getStyle,
   IConfigurableFormComponent,
-  ISidebarMenuItem,
   IStyleType,
   IToolboxComponent,
   useFormData,
@@ -21,6 +20,7 @@ import LayoutMenu from "@/components/menu";
 import { MenuUnfoldOutlined } from "@ant-design/icons";
 import { useFormComponentStyles } from "@/hooks/formComponentHooks";
 import { migratePrevStyles } from "../_common-migrations/migrateStyles";
+import { ISidebarMenuItem } from "@/interfaces/sidebar";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
@@ -100,8 +100,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "hoverItemColor",
         "hoverItemBackground",
       ]),
-      itemBackground: model?.itemBackground || 'white',
-      itemColor: model?.itemColor || allStyles?.fontStyles?.color,
+      itemBackground: model.itemBackground || 'white',
+      itemColor: model.itemColor || allStyles?.fontStyles?.color,
     };
 
     if (model.hidden) return null;
@@ -114,7 +114,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           // Only use custom styles for items, not all computed styles
-          const finalItemStyle = model?.style ? getStyle(model.style, data) : undefined;
+          const finalItemStyle = model.style ? getStyle(model.style, data) : undefined;
 
           return (
             <div className={`sidebar ${componentState.wrapperClassName}`}>

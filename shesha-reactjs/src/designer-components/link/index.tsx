@@ -16,6 +16,7 @@ const LinkComponent: LinkComponentDefinition = {
   type: 'link',
   isInput: false,
   name: 'link',
+  preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,
   calculateModel: (model, allData) => ({
     isDesignerMode: allData.form.formMode === 'designer',
@@ -58,17 +59,20 @@ const LinkComponent: LinkComponentDefinition = {
           }
 
           const containerHolder = (): ReactNode => (
-            <ParentProvider model={model}>
+            <ParentProvider
+              name={`Link-${model.id}`}
+              model={model}
+            >
               <ComponentsContainer
                 style={{ ...linkStyle, ...model.allStyles.fullStyle }}
                 containerId={id}
                 direction={direction}
-                justifyContent={model.direction === 'horizontal' ? model?.justifyContent : null}
-                alignItems={model.direction === 'horizontal' ? model?.alignItems : null}
-                justifyItems={model.direction === 'horizontal' ? model?.justifyItems : null}
+                justifyContent={model.direction === 'horizontal' ? model.justifyContent : null}
+                alignItems={model.direction === 'horizontal' ? model.alignItems : null}
+                justifyItems={model.direction === 'horizontal' ? model.justifyItems : null}
                 className={model.className}
                 itemsLimit={1}
-                dynamicComponents={model?.isDynamic ? model?.components : []}
+                dynamicComponents={model?.isDynamic ? model.components : []}
               />
             </ParentProvider>
           );

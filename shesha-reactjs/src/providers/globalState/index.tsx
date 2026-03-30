@@ -4,6 +4,7 @@ import {
   IGlobalState,
 } from './contexts';
 import { GlobalState } from './globalState';
+import { throwError } from '@/utils/errors';
 
 const GlobalStateProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, forceUpdate] = React.useState({});
@@ -24,15 +25,7 @@ const GlobalStateProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-function useGlobalState(): IGlobalState {
-  const context = useContext(GlobalStateContext);
-
-  if (context === undefined) {
-    throw new Error('useGlobalState must be used within a GlobalStateProvider');
-  }
-
-  return context.globalState;
-}
+const useGlobalState = (): IGlobalState => useContext(GlobalStateContext)?.globalState ?? throwError("useGlobalState must be used within a GlobalStateProvider");
 
 export default GlobalStateProvider;
 

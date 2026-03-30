@@ -2,6 +2,7 @@ import { ICacheProvider, IEntityMetadataFetcher } from "@/providers/metadataDisp
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { EntitiesManager } from "./manager";
 import { EntitiesModuleAccessor } from "./moduleAccessor";
+import { createProxy } from "@/utils/proxy";
 
 /**
  * Entities API. Provides settings to the entities groupped by modules.
@@ -12,8 +13,9 @@ export class EntitiesApi {
   readonly _manager: EntitiesManager;
 
   getModuleEntities(name: string): EntitiesModuleAccessor {
-    if (this._modules.has(name))
-      return this._modules.get(name);
+    const existing = this._modules.get(name);
+    if (existing)
+      return existing;
 
     const moduleApi = new EntitiesModuleAccessor(this._manager, name);
     this._modules.set(name, moduleApi);
@@ -24,25 +26,8 @@ export class EntitiesApi {
     this._manager = new EntitiesManager(httpClient, cacheProvider, metadataFetcher);
     this._modules = new Map<string, EntitiesModuleAccessor>();
 
-    return new Proxy(this, {
-      get(target, name) {
-        if (name in target) {
-          const result = target[name];
-          return typeof result === 'function' ? result.bind(target) : result;
-        }
-
-        return typeof (name) === 'string'
-          ? target.getModuleEntities(name)
-          : undefined;
-      },
-
-      set(target, name, value) {
-        if (name in target) {
-          target[name] = value;
-          return true;
-        }
-        return false;
-      },
+    return createProxy<EntitiesApi>(this, {
+      onGetProperty: (name: string) => this.getModuleEntities(name),
     });
   }
 }

@@ -1,24 +1,24 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Badge, Button, Tooltip } from 'antd';
 import { FilterFilled, FilterOutlined } from '@ant-design/icons';
-import { useDataTableStore } from '@/providers';
+import { FCUnwrapped, useDataTableStore } from '@/providers';
 import { useStyles } from './style';
 import * as Icons from '@ant-design/icons';
 import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { getGhostStyleOverrides } from '@/utils/style';
 import { IAdvancedFilterButtonComponentProps } from './types';
 
-export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (props) => {
+export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentProps> = (props) => {
   const {
-    isInProgress: { isFiltering },
-    setIsInProgressFlag,
+    isAdvancedFilterVisible,
+    toggleAdvancedFilter,
     tableFilter,
   } = useDataTableStore();
   const [icon, setIcon] = useState(null);
   const { styles } = useStyles(props.styles?.fontSize);
 
   const filterColumns = tableFilter?.map((filter) => filter.columnId);
-  const hasFilters = filterColumns?.length > 0 || isFiltering;
+  const hasFilters = filterColumns?.length > 0 || isAdvancedFilterVisible;
 
   // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
   const isGhostType = props.buttonType === 'ghost';
@@ -50,8 +50,6 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
     ...props.styles,
     ...ghostOverrides,
   };
-
-  const startFilteringColumns = (): void => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
 
   const splitByCapitalLetters = (str: string): string[] => {
     return str
@@ -86,7 +84,7 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
     <span>
       <Badge
         count={tableFilter?.length}
-        color={isFiltering || props.readOnly ? styles.disabledColor : styles.primaryColor}
+        color={isAdvancedFilterVisible || props.readOnly ? styles.disabledColor : styles.primaryColor}
         size="small"
         title={filterColumns?.join('  ')}
       >
@@ -95,13 +93,13 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
             type={actualButtonType}
             ghost={isGhostType}
             title={filterColumns?.join('  ')}
-            onClick={startFilteringColumns}
+            onClick={() => toggleAdvancedFilter(true)}
             className={styles.button}
             danger={props.danger}
-            disabled={props.readOnly || isFiltering}
+            disabled={props.readOnly || isAdvancedFilterVisible}
             icon={filterIcon}
             size={props.size}
-            style={isFiltering || props.readOnly
+            style={isAdvancedFilterVisible || props.readOnly
               ? { ...buttonStyle, opacity: 0.5, border: ['link', 'ghost'].includes(props.buttonType) ? 'none' : buttonStyle.border }
               : { ...buttonStyle }}
           >

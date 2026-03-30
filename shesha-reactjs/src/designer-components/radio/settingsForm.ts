@@ -120,7 +120,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: commonTabId,
+                  parentId: dataTabId,
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "values";',
                     _mode: 'code',
@@ -144,7 +144,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: commonTabId,
+                  parentId: dataTabId,
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "referenceList";',
                     _mode: 'code',
@@ -162,7 +162,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: commonTabId,
+                  parentId: dataTabId,
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
                     _mode: 'code',

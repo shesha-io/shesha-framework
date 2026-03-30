@@ -61,7 +61,6 @@ export const DataContextManagerActionsContext = createNamedContext<IDataContextM
 
 export interface IDataContextManagerProps {
   id: string;
-  name?: string;
 }
 
 export const useDataContextManagerUpdate = (): object => {
@@ -362,7 +361,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       getRoot,
       getParent,
     } satisfies IDataContextManagerActionsContext;
-  // TODO: Alex, please review this. Looks like it's better to convert to singletone class
+  // TODO (performance): Alex, please review this. Looks like it's better to convert to singletone class
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [true]);
 

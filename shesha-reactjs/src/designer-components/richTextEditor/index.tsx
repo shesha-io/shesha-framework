@@ -42,31 +42,31 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
 
     const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
       const typedConfig: PartialRichTextEditorConfig = {
-        toolbar: model?.toolbar,
-        preset: model?.preset,
-        textIcons: model?.textIcons,
-        toolbarButtonSize: model?.toolbarButtonSize,
-        theme: typeof model?.theme === 'string' ? model?.theme : 'default',
-        iframe: model?.iframe,
-        direction: model?.direction,
+        toolbar: model.toolbar,
+        preset: model.preset,
+        textIcons: model.textIcons,
+        toolbarButtonSize: model.toolbarButtonSize,
+        theme: typeof model.theme === 'string' ? model.theme : 'default',
+        iframe: model.iframe,
+        direction: model.direction,
         disablePlugins: [...(model?.disablePlugins || []), 'spellcheck'].join(','),
-        placeholder: model?.placeholder ?? '',
-        readonly: model?.readOnly,
+        placeholder: model.placeholder ?? '',
+        readonly: model.readOnly,
         style: getStyle(model?.style, formData),
         defaultActionOnPaste: 'insert_as_html',
-        enter: model?.enter || 'br',
+        enter: model.enter || 'br',
         editHTMLDocumentMode: false,
         ...(!model.autoHeight && { height, minHeight, maxHeight }),
         ...(!model.autoWidth && { width, minWidth, maxWidth }),
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
-        allowResizeX: model?.allowResizeX && !model?.autoWidth,
-        allowResizeY: model?.allowResizeY && !model?.autoHeight,
-        askBeforePasteHTML: model?.askBeforePasteHTML,
-        askBeforePasteFromWord: model?.askBeforePasteFromWord,
-        autofocus: formMode === 'designer' ? false : model?.autofocus,
-        showCharsCounter: model?.showCharsCounter,
-        showWordsCounter: model?.showWordsCounter,
+        allowResizeX: model.allowResizeX && !model?.autoWidth,
+        allowResizeY: model.allowResizeY && !model?.autoHeight,
+        askBeforePasteHTML: model.askBeforePasteHTML,
+        askBeforePasteFromWord: model.askBeforePasteFromWord,
+        autofocus: formMode === 'designer' ? false : model.autofocus,
+        showCharsCounter: model.showCharsCounter,
+        showWordsCounter: model.showWordsCounter,
       };
       return typedConfig;
     }, [model, formData, formMode]);
@@ -74,7 +74,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     const rerenderKey = `${model?.placeholder || ''}-${model?.placeholder || false}`;
 
     return (
-      <ConfigurableFormItem model={model} key={rerenderKey}>
+      <ConfigurableFormItem model={model} autoAlignLabel={false} key={rerenderKey}>
         {(value, onChange) => (
           <RichTextEditor
             config={config}

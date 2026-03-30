@@ -290,7 +290,7 @@ export const LayoutMenu: FC<IProps> = ({
           defaultOpenKeys={keys}
           items={menuItems}
           onOpenChange={onOpenChange}
-          selectedKeys={getSelectedKeys(router?.fullPath, items)}
+          selectedKeys={getSelectedKeys(router?.fullPath ?? "", items)}
           overflowedIndicator={<OverflowedIndicator className={styles.shaHamburgerItem} />}
           overflowedIndicatorPopupClassName={menuId ? `horizontal-menu-${menuId}-dropdown` : undefined}
           disabledOverflow={isScrolling}

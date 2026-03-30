@@ -1,8 +1,10 @@
 import { Row } from 'react-table';
-import { createAction } from 'redux-actions';
+import { createAction } from '@reduxjs/toolkit';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
-import { DragState, IDataTableUserConfig, ISelectionProps } from './contexts';
+import { IDataTableUserConfig } from './contexts';
 import {
+  DragState,
+  ISelectionProps,
   DataFetchingMode,
   DataTableColumnDto,
   IColumnSorting,
@@ -16,6 +18,8 @@ import {
   ISortingItem,
   GroupingItem,
   FilterExpression,
+  ITableRowData,
+  ColumnFilter,
 } from './interfaces';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IModelValidation } from '@/utils/errors';
@@ -29,11 +33,6 @@ export enum DataTableActionEnums {
 
   SetRowData = 'SET_ROW_DATA',
 
-  ExportToExcelRequest = 'EXPORT_TO_EXCEL_REQUEST',
-  ExportToExcelSuccess = 'EXPORT_TO_EXCEL_SUCCESS',
-  ExportToExcelError = 'EXPORT_TO_EXCEL_ERROR',
-  ExportToExcelWarning = 'EXPORT_TO_EXCEL_WARNING',
-
   ChangePageSize = 'CHANGE_PAGE_SIZE',
   SetCurrentPage = 'SET_CURRENT_PAGE',
 
@@ -44,9 +43,6 @@ export enum DataTableActionEnums {
   ChangeFilter = 'CHANGE_FILTER',
   ApplyFilter = 'APPLY_FILTER',
   ChangeQuickSearch = 'CHANGE_QUICK_SEARCH',
-  ToggleSaveFilterModal = 'TOGGLE_SAVE_FILTER_MODAL',
-  ChangeUserConfigId = 'CHANGE_USER_CONFIG_ID',
-  ChangeSelectedRow = 'CHANGE_SELECTED_ROW',
   ChangeActionedRow = 'CHANGE_ACTIONED_ROW',
   ChangeSelectedStoredFilterIds = 'CHANGE_SELECTED_STORED_FILTER_IDS',
   SetPredefinedFilters = 'REGISTER_STORED_FILTER',
@@ -59,9 +55,6 @@ export enum DataTableActionEnums {
   SetModelType = 'SET_MODEL_TYPE',
   SetDataFetchingMode = 'SET_DATA_FETCHING_MODE',
 
-  ChangeDisplayColumn = 'CHANGE_DISPLAY_COLUMN',
-  ChangePersistedFiltersToggle = 'CHANGE_PERSISTED_FILTERS_TOGGLE',
-
   // selections
   SetSelectedRow = 'SET_SELECTED_ROW',
   SetDraggingState = 'SET_DRAGGING_STATE',
@@ -72,211 +65,117 @@ export enum DataTableActionEnums {
   SetSortingSettings = 'SET_SORTING_SETTINGS',
   SetStandardSorting = 'SET_STANDARD_SORTING',
   SetContextValidation = 'SET_CONTEXT_VALIDATION',
+  ToggleAdvancedFilter = 'TOGGLE_ADVANCED_FILTER',
+  ToggleColumnsSelector = 'TOGGLE_COLUMNS_SELECTOR',
 }
 
-export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
-  DataTableActionEnums.SetSelectedRow,
-  (p) => p,
-);
+export const setSelectedRowAction = createAction<ISelectionProps | undefined>(DataTableActionEnums.SetSelectedRow);
 
-export const setDraggingRowAction = createAction<DragState, DragState>(
-  DataTableActionEnums.SetDraggingState,
-  (p) => p,
-);
+export const setDraggingRowAction = createAction<DragState>(DataTableActionEnums.SetDraggingState);
 
-export const setMultiSelectedRowAction = createAction<Array<Row> | Row, Array<Row> | Row>(
-  DataTableActionEnums.SetMultiSelectedRow,
-  (p) => p,
-);
+export const setMultiSelectedRowAction = createAction<Array<Row<ITableRowData>> | Row<ITableRowData>>(DataTableActionEnums.SetMultiSelectedRow);
 
-export const setModelTypeAction = createAction<string | IEntityTypeIdentifier, string | IEntityTypeIdentifier>(
-  DataTableActionEnums.SetModelType,
-  (p) => p,
-);
+export const setModelTypeAction = createAction<string | IEntityTypeIdentifier | undefined>(DataTableActionEnums.SetModelType);
 
-export const fetchTableDataAction = createAction<IGetListDataPayload, IGetListDataPayload>(
-  DataTableActionEnums.FetchTableData,
-  (p) => p,
-);
+export const fetchTableDataAction = createAction<IGetListDataPayload>(DataTableActionEnums.FetchTableData);
 
-export const fetchTableDataSuccessAction = createAction<ITableDataInternalResponse, ITableDataInternalResponse>(
-  DataTableActionEnums.FetchTableDataSuccess,
-  (p) => p,
-);
+export const fetchTableDataSuccessAction = createAction<ITableDataInternalResponse>(DataTableActionEnums.FetchTableDataSuccess);
 
 export interface IFetchTableDataErrorPayload {
-  error?: any;
+  error: unknown;
 }
 
-export const fetchTableDataErrorAction = createAction<IFetchTableDataErrorPayload, IFetchTableDataErrorPayload>(
-  DataTableActionEnums.FetchTableDataError,
-  (p) => p,
-);
+export const fetchTableDataErrorAction = createAction<IFetchTableDataErrorPayload>(DataTableActionEnums.FetchTableDataError);
 
 export interface ISetRowDataPayload {
   rowIndex: number;
-  rowData: any;
+  rowData: object;
 }
-export const setRowDataAction = createAction<ISetRowDataPayload, ISetRowDataPayload>(
-  DataTableActionEnums.SetRowData,
-  (p) => p,
-);
+export const setRowDataAction = createAction<ISetRowDataPayload>(DataTableActionEnums.SetRowData);
 
 export interface IFetchColumnsSuccessSuccessPayload {
   columns: DataTableColumnDto[];
   configurableColumns: IConfigurableColumnsProps[];
-  userConfig: IDataTableUserConfig;
+  userConfig: IDataTableUserConfig | undefined;
 }
-export const fetchColumnsSuccessSuccessAction = createAction<
-  IFetchColumnsSuccessSuccessPayload,
-  IFetchColumnsSuccessSuccessPayload
->(DataTableActionEnums.FetchColumnsSuccess, (p) => p);
+export const fetchColumnsSuccessSuccessAction = createAction<IFetchColumnsSuccessSuccessPayload>(DataTableActionEnums.FetchColumnsSuccess);
 
-export const changePageSizeAction = createAction<number, number>(DataTableActionEnums.ChangePageSize, (p) => p);
+export const changePageSizeAction = createAction<number>(DataTableActionEnums.ChangePageSize);
 
-export const changeQuickSearchAction = createAction<string, string>(DataTableActionEnums.ChangeQuickSearch, (p) => p);
+export const changeQuickSearchAction = createAction<string, string>(DataTableActionEnums.ChangeQuickSearch);
 
-export const toggleSaveFilterModalAction = createAction<boolean, boolean>(
-  DataTableActionEnums.ToggleSaveFilterModal,
-  (p) => p,
-);
+export const setCurrentPageAction = createAction<number>(DataTableActionEnums.SetCurrentPage);
 
-export const setCurrentPageAction = createAction<number, number>(DataTableActionEnums.SetCurrentPage, (p) => p);
+export const toggleColumnVisibilityAction = createAction<string>(DataTableActionEnums.ToggleColumnVisibility);
 
-export const toggleColumnVisibilityAction = createAction<string, string>(
-  DataTableActionEnums.ToggleColumnVisibility,
-  (p) => p,
-);
+export const toggleColumnFilterAction = createAction<string[]>(DataTableActionEnums.ToggleColumnFilter);
 
-export const toggleColumnFilterAction = createAction<string[], string[]>(
-  DataTableActionEnums.ToggleColumnFilter,
-  (p) => p,
-);
-
-export const removeColumFilterAction = createAction<string, any>(DataTableActionEnums.RemoveColumnFilter, (p) => p);
+export const removeColumFilterAction = createAction<string>(DataTableActionEnums.RemoveColumnFilter);
 
 export interface IChangeFilterOptionPayload {
   filterColumnId: string;
   filterOptionValue: IndexColumnFilterOption;
 }
-export const changeFilterOptionAction = createAction<IChangeFilterOptionPayload, IChangeFilterOptionPayload>(
-  DataTableActionEnums.ChangeFilterOption,
-  (p) => p,
-);
+export const changeFilterOptionAction = createAction<IChangeFilterOptionPayload>(DataTableActionEnums.ChangeFilterOption);
 
 export interface IChangeFilterAction {
   filterColumnId: string;
-  filterValue: any;
+  filterValue: ColumnFilter;
 }
 
-export const changeFilterAction = createAction<IChangeFilterAction, IChangeFilterAction>(
-  DataTableActionEnums.ChangeFilter,
-  (p) => p,
-);
+export const changeFilterAction = createAction<IChangeFilterAction>(DataTableActionEnums.ChangeFilter);
 
-export const applyFilterAction = createAction<ITableFilter[], ITableFilter[]>(
-  DataTableActionEnums.ApplyFilter,
-  (p) => p,
-);
+export const applyFilterAction = createAction<ITableFilter[] | undefined>(DataTableActionEnums.ApplyFilter);
 
-export const changeUserConfigIdAction = createAction<any, any>(DataTableActionEnums.ChangeUserConfigId, (p) => p);
+export const changeActionedRowAction = createAction<unknown>(DataTableActionEnums.ChangeActionedRow);
 
-export const changeSelectedRowAction = createAction<any, any>(DataTableActionEnums.ChangeSelectedRow, (p) => p);
-
-export const changeActionedRowAction = createAction<any, any>(DataTableActionEnums.ChangeActionedRow, (p) => p);
-
-export const changeSelectedStoredFilterIdsAction = createAction<string[], string[]>(
-  DataTableActionEnums.ChangeSelectedStoredFilterIds,
-  (p) => p,
-);
+export const changeSelectedStoredFilterIdsAction = createAction<string[]>(DataTableActionEnums.ChangeSelectedStoredFilterIds);
 
 export interface ISetPredefinedFiltersPayload {
-  predefinedFilters: IStoredFilter[];
-  userConfig: IDataTableUserConfig;
+  predefinedFilters: IStoredFilter[] | undefined;
+  userConfig: IDataTableUserConfig | undefined;
 }
-export const setPredefinedFiltersAction = createAction<ISetPredefinedFiltersPayload, ISetPredefinedFiltersPayload>(
-  DataTableActionEnums.SetPredefinedFilters,
-  (p) => p,
-);
+export const setPredefinedFiltersAction = createAction<ISetPredefinedFiltersPayload>(DataTableActionEnums.SetPredefinedFilters);
 
 export interface ISetPermanentFilterActionPayload {
-  filter: FilterExpression;
+  filter: FilterExpression | undefined;
 }
-export const setPermanentFilterAction = createAction<ISetPermanentFilterActionPayload, ISetPermanentFilterActionPayload>(
-  DataTableActionEnums.SetPermanentFilter,
-  (p) => p,
-);
+export const setPermanentFilterAction = createAction<ISetPermanentFilterActionPayload>(DataTableActionEnums.SetPermanentFilter);
 
-export const changeSelectedIdsAction = createAction<string[], string[]>(
-  DataTableActionEnums.ChangeSelectedIds,
-  (p) => p,
-);
-
-export const exportToExcelRequestAction = createAction(DataTableActionEnums.ExportToExcelRequest);
-export const exportToExcelSuccessAction = createAction(DataTableActionEnums.ExportToExcelSuccess);
-export const exportToExcelErrorAction = createAction<string, string>(DataTableActionEnums.ExportToExcelError, (p) => p);
-export const exportToExcelWarningAction = createAction<string, string>(
-  DataTableActionEnums.ExportToExcelWarning,
-  (p) => p,
-);
+export const changeSelectedIdsAction = createAction<string[]>(DataTableActionEnums.ChangeSelectedIds);
 
 export interface IRegisterConfigurableColumnsPayload {
   /** owner of the columns list, not used now and may be removed later */
   ownerId: string;
   columns: IConfigurableColumnsProps[];
 }
-export const registerConfigurableColumnsAction = createAction<
-  IRegisterConfigurableColumnsPayload,
-  IRegisterConfigurableColumnsPayload
->(DataTableActionEnums.RegisterConfigurableColumns, (p) => p);
+export const registerConfigurableColumnsAction = createAction<IRegisterConfigurableColumnsPayload>(DataTableActionEnums.RegisterConfigurableColumns);
 
-export const onSortAction = createAction<IColumnSorting[], IColumnSorting[]>(DataTableActionEnums.OnSort, (p) => p);
+export const onSortAction = createAction<IColumnSorting[]>(DataTableActionEnums.OnSort);
 
-export const onGroupAction = createAction<ISortingItem[], ISortingItem[]>(DataTableActionEnums.OnGroup, (p) => p);
+export const onGroupAction = createAction<ISortingItem[]>(DataTableActionEnums.OnGroup);
 
 /* NEW_ACTION_GOES_HERE */
 
-export const changeDisplayColumnAction = createAction<string, string>(
-  DataTableActionEnums.ChangeDisplayColumn,
-  (p) => p,
-);
-
-export const changePersistedFiltersToggleAction = createAction<boolean, boolean>(
-  DataTableActionEnums.ChangePersistedFiltersToggle,
-  (p) => p,
-);
-
-export const setDataFetchingModeAction = createAction<DataFetchingMode, DataFetchingMode>(
-  DataTableActionEnums.SetDataFetchingMode,
-  (p) => p,
-);
+export const setDataFetchingModeAction = createAction<DataFetchingMode>(DataTableActionEnums.SetDataFetchingMode);
 
 export interface IFetchGroupingColumnsSuccessPayload {
   grouping: GroupingItem[];
   columns: DataTableColumnDto[];
 }
-export const fetchGroupingColumnsSuccessAction = createAction<
-  IFetchGroupingColumnsSuccessPayload,
-  IFetchGroupingColumnsSuccessPayload
->(DataTableActionEnums.FetchGroupingColumnsSuccess, (p) => p);
+export const fetchGroupingColumnsSuccessAction = createAction<IFetchGroupingColumnsSuccessPayload>(DataTableActionEnums.FetchGroupingColumnsSuccess);
 
 export interface ISortingSettingsActionPayload {
-  sortMode?: SortMode;
-  strictSortBy?: string;
-  strictSortOrder?: ColumnSorting;
+  sortMode?: SortMode | undefined;
+  strictSortBy?: string | undefined;
+  strictSortOrder?: ColumnSorting | undefined;
   allowReordering: boolean;
 }
-export const setSortingSettingsAction = createAction<
-  ISortingSettingsActionPayload,
-  ISortingSettingsActionPayload
->(DataTableActionEnums.SetSortingSettings, (p) => p);
+export const setSortingSettingsAction = createAction<ISortingSettingsActionPayload>(DataTableActionEnums.SetSortingSettings);
 
-export const setStandardSortingAction = createAction<
-  IColumnSorting[],
-  IColumnSorting[]
->(DataTableActionEnums.SetStandardSorting, (p) => p);
+export const setStandardSortingAction = createAction<IColumnSorting[]>(DataTableActionEnums.SetStandardSorting);
 
-export const setContextValidationAction = createAction<
-  IModelValidation | undefined,
-  IModelValidation | undefined
->(DataTableActionEnums.SetContextValidation, (p) => p);
+export const setContextValidationAction = createAction<IModelValidation | undefined>(DataTableActionEnums.SetContextValidation);
+
+export const toggleAdvancedFilterAction = createAction<boolean>(DataTableActionEnums.ToggleAdvancedFilter);
+export const toggleColumnsSelectorAction = createAction<boolean>(DataTableActionEnums.ToggleColumnsSelector);

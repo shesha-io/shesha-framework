@@ -1,5 +1,4 @@
 import React, { MutableRefObject, useState, FC } from 'react';
-import { appendFormData } from '@/utils/form';
 import {
   DeleteOutlined,
   FileZipTwoTone,
@@ -115,7 +114,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
 
     const formData = new FormData();
     formData.append('file', uploadFile.originFileObj);
-    appendFormData(formData, 'itemsToImport', JSON.stringify(checkedIds));
+    formData.append('itemsToImport', JSON.stringify(checkedIds));
 
     return httpClient.post(`/api/services/app/ConfigurationStudio/ImportPackage`, formData)
       .then(() => {

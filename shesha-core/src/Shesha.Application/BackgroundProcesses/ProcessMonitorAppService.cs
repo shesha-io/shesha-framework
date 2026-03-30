@@ -3,6 +3,7 @@ using Shesha.BackgroundProcesses.Dtos;
 using Shesha.BackgroundProcesses.Exceptions;
 using Shesha.BackgroundProcesses.Models;
 using Shesha.Extensions;
+using Shesha.Mvc;
 using Shesha.Utilities;
 using System;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ namespace Shesha.BackgroundProcesses
 #pragma warning disable IDISP001 // Dispose created
             var fileContentStream = await logInfo.StreamGetter();
 #pragma warning restore IDISP001 // Dispose created
-            var result = new FileStreamResult(fileContentStream, logInfo.FileName.GetContentType())
+            var result = new ShaFileStreamResult(fileContentStream, logInfo.FileName.GetContentType())
             {
                 FileDownloadName = logInfo.FileName,
             };

@@ -1,11 +1,11 @@
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import { Modal } from 'antd';
 import React, { FC, useState } from 'react';
 import { FilterItemSettingsEditor } from './filterItemSettingsEditor';
+import { IStoredFilter } from '@/interfaces';
 
 export interface IFilterItemSettingsModalProps {
-  value?: ITableViewProps;
-  onSave: (newValue: ITableViewProps) => void;
+  value?: IStoredFilter;
+  onSave: (newValue: IStoredFilter) => void;
   onCancel: () => void;
   readOnly: boolean;
 }

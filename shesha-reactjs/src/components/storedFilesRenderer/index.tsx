@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import { StoredFilesRendererBase } from '@/components/storedFilesRendererBase';
-import { useStoredFilesStore } from '@/providers/storedFiles';
+import { useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers/storedFiles';
 import { ButtonProps } from 'antd';
-import { IStoredFile } from '@/index';
 
 export interface IStoredFilesRendererProps {
   ownerId?: string;
@@ -13,7 +12,6 @@ export interface IStoredFilesRendererProps {
   accept?: string[];
   layout?: 'vertical' | 'horizontal' | 'grid';
   listType?: 'text' | 'thumbnail';
-  onFileListChanged?: (list: IStoredFile[]) => void;
 }
 
 export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
@@ -27,26 +25,28 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
   listType,
 }) => {
   const {
-    fileList,
     deleteFile,
-    uploadFile: uploadFileRequest,
+    uploadFile,
+    replaceFile,
     downloadZipFile,
     downloadFile,
-    isInProgress,
-    succeeded,
-  } = useStoredFilesStore();
+    // isInProgress,
+    // succeeded,
+  } = useAttachmentsEditorActions();
+  const fileList = useAttachmentsEditorState();
 
   return (
     <StoredFilesRendererBase
       ownerId={ownerId}
       ownerType={ownerType}
       fileList={fileList}
-      uploadFile={uploadFileRequest}
+      uploadFile={uploadFile}
+      replaceFile={replaceFile}
       deleteFile={deleteFile}
       downloadZipFile={downloadZipFile}
       downloadFile={downloadFile}
-      isDownloadingFileListZip={isInProgress?.downloadZip}
-      isDownloadZipSucceeded={succeeded?.downloadZip}
+      // isDownloadingFileListZip={isInProgress?.downloadZip}
+      // isDownloadZipSucceeded={succeeded?.downloadZip}
       isDragger={isDragger}
       uploadBtnProps={uploadBtnProps}
       disabled={disabled}
