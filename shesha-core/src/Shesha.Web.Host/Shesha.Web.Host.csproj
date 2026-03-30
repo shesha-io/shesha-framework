@@ -47,7 +47,6 @@
     <PackageReference Include="Hangfire.Core" />
     <PackageReference Include="Hangfire.PostgreSql" />
     <PackageReference Include="Hangfire.SqlServer" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
@@ -63,7 +62,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.201">
+    <PackageReference Update="Microsoft.SourceLink.GitHub">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
