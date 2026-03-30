@@ -2,7 +2,7 @@ import { Modal as AntModal, App } from 'antd';
 import { ReactNode } from 'react';
 import { nanoid } from '@/utils/uuid';
 import { FormIdentifier, FormMode } from '../form/models';
-import { IModalProps } from './models';
+import { ICommonModalProps, IModalProps, IModalWithContentProps } from './models';
 import { ModalFuncProps } from 'antd/lib/modal';
 
 /**
@@ -71,14 +71,23 @@ export interface AlertModalArgs {
 export interface ShowContentModalArgs {
   /** Modal title */
   title?: string;
-  /** Modal content (HTML string or React elements) */
-  content: ReactNode;
+  /** 
+   * Modal content - can be:
+   * - String (Text)
+   * - HTML string (will be rendered as HTML)
+   */
+  content: ReactNode | string;
   /** Modal width */
   width?: ModalWidth;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
-  /** Custom footer content */
-  footer?: ReactNode;
+  /** 
+   * Custom footer content - can be:
+   * - React elements (JSX)
+   * - A function that returns React elements
+   * - HTML string
+   */
+  footer?: ReactNode | string | undefined;
 }
 
 /**
@@ -232,7 +241,7 @@ export const createFallbackModalApi = (
  * @param modalApi - Ant Design modal API from App.useApp()
  */
 export const createModalApi = (
-  createModal: (props: IModalProps) => void,
+  createModal: (props: ICommonModalProps) => void,
   removeModal: (id: string) => void,
   modalApi?: ReturnType<typeof App.useApp>['modal'],
 ): IModalApi => {
@@ -384,12 +393,13 @@ export const createModalApi = (
 
     showContent: <T = unknown>(args: ShowContentModalArgs): Promise<T> => {
       const modalId = nanoid();
-      const { title, width, showCloseIcon = true } = args;
+      const { title, content, width, showCloseIcon = true, footer } = args;
 
       return new Promise<T>((resolve, reject) => {
-        const modalProps: IModalProps = {
+        const modalProps: IModalWithContentProps = {
           id: modalId,
-          formId: '', // Empty formId since we're showing custom content
+          content,
+          footer,
           title,
           width: getWidthFromPreset(width),
           isVisible: true,

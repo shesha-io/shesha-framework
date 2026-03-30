@@ -84,8 +84,8 @@ export interface IModalWithConfigurableFormProps<Values extends object = object>
 }
 
 export interface IModalWithContentProps<Values extends object = object> extends IModalBaseProps {
-  footer?: ReactNode | undefined;
-  content: ReactNode;
+  footer?: ReactNode | string | undefined;
+  content: ReactNode | string;
   onClose?: ((positive?: boolean, result?: Values | undefined) => void) | undefined;
 }
 /**

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { FC, useState } from 'react';
+import React, { FC, ReactNode, useState } from 'react';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { Form, Modal } from 'antd';
@@ -16,6 +16,20 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   onOk?: () => void;
   showCloseIcon?: boolean;
 }
+
+/**
+ * Helper to render content that can be:
+ * - string (Text)
+ * - String (HTML)
+ */
+const renderContent = (content: ReactNode | string): ReactNode => {
+
+  if (typeof content === 'string') {
+    return <div dangerouslySetInnerHTML={{ __html: content }} />;
+  }
+  return content;
+};
+
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
   const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
 
@@ -39,7 +53,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       open={isVisible}
       onOk={onOk}
       onCancel={hideForm}
-      footer={footer}
+      footer={renderContent(footer)}
       destroyOnHidden
       width={isSmall ? '90%' : width ?? '80vw'}
       centered
@@ -48,7 +62,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       closable={showCloseIcon ?? true} // Add this line - default to true for backward compatibility
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
     >
-      {content}
+      {renderContent(content)}
     </Modal>
   );
 };
