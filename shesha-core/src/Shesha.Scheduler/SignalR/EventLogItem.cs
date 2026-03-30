@@ -36,11 +36,11 @@ namespace Shesha.Scheduler.SignalR
         {
             Message = loggingEvent.ExceptionObject != null
                 ? loggingEvent.ExceptionObject.Message
-                : loggingEvent.RenderedMessage;
+                : loggingEvent.RenderedMessage ?? "";
             
             TimeStamp = loggingEvent.TimeStamp;
 
-            Level = loggingEvent.Level.Name;
+            Level = (loggingEvent.Level ?? log4net.Core.Level.Info).Name;
         }
     }
 }

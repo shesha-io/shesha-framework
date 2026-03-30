@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Timing;
 using Microsoft.AspNetCore.Http;
-using NetTopologySuite.Index.HPRtree;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
@@ -51,7 +50,7 @@ namespace Shesha.ConfigurationItems.Distribution
                 {
                     var entry = zip.CreateEntry(item.RelativePath);
 
-                    using (var entryStream = entry.Open())
+                    using (var entryStream = await entry.OpenAsync())
                     {
                         await item.Exporter.WriteItemToJsonAsync(item.ItemData, entryStream);
                     }
@@ -428,7 +427,7 @@ namespace Shesha.ConfigurationItems.Distribution
                     {
                         using (var zip = new ZipArchive(packageStream, ZipArchiveMode.Read))
                         {
-                            zip.ExtractToDirectory(tempFolder.Path, overwriteFiles: true);
+                            await zip.ExtractToDirectoryAsync(tempFolder.Path, overwriteFiles: true);
                         }
                     }
                 }
@@ -443,7 +442,7 @@ namespace Shesha.ConfigurationItems.Distribution
                             var zipFilename = Path.GetRelativePath(tempFolder.Path, fileToZip);
                             var entry = zip.CreateEntry(zipFilename);
 
-                            using (var dstStream = entry.Open())
+                            using (var dstStream = await entry.OpenAsync())
                             {
                                 await fileData.CopyToAsync(dstStream);
                             }

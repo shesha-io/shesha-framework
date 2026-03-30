@@ -292,9 +292,9 @@ namespace Shesha.Tests.Users
                                     ? "no-auth"
                                     : "";
                             // Handle the redirect case in your test (e.g., simulate navigation or log it)
-                            if (!response.RedirectUrl.IsNullOrEmpty())
+                            if (!string.IsNullOrEmpty(response.RedirectUrl))
                                 Console.WriteLine($"Redirect to: {url}/{response.RedirectUrl}");
-                            if (!response.RedirectModule.IsNullOrEmpty())
+                            if (!string.IsNullOrEmpty(response.RedirectModule))
                                 Console.WriteLine($"Redirect to: {url}/{response.RedirectModule}/{response.RedirectForm}");
                             return false; // Return false to indicate that redirection occurred and login was not completed
                         }

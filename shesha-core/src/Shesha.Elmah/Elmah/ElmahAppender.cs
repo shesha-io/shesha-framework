@@ -13,10 +13,10 @@ namespace Shesha.Elmah
         {
             var exception = loggingEvent.ExceptionObject;
 
-            if (exception == null || loggingEvent.ExceptionObject.IsExceptionLogged())
+            if (exception == null || exception.IsExceptionLogged())
                 return;
 
-            loggingEvent.ExceptionObject.MarkExceptionAsLogged();
+            exception.MarkExceptionAsLogged();
             ElmahExtensions.RaiseError(exception);            
         }
 	}
