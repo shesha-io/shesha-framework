@@ -3,7 +3,7 @@ import { DEFAULT_ACCESS_TOKEN_NAME } from '../sheshaApplication/contexts';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
 import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
-import { AuthenticateModel, AuthenticateResultModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
 import { IRouter } from '../shaRouting';

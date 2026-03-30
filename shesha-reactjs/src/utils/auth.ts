@@ -10,25 +10,8 @@ import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/context
  */
 export const AUTHORIZATION_HEADER_NAME = 'Authorization';
 
-/**
- * Generates a cryptographically secure nonce using crypto.getRandomValues
- * Returns a UUID-like string (e.g., "a1b2c3d4-e5f6-7890-abcd-ef1234567890")
- */
-const generateSecureNonce = (): string => {
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-
-  // Convert to UUID format (8-4-4-4-12)
-  const hex = Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
-};
-
 export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAccessToken, tokenName: string = DEFAULT_ACCESS_TOKEN_NAME): IAccessToken => {
-  // Add client-side nonce for absolute uniqueness guarantee
-  // Use crypto.randomUUID() if available (modern browsers), otherwise generate secure UUID-like string
-  const nonce = typeof crypto !== 'undefined' && crypto.randomUUID
-    ? crypto.randomUUID()
-    : generateSecureNonce();
+  const nonce = crypto.randomUUID();
 
   // Create stored token with nonce for storage uniqueness
   const storedToken: IStoredToken = {
