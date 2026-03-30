@@ -416,9 +416,6 @@ const makeStrictConfig = (path) => {
 
 export default [
     {
-        ignores: [".next/**", "dist/**"],
-    },
-    {
         ...baseTsConfig,
         files: [
             "src/**/*.ts",
