@@ -147,6 +147,10 @@ namespace Shesha.ConfigurationItems
                     if (codeModule.IsNewModule || !_startupSession.AssemblyStaysUnchanged(codeModule.ModuleType.Assembly))
                         hasModulesChanged = true;
 
+                    // Link the module's assembly to this startup for per-module version history
+                    var assemblyFileName = System.IO.Path.GetFileName(codeModule.ModuleType.Assembly.Location);
+                    await _startupSession.LinkAssemblyToModuleAsync(assemblyFileName, dbModule.Id);
+
                     // initialize main module
                     var mainModuleInitialized = await codeModule.Instance.InitializeConfigurationAsync();
 

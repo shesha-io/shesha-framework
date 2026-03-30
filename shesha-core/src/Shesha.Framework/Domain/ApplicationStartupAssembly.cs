@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.ConfigurationItems;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,5 +23,10 @@ namespace Shesha.Domain
         [StringLength(100)]
         public virtual string ProductVersion { get; set; }
         public virtual ApplicationStartup ApplicationStartup { get; set; }
+
+        /// <summary>
+        /// The Shesha module that owns this assembly. Used to show per-module version history per deployment.
+        /// </summary>
+        public virtual Module Module { get; set; }
     }
 }
