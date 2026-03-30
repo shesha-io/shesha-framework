@@ -58,12 +58,10 @@ namespace Shesha.Startup
         bool AllAssembliesStayUnchanged { get; }
 
         /// <summary>
-        /// Links a recorded startup assembly to its Shesha module.
-        /// Called by the bootstrapper after each module is resolved so the assembly row
-        /// can be updated with the module FK for deployment audit purposes.
+        /// Marks the current startup as a release — called by the bootstrapper when it detects
+        /// that at least one module assembly changed version/md5 vs the previous startup.
         /// </summary>
-        /// <param name="assemblyFileName">File name of the assembly (e.g. "Shesha.Framework.dll")</param>
-        /// <param name="moduleId">Id of the corresponding Module record</param>
-        Task LinkAssemblyToModuleAsync(string assemblyFileName, Guid moduleId);
+        /// <param name="mainModuleVersion">Version string of the root (startup) module assembly.</param>
+        Task MarkAsReleaseAsync(string mainModuleVersion);
     }
 }

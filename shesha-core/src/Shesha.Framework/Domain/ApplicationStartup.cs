@@ -27,5 +27,18 @@ namespace Shesha.Domain
 
         public virtual bool BootstrappersDisabled { get; set; }
         public virtual bool MigrationsDisabled { get; set; }
+
+        /// <summary>
+        /// True when at least one module assembly changed version/md5 compared to the previous successful startup.
+        /// Used to filter the startup list to show only deployments that included module changes.
+        /// </summary>
+        public virtual bool HasModulesChanged { get; set; }
+
+        /// <summary>
+        /// Version of the root (startup) module assembly at the time of this startup.
+        /// Represents the application release version.
+        /// </summary>
+        [StringLength(100)]
+        public virtual string MainModuleVersion { get; set; }
     }
 }

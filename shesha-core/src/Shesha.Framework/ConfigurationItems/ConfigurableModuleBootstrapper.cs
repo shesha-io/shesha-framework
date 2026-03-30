@@ -121,6 +121,8 @@ namespace Shesha.ConfigurationItems
                 })
                 .ToList();
 
+            var hasModulesChanged = false;
+
             foreach (var codeModule in codeModules)
             {
                 using (var unitOfWork = _unitOfWorkManager.Begin())
@@ -141,9 +143,9 @@ namespace Shesha.ConfigurationItems
                         await _moduleRepo.UpdateAsync(dbModule);
                     }
 
-                    // Link the module's assembly to this startup so we can audit when each module version was deployed
-                    var assemblyFileName = System.IO.Path.GetFileName(codeModule.ModuleType.Assembly.Location);
-                    await _startupSession.LinkAssemblyToModuleAsync(assemblyFileName, dbModule.Id);
+                    // Detect if this module's assembly changed vs the previous startup
+                    if (codeModule.IsNewModule || !_startupSession.AssemblyStaysUnchanged(codeModule.ModuleType.Assembly))
+                        hasModulesChanged = true;
 
                     // initialize main module
                     var mainModuleInitialized = await codeModule.Instance.InitializeConfigurationAsync();
@@ -169,6 +171,13 @@ namespace Shesha.ConfigurationItems
 
                     await unitOfWork.CompleteAsync();
                 }
+            }
+
+            // If any module assembly is new or changed, mark this startup as a release and record the main module version
+            if (hasModulesChanged)
+            {
+                var mainModule = codeModules.FirstOrDefault(m => m.ModuleInfo.IsRootModule);
+                await _startupSession.MarkAsReleaseAsync(mainModule?.Version);
             }
         }
         private class ModuleItem
