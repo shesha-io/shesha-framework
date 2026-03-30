@@ -16,8 +16,7 @@ namespace Shesha.Migrations
                     SELECT a.id AS assembly_id, m.Id AS module_id,
                            ROW_NUMBER() OVER (PARTITION BY a.id ORDER BY LEN(m.Name) DESC) AS rn
                     FROM frwk_application_startup_assemblies a
-                    JOIN Frwk_Modules m ON a.file_name = m.Name + '.dll'
-                                       OR a.file_name LIKE m.Name + '.%'
+                    JOIN Frwk_Modules m ON LEFT(a.file_name, LEN(m.Name) + 1) = m.Name + '.'
                     WHERE a.module_id IS NULL
                 )
                 UPDATE a
@@ -32,8 +31,7 @@ namespace Shesha.Migrations
                 FROM (
                     SELECT DISTINCT ON (a2.id) a2.id AS assembly_id, m.""Id"" AS module_id
                     FROM frwk_application_startup_assemblies a2
-                    JOIN ""Frwk_Modules"" m ON a2.file_name = m.""Name"" || '.dll'
-                                           OR a2.file_name LIKE m.""Name"" || '.%'
+                    JOIN ""Frwk_Modules"" m ON substring(a2.file_name, 1, LENGTH(m.""Name"") + 1) = m.""Name"" || '.'
                     WHERE a2.module_id IS NULL
                     ORDER BY a2.id, LENGTH(m.""Name"") DESC
                 ) sub
