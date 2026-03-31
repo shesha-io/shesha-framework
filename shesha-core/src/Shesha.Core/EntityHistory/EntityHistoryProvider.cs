@@ -1,17 +1,13 @@
-﻿using Abp.Configuration;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityHistory;
 using Abp.Events.Bus.Entities;
-using NetTopologySuite.Index.HPRtree;
-using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
 using Shesha.Metadata;
-using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -418,7 +414,7 @@ namespace Shesha.EntityHistory
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
                 userIds.AddRange(childItems.Select(x => x.InnerObject?.DeleterUserId));
                 userIds = userIds.Distinct().Where(x => x != null).ToList();
-                var persons = await _personRepository.GetAll().Where(x => x.User != null && userIds.Contains(x.User.Id)).ToListAsync();
+                var persons = await _personRepository.GetAllListAsync(x => x.User != null && userIds.Contains(x.User.Id));
 
                 foreach (var childItem in childItems)
                 {
@@ -593,7 +589,7 @@ namespace Shesha.EntityHistory
                 var userIds = childItems.Select(x => x.RelatedObject.CreatorUserId).ToList();
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
                 userIds = userIds.Distinct().Where(x => x != null).ToList();
-                var persons = await _personRepository.GetAll().Where(x => x.User != null && userIds.Contains(x.User.Id)).ToListAsync();
+                var persons = await _personRepository.GetAllListAsync(x => x.User != null && userIds.Contains(x.User.Id));
 
                 foreach (var childItem in childItems)
                 {

@@ -7,9 +7,7 @@ using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Permissions;
-using Shesha.Services;
 using Shesha.Services.VersionedFields;
 using Shesha.Startup;
 using System;
@@ -58,8 +56,7 @@ namespace Shesha.Permission
 
                     var items = await permissionedObjectProvider.GetAllAsync(objectType, !ForceUpdate);
 
-                    var dbItems = await _permissionedObjectRepository.GetAll()
-                        .Where(x => x.Type != null && (x.Type == objectType || x.Type.Contains($"{objectType}."))).ToListAsync();
+                    var dbItems = await _permissionedObjectRepository.GetAllListAsync(x => x.Type != null && (x.Type == objectType || x.Type.Contains($"{objectType}.")));
 
                     // Add news items
                     var toAdd = items.Where(i => dbItems.All(dbi => dbi.Object != i.Object))

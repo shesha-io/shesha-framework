@@ -9,7 +9,6 @@ using GraphQL.Types;
 using GraphQLParser.AST;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using Shesha.Application.Services.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
@@ -71,7 +70,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
                     var uow = unitOfWorkManager.Current;
 
-                    var query = repository.GetAll();
+                    var query = await repository.GetAllAsync();
 
                     // apply specifications
                     query = specificationManager.ApplySpecifications(query, input.Specifications);

@@ -30,7 +30,7 @@ namespace Shesha.DynamicEntities.Distribution
 
         private async Task ImportPermissionsAsync(ShaRole item, DistributedShaRole distributedItem) 
         {
-            var dbPermissions = await _rolePermissionRepo.GetAll().Where(e => e.Role == item).ToListAsync();
+            var dbPermissions = await _rolePermissionRepo.GetAllListAsync(e => e.Role == item);
 
             var toDelete = dbPermissions.Where(e => !distributedItem.Permissions.Any(dp => dp.Permission == e.Permission)).ToList();
             foreach (var permission in toDelete) 
@@ -70,7 +70,7 @@ namespace Shesha.DynamicEntities.Distribution
 
         private async Task<bool> PermissionsAreEqualAsync(ShaRole role, DistributedShaRole distributedItem)
         {
-            var dbPermissions = await _rolePermissionRepo.GetAll().Where(e => e.Role == role && e.IsGranted)
+            var dbPermissions = await (await _rolePermissionRepo.GetAllAsync()).Where(e => e.Role == role && e.IsGranted)
                 .OrderBy(e => e.Permission)
                 .Select(e => e.Permission)                
                 .ToListAsync();

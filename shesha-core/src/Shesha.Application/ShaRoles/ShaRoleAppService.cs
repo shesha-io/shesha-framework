@@ -6,6 +6,7 @@ using NHibernate.Linq;
 using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Roles.Dto;
 using Shesha.ShaRoles.Dto;
 using System;
@@ -78,7 +79,7 @@ namespace Shesha.ShaRoles
         public async Task<bool> IsRoleGrantedAsync(IsRoleGrantedInput input)
         {
             var userId = AbpSession.GetUserId();
-            var isGranted = await _roleAppointmentRepository.GetAll().AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName);
+            var isGranted = await _roleAppointmentRepository.AnyAsync(a => a.Person != null && a.Person.User != null && a.Person.User.Id == userId && a.Role.Name == input.RoleName);
             return isGranted;
         }
     }

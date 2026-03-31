@@ -63,10 +63,10 @@ stages:
           restoreSolution: 'shesha-core/Shesha.sln'
           nugetConfigPath: 'shesha-core/.nuget/NuGet.Azure.Config'
       - task: UseDotNet@2
-        displayName: Use .NET Core sdk 8.x
+        displayName: Use .NET Core sdk 10.x
         retryCountOnTaskFailure: 3
         inputs:
-          version: 8.x
+          version: 10.x
       - task: DotNetCoreCLI@2
         displayName: dotnet build
         inputs:
@@ -156,9 +156,9 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-1'
     - task: UseDotNet@2
-      displayName: Use .NET Core sdk 8.x
+      displayName: Use .NET Core sdk 10.x
       inputs:
-        version: 8.x
+        version: 10.x
     - task: Assembly-Info-NetCore@3
       displayName: 'Set Assembly Manifest Data'
       inputs:

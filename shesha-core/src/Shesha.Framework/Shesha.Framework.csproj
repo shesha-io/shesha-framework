@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <RootNamespace>Shesha</RootNamespace>
         <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -203,41 +203,41 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Abp" Version="9.0.0" />
-        <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
-        <PackageReference Include="Abp.AutoMapper" Version="9.0.0" />
-        <PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
-    <PackageReference Include="AsyncFixer" Version="1.6.0">
+        <PackageReference Include="Abp" />
+        <PackageReference Include="Abp.AspNetCore" />
+        <PackageReference Include="Abp.AutoMapper" />
+        <PackageReference Include="Abp.ZeroCore" />
+    <PackageReference Include="AsyncFixer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-        <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
-        <PackageReference Include="ConcurrentHashSet" Version="1.3.0" />
-        <PackageReference Include="Cronos" Version="0.9.0" />
-        <PackageReference Include="EasyNetQ" Version="7.7.0" />
-        <PackageReference Include="FluentMigrator" Version="5.0.0" />
-        <PackageReference Include="FluentValidation" Version="11.8.1" />
-        <PackageReference Include="Hangfire.Core" Version="1.8.6" />
-        <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+        <PackageReference Include="Azure.Storage.Blobs" />
+        <PackageReference Include="ConcurrentHashSet" />
+        <PackageReference Include="Cronos" />
+        <PackageReference Include="EasyNetQ" />
+        <PackageReference Include="FluentMigrator" />
+        <PackageReference Include="FluentValidation" />
+        <PackageReference Include="Hangfire.Core" />
+        <PackageReference Include="IDisposableAnalyzers">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="JsonLogic.Net" Version="1.1.11" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.55" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2">
+        <PackageReference Include="JsonLogic.Net" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="HtmlAgilityPack" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="NetTopologySuite" Version="2.5.0" />
-        <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
-        <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
-        <PackageReference Include="RedLock.net" Version="2.3.2" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-        <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+        <PackageReference Include="NetTopologySuite" />
+        <PackageReference Include="NetTopologySuite.IO.GeoJSON" />
+        <PackageReference Include="PluralizeService.Core" />
+        <PackageReference Include="RedLock.net" />
+        <PackageReference Include="Swashbuckle.AspNetCore" />
+        <PackageReference Include="System.Linq.Async" />
     </ItemGroup>
 
     <ItemGroup>
@@ -245,6 +245,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>

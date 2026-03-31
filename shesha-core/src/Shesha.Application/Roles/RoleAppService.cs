@@ -38,8 +38,7 @@ namespace Shesha.Roles
 
             CheckErrors(await _roleManager.CreateAsync(role));
 
-            var grantedPermissions = PermissionManager
-                .GetAllPermissions()
+            var grantedPermissions = (await PermissionManager.GetAllPermissionsAsync())
                 .Where(p => input.GrantedPermissions.Contains(p.Name))
                 .ToList();
 
@@ -71,8 +70,7 @@ namespace Shesha.Roles
 
             CheckErrors(await _roleManager.UpdateAsync(role));
 
-            var grantedPermissions = PermissionManager
-                .GetAllPermissions()
+            var grantedPermissions = (await PermissionManager.GetAllPermissionsAsync())
                 .Where(p => input.GrantedPermissions.Contains(p.Name))
                 .ToList();
 
@@ -115,7 +113,7 @@ namespace Shesha.Roles
 
         protected override async Task<Role> GetEntityByIdAsync(int id)
         {
-            return await Repository.GetAllIncluding(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
+            return await Repository.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         protected override IQueryable<Role> ApplySorting(IQueryable<Role> query, PagedRoleResultRequestDto input)
@@ -130,7 +128,7 @@ namespace Shesha.Roles
 
         public async Task<GetRoleForEditOutput> GetRoleForEditAsync(EntityDto input)
         {
-            var permissions = PermissionManager.GetAllPermissions();
+            var permissions = await PermissionManager.GetAllPermissionsAsync();
             var role = await _roleManager.GetRoleByIdAsync(input.Id);
             var grantedPermissions = (await _roleManager.GetGrantedPermissionsAsync(role)).ToArray();
             var roleEditDto = ObjectMapper.Map<RoleEditDto>(role);

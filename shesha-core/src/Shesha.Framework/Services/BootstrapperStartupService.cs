@@ -25,7 +25,7 @@ namespace Shesha.Services
 
         private async Task<BootstrapperStartup> GetLastAsync(string bootstrapperName)
         {
-            return await _repository.GetAll()
+            return await (await _repository.GetAllAsync())
                 .Where(x => x.BootstrapperName == bootstrapperName)
                 .OrderByDescending(x => x.CreationTime)
                 .FirstOrDefaultAsync();
