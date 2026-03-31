@@ -140,7 +140,7 @@ namespace Shesha.ConfigurationItems.Distribution
                     var dependencies = await depsProvider.GetReferencedItemsAsync(item);
                     foreach (var dependency in dependencies)
                     {
-                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItem>();                        
+                        var query = (await _itemsRepository.GetAllAsync()).OfType(dependency.ItemType).Cast<ConfigurationItem>();                        
 
                         var dependencyItem = await query.GetItemByIdAsync(dependency);
 

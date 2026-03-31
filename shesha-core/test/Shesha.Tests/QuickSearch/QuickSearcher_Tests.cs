@@ -2,10 +2,8 @@
 using Abp.Domain.Repositories;
 using Abp.Linq;
 using Abp.Runtime.Caching;
-using DocumentFormat.OpenXml.Wordprocessing;
 using FluentAssertions;
 using Moq;
-using NSubstitute;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -232,7 +230,7 @@ namespace Shesha.Tests.QuickSearch
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
             return await WithUnitOfWorkAsync(async () => {
-                var query = repository.GetAll();
+                var query = await repository.GetAllAsync();
 
                 if (prepareQueryable != null)
                     query = prepareQueryable.Invoke(query);

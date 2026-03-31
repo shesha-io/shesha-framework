@@ -39,14 +39,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Description = bank.Description,
                 Id = bank.Id,
                 Name = bank.Name,
-                Members = _memberRepo.GetAll().Where(x => x.Bank.Id == bank.Id).Select(x => x.Id).ToList()
+                Members = (await _memberRepo.GetAllAsync()).Where(x => x.Bank.Id == bank.Id).Select(x => x.Id).ToList()
             };
             return ObjectMapper.Map<BankMemberDto>(bankMembers);
         }
 
-        public Task<List<BankMemberDto>> GetAllBankWithMembersAsync()
+        public async Task<List<BankMemberDto>> GetAllBankWithMembersAsync()
         {
-            var bankMembers = _bankRepo.GetAll().Select(x => new BankMemberDto
+            var bankMembers = (await _bankRepo.GetAllAsync()).Select(x => new BankMemberDto
             {
                 Address = x.Address != null ? x.Address.Id : null,
                 Description = x.Description,
@@ -56,7 +56,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             }).ToList();
             var result = ObjectMapper.Map<List<BankMemberDto>>(bankMembers);
 
-            return Task.FromResult(result);
+            return result;
         }
     }
 }

@@ -88,8 +88,8 @@ namespace Shesha.Sessions
                 if (currentUser == null)
                     return grantedPermissions;
 
-                var roles = await _roleAppointmentRepository.GetAll().Where(a => a.Person == currentUser).ToListAsync();
-                var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
+                var roles = await _roleAppointmentRepository.GetAllListAsync(a => a.Person == currentUser);
+                var allPermissionNames = (await PermissionManager.GetAllPermissionsAsync(false)).Select(p => p.Name).ToList();
 
                 foreach (var permissionName in allPermissionNames)
                 {
@@ -124,7 +124,7 @@ namespace Shesha.Sessions
                 : null;
             if (currentUser == null)
                 return new List<string>();
-            var roles = await _roleAppointmentRepository.GetAll()
+            var roles = await (await _roleAppointmentRepository.GetAllAsync())
                 .Where(a => a.Person == currentUser)
                 .Select(a => a.Role.Name)
                 .Distinct()

@@ -48,7 +48,7 @@ namespace Shesha.Metadata
         protected async override Task<List<EntityModelDto>> FetchModelsAsync()
         {
             // Get all Entity configurations from DB (include exposed Entities)
-            var entityConfigs = await _entityConfigRepository.GetAll().ToListAsync();
+            var entityConfigs = await _entityConfigRepository.GetAllListAsync();
             var dtos = (await entityConfigs
                 .SelectAsync(async entityConfig =>
                 {

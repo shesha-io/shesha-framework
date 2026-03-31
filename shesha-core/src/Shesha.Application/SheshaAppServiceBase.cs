@@ -133,7 +133,7 @@ namespace Shesha
         protected virtual async Task<Domain.Person> GetCurrentPersonAsync()
         {
             var personRepository = IocManager.Resolve<IRepository<Domain.Person, Guid>>();
-            var person = await personRepository.GetAll().FirstOrDefaultAsync(p => p.User != null && p.User.Id == AbpSession.GetUserId());
+            var person = await personRepository.FirstOrDefaultAsync(p => p.User != null && p.User.Id == AbpSession.GetUserId());
             return person;
         }
 
