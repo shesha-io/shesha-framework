@@ -841,26 +841,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-source-trigger {
-            height: 24px;
-            width: 100%;
-            min-width: 32px;
-            padding: 0 7px;
-            border: 1px solid #d9d9d9;
-            border-radius: 6px;
-            background: #fff;
-            color: rgba(0, 0, 0, 0.45);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
             cursor: pointer;
-            transition: border-color 0.2s ease, color 0.2s ease;
             box-sizing: border-box;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            border: 0;
+            background: transparent;
+            color: rgba(0, 0, 0, 0.45);
         }
 
         .sha-query-builder-source-trigger:hover,
         .sha-query-builder-source-trigger:focus-visible {
-            border-color: #1677ff;
             color: #1677ff;
             outline: none;
         }
@@ -872,11 +866,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-source-dropdown-trigger {
             display: inline-flex;
-            width: 100%;
             min-width: 0;
             pointer-events: auto !important;
-            position: relative;
-            z-index: 2;
         }
 
         .query-builder .widget--valuesrc,
@@ -888,12 +879,24 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-query-builder-source-trigger-arrow {
             line-height: 1;
             font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .sha-query-builder-source-trigger-label {
+            flex: 1 1 0;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+            line-height: 1;
         }
 
         .sha-query-builder-packed-select {
             display: flex;
             align-items: stretch;
             width: 100%;
+            height: 100%;
             min-width: 0;
             flex: 1 1 auto;
         }
@@ -912,9 +915,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .widget--valuesrc {
-            flex: 0 0 calc(100% * 0.09780);
-            width: calc(100% * 0.09780);
-            max-width: calc(100% * 0.09780);
+            flex: 0 0 auto;
+            width: auto;
+            max-width: none;
             min-width: 0;
         }
 
@@ -922,60 +925,82 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: flex;
             align-items: stretch;
             width: 100%;
+            height: 100%;
             min-width: 0;
             flex: 1 1 auto;
         }
 
-        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger {
-            height: 100%;
-            min-height: 32px;
-            width: 100%;
+        /* Strip borders from the PropertySelect (Ant Design Select) inside the field cell */
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select {
+            flex: 1 1 auto !important;
+            width: 100% !important;
+            height: 100% !important;
             min-width: 0;
-            box-sizing: border-box;
-            border-radius: 0;
-            border: 0;
-            border-right: 1px solid #d0d5dd;
-            background: #f8fafc;
-            padding: 0 6px;
-            color: #344054;
-            gap: 4px;
-            justify-content: center;
+            border: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
         }
 
-        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-icon {
-            color: #1d2939;
-            font-size: 16px;
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-selector {
+            height: 100% !important;
+            min-height: 30px !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            display: flex !important;
+            align-items: center !important;
         }
 
-        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-arrow {
-            color: #98a2b3;
-            font-size: 9px;
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-focused .${prefixCls}-select-selector,
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select:focus .${prefixCls}-select-selector,
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-open .${prefixCls}-select-selector {
+            border: 0 !important;
+            box-shadow: none !important;
+            outline: none !important;
         }
 
+        /* Source triggers inside packed rule cells — shared base */
+
+        .query-builder .rule--fieldsrc .sha-query-builder-source-dropdown-trigger,
+        .query-builder .widget--valuesrc .sha-query-builder-source-dropdown-trigger {
+            display: flex;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger,
         .query-builder .widget--valuesrc .sha-query-builder-source-trigger {
             height: 100%;
-            min-height: 32px;
-            width: 100%;
+            min-height: 30px;
             min-width: 0;
-            box-sizing: border-box;
+            overflow: hidden;
+            padding: 0 8px;
             border-radius: 0;
             border: 0;
             border-right: 1px solid #d0d5dd;
             background: #f8fafc;
-            padding: 0 4px;
             color: #344054;
-            gap: 2px;
-            justify-content: center;
+            gap: 4px;
         }
 
+        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-icon,
         .query-builder .widget--valuesrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-icon {
             color: #1d2939;
-            font-size: 12px;
+            font-size: 14px;
         }
 
+        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-arrow,
         .query-builder .widget--valuesrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-arrow {
             color: #98a2b3;
             font-size: 9px;
+        }
+
+        /* Value variant: compact fixed-width pill — keeps caret */
+        .query-builder .widget--valuesrc .sha-query-builder-source-trigger {
+            width: 44px;
+            min-width: 44px;
+            padding: 0 4px;
+            gap: 2px;
         }
 
         .query-builder .rule--before-widget:empty {
@@ -1072,24 +1097,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             font-size: 9px;
         }
 
-        .query-builder .rule--value .sha-query-builder-mustache-expression-input {
-            width: 100%;
-            border: 0 !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            background: transparent !important;
-        }
-
-        .query-builder .rule--value .${prefixCls}-input-number {
-            width: 100% !important;
-            min-width: 0;
-            min-height: 20px;
-            border: 0 !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            background: transparent !important;
-        }
-
         .query-builder .rule--func {
             display: none;
         }
@@ -1100,39 +1107,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: none;
         }
 
-        .query-builder .rule--value .widget--widget .rule--func--arg--expression {
-            flex: 1 1 auto;
-            min-width: 0;
-            display: flex;
-            align-items: stretch;
-        }
-
-        .query-builder .rule--value .widget--widget .rule--func--arg--expression .rule--widget,
-        .query-builder .rule--value .widget--widget .rule--func--arg--expression .rule--widget > * {
-            flex: 1 1 auto;
-            min-width: 0;
-            width: 100%;
-        }
-
-        .query-builder .rule--value .widget--widget .rule--func--arg--ignoreIfUnassigned {
-            flex: 0 0 auto;
-            margin: 0;
-            padding: 0 8px;
-            border-left: 1px solid #d0d5dd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-        }
-
-        .query-builder .rule--value .widget--widget .rule--func--arg--ignoreIfUnassigned .rule--widget {
-            width: auto;
-            margin: 0;
-        }
-
-        .query-builder .rule--value .widget--widget .rule--func--arg--ignoreIfUnassigned .sha-query-builder-ignore-unassigned {
-            padding-right: 0;
-        }
 
         .sha-query-builder-source-option .${prefixCls}-dropdown-menu-title-content {
             display: inline-flex;
@@ -1323,15 +1297,24 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             gap: 12px;
         }
 
+        /* ── Rule cells: shared "pill" border ─────────────────────────── */
+
         .query-builder .rule--field,
         .query-builder .rule--operator,
         .query-builder .rule--value {
             display: flex;
             align-items: stretch;
+            gap: 0;
+            height: 32px;
             min-height: 32px;
+            max-height: 32px;
             min-width: 0;
             max-width: 100%;
             box-sizing: border-box;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fff;
         }
 
         .query-builder .rule--field > *,
@@ -1342,58 +1325,26 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-sizing: border-box;
         }
 
-        .query-builder .rule--field .sha-query-builder-packed-select,
-        .query-builder .rule--field .sha-query-builder-packed-select > *,
-        .query-builder .rule--fieldsrc .sha-query-builder-source-dropdown-trigger,
-        .query-builder .rule--operator > *,
-        .query-builder .rule--value .rule--widget,
-        .query-builder .rule--value .widget--widget,
-        .query-builder .rule--value .widget--widget > *:not(.widget--valuesrc),
-        .query-builder .rule--before-widget .sha-query-builder-empty-rule-placeholders,
-        .query-builder .rule--before-widget .sha-query-builder-empty-rule-placeholders > * {
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .query-builder .rule--value .rule--widget {
-            width: 100% !important;
-            height: 100% !important;
-            min-width: 0;
-            flex: 1 1 auto;
-        }
-
-        .query-builder .rule--value .widget--widget {
-            width: auto !important;
-            max-width: 100%;
-            height: 100% !important;
-            min-width: 0;
-            flex: 1 1 0;
-        }
-
-        .query-builder .rule--value .widget--widget > *:not(.widget--valuesrc) {
-            width: auto !important;
-            max-width: 100%;
-            height: 100% !important;
-            min-width: 0;
-            flex: 1 1 0;
-        }
+        /* Strip individual borders from children — the container owns the border */
 
         .query-builder .rule--field .${prefixCls}-select,
         .query-builder .rule--operator .${prefixCls}-select,
-        .query-builder .rule--value .${prefixCls}-select,
-        .query-builder .rule--value .${prefixCls}-input-number,
-        .query-builder .rule--value .${prefixCls}-input,
-        .query-builder .rule--value .sha-query-builder-mustache-expression-input {
+        .query-builder .rule--value .${prefixCls}-select {
             width: 100% !important;
             height: 100% !important;
             min-width: 0;
+            border: 0 !important;
+            box-shadow: none !important;
         }
 
         .query-builder .rule--field .${prefixCls}-select-selector,
         .query-builder .rule--operator .${prefixCls}-select-selector,
         .query-builder .rule--value .${prefixCls}-select-selector {
             height: 100% !important;
-            min-height: 32px !important;
+            min-height: 30px !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
             display: flex !important;
             align-items: center !important;
         }
@@ -1412,7 +1363,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--value .${prefixCls}-select-single .${prefixCls}-select-selection-placeholder {
             display: flex !important;
             align-items: center !important;
-            line-height: 32px !important;
+            line-height: 30px !important;
             font-size: 14px !important;
             white-space: nowrap;
             overflow: hidden;
@@ -1433,16 +1384,28 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             height: 100% !important;
         }
 
-        .query-builder .rule--value .${prefixCls}-input,
-        .query-builder .rule--value .sha-query-builder-mustache-expression-input {
+        .query-builder .rule--value .${prefixCls}-input {
+            width: 100% !important;
             height: 100% !important;
-            min-height: 32px !important;
-            line-height: 32px !important;
+            min-height: 30px !important;
+            line-height: 30px !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
             padding-inline: 12px !important;
             font-size: 14px !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
             display: block;
+        }
+
+        .query-builder .rule--value .${prefixCls}-input-number {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 30px !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
         }
 
         .query-builder .rule--value .${prefixCls}-input-number-input-wrap {
@@ -1453,12 +1416,161 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .query-builder .rule--value .${prefixCls}-input-number-input {
             height: 100% !important;
-            min-height: 32px !important;
-            line-height: 32px !important;
+            min-height: 30px !important;
+            line-height: 30px !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
             padding-inline: 12px !important;
             font-size: 14px !important;
+        }
+
+        /* Focus ring on the container instead of the child */
+
+        .query-builder .rule--field:focus-within,
+        .query-builder .rule--operator:focus-within,
+        .query-builder .rule--value:focus-within {
+            border-color: #1677ff;
+            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.15);
+        }
+
+        /* ── Widget layout inside .rule--value ─────────────────────────── */
+
+        .query-builder .rule--field .sha-query-builder-packed-select,
+        .query-builder .rule--field .sha-query-builder-packed-select > *,
+        .query-builder .rule--fieldsrc .sha-query-builder-source-dropdown-trigger,
+        .query-builder .rule--operator > *,
+        .query-builder .rule--value .rule--widget,
+        .query-builder .rule--value .widget--widget,
+        .query-builder .rule--value .widget--func,
+        .query-builder .rule--value .widget--widget > *:not(.widget--valuesrc),
+        .query-builder .rule--value .widget--func > *:not(.widget--valuesrc),
+        .query-builder .rule--before-widget .sha-query-builder-empty-rule-placeholders,
+        .query-builder .rule--before-widget .sha-query-builder-empty-rule-placeholders > * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .query-builder .rule--value .rule--widget {
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 0;
+            flex: 1 1 auto;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* Both .widget--widget (plain values) and .widget--func (expression/func) fill the value cell */
+
+        .query-builder .rule--value .widget--widget,
+        .query-builder .rule--value .widget--func {
+            width: auto !important;
+            max-width: 100%;
+            height: 100% !important;
+            min-width: 0;
+            flex: 1 1 0;
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+        }
+
+        .query-builder .rule--value .widget--widget > *:not(.widget--valuesrc),
+        .query-builder .rule--value .widget--func > *:not(.widget--valuesrc) {
+            width: auto !important;
+            max-width: 100%;
+            height: 100% !important;
+            min-width: 0;
+            flex: 1 1 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* func wrapper, args, and expression arg chain — transparent to flex */
+
+        .query-builder .rule--value .rule--func--wrapper,
+        .query-builder .rule--value .rule--func--args,
+        .query-builder .rule--value [class*="rule--func--arg--expression"],
+        .query-builder .rule--value [class*="rule--func--arg--expression"] .rule--func--arg-value,
+        .query-builder .rule--value [class*="rule--func--arg--expression"] .rule--func--arg-value > .rule--widget {
+            display: contents;
+        }
+
+        /* ── Expression editor native blend ────────────────────────────── */
+
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input {
+            flex: 1 1 0 !important;
+            min-width: 0 !important;
+            width: 0 !important;
+            height: 30px !important;
+            max-height: 30px !important;
+            display: flex !important;
+            align-items: center !important;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            overflow: hidden !important;
+            position: static !important;
+        }
+
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-preview {
+            flex: 1 1 0 !important;
+            min-width: 0 !important;
+            width: 0 !important;
+            height: 30px !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            padding: 0 12px !important;
+            line-height: 30px !important;
+            font-size: 14px !important;
+            display: block !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            text-align: left !important;
+        }
+
+        /* ── Ignore-if-unassigned: compact right-side addon with divider ── */
+
+        .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            height: 30px !important;
+            margin: 0 !important;
+            padding: 0 8px !important;
+            border-left: 1px solid #d0d5dd !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: #f8fafc !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .rule--func--arg-value {
+            display: flex !important;
+            align-items: center !important;
+            height: 100% !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .rule--func--arg-value > .rule--widget {
+            display: flex !important;
+            align-items: center !important;
+            height: 100% !important;
+            width: auto !important;
+            flex: 0 0 auto !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .widget--widget {
+            display: flex !important;
+            align-items: center !important;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            height: auto !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .sha-query-builder-ignore-unassigned {
+            padding-right: 0;
         }
     `);
 

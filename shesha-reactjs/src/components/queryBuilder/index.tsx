@@ -5,7 +5,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { extractVars } from '@/utils/jsonLogic';
 import { FieldAutocomplete } from './fieldAutocomplete';
 import { FuncSelect } from './funcSelect/index';
-import { ValueSources } from './valueSources';
+import { SourceSelector } from './sourceSelector';
 import { ItemWithRelation } from './itemWithRelation';
 import { EmptyRulePlaceholders } from './emptyRulePlaceholders';
 import { GroupEmptyState } from './groupEmptyState';
@@ -141,8 +141,8 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
     renderFunc: (props) => (<FuncSelect {...props} />),
     renderConjs: () => null,
     renderField: (props) => (<FieldAutocomplete {...props} /* fields={fields}*/ />),
-    renderValueSources: (props) => (<ValueSources {...props} variant="value" />),
-    renderFieldSources: (props) => (<ValueSources {...props} variant="field" />),
+    renderValueSources: (props) => (<SourceSelector {...props} variant="value" />),
+    renderFieldSources: (props) => (<SourceSelector {...props} variant="field" />),
     renderBeforeWidget: (ruleProps) => (<EmptyRulePlaceholders {...ruleProps} />),
     renderBeforeActions: (groupProps) => (<GroupEmptyState {...groupProps} />),
     renderAfterActions: (groupProps) => (<GroupDragAction {...groupProps} />),

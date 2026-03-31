@@ -53,16 +53,14 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
   );
 
   return (
-    <div style={{ width: '100%' }}>
-      <ExpressionEditor
-        value={value ?? ''}
-        onChange={setValue}
-        disabled={readonly}
-        context={context}
-        className="sha-query-builder-mustache-expression-input"
-        placeholder="Expression"
-      />
-    </div>
+    <ExpressionEditor
+      value={value ?? ''}
+      onChange={setValue}
+      disabled={readonly}
+      context={context}
+      className="sha-query-builder-mustache-expression-input"
+      placeholder="Expression"
+    />
   );
 };
 
