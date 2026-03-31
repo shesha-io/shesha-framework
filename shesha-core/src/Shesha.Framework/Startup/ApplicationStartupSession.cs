@@ -91,6 +91,7 @@ namespace Shesha.Startup
                     FileMD5 = assemblyDto.FileMD5,
                     FileVersion = assemblyDto.FileVersion,
                     ProductVersion = assemblyDto.ProductVersion,
+                    BuildId = assemblyDto.BuildId,
                 };
                 await _assemblyRepository.InsertAsync(startupAssembly);
                 assemblies.Add(startupAssembly);
@@ -108,6 +109,8 @@ namespace Shesha.Startup
         private AssemblyDto GetAssemblyDto(Assembly assembly)
         {
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            var buildId = assembly.GetCustomAttributes<System.Reflection.AssemblyMetadataAttribute>()
+                              .FirstOrDefault(a => a.Key == "BuildId")?.Value;
 
             return new AssemblyDto
             {
@@ -116,6 +119,7 @@ namespace Shesha.Startup
                 FileMD5 = FileHelper.GetMD5(assembly.Location),
                 FileVersion = fileVersionInfo.FileVersion,
                 ProductVersion = fileVersionInfo.ProductVersion,
+                BuildId = buildId,
             };
         }
 
