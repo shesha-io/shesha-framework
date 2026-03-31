@@ -110,7 +110,8 @@ namespace Shesha.Startup
         {
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
             var buildId = assembly.GetCustomAttributes<System.Reflection.AssemblyMetadataAttribute>()
-                              .FirstOrDefault(a => a.Key == "BuildId")?.Value;
+                              .FirstOrDefault(a => a.Key == "BuildId")?.Value
+                          ?? fileVersionInfo.ProductVersion;
 
             return new AssemblyDto
             {
