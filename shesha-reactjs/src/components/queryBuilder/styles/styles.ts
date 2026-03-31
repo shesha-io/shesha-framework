@@ -101,46 +101,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             align-items: flex-start;
             gap: 12px;
             flex: 0 0 auto;
-            padding-left: calc(var(--qb-relation-width) + 10px);
+            padding-left: 0;
             width: 100%;
             box-sizing: border-box;
-        }
-
-        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn,
-        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            height: 32px !important;
-            min-width: 0 !important;
-            padding: 0 16px !important;
-            border-radius: 4px !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            box-shadow: none !important;
-            gap: 8px !important;
-        }
-
-        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn {
-            background: #1890ff !important;
-            border-color: #1890ff !important;
-            color: #fff !important;
-        }
-
-        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn {
-            background: #fff !important;
-            border-color: #1890ff !important;
-            color: #1890ff !important;
-        }
-
-        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn .ant-btn-icon,
-        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn .ant-btn-icon {
-            margin-right: 0 !important;
-        }
-
-        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn .ant-btn-icon .anticon,
-        .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn .ant-btn-icon .anticon {
-            font-size: 16px !important;
         }
 
         .query-builder .group--footer > .sha-query-builder-empty-state + .group--actions,
