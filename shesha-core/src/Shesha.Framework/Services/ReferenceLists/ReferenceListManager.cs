@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Dto.Interfaces;
-using Shesha.Extensions;
 using Shesha.Services.ReferenceLists.Dto;
 using System;
 using System.Collections.Generic;
@@ -26,7 +25,7 @@ namespace Shesha.Services.ReferenceLists
 
         private async Task CopyItemsAsync(ReferenceList source, ReferenceList destination)
         {
-            var srcItems = await _listItemsRepository.GetAll().Where(i => i.ReferenceList == source).ToListAsync();
+            var srcItems = await _listItemsRepository.GetAllListAsync(i => i.ReferenceList == source);
 
             await CopyItemsAsync(srcItems, destination, null, null);
         }

@@ -141,7 +141,7 @@ namespace Shesha.Services
 
         public async Task<List<ReferenceListItemDto>> GetItemsAsync(Guid refListId)
         {
-            var items = await _itemsRepository.GetAll()
+            var items = await (await _itemsRepository.GetAllAsync())
                 .Where(e => e.ReferenceList.Id == refListId)
                 .OrderBy(e => e.OrderIndex).ThenBy(e => e.Item)
                 .ToListAsync();

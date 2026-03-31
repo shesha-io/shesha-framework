@@ -52,7 +52,7 @@ namespace Shesha.Domain
             if (string.IsNullOrWhiteSpace(appKey))
                 return true;
 
-            var alreadyExist = await _repository.GetAll().Where(m => m.AppKey.ToLower() == appKey.ToLower() && m.Id != app.Id).AnyAsync();
+            var alreadyExist = await (await _repository.GetAllAsync()).Where(m => m.AppKey.ToLower() == appKey.ToLower() && m.Id != app.Id).AnyAsync();
             return !alreadyExist;
         }
     }

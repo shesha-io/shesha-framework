@@ -111,7 +111,7 @@ namespace Shesha.Authorization
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity), validFrom, expiresOn);
 
             var personId = loginResult.User != null
-                ? await _personRepository.GetAll()
+                ? await (await _personRepository.GetAllAsync())
                     .Where(p => p.User == loginResult.User)
                     .OrderBy(p => p.CreationTime)
                     .Select(p => p.Id)
@@ -153,7 +153,7 @@ namespace Shesha.Authorization
         [HttpPost]
         public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)
         {
-            var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == userNameOrMobileNo || u.User != null && u.User.UserName == userNameOrMobileNo).ToListAsync();
+            var persons = await _personRepository.GetAllListAsync(u => u.MobileNumber1 == userNameOrMobileNo || u.User != null && u.User.UserName == userNameOrMobileNo);
             if (!persons.Any())
                 throw new UserFriendlyException("User with the specified mobile number not found");
             if (persons.Count() > 1)

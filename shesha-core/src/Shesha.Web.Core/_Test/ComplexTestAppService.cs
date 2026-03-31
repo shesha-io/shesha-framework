@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using NHibernate.Linq;
 
 namespace Shesha.Test
 {
@@ -68,14 +69,14 @@ namespace Shesha.Test
         }
 
         [HttpGet]
-        public Task<List<object>> CheckGenericEntityAsync()
+        public async Task<List<object>> CheckGenericEntityAsync()
         {
-            var entities = Repository.GetAll().Where(x => x.AnyEntity != null).ToList();
+            var entities = await Repository.GetAllListAsync(x => x.AnyEntity != null);
             var entity = entities.First(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
 
             var person = (Person)entity.AnyEntity;
 
-            var dbEntity = Repository.GetAll().First(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
+            var dbEntity = await (await Repository.GetAllAsync()).FirstAsync(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
 
             var dbPerson = (Person)dbEntity.AnyEntity;
 
@@ -83,7 +84,7 @@ namespace Shesha.Test
                 new { id = person.Id, fullName = person.FullName },
                 new { id = dbPerson.Id, fullName = dbPerson.FullName }
             };
-            return Task.FromResult(result);
+            return result;
         }
 
 

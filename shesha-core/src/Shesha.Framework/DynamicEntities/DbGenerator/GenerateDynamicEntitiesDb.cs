@@ -5,7 +5,6 @@ using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.Domain;
 using Shesha.DynamicEntities.ErrorHandler;
-using Shesha.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,9 +44,7 @@ namespace Shesha.DynamicEntities.DbGenerator
 
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
-                var configs = await _entityConfigRepository.GetAll()
-                    .Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && x.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
-                    .ToListAsync();
+                var configs = await _entityConfigRepository.GetAllListAsync(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && x.EntityConfigType == Domain.Enums.EntityConfigTypes.Class);
 
                 var allCount = configs.Count;
                 var sortedToAdd = configs.Where(x => configs.All(y => x.InheritedFrom != y)).ToList();

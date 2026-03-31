@@ -31,7 +31,7 @@ namespace Shesha.Authorization
                 return false;
             
             // TODO: add caching
-            var roles = await _rolePersonRepository.GetAll().Where(x => x.Person == person).Select(e => e.Role).ToListAsync();
+            var roles = await (await _rolePersonRepository.GetAllAsync()).Where(x => x.Person == person).Select(e => e.Role).ToListAsync();
             return roles.Any(r => r.Permissions.Any(x => x.Permission == permissionName && x.IsGranted));
         }
 
@@ -43,8 +43,7 @@ namespace Shesha.Authorization
 
             
             
-            var appointments = (await _rolePersonRepository.GetAll().Where(x => x.Person == person)
-                .ToListAsync())
+            var appointments = (await _rolePersonRepository.GetAllListAsync(x => x.Person == person))
                 .Where(x =>
                     !x.PermissionedEntities.Any()
                     || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
