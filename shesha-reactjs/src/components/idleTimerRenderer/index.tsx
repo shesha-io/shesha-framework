@@ -16,7 +16,7 @@ import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
 import { useHttpClient } from '@/providers';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
 import { URLS } from '@/providers/auth/models';
 
 export interface ISecuritySettings {
@@ -208,27 +208,25 @@ class IdleHandler implements IIdleHandler {
     this.refreshInFlight = true;
     this.refreshPromise = this.httpClient.post<RefreshTokenResultModelAjaxResponse>(URLS.REFRESH_TOKEN)
       .then(({ data: response }) => {
-        if (isAjaxSuccessResponse(response) && response.result) {
-          saveUserToken(
-            {
-              accessToken: response.result.accessToken,
-              expireInSeconds: response.result.expireInSeconds,
-              expireOn: response.result.expireOn,
-            },
-            DEFAULT_ACCESS_TOKEN_NAME,
-          );
+        const result = extractAjaxResponse(response);
+        saveUserToken(
+          {
+            accessToken: result.accessToken,
+            expireInSeconds: result.expireInSeconds,
+            expireOn: result.expireOn,
+          },
+          DEFAULT_ACCESS_TOKEN_NAME,
+        );
 
-          if (response.result.expireOn) {
-            this.authenticator.updateTokenExpiration(response.result.expireOn);
-            this.authenticator.refreshAuthHeaders();
-            this.broadcastTokenRefresh(response.result.expireOn);
-          }
-
-          this.lastRefreshAttempt = Date.now();
-          this.activateFn?.();
-          return true;
+        if (result.expireOn) {
+          this.authenticator.updateTokenExpiration(result.expireOn);
+          this.authenticator.refreshAuthHeaders();
+          this.broadcastTokenRefresh(result.expireOn);
         }
-        return false;
+
+        this.lastRefreshAttempt = Date.now();
+        this.activateFn?.();
+        return true;
       })
       .catch((error: unknown) => {
         console.error('Failed to refresh token:', error);

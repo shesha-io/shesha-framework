@@ -35,6 +35,9 @@ export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAcces
   return publicToken;
 };
 
+const isIAccessToken = (value: unknown): value is IAccessToken =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 const parseToken = (token: string): IAccessToken | null => {
   try {
     // Parse as stored token (may contain nonce)
@@ -45,7 +48,12 @@ const parseToken = (token: string): IAccessToken | null => {
     const { nonce, ...publicToken } = storedToken;
     void nonce; // nonce is intentionally discarded - it is only for storage uniqueness
 
-    return publicToken as IAccessToken;
+    if (!isIAccessToken(publicToken)) {
+      console.error('parsed token does not match IAccessToken shape');
+      return null;
+    }
+
+    return publicToken;
   } catch (error) {
     console.error('failed to parse token', error);
     return null;

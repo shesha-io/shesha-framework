@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,23 +49,7 @@ namespace Shesha.Web.Host.Startup
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = QueryStringTokenResolver,
-                        OnTokenValidated = async context =>
-                        {
-                            var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
-                            if (string.IsNullOrEmpty(jti))
-                            {
-                                context.Fail("Token is missing JTI claim");
-                                return;
-                            }
-
-                            var blacklistService = context.HttpContext.RequestServices
-                                .GetRequiredService<ITokenBlacklistService>();
-
-                            if (await blacklistService.IsTokenBlacklistedAsync(jti))
-                            {
-                                context.Fail("Token has been revoked");
-                            }
-                        }
+                        OnTokenValidated = async context => await context.EnsureTokenIsNotBlacklistedAsync()
                     };
                 });
             }
