@@ -168,6 +168,7 @@ stages:
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
       # condition: ne(variables['currentBranch'], 'refs/heads/main')
+
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -179,7 +180,8 @@ stages:
       displayName: dotnet build
       inputs:
         projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
-        arguments: --configuration $(BuildParameters.configuration) -p:DefineConstants=DisableEditModule
+        arguments: --configuration $(BuildParameters.configuration) -p:DefineConstants=DisableEditModule -p:AssemblyMetadata_BuildId=$(Build.BuildId)
+    
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
