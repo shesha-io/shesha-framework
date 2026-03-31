@@ -49,7 +49,7 @@ interface IWarningState {
 }
 
 interface ITokenRefreshData {
-  expireOn: string;
+  expireOn?: string;
   timestamp: number;
 }
 
@@ -80,8 +80,8 @@ const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
   return (
     typeof value === 'object' &&
     value !== null &&
-    'expireOn' in value &&
-    typeof (value as Record<string, unknown>).expireOn === 'string'
+    'timestamp' in value &&
+    typeof (value as Record<string, unknown>).timestamp === 'number'
   );
 };
 
@@ -166,7 +166,7 @@ class IdleHandler implements IIdleHandler {
     }
   };
 
-  private broadcastTokenRefresh = (expireOn: string): void => {
+  private broadcastTokenRefresh = (expireOn?: string): void => {
     try {
       const storage = getLocalStorage();
       if (storage) {
@@ -206,6 +206,7 @@ class IdleHandler implements IIdleHandler {
     }
 
     this.refreshInFlight = true;
+    this.lastRefreshAttempt = Date.now();
     this.refreshPromise = this.httpClient.post<RefreshTokenResultModelAjaxResponse>(URLS.REFRESH_TOKEN)
       .then(({ data: response }) => {
         const result = extractAjaxResponse(response);
@@ -223,11 +224,10 @@ class IdleHandler implements IIdleHandler {
 
         if (result.expireOn) {
           this.authenticator.updateTokenExpiration(result.expireOn);
-          this.authenticator.refreshAuthHeaders();
-          this.broadcastTokenRefresh(result.expireOn);
         }
+        this.authenticator.refreshAuthHeaders();
+        this.broadcastTokenRefresh(result.expireOn);
 
-        this.lastRefreshAttempt = Date.now();
         this.activateFn?.();
         return true;
       })
@@ -323,13 +323,13 @@ class IdleHandler implements IIdleHandler {
         const refreshData = parsed;
         if (refreshData.expireOn) {
           this.authenticator.updateTokenExpiration(refreshData.expireOn);
-          this.authenticator.refreshAuthHeaders();
-          this.activateFn?.();
+        }
+        this.authenticator.refreshAuthHeaders();
+        this.activateFn?.();
 
-          if (this.warningVisible) {
-            this.warningVisible = false;
-            this.setStateFn?.(INIT_STATE);
-          }
+        if (this.warningVisible) {
+          this.warningVisible = false;
+          this.setStateFn?.(INIT_STATE);
         }
       } catch (err) {
         console.error('Failed to parse token refresh data', err);
@@ -349,6 +349,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
   const { isWarningVisible, remainingTime: rt, isCountingDown } = state;
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [idleHandler] = useState<IIdleHandler>(() =>
     new IdleHandler(authenticator, httpClient, logoutUser, setState),
@@ -406,7 +407,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   };
 
   useInterval(() => {
-    if (isCountingDown && isWarningVisible) {
+    if (isCountingDown && isWarningVisible && !isRefreshing) {
       doCountdown();
     }
   }, ONE_SECOND);
@@ -423,10 +424,10 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   // Effect to handle logout when pendingLogout flag is set
   // This separates the side effect from the state updater
   useEffect(() => {
-    if (state.pendingLogout) {
+    if (state.pendingLogout && !isRefreshing) {
       idleHandler.logout();
     }
-  }, [state.pendingLogout, idleHandler]);
+  }, [state.pendingLogout, idleHandler, isRefreshing]);
 
   // Modal handlers
   const onOk = useCallback(() => {
@@ -438,13 +439,18 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     // User chose "Stay Logged In"
 
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
-      const refreshed = await idleHandler.refreshToken();
-      if (!refreshed) {
-        // Token refresh failed — force logout instead of leaving user with expired token
-        idleHandler.logout();
-        return;
+      setIsRefreshing(true);
+      try {
+        const refreshed = await idleHandler.refreshToken();
+        if (!refreshed) {
+          // Token refresh failed — force logout instead of leaving user with expired token
+          idleHandler.logout();
+          return;
+        }
+        // refreshToken() already called activate() internally on success — skip it here
+      } finally {
+        setIsRefreshing(false);
       }
-      // refreshToken() already called activate() internally on success — skip it here
     } else {
       // Token not about to expire; reset idle timer manually
       activate();
