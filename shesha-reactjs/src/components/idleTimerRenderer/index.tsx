@@ -209,6 +209,9 @@ class IdleHandler implements IIdleHandler {
     this.refreshPromise = this.httpClient.post<RefreshTokenResultModelAjaxResponse>(URLS.REFRESH_TOKEN)
       .then(({ data: response }) => {
         const result = extractAjaxResponse(response);
+        if (!result.accessToken) {
+          throw new Error('Token refresh response is missing accessToken');
+        }
         saveUserToken(
           {
             accessToken: result.accessToken,
