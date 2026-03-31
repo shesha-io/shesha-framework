@@ -41,7 +41,11 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
   readonly,
   variant = 'value',
 }) => {
-  const orderedSources = [...valueSources].sort(([a], [b]) => getSourceOrder(a) - getSourceOrder(b));
+  const availableSources = variant === 'field'
+    ? valueSources.filter(([key]) => key !== 'func')
+    : valueSources;
+
+  const orderedSources = [...availableSources].sort(([a], [b]) => getSourceOrder(a) - getSourceOrder(b));
 
   const fallbackKey = variant === 'field' ? 'field' : 'value';
   const activeSource = orderedSources.some(([key]) => key === valueSrc)

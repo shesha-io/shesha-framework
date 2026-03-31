@@ -98,6 +98,20 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return disabledValues ? result.map(disableValue) : result;
   }, [refList, getLabeledValue, getOptionFromFetchedItem, incomeValueFunc, outcomeValueFunc, disabledValues]);
 
+  const singleValueTitle = useMemo(() => {
+    if (mode === 'multiple' || mode === 'tags')
+      return undefined;
+
+    const labeledValue = wrapValue(value, options);
+    if (Array.isArray(labeledValue))
+      return undefined;
+
+    if (typeof labeledValue?.label === 'string')
+      return labeledValue.label;
+
+    return typeof placeholder === 'string' ? placeholder : undefined;
+  }, [mode, options, placeholder, value]);
+
   const handleChange = (_: CustomLabeledValue<TValue>, option: any): void => {
     if (!Boolean(onChange)) return;
     const selectedValue =
@@ -155,6 +169,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return (
       <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
         {...commonSelectProps}
+        title={singleValueTitle}
         popupMatchSelectWidth={false}
         style={{ width: 'max-content', height: 'max-content' }}
         placeholder={placeholder}
@@ -188,6 +203,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       {...commonSelectProps}
+      title={singleValueTitle}
       style={{ ...style }}
       showSearch
       mode={mode}
@@ -212,7 +228,13 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
       } : {})}
     >
       {options?.map(({ value: localValue, label, data, disabled }) => (
-        <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
+        <Select.Option
+          value={localValue}
+          key={localValue}
+          data={data}
+          disabled={disabled}
+          title={typeof label === 'string' ? label : undefined}
+        >
           {label}
         </Select.Option>
       ))}

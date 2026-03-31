@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { FullscreenOutlined } from '@ant-design/icons';
 import {
   getMustacheFunctionDefinitions,
 } from '@/utils/mustacheExpressionFunctions';
@@ -53,6 +54,8 @@ export interface ExpressionEditorProps {
   placeholder?: string;
   className?: string;
   focusRows?: number;
+  inline?: boolean;
+  allowExpand?: boolean;
 }
 
 export interface BuildExpressionContextFromPathsOptions {
@@ -483,8 +486,11 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   placeholder = 'Expression',
   className,
   focusRows = 6,
+  inline = false,
+  allowExpand = false,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [suggestions, setSuggestions] = useState<ExpressionSuggestion[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -512,7 +518,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     () => highlightText(value ?? '', knownFunctionNames),
     [knownFunctionNames, value],
   );
-  const showDropdown = isFocused && suggestions.length > 0;
+  const showDropdown = isFocused && isExpanded && suggestions.length > 0;
 
   const updateSuggestions = useCallback((text: string, cursorPos: number) => {
     const result = getSuggestions(text, cursorPos, context, functionDefinitions);
@@ -523,6 +529,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const closeEditor = useCallback(() => {
     setIsFocused(false);
     setSuggestions([]);
+    setIsExpanded(false);
   }, []);
 
   const updateFloatingPosition = useCallback(() => {
@@ -548,12 +555,30 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     if (disabled) return;
 
     setIsFocused(true);
+    setIsExpanded(!inline);
     updateFloatingPosition();
     requestAnimationFrame(() => {
       const textarea = textareaRef.current;
       if (!textarea) return;
 
       const cursorPos = textarea.value.length;
+      textarea.focus();
+      textarea.setSelectionRange(cursorPos, cursorPos);
+      updateSuggestions(textarea.value, cursorPos);
+    });
+  }, [disabled, inline, updateFloatingPosition, updateSuggestions]);
+
+  const expandEditor = useCallback(() => {
+    if (disabled) return;
+
+    setIsFocused(true);
+    setIsExpanded(true);
+    updateFloatingPosition();
+    requestAnimationFrame(() => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      const cursorPos = textarea.selectionStart ?? textarea.value.length;
       textarea.focus();
       textarea.setSelectionRange(cursorPos, cursorPos);
       updateSuggestions(textarea.value, cursorPos);
@@ -692,7 +717,8 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   }, [activeIndex, showDropdown]);
 
   useEffect(() => {
-    if (!isFocused) return;
+    if (!isFocused || !isExpanded)
+      return undefined;
 
     updateFloatingPosition();
     const handleWindowChange = (): void => updateFloatingPosition();
@@ -703,10 +729,11 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       window.removeEventListener('resize', handleWindowChange);
       window.removeEventListener('scroll', handleWindowChange, true);
     };
-  }, [isFocused, updateFloatingPosition]);
+  }, [isExpanded, isFocused, updateFloatingPosition]);
 
   useEffect(() => {
-    if (!isFocused) return;
+    if (!isFocused)
+      return undefined;
 
     const handleOutsideClick = (event: MouseEvent): void => {
       const target = event.target as Node | null;
@@ -734,91 +761,117 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const hasValue = Boolean(value?.trim().length);
   const previewText = hasValue ? toPreviewText(value) : placeholder;
 
-  return (
-    <div ref={wrapperRef} className={joinClassNames('sha-expression-editor', className, 'is-expanded', disabled && 'is-disabled')}>
-      <button
-        type="button"
-        className={joinClassNames(
-          'sha-expression-editor-preview',
-          controlClassName,
-          !hasValue && 'is-placeholder',
-        )}
-        onClick={openEditor}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
+  const renderDropdown = (): JSX.Element | false => showDropdown && (
+    <div ref={dropdownRef} className="sha-expression-editor-dropdown">
+      {suggestions.map((suggestion, index) => (
+        <button
+          key={`${suggestion.label}-${index}`}
+          type="button"
+          tabIndex={-1}
+          className={joinClassNames(
+            'sha-expression-editor-dropdown-item',
+            index === activeIndex && 'is-active',
+          )}
+          onMouseDown={(event) => {
             event.preventDefault();
-            openEditor();
-          }
-        }}
-        disabled={disabled}
-      >
-        {previewText}
-      </button>
+            insertSuggestion(suggestion);
+          }}
+          onMouseEnter={() => setActiveIndex(index)}
+        >
+          <span className={joinClassNames('sha-expression-editor-badge', `is-${suggestion.category.toLowerCase()}`)}>
+            {suggestion.category}
+          </span>
+          <span className="sha-expression-editor-item-content">
+            <span className="sha-expression-editor-item-label">{suggestion.label}</span>
+            <span className="sha-expression-editor-item-description">{suggestion.description}</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  );
 
-      {isFocused && typeof document !== 'undefined' && createPortal(
+  const renderEditorSurface = (mode: 'inline' | 'floating'): JSX.Element => (
+    <div className={joinClassNames('sha-expression-editor-overlay', mode === 'floating' && 'sha-expression-editor-overlay--floating')} style={mode === 'floating' ? floatingStyle : undefined}>
+      <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
+        <div className="sha-expression-editor-backdrop-content">
+          {highlightTokens.map((token, index) => (
+            token.className
+              ? (
+                <span key={index} className={token.className}>
+                  {token.text}
+                </span>
+              )
+              : <span key={index}>{token.text}</span>
+          ))}
+          {value.endsWith('\n') && <span>{'\n'}</span>}
+        </div>
+      </div>
+
+      <textarea
+        ref={textareaRef}
+        className={joinClassNames('sha-expression-editor-input', controlClassName)}
+        value={value}
+        rows={mode === 'floating' ? focusRows : (isFocused ? Math.max(3, Math.min(focusRows, 4)) : 1)}
+        onBlur={handleBlur}
+        onFocus={() => setIsFocused(true)}
+        onChange={handleChange}
+        onSelect={handleSelect}
+        onKeyDown={handleKeyDown}
+        onScroll={handleScroll}
+        disabled={disabled}
+        placeholder={placeholder}
+        spellCheck={false}
+      />
+
+      {allowExpand && mode === 'inline' && isFocused && (
+        <button
+          type="button"
+          className="sha-expression-editor-expand"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={expandEditor}
+          disabled={disabled}
+          aria-label="Expand expression editor"
+          title="Expand editor"
+        >
+          <FullscreenOutlined />
+        </button>
+      )}
+
+      {renderDropdown()}
+    </div>
+  );
+
+  return (
+    <div ref={wrapperRef} className={joinClassNames('sha-expression-editor', className, (inline || isExpanded) && 'is-expanded', inline && 'is-inline', disabled && 'is-disabled')}>
+      {inline && !isExpanded ? (
+        renderEditorSurface('inline')
+      ) : (
+        <button
+          type="button"
+          className={joinClassNames(
+            'sha-expression-editor-preview',
+            controlClassName,
+            !hasValue && 'is-placeholder',
+          )}
+          onClick={openEditor}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              openEditor();
+            }
+          }}
+          disabled={disabled}
+        >
+          {previewText}
+        </button>
+      )}
+
+      {isFocused && isExpanded && typeof document !== 'undefined' && createPortal(
         <div
           ref={overlayRef}
-          className="sha-expression-editor-overlay sha-expression-editor-overlay--floating"
-          style={floatingStyle}
+          className="sha-expression-editor-portal"
         >
-          <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
-            <div className="sha-expression-editor-backdrop-content">
-              {highlightTokens.map((token, index) => (
-                token.className
-                  ? (
-                    <span key={index} className={token.className}>
-                      {token.text}
-                    </span>
-                  )
-                  : <span key={index}>{token.text}</span>
-              ))}
-              {value.endsWith('\n') && <span>{'\n'}</span>}
-            </div>
-          </div>
-
-          <textarea
-            ref={textareaRef}
-            className={joinClassNames('sha-expression-editor-input', controlClassName)}
-            value={value}
-            rows={focusRows}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            onSelect={handleSelect}
-            onKeyDown={handleKeyDown}
-            onScroll={handleScroll}
-            disabled={disabled}
-            placeholder={placeholder}
-            spellCheck={false}
-          />
-
-          {showDropdown && (
-            <div ref={dropdownRef} className="sha-expression-editor-dropdown">
-              {suggestions.map((suggestion, index) => (
-                <button
-                  key={`${suggestion.label}-${index}`}
-                  type="button"
-                  tabIndex={-1}
-                  className={joinClassNames(
-                    'sha-expression-editor-dropdown-item',
-                    index === activeIndex && 'is-active',
-                  )}
-                  onMouseDown={(event) => {
-                    event.preventDefault();
-                    insertSuggestion(suggestion);
-                  }}
-                  onMouseEnter={() => setActiveIndex(index)}
-                >
-                  <span className={joinClassNames('sha-expression-editor-badge', `is-${suggestion.category.toLowerCase()}`)}>
-                    {suggestion.category}
-                  </span>
-                  <span className="sha-expression-editor-item-content">
-                    <span className="sha-expression-editor-item-label">{suggestion.label}</span>
-                    <span className="sha-expression-editor-item-description">{suggestion.description}</span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
+          {renderEditorSurface('floating')}
         </div>,
         document.body,
       )}

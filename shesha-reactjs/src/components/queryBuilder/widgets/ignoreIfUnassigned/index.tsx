@@ -11,7 +11,7 @@ export const IgnoreIfUnassignedWidget: IgnoreIfUnassignedWidgetType = {
   valueSrc: 'value',
   factory: (props) => {
     const checked = Boolean(props.value);
-    const tooltipText = props.customProps?.title || ignoreIfUnassignedTooltip;
+    const tooltipText = (props.customProps?.title as React.ReactNode) || ignoreIfUnassignedTooltip;
 
     return (
       <Tooltip title={tooltipText} placement="right">

@@ -2,7 +2,9 @@ import React from 'react';
 import { HolderOutlined } from '@ant-design/icons';
 import type { RuleProps } from '@react-awesome-query-builder/antd';
 
-export const RuleDragHandlePlaceholder = (props: RuleProps): JSX.Element | null => {
+type RulePropsWithReorder = RuleProps & { parentFieldCanReorder?: boolean };
+
+export const RuleDragHandlePlaceholder = (props: RulePropsWithReorder): JSX.Element | null => {
   const { config, reordableNodesCnt, isLocked, parentField, parentFieldCanReorder } = props;
 
   const canReorder = config?.settings?.canReorder !== false;

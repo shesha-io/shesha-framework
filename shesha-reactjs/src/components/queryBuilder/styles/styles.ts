@@ -812,14 +812,21 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-sizing: border-box;
             transition: background-color 0.15s ease, color 0.15s ease;
             border: 0;
+            outline: none;
+            box-shadow: none;
+            border-radius: 0;
             background: transparent;
             color: rgba(0, 0, 0, 0.45);
+            appearance: none;
+            -webkit-appearance: none;
         }
 
         .sha-query-builder-source-trigger:hover,
         .sha-query-builder-source-trigger:focus-visible {
             color: #1677ff;
             outline: none;
+            box-shadow: none;
+            border-color: transparent;
         }
 
         .sha-query-builder-source-trigger:disabled {
@@ -900,26 +907,55 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             height: 100% !important;
             min-width: 0;
             border: 0 !important;
+            outline: none !important;
             box-shadow: none !important;
             background: transparent !important;
+            border-radius: 0 !important;
         }
 
         .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-selector {
             height: 100% !important;
             min-height: 30px !important;
             border: 0 !important;
+            border-color: transparent !important;
+            outline: none !important;
             box-shadow: none !important;
             background: transparent !important;
             display: flex !important;
             align-items: center !important;
+            border-radius: 0 !important;
+        }
+
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-outlined:not(.${prefixCls}-select-customize-input) .${prefixCls}-select-selector,
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-borderless .${prefixCls}-select-selector {
+            border: 0 !important;
+            border-color: transparent !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+        }
+
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select:hover .${prefixCls}-select-selector,
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-active .${prefixCls}-select-selector,
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-focused .${prefixCls}-select-selector,
+        .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-open .${prefixCls}-select-selector {
+            border: 0 !important;
+            border-color: transparent !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            border-radius: 0 !important;
         }
 
         .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-focused .${prefixCls}-select-selector,
         .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select:focus .${prefixCls}-select-selector,
         .query-builder .rule--field .sha-query-builder-packed-select .${prefixCls}-select-open .${prefixCls}-select-selector {
             border: 0 !important;
+            border-color: transparent !important;
             box-shadow: none !important;
             outline: none !important;
+            border-radius: 0 !important;
         }
 
         /* Source triggers inside packed rule cells — shared base */
@@ -944,6 +980,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             background: #f8fafc;
             color: #344054;
             gap: 4px;
+        }
+
+        .query-builder .rule--fieldsrc .sha-query-builder-source-trigger {
+            display: flex;
+            width: 123px;
+            height: 32px;
+            padding: 10px 5px;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            border-right: 0;
+            box-shadow: none;
+            outline: none;
+            border-radius: 0;
         }
 
         .query-builder .rule--fieldsrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-icon,
@@ -1280,6 +1330,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             background: #fff;
         }
 
+        .query-builder .rule--field {
+            border: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
         .query-builder .rule--field > *,
         .query-builder .rule--operator > *,
         .query-builder .rule--value > * {
@@ -1387,6 +1443,45 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             font-size: 14px !important;
         }
 
+        .query-builder .rule--value .${prefixCls}-picker {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 30px !important;
+            border: 0 !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+        }
+
+        .query-builder .rule--value .${prefixCls}-picker:hover,
+        .query-builder .rule--value .${prefixCls}-picker-focused,
+        .query-builder .rule--value .${prefixCls}-picker:focus,
+        .query-builder .rule--value .${prefixCls}-picker:focus-within {
+            border: 0 !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
+            border-radius: 0 !important;
+        }
+
+        .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-input,
+        .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-input > input {
+            height: 100% !important;
+            min-height: 30px !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            outline: none !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+        }
+
+        .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-suffix,
+        .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-clear {
+            align-self: center;
+        }
+
         /* Focus ring on the container instead of the child */
 
         .query-builder .rule--field:focus-within,
@@ -1462,7 +1557,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--value .sha-query-builder-mustache-expression-input {
             flex: 1 1 0 !important;
             min-width: 0 !important;
-            width: 0 !important;
+            width: 100% !important;
             height: 30px !important;
             max-height: 30px !important;
             display: flex !important;
@@ -1476,26 +1571,239 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             position: static !important;
         }
 
-        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-preview {
-            flex: 1 1 0 !important;
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-overlay {
+            position: relative !important;
+            inset: auto !important;
+            width: 100% !important;
             min-width: 0 !important;
-            width: 0 !important;
-            height: 30px !important;
+            max-width: 100% !important;
+        }
+
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-backdrop,
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-input {
             border: 0 !important;
             border-radius: 0 !important;
             box-shadow: none !important;
             background: transparent !important;
-            padding: 0 12px !important;
+        }
+
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-backdrop-content,
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-input {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            padding-left: 12px !important;
+            padding-right: 32px !important;
             line-height: 30px !important;
             font-size: 14px !important;
-            display: block !important;
+        }
+
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-backdrop-content {
             white-space: nowrap !important;
             overflow: hidden !important;
             text-overflow: ellipsis !important;
-            text-align: left !important;
+        }
+
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-input {
+            min-height: 30px !important;
+            height: 30px !important;
+            resize: none !important;
+        }
+
+        .query-builder .rule--value .sha-query-builder-mustache-expression-input .sha-expression-editor-expand {
+            right: 6px !important;
+            bottom: 6px !important;
+        }
+
+        .query-builder .rule--value .widget--func:has(.sha-query-builder-mustache-expression-input) {
+            width: 100% !important;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            display: flex !important;
+            align-items: stretch !important;
+            gap: 0 !important;
+        }
+
+        .query-builder .rule--value .rule--widget:has(.sha-query-builder-mustache-expression-input) {
+            width: 100% !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: stretch !important;
+            gap: 0 !important;
+        }
+
+        .query-builder .rule--value .rule--widget:has(.sha-query-builder-mustache-expression-input) > .widget--valuesrc {
+            flex: 0 0 auto !important;
+        }
+
+        .query-builder .rule--value .rule--widget:has(.sha-query-builder-mustache-expression-input) > .widget--func {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: stretch !important;
+        }
+
+        .query-builder .rule--value .widget--func:has(.sha-query-builder-mustache-expression-input) .widget--valuesrc {
+            flex: 0 0 auto !important;
+            width: auto !important;
+        }
+
+        .query-builder .rule--value .widget--func:has(.sha-query-builder-mustache-expression-input) .sha-query-builder-mustache-expression-input {
+            flex: 1 1 auto !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+        }
+
+        .query-builder .rule--value .rule--func--wrapper:has([class*="rule--func--EVALUATE_"][class*="--args"]) {
+            width: 100% !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: stretch !important;
+        }
+
+        .query-builder .rule--value .rule--func--wrapper:has([class*="rule--func--EVALUATE_"][class*="--args"]) > .rule--func,
+        .query-builder .rule--value .rule--func--wrapper:has([class*="rule--func--EVALUATE_"][class*="--args"]) > .rule--func--bracket-before,
+        .query-builder .rule--value .rule--func--wrapper:has([class*="rule--func--EVALUATE_"][class*="--args"]) > .rule--func--bracket-after {
+            display: none !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--EVALUATE_"][class*="--args"] {
+            width: 100% !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: stretch !important;
+            gap: 0 !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--EVALUATE_"][class*="--arg--expression"] {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: stretch !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--EVALUATE_"][class*="--arg--expression"] .rule--func--arg-value,
+        .query-builder .rule--value [class*="rule--func--EVALUATE_"][class*="--arg--expression"] .rule--func--arg-value > .rule--widget,
+        .query-builder .rule--value [class*="rule--func--EVALUATE_"][class*="--arg--expression"] .widget--widget {
+            flex: 1 1 auto !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: stretch !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--EVALUATE_"][class*="--arg--ignoreIfUnassigned"] {
+            flex: 0 0 48px !important;
+            width: 48px !important;
+            min-width: 48px !important;
+            display: flex !important;
+            align-items: stretch !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--EVALUATE_"][class*="--arg--ignoreIfUnassigned"] .rule--func--arg-sep {
+            display: none !important;
+        }
+
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) {
+            height: auto !important;
+            max-height: none !important;
+            min-height: 72px !important;
+            align-items: stretch !important;
+            width: auto !important;
+            max-width: 100% !important;
+        }
+
+        .query-builder .rule.group-or-rule:has(.sha-query-builder-mustache-expression-input:focus-within) {
+            align-items: stretch !important;
+        }
+
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) .rule--widget,
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) .widget--widget,
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) .widget--func {
+            height: auto !important;
+            min-height: 72px !important;
+            align-items: stretch !important;
+            width: auto !important;
+            max-width: 100% !important;
+        }
+
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) .sha-query-builder-mustache-expression-input,
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) .sha-query-builder-mustache-expression-input .sha-expression-editor-overlay {
+            height: auto !important;
+            max-height: none !important;
+            min-height: 72px !important;
+            align-items: stretch !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
+
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) .sha-query-builder-mustache-expression-input .sha-expression-editor-backdrop-content,
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) .sha-query-builder-mustache-expression-input .sha-expression-editor-input {
+            min-height: 72px !important;
+            height: 100% !important;
+            line-height: 20px !important;
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
+            white-space: pre-wrap !important;
+        }
+
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) .sha-query-builder-mustache-expression-input .sha-expression-editor-backdrop-content {
+            display: block !important;
+            align-items: flex-start !important;
+        }
+
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) [class*="rule--func--arg--ignoreIfUnassigned"] {
+            height: auto !important;
+            min-height: 72px !important;
+            align-items: stretch !important;
+            width: 48px !important;
+            min-width: 48px !important;
+            padding: 0 8px !important;
+            border-left: 1px solid #d0d5dd !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) [class*="rule--func--arg--ignoreIfUnassigned"] .rule--func--arg-value,
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) [class*="rule--func--arg--ignoreIfUnassigned"] .rule--func--arg-value > .rule--widget,
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) [class*="rule--func--arg--ignoreIfUnassigned"] .widget--widget,
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input:focus-within) [class*="rule--func--arg--ignoreIfUnassigned"] .sha-query-builder-ignore-unassigned {
+            height: 100% !important;
+            min-height: 72px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .sha-query-builder-ignore-unassigned {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            width: 100% !important;
+        }
+
+        .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-wrapper,
+        .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
         }
 
         /* ── Ignore-if-unassigned: compact right-side addon with divider ── */
+
+        .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input) [class*="rule--func--arg--ignoreIfUnassigned"] {
+            flex: 0 0 48px !important;
+            width: 48px !important;
+            min-width: 48px !important;
+            padding: 0 8px !important;
+            border-left: 1px solid #d0d5dd !important;
+            opacity: 1 !important;
+            overflow: hidden !important;
+            pointer-events: auto !important;
+        }
 
         .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] {
             flex: 0 0 auto !important;

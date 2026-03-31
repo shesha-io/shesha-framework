@@ -4,7 +4,8 @@ import { QueryBuilderRenderContext } from './renderContext';
 import { IQueryBuilderProps } from './interfaces';
 import { usePrevious } from 'react-use';
 import { useStyles } from './styles/styles';
-import { getRootLogicLabel, normalizeTreeForJsonLogic } from './treeRelations';
+import { getRootLogicLabel, normalizeTreeForJsonLogic, IPlainTreeNode } from './treeRelations';
+import type { JsonTree } from '@react-awesome-query-builder/antd';
 import {
   Query,
   Builder,
@@ -59,7 +60,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 
   const renderBuilder = (props: BuilderProps): JSX.Element => {
     const children1 = props.tree?.getIn?.(['children1']);
-    const hasRules = Boolean(children1 && children1?.size > 0);
+    const hasRules = Boolean(children1 && (children1 as { size?: number })?.size > 0);
     const plainTree = props.tree ? QbUtils.getTree(props.tree) : undefined;
     const logicHeading = getRootLogicLabel(plainTree);
 
@@ -79,7 +80,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 
   const handleChange = (_tree: ImmutableTree, _config: Config): void => {
     if (onChange) {
-      const normalizedTree = QbUtils.loadTree(normalizeTreeForJsonLogic(QbUtils.getTree(_tree)));
+      const normalizedTree = QbUtils.loadTree(normalizeTreeForJsonLogic(QbUtils.getTree(_tree) as unknown as IPlainTreeNode) as unknown as JsonTree);
       const jsonLogicResult = QbUtils.jsonLogicFormat(normalizedTree, _config);
 
       lastLocallyChangedValue.current = jsonLogicResult.logic;

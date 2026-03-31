@@ -10,8 +10,9 @@ export const BooleanButtonSelectWidget: BooleanButtonSelectWidgetType = {
   ...BasicConfig.widgets.boolean,
   valueSrc: 'value',
   factory: (props) => {
-    const labelYes = props.labelYes ?? 'Yes';
-    const labelNo = props.labelNo ?? 'No';
+    const extProps = props as typeof props & { labelYes?: string; labelNo?: string };
+    const labelYes = extProps.labelYes ?? 'Yes';
+    const labelNo = extProps.labelNo ?? 'No';
 
     return (
       <Segmented

@@ -2,7 +2,7 @@ import React from 'react';
 import { BasicConfig } from '@react-awesome-query-builder/antd';
 import type { BaseWidget, TextFieldSettings } from '@react-awesome-query-builder/antd';
 import { ExpressionEditor, buildExpressionContextFromPaths } from '@/components/expressionEditor';
-import { buildExpressionContextFromMetadata, mergeExpressionContexts } from '@/components/expressionEditor/contextMetadata';
+import { buildExpressionContextFromMetadata, mergeExpressionContexts, ExpressionContextTree } from '@/components/expressionEditor/contextMetadata';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { useQueryBuilderState } from '@/providers/queryBuilder';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
@@ -46,8 +46,8 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
   );
   const context = React.useMemo(
     () => mergeExpressionContexts(
-      { ...fieldContext },
-      constantsContext ?? {},
+      fieldContext as unknown as ExpressionContextTree,
+      (constantsContext ?? {}) as ExpressionContextTree,
     ),
     [constantsContext, fieldContext],
   );
@@ -60,6 +60,8 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
       context={context}
       className="sha-query-builder-mustache-expression-input"
       placeholder="Expression"
+      inline
+      allowExpand
     />
   );
 };

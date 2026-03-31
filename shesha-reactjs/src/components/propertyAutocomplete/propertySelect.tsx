@@ -18,7 +18,7 @@ import {
   ISpecification,
   metadataHasNestedProperties,
 } from '@/interfaces/metadata';
-import { Select, Tooltip } from 'antd';
+import { Select, SelectProps, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useQueryBuilder } from '@/providers';
 
@@ -31,6 +31,7 @@ export interface IPropertySelectProps {
   dropdownStyle?: CSSProperties;
   size?: SizeType;
   placeholder?: string;
+  variant?: SelectProps['variant'];
   onChange?: (value: string) => void;
   onSelect?: (value: string, selectedProperty: IPropertyItem) => void;
   readOnly?: boolean;
@@ -55,6 +56,15 @@ interface IAutocompleteState {
   propertyItems: IPropertyItem[];
   prefix: string;
 }
+
+const getOptionTitle = (option: IOption | undefined): string | undefined => {
+  if (!option)
+    return undefined;
+
+  return typeof option.label === 'string'
+    ? option.label
+    : option.value;
+};
 
 const getFullPath = (path: string, prefix: string): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
@@ -231,8 +241,15 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     props.onChange?.(null);
   };
 
+  const selectedOption = useMemo(
+    () => state.options.find((option) => option.value === props.value),
+    [props.value, state.options],
+  );
+  const title = getOptionTitle(selectedOption) ?? props.value ?? props.placeholder;
+
   return (
     <Select
+      title={title}
       onSelect={onSelect}
       value={props.value}
       showSearch
@@ -242,12 +259,12 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
       options={state.options}
       style={{ minWidth: "150px", ...props.style }}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
+      variant={props.variant}
       popupMatchSelectWidth={false}
       allowClear
       onClear={onClear}
       placeholder={props.placeholder}
-    >
-    </Select>
+    />
   );
 };
 

@@ -8,6 +8,11 @@
   box-sizing: border-box;
 }
 
+.sha-expression-editor.is-inline {
+  display: flex;
+  align-items: stretch;
+}
+
 .sha-expression-editor-control {
   width: 100%;
   border: 1px solid #d9d9d9;
@@ -65,6 +70,12 @@
   z-index: 2;
 }
 
+.sha-expression-editor.is-inline .sha-expression-editor-input {
+  min-height: 100%;
+  resize: none;
+  padding: 0 32px 0 12px;
+}
+
 .sha-expression-editor-overlay {
   position: absolute;
   left: 0;
@@ -77,10 +88,26 @@
   box-sizing: border-box;
 }
 
+.sha-expression-editor.is-inline .sha-expression-editor-overlay {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  z-index: auto;
+}
+
 .sha-expression-editor-overlay--floating {
   right: auto;
   min-width: 0;
   max-width: calc(100vw - 24px);
+}
+
+.sha-expression-editor-portal {
+  position: absolute;
+  inset: 0;
 }
 
 .sha-expression-editor-backdrop {
@@ -110,6 +137,12 @@
   line-height: 20px;
   min-height: 100%;
   box-sizing: border-box;
+}
+
+.sha-expression-editor.is-inline .sha-expression-editor-backdrop-content {
+  padding: 0 32px 0 12px;
+  display: flex;
+  align-items: center;
 }
 
 .sha-expression-editor-backdrop-content > span {
@@ -181,6 +214,36 @@
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
   z-index: 1200;
+}
+
+.sha-expression-editor-expand {
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #98a2b3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.sha-expression-editor-expand:hover,
+.sha-expression-editor-expand:focus-visible {
+  color: #1677ff;
+  background: rgba(22, 119, 255, 0.08);
+  outline: none;
+}
+
+.sha-expression-editor-expand:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .sha-expression-editor-dropdown-item {

@@ -63,6 +63,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
         size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
         onSelect={onSelect}
         placeholder={placeholder}
+        variant="borderless"
         isPropertyVisible={isPropertyVisible}
         isPropertySelectable={isPropertySelectable}
       />

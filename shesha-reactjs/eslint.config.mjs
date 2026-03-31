@@ -184,6 +184,8 @@ const baseTsConfig = {
     ignores: [
         "src/apis/*",
         "**/__tests__/**/*",
+        "**/*.test.ts",
+        "**/*.test.tsx",
     ],
     plugins: {
         "memory-monitor": memoryTracePlugin,

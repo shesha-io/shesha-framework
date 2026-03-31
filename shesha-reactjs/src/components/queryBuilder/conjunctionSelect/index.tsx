@@ -1,6 +1,8 @@
 import React from 'react';
 import { Select } from 'antd';
-import type { ConjsProps, ConjunctionOption, FactoryWithContext } from '@react-awesome-query-builder/antd';
+import type { ConjsProps, ConjunctionOption, FactoryWithContext, Settings } from '@react-awesome-query-builder/antd';
+
+type SettingsWithRenderSize = Settings & { renderSize?: 'small' | 'medium' | 'large' };
 
 export const ConjunctionSelect: FactoryWithContext<ConjsProps> = (props) => {
   const {
@@ -41,7 +43,7 @@ export const ConjunctionSelect: FactoryWithContext<ConjsProps> = (props) => {
         onChange={handleChange}
         disabled={Boolean(readonly || disabled)}
         popupMatchSelectWidth={false}
-        size={config?.settings?.renderSize === 'medium' ? 'middle' : config?.settings?.renderSize}
+        size={(config?.settings as SettingsWithRenderSize)?.renderSize === 'medium' ? 'middle' : (config?.settings as SettingsWithRenderSize)?.renderSize as 'small' | 'large' | undefined}
       />
     </div>
   );

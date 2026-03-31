@@ -1,8 +1,10 @@
+import type { JsonTree } from '@react-awesome-query-builder/antd';
+
 const NOT_OPTION_VALUE = '__NOT__';
 
 type RelationValue = 'AND' | 'OR' | typeof NOT_OPTION_VALUE;
 
-interface IPlainTreeNode {
+export interface IPlainTreeNode {
   id?: string;
   type?: string;
   children1?: IPlainTreeNode[];
@@ -119,9 +121,9 @@ export const normalizeTreeForJsonLogic = <T extends IPlainTreeNode>(tree?: T): T
   normalizeNodeForExport(tree) as T | undefined
 );
 
-export const getRootLogicLabel = (tree?: IPlainTreeNode): string => {
-  const normalizedTree = normalizeTreeForJsonLogic(tree);
-  const conjunction = normalizedTree?.properties?.conjunction;
+export const getRootLogicLabel = (tree?: IPlainTreeNode | JsonTree): string => {
+  const normalizedTree = normalizeTreeForJsonLogic(tree as IPlainTreeNode);
+  const conjunction = (normalizedTree?.properties as Record<string, unknown>)?.conjunction;
 
   if (conjunction === 'OR')
     return 'Show any...';
