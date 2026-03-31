@@ -983,13 +983,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .rule--fieldsrc .sha-query-builder-source-trigger {
-            display: flex;
-            width: 123px;
-            height: 32px;
-            padding: 10px 5px;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
             border-right: 0;
             box-shadow: none;
             outline: none;
