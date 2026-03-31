@@ -22,6 +22,12 @@ namespace Shesha.Domain
         public virtual string FileVersion { get; set; }
         [StringLength(100)]
         public virtual string ProductVersion { get; set; }
+        /// <summary>
+        /// CI/CD build identifier read from AssemblyMetadata("BuildId") at startup.
+        /// Falls back to ProductVersion until the pipeline is configured to embed BuildId.
+        /// </summary>
+        [StringLength(100)]
+        public virtual string BuildId { get; set; }
         public virtual ApplicationStartup ApplicationStartup { get; set; }
 
         /// <summary>
