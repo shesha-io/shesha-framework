@@ -118,7 +118,7 @@ namespace Shesha.Authorization
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity), validFrom, expiresOn);
 
             var personId = loginResult.User != null
-                ? await _personRepository.GetAll()
+                ? await (await _personRepository.GetAllAsync())
                     .Where(p => p.User == loginResult.User)
                     .OrderBy(p => p.CreationTime)
                     .Select(p => p.Id)
@@ -156,7 +156,6 @@ namespace Shesha.Authorization
         /// </summary>
         /// <returns>New JWT token with fresh expiration</returns>
         [HttpPost]
-        [Authorize]
         public async Task<RefreshTokenResultModel> RefreshTokenAsync()
         {
             // 1. Get current user from JWT claims
