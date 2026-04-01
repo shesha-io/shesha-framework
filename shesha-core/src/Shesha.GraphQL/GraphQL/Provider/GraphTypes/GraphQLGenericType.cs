@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Shesha.GraphQL.Provider.GraphTypes
 {
@@ -42,10 +41,6 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
             var genericType = typeof(TModel);
 
-            if (genericType.Name.Contains("FormConfiguration")) 
-            { 
-            }
-
             Name = MakeName(typeof(TModel));
 
             var propsInfo = genericType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -66,16 +61,17 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                     var nestedEntityIdName = $"{property.Name}Id";
 
                     // skip if property already declared
-                    if (!properties.Any(p => p.Name.Equals(nestedEntityIdName, StringComparison.InvariantCultureIgnoreCase))) 
+                    if (!properties.Any(p => p.Name.Equals(nestedEntityIdName, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         var idType = property.PropertyType.GetEntityIdType();
 
-                        Field(GraphTypeMapper.GetGraphType(idType, isInput: false), nestedEntityIdName, $"Id of the {property.Name}",
-                            resolve: context => {
+                        Field(nestedEntityIdName, GraphTypeMapper.GetGraphType(idType, isInput: false))
+                            .Description($"Id of the {property.Name}")
+                            .Resolve(context =>
+                            {
                                 var nestedEntity = property.GetValue(context.Source);
                                 return nestedEntity?.GetId();
-                            }
-                        );
+                            });
                     }
                 }
             }
@@ -85,28 +81,45 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             {
                 var displayNameProperty = typeof(TModel).GetEntityConfiguration()?.DisplayNamePropertyInfo;
 
-                // add displayName
-                FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.DisplayNameField, "Entity display name",
-                    resolve: context => {
-                        var value = displayNameProperty != null
-                            ? displayNameProperty.GetValue(context.Source)
-                            : "";
-                        return Task.FromResult(value);
-                    }
-                );
+                    // add displayName
+                    //FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.DisplayNameField, "Entity display name",
+                    //    resolve: context => {
+                    //        var value = displayNameProperty != null
+                    //            ? displayNameProperty.GetValue(context.Source)
+                    //            : "";
+                    //        return Task.FromResult(value);
+                    //    }
+                    //);
+                    Field(EntityConstants.DisplayNameField, GraphTypeMapper.GetGraphType(typeof(string), isInput: false))
+                        .Description("Entity display name")
+                        .Resolve(context => {
+                            var value = displayNameProperty != null
+                                ? displayNameProperty.GetValue(context.Source)
+                                : "";
+                            return value;
+                        });
 
-                // add className
-                FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.ClassNameField, "Entity class name",
-                    resolve: context => {
-                        var type = context.Source != null
-                            ? context.Source.GetType().StripCastleProxyType()
-                            : typeof(TModel);
+                    // add className
+                    //    FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.ClassNameField, "Entity class name",
+                    //    resolve: context => {
+                    //        var type = context.Source != null
+                    //            ? context.Source.GetType().StripCastleProxyType()
+                    //            : typeof(TModel);
 
-                        return Task.FromResult(type.FullName as object);
-                    }
-                );
+                    //        return Task.FromResult(type.FullName as object);
+                    //    }
+                    //);
+                    Field(EntityConstants.ClassNameField, GraphTypeMapper.GetGraphType(typeof(string), isInput: false))
+                        .Description("Entity class name")
+                        .Resolve(context => {
+                            var type = context.Source != null
+                                ? context.Source.GetType().StripCastleProxyType()
+                                : typeof(TModel);
 
-                AsyncHelper.RunSync(async () => {
+                            return type.FullName;
+                        });
+
+                    AsyncHelper.RunSync(async () => {
                     using (var uow = _unitOfWorkManager.Begin())
                     {
                         var properties = await _entityConfigCache.GetEntityPropertiesAsync(typeof(TModel));
@@ -117,13 +130,20 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             if (!alreadyDeclared) 
                             {
                                 var propType = await _dynamicDtoTypeBuilder.GetDtoPropertyTypeAsync(dynamicProp, new DynamicDtoTypeBuildingContext());
-                                FieldAsync(GraphTypeMapper.GetGraphType(propType, isInput: false), dynamicProp.Name, dynamicProp.Description,
-                                    resolve: async context => {
-                                        var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
-                                        return value;
-                                    }
-                                );
-                            }                            
+
+                                    //FieldAsync(GraphTypeMapper.GetGraphType(propType, isInput: false), dynamicProp.Name, dynamicProp.Description,
+                                    //    resolve: async context => {
+                                    //        var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
+                                    //        return value;
+                                    //    }
+                                    //);
+                                    Field(dynamicProp.Name, GraphTypeMapper.GetGraphType(propType, isInput: false))
+                                        .Description(dynamicProp.Description)
+                                        .ResolveAsync(async context => {
+                                            var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
+                                            return value;
+                                        });
+                                }                            
                         }
                         await uow.CompleteAsync();
                     }
@@ -152,44 +172,47 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
             if (propertyInfo.PropertyType.IsJsonEntityType())
             {
-                Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {
-                    var jsonEntity = propertyInfo.GetValue(context.Source) as IJsonEntity;
-                    return jsonEntity != null
-                        ? new RawJson(jsonEntity)
-                        : null;
-                });
+                Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false))
+                    .Resolve(context => {
+                        var jsonEntity = propertyInfo.GetValue(context.Source) as IJsonEntity;
+                        return jsonEntity != null
+                            ? new RawJson(jsonEntity)
+                            : null;
+                    });
                 return;
             }
 
             if (propertyInfo.GetCustomAttribute<SaveAsJsonAttribute>() != null)
             {
-                Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {
-                    var jsonValue = propertyInfo.GetValue(context.Source);
-                    return jsonValue != null
-                        ? new RawJson(jsonValue)
-                        : null;
-                });
+                Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false))
+                    .Resolve(context => {
+                        var jsonValue = propertyInfo.GetValue(context.Source);
+                        return jsonValue != null
+                            ? new RawJson(jsonValue)
+                            : null;
+                    });
                 return;
             }
 
             if (typeof(Geometry).IsAssignableFrom(propertyInfo.PropertyType))
             {
-                Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {
-                    var geometry = propertyInfo.GetValue(context.Source) as Geometry;
-                    if (geometry == null)
-                        return null;
+                Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false))
+                    .Resolve(context => {
+                        var geometry = propertyInfo.GetValue(context.Source) as Geometry;
+                        if (geometry == null)
+                            return null;
 
-                    var serializer = GeoJsonSerializer.Create();
-                    using (var stringWriter = new StringWriter())
-                    {
-                        using (var jsonWriter = new JsonTextWriter(stringWriter))
+                        var serializer = GeoJsonSerializer.Create();
+                        using (var stringWriter = new StringWriter())
                         {
-                            serializer.Serialize(jsonWriter, geometry);
-                            var geoJson = stringWriter.ToString();
-                            return new RawJson(new JsonString(geoJson));
+                            using (var jsonWriter = new JsonTextWriter(stringWriter))
+                            {
+                                serializer.Serialize(jsonWriter, geometry);
+                                var geoJson = stringWriter.ToString();
+                                return new RawJson(new JsonString(geoJson));
+                            }
                         }
-                    }
-                });
+                    });                    
                 return;
             }
 
@@ -198,36 +221,32 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 var gtn = typeof(Int64);
                 var gqlListType = GraphTypeMapper.GetGraphType(gtn, isInput: false);
                 var listType = typeof(ListGraphType<>).MakeGenericType(gqlListType);
-                Field(listType, propertyInfo.Name, resolve: context => {
-                    var rawValue = propertyInfo.GetValue(context.Source);
-                    var arrayValue = rawValue != null
-                                ? EntityExtensions.DecomposeIntoBitFlagComponents((Int64)System.Convert.ChangeType(rawValue, typeof(Int64)))
-                                : new Int64[0];
 
-                    return arrayValue;
-                });
+                Field(propertyInfo.Name, listType)
+                    .Resolve(context => {
+                        var rawValue = propertyInfo.GetValue(context.Source);
+                        var arrayValue = rawValue != null
+                                    ? EntityExtensions.DecomposeIntoBitFlagComponents((Int64)System.Convert.ChangeType(rawValue, typeof(Int64)))
+                                    : new Int64[0];
+
+                        return arrayValue;
+                    });
                 return;
             }
 
             if (isDictionary || propertyInfo.PropertyType.Namespace != null && !propertyInfo.PropertyType.Namespace.StartsWith("System"))
             {
                 if (propertyInfo.PropertyType.IsEnum)
-                    Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name, resolve: context => Convert.ToInt32(propertyInfo.GetValue(context.Source)));
+                    Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false)).Resolve(context => Convert.ToInt32(propertyInfo.GetValue(context.Source)));
                 else
                 {
                     var gqlType = Assembly.GetAssembly(typeof(ISchema)).GetTypes().FirstOrDefault(t => t.Name == $"{typeName}Type" && t.IsAssignableTo(typeof(IGraphType)));
-                    /*
-                    gqlType ??= isDictionary
-                        ? propertyInfo.PropertyType.IsAssignableTo(typeof(ExtraPropertyDictionary))
-                            ? typeof(AbpExtraPropertyGraphType)
-                            : MakeDictionaryType(propertyInfo)
-                        : typeof(GraphQLGenericType<>).MakeGenericType(propertyInfo.PropertyType);
-                    */
+                    
                     gqlType ??= isDictionary
                         ? MakeDictionaryType(propertyInfo)
                         : typeof(GraphQLGenericType<>).MakeGenericType(propertyInfo.PropertyType);
 
-                    Field(gqlType, propertyInfo.Name);
+                    Field(propertyInfo.Name, gqlType);
                 }
             }
             else
@@ -242,125 +261,149 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             var gtn = propertyInfo.PropertyType.GetGenericArguments().First();
                             var gqlListType = GraphTypeMapper.GetGraphType(gtn, isInput: false);
                             var listType = typeof(ListGraphType<>).MakeGenericType(gqlListType);
-                            Field(listType, propertyInfo.Name);
+                            Field(propertyInfo.Name, listType);
                             break;
                         }
-                    case nameof(Guid): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
-                    case nameof(Boolean): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
-                    case nameof(Int32): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
-                    case nameof(Int64): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
-                    case nameof(Int16): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
-                    case nameof(Single): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
-                    case nameof(Double): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
-                    case nameof(Decimal): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
-                    case nameof(Byte): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name, resolve: context => Convert.ToInt32(propertyInfo.GetValue(context.Source))); break;
-                    case nameof(DateTime): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
+                    case nameof(Byte): Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false)).Resolve(context => Convert.ToInt32(propertyInfo.GetValue(context.Source))); break;
+
                     case "Nullable`1":
                         {
                             var underlyingType = Nullable.GetUnderlyingType(propertyInfo.PropertyType);
                             if (underlyingType.IsEnum)
                             {
+                                Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                    .Resolve(context =>
+                                    {
+                                        var nullableEnum = propertyInfo.GetValue(context.Source);
 
-                                Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                {
-                                    var nullableEnum = propertyInfo.GetValue(context.Source);
+                                        if (nullableEnum == null)
+                                            return null;
 
-                                    if (nullableEnum == null)
-                                        return null;
-
-                                    var numericValue = Convert.ChangeType(nullableEnum, typeof(Int64));
-                                    return numericValue;
-                                });
+                                        var numericValue = Convert.ChangeType(nullableEnum, typeof(Int64));
+                                        return numericValue;
+                                    });
+                                break;
                             }
                             else
                             {
                                 switch (underlyingType.Name)
                                 {
                                     case nameof(Guid):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableGuid = propertyInfo.GetValue(context.Source) as Guid?;
-                                            if (nullableGuid.HasValue) return nullableGuid.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as Guid?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(Int32):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableInt = propertyInfo.GetValue(context.Source) as int?;
-                                            if (nullableInt.HasValue) return nullableInt.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as int?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(Byte):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableByte = propertyInfo.GetValue(context.Source) as byte?;
-                                            if (nullableByte.HasValue) return nullableByte.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as byte?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(Int16):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableShort = propertyInfo.GetValue(context.Source) as short?;
-                                            if (nullableShort.HasValue) return nullableShort.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as short?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(Int64):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableLong = propertyInfo.GetValue(context.Source) as long?;
-                                            if (nullableLong.HasValue) return nullableLong.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as long?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(Double):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableDouble = propertyInfo.GetValue(context.Source) as double?;
-                                            if (nullableDouble.HasValue) return nullableDouble.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as double?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(Single):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableSingle = propertyInfo.GetValue(context.Source) as float?;
-                                            if (nullableSingle.HasValue) return nullableSingle.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as float?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(Boolean):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableBoolean = propertyInfo.GetValue(context.Source) as bool?;
-                                            if (nullableBoolean.HasValue) return nullableBoolean.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as bool?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(Decimal):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableDecimal = propertyInfo.GetValue(context.Source) as decimal?;
-                                            if (nullableDecimal.HasValue) return nullableDecimal.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as decimal?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(DateTime):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableDateTime = propertyInfo.GetValue(context.Source) as DateTime?;
-                                            if (nullableDateTime.HasValue) return nullableDateTime.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as DateTime?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                     case nameof(TimeSpan):
-                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
-                                        {
-                                            var nullableTimeSpan = propertyInfo.GetValue(context.Source) as TimeSpan?;
-                                            if (nullableTimeSpan.HasValue) return nullableTimeSpan.Value;
-                                            else return null;
-                                        }); break;
+                                        Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(underlyingType, isInput: false))
+                                            .Resolve(context =>
+                                            {
+                                                var nullableGuid = propertyInfo.GetValue(context.Source) as TimeSpan?;
+                                                if (nullableGuid.HasValue) return nullableGuid.Value;
+                                                else return null;
+                                            });
+                                        break;
                                 }
                             }
                         }
                         break;
                     case nameof(String):
+                    case nameof(Guid):
+                    case nameof(Boolean):
+                    case nameof(Int32):
+                    case nameof(Int64):
+                    case nameof(Int16):
+                    case nameof(Single):
+                    case nameof(Double):
+                    case nameof(Decimal):
+                    case nameof(DateTime):
                     default: 
                         {
-                            Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); 
+                            Field(propertyInfo.Name, GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false)); 
                             break;
                         } 
                 }

@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using GraphQL;
 using GraphQL.SystemTextJson;
-using GraphQL.Validation.Complexity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,7 +28,7 @@ namespace Shesha.GraphQL.Provider
             _serviceProvider = serviceProvider;
         }
 
-        public virtual async Task<ExecutionResult> /*Task<Dictionary<string, object>>*/ ExecuteAsync(string operationName, string query,
+        public virtual async Task<ExecutionResult> ExecuteAsync(string operationName, string query,
             Dictionary<string, object> variables, string defaultSchemaName = null)
         {
             var schema = await _schemaContainer.GetOrDefaultAsync(operationName, defaultSchemaName);
@@ -57,7 +56,6 @@ namespace Shesha.GraphQL.Provider
 #if DEBUG
                 _.ThrowOnUnhandledException = true;
 #endif
-                _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
                 _.RequestServices = _serviceProvider;
 
             });

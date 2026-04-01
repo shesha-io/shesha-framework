@@ -14,7 +14,7 @@
     <PackageVersion Include="ElmahCore.Postgresql" Version="2.1.2" />
     <PackageVersion Include="ElmahCore.Sql" Version="2.1.2" />
     <PackageVersion Include="FluentMigrator" Version="8.0.1" />
-    <PackageVersion Include="GraphQL.Server.Ui.Playground" Version="6.1.0" />
+    <PackageVersion Include="GraphQL.Server.Ui.Playground" Version="8.3.3" />
     <PackageVersion Include="Hangfire.Core" Version="1.8.23" />
     <PackageVersion Include="Hangfire.PostgreSql" Version="1.21.1" />
     <PackageVersion Include="Hangfire.SqlServer" Version="1.8.23" />

@@ -6,7 +6,7 @@
     <PackageVersion Include="Abp.AutoMapper" Version="10.3.0" />
     <PackageVersion Include="Abp.Castle.Log4Net" Version="10.3.0" />
     <PackageVersion Include="Abp.FluentValidation" Version="10.3.0" />
-    <PackageVersion Include="Abp.HangFire.AspNetCore" Version="9.0.0" />
+    <PackageVersion Include="Abp.HangFire.AspNetCore" Version="10.3.0" />
     <PackageVersion Include="Abp.MemoryDb" Version="10.3.0" />
     <PackageVersion Include="Abp.TestBase" Version="10.3.0" />
     <PackageVersion Include="Abp.Zero.Common" Version="10.3.0" />
@@ -25,12 +25,12 @@
     <PackageVersion Include="FluentMigrator.Runner" Version="8.0.1" />
     <PackageVersion Include="FluentMigrator.Runner.Postgres" Version="8.0.1" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
-    <PackageVersion Include="GraphQL" Version="5.3.0" />
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="5.3.0" />
-    <PackageVersion Include="GraphQL.NewtonsoftJson" Version="5.3.0" />
-    <PackageVersion Include="GraphQL.Server.All" Version="6.1.0" />
-    <PackageVersion Include="GraphQL.Server.Ui.Playground" Version="6.1.0" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="5.3.0" />
+    <PackageVersion Include="GraphQL" Version="8.8.4" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
+    <PackageVersion Include="GraphQL.NewtonsoftJson" Version="8.8.4" />
+    <PackageVersion Include="GraphQL.Server.All" Version="8.3.3" />
+    <PackageVersion Include="GraphQL.Server.Ui.Playground" Version="8.3.3" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
     <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.23" />
     <PackageVersion Include="Hangfire.Core" Version="1.8.23" />
     <PackageVersion Include="Hangfire.PostgreSql" Version="1.21.1" />
