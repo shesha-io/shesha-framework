@@ -15,7 +15,7 @@ export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyl
       display: flex;
       align-items: center;
       width: fit-content;
-      margin: ${readOnly ? '0 ' + sheshaStyles.paddingLG + 'px' : '0'} !important;
+      margin: ${readOnly ? `0 ${sheshaStyles.paddingLG}px` : '0'} !important;
       ${dimensionsStyles};
 
       > span {
