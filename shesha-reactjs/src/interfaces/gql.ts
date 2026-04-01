@@ -65,7 +65,7 @@ export interface GetAllResponse<TItem> {
 
 export interface EntityData {
   id: string | number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type IAbpWrappedResponse<TResponse, TError = ErrorInfo> = AbpWrappedResponse<TResponse, TError>;

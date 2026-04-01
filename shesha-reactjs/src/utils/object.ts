@@ -208,3 +208,13 @@ export const getStringPropertyOrUndefined = (obj: object, key: string | null | u
   }
   return undefined;
 };
+
+export const getFirstNonEmptyStringPropertyOrUndefined = (obj: object, keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = getStringPropertyOrUndefined(obj, key);
+    if (value !== undefined) {
+      return value;
+    }
+  }
+  return undefined;
+};
