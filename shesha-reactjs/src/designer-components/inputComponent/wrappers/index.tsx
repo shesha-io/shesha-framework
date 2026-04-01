@@ -43,6 +43,7 @@ import { KeyInformationBarColumnsWrapper } from "./keyInformationBarColumns";
 import { SizableColumnsConfigWrapper } from "./sizableColumnsConfig";
 import { LayerSelectorSettingsModalWrapper } from "./layerSelectorSettingsModal";
 import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
+import { UnwrapCodeEvaluators } from "@/index";
 
 
 type InputType = ISettingsInputProps['type'];
@@ -50,7 +51,7 @@ type InputType = ISettingsInputProps['type'];
 export type EditorComponent = FC<ISettingsInputProps>;
 
 type EditorDictionary = {
-  [K in InputType]: FC<BaseInputProps & { type: K }>;
+  [K in InputType]: FC<UnwrapCodeEvaluators<BaseInputProps & { type: K }>> | FC<BaseInputProps & { type: K }>;
 };
 
 export const editorRegistry: EditorDictionary = {
@@ -80,7 +81,7 @@ export const editorRegistry: EditorDictionary = {
   columnsList: ColumnsListWrapper,
   labelValueEditor: LabelValueEditorWrapper,
   componentSelector: ComponentSelectorWrapper,
-  itemListConfiguratorModal: ItemListConfiguratorModalWrapper as any,
+  itemListConfiguratorModal: ItemListConfiguratorModalWrapper,
   dataSortingEditor: DataSortingEditorWrapper,
   queryBuilder: QueryBuilderWrapper,
   filtersList: FiltersListWrapper,
@@ -90,7 +91,7 @@ export const editorRegistry: EditorDictionary = {
   RefListItemSelectorSettingsModal: RefListItemSelectorSettingsModalWrapper,
   Password: PasswordWrapper,
   date: DateWrapper,
-  layerSelectorSettingsModal: LayerSelectorSettingsModalWrapper as any,
+  layerSelectorSettingsModal: LayerSelectorSettingsModalWrapper,
   // TODO: check usages and remove or implement wrapper
   settingsInput: undefined,
   endpointsAutocomplete: EndpointsAutocompleteWrapper,

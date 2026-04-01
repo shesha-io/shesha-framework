@@ -267,32 +267,21 @@ export const createModalApi = (
     confirm: (args: ConfirmModalArgs): Promise<boolean> => {
       const { title = 'Confirm', content, okText = 'Yes', cancelText = 'No', okType = 'primary' } = args;
 
-      // Use Ant Design's modal API if available, otherwise use the static Modal.confirm
-      if (modalApi) {
-        return new Promise<boolean>((resolve) => {
-          modalApi.confirm({
-            title,
-            content,
-            okText,
-            cancelText,
-            okType,
-            onOk: () => resolve(true),
-            onCancel: () => resolve(false),
-          });
-        });
-      } else {
-        return new Promise<boolean>((resolve) => {
-          AntModal.confirm({
-            title,
-            content,
-            okText,
-            cancelText,
-            okType,
-            onOk: () => resolve(true),
-            onCancel: () => resolve(false),
-          });
-        });
-      }
+      return new Promise<boolean>((resolve) => {
+        const options = {
+          title,
+          content,
+          okText,
+          cancelText,
+          okType,
+          onOk: () => resolve(true),
+          onCancel: () => resolve(false),
+        };
+
+        // Use Ant Design's modal API if available, otherwise use the static Modal.confirm
+        const confirmFn = modalApi ? modalApi.confirm : AntModal.confirm;
+        confirmFn(options);
+      });
     },
 
     warning: createAlertHandler('warning', 'Warning', modalApi),
