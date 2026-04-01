@@ -9,4 +9,8 @@ export interface IQueryBuilderComponentProps extends IConfigurableFormComponent 
 }
 export type IQueryBuilderComponentPropsUnwrapped = UnwrapCodeEvaluators<IQueryBuilderComponentProps>;
 
-export type QueryBuilderComponentDefinition = ComponentDefinition<"queryBuilder", IQueryBuilderComponentProps>;
+export type QueryBuilderCalculatedProps = {
+  modelType: string | IEntityTypeIdentifier | undefined;
+};
+
+export type QueryBuilderComponentDefinition = ComponentDefinition<"queryBuilder", IQueryBuilderComponentProps, QueryBuilderCalculatedProps>;

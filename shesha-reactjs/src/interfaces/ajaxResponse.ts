@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { IErrorInfo } from './errorInfo';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IAjaxResponseCommon {
   targetUrl?: string | null;
@@ -20,7 +20,7 @@ export interface IAjaxErrorResponse extends IAjaxResponseCommon {
 export type IAjaxResponse<T> = IAjaxSuccessResponse<T> | IAjaxErrorResponse;
 export type IAjaxResponseBase = IAjaxResponseCommon | IAjaxErrorResponse;
 
-export const isAjaxSuccessResponse = <T>(value: IAjaxResponse<T>): value is IAjaxSuccessResponse<T> => value && value.success === true;
+export const isAjaxSuccessResponse = <T>(value: IAjaxResponse<T>): value is IAjaxSuccessResponse<T> => isDefined(value) && value.success === true;
 export const isAjaxErrorResponse = (value: unknown): value is IAjaxErrorResponse => isDefined(value) && typeof (value) === 'object' && "success" in value && value.success === false;
 
 export const isAxiosResponse = (value: unknown): value is AxiosResponse => {
@@ -32,5 +32,7 @@ export const extractAjaxResponse = <T>(response: IAjaxResponse<T>, errorMessage?
   if (isAjaxSuccessResponse(response))
     return response.result;
   else
-    throw errorMessage ? new Error(errorMessage, { cause: response?.error }) : new Error(response?.error?.message);
+    throw !isNullOrWhiteSpace(errorMessage)
+      ? new Error(errorMessage, { cause: response.error })
+      : new Error(response.error.message ?? "Unknown error");
 };
