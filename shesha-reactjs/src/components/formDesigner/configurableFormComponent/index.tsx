@@ -3,7 +3,6 @@ import DragWrapper from './dragWrapper';
 import FormComponent from '../formComponent';
 import React, {
   FC,
-  MutableRefObject,
   memo,
   useMemo,
   useRef,
@@ -37,7 +36,7 @@ export interface IConfigurableFormComponentDesignerProps {
   componentModel: IComponentModelProps;
   selectedComponentId?: string;
   readOnly?: boolean;
-  settingsPanelRef?: MutableRefObject<HTMLElement>;
+  settingsPanelElement?: HTMLDivElement | null;
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
@@ -45,7 +44,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   componentModel,
   selectedComponentId,
   readOnly,
-  settingsPanelRef,
+  settingsPanelElement,
   hidden,
   componentEditMode,
 }) => {
@@ -125,7 +124,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // when typing in the properties panel. The portal is created once and the component
   // receives updates through its own internal state management.
   const settingsEditor = useMemo(() => {
-    const renderRequired = isSelected && settingsPanelRef?.current;
+    const renderRequired = isSelected && settingsPanelElement;
 
     if (!renderRequired)
       return null;
@@ -142,10 +141,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
           toolboxComponent={component}
         />
       </div>
-    ), settingsPanelRef.current, "propertiesPanel");
+    ), settingsPanelElement, "propertiesPanel");
 
     return result;
-  }, [isSelected, settingsPanelRef, readOnly, component]);
+  }, [isSelected, settingsPanelElement, readOnly, component]);
 
   // Extract margins from ORIGINAL component styling (both stylingBox and custom styles)
   // Custom style margins take precedence over stylingBox margins
@@ -305,7 +304,7 @@ const ConfigurableFormComponentDesignerMemo = memo(ConfigurableFormComponentDesi
 
 export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = (props) => {
   const allData = useAvailableConstantsData({ topContextId: DataContextTopLevels.All });
-  const { settingsPanelRef } = useFormDesigner();
+  const { settingsPanelElement } = useFormDesigner();
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const readOnly = useFormDesignerReadOnly();
   const isEditMode = (value: unknown): value is EditMode =>
@@ -321,7 +320,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
     };
   }, [props.componentModel, allData]);
 
-  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
+  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelElement, hidden, componentEditMode }} />;
 };
 
 export interface IConfigurableFormComponentProps {
