@@ -82,8 +82,8 @@ const typeModifiers: IDictionary<TypeModifier> = {
     operators: [
       'equal',
       'not_equal',
-      'is_empty',
-      'is_not_empty',
+      'is_null',
+      'is_not_null',
       'like',
       'not_like',
       'starts_with',
@@ -110,8 +110,8 @@ const typeModifiers: IDictionary<TypeModifier> = {
     operators: [
       'equal',
       'not_equal',
-      'is_empty',
-      'is_not_empty',
+      'is_null',
+      'is_not_null',
     ],
   },
 };
@@ -122,11 +122,10 @@ for (const typeName in typeModifiers) {
   }
 };
 
-// remove proximity search
-delete standardOperators.proximity;
+const { proximity: _proximity, ...operatorsWithoutProximity } = standardOperators;
 
 const operators = {
-  ...standardOperators,
+  ...operatorsWithoutProximity,
   equal: {
     ...standardOperators.equal,
     label: 'is',
@@ -181,25 +180,15 @@ const operators = {
     labelForFormat: 'ends with',
     jsonLogic: 'endsWith',
   },
-  is_empty: {
-    ...standardOperators.is_empty,
+  is_null: {
+    ...standardOperators.is_null,
     label: 'is empty',
     labelForFormat: 'is empty',
   },
-  is_not_empty: {
-    ...standardOperators.is_not_empty,
-    label: 'is not empty',
-    labelForFormat: 'is not empty',
-  },
-  is_null: {
-    ...standardOperators.is_null,
-    label: 'is blank',
-    labelForFormat: 'is blank',
-  },
   is_not_null: {
     ...standardOperators.is_not_null,
-    label: 'is not blank',
-    labelForFormat: 'is not blank',
+    label: 'is not empty',
+    labelForFormat: 'is not empty',
   },
   some: {
     ...standardOperators.some,

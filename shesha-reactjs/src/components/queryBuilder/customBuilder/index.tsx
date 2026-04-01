@@ -202,11 +202,11 @@ const getOperatorOptionsForType = (config: Config, typeName: string): Array<{ la
   }));
 };
 
-const getOperatorCardinality = (config: Config, field?: string, operator?: string): number => {
-  if (!field || !operator)
+const getOperatorCardinality = (config: Config, operator?: string): number => {
+  if (!operator)
     return 1;
 
-  const operatorDefinition = QbUtils.ConfigUtils.getOperatorConfig(config, operator, field);
+  const operatorDefinition = config.operators?.[operator] as { cardinality?: number } | undefined;
   return typeof operatorDefinition?.cardinality === 'number' ? operatorDefinition.cardinality : 1;
 };
 
@@ -581,7 +581,7 @@ const FunctionValueEditor: React.FC<{
 };
 
 /** Parse a field-side func expression value back into { expression, ignoreIfUnassigned }. */
-const parseFieldFuncExpression = (field: string | undefined): { expression: string; ignoreIfUnassigned: boolean } => {
+const parseFieldFuncExpression = (field: unknown): { expression: string; ignoreIfUnassigned: boolean } => {
   if (!field || typeof field !== 'object')
     return { expression: '', ignoreIfUnassigned: false };
 
@@ -619,7 +619,7 @@ const FieldFunctionEditor: React.FC<{
   actions: BuilderProps['actions'];
   config: Config;
   path: string[];
-  field: string | undefined;
+  field: unknown;
   readOnly: boolean;
 }> = ({ actions, config, field, path, readOnly }) => {
   const { expression, ignoreIfUnassigned } = React.useMemo(() => parseFieldFuncExpression(field), [field]);
@@ -694,14 +694,14 @@ const RuleValueEditor: React.FC<{
   const valueErrors = Array.isArray(properties.valueError) ? properties.valueError : [];
   const fieldDefinition = selectedField ? QbUtils.ConfigUtils.getFieldConfig(config, selectedField) : null;
   const fieldType = properties.fieldType ?? (fieldDefinition as { type?: string } | null)?.type;
-  const cardinality = getOperatorCardinality(config, selectedField, selectedOperator);
+  const cardinality = getOperatorCardinality(config, selectedOperator);
 
   if (!selectedField || !selectedOperator) {
     return <div className="sha-query-builder-value-shell sha-query-builder-value-shell--empty" />;
   }
 
   if (cardinality === 0) {
-    return <div className="sha-query-builder-value-shell sha-query-builder-value-shell--empty" />;
+    return null;
   }
 
   if (isBooleanFieldType(fieldType)) {
@@ -857,9 +857,10 @@ const QueryRuleRow: React.FC<IRuleProps> = (props) => {
 
   // path.length === 2 is root-level; each nested group adds 1. Wrap layout at depth 3+.
   const isDeepNested = path.length >= 4;
+  const isUnaryOperator = getOperatorCardinality(config, selectedOperator) === 0;
 
   return (
-    <div className={classNames('sha-query-builder-rule-row', isFieldFunc && 'has-field-func', isDeepNested && 'is-deep-nested')}>
+    <div className={classNames('sha-query-builder-rule-row', isFieldFunc && 'has-field-func', isDeepNested && 'is-deep-nested', isUnaryOperator && 'is-unary')}>
       <div
         className={classNames(
           isFieldFunc
@@ -1009,7 +1010,6 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
             path={path}
             config={config}
             actions={actions}
-            tree={tree}
             readOnly={readOnly}
           />
         )}

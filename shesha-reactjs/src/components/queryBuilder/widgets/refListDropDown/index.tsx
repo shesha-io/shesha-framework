@@ -10,7 +10,10 @@ const RefListDropdownWidget: RefListDropdownWidgetType = {
   type: 'refList',
   factory: (props) => {
     const { fieldDefinition, value, setValue, readonly } = props;
-    const customSettings = fieldDefinition.fieldSettings as CustomFieldSettings;
+    const customSettings = fieldDefinition?.fieldSettings as CustomFieldSettings | undefined;
+
+    if (!customSettings?.referenceListName)
+      return null;
 
     const onChange = (v): void => {
       setValue(v);

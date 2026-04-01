@@ -262,6 +262,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             grid-template-columns: minmax(0, 418px) 155px minmax(0, 418px);
         }
 
+        .sha-query-builder-rule-row.is-unary {
+            grid-template-columns: minmax(0, 1fr) auto;
+        }
+
+        .sha-query-builder-rule-row.is-unary .sha-query-builder-packed-control {
+            width: auto;
+            max-width: 418px;
+        }
+
         .sha-query-builder-rule-row.is-deep-nested {
             display: flex;
             flex-wrap: wrap;
