@@ -1,6 +1,7 @@
 import { App } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer } from 'react';
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
+import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';
@@ -27,6 +28,10 @@ import { showDialogArgumentsFormFactory } from './configurable-actions/show-dial
 import { throwError } from '@/utils/errors';
 import { getLatestInstance } from './utils';
 import { createModalApi, IModalApi, createFallbackModalApi } from './modalApi';
+
+type IDynamicModalActionExecutionContext = IActionExecutionContext & {
+  configurableActionsDispatcherProxy?: FC<PropsWithChildren>;
+};
 
 
 const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -68,15 +73,15 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
     actionDependencies,
   );
 
-  const removeModal = (id: string): void => {
+  const removeModal = useCallback((id: string): void => {
     dispatch(removeModalAction(id));
-  };
+  }, []);
 
-  const createModal = (modalProps: IModalProps): void => {
+  const createModal = useCallback((modalProps: IModalProps): void => {
     dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
-  };
+  }, []);
 
-  useConfigurableAction<IShowModalActionArguments>(
+  useConfigurableAction<IShowModalActionArguments, unknown, IDynamicModalActionExecutionContext>(
     {
       name: 'Show Dialog',
       owner: 'Common',
@@ -122,7 +127,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
                 else
                   reject(result);
               },
-              wrapper: context["configurableActionsDispatcherProxy"] as FC<PropsWithChildren> | undefined,
+              wrapper: context.configurableActionsDispatcherProxy,
             };
 
             createModal({ ...modalProps });
@@ -276,9 +281,11 @@ function useModalApi(): IModalApi {
 /**
  * Hook to get the modal API with fallback if provider is not available
  * Use this in contexts where DynamicModalProvider may not be available
- * @returns Modal API instance (with limited functionality if provider is not available)
+ * @returns Modal API instance with full functionality when provider is available,
+ * or a fallback API with limited functionality (only static methods like confirm, warning, etc.) when provider is not available.
+ * Note: This hook always returns an IModalApi object, never undefined.
  */
-function useModalApiOrUndefined(): IModalApi {
+function useModalApiWithFallback(): IModalApi {
   const modals = useDynamicModalsOrUndefined();
   const { modal: antModalApi } = App.useApp();
 
@@ -302,6 +309,6 @@ export {
   useDynamicModalsOrUndefined,
   useModal,
   useModalApi,
-  useModalApiOrUndefined,
+  useModalApiWithFallback,
 };
 export type { IModalApi };

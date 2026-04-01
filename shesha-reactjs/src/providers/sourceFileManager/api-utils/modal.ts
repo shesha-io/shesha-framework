@@ -32,9 +32,9 @@ export interface ShowFormModalArgs {
   /** Form mode - defaults to 'edit' */
   mode?: FormMode;
   /** Arguments to pass to the form */
-  formArguments?: any;
+  formArguments?: Record<string, unknown>;
   /** Initial values for the form */
-  initialValues?: any;
+  initialValues?: Record<string, unknown>;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
   /** Footer buttons configuration */
@@ -75,14 +75,14 @@ export interface AlertModalArgs {
 export interface ShowContentModalArgs {
   /** Modal title */
   title?: string;
-  /** Modal content (HTML string or React elements) */
-  content: any;
+  /** Modal content - HTML string that will be rendered in the modal body */
+  content: string;
   /** Modal width */
   width?: ModalWidth;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
-  /** Custom footer content */
-  footer?: any;
+  /** Custom footer content - HTML string that will be rendered in the modal footer */
+  footer?: string;
 }
 
 /**
@@ -109,7 +109,7 @@ export interface ModalApi {
    *   initialValues: data
    * });
    */
-  showForm: <T = any>(args: ShowFormModalArgs) => Promise<T>;
+  showForm: <T = unknown>(args: ShowFormModalArgs) => Promise<T>;
 
   /**
    * Show a confirmation dialog (Yes/No)
@@ -187,6 +187,6 @@ export interface ModalApi {
    *   width: '800px'
    * });
    */
-  showContent: <T = any>(args: ShowContentModalArgs) => Promise<T>;
+  showContent: <T = unknown>(args: ShowContentModalArgs) => Promise<T>;
 }
 `;

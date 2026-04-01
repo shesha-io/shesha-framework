@@ -10,7 +10,7 @@ export const LayerSelectorSettingsModalWrapper: FCUnwrapped<ILayerSelectorSettin
       value={value}
       onChange={(e) => onChange(e)}
       readOnly={readOnly}
-      settings={settings}
+      settings={settings as any}
     />
   );
 };

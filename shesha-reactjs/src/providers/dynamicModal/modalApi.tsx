@@ -147,6 +147,32 @@ const getWidthFromPreset = (width?: ModalWidth): string | number | undefined => 
 };
 
 /**
+ * Helper factory to create alert handlers (warning, info, error, success)
+ * Reduces code duplication by centralizing the alert handler logic
+ * @param type - The type of alert ('warning' | 'info' | 'error' | 'success')
+ * @param defaultTitle - Default title for the alert dialog
+ * @param modalApi - Optional Ant Design modal API from App.useApp()
+ * @returns Function that handles alert modal arguments and returns a promise
+ */
+const createAlertHandler = (
+  type: 'warning' | 'info' | 'error' | 'success',
+  defaultTitle: string,
+  modalApi?: ReturnType<typeof App.useApp>['modal'],
+) => {
+  return (args: AlertModalArgs): Promise<void> => {
+    const { title = defaultTitle, content, okText = 'OK' } = args;
+    return new Promise<void>((resolve) => {
+      const config: ModalFuncProps = { title, content, okText, onOk: () => resolve() };
+      if (modalApi) {
+        modalApi[type](config);
+      } else {
+        AntModal[type](config);
+      }
+    });
+  };
+};
+
+/**
  * Create a fallback modal API when DynamicModalProvider is not available
  * Only static methods (confirm, warning, info, error, success) are available
  * showForm and showContent will throw errors
@@ -160,14 +186,8 @@ export const createFallbackModalApi = (
   };
 
   return {
-    showForm: () => {
-      notAvailableError();
-      return Promise.reject(new Error('Modal API not available'));
-    },
-    showContent: () => {
-      notAvailableError();
-      return Promise.reject(new Error('Modal API not available'));
-    },
+    showForm: () => notAvailableError(),
+    showContent: () => notAvailableError(),
     confirm: (args: ConfirmModalArgs): Promise<boolean> => {
       const { title = 'Confirm', content, okText = 'Yes', cancelText = 'No', okType = 'primary' } = args;
       return new Promise<boolean>((resolve) => {
@@ -187,50 +207,10 @@ export const createFallbackModalApi = (
         }
       });
     },
-    warning: (args: AlertModalArgs): Promise<void> => {
-      const { title = 'Warning', content, okText = 'OK' } = args;
-      return new Promise<void>((resolve) => {
-        const config: ModalFuncProps = { title, content, okText, onOk: () => resolve() };
-        if (modalApi) {
-          modalApi.warning(config);
-        } else {
-          AntModal.warning(config);
-        }
-      });
-    },
-    info: (args: AlertModalArgs): Promise<void> => {
-      const { title = 'Information', content, okText = 'OK' } = args;
-      return new Promise<void>((resolve) => {
-        const config: ModalFuncProps = { title, content, okText, onOk: () => resolve() };
-        if (modalApi) {
-          modalApi.info(config);
-        } else {
-          AntModal.info(config);
-        }
-      });
-    },
-    error: (args: AlertModalArgs): Promise<void> => {
-      const { title = 'Error', content, okText = 'OK' } = args;
-      return new Promise<void>((resolve) => {
-        const config: ModalFuncProps = { title, content, okText, onOk: () => resolve() };
-        if (modalApi) {
-          modalApi.error(config);
-        } else {
-          AntModal.error(config);
-        }
-      });
-    },
-    success: (args: AlertModalArgs): Promise<void> => {
-      const { title = 'Success', content, okText = 'OK' } = args;
-      return new Promise<void>((resolve) => {
-        const config: ModalFuncProps = { title, content, okText, onOk: () => resolve() };
-        if (modalApi) {
-          modalApi.success(config);
-        } else {
-          AntModal.success(config);
-        }
-      });
-    },
+    warning: createAlertHandler('warning', 'Warning', modalApi),
+    info: createAlertHandler('info', 'Information', modalApi),
+    error: createAlertHandler('error', 'Error', modalApi),
+    success: createAlertHandler('success', 'Success', modalApi),
   };
 };
 
@@ -315,81 +295,10 @@ export const createModalApi = (
       }
     },
 
-    warning: (args: AlertModalArgs): Promise<void> => {
-      const { title = 'Warning', content, okText = 'OK' } = args;
-
-      return new Promise<void>((resolve) => {
-        const config: ModalFuncProps = {
-          title,
-          content,
-          okText,
-          onOk: () => resolve(),
-        };
-
-        if (modalApi) {
-          modalApi.warning(config);
-        } else {
-          AntModal.warning(config);
-        }
-      });
-    },
-
-    info: (args: AlertModalArgs): Promise<void> => {
-      const { title = 'Information', content, okText = 'OK' } = args;
-
-      return new Promise<void>((resolve) => {
-        const config: ModalFuncProps = {
-          title,
-          content,
-          okText,
-          onOk: () => resolve(),
-        };
-
-        if (modalApi) {
-          modalApi.info(config);
-        } else {
-          AntModal.info(config);
-        }
-      });
-    },
-
-    error: (args: AlertModalArgs): Promise<void> => {
-      const { title = 'Error', content, okText = 'OK' } = args;
-
-      return new Promise<void>((resolve) => {
-        const config: ModalFuncProps = {
-          title,
-          content,
-          okText,
-          onOk: () => resolve(),
-        };
-
-        if (modalApi) {
-          modalApi.error(config);
-        } else {
-          AntModal.error(config);
-        }
-      });
-    },
-
-    success: (args: AlertModalArgs): Promise<void> => {
-      const { title = 'Success', content, okText = 'OK' } = args;
-
-      return new Promise<void>((resolve) => {
-        const config: ModalFuncProps = {
-          title,
-          content,
-          okText,
-          onOk: () => resolve(),
-        };
-
-        if (modalApi) {
-          modalApi.success(config);
-        } else {
-          AntModal.success(config);
-        }
-      });
-    },
+    warning: createAlertHandler('warning', 'Warning', modalApi),
+    info: createAlertHandler('info', 'Information', modalApi),
+    error: createAlertHandler('error', 'Error', modalApi),
+    success: createAlertHandler('success', 'Success', modalApi),
 
     showContent: <T = unknown>(args: ShowContentModalArgs): Promise<T> => {
       const modalId = nanoid();

@@ -80,7 +80,7 @@ export const editorRegistry: EditorDictionary = {
   columnsList: ColumnsListWrapper,
   labelValueEditor: LabelValueEditorWrapper,
   componentSelector: ComponentSelectorWrapper,
-  itemListConfiguratorModal: ItemListConfiguratorModalWrapper,
+  itemListConfiguratorModal: ItemListConfiguratorModalWrapper as any,
   dataSortingEditor: DataSortingEditorWrapper,
   queryBuilder: QueryBuilderWrapper,
   filtersList: FiltersListWrapper,
@@ -90,7 +90,7 @@ export const editorRegistry: EditorDictionary = {
   RefListItemSelectorSettingsModal: RefListItemSelectorSettingsModalWrapper,
   Password: PasswordWrapper,
   date: DateWrapper,
-  layerSelectorSettingsModal: LayerSelectorSettingsModalWrapper,
+  layerSelectorSettingsModal: LayerSelectorSettingsModalWrapper as any,
   // TODO: check usages and remove or implement wrapper
   settingsInput: undefined,
   endpointsAutocomplete: EndpointsAutocompleteWrapper,

@@ -21,7 +21,7 @@ interface ISubFormWrapperProps
 
 export const SubFormWrapper: FC<UnwrapCodeEvaluators<ISubFormWrapperProps>> = ({ style, ...props }) => {
   return (
-    <SubFormProvider {...props} key={props.id}>
+    <SubFormProvider {...props as any} key={props.id}>
       <SubForm style={style} readOnly={props.readOnly} />
     </SubFormProvider>
   );

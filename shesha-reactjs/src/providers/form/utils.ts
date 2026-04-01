@@ -85,7 +85,7 @@ import {
 } from './utils/scripts';
 import { findToolboxComponent, getToolboxComponent } from './utils/markup';
 import { IModalApi } from '../dynamicModal/modalApi';
-import { useModalApiOrUndefined } from '../dynamicModal';
+import { useModalApiWithFallback } from '../dynamicModal';
 import { ExpressionNodeValue } from '@/utils/jsonLogic';
 import { isHasDataGetter } from './touchableProperty';
 import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
@@ -183,7 +183,7 @@ export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((re
 
 const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
-  const modal = useModalApiOrUndefined();
+  const modal = useModalApiWithFallback();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
   const closestContextId = useDataContextOrUndefined()?.id;
