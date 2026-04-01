@@ -98,10 +98,12 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
   if (isSpecification(item)) {
     const value = item.name;
     const label = (
-      <div>
-        {item.description ? <Tooltip title={item.description}><BulbTwoTone twoToneColor="orange" style={{ cursor: 'help' }} /></Tooltip> : <BulbOutlined />}
-        {item.friendlyName}
-      </div>
+      <span className="sha-property-select-option" title={item.friendlyName}>
+        <span className="sha-property-select-option-icon">
+          {item.description ? <Tooltip title={item.description}><BulbTwoTone twoToneColor="orange" style={{ cursor: 'help' }} /></Tooltip> : <BulbOutlined />}
+        </span>
+        <span className="sha-property-select-option-text">{item.friendlyName}</span>
+      </span>
     );
 
     return {
@@ -114,7 +116,12 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
     const property = item as IPropertyMetadata;
     const value = getPropertyItemIdentifier(item, prefix);
     const icon = getIconByPropertyMetadata(property);
-    const label = <div>{icon} {value}</div>;
+    const label = (
+      <span className="sha-property-select-option" title={value}>
+        <span className="sha-property-select-option-icon">{icon}</span>
+        <span className="sha-property-select-option-text">{value}</span>
+      </span>
+    );
 
     return {
       value: value,

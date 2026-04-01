@@ -505,6 +505,11 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     left: 0,
     width: 0,
   });
+  const [inlineDropdownStyle, setInlineDropdownStyle] = useState<React.CSSProperties>({
+    top: 0,
+    left: 0,
+    width: 0,
+  });
 
   const functionDefinitions = useMemo(() => functions ?? getMustacheFunctionDefinitions(), [functions]);
   const knownFunctionNames = useMemo(() => {
@@ -518,7 +523,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     () => highlightText(value ?? '', knownFunctionNames),
     [knownFunctionNames, value],
   );
-  const showDropdown = isFocused && isExpanded && suggestions.length > 0;
+  const showDropdown = isFocused && suggestions.length > 0;
 
   const updateSuggestions = useCallback((text: string, cursorPos: number) => {
     const result = getSuggestions(text, cursorPos, context, functionDefinitions);
@@ -551,12 +556,36 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     });
   }, []);
 
+  const updateInlineDropdownPosition = useCallback(() => {
+    const anchor = wrapperRef.current;
+    if (!anchor) return;
+
+    const rect = anchor.getBoundingClientRect();
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const availableWidth = Math.max(220, viewportWidth - (FLOATING_EDITOR_VIEWPORT_PADDING * 2));
+    const preferredWidth = Math.max(rect.width + 2, 280);
+    const nextWidth = Math.min(360, Math.min(preferredWidth, availableWidth));
+    const minLeft = FLOATING_EDITOR_VIEWPORT_PADDING;
+    const maxLeft = Math.max(minLeft, viewportWidth - FLOATING_EDITOR_VIEWPORT_PADDING - nextWidth);
+    const nextLeft = Math.min(Math.max(rect.left - 1, minLeft), maxLeft);
+
+    setInlineDropdownStyle({
+      top: rect.bottom - 1,
+      left: nextLeft,
+      width: nextWidth,
+    });
+  }, []);
+
   const openEditor = useCallback(() => {
     if (disabled) return;
 
     setIsFocused(true);
     setIsExpanded(!inline);
-    updateFloatingPosition();
+    if (inline) {
+      updateInlineDropdownPosition();
+    } else {
+      updateFloatingPosition();
+    }
     requestAnimationFrame(() => {
       const textarea = textareaRef.current;
       if (!textarea) return;
@@ -565,8 +594,9 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       textarea.focus();
       textarea.setSelectionRange(cursorPos, cursorPos);
       updateSuggestions(textarea.value, cursorPos);
+      updateInlineDropdownPosition();
     });
-  }, [disabled, inline, updateFloatingPosition, updateSuggestions]);
+  }, [disabled, inline, updateFloatingPosition, updateInlineDropdownPosition, updateSuggestions]);
 
   const expandEditor = useCallback(() => {
     if (disabled) return;
@@ -663,7 +693,11 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
 
   const handleBlur = useCallback((event: React.FocusEvent<HTMLTextAreaElement>) => {
     const nextTarget = event.relatedTarget as Node | null;
-    if (nextTarget && (wrapperRef.current?.contains(nextTarget) || overlayRef.current?.contains(nextTarget))) {
+    if (nextTarget && (
+      wrapperRef.current?.contains(nextTarget) ||
+      overlayRef.current?.contains(nextTarget) ||
+      dropdownRef.current?.contains(nextTarget)
+    )) {
       return;
     }
 
@@ -717,11 +751,18 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   }, [activeIndex, showDropdown]);
 
   useEffect(() => {
-    if (!isFocused || !isExpanded)
+    if (!isFocused)
       return undefined;
 
-    updateFloatingPosition();
-    const handleWindowChange = (): void => updateFloatingPosition();
+    const handleWindowChange = (): void => {
+      if (isExpanded) {
+        updateFloatingPosition();
+      } else {
+        updateInlineDropdownPosition();
+      }
+    };
+
+    handleWindowChange();
     window.addEventListener('resize', handleWindowChange);
     window.addEventListener('scroll', handleWindowChange, true);
 
@@ -729,7 +770,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       window.removeEventListener('resize', handleWindowChange);
       window.removeEventListener('scroll', handleWindowChange, true);
     };
-  }, [isExpanded, isFocused, updateFloatingPosition]);
+  }, [isExpanded, isFocused, updateFloatingPosition, updateInlineDropdownPosition]);
 
   useEffect(() => {
     if (!isFocused)
@@ -741,6 +782,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
 
       if (wrapperRef.current?.contains(target)) return;
       if (overlayRef.current?.contains(target)) return;
+      if (dropdownRef.current?.contains(target)) return;
       closeEditor();
     };
 
@@ -761,8 +803,15 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const hasValue = Boolean(value?.trim().length);
   const previewText = hasValue ? toPreviewText(value) : placeholder;
 
-  const renderDropdown = (): JSX.Element | false => showDropdown && (
-    <div ref={dropdownRef} className="sha-expression-editor-dropdown">
+  const renderDropdown = (mode: 'inline' | 'floating'): JSX.Element | false => showDropdown && (
+    <div
+      ref={dropdownRef}
+      className={joinClassNames(
+        'sha-expression-editor-dropdown',
+        mode === 'inline' && 'sha-expression-editor-dropdown--inline',
+      )}
+      style={mode === 'inline' ? inlineDropdownStyle : undefined}
+    >
       {suggestions.map((suggestion, index) => (
         <button
           key={`${suggestion.label}-${index}`}
@@ -790,26 +839,51 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     </div>
   );
 
+  const renderPreviewContent = (): React.ReactNode => {
+    if (!hasValue)
+      return previewText;
+
+    return (
+      <span className="sha-expression-editor-preview-content" aria-hidden="true">
+        {highlightTokens.map((token, index) => (
+          token.className
+            ? (
+              <span key={index} className={token.className}>
+                {token.text}
+              </span>
+            )
+            : <span key={index}>{token.text}</span>
+        ))}
+      </span>
+    );
+  };
+
   const renderEditorSurface = (mode: 'inline' | 'floating'): JSX.Element => (
     <div className={joinClassNames('sha-expression-editor-overlay', mode === 'floating' && 'sha-expression-editor-overlay--floating')} style={mode === 'floating' ? floatingStyle : undefined}>
-      <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
-        <div className="sha-expression-editor-backdrop-content">
-          {highlightTokens.map((token, index) => (
-            token.className
-              ? (
-                <span key={index} className={token.className}>
-                  {token.text}
-                </span>
-              )
-              : <span key={index}>{token.text}</span>
-          ))}
-          {value.endsWith('\n') && <span>{'\n'}</span>}
+      {mode === 'floating' && (
+        <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
+          <div className="sha-expression-editor-backdrop-content">
+            {highlightTokens.map((token, index) => (
+              token.className
+                ? (
+                  <span key={index} className={token.className}>
+                    {token.text}
+                  </span>
+                )
+                : <span key={index}>{token.text}</span>
+            ))}
+            {value.endsWith('\n') && <span>{'\n'}</span>}
+          </div>
         </div>
-      </div>
+      )}
 
       <textarea
         ref={textareaRef}
-        className={joinClassNames('sha-expression-editor-input', controlClassName)}
+        className={joinClassNames(
+          'sha-expression-editor-input',
+          mode === 'inline' && 'sha-expression-editor-input--plain',
+          controlClassName,
+        )}
         value={value}
         rows={mode === 'floating' ? focusRows : (isFocused ? Math.max(3, Math.min(focusRows, 4)) : 1)}
         onBlur={handleBlur}
@@ -837,13 +911,13 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
         </button>
       )}
 
-      {renderDropdown()}
+      {mode === 'floating' && renderDropdown('floating')}
     </div>
   );
 
   return (
     <div ref={wrapperRef} className={joinClassNames('sha-expression-editor', className, (inline || isExpanded) && 'is-expanded', inline && 'is-inline', disabled && 'is-disabled')}>
-      {inline && !isExpanded ? (
+      {inline && !isExpanded && isFocused ? (
         renderEditorSurface('inline')
       ) : (
         <button
@@ -853,6 +927,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
             controlClassName,
             !hasValue && 'is-placeholder',
           )}
+          title={hasValue ? value : placeholder}
           onClick={openEditor}
           onKeyDown={(event) => {
             if (event.key === 'Enter' || event.key === ' ') {
@@ -862,8 +937,13 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
           }}
           disabled={disabled}
         >
-          {previewText}
+          {renderPreviewContent()}
         </button>
+      )}
+
+      {!isExpanded && isFocused && typeof document !== 'undefined' && createPortal(
+        renderDropdown('inline'),
+        document.body,
       )}
 
       {isFocused && isExpanded && typeof document !== 'undefined' && createPortal(

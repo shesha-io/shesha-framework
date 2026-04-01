@@ -87,6 +87,8 @@ interface IBuilderItemProps extends IBuilderItemCommonProps {
 }
 
 interface IGroupProps extends IBuilderItemCommonProps {
+  canDelete: boolean;
+  canDrag: boolean;
   node: IPlainTreeItem;
   path: string[];
   isRoot: boolean;
@@ -535,7 +537,12 @@ const FunctionValueEditor: React.FC<{
       </div>
       <Tooltip title={ignoreIfUnassignedTooltip} placement="top">
         <div className="sha-query-builder-func-checkbox">
-          <span className="sha-query-builder-ignore-unassigned">
+          <span
+            className={classNames(
+              'sha-query-builder-ignore-unassigned',
+              currentValue.ignoreIfUnassigned && 'is-checked',
+            )}
+          >
             <Checkbox
               checked={currentValue.ignoreIfUnassigned}
               disabled={readOnly}
@@ -548,7 +555,7 @@ const FunctionValueEditor: React.FC<{
                 );
               }}
             />
-            {currentValue.ignoreIfUnassigned && <DoubleRightOutlined className="sha-query-builder-ignore-unassigned-icon" />}
+            <DoubleRightOutlined className="sha-query-builder-ignore-unassigned-icon" />
           </span>
         </div>
       </Tooltip>
@@ -796,6 +803,8 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
         {isGroupNode(node) ? (
           // eslint-disable-next-line @typescript-eslint/no-use-before-define
           <QueryBuilderGroup
+            canDelete={canDelete}
+            canDrag={canDrag}
             node={node}
             path={path}
             isRoot={false}
@@ -824,25 +833,26 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
         )}
       </div>
 
-      <QueryBuilderItemRail
-        canDelete={canDelete}
-        canDrag={canDrag}
-        isGroup={isGroupNode(node)}
-        onDelete={() => {
-          if (isGroupNode(node))
-            actions.removeGroup(path);
-          else
+      {!isGroupNode(node) && (
+        <QueryBuilderItemRail
+          canDelete={canDelete}
+          canDrag={canDrag}
+          isGroup={false}
+          onDelete={() => {
             actions.removeRule(path);
-        }}
-        onDragStart={onStartDrag(path)}
-        onDragEnd={onFinishDrag}
-      />
+          }}
+          onDragStart={onStartDrag(path)}
+          onDragEnd={onFinishDrag}
+        />
+      )}
     </div>
   );
 };
 
 function QueryBuilderGroup({
   actions,
+  canDelete,
+  canDrag,
   config,
   dragState,
   dropHint,
@@ -864,11 +874,12 @@ function QueryBuilderGroup({
 
   if (isRoot) {
     const hasChildren = children.length > 0;
+    const headingText = hasChildren ? getRootLogicLabel(node) : 'No filter conditions are applied';
 
     return (
       <div className={classNames('sha-query-builder-surface', !hasChildren && 'is-empty')}>
-        <div className="sha-query-builder-heading">{getRootLogicLabel(node)}</div>
-        <div className="sha-query-builder-filter">
+        <div className="sha-query-builder-heading">{headingText}</div>
+        <div className={classNames('sha-query-builder-filter', !hasChildren && 'is-empty')}>
           <div className="sha-query-builder-filter-body">
             {children.map((child, index) => (
               <QueryBuilderItem
@@ -892,8 +903,9 @@ function QueryBuilderGroup({
                 onDropAppend={onDropAppend}
               />
             ))}
+            {!hasChildren && <div className="sha-query-builder-empty-spacer" aria-hidden="true" />}
           </div>
-          <div className="sha-query-builder-filter-actions">
+          <div className={classNames('sha-query-builder-filter-actions', !hasChildren && 'is-empty')}>
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -932,16 +944,39 @@ function QueryBuilderGroup({
             icon={<PlusOutlined />}
             onClick={() => actions.addRule(path)}
             disabled={groupReadonly}
+            className="sha-query-builder-group-action-button"
+            aria-label="Add Rule"
+            title="Add Rule"
           >
-            Add Rule
           </Button>
           <Button
             icon={<FolderOutlined />}
             onClick={() => actions.addGroup(path)}
             disabled={groupReadonly}
+            className="sha-query-builder-group-action-button"
+            aria-label="Add Group"
+            title="Add Group"
           >
-            Add Group
           </Button>
+          <Button
+            icon={<DeleteOutlined />}
+            onClick={() => actions.removeGroup(path)}
+            disabled={!canDelete}
+            danger
+            className="sha-query-builder-group-action-button sha-query-builder-group-action-button--danger"
+            aria-label="Delete Group"
+            title="Delete Group"
+          />
+          <Button
+            icon={<HolderOutlined />}
+            draggable={canDrag}
+            disabled={!canDrag}
+            onDragStart={onStartDrag(path)}
+            onDragEnd={onFinishDrag}
+            className="sha-query-builder-group-action-button"
+            aria-label="Drag Group"
+            title="Drag Group"
+          />
         </div>
       </div>
 
@@ -1064,6 +1099,8 @@ export const CustomQueryBuilder: React.FC<BuilderProps> = ({ actions, config, tr
 
   return (
     <QueryBuilderGroup
+      canDelete={false}
+      canDrag={false}
       node={plainTree}
       path={rootPath}
       isRoot

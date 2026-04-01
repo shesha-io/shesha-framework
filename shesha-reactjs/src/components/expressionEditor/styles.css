@@ -35,6 +35,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: text;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #1d2939;
+}
+
+.sha-expression-editor-preview-content {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sha-expression-editor-preview.is-placeholder {
@@ -74,6 +85,12 @@
   min-height: 100%;
   resize: none;
   padding: 0 32px 0 12px;
+}
+
+.sha-expression-editor-input--plain {
+  color: #1f1f1f;
+  caret-color: #1f1f1f;
+  -webkit-text-fill-color: currentColor;
 }
 
 .sha-expression-editor-overlay {
@@ -149,41 +166,51 @@
   color: #1f1f1f;
 }
 
-.sha-expression-editor-backdrop-content .hl-bracket {
+.sha-expression-editor-backdrop-content .hl-bracket,
+.sha-expression-editor-preview-content .hl-bracket {
   color: #c2410c;
   font-weight: 700;
 }
 
-.sha-expression-editor-backdrop-content .hl-function {
+.sha-expression-editor-backdrop-content .hl-function,
+.sha-expression-editor-preview-content .hl-function {
   color: #7c3aed;
   font-weight: 600;
 }
 
-.sha-expression-editor-backdrop-content .hl-variable {
+.sha-expression-editor-backdrop-content .hl-variable,
+.sha-expression-editor-preview-content .hl-variable {
   color: #2563eb;
 }
 
-.sha-expression-editor-backdrop-content .hl-string {
+.sha-expression-editor-backdrop-content .hl-string,
+.sha-expression-editor-preview-content .hl-string {
   color: #059669;
 }
 
-.sha-expression-editor-backdrop-content .hl-number {
+.sha-expression-editor-backdrop-content .hl-number,
+.sha-expression-editor-preview-content .hl-number {
   color: #dc2626;
 }
 
-.sha-expression-editor-backdrop-content .hl-keyword {
+.sha-expression-editor-backdrop-content .hl-keyword,
+.sha-expression-editor-preview-content .hl-keyword {
   color: #be185d;
   font-weight: 600;
 }
 
-.sha-expression-editor-backdrop-content .hl-operator {
+.sha-expression-editor-backdrop-content .hl-operator,
+.sha-expression-editor-preview-content .hl-operator {
   color: #9333ea;
   font-weight: 600;
 }
 
 .sha-expression-editor-backdrop-content .hl-paren,
 .sha-expression-editor-backdrop-content .hl-comma,
-.sha-expression-editor-backdrop-content .hl-dot {
+.sha-expression-editor-backdrop-content .hl-dot,
+.sha-expression-editor-preview-content .hl-paren,
+.sha-expression-editor-preview-content .hl-comma,
+.sha-expression-editor-preview-content .hl-dot {
   color: #64748b;
 }
 
@@ -214,6 +241,17 @@
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
   z-index: 1200;
+}
+
+.sha-expression-editor-dropdown--inline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  max-height: 216px;
+  border-top-left-radius: 0;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  z-index: 1400;
 }
 
 .sha-expression-editor-expand {

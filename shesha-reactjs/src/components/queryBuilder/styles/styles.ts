@@ -52,8 +52,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-surface.is-empty {
-            min-height: 88px;
-            padding-top: 10px;
+            min-height: 118px;
+            gap: 16px;
         }
 
         .sha-query-builder-heading {
@@ -74,6 +74,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
         }
 
+        .sha-query-builder-filter.is-empty {
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
         .sha-query-builder-filter-body,
         .sha-query-builder-group-children {
             display: flex;
@@ -84,6 +89,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
         }
 
+        .sha-query-builder-empty-spacer {
+            flex: 1 1 auto;
+            min-height: 8px;
+        }
+
         .sha-query-builder-filter-actions,
         .sha-query-builder-group-actions {
             display: flex;
@@ -91,6 +101,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             align-items: center;
             gap: 10px;
             width: 100%;
+            margin-top: auto;
+        }
+
+        .sha-query-builder-filter-actions.is-empty {
+            justify-content: flex-start;
         }
 
         .sha-query-builder-filter-actions .${prefixCls}-btn,
@@ -128,6 +143,26 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             justify-content: flex-end;
             align-items: center;
             min-height: 32px;
+        }
+
+        .sha-query-builder-group-actions {
+            gap: 8px;
+        }
+
+        .sha-query-builder-group-action-button.${prefixCls}-btn {
+            width: 32px;
+            min-width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 6px;
+        }
+
+        .sha-query-builder-group-action-button.${prefixCls}-btn .${prefixCls}-btn-icon {
+            margin-inline-end: 0;
+        }
+
+        .sha-query-builder-group-action-button.${prefixCls}-btn .anticon {
+            font-size: 16px;
         }
 
         .sha-query-builder-item-row {
@@ -171,6 +206,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             align-items: flex-start;
             padding-top: 6px;
             box-sizing: border-box;
+        }
+
+        .sha-query-builder-item-row.is-group {
+            grid-template-columns: 69px minmax(0, 1fr);
         }
 
         .sha-query-builder-prefix-label {
@@ -225,7 +264,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             width: 64px;
             min-width: 64px;
             height: 58px;
-            background: #fff;
+            background: transparent;
             border-radius: 5px;
             overflow: hidden;
         }
@@ -240,7 +279,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             height: 58px;
             padding: 0;
             border: 0;
-            border-left: 1px solid #eaecf0;
             background: transparent;
             color: #667085;
             display: inline-flex;
@@ -368,17 +406,60 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-shadow: none !important;
         }
 
+        .sha-query-builder-field-slot .${prefixCls}-select-selection-wrap,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-wrap,
+        .sha-query-builder-operator-select .${prefixCls}-select-selection-wrap {
+            min-width: 0 !important;
+        }
+
         .sha-query-builder-field-slot .${prefixCls}-select-selection-item,
         .sha-query-builder-field-slot .${prefixCls}-select-selection-placeholder,
         .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-item,
         .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-placeholder,
         .sha-query-builder-operator-select .${prefixCls}-select-selection-item,
         .sha-query-builder-operator-select .${prefixCls}-select-selection-placeholder {
-            display: block;
+            width: 100%;
+            min-width: 0;
+            display: flex;
+            align-items: center;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             line-height: 30px !important;
+        }
+
+        .sha-query-builder-field-slot .${prefixCls}-select-selection-item > *,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-item > *,
+        .sha-query-builder-operator-select .${prefixCls}-select-selection-item > * {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .sha-query-builder-field-slot .sha-property-select-option,
+        .sha-query-builder-value-editor-slot .sha-property-select-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        .sha-query-builder-field-slot .sha-property-select-option-icon,
+        .sha-query-builder-value-editor-slot .sha-property-select-option-icon {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sha-query-builder-field-slot .sha-property-select-option-text,
+        .sha-query-builder-value-editor-slot .sha-property-select-option-text {
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .sha-query-builder-operator-slot {
@@ -418,7 +499,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-value-shell.is-function {
-            grid-template-columns: 60px minmax(0, 1fr) 33px;
+            grid-template-columns: 60px minmax(0, 1fr) 54px;
         }
 
         .sha-query-builder-value-shell--empty {
@@ -458,8 +539,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-func-checkbox {
-            width: 33px;
-            min-width: 33px;
+            width: 54px;
+            min-width: 54px;
             height: 32px;
             border-left: 1px solid #d0d5dd;
             display: inline-flex;
@@ -495,6 +576,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-query-builder-value-editor-slot .${prefixCls}-picker-input > input,
         .sha-query-builder-value-editor-slot .${prefixCls}-input,
         .sha-query-builder-value-editor-slot .${prefixCls}-input-number-input {
+            width: 100%;
+            min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -1602,8 +1685,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-query-builder-ignore-unassigned {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding-right: 2px;
+            justify-content: center;
+            gap: 0;
+            width: 100%;
+            height: 100%;
+            padding: 0 3px;
+            box-sizing: border-box;
+        }
+
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-wrapper,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox {
+            flex: 0 0 24px;
+            width: 24px;
+            height: 24px;
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-inner {
