@@ -59,6 +59,7 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
       disabled={readonly}
       context={context}
       className="sha-query-builder-mustache-expression-input"
+      controlClassName="sha-query-builder-mustache-expression-control"
       placeholder="Expression"
       inline
       allowExpand

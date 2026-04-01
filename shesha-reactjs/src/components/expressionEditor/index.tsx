@@ -53,6 +53,7 @@ export interface ExpressionEditorProps {
   disabled?: boolean;
   placeholder?: string;
   className?: string;
+  controlClassName?: string;
   focusRows?: number;
   inline?: boolean;
   allowExpand?: boolean;
@@ -485,6 +486,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   disabled = false,
   placeholder = 'Expression',
   className,
+  controlClassName,
   focusRows = 6,
   inline = false,
   allowExpand = false,
@@ -799,7 +801,10 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     backdropRef.current.scrollLeft = textareaRef.current.scrollLeft;
   }, []);
 
-  const controlClassName = joinClassNames('sha-expression-editor-control', className);
+  const resolvedControlClassName = joinClassNames(
+    'sha-expression-editor-control',
+    controlClassName ?? className,
+  );
   const hasValue = Boolean(value?.trim().length);
   const previewText = hasValue ? toPreviewText(value) : placeholder;
 
@@ -882,7 +887,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
         className={joinClassNames(
           'sha-expression-editor-input',
           mode === 'inline' && 'sha-expression-editor-input--plain',
-          controlClassName,
+          resolvedControlClassName,
         )}
         value={value}
         rows={mode === 'floating' ? focusRows : (isFocused ? Math.max(3, Math.min(focusRows, 4)) : 1)}
@@ -924,7 +929,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
           type="button"
           className={joinClassNames(
             'sha-expression-editor-preview',
-            controlClassName,
+            resolvedControlClassName,
             !hasValue && 'is-placeholder',
           )}
           title={hasValue ? value : placeholder}

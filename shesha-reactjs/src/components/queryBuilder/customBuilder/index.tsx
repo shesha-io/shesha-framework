@@ -109,7 +109,11 @@ const DEFAULT_SOURCE_LABELS: Record<string, string> = {
 };
 
 const RELATION_OPTIONS: RelationValue[] = ['AND', 'OR'];
-const FIELD_SOURCE_ITEMS: Array<[string, { label: string }]> = [['field', { label: 'Field' }]];
+const FIELD_SOURCE_ITEMS: Array<[string, { label: string }]> = [
+  ['field', { label: 'Field' }],
+  ['func', { label: 'Function' }],
+];
+
 
 const isGroupNode = (node?: IPlainTreeItem): boolean => node?.type === 'group';
 
@@ -180,6 +184,17 @@ const getOperatorOptions = (config: Config, field?: string): Array<{ label: stri
   const operatorKeys = ((QbUtils.ConfigUtils as unknown as {
     getOperatorsForField: (cfg: Config, fieldName: string) => string[] | null;
   }).getOperatorsForField(config, field) ?? []);
+
+  return operatorKeys.map((value) => ({
+    value,
+    label: config.operators?.[value]?.label ?? value,
+  }));
+};
+
+const getOperatorOptionsForType = (config: Config, typeName: string): Array<{ label: string; value: string }> => {
+  const operatorKeys = ((QbUtils.ConfigUtils as unknown as {
+    getOperatorsForType: (cfg: Config, type: string) => string[] | null;
+  }).getOperatorsForType?.(config, typeName) ?? []);
 
   return operatorKeys.map((value) => ({
     value,
@@ -565,6 +580,104 @@ const FunctionValueEditor: React.FC<{
   );
 };
 
+/** Parse a field-side func expression value back into { expression, ignoreIfUnassigned }. */
+const parseFieldFuncExpression = (field: string | undefined): { expression: string; ignoreIfUnassigned: boolean } => {
+  if (!field || typeof field !== 'object')
+    return { expression: '', ignoreIfUnassigned: false };
+
+  // Field-side func is stored as an EVALUATE_TEXT func shape: { func, args: { expression, ignoreIfUnassigned } }
+  const raw = field as unknown as {
+    args?: {
+      expression?: { value?: string };
+      ignoreIfUnassigned?: { value?: boolean };
+    };
+  };
+  return {
+    expression: raw.args?.expression?.value ?? '',
+    ignoreIfUnassigned: Boolean(raw.args?.ignoreIfUnassigned?.value),
+  };
+};
+
+/** Build the field-side func value — same EVALUATE_TEXT shape used on the value side. */
+const createFieldFuncExpression = (expression: string, ignoreIfUnassigned: boolean): unknown => {
+  return QbUtils.TreeUtils.jsToImmutable({
+    func: 'EVALUATE_TEXT',
+    args: {
+      expression: {
+        value: expression,
+        valueSrc: 'value',
+      },
+      ignoreIfUnassigned: {
+        value: ignoreIfUnassigned,
+        valueSrc: 'value',
+      },
+    },
+  });
+};
+
+const FieldFunctionEditor: React.FC<{
+  actions: BuilderProps['actions'];
+  config: Config;
+  path: string[];
+  field: string | undefined;
+  readOnly: boolean;
+}> = ({ actions, config, field, path, readOnly }) => {
+  const { expression, ignoreIfUnassigned } = React.useMemo(() => parseFieldFuncExpression(field), [field]);
+
+  const widgetDefinition = config.widgets?.mustacheExpression;
+  const widgetFactory = typeof widgetDefinition?.factory === 'function'
+    ? widgetDefinition.factory as unknown as (props: WidgetProps, ctx?: Config['ctx']) => React.ReactNode
+    : null;
+
+  const widgetProps: WidgetProps = {
+    placeholder: 'Expression',
+    field: '' as unknown as WidgetProps['field'],
+    fieldDefinition: null as unknown as WidgetProps['fieldDefinition'],
+    fieldSrc: 'func',
+    fieldType: 'text',
+    operator: '',
+    config,
+    readonly: readOnly,
+    value: expression,
+    setValue: (nextValue: RuleValue): void => {
+      actions.setField(
+        path,
+        createFieldFuncExpression(String(nextValue ?? ''), ignoreIfUnassigned) as never,
+      );
+    },
+  };
+
+  return (
+    <>
+      <div className="sha-query-builder-func-expression" title={expression || 'Expression'}>
+        {widgetFactory ? widgetFactory(widgetProps, config.ctx) : null}
+      </div>
+      <Tooltip title={ignoreIfUnassignedTooltip} placement="top">
+        <div className="sha-query-builder-func-checkbox">
+          <span
+            className={classNames(
+              'sha-query-builder-ignore-unassigned',
+              ignoreIfUnassigned && 'is-checked',
+            )}
+          >
+            <Checkbox
+              checked={ignoreIfUnassigned}
+              disabled={readOnly}
+              onChange={(event) => {
+                actions.setField(
+                  path,
+                  createFieldFuncExpression(expression, event.target.checked) as never,
+                );
+              }}
+            />
+            <DoubleRightOutlined className="sha-query-builder-ignore-unassigned-icon" />
+          </span>
+        </div>
+      </Tooltip>
+    </>
+  );
+};
+
 const RuleValueEditor: React.FC<{
   node: IPlainTreeItem;
   path: string[];
@@ -651,7 +764,6 @@ const RuleValueEditor: React.FC<{
           valueSrc={currentSource}
           setValueSrc={handleSourceChange}
           readonly={valueReadonly}
-          title={config.settings?.valueSourcesPopupTitle ?? 'Value source'}
         />
       </div>
       {isFunction ? (
@@ -694,14 +806,42 @@ const RuleValueEditor: React.FC<{
   );
 };
 
-const QueryRuleRow: React.FC<IRuleProps> = ({ actions, config, node, path, readOnly }) => {
+const QueryRuleRow: React.FC<IRuleProps> = (props) => {
+  const {
+    actions,
+    config,
+    node,
+    path,
+    readOnly,
+  } = props;
   const properties = (node.properties ?? {}) as IPlainRuleProperties;
   const selectedField = properties.field;
+  const selectedFieldSrc: FieldSource = properties.fieldSrc ?? 'field';
+  const isFieldFunc = selectedFieldSrc === 'func';
   const selectedOperator = properties.operator;
-  const operatorOptions = getOperatorOptions(config, selectedField);
+  // When field side is a func, derive operators from the function return type (text for UPPER/LOWER).
+  const operatorOptions = isFieldFunc
+    ? getOperatorOptionsForType(config, 'text')
+    : getOperatorOptions(config, selectedField);
   const fieldReadonly = getFieldSourceReadonly(config, readOnly);
   const operatorReadonly = getOperatorReadonly(config, readOnly);
   const activeOperatorLabel = operatorOptions.find((item) => item.value === selectedOperator)?.label;
+
+  const handleFieldSrcChange = (nextSrc: string): void => {
+    if (nextSrc === selectedFieldSrc)
+      return;
+
+    if (nextSrc === 'func') {
+      (actions as unknown as { setFieldSrc: (path: string[], src: FieldSource) => void })
+        .setFieldSrc(path, 'func');
+      actions.setField(path, createFieldFuncExpression('', false) as never);
+    } else {
+      // Switching back to plain field — remove this rule and add a fresh empty one at the parent group.
+      const parentPath = path.slice(0, -1);
+      actions.removeRule(path);
+      actions.addRule(parentPath);
+    }
+  };
 
   const fieldProps: FieldProps = {
     items: [],
@@ -716,21 +856,36 @@ const QueryRuleRow: React.FC<IRuleProps> = ({ actions, config, node, path, readO
   };
 
   return (
-    <div className="sha-query-builder-rule-row">
-      <div className="sha-query-builder-packed-control sha-query-builder-packed-control--field">
+    <div className={classNames('sha-query-builder-rule-row', isFieldFunc && 'has-field-func')}>
+      <div
+        className={classNames(
+          isFieldFunc
+            ? 'sha-query-builder-value-shell is-function'
+            : 'sha-query-builder-packed-control sha-query-builder-packed-control--field',
+        )}
+      >
         <div className="sha-query-builder-source-slot">
           <SourceSelector
             variant="field"
             valueSources={FIELD_SOURCE_ITEMS}
-            valueSrc="field"
-            setValueSrc={() => undefined}
+            valueSrc={selectedFieldSrc}
+            setValueSrc={handleFieldSrcChange}
             readonly={fieldReadonly}
-            title={config.settings?.fieldSourcesPopupTitle ?? 'Field source'}
           />
         </div>
-        <div className="sha-query-builder-field-slot">
-          <FieldAutocomplete {...fieldProps} />
-        </div>
+        {isFieldFunc ? (
+          <FieldFunctionEditor
+            actions={actions}
+            config={config}
+            path={path}
+            field={selectedField}
+            readOnly={fieldReadonly}
+          />
+        ) : (
+          <div className="sha-query-builder-field-slot">
+            <FieldAutocomplete {...fieldProps} />
+          </div>
+        )}
       </div>
 
       <div className="sha-query-builder-operator-slot" title={activeOperatorLabel}>
@@ -745,7 +900,7 @@ const QueryRuleRow: React.FC<IRuleProps> = ({ actions, config, node, path, readO
             variant="borderless"
             placeholder={config.settings?.operatorPlaceholder}
             onChange={(nextOperator) => actions.setOperator(path, nextOperator)}
-            disabled={operatorReadonly || !selectedField}
+            disabled={operatorReadonly || (!selectedField && !isFieldFunc)}
             popupMatchSelectWidth={false}
             size={config.settings?.renderSize === 'medium' ? 'middle' : config.settings?.renderSize}
           />
@@ -851,6 +1006,7 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
             path={path}
             config={config}
             actions={actions}
+            tree={tree}
             readOnly={readOnly}
           />
         )}

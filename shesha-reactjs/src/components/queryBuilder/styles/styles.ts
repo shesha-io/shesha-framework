@@ -258,6 +258,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             gap: 10px;
         }
 
+        .sha-query-builder-rule-row.has-field-func {
+            grid-template-columns: minmax(0, 418px) 155px minmax(0, 418px);
+        }
+
         .sha-query-builder-item-rail {
             display: grid;
             grid-template-columns: repeat(2, 32px);
@@ -313,7 +317,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-packed-control {
             width: 183px;
-            height: 32px;
+            min-height: 32px;
             display: grid;
             grid-template-columns: 60px 123px;
             align-items: stretch;
@@ -322,6 +326,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             background: #fff;
             box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
             overflow: hidden;
+        }
+
+        .sha-query-builder-packed-control:not(.is-func) {
+            height: 32px;
         }
 
         .sha-query-builder-source-slot {

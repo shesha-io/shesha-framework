@@ -267,7 +267,6 @@ const knownFuncNames = ['NOW', 'RELATIVE_DATETIME'];
 const knownFuncs: Funcs = {};
 knownFuncNames.forEach((funcName) => {
   if (Object.hasOwn(BasicFuncs, funcName))
-  // if (BasicFuncs.hasOwnProperty(funcName))
     knownFuncs[funcName] = BasicFuncs[funcName];
 });
 
