@@ -1,8 +1,9 @@
+import { CSSObject } from '@emotion/serialize';
 import { createStyles, sheshaStyles } from '@/styles';
 
 interface RefListStatusStyleProps {
-  dimensionsStyles: Record<string, unknown>;
-  fontStyles: { fontSize?: string | number; fontWeight?: string | number; textAlign?: string };
+  dimensionsStyles: CSSObject;
+  fontStyles: CSSObject;
   readOnly?: boolean;
 }
 

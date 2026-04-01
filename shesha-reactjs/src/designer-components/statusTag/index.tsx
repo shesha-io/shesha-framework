@@ -11,7 +11,7 @@ import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } fr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { jsonSafeParse } from '@/utils/object';
 
-export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, IConfigurableFormComponent {
+export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style' | 'readOnly'>, IConfigurableFormComponent {
   mappings?: string;
   valueSource?: 'form' | 'manual';
 }
