@@ -1,5 +1,4 @@
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
-import { FC } from "react";
 
 export interface IQueryBuilderProps {
   jsonExpanded?: boolean;
@@ -18,5 +17,3 @@ export interface IQueryBuilderFieldProps {
   onChange?: (value: any) => void;
   readOnly?: boolean;
 }
-
-export type QueryBuilderFieldType = FC<IQueryBuilderFieldProps>;
