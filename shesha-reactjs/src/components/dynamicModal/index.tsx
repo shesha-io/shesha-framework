@@ -8,6 +8,7 @@ import { useDynamicModals } from '@/providers';
 import { useMedia } from 'react-use';
 import ConditionalWrap from '../conditionalWrapper';
 import { useStyles } from './styles';
+import DOMPurify from 'dompurify';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
@@ -24,10 +25,11 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
  */
 const renderContent = (content: ReactNode | string): ReactNode => {
   if (typeof content === 'string') {
-    return <div dangerouslySetInnerHTML={{ __html: content }} />;
+    return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />;
   }
   return content;
 };
+
 
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
   const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
