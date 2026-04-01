@@ -126,7 +126,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-height: 133px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
             padding: 10px;
             box-sizing: border-box;
             border-radius: 11px;
@@ -1037,9 +1037,21 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             gap: 10px;
         }
 
-        .query-builder > .group-or-rule-container > .group > .group--children > .group-or-rule-container {
-            margin: 0;
-            padding: 0;
+        .query-builder > .group-or-rule-container > .group > .group--children > .group-or-rule-container,
+        .query-builder .group-or-rule-container {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .query-builder .rule {
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .query-builder .group--children {
+            gap: 0 !important;
         }
 
         .query-builder .group--header:not(.no--children) + .group--children::before {
@@ -1725,27 +1737,47 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             font-size: 11px;
         }
 
-        .query-builder .rule--value .sha-query-builder-boolean-segmented {
-            width: 100%;
-            max-width: 100%;
+        .sha-bool-btn-group {
+            display: inline-flex;
+            height: 32px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+            overflow: hidden;
         }
 
-        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-group {
-            width: 100%;
+        .sha-bool-btn-group.is-disabled {
+            opacity: 0.6;
+            pointer-events: none;
         }
 
-        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-item {
-            flex: 1 1 50%;
-            min-width: 0;
-        }
-
-        .query-builder .rule--value .sha-query-builder-boolean-segmented .${prefixCls}-segmented-item-label {
-            min-height: 30px;
+        .sha-bool-btn-group__btn {
+            min-width: 40px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 12px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+            font-family: Inter, sans-serif;
             white-space: nowrap;
+            cursor: pointer;
+            border: none;
+            box-sizing: border-box;
+            background: #ffffff;
+            color: #344054;
+            border-right: 1px solid #d0d5dd;
+        }
+
+        .sha-bool-btn-group__btn:last-child {
+            border-right: none;
+        }
+
+        .sha-bool-btn-group__btn.is-active {
+            background: #2b78e4;
+            color: #ffffff;
         }
 
         .query-builder .action--ADD-RULE.ant-btn:not(.ant-btn-icon-only),

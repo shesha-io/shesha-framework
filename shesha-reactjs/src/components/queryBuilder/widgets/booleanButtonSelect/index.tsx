@@ -1,10 +1,34 @@
 import React from 'react';
 import { BaseWidget, BasicConfig, BooleanFieldSettings } from '@react-awesome-query-builder/antd';
-import { Segmented } from 'antd';
 
 type BooleanButtonSelectWidgetType = BaseWidget & BooleanFieldSettings;
 
-const toSegmentedValue = (value: boolean | null | undefined): 'true' | 'false' => (value ? 'true' : 'false');
+interface BoolButtonGroupProps {
+  value: boolean;
+  readonly?: boolean;
+  labelYes: string;
+  labelNo: string;
+  onChange: (value: boolean) => void;
+}
+
+const BoolButtonGroup = ({ value, readonly, labelYes, labelNo, onChange }: BoolButtonGroupProps): JSX.Element => (
+  <div className={`sha-bool-btn-group${readonly ? ' is-disabled' : ''}`}>
+    <button
+      type="button"
+      className={`sha-bool-btn-group__btn${value === true ? ' is-active' : ''}`}
+      onClick={() => onChange(true)}
+    >
+      {labelYes}
+    </button>
+    <button
+      type="button"
+      className={`sha-bool-btn-group__btn${value === false ? ' is-active' : ''}`}
+      onClick={() => onChange(false)}
+    >
+      {labelNo}
+    </button>
+  </div>
+);
 
 export const BooleanButtonSelectWidget: BooleanButtonSelectWidgetType = {
   ...BasicConfig.widgets.boolean,
@@ -15,16 +39,12 @@ export const BooleanButtonSelectWidget: BooleanButtonSelectWidgetType = {
     const labelNo = extProps.labelNo ?? 'No';
 
     return (
-      <Segmented
-        block
-        className="sha-query-builder-boolean-segmented"
-        disabled={props.readonly}
-        options={[
-          { label: labelNo, value: 'false' },
-          { label: labelYes, value: 'true' },
-        ]}
-        value={toSegmentedValue(props.value)}
-        onChange={(value) => props.setValue(value === 'true')}
+      <BoolButtonGroup
+        value={props.value ?? true}
+        readonly={props.readonly}
+        labelYes={labelYes}
+        labelNo={labelNo}
+        onChange={(val) => props.setValue(val)}
       />
     );
   },
