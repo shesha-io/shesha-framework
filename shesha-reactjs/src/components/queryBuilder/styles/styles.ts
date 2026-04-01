@@ -613,25 +613,32 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
         }
 
-        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) {
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) {
             align-items: stretch;
         }
 
-        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-rule-row,
-        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-item-rail,
-        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-value-shell.is-function {
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-rail,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-value-shell.is-function {
             min-height: 94px;
             align-items: stretch;
         }
 
-        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-func-expression,
-        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-source-slot,
-        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-func-checkbox {
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-expression,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-source-slot,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-checkbox {
             height: auto;
             min-height: 94px;
         }
 
-        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-func-checkbox {
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor-overlay,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor-input {
+            height: 100%;
+            min-height: 94px;
+        }
+
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-checkbox {
             align-items: center;
             justify-content: center;
             padding-top: 0;

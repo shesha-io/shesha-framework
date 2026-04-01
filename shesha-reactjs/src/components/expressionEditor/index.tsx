@@ -474,7 +474,7 @@ const joinClassNames = (...classNames: Array<string | undefined | null | false>)
 };
 
 const toPreviewText = (value: string): string => value.replace(/\s+/g, ' ').trim();
-const FLOATING_EDITOR_WIDTH = 500;
+const FLOATING_EDITOR_WIDTH = 400;
 const FLOATING_EDITOR_VIEWPORT_PADDING = 12;
 
 export const ExpressionEditor: FC<ExpressionEditorProps> = ({
