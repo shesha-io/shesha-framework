@@ -94,7 +94,7 @@ namespace Shesha.Tests.Users
 
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == userName);
                 user.PhoneNumber = mobileNo;
                 await _userRepository.UpdateAsync(user);
                 
@@ -206,7 +206,7 @@ namespace Shesha.Tests.Users
 
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == userName);
+                var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == userName);
 
                 user.PasswordResetCode.ShouldNotBeNullOrEmpty();
 
@@ -255,7 +255,7 @@ namespace Shesha.Tests.Users
                 do
                 {
                     var mobileNo = rnd.NextDouble().ToString("0000000000");
-                    var alreadyExists = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.PhoneNumber == mobileNo) != null;
+                    var alreadyExists = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == mobileNo) != null;
                     if (!alreadyExists)
                         return mobileNo;
                 } while (true);
@@ -292,9 +292,9 @@ namespace Shesha.Tests.Users
                                     ? "no-auth"
                                     : "";
                             // Handle the redirect case in your test (e.g., simulate navigation or log it)
-                            if (!response.RedirectUrl.IsNullOrEmpty())
+                            if (!string.IsNullOrEmpty(response.RedirectUrl))
                                 Console.WriteLine($"Redirect to: {url}/{response.RedirectUrl}");
-                            if (!response.RedirectModule.IsNullOrEmpty())
+                            if (!string.IsNullOrEmpty(response.RedirectModule))
                                 Console.WriteLine($"Redirect to: {url}/{response.RedirectModule}/{response.RedirectForm}");
                             return false; // Return false to indicate that redirection occurred and login was not completed
                         }

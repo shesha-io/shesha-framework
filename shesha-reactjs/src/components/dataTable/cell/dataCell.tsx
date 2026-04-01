@@ -141,7 +141,7 @@ const ReadDataCell = <D extends object = object, V = number>(props: IDataCellPro
   const customComponent = columnConfig?.displayComponent;
 
   const componentType = customComponent?.type ?? standardCellComponentTypes.defaultDisplay;
-  const row = props?.row?.original;
+  const row = props.row?.original;
 
   return componentType === standardCellComponentTypes.defaultDisplay ? (
     <DefaultDataDisplayCell {...props} />

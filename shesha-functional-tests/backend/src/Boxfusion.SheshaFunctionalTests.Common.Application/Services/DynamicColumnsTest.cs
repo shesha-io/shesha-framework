@@ -24,37 +24,12 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 
         public async Task<List<PersonSelect>> GetPersonListAsync()
         {
-            return await _memberRepo.GetAll().Take(5).Select(x => new PersonSelect { Id = x.Id, Name = x.FirstName }).ToListAsync();
+            return await (await _memberRepo.GetAllAsync()).Take(5).Select(x => new PersonSelect { Id = x.Id, Name = x.FirstName }).ToListAsync();
         }
 
         public async Task<Dictionary<string, object>> GetPersonDetailsAsync(PropsFilteredPagedAndSortedResultRequestDto input)
         {
             var columns = input.Properties?.Replace(',', ' ').Split(' ') ?? [];
-
-            /*
-            var data = new Dictionary<string, object>();
-            var list = new List<Dictionary<string, object>>();
-            var personFulNames = new Dictionary<string, object>();
-            foreach (var column in columns.Where(x => x.Trim() != "id"))
-            {
-                var person = await _memberRepo.GetAsync(column.Replace("id", "").ToGuid());
-                personFulNames.Add(column.ToLower(), person.FullName);
-            }
-            list.Add(personFulNames);
-
-            var rnd = new Random();
-            var personAmounts = new Dictionary<string, object>();
-            foreach (var column in columns.Where(x => x.Trim() != "id"))
-            {
-                var person = await _memberRepo.GetAsync(column.Replace("id", "").ToGuid());
-                personAmounts.Add(column.ToLower(), rnd.NextInt64(1000));
-            }
-            list.Add(personAmounts);
-
-            data.Add("total", list.Count);
-            data.Add("items", list);
-            return data;
-            */
 
             var data = new Dictionary<string, object>();
             var list = new List<Dictionary<string, object>>();

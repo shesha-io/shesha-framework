@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
@@ -31,8 +32,8 @@ using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
-using Shesha.Notifications.SMS;
 using Shesha.Notifications;
+using Shesha.Notifications.SMS;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -56,7 +57,7 @@ namespace Shesha.Web.Host.Startup
             _hostEnvironment = hostEnvironment;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             // Should be before AddMvcCore
             services.AddSingleton<IActionDescriptorChangeProvider>(SheshaActionDescriptorChangeProvider.Instance);
@@ -90,6 +91,7 @@ namespace Shesha.Web.Host.Startup
                 .AddNewtonsoftJson(options =>
                 {
                     options.UseCamelCasing(true);
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 });
 
             IdentityRegistrar.Register(services);
@@ -132,7 +134,7 @@ namespace Shesha.Web.Host.Startup
 
             // Add ABP and initialize 
             // Configure Abp and Dependency Injection
-            return services.AddAbp<SheshaWebHostModule>(
+            services.AddAbpWithoutCreatingServiceProvider<SheshaWebHostModule>(
                 options =>
                 {
                     // Configure Log4Net logging

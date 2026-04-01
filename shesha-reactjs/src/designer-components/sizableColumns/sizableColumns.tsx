@@ -34,10 +34,10 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const shadow = model?.shadow;
-    const background = model?.background;
+    const dimensions = model.dimensions;
+    const border = model.border;
+    const shadow = model.shadow;
+    const background = model.background;
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
@@ -66,7 +66,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     if (model.hidden) return null;
 
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
     const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');

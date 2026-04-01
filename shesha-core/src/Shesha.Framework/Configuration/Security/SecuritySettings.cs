@@ -12,6 +12,11 @@ namespace Shesha.Configuration.Security
     public class SecuritySettings
     {
         /// <summary>
+        /// Enable auto logoff on user inactivity
+        /// </summary>
+        public bool UseAutoLogoff { get; set; }
+
+        /// <summary>
         /// Auto logoff timeout
         /// </summary>
         public int AutoLogoffTimeout { get; set; }

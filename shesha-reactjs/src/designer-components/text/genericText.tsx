@@ -66,14 +66,14 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   const chosenType: BaseType | undefined = contentType === 'secondary' ? undefined : (contentType as BaseType);
 
   const baseProps: ITypographyProps = {
-    code: model?.code,
-    copyable: model?.copyable,
-    delete: model?.delete,
-    ellipsis: model?.ellipsis,
-    mark: model?.mark,
-    underline: model?.underline,
-    keyboard: model?.keyboard,
-    italic: model?.italic,
+    code: model.code,
+    copyable: model.copyable,
+    delete: model.delete,
+    ellipsis: model.ellipsis,
+    mark: model.mark,
+    underline: model.underline,
+    keyboard: model.keyboard,
+    italic: model.italic,
     type: chosenType,
     style: {
       padding: 0,
@@ -88,7 +88,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   const paragraphProps: ParagraphProps = {
     ...baseProps,
-    strong: model?.strong,
+    strong: model.strong,
   };
 
   const titleProps: TitleProps = {

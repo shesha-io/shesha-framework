@@ -50,9 +50,9 @@ namespace Shesha.Settings
             {
                 var definitionsInCode = _settingDefinitionManager.GetAll();
 
-                var configurationsInDb = await _settingConfigurationRepository.GetAll().ToListAsync();
+                var configurationsInDb = await _settingConfigurationRepository.GetAllListAsync();
 
-                var modules = await _moduleRepository.GetAll().ToListAsync();
+                var modules = await _moduleRepository.GetAllListAsync();
                 // delete only the ones which are hard linked to the app
                 //var toDelete = configurationsInDb
 

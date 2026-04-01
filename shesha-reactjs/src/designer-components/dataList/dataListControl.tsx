@@ -383,7 +383,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       model={{ ...props, hideLabel: true }}
       className={classNames(
         styles.shaDatalistComponent,
-        { horizontal: props?.orientation === 'horizontal' && appContext.form?.formMode !== 'designer' }, //
+        { horizontal: props.orientation === 'horizontal' && appContext.form?.formMode !== 'designer' }, //
       )}
       wrapperCol={{ md: 24 }}
     >

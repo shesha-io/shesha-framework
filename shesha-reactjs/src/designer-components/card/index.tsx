@@ -37,9 +37,9 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
 
     const title = model.hideHeading ? null : model.label;
 
-    const border = model?.border;
-    const shadow = model?.shadow;
-    const background = model?.background;
+    const border = model.border;
+    const shadow = model.shadow;
+    const background = model.background;
     const jsStyle = getStyle(model.style, model);
 
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
@@ -71,7 +71,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
       ...jsStyle,
     };
 
-    const headerComponents = model?.header?.components ?? [];
+    const headerComponents = model.header?.components ?? [];
 
     const extra =
       (headerComponents?.length > 0 || formMode === 'designer') && !model.hideHeading ? (
@@ -95,7 +95,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
         >
           <ComponentsContainer
             containerId={model?.content?.id}
-            dynamicComponents={model?.isDynamic ? model?.content.components : []}
+            dynamicComponents={model?.isDynamic ? model.content.components : []}
           />
         </Card>
       </ParentProvider>

@@ -21,7 +21,7 @@ export interface IImageFieldProps {
 export const ImageField: FC<IImageFieldProps> = (props) => {
   const { imageSource, value, allowPreview = false, styles, onChange, allowedFileTypes } = props;
 
-  const readOnly = props?.readOnly || props.imageSource === 'url';
+  const readOnly = props.readOnly || props.imageSource === 'url';
 
   const { styles: classes } = useStyles();
 

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
@@ -22,43 +22,42 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Abp.Castle.Log4Net" Version="9.0.0" />
-		<PackageReference Include="AsyncFixer" Version="1.6.0">
+		<PackageReference Include="Abp.Castle.Log4Net" />
+		<PackageReference Include="AsyncFixer">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Bogus" Version="35.5.1" />
-		<PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
-		<PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+		<PackageReference Include="Bogus" />
+		<PackageReference Include="Hangfire.SqlServer" />
+		<PackageReference Include="IDisposableAnalyzers">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+		<PackageReference Include="Microsoft.SourceLink.GitHub">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2">
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="nunit" Version="4.0.1" />
-		<PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+		<PackageReference Include="nunit" />
+		<PackageReference Include="NUnit3TestAdapter" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Identity.Client" Version="4.61.3" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-		<PackageReference Include="Moq" Version="4.20.70" />
-		<PackageReference Include="NSubstitute" Version="5.1.0" />
-		<PackageReference Include="Shouldly" Version="4.2.1" />
-		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
-		<PackageReference Include="xunit" Version="2.9.3" />
-		<PackageReference Include="xunit.extensibility.execution" Version="2.9.3" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+		<PackageReference Include="Microsoft.Identity.Client" />
+		<PackageReference Include="Moq" />
+		<PackageReference Include="NSubstitute" />
+		<PackageReference Include="Shouldly" />
+		<PackageReference Include="System.Data.SQLite.Core" />
+		<PackageReference Include="xunit" />
+		<PackageReference Include="xunit.extensibility.execution" />
+		<PackageReference Include="xunit.runner.visualstudio">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Abp.TestBase" Version="9.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
+		<PackageReference Include="Abp.TestBase" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Application\Shesha.Application.csproj" />

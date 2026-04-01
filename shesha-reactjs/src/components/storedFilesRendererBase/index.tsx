@@ -213,13 +213,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isDragger,
       isStub,
       downloadZip,
-      fontStyles: model?.allStyles?.fontStyles,
+      fontStyles: model.allStyles?.fontStyles,
       listType,
       hasFiles: fileList.length > 0,
     },
   });
 
-  const { width, minWidth, maxWidth } = model?.allStyles?.dimensionsStyles ?? {};
+  const { width, minWidth, maxWidth } = model.allStyles?.dimensionsStyles ?? {};
   const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
 
   const openFilesZipNotification = (): void => {
@@ -324,7 +324,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
 
 
-    return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
+    return getFileIcon(type, model.allStyles?.fontStyles?.fontSize);
   };
 
   // Helper function to get or create cached file context data
@@ -346,7 +346,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return fileContextCache.current.get(cacheKey)!;
   }, []);
 
-  if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+  if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 

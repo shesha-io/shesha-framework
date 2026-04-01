@@ -81,7 +81,7 @@ namespace Shesha.DynamicEntities
                 foreach (var passedItem in passedItems)
                 {
                     var orderIndex = numbers.Pop();
-                    var query = _repository.GetAll().Where(GetFindByIdExpression(passedItem.Id));
+                    var query = (await _repository.GetAllAsync()).Where(GetFindByIdExpression(passedItem.Id));
                     await query.UpdateAsync(GetUpdateExpression(partialType, orderIndexProperty.Name, orderIndex));
 
                     result.ReorderedItems[passedItem.Id] = orderIndex;
