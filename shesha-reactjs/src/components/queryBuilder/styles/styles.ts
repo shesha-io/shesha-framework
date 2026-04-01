@@ -262,6 +262,29 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             grid-template-columns: minmax(0, 418px) 155px minmax(0, 418px);
         }
 
+        .sha-query-builder-rule-row.is-deep-nested {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-packed-control,
+        .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-value-shell.is-function {
+            flex: 1 1 160px;
+            width: auto;
+            max-width: 418px;
+        }
+
+        .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-operator-slot {
+            flex: 0 0 auto;
+        }
+
+        .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-value-shell {
+            flex: 1 1 160px;
+            width: auto;
+            max-width: 418px;
+        }
+
         .sha-query-builder-item-rail {
             display: grid;
             grid-template-columns: repeat(2, 32px);

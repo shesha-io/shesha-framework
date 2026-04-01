@@ -855,8 +855,11 @@ const QueryRuleRow: React.FC<IRuleProps> = (props) => {
     },
   };
 
+  // path.length === 2 is root-level; each nested group adds 1. Wrap layout at depth 3+.
+  const isDeepNested = path.length >= 4;
+
   return (
-    <div className={classNames('sha-query-builder-rule-row', isFieldFunc && 'has-field-func')}>
+    <div className={classNames('sha-query-builder-rule-row', isFieldFunc && 'has-field-func', isDeepNested && 'is-deep-nested')}>
       <div
         className={classNames(
           isFieldFunc
