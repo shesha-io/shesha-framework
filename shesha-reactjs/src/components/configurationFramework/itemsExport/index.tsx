@@ -88,7 +88,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
 
     setExportInProgress(true);
-    return httpClient.post(exportUrl, {
+    return httpClient.post<BlobPart>(exportUrl, {
       filter: JSON.stringify(filter),
       exportDependencies: exportDependencies,
     }, { responseType: 'blob' })

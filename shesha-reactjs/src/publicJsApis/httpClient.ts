@@ -1,12 +1,12 @@
 /**
  * HTTP response
  */
-export interface HttpResponse<T = any> {
+export interface HttpResponse<T = unknown> {
   data: T;
   status: number;
   statusText: string;
   headers: Record<string, string>;
-  request?: any;
+  request?: unknown;
 }
 
 export type ResponseType =
@@ -17,13 +17,6 @@ export type ResponseType =
   'text' |
   'stream' |
   'formdata';
-
-export interface GenericAbortSignal {
-  readonly aborted: boolean;
-  onabort?: ((...args: any) => any) | null;
-  addEventListener?: (...args: any) => any;
-  removeEventListener?: (...args: any) => any;
-}
 
 /**
  * Http request configuration
@@ -38,18 +31,18 @@ export interface HttpRequestConfig {
   /** Response type */
   responseType?: ResponseType;
   /** Abort signal */
-  signal?: GenericAbortSignal;
+  signal?: AbortSignal;
 }
 
 /**
  * HTTP client API
  */
 export interface HttpClientApi {
-  get<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  delete<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  head<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  options<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  post<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R>;
-  put<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R>;
-  patch<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R>;
+  get<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
+  delete<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
+  head<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
+  options<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
+  post<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
+  put<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
+  patch<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
 }

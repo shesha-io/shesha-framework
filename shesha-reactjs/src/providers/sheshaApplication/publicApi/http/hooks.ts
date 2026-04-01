@@ -43,15 +43,15 @@ export class AxiosHttpClient implements HttpClientApi {
     return axios.options(url, this.#getRequestConfig(config));
   }
 
-  post<T = unknown, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
+  post<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R> {
     return axios.post(url, data, this.#getRequestConfig(config));
   }
 
-  put<T = unknown, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
+  put<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R> {
     return axios.put(url, data, this.#getRequestConfig(config));
   }
 
-  patch<T = unknown, R = HttpResponse<T>>(url: string, data?: T, config?: HttpRequestConfig): Promise<R> {
+  patch<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R> {
     return axios.patch(url, data, this.#getRequestConfig(config));
   }
 

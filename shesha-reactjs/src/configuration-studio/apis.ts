@@ -158,7 +158,7 @@ export const restoreItemRevisionAsync = async (httpClient: HttpClientApi, payloa
 
 export const getRevisionJsonAsync = async (httpClient: HttpClientApi, payload: { id: string }): Promise<void> => {
   const url = `${CS_URLS.REVISION_GET_JSON}?id=${payload.id}`;
-  const response = await httpClient.get(url, { responseType: 'blob' });
+  const response = await httpClient.get<BlobPart>(url, { responseType: 'blob' });
   const fileName = getFileNameFromResponse(response) ?? 'revision.json';
   FileSaver.saveAs(new Blob([response.data]), fileName);
 };
