@@ -214,7 +214,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
       />
       <Modal
         open={modalVisible}
-        width={isSmall ? '90%' : 900}
+        width={isSmall ? '90%' : 1038}
         styles={modalStyles}
         title={(
           <Space size={10} className={styles.shaQueryBuilderModalTitle}>

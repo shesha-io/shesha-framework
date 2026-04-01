@@ -25,20 +25,525 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .query-builder-container.qb-has-rules,
         .query-builder-container.qb-empty {
-            background: #f5f5f5;
-            border: 1px solid #ececec;
-            border-radius: 8px;
+            padding: 0 !important;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
             box-sizing: border-box;
         }
 
-        .query-builder-container.qb-has-rules {
-            min-height: 218px;
-            padding: 20px 10px !important;
+        .sha-query-builder-canvas {
+            width: 100%;
+            min-width: 0;
         }
 
-        .query-builder-container.qb-empty {
+        .sha-query-builder-surface {
+            width: 100%;
+            min-width: 0;
+            min-height: 218px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 10px;
+            box-sizing: border-box;
+            background: #f5f5f5;
+            border: 1px solid #ececec;
+            border-radius: 8px;
+        }
+
+        .sha-query-builder-surface.is-empty {
             min-height: 88px;
-            padding: 10px !important;
+            padding-top: 10px;
+        }
+
+        .sha-query-builder-heading {
+            margin: 0;
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 22px;
+            font-weight: 400;
+            color: #000;
+        }
+
+        .sha-query-builder-filter {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            gap: 20px;
+            min-width: 0;
+        }
+
+        .sha-query-builder-filter-body,
+        .sha-query-builder-group-children {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            gap: 10px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .sha-query-builder-filter-actions,
+        .sha-query-builder-group-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .sha-query-builder-filter-actions .${prefixCls}-btn,
+        .sha-query-builder-group-actions .${prefixCls}-btn {
+            height: 32px;
+            border-radius: 8px;
+            padding: 0 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: none;
+        }
+
+        .sha-query-builder-group-card {
+            width: 100%;
+            min-width: 0;
+            min-height: 133px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 11px;
+            border: 1px solid #7fa8dc;
+            background: rgba(43, 120, 228, 0.08);
+        }
+
+        .sha-query-builder-group-card.is-drop-append {
+            box-shadow: inset 0 0 0 2px ${token.colorPrimary};
+        }
+
+        .sha-query-builder-group-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            min-height: 32px;
+        }
+
+        .sha-query-builder-item-row {
+            position: relative;
+            display: grid;
+            grid-template-columns: 69px minmax(0, 1fr) 64px;
+            align-items: stretch;
+            gap: 10px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .sha-query-builder-item-row.is-drop-before::before,
+        .sha-query-builder-item-row.is-drop-after::after {
+            content: "";
+            position: absolute;
+            left: 69px;
+            right: 0;
+            height: 2px;
+            background: ${token.colorPrimary};
+            border-radius: 999px;
+        }
+
+        .sha-query-builder-item-row.is-drop-before::before {
+            top: -5px;
+        }
+
+        .sha-query-builder-item-row.is-drop-after::after {
+            bottom: -5px;
+        }
+
+        .sha-query-builder-item-prefix {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+        }
+
+        .sha-query-builder-item-row.is-group .sha-query-builder-item-prefix {
+            align-items: flex-start;
+            padding-top: 6px;
+            box-sizing: border-box;
+        }
+
+        .sha-query-builder-prefix-label {
+            color: ${token.colorPrimary};
+            font-size: 14px;
+            line-height: 20px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .sha-query-builder-prefix-select {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .sha-query-builder-prefix-select .${prefixCls}-select {
+            width: 100%;
+        }
+
+        .sha-query-builder-prefix-select .${prefixCls}-select-selector {
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .sha-query-builder-prefix-select .${prefixCls}-select-selection-item,
+        .sha-query-builder-prefix-select .${prefixCls}-select-selection-placeholder {
+            font-size: 14px;
+            line-height: 20px !important;
+            font-weight: 500;
+            color: ${token.colorPrimary} !important;
+        }
+
+        .sha-query-builder-item-main {
+            min-width: 0;
+        }
+
+        .sha-query-builder-rule-row {
+            width: 100%;
+            min-width: 0;
+            min-height: 58px;
+            display: grid;
+            grid-template-columns: 183px 155px minmax(0, 1fr);
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sha-query-builder-item-rail {
+            display: grid;
+            grid-template-columns: repeat(2, 32px);
+            width: 64px;
+            min-width: 64px;
+            height: 58px;
+            background: #fff;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .sha-query-builder-item-rail.is-group {
+            height: 100%;
+            min-height: 133px;
+        }
+
+        .sha-query-builder-rail-button {
+            width: 32px;
+            height: 58px;
+            padding: 0;
+            border: 0;
+            border-left: 1px solid #eaecf0;
+            background: transparent;
+            color: #667085;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .sha-query-builder-item-rail.is-group .sha-query-builder-rail-button {
+            height: auto;
+        }
+
+        .sha-query-builder-rail-button:first-child {
+            color: ${token.colorError};
+        }
+
+        .sha-query-builder-rail-button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .sha-query-builder-rail-button .anticon {
+            font-size: 18px;
+        }
+
+        .sha-query-builder-packed-control,
+        .sha-query-builder-operator-slot,
+        .sha-query-builder-value-shell {
+            box-sizing: border-box;
+            min-width: 0;
+        }
+
+        .sha-query-builder-packed-control {
+            width: 183px;
+            height: 32px;
+            display: grid;
+            grid-template-columns: 60px 123px;
+            align-items: stretch;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+            overflow: hidden;
+        }
+
+        .sha-query-builder-source-slot {
+            width: 60px;
+            min-width: 60px;
+            height: 32px;
+            border-right: 1px solid #d0d5dd;
+            background: #f9fafb;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .sha-query-builder-field-slot {
+            width: 123px;
+            min-width: 123px;
+            min-height: 32px;
+            display: flex;
+            align-items: stretch;
+            overflow: hidden;
+        }
+
+        .sha-query-builder-source-dropdown-trigger,
+        .sha-query-builder-source-trigger {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sha-query-builder-source-trigger {
+            padding: 10px 5px;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            box-shadow: none;
+        }
+
+        .sha-query-builder-source-trigger-icon,
+        .sha-query-builder-source-trigger-arrow {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            aspect-ratio: 1 / 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sha-query-builder-source-trigger-icon .anticon,
+        .sha-query-builder-source-trigger-arrow.anticon {
+            font-size: 20px;
+        }
+
+        .sha-query-builder-source-trigger-label {
+            display: none;
+        }
+
+        .sha-query-builder-field-slot .sha-query-builder-packed-select,
+        .sha-query-builder-value-editor-slot .sha-query-builder-packed-select,
+        .sha-query-builder-field-slot .${prefixCls}-select,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select,
+        .sha-query-builder-value-editor-slot .${prefixCls}-picker,
+        .sha-query-builder-value-editor-slot .${prefixCls}-input-number,
+        .sha-query-builder-value-editor-slot .${prefixCls}-segmented,
+        .sha-query-builder-func-expression .sha-expression-editor {
+            width: 100% !important;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        .sha-query-builder-field-slot .${prefixCls}-select-selector,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select-selector,
+        .sha-query-builder-operator-select .${prefixCls}-select-selector {
+            height: 32px !important;
+            min-height: 32px !important;
+            padding: 0 5px !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .sha-query-builder-field-slot .${prefixCls}-select-selection-item,
+        .sha-query-builder-field-slot .${prefixCls}-select-selection-placeholder,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-item,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-placeholder,
+        .sha-query-builder-operator-select .${prefixCls}-select-selection-item,
+        .sha-query-builder-operator-select .${prefixCls}-select-selection-placeholder {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 30px !important;
+        }
+
+        .sha-query-builder-operator-slot {
+            width: 155px;
+            min-width: 155px;
+            height: 32px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+            overflow: hidden;
+        }
+
+        .sha-query-builder-operator-select {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sha-query-builder-operator-select .${prefixCls}-select {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sha-query-builder-value-shell {
+            width: 100%;
+            max-width: 418px;
+            min-width: 0;
+            min-height: 32px;
+            display: grid;
+            grid-template-columns: 60px minmax(0, 1fr);
+            align-items: stretch;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+            overflow: hidden;
+        }
+
+        .sha-query-builder-value-shell.is-function {
+            grid-template-columns: 60px minmax(0, 1fr) 33px;
+        }
+
+        .sha-query-builder-value-shell--empty {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .sha-query-builder-value-editor {
+            min-width: 0;
+            height: 32px;
+            display: flex;
+            align-items: stretch;
+            overflow: hidden;
+        }
+
+        .sha-query-builder-value-editor.is-range {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            padding: 0 8px;
+            box-sizing: border-box;
+        }
+
+        .sha-query-builder-value-editor-slot {
+            min-width: 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .sha-query-builder-widget-host,
+        .sha-query-builder-func-expression {
+            width: 100%;
+            min-width: 0;
+            height: 32px;
+            display: flex;
+            align-items: stretch;
+            overflow: hidden;
+        }
+
+        .sha-query-builder-func-checkbox {
+            width: 33px;
+            min-width: 33px;
+            height: 32px;
+            border-left: 1px solid #d0d5dd;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .sha-query-builder-func-checkbox .${prefixCls}-checkbox-wrapper {
+            margin-inline-start: 0;
+        }
+
+        .sha-query-builder-value-editor-slot .${prefixCls}-picker,
+        .sha-query-builder-value-editor-slot .${prefixCls}-input-number,
+        .sha-query-builder-value-editor-slot .${prefixCls}-input,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select,
+        .sha-query-builder-field-slot .${prefixCls}-select,
+        .sha-query-builder-func-expression .sha-expression-editor {
+            height: 32px;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .sha-query-builder-value-editor-slot .${prefixCls}-picker,
+        .sha-query-builder-value-editor-slot .${prefixCls}-input-number,
+        .sha-query-builder-value-editor-slot .${prefixCls}-input {
+            padding: 0 16px;
+        }
+
+        .sha-query-builder-value-editor-slot .${prefixCls}-picker-input > input,
+        .sha-query-builder-value-editor-slot .${prefixCls}-input,
+        .sha-query-builder-value-editor-slot .${prefixCls}-input-number-input {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sha-query-builder-value-editor-slot .${prefixCls}-picker-input,
+        .sha-query-builder-value-editor-slot .${prefixCls}-input-number-input-wrap {
+            min-width: 0;
+        }
+
+        .sha-query-builder-value-editor-slot .${prefixCls}-picker-suffix,
+        .sha-query-builder-value-editor-slot .${prefixCls}-picker-clear,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select-arrow,
+        .sha-query-builder-value-editor-slot .${prefixCls}-select-clear {
+            flex-shrink: 0;
+        }
+
+        .sha-query-builder-value-editor-slot .${prefixCls}-segmented {
+            padding: 2px 8px;
+            box-sizing: border-box;
+        }
+
+        .sha-query-builder-value-placeholder {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) {
+            align-items: stretch;
+        }
+
+        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-rule-row,
+        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-item-rail,
+        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-value-shell.is-function {
+            min-height: 94px;
+            align-items: stretch;
+        }
+
+        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-func-expression,
+        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-source-slot,
+        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-func-checkbox {
+            height: auto;
+            min-height: 94px;
+        }
+
+        .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-func-checkbox {
+            align-items: flex-start;
+            padding-top: 10px;
+            box-sizing: border-box;
         }
 
         .query-builder-container.qb-empty .query-builder {
@@ -345,36 +850,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .rule--field-wrapper {
-            flex: 0 0 calc((100% - 20px) * 0.24498) !important;
-            width: calc((100% - 20px) * 0.24498) !important;
-            max-width: calc((100% - 20px) * 0.24498) !important;
-            min-width: 0 !important;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .query-builder .rule--operator {
-            flex: 0 0 calc((100% - 20px) * 0.20750) !important;
-            width: calc((100% - 20px) * 0.20750) !important;
-            max-width: calc((100% - 20px) * 0.20750) !important;
-            min-width: 0 !important;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .query-builder .rule--value {
-            flex: 0 0 calc((100% - 20px) * 0.54752) !important;
-            width: calc((100% - 20px) * 0.54752) !important;
-            max-width: calc((100% - 20px) * 0.54752) !important;
-            min-width: 0 !important;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .query-builder .rule--body.can--shrink--value .rule--value {
-            flex: 0 0 calc((100% - 20px) * 0.54752) !important;
-            width: calc((100% - 20px) * 0.54752) !important;
-            max-width: calc((100% - 20px) * 0.54752) !important;
             min-width: 0 !important;
             box-sizing: border-box;
             overflow: hidden;
@@ -847,9 +1322,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-source-trigger-icon,
         .sha-query-builder-source-trigger-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            aspect-ratio: 1 / 1;
             line-height: 1;
             font-size: 11px;
-            flex-shrink: 0;
         }
 
         .sha-query-builder-source-trigger-label {
@@ -969,11 +1450,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .query-builder .rule--fieldsrc .sha-query-builder-source-trigger,
         .query-builder .widget--valuesrc .sha-query-builder-source-trigger {
+            display: flex;
+            width: 60px;
             height: 100%;
+            height: 32px;
             min-height: 30px;
+            padding: 10px 5px;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
             min-width: 0;
             overflow: hidden;
-            padding: 0 8px;
             border-radius: 0;
             border: 0;
             border-right: 1px solid #d0d5dd;
@@ -999,14 +1486,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .widget--valuesrc .sha-query-builder-source-trigger .sha-query-builder-source-trigger-arrow {
             color: #98a2b3;
             font-size: 9px;
-        }
-
-        /* Value variant: compact fixed-width pill — keeps caret */
-        .query-builder .widget--valuesrc .sha-query-builder-source-trigger {
-            width: 44px;
-            min-width: 44px;
-            padding: 0 4px;
-            gap: 2px;
         }
 
         .query-builder .rule--before-widget:empty {
@@ -1137,6 +1616,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-ignore-unassigned-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            aspect-ratio: 1 / 1;
             color: #52c41a;
             font-size: 11px;
         }
@@ -1323,10 +1809,37 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             background: #fff;
         }
 
+        .query-builder .rule--field-wrapper {
+            width: 183px;
+            min-width: 183px;
+            max-width: 183px;
+            flex: 0 0 183px;
+        }
+
         .query-builder .rule--field {
             border: none;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
+            width: 123px;
+            min-width: 123px;
+            max-width: 123px;
+            height: 32px;
+            flex: 0 0 123px;
+        }
+
+        .query-builder .rule--operator {
+            width: 155px;
+            min-width: 155px;
+            max-width: 155px;
+            height: 32px;
+            flex: 0 0 155px;
+        }
+
+        .query-builder .rule--value {
+            width: 418px;
+            min-width: 418px;
+            max-width: 418px;
+            flex: 0 0 418px;
         }
 
         .query-builder .rule--field > *,
@@ -1361,6 +1874,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             align-items: center !important;
         }
 
+        .query-builder .rule--operator .${prefixCls}-select-selector {
+            padding: 10px 5px !important;
+        }
+
         .query-builder .rule--field .${prefixCls}-select-selection-wrap,
         .query-builder .rule--operator .${prefixCls}-select-selection-wrap,
         .query-builder .rule--value .${prefixCls}-select-selection-wrap {
@@ -1380,6 +1897,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .query-builder .rule--operator .${prefixCls}-select-single .${prefixCls}-select-selection-item,
+        .query-builder .rule--operator .${prefixCls}-select-single .${prefixCls}-select-selection-placeholder {
+            width: 100% !important;
+            height: 32px !important;
         }
 
         .query-builder .rule--field .${prefixCls}-select-single .${prefixCls}-select-selection-search,
@@ -1403,7 +1926,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             line-height: 30px !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
-            padding-inline: 12px !important;
+            padding-inline: 16px !important;
             font-size: 14px !important;
             border: 0 !important;
             box-shadow: none !important;
@@ -1432,7 +1955,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             line-height: 30px !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
-            padding-inline: 12px !important;
+            padding-inline: 16px !important;
             font-size: 14px !important;
         }
 
@@ -1440,6 +1963,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             width: 100% !important;
             height: 100% !important;
             min-height: 30px !important;
+            padding: 0 !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
             border: 0 !important;
             border-color: transparent !important;
             box-shadow: none !important;
@@ -1463,6 +1991,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-input > input {
             height: 100% !important;
             min-height: 30px !important;
+            min-width: 0 !important;
             border: 0 !important;
             box-shadow: none !important;
             outline: none !important;
@@ -1470,8 +1999,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             border-radius: 0 !important;
         }
 
+        .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-input {
+            flex: 1 1 auto !important;
+            width: 0 !important;
+            overflow: hidden !important;
+            padding: 0 16px !important;
+            box-sizing: border-box !important;
+        }
+
+        .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-input > input {
+            width: 100% !important;
+            text-overflow: ellipsis !important;
+        }
+
         .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-suffix,
         .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-clear {
+            flex: 0 0 auto !important;
+            margin-right: 16px !important;
             align-self: center;
         }
 
@@ -1507,7 +2051,29 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             flex: 1 1 auto;
             display: flex;
+            flex-direction: row !important;
             align-items: stretch;
+        }
+
+        .query-builder .rule--value .rule--widget > .widget--valuesrc {
+            order: 0 !important;
+            flex: 0 0 auto !important;
+            width: 60px !important;
+            min-width: 60px !important;
+            max-width: 60px !important;
+            height: 32px !important;
+            display: flex !important;
+            align-items: stretch !important;
+        }
+
+        .query-builder .rule--value .rule--widget > .widget--widget,
+        .query-builder .rule--value .rule--widget > .widget--func {
+            order: 1 !important;
+            width: 358px !important;
+            min-width: 358px !important;
+            max-width: 358px !important;
+            flex: 0 0 358px !important;
+            height: 32px !important;
         }
 
         /* Both .widget--widget (plain values) and .widget--func (expression/func) fill the value cell */

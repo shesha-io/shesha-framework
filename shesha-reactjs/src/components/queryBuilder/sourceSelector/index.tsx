@@ -90,9 +90,6 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
           disabled={readonly}
         >
           <span className="sha-query-builder-source-trigger-icon">{getSourceIcon(activeSource)}</span>
-          {variant === 'field' && (
-            <span className="sha-query-builder-source-trigger-label">{activeLabel}</span>
-          )}
           <CaretDownOutlined className="sha-query-builder-source-trigger-arrow" />
         </button>
       </span>

@@ -1,19 +1,11 @@
 import React, { FC, useEffect, useMemo } from 'react';
-import { FolderOutlined } from '@ant-design/icons';
 import { config as InitialConfig } from './config';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { extractVars } from '@/utils/jsonLogic';
-import { FieldAutocomplete } from './fieldAutocomplete';
-import { FuncSelect } from './funcSelect/index';
-import { SourceSelector } from './sourceSelector';
-import { ItemWithRelation } from './itemWithRelation';
-import { EmptyRulePlaceholders } from './emptyRulePlaceholders';
-import { GroupEmptyState } from './groupEmptyState';
-import { GroupDragAction } from './groupDragAction';
 import { hasCustomQBSettings, IProperty, propertyHasQBConfig, type CustomFieldSettings } from '@/providers/queryBuilder/models';
 import { IQueryBuilderProps } from './interfaces';
 import { QueryBuilderContent } from './queryBuilderContent';
-import { Button as AntButton, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import { useQueryBuilder } from '@/providers';
 import {
   Config,
@@ -73,48 +65,6 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
   // pre-parse tree and extract all used fields
   // load all fields which are missing
 
-  const renderQbButton = (buttonProps): JSX.Element => {
-    const { type, onClick, label, readonly, config, renderIcon } = buttonProps;
-    const renderSize = config?.settings?.renderSize;
-
-    const hideLabelsFor = new Set(['addSubRuleSimple', 'delGroup', 'delRuleGroup', 'delRule']);
-    const actionClassMap = {
-      addRule: 'action action--ADD-RULE',
-      addGroup: 'action action--ADD-GROUP',
-      delRule: 'action action--DELETE',
-      delGroup: 'action action--DELETE',
-      delRuleGroup: 'action action--DELETE',
-      addSubRuleSimple: 'action action--ADD-RULE',
-      addSubRule: 'action action--ADD-RULE',
-      addSubGroup: 'action action--ADD-GROUP',
-    };
-
-    const antTypeMap = {
-      addRule: 'primary',
-      addSubRule: 'primary',
-      addSubRuleSimple: 'primary',
-      delRule: 'text',
-    };
-
-    const dangerTypes = new Set(['delRule', 'delGroup', 'delRuleGroup']);
-    const icon = renderIcon?.({ type, readonly });
-
-    return (
-      <AntButton
-        key={type}
-        className={actionClassMap[type]}
-        type={antTypeMap[type] ?? 'default'}
-        icon={icon}
-        danger={dangerTypes.has(type)}
-        onClick={onClick}
-        size={renderSize === 'medium' ? 'middle' : renderSize}
-        disabled={readonly}
-      >
-        {hideLabelsFor.has(type) ? '' : label}
-      </AntButton>
-    );
-  };
-
   const qbSettings: Settings = {
     ...InitialConfig.settings,
     addRuleLabel: 'Add Rule',
@@ -127,27 +77,11 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
     fieldLabel: 'Field',
     operatorLabel: 'Operator',
     showNot: false,
-    renderIcon: (iconProps, ctx) => {
-      if (iconProps.type === 'addGroup' || iconProps.type === 'addSubGroup')
-        return <FolderOutlined />;
-
-      return InitialConfig.settings.renderIcon(iconProps, ctx);
-    },
     removeIncompleteRulesOnLoad: false,
     removeEmptyGroupsOnLoad: false,
     removeEmptyRulesOnLoad: false,
     removeInvalidMultiSelectValuesOnLoad: false,
-    fieldSources: ["field", "func"],
-    renderFunc: (props) => (<FuncSelect {...props} />),
-    renderConjs: () => null,
-    renderField: (props) => (<FieldAutocomplete {...props} /* fields={fields}*/ />),
-    renderValueSources: (props) => (<SourceSelector {...props} variant="value" />),
-    renderFieldSources: (props) => (<SourceSelector {...props} variant="field" />),
-    renderBeforeWidget: (ruleProps) => (<EmptyRulePlaceholders {...ruleProps} />),
-    renderBeforeActions: (groupProps) => (<GroupEmptyState {...groupProps} />),
-    renderAfterActions: (groupProps) => (<GroupDragAction {...groupProps} />),
-    renderButton: (buttonProps) => renderQbButton(buttonProps),
-    renderItem: (itemProps) => (<ItemWithRelation {...itemProps} />),
+    fieldSources: ["field"],
   };
 
   const convertFields = (fields: IProperty[]): Fields => {

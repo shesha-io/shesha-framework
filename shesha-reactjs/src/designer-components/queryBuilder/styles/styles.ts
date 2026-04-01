@@ -728,23 +728,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const shaQueryBuilderModalTitle = cx("sha-query-builder-modal-title", css`
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        font-size: 16px;
+        gap: 10px;
+        font-size: 20px;
         font-weight: 600;
-        line-height: 1.25;
+        line-height: 1.2;
     `);
 
   const shaQueryBuilderModalTitleIcon = cx("sha-query-builder-modal-title-icon", css`
-        width: 28px;
-        height: 28px;
-        border-radius: ${queryBuilderActionRadius};
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         background: ${token.colorPrimaryBg};
         color: ${token.colorPrimary};
         border: 1px solid ${token.colorPrimaryBorder};
-        font-size: 13px;
+        font-size: 18px;
     `);
 
   const shaQueryBuilderModalBody = cx("sha-query-builder-modal-body", css`
@@ -2392,18 +2392,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const shaQueryBuilderModalHelpText = cx("sha-query-builder-modal-help-text", css`
         font-size: 16px;
         line-height: 1.5;
-        color: rgba(0, 0, 0, 0.88);
+        color: #252525;
     `);
 
   const shaQueryBuilderModalHelpWrap = cx("sha-query-builder-modal-help-wrap", css`
         margin: 0 0 12px;
         display: inline-flex;
         align-items: center;
+        gap: 6px;
     `);
 
   const shaQueryBuilderModalHelpIcon = cx("sha-query-builder-modal-help-icon", css`
         color: rgba(0, 0, 0, 0.45);
-        font-size: 14px;
+        font-size: 16px;
         line-height: 1;
         display: inline-flex;
         align-items: center;
