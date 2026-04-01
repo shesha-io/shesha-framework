@@ -30,7 +30,7 @@ export type GroupingItem = ISortingItem;
 export interface ITableFilter {
   readonly columnId: string;
   readonly filterOption: IndexColumnFilterOption;
-  readonly filter: any;
+  readonly filter: unknown;
 }
 
 export type ColumnFilter = string[] | number[] | /* Moment[] |*/ Date[] | string | number | /* Moment |*/ Date | boolean;
@@ -59,7 +59,7 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
   changeQuickSearch?: (val: string) => void;
   /** change quick search and refresh table data */
   performQuickSearch?: (val: string) => void;
-  changeActionedRow?: (data: any) => void;
+  changeActionedRow?: (data: unknown) => void;
   changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => Promise<void>;
 
   setPredefinedFilters: (filters: IStoredFilter[]) => void;
@@ -78,9 +78,9 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
   /**
    * Set row data after inline editing
    */
-  setRowData: (rowIndex: number, data: any) => void;
+  setRowData: (rowIndex: number, data: unknown) => void;
 
-  setSelectedRow: (index: number, row: any) => void;
+  setSelectedRow: (index: number, row: unknown) => void;
   setColumnWidths: (widths: IColumnWidth[]) => void;
 }
 
@@ -117,9 +117,9 @@ export interface IDataTableContexApi extends IHasModelType {
   selectedStoredFilterIds?: string[];
 
   /** index of selected row */
-  selectedRow?: any;
+  selectedRow?: unknown;
 
-  actionedRow?: any;
+  actionedRow?: unknown;
 
   /** List of Ids of selected rows */
   selectedIds?: string[];
