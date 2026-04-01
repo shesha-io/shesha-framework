@@ -122,10 +122,8 @@ for (const typeName in typeModifiers) {
   }
 };
 
-const { proximity: _proximity, ...operatorsWithoutProximity } = standardOperators;
-
 const operators = {
-  ...operatorsWithoutProximity,
+  ...standardOperators,
   equal: {
     ...standardOperators.equal,
     label: 'is',
@@ -216,6 +214,7 @@ const operators = {
     cardinality: 1,
   },
 };
+delete operators.proximity;
 
 const customDatetimeWidget: DateTimeWidget<Config> = {
   ...standardWidgets.datetime,
