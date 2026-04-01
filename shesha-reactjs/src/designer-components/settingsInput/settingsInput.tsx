@@ -48,12 +48,12 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
   const style = useMemo(() => {
     return unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker'
       ? { width: 'auto' }
-      : { flex: `1 1 ${inline ? width : '120px'}`, width };
+      : { flex: `1 1 ${inline ? (width ?? 'auto') : '120px'}`, width };
   }, [unwrappedType, inline, width]);
 
   return isHidden ? null
     : (
-      <div key={label} style={style}>
+      <div key={propertyName} style={style}>
         <ConditionalWrap
           condition={!isEntityTypeIdEmpty(evaluatedModelType)}
           wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}

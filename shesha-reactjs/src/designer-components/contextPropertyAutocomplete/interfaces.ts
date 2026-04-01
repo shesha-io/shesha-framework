@@ -12,8 +12,8 @@ export interface IContextPropertyAutocompleteComponentProps extends IConfigurabl
 }
 
 interface IContextPropertyAutocompleteCalculatedModel {
-  componentid: string;
-  commponentType: string;
+  componentId: string;
+  componentType: string;
   componentName: string;
   propertyName: string;
   contextName: string;

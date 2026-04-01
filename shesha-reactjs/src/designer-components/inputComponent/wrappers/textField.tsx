@@ -41,7 +41,7 @@ export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (prop
       variant={variant}
       placeholder={placeholder}
       style={{ width: width ?? "100%" }}
-      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? label} className={styles.icon} /></span>}
+      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? (typeof label === 'string' ? label : '')} className={styles.icon} /></span>}
       value={value}
       type={textType}
     />

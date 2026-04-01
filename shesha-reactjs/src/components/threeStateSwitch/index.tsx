@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { CheckOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons';
 import { useDeepCompareMemo } from '@/hooks';
-import IconRadioGroup, { IIconRadioGroupValueDefeintion } from '../iconRadioGroup';
+import IconRadioGroup, { IIconRadioGroupValueDefinition } from '../iconRadioGroup';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IThreeStateSwitchProps {
@@ -11,17 +11,17 @@ export interface IThreeStateSwitchProps {
   onChange?: (value: boolean | undefined) => void;
   size?: SizeType;
   className?: string;
-  yesDefenition?: Partial<IIconRadioGroupValueDefeintion>;
-  noDefenition?: Partial<IIconRadioGroupValueDefeintion>;
-  defaultDefenition?: Partial<IIconRadioGroupValueDefeintion>;
+  yesDefinition?: Partial<IIconRadioGroupValueDefinition>;
+  noDefinition?: Partial<IIconRadioGroupValueDefinition>;
+  defaultDefinition?: Partial<IIconRadioGroupValueDefinition>;
 }
 
 const notRecommendedColor = '#F0F0F0';
 
 const ThreeStateSwitch: FC<IThreeStateSwitchProps> = ({
-  yesDefenition: yesValueProp,
-  noDefenition: noValueProp,
-  defaultDefenition: defaultValueProp,
+  yesDefinition: yesValueProp,
+  noDefinition: noValueProp,
+  defaultDefinition: defaultValueProp,
   defaultValue,
   value,
   ...rest
@@ -54,7 +54,7 @@ const ThreeStateSwitch: FC<IThreeStateSwitchProps> = ({
     return { ...{ value: undefined, icon: <SettingOutlined />, hint: `Default${defaultValue === true ? ' (Yes)' : defaultValue === false ? ' (No)' : ''}` }, ...defaultValueProp };
   }, [defaultValueProp, defaultValue]);
 
-  return <IconRadioGroup {...rest} value={value} valueDefenitions={[yes, no, def]} />;
+  return <IconRadioGroup {...rest} value={value} valueDefinitions={[yes, no, def]} />;
 };
 
 export default ThreeStateSwitch;

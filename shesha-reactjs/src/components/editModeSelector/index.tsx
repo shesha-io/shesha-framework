@@ -22,7 +22,7 @@ const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
 
   if (typeof props.onGetAdditionalInfo === 'function') {
     return (
-      <Radio.Group buttonStyle="solid" value={val} onChange={(e) => props.onChange(e.target.value)} size={props.size} disabled={props.readOnly} className={props.className}>
+      <Radio.Group buttonStyle="solid" value={val} onChange={(e) => props.onChange?.(e.target.value)} size={props.size} disabled={props.readOnly} className={props.className}>
         <Radio.Button onMouseEnter={() => props.onGetAdditionalInfo('Editable')} key="editable" value="editable">
           <Icon icon="editIcon" />
         </Radio.Button>
@@ -37,7 +37,7 @@ const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
   }
 
   return (
-    <Radio.Group buttonStyle="solid" value={val} onChange={(e) => props.onChange(e.target.value)} size={props.size} disabled={props.readOnly} className={props.className}>
+    <Radio.Group buttonStyle="solid" value={val} onChange={(e) => props.onChange?.(e.target.value)} size={props.size} disabled={props.readOnly} className={props.className}>
       <Radio.Button key="editable" value="editable"><Icon icon="editIcon" hint="Editable" /></Radio.Button>
       <Radio.Button key="readOnly" value="readOnly"><Icon icon="readonlyIcon" hint="Read only" /></Radio.Button>
       <Radio.Button key="inherited" value="inherited"><Icon icon="inheritIcon" hint="Inherited" /></Radio.Button>

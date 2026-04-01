@@ -164,13 +164,13 @@ export type AvailableConstantsContext = {
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
   dcm: IDataContextManagerActionsContext | undefined;
-  metadataDispatcher: IMetadataDispatcher;
+  metadataDispatcher: IMetadataDispatcher | undefined;
   closestContextId: string | undefined;
   globalState: IAnyObject | undefined;
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
   httpClient: HttpClientApi;
-  defaultModel: IDefaultModelProviderState;
+  defaultModel: IDefaultModelProviderState | undefined;
 };
 
 
@@ -329,7 +329,8 @@ const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, a
   else
     contextProxyRef.current.refreshAccessors(accessors);
 
-  contextProxyRef.current.setAdditionalData(additionalData);
+  if (additionalData)
+    contextProxyRef.current.setAdditionalData(additionalData);
 
   return contextProxyRef.current;
 };
@@ -1121,14 +1122,14 @@ export function getComponentModelFromMetadata<TModel extends IConfigurableFormCo
   model: TModel,
   metadata: IPropertyMetadata,
 ): TModel {
-  // make cooy of component model but with undefined values
-  let m = deepCopyViaJson(model);
+  // make copy of component model but with undefined values
+  let m = deepCopyViaJson(model) as Record<string, unknown>;
   for (const key in m)
     if (Object.hasOwn(m, key))
       m[key] = undefined;
 
   // apply metadata
-  m = linkComponentToModelMetadata(component, m, metadata);
+  m = linkComponentToModelMetadata(component, m as TModel, metadata) as Record<string, unknown>;
 
   // remove fields with undefined values
   for (const key in m)
@@ -1136,7 +1137,7 @@ export function getComponentModelFromMetadata<TModel extends IConfigurableFormCo
       if (m[key] === undefined)
         delete m[key];
 
-  return m;
+  return m as TModel;
 };
 
 export function updateComponentModelFromMetadata<TModel extends IConfigurableFormComponent>(
@@ -1145,11 +1146,11 @@ export function updateComponentModelFromMetadata<TModel extends IConfigurableFor
   metadata: IPropertyMetadata,
 ): TModel {
   const mm = getComponentModelFromMetadata(component, model, metadata);
-  const m = deepMergeValues(deepCopyViaJson(model), mm, (t, s, key) => {
+  const m = deepMergeValues(deepCopyViaJson(model), mm, (t: Record<string, unknown>, s: Record<string, unknown>, key) => {
     // skip merge
     // metadata value is empty
     return s[key] === undefined ||
-      // model value is not empty and if model value is object, it has at least one property
+      // model value is a non-empty primitive (non-object values are not merged if already set)
       (t[key] !== undefined && t[key] !== null && t[key] !== '' && typeof t[key] !== 'object');
   });
   return m;
@@ -1267,7 +1268,7 @@ export const createComponentModelForDataProperty = (
 
   if (toolboxComponent.migrator && migrator) componentModel = migrator(componentModel, toolboxComponent);
 
-  if (!toolboxComponent.allowInherite)
+  if (!toolboxComponent.allowInherit)
     componentModel = linkComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 
   return componentModel;

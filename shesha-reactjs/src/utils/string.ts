@@ -225,10 +225,11 @@ export const isEmptyString = (value: unknown): boolean => {
 };
 
 export const truncateMiddle = (str: string, maxLength: number, ellipsis: string = '...'): string => {
+  if (!str) return str;
   if (str.length <= maxLength) return str;
   if (maxLength <= ellipsis.length) return ellipsis.slice(0, maxLength);
   const charsToShow = maxLength - ellipsis.length;
   const start = Math.ceil(charsToShow / 2);
   const end = Math.floor(charsToShow / 2);
-  return str.slice(0, start) + ellipsis + str.slice(-end);
+  return str.slice(0, start) + ellipsis + (end > 0 ? str.slice(-end) : '');
 };

@@ -18,7 +18,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const defaultModel = useDefaultModelProviderStateOrUndefined();
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
   const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultModelPropName);
-  const className = valueInfo.state === 'usedDefault' ? styles.inheritedValue : valueInfo.state === 'usedModel' ? styles.overridedValue : '';
+  const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
 
   const childElement = children as ReactElement;
   const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
@@ -60,7 +60,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       className={`sha-js-label ${className}`}
     >
       {(value, onChange) => {
-        const localValue = valueInfo.state === 'usedDefault' ? defaultValue : value;
+        const localValue = valueInfo?.state === 'usedDefault' ? defaultValue : value;
         return !jsSetting ? (
           createClonedElement(localValue, onChange)
         ) : (

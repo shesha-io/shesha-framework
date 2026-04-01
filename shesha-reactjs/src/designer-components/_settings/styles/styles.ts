@@ -81,25 +81,24 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
         
     `);
 
-  const inheritedValue = cx(css`
+  const valueHighlightSelectors = `
     input, textarea,
     .properties-label,
     .ant-select-selector,
     .ant-switch-handle:before,
     .ant-input-affix-wrapper,
-    .ant-radio-button-wrapper-checked {
+    .ant-radio-button-wrapper-checked
+  `;
+
+  const inheritedValue = cx(css`
+    ${valueHighlightSelectors} {
       background-color: #D7E8D9 !important;
       color: #1C1B1F !important;
     }
   `);
 
-  const overridedValue = cx(css`
-    input, textarea,
-    .properties-label,
-    .ant-select-selector,
-    .ant-switch-handle:before,
-    .ant-input-affix-wrapper,
-    .ant-radio-button-wrapper-checked {
+  const overriddenValue = cx(css`
+    ${valueHighlightSelectors} {
       background-color: #F4E9D6 !important;
       color: #1C1B1F !important;
     }
@@ -113,6 +112,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     jsSwitch,
     formItem,
     inheritedValue,
-    overridedValue,
+    overriddenValue,
   };
 });

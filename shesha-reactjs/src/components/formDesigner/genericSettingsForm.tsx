@@ -46,15 +46,24 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   const designerDevice = (dcm?.getDataContextData('canvasContext') as ICanvasStateContext)?.designerDevice || 'desktop';
   const currentDevice = useRef<DeviceTypes>('desktop');
 
-  // inherite mobile and tablet styles from desktop styles
+  // inherit mobile and tablet styles from desktop styles
   useEffect(() => {
-    if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
-      const currentModel = defaultModel?.getModel() as Record<string, unknown>;
-      const newStyle = { [designerDevice]: unproxyValue(deepCopyViaJson(currentModel?.desktop)) };
-      defaultModel?.setDefaultModel('Desktop style', newStyle);
+    if (toolboxComponent.allowInherit && designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
+      const desktopStyles = (defaultModel?.getModel() as Record<string, unknown>)?.desktop;
+      if (desktopStyles) {
+        const newStyle = { [designerDevice]: unproxyValue(deepCopyViaJson(desktopStyles)) };
+        defaultModel?.setDefaultModel('Desktop style', newStyle);
+      }
     }
     currentDevice.current = designerDevice;
-  }, [designerDevice, defaultModel]);
+  }, [designerDevice, defaultModel, toolboxComponent.allowInherit]);
+
+  const isMounted = useRef(true);
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const linkToModelMetadata = (metadata: IPropertyMetadata, settingsForm: ConfigurableFormInstance): void => {
     const currentModel = form.getFieldsValue() as TModel;
@@ -70,7 +79,11 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     setData(newModel);
 
     if (toolboxComponent.initModelFromMetadata) {
-      toolboxComponent.initModelFromMetadata(currentModel, newModel, metadata).then((r) => setData(r));
+      toolboxComponent.initModelFromMetadata(currentModel, newModel, metadata)
+        .then((r) => {
+          if (isMounted.current) setData(r);
+        })
+        .catch((error) => console.error('Failed to initialize model from metadata:', error));
     }
   };
 
@@ -117,8 +130,8 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       propertyFilter={propertyFilter}
       isSettingsForm={true}
 
-      formDataGetter={defaultModel.getMergedModel}
-      formDataSetter={defaultModel.setModel}
+      formDataGetter={defaultModel?.getMergedModel}
+      formDataSetter={defaultModel?.setModel}
       setFormDataNewDataAction={setFormDataNewDataAction}
     />
   );

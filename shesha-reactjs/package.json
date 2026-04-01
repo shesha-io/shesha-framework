@@ -27,7 +27,7 @@
     "commit": "cz",
     "lint": "eslint",
     "lint-errors": "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint --quiet",
-    "lint-fix": "eslint --fix --quiet",
+    "lint-fix": "eslint --fix",
     "dev": "next dev --webpack",
     "build-next": "next build --webpack",
     "start-next": "cross-env NODE_ENV=production node --max-old-space-size=8192 server.js",

@@ -1,5 +1,6 @@
 import { SectionSeparator } from '@/components';
-import { ISwitchSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import { ISectionSeparatorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
+import { FCUnwrapped } from '@/index';
+import React from 'react';
 
-export const SectionSeparatorWrapper: FC<ISwitchSettingsInputProps> = (props) => <SectionSeparator {...props} />;
+export const SectionSeparatorWrapper: FCUnwrapped<ISectionSeparatorSettingsInputProps> = (props) => <SectionSeparator {...props} />;

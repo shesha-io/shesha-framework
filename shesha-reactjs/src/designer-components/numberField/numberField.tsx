@@ -25,7 +25,7 @@ import { ValueType } from 'rc-input-number';
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
 const NumberFieldComponent: NumberFieldComponentDefinition = {
-  allowInherite: true,
+  allowInherit: true,
   type: 'numberField',
   isInput: true,
   isOutput: true,
@@ -77,8 +77,6 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
     const inputProps: InputNumberProps = {
       disabled: model.readOnly,
       variant: model.hideBorder ? 'borderless' : undefined,
-      // min: model.validate?.minValue !== undefined ? model.validate?.minValue : null,
-      // max: model.validate?.maxValue !== undefined ? model.validate?.maxValue : Number.MAX_SAFE_INTEGER,
       placeholder: model.placeholder,
       size: model.size,
       ...calculatedModel.eventHandlers,
@@ -88,9 +86,11 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       suffix,
       stringMode: true,
       controls: false,
+      max: model.validate?.maxValue !== undefined ? model.validate?.maxValue : null,
+      min: model.validate?.minValue !== undefined ? model.validate?.minValue : null,
     };
 
-    if (model.thousandsSeparator || model.numberFormat === 'percent') {
+    if (model.thousandsSeparator || model.numberFormat === 'percent' || (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && model.customFormat._code)) {
       inputProps.formatter = (value) => {
         if (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && model.customFormat._code) {
           return calculatedModel.executeCustomFormat(value, model.customFormat._code);
@@ -104,7 +104,8 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       inputProps.parser = (value) => {
         if (value === null || value === undefined) return value;
         const ts = model.thousandsSeparator;
-        const regex = new RegExp(`[+-]?(?:\\d+${(Boolean(ts) ? `(?:${ts}\\d*)*` : '')}(?:\\.\\d*)?|\\.\\d+)`, 'g');
+        const escapedTs = ts ? ts.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
+        const regex = new RegExp(`[+-]?(?:\\d+${(Boolean(ts) ? `(?:${escapedTs}\\d*)*` : '')}(?:\\.\\d*)?|\\.\\d+)`, 'g');
 
         const match = value.match(regex);
         if (match) {
@@ -125,7 +126,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (val: number | string | null): void => {
+          const onChangeInternal = (val: number | string | null | undefined): void => {
             let newValue = val;
             let numValue = 0;
             if (val !== undefined && val !== null) {
@@ -136,16 +137,15 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                 ? strVal.substring(0, decimal + numDecimalPlaces + 1)
                 : strVal;
               numValue = parseFloat(formattedValue);
-              if (model.validate?.minValue !== undefined && model.validate?.minValue < 0 && numValue < model.validate?.minValue) {
-                numValue = value;
-                newValue = model.highPrecision ? numValue.toString() : numValue;
+              newValue = model.highPrecision ? formattedValue : Number.isNaN(numValue) ? undefined : numValue;
+              /* if (model.validate?.minValue !== undefined && numValue < model.validate?.minValue) {
+                numValue = value as number | undefined;
+                newValue = model.highPrecision ? numValue?.toString() : numValue;
               }
               if (model.validate?.maxValue !== undefined && numValue > model.validate?.maxValue) {
-                numValue = value;
-                newValue = model.highPrecision ? numValue.toString() : numValue;
-              }
-
-              newValue = model.highPrecision ? formattedValue : numValue;
+                numValue = value as number | undefined;
+                newValue = model.highPrecision ? numValue?.toString() : numValue;
+              }*/
             }
 
             customEvents.onChange(newValue);
@@ -200,12 +200,6 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
         return model;
       }),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
-  initModelFromMetadata: (prevModel, model) => {
-    if (prevModel.description !== model.description) {
-      return new Promise((resolve) => setTimeout(() => resolve({ ...model, placeholder: model.description }), 1000));
-    }
-    return Promise.resolve(model);
-  },
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     const numFormat = isNumberFormatting(metadata.formatting) ? metadata.formatting as INumberFormatting : null;
     const decimalFormat = isDecimalFormatting(metadata.formatting) ? metadata.formatting as IDecimalFormatting : null;

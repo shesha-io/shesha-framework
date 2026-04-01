@@ -36,13 +36,22 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   const [propMetadata, setPropMetadata] = useState<IPropertyMetadata>(null);
 
   useEffect(() => {
-    if (!modelMetadata?.properties)
-      return;
-    const pName = toCamelCase(sourceComponentModel.propertyName);
-    if (Array.isArray(modelMetadata.properties))
-      setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
-    else
-      modelMetadata.properties().then((propsMeta) => setPropMetadata(propsMeta.find((p) => toCamelCase(p.path) === pName)));
+    let cancelled = false;
+    if (modelMetadata?.properties && sourceComponentModel?.propertyName) {
+      const pName = toCamelCase(sourceComponentModel.propertyName);
+      if (Array.isArray(modelMetadata.properties)) {
+        setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
+      } else {
+        modelMetadata.properties().then((propsMeta) => {
+          if (!cancelled) setPropMetadata(propsMeta.find((p) => toCamelCase(p.path) === pName));
+        }).catch((error) => {
+          if (!cancelled) console.error('Failed to fetch property metadata:', error);
+        });
+      }
+    }
+    return () => {
+      cancelled = true;
+    };
   }, [modelMetadata, sourceComponentModel?.propertyName]);
 
   const componentModel = useDeepCompareMemo(() => {

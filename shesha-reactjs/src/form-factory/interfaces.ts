@@ -142,8 +142,8 @@ export type AllComponentsConfig<T extends AllComponentDefinitions = AllComponent
   [K in T["type"]]: Extract<T, { type: K }> extends ComponentDefinition<infer _TType, infer TSettings> ? FluentSettings<TSettings> : never;
 };
 
-export type StandartEventHandler = 'onChange' | 'onBlur' | 'onFocus' | 'onClick';
-export type StandartAppearancePanel = 'font' | 'dimensions' | 'border' | 'shadow' | 'background' | 'customStyle' | 'marginPadding';
+export type StandardEventHandler = 'onChange' | 'onBlur' | 'onFocus' | 'onClick';
+export type StandardAppearancePanel = 'font' | 'dimensions' | 'border' | 'shadow' | 'background' | 'customStyle' | 'marginPadding';
 
 /** Fluent form builder */
 export type FluentFormBuilder<
@@ -157,22 +157,22 @@ export type FluentFormBuilder<
   build(): string;
   toJson(): IConfigurableFormComponent[];
 } & {
-  // standart components and coponents groups
+  // standart components and component groups
   stdPrefixSuffixInputs(visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
   stdVisibleEditableInputs(): FluentFormBuilder<TConfig>;
   stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
-  stdPlaceholerDescriptionInputs(): FluentFormBuilder<TConfig>;
+  stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
   stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
   stdEventHandler(propertyName: string, label: string, tooltip: string, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
-  stdEventHandlers(events: StandartEventHandler[]): FluentFormBuilder<TConfig>;
+  stdEventHandlers(events: StandardEventHandler[]): FluentFormBuilder<TConfig>;
   stdFontPanel(propertyName?: string): FluentFormBuilder<TConfig>;
   stdDimensionsPanel(propertyName?: string): FluentFormBuilder<TConfig>;
   stdBorderPanel(): FluentFormBuilder<TConfig>;
-  stdBackgroundtPanel(): FluentFormBuilder<TConfig>;
+  stdBackgroundPanel(): FluentFormBuilder<TConfig>;
   stdShadowPanel(): FluentFormBuilder<TConfig>;
   stdMarginPaddingPanel(propertyName?: string): FluentFormBuilder<TConfig>;
   stdCustomStylePanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdAppearancePanels(appearancePanels: StandartAppearancePanel[]): FluentFormBuilder<TConfig>;
+  stdAppearancePanels(appearancePanels: StandardAppearancePanel[]): FluentFormBuilder<TConfig>;
 };
 
 /** Fluent form builder */

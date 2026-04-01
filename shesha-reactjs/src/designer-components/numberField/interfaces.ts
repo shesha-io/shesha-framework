@@ -33,11 +33,11 @@ export interface INumberFieldComponentProps extends IConfigurableFormComponent, 
   suffixIcon?: IconType;
   prefixIcon?: IconType;
 }
-interface INumberFieldComponentCalulatedValues {
+interface INumberFieldComponentCalculatedValues {
   defaultValue?: string;
   eventHandlers?: any;
   executeCustomFormat?: (value: ValueType, code: string) => string;
 }
 
-export type NumberFieldComponentDefinition = ComponentDefinition<"numberField", INumberFieldComponentProps, INumberFieldComponentCalulatedValues>;
+export type NumberFieldComponentDefinition = ComponentDefinition<"numberField", INumberFieldComponentProps, INumberFieldComponentCalculatedValues>;
 

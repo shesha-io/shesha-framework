@@ -43,6 +43,7 @@ import { KeyInformationBarColumnsWrapper } from "./keyInformationBarColumns";
 import { SizableColumnsConfigWrapper } from "./sizableColumnsConfig";
 import { LayerSelectorSettingsModalWrapper } from "./layerSelectorSettingsModal";
 import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
+import { SectionSeparatorWrapper } from "./sectionSeparator";
 
 type InputType = ISettingsInputProps['type'];
 
@@ -99,4 +100,5 @@ export const editorRegistry: EditorDictionary = {
   customLabelValueEditor: CustomLabelValueEditorWrapper,
   keyInformationBarColumnsList: KeyInformationBarColumnsWrapper,
   sizableColumnsConfig: SizableColumnsConfigWrapper,
+  sectionSeparator: SectionSeparatorWrapper,
 };

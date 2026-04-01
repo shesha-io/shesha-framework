@@ -44,7 +44,7 @@ import { ITextAreaComponentProps } from "@/designer-components/textArea/interfac
 import { ITextFieldComponentProps } from "@/designer-components/textField/interfaces";
 import { ITimePickerComponentProps } from "@/designer-components/timeField/models";
 import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentProps, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
-import { ComponentTypes, FluentSettings, FormBuilder, FormBuilderFactory, StandartAppearancePanel, StandartEventHandler } from "./interfaces";
+import { ComponentTypes, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardEventHandler } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
 import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
@@ -53,7 +53,7 @@ import { getBorderInputs, getCornerInputs } from "@/designer-components/_setting
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
 
 interface EventConfig {
-  event: StandartEventHandler;
+  event: StandardEventHandler;
   propertyName: string;
   label: string;
   tooltip: string;
@@ -188,7 +188,7 @@ export class FormBuilderImplementation implements FormBuilder {
   addCollapsiblePanel = (props: FluentSettings<ICollapsiblePanelComponentProps>, meta?: IPropertyMetadata): FormBuilder => {
     const fixedProps = {
       ...props,
-      label: props.label ?? 'Font',
+      label: props.label ?? '',
       labelAlign: props.labelAlign ?? 'right',
       ghost: props.ghost ?? true,
       collapsible: props.collapsible ?? 'header',
@@ -223,7 +223,7 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdPlaceholerDescriptionInputs = (): FormBuilder => {
+  stdPlaceholderDescriptionInputs = (): FormBuilder => {
     this.addSettingsInputRow({
       inputs: [
         { type: 'textField', propertyName: 'placeholder', label: 'Placeholder', size: 'small', jsSetting: true },
@@ -243,7 +243,7 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdPrefixSuffixInputs = (visibleJs: string | undefined = undefined): FormBuilder => {
+  stdPrefixSuffixInputs = (visibleJs?: string): FormBuilder => {
     this.addSettingsInputRow({
       inputs: [
         { type: 'textField', propertyName: 'prefix', label: 'Prefix', jsSetting: true },
@@ -295,7 +295,7 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdEventHandlers = (events: StandartEventHandler[]): FormBuilder => {
+  stdEventHandlers = (events: StandardEventHandler[]): FormBuilder => {
     events.forEach((event) => {
       const eventConfig = eventConfigs.find((e) => e.event === event);
       if (eventConfig)
@@ -354,7 +354,7 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdBackgroundtPanel = (): FormBuilder => {
+  stdBackgroundPanel = (): FormBuilder => {
     this.stdCollapsiblePanel('Background', (f) => f
       .addSettingsInput({ label: 'Type', jsSetting: false, propertyName: 'background.type', inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions })
       .addSettingsInput({ label: 'Color', propertyName: 'background.color', hideLabel: true, jsSetting: false, inputType: 'colorPicker',
@@ -370,7 +370,7 @@ export class FormBuilderImplementation implements FormBuilder {
         visibleJs: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "image";',
       })
       .addSettingsInput({ label: 'File ID', inputType: 'textField', jsSetting: false, propertyName: 'background.storedFile.id',
-        visibleJs: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "storedFile";',
+        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "storedFile";',
       })
       .addSettingsInputRow({
         inline: true,
@@ -417,7 +417,7 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdAppearancePanels = (appearancePanels: StandartAppearancePanel[]): FormBuilder => {
+  stdAppearancePanels = (appearancePanels: StandardAppearancePanel[]): FormBuilder => {
     const rootId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, rootId);
     fbf.addSettingsInput({
@@ -431,7 +431,7 @@ export class FormBuilderImplementation implements FormBuilder {
     appearancePanels.forEach((panel) => {
       switch (panel) {
         case 'background':
-          fbf.stdBackgroundtPanel();
+          fbf.stdBackgroundPanel();
           break;
         case 'shadow':
           fbf.stdShadowPanel();
@@ -456,9 +456,9 @@ export class FormBuilderImplementation implements FormBuilder {
 
     this.addPropertyRouter({
       id: rootId,
-      propertyName: 'propertyRouter1',
-      componentName: 'propertyRouter',
-      label: 'Property router1',
+      propertyName: 'styleRouter',
+      componentName: 'styleRouter',
+      label: 'Style router',
       labelAlign: 'right',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
       propertyRouteName: { _code: "return contexts.canvasContext?.designerDevice || 'desktop';", _mode: 'code', _value: '' } as any,

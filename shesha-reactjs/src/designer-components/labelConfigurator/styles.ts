@@ -1,8 +1,8 @@
 import { createStyles } from '@/styles';
 
 
-export const useStyles = createStyles(({ css, cx, token }) => {
-  const flexWrapper = cx("", css`
+export const useStyles = createStyles(({ css, token }) => {
+  const flexWrapper = css`
         display: flex;
         flex-direction: row;
         gap: 8px;
@@ -11,9 +11,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         right: 36px;
         top: 4px;
         z-index: 2;
-    `);
+    `;
 
-  const hidelLabelIcon = cx("", css`
+  const hideLabelIcon = css`
     cursor: pointer;
     display: flex;
     gap: 4px;
@@ -22,9 +22,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     border-radius: 6px;
     color: ${token.colorPrimary};
     border: 1px solid ${token.colorPrimary};
-    `);
+    `;
 
-  const formItem = cx("", css`
+  const formItem = css`
 
       .sha-js-label {
         margin: 0px !important;
@@ -33,11 +33,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
       .ant-form-item-control-input {
         min-height: 0px !important;
       }
-    `);
+    `;
 
   return {
     flexWrapper,
-    hidelLabelIcon,
+    hideLabelIcon,
     formItem,
   };
 });

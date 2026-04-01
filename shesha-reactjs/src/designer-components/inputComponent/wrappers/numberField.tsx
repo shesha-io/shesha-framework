@@ -21,7 +21,7 @@ export const NumberFieldWrapper: FCUnwrapped<INumberFieldSettingsInputProps> = (
       min={min}
       max={max}
       controls={!icon}
-      addonAfter={icon ? <Icon icon={icon} hint={tooltip || label} className={styles.icon} /> : null}
+      addonAfter={icon ? <Icon icon={icon} hint={tooltip || (typeof label === 'string' ? label : undefined)} className={styles.icon} /> : null}
     />
   );
 };

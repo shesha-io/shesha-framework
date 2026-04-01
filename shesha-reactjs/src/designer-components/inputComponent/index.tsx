@@ -34,10 +34,11 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
   const resetToDefault = (): void => internalOnChange(undefined);
 
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
-  const isInherited = valueInfo.state === 'usedDefault';
-  const isOverrided = valueInfo.state === 'usedModel';
+  const isInherited = valueInfo?.state === 'usedDefault';
+  const isOverridden = valueInfo?.state === 'usedModel';
   const additionalInfo = defaultModel?.getCurrentValueAdditionalInfo(defaultModelPropName);
 
+  // ToDo: AS - review memoize
   const content = useMemo(() => (
     <div style={{ width: '100%' }}>
       {Boolean(props.tooltip) && (
@@ -46,22 +47,23 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
       {typeof additionalInfo === 'function' && (
         <div><div>{additionalInfo()}</div><Divider size="small" /></div>
       )}
-      <div>{isInherited ? `This value inherits from ${valueInfo.latestDefaultModelName}` : `This value is overrided.`}</div>
-      {isOverrided && <div>Inherited value: {convertValueToFriendlyString(defaultValue)}</div>}
+      <div>{isInherited ? `This value inherits from ${valueInfo.latestDefaultModelName}` : `This value is overridden.`}</div>
+      {isOverridden && <div>Inherited value: {convertValueToFriendlyString(defaultValue)}</div>}
       <div>{isInherited
         ? <Button type="link" onClick={() => setOverride()}><SyncOutlined /> Override inheritance</Button>
         : <Button type="link" onClick={() => resetToDefault()}><RollbackOutlined /> Reset to default</Button>}
       </div>
     </div>
-  ), [props.tooltip, additionalInfo, isInherited, valueInfo.latestDefaultModelName, isOverrided, defaultValue, setOverride, resetToDefault]);
+  ), [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue]);
 
-  if (!Editor) return undefined;
+  if (!Editor) return null;
 
-  if (isInherited || isOverrided) {
+  if (isInherited || isOverridden) {
     return (
-      <Popover content={content} trigger="hover" autoAdjustOverflow={true} placement="topLeft">
-        <span></span>
-        <Editor {...newProps} />
+      <Popover content={content} trigger="hover" autoAdjustOverflow={true} placement="topRight">
+        <div> {/* div is required to make Popover work for some input components */}
+          <Editor {...newProps} />
+        </div>
       </Popover>
     );
   }

@@ -135,7 +135,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         onMouseOut={(e) => e.stopPropagation()}
       >
         <ComponentProperties
-          componentModel={fullComponentModel}
+          componentModel={componentModel}
           readOnly={readOnly}
           toolboxComponent={component}
         />

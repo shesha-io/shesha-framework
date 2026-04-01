@@ -65,7 +65,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   }, [mode]);
 
   const codeOnChange = (val: any): void => {
-    const newValue: IPropertySetting = { ...setting, _code: val, _lazy: props.lazy };
+    const newValue: IPropertySetting = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy };
     onInternalChange(newValue);
   };
 

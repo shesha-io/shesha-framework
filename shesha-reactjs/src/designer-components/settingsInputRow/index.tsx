@@ -22,11 +22,10 @@ const InputRowInput = (props): React.JSX.Element => {
 
   return (
     <SettingInput
-      key={props.index + props.label}
       {...props}
       id={props.id ?? id}
       hidden={isHidden as boolean}
-      readOnly={Boolean(props.readOnly) || props.readOnly}
+      readOnly={props.parentReadOnly || props.readOnly}
       inline={props.inline}
       width={width}
     />
@@ -41,7 +40,7 @@ export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, childre
   return isHidden ? null : (
     <div className={inline ? styles.inlineInputs : styles.rowInputs}>
       {inputs?.map((props, i) => {
-        return <InputRowInput key={i} {...props} index={i} readOnly={readOnly} formData={formData} />;
+        return <InputRowInput key={i} {...props} parentReadOnly={readOnly} formData={formData} />;
       })}
       {children}
     </div>

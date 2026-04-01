@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import Icon from '../icon/Icon';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
-export interface IIconRadioGroupValueDefeintion {
+export interface IIconRadioGroupValueDefinition {
   value: unknown;
   icon: string | React.ReactNode;
   hint?: string;
@@ -16,13 +16,13 @@ export interface IIconRadioGroupProps {
   onChange?: (value: unknown) => void;
   size?: SizeType;
   className?: string;
-  valueDefenitions: IIconRadioGroupValueDefeintion[];
+  valueDefinitions: IIconRadioGroupValueDefinition[];
 }
 
 const IconRadioGroup: FC<IIconRadioGroupProps> = (props) => {
   return (
     <Radio.Group buttonStyle="solid" value={props.value} onChange={(e) => props.onChange?.(e.target.value)} size={props.size} disabled={props.readOnly} className={props.className}>
-      {props.valueDefenitions?.map((v, i) => {
+      {props.valueDefinitions.map((v, i) => {
         return (
           <Radio.Button key={i} value={v.value} style={v.style}><Icon icon={v.icon} hint={v.hint} /></Radio.Button>
         );

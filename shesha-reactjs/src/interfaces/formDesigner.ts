@@ -87,11 +87,11 @@ export type ToolboxComponentAsTemplate = {
 };
 
 export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> = {
-  // ToDo: AS - remove after all components are migrated to ingeritance
+  // ToDo: AS - remove after all components are migrated to inheritance
   /**
    * If true, indicates that the component properties can be inherited
    */
-  allowInherite?: boolean;
+  allowInherit?: boolean;
 
   /**
    * Type of the component. Must be unique in the project.
@@ -155,11 +155,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
   /**
    * Init model from metadata. Fired when the user drops a component to the form and bind component to the Entity property
-   * @param model - component model
+   * @param currentModel - current component model
+   * @param newModel - new component model
    * @param metadata - property metadata
    * @returns - component model
    */
-  initModelFromMetadata?: (currentModel: TModel, model: TModel, metadata: IPropertyMetadata) => Promise<TModel>;
+  initModelFromMetadata?: (currentModel: TModel, newModel: TModel, metadata: IPropertyMetadata) => Promise<TModel>;
   /**
    * Returns nested component containers. Is used in the complex components like tabs, panels etc.
    */

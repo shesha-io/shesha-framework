@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useStyles } from './styles';
 import { labelAlignOptions } from './utils';
 import { SettingInput } from '../settingsInput/settingsInput';
@@ -8,13 +8,15 @@ import { IRadioOption } from '../settingsInput/interfaces';
 export interface ILabelProps {
   readOnly?: boolean;
   label: string | React.ReactNode;
-  value?: boolean;
+  hideLabel?: boolean;
   labelAlignOptions?: IRadioOption[];
   placeholder?: string;
 }
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions: labelAlign, placeholder }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ hideLabel: value, readOnly, label, labelAlignOptions: labelAlign, placeholder }) => {
   const { styles } = useStyles();
+
+  const [ids] = useState<string[]>([nanoid(), nanoid(), nanoid(), nanoid()]);
 
   return (
     <>
@@ -28,10 +30,10 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
           hidden={value}
           buttonGroupOptions={labelAlign ? labelAlign : labelAlignOptions}
           jsSetting={false}
-          id={nanoid()}
+          id={ids[0]}
         />
         <SettingInput
-          id={nanoid()}
+          id={ids[1]}
           label="Show Label"
           hideLabel={!value}
           hidden={!value}
@@ -42,7 +44,7 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
           icon="EyeOutlined"
         />
         <SettingInput
-          id={nanoid()}
+          id={ids[2]}
           label="Hide Label"
           tooltip="Hide Label"
           hideLabel={!value}
@@ -55,9 +57,9 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
         />
       </div>
       <SettingInput
-        id={nanoid()}
+        id={ids[3]}
         type="textField"
-        label={label as string}
+        label={label}
         propertyName="label"
         readOnly={readOnly}
         jsSetting={!value}

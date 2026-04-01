@@ -20,7 +20,8 @@ export function executeScriptSync<TResult, TArgs = unknown>(expression: string, 
 
     return dynamicFunction(context);
   } catch (error) {
-    console.error(`executeScriptSync error: ${functionBody}:`, error);
+    // console.error(`executeScriptSync error: ${functionBody}:`, error);
+    console.error('executeScriptSync error:', error);
     return undefined;
   }
 };

@@ -11,7 +11,7 @@ import { defaultExposedVariables } from '@/designer-components/_settings/setting
 
 export const CodeEditorWrapper: FCUnwrapped<ICodeEditorSettingsInputProps> = (props) => {
   const { mode, language, availableConstantsExpression, resultTypeExpression, value, readOnly, description, label, propertyName, onChange, templateSettings, wrapInTemplate } = props;
-  const functionName = `get${camelcase(label ?? propertyName, { pascalCase: true })}`;
+  const functionName = `get${camelcase((typeof label === 'string' ? label : undefined) || propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: readOnly,

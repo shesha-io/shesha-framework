@@ -227,7 +227,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   }, [fetchedItems]);
 
   const loading = listFetcher.loading;
-  const loadingInitialItem = loading && Boolean(value) && !selectedItem;
+  const loadingInitialItem = loading && Boolean(value) && !selectedItem?.key;
 
   return (
     <Select<string, IOption>

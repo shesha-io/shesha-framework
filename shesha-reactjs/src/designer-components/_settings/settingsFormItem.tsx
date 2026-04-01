@@ -16,7 +16,7 @@ import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/inte
 
 export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
   name?: string;
-  label?: string;
+  label?: string | React.ReactNode;
   jsSetting?: boolean | 'lazy';
   readOnly?: boolean;
   disabled?: boolean;

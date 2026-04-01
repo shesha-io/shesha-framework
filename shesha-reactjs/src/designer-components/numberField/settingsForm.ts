@@ -15,17 +15,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
     { value: 'percent', label: 'Percent' },
     { value: 'custom', label: 'Custom' },
   ];
-  /* const numberFormatChange = (value, _data, setFormData): void => {
-    if (value === 'percent') {
-      setFormData({ values: { numDecimalPlaces: 0, prefix: undefined, suffix: '%' }, mergeValues: true });
-    } else if (value === 'integer') {
-      setFormData({ values: { numDecimalPlaces: 0, prefix: undefined, suffix: undefined }, mergeValues: true });
-    } else if (value === 'decimal') {
-      setFormData({ values: { numDecimalPlaces: 2, prefix: undefined, suffix: undefined }, mergeValues: true });
-    } else if (value === 'currency') {
-      setFormData({ values: { numDecimalPlaces: 2, prefix: undefined, suffix: undefined }, mergeValues: true });
-    }
-  };*/
 
   const json = {
     components: fbf('root')
@@ -43,10 +32,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
                 .addLabelConfigurator({ propertyName: 'label', label: 'Label', hideLabel: true })
-                .stdPlaceholerDescriptionInputs()
+                .stdPlaceholderDescriptionInputs()
                 .stdVisibleEditableInputs()
                 .stdCollapsiblePanel('Format', (fb) => fb
-                  .addSettingsInput({ inputType: 'dropdown', propertyName: 'numberFormat', label: 'Format', dropdownOptions: numberFormatOptions /* , onChangeSetting: numberFormatChange*/ })
+                  .addSettingsInput({ inputType: 'dropdown', propertyName: 'numberFormat', label: 'Format', dropdownOptions: numberFormatOptions })
                   .addSettingsInputRow({ inputs: [
                     { type: 'numberField', propertyName: `numDecimalPlaces`, label: 'Num decimal places' },
                     { type: 'textField', propertyName: `thousandsSeparator`, label: 'Thousands separator' },
@@ -67,7 +56,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   .addSettingsInputRow({
                     inputs: [
                       { type: 'numberField', propertyName: 'validate.minValue', label: 'Min Value', size: 'small', jsSetting: true, tooltip: 'Minimum allowed value, leave empty for no limit' },
-                      { type: 'numberField', propertyName: 'validate.maxValue', label: 'Max Value', size: 'small', jsSetting: false, tooltip: 'Maximum allowed value, leave empty for no limit' },
+                      { type: 'numberField', propertyName: 'validate.maxValue', label: 'Max Value', size: 'small', jsSetting: true, tooltip: 'Maximum allowed value, leave empty for no limit' },
                     ],
                   }))
 

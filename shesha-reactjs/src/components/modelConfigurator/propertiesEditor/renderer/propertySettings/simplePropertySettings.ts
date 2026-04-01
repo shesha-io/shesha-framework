@@ -47,11 +47,11 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
 
     // Date & Time format
     .addSettingsInput({ inputType: 'textField', propertyName: `${propName}dataFormat`, label: 'Date Format',
-      tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
-      visibleJs: `return data?.${codePropName}dataType === \'date\' || data?.${codePropName}  dataType === \'date-time\';`,
+      tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjs.com/docs/#/displaying/format/',
+      visibleJs: `return data?.${codePropName}dataType === \'date\' || data?.${codePropName}dataType === \'date-time\';`,
     })
     .addSettingsInput({ inputType: 'textField', propertyName: `${propName}dataFormat`, label: 'Time Format',
-      tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
+      tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjs.com/docs/#/displaying/format/',
       visibleJs: `return data?.${codePropName}dataType === \'time\';`,
     })
 

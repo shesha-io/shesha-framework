@@ -28,6 +28,8 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const { antdForm: form } = shaForm;
   const { styles } = useStyles();
 
+  // const markup = useFormDesignerMarkup();
+
   const noPageContext = !Boolean(useDataContextManager().getPageContext());
 
   useEffect(() => {
@@ -97,6 +99,9 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
                 </DataContextProvider>
               )}
             >
+
+              {/* <textarea value={JSON.stringify(markup, null, 2)} /> */}
+
               <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
                 {isDebug && (
                   <DebugPanel />

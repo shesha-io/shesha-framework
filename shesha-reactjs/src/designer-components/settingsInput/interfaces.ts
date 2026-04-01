@@ -12,7 +12,6 @@ import { GetResultTypeFunc } from '../codeEditor/interfaces';
 import { CodeLanguages } from '../codeEditor/types';
 import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
-import { IFontValue } from '../_settings/utils/font/interfaces';
 
 export interface IRadioOption {
   value: string | number;
@@ -36,7 +35,7 @@ export interface IHasModelType {
 export interface ISettingsInputBase extends IComponentLabelProps,
   Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName' | 'hidden'> {
   id?: string;
-  label: string;
+  label: string | React.ReactNode;
   propertyName: string;
   readOnly?: ValueOrCodeEvaluator<boolean>;
   value?: any;
@@ -50,7 +49,7 @@ export interface ISettingsInputBase extends IComponentLabelProps,
   placeholder?: string;
   className?: string;
 
-  /** @deprecated Use `visible` instead (inverson of `hidden`) */
+  /** @deprecated Use `visible` instead (inversion of `hidden`) */
   hidden?: boolean | IPropertySetting<boolean>;
   visible?: boolean;
   visibleJs?: string;
@@ -110,15 +109,19 @@ export const isSwitchProps = (value: ISettingsInputBase): value is ISwitchSettin
 
 export interface ISectionSeparatorSettingsInputProps extends ISettingsInputBase {
   type: 'sectionSeparator';
-  containerStyle?: string;
-  titleStyle?: string;
-  lineFont?: IFontValue;
-  font?: IFontValue;
-  titleStylingBox?: string;
-  containerStylingBox?: string;
-  dashed?: boolean;
+  id?: string;
+  title?: string;
+  tooltip?: string;
+  inline?: boolean;
+  lineColor?: string;
+  lineThickness?: number;
   lineWidth?: string;
   lineHeight?: string;
+  titleMargin?: number;
+  marginBottom?: string | number;
+  orientation?: 'horizontal' | 'vertical';
+  fontSize?: string | number;
+  lineType?: string;
 }
 export const isSectionSeparatorProps = (value: ISettingsInputBase): value is ISectionSeparatorSettingsInputProps => value.type === 'sectionSeparator';
 
@@ -541,8 +544,9 @@ export type BaseInputProps =
   IKeyInformationBarColumnsInputProps |
   ISizableColumnsConfigSettingsInputProps |
   ILayerSelectorSettingsInputProps |
-  IThreeStateSwitchSettingsInputProps
-  ;
+  IThreeStateSwitchSettingsInputProps |
+  ISectionSeparatorSettingsInputProps
+;
 
 export type InputTypes = BaseInputProps['type'];
 

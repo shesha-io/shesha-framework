@@ -14,7 +14,7 @@ const LabelConfigurator: LabelConfiguratorDefinition = {
   isOutput: true,
   canBeJsSetting: true,
   icon: <ColumnWidthOutlined />,
-  calculateModel: (_, allData) => ({ hideLabel: (allData.data as IConfigurableFormComponent).hideLabel }),
+  calculateModel: (_, allData) => ({ hideLabel: (allData.data as IConfigurableFormComponent)?.hideLabel }),
   Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles();
 
@@ -23,7 +23,7 @@ const LabelConfigurator: LabelConfiguratorDefinition = {
         <ConfigurableFormItem model={model}>
           {() => (
             <LabelConfiguratorComponent
-              value={Boolean(calculatedModel.hideLabel)}
+              hideLabel={Boolean(calculatedModel.hideLabel)}
               labelAlignOptions={model.labelAlignOptions}
               readOnly={model.readOnly}
               label={model.label}

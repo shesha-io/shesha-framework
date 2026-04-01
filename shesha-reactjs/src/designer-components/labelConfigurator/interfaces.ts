@@ -4,7 +4,6 @@ import { ComponentDefinition } from "@/interfaces";
 
 export interface ILabelComponentProps extends IConfigurableFormComponent {
   value?: boolean;
-  onChange?: Function;
   alignPropName?: string;
   labelPropName?: string;
   hideLabelPropName?: string;
@@ -12,8 +11,8 @@ export interface ILabelComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
 }
 
-export interface IlabelComponentCalcProps {
+export interface ILabelComponentCalcProps {
   hideLabel: boolean;
 }
 
-export type LabelConfiguratorDefinition = ComponentDefinition<"labelConfigurator", ILabelComponentProps, IlabelComponentCalcProps>;
+export type LabelConfiguratorDefinition = ComponentDefinition<"labelConfigurator", ILabelComponentProps, ILabelComponentCalcProps>;

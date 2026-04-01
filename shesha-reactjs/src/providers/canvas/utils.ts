@@ -268,6 +268,6 @@ export const screenSizeOptions = [
 
 export const getDeviceStyle = (data: Record<string, object | undefined> | undefined, device: DeviceTypes | undefined, defaultDevice: DeviceTypes = 'desktop'): object | undefined => {
   if (!data) return {};
-  if (!device) return data[defaultDevice];
+  if (!device) return data[defaultDevice] ?? {};
   return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
 };

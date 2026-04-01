@@ -47,21 +47,21 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
         value instanceof ShaObjectAccessProxy
         ? value.getAccessorValue() as TValue
         : value instanceof ObservableProxy
-          ? { ...value }
+          ? Array.isArray(value) ? [...value] : { ...value }
           : value
     : value;
 
-  return isProxy(result) ? unproxyValue<TValue>(result) : result;
+  return isProxy(result) ? unproxyValue<TValue>(result as TValue) : result as TValue;
 };
 
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
   target: TObject,
   source: TSource,
-  skipProp: ((target: object, source: object, key: string) => boolean) | undefined = undefined):
+  skipProp: ((target: Record<string, unknown>, source: Record<string, unknown>, key: string) => boolean) | undefined = undefined):
 TObject & TSource => {
   return mergeWith({ ...target }, source, (objValue: unknown, srcValue: unknown, key: string, obj: TObject | null) => {
     // Check if the property should be skipped
-    const skip = skipProp && typeof skipProp === 'function' ? skipProp(target, source, key) : false;
+    const skip = skipProp && typeof skipProp === 'function' ? skipProp(target as Record<string, unknown>, source as Record<string, unknown>, key) : false;
     // if skip is true, return original value
     if (skip) return objValue;
 

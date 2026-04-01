@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import { Collapse, Form } from 'antd';
 import { useForm, useConfigurableActionDispatcher } from '@/providers';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
@@ -173,7 +173,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 };
 
 interface IConfigurableActionConfiguratorProps {
-  label?: string;
+  label?: string | ReactNode;
   hideLabel?: boolean;
   description?: string;
   editorConfig: IConfigurableActionConfiguratorComponentProps;

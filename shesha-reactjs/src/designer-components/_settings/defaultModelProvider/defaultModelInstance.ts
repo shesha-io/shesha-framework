@@ -1,5 +1,5 @@
 import { deepCopyViaJson, deepMergeValues, getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
-import { ReactElement } from "react-markdown/lib/react-markdown";
+import { ReactElement } from "react";
 
 export type DefaultModelValueState = 'usedDefault' | 'usedModel' | 'onlyModel';
 
@@ -13,7 +13,7 @@ export interface IDefaultModelInstance<T> {
   setDefaultModel: (name: string, model: T) => void;
   getMergedModel: () => T;
   getModel: () => T;
-  getDefaultModel: (name?: string) => T;
+  getDefaultModel: (name?: string) => T | undefined;
   getValueInfo: (propName: string) => IDefaultModelValueInfo;
   overrideValue: (propName: string) => void;
   setCurrentValueAdditionalInfo: (propName: string, additionalInfo: () => string | ReactElement) => void;
@@ -35,26 +35,24 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     this.defaultModels = new Map<string, T>();
   };
 
-  #updateMergedModel = (): void => {
-    this.mergedModel = deepMergeValues(deepCopyViaJson(this.model), this.defaultModel, (t, s, key) => {
+  #mergeModels = (model: T, defaultModel: T): T => {
+    return deepMergeValues(deepCopyViaJson(model), defaultModel, (t, s, key) => {
       // skip merge
       // metadata value is empty
       return s[key] === undefined ||
-        // model value is not empty and if model value is object, it has at least one property
+        // model value is not empty (null is also a value) and if model value is object, it has at least one property
         (t[key] !== undefined && typeof t[key] !== 'object');
     });
+  };
+
+  #updateMergedModel = (): void => {
+    this.mergedModel = this.#mergeModels(this.model, this.defaultModel);
   };
 
   #updateDefaultModel = (): void => {
     let model = {} as T;
     this.defaultModels.forEach((m) => {
-      model = deepMergeValues(model, m, (t, s, key) => {
-        // skip merge
-        // metadata value is empty
-        return s[key] === undefined ||
-          // model value is not empty and if model value is object, it has at least one property
-          (t[key] !== undefined && typeof t[key] !== 'object');
-      });
+      model = this.#mergeModels(model, m);
     });
 
     this.defaultModel = model;
@@ -63,7 +61,6 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
   setModel = (model: T): void => {
     if (model === undefined) return;
     this.model = deepCopyViaJson(model ?? {} as T);
-    this.#updateDefaultModel();
     this.#updateMergedModel();
   };
 
@@ -81,8 +78,8 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     return this.model as T;
   };
 
-  getDefaultModel = (name?: string): T => {
-    return !name ? this.defaultModel as T : this.defaultModels.get(name) as T;
+  getDefaultModel = (name?: string): T | undefined => {
+    return !name ? this.defaultModel : this.defaultModels.get(name);
   };
 
   getValueInfo = (propName: string): IDefaultModelValueInfo => {
@@ -110,13 +107,14 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
 
   overrideValue = (propName: string): void => {
     setValueByPropertyName(this.model, propName, getValueByPropertyName(this.defaultModel as Record<string, unknown>, propName));
+    this.#updateMergedModel();
   };
 
   setCurrentValueAdditionalInfo = (propName: string, additionalInfo: () => string | ReactElement): void => {
     this.valuesAdditionalInfo.set(propName, additionalInfo);
   };
 
-  getCurrentValueAdditionalInfo = (propName: string): () => string | ReactElement => {
-    return this.valuesAdditionalInfo.get(propName) ?? undefined;
+  getCurrentValueAdditionalInfo = (propName: string): (() => string | ReactElement) | undefined => {
+    return this.valuesAdditionalInfo.get(propName);
   };
 };

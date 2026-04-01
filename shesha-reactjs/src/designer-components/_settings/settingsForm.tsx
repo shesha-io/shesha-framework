@@ -79,7 +79,11 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
     valuesChange(newModel);
 
     if (toolboxComponent.initModelFromMetadata) {
-      toolboxComponent.initModelFromMetadata(currentModel, newModel, metadata).then((r) => valuesChange(r));
+      toolboxComponent.initModelFromMetadata(currentModel, newModel, metadata)
+        .then((r) => valuesChange(r))
+        .catch((error) => {
+          console.error('Failed to initialize model from metadata:', error);
+        });
     }
   };
 

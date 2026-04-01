@@ -66,11 +66,9 @@ export const migratePropToInverseProp = <T>(prev: T, fromProp: string, toProp: s
   } as T;
 
   if (isPropertySettings(model[toProp])) {
-    const func = `// Automatically updated from 'disabled' property, please review\n\n` +
-      'return !(() => {\n    // Source code\n\n' +
-      model[toProp]['_code'] +
-      '\n\n})();';
-
+    const existingCode = model[toProp]['_code'];
+    if (!existingCode) return model;
+    const func = `// Automatically updated from '${fromProp}' property, please review\n\nreturn !(() => {\n    // Source code\n\n${existingCode}\n\n})();`;
     model[toProp] = { ...model[toProp] as any, _code: func };
   }
 
@@ -102,7 +100,5 @@ export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
             : undefined,
   } as T;
 
-  migratePropToInverseProp(model, 'editMode', 'editMode', undefined, defaultValue);
-
-  return model;
+  return migratePropToInverseProp(model, 'editMode', 'editMode', undefined, defaultValue);
 };

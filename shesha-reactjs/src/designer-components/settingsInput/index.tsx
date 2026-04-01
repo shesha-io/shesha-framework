@@ -10,7 +10,7 @@ const SettingsInput: SettingsInputDefinition = {
   name: 'SettingsInput',
   icon: <SettingOutlined />,
   Factory: ({ model }) => {
-    return model.hidden ? null : <SettingInput size="small" {...model} />;
+    return model.hidden ? null : <SettingInput {...model} size="small" />;
   },
 };
 
