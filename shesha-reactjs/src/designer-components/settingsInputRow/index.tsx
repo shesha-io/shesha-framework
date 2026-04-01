@@ -1,7 +1,7 @@
 import { IConfigurableFormComponent, UnwrapCodeEvaluators } from "@/interfaces";
 import { isDefined } from '@/utils/nullables';
 import { SettingOutlined } from "@ant-design/icons";
-import React, { FC } from 'react';
+import React, { FC, useRef } from 'react';
 import { useStyles } from '../inputComponent/styles';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
@@ -14,6 +14,25 @@ export const isSettingsInputRow = (component: IConfigurableFormComponent): compo
 
 type UnwrappedInputRowProps = UnwrapCodeEvaluators<IInputRowProps>;
 
+const InputRowInput = (props): React.JSX.Element => {
+  const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: props.formData }) : props.hidden;
+  const width = getWidth(props.type, props.width);
+  // eslint-disable-next-line react-hooks/refs
+  const id = useRef(nanoid()).current;
+
+  return (
+    <SettingInput
+      key={props.index + props.label}
+      {...props}
+      id={props.id ?? id}
+      hidden={isHidden as boolean}
+      readOnly={Boolean(props.readOnly) || props.readOnly}
+      inline={props.inline}
+      width={width}
+    />
+  );
+};
+
 export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
   const { styles } = useStyles();
   const { formData } = useShaFormInstance();
@@ -22,22 +41,7 @@ export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, childre
   return isHidden ? null : (
     <div className={inline ? styles.inlineInputs : styles.rowInputs}>
       {inputs?.map((props, i) => {
-        const { type, id } = props;
-        const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: formData }) : props.hidden;
-
-        const width = getWidth(type, props.width);
-
-        return (
-          <SettingInput
-            key={i + props.label}
-            {...props}
-            id={id ?? nanoid()}
-            hidden={isHidden as boolean}
-            readOnly={Boolean(props.readOnly) || readOnly}
-            inline={inline}
-            width={width}
-          />
-        );
+        return <InputRowInput key={i} {...props} index={i} readOnly={readOnly} formData={formData} />;
       })}
       {children}
     </div>

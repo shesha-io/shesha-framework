@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import EditModeSelector from '@/components/editModeSelector';
 import { useStyles } from '../styles';
-import { useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultValuesProvider/defaultModelProvider';
+import { useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 
 export const EditModeSelectorWrapper: FCUnwrapped<IEditModeSelectorSettingsInputProps> = (props) => {
   const { styles } = useStyles();

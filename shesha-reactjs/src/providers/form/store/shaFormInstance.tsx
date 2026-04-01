@@ -43,9 +43,9 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractErrorInfo, throwError } from "@/utils/errors";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
-  formDataGetter?: () => any;
-  formDataSetter?: (data: any) => void;
-  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => any;
+  formDataGetter?: (() => Values | undefined) | undefined;
+  formDataSetter?: ((data: Values | undefined) => void) | undefined;
+  setFormDataNewDataAction?: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
   forceRootUpdate: ForceUpdateTrigger;
   formManager: IFormManagerActionsContext;
   metadataDispatcher: IMetadataDispatcher;
@@ -156,13 +156,13 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   private _formData: Values | undefined;
 
-  formDataSetter: (data: Values | undefined) => void;
+  formDataSetter: ((data: Values | undefined) => void) | undefined;
 
-  formDataGetter: () => Values | undefined;
+  formDataGetter: (() => (Values | undefined) | undefined) | undefined;
 
-  setFormDataNewDataAction: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined;
+  setFormDataNewDataAction: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
 
-  updateData: () => void;
+  updateData: (() => void) | undefined;
 
   modelMetadata?: IModelMetadata | undefined;
 
@@ -176,7 +176,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     return this._formData;
   };
 
-  set formData(data: object) {
+  set formData(data: Values | undefined) {
     if (typeof this.formDataSetter === 'function')
       this.formDataSetter(data);
     else
@@ -684,12 +684,12 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       this.initialValues = data;
       this.formData = data;
       this.antdForm.resetFields();
-      this.antdForm.setFieldsValue(data);
+      this.antdForm.setFieldsValue(data as Values);
       this.#setIsDataModified(false);
       this.forceRootUpdate();
 
       this.log('LOG: loaded', data);
-      return data;
+      return data as Values;
     }
 
     this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
@@ -776,9 +776,9 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFormInstance<Values> | undefined };
 
 type UseShaFormArgsNewForm<Values extends object = object> = {
-  formDataGetter?: () => Values;
-  formDataSetter?: (data: Values) => void;
-  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => any;
+  formDataGetter?: (() => Values | undefined) | undefined;
+  formDataSetter?: ((data: Values | undefined) => void) | undefined;
+  setFormDataNewDataAction?: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
   antdForm?: FormInstance<Values>;
   init?: (shaForm: IShaFormInstance<Values>) => void;
 };

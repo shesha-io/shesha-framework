@@ -31,7 +31,7 @@ export interface IHasFilter {
 }
 
 export interface INumberFormatting {
-  thousandsSeparator?: boolean;
+  thousandsSeparator?: string;
   customFormat?: string | null;
   step?: string | null;
 }

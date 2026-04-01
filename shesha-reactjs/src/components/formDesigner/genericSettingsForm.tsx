@@ -10,7 +10,7 @@ import { useDataContextManager } from '@/providers';
 import { ICanvasStateContext } from '@/providers/canvas/contexts';
 import { deepCopyViaJson, deepMergeValues, unproxyValue } from '@/utils/object';
 import { DeviceTypes } from '@/publicJsApis/canvasContextApi';
-import { useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultValuesProvider/defaultModelProvider';
+import { useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
@@ -46,19 +46,18 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   const designerDevice = (dcm?.getDataContextData('canvasContext') as ICanvasStateContext)?.designerDevice || 'desktop';
   const currentDevice = useRef<DeviceTypes>('desktop');
 
+  // inherite mobile and tablet styles from desktop styles
   useEffect(() => {
     if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
-      const currentModel = form.getFieldValue([]);
+      const currentModel = defaultModel?.getModel() as Record<string, unknown>;
       const newStyle = { [designerDevice]: unproxyValue(deepCopyViaJson(currentModel?.desktop)) };
       defaultModel?.setDefaultModel('Desktop style', newStyle);
     }
-    const d = defaultModel?.getDefaultModel();
-    const m = defaultModel?.getMergedModel();
     currentDevice.current = designerDevice;
-  }, [designerDevice]);
+  }, [designerDevice, defaultModel]);
 
   const linkToModelMetadata = (metadata: IPropertyMetadata, settingsForm: ConfigurableFormInstance): void => {
-    const currentModel = form.getFieldValue([]) as TModel;
+    const currentModel = form.getFieldsValue() as TModel;
     const newModel = linkComponentToModelMetadata(toolboxComponent, currentModel, metadata);
 
     const setData = (values: object): void => {

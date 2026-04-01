@@ -99,7 +99,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   },
                 ],
               })
-              .addPrefixSuffixInputs()
+              .stdPrefixSuffixInputs()
               .toJson(),
             ],
           },

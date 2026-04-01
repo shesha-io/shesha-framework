@@ -5,7 +5,7 @@ import { DataContextSelector } from '@/designer-components/dataContextSelector';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle, linkComponentToModelMetadata, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IConfigurableFormComponent, MetadataProvider, useFormDesignerComponents, useMetadataDispatcher, useShaFormInstanceOrUndefined } from '@/providers';
+import { IConfigurableFormComponent, MetadataProvider, UnwrapCodeEvaluators, useFormDesignerComponents, useMetadataDispatcher, useShaFormInstanceOrUndefined } from '@/providers';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { useFormDesignerSettings } from '@/providers/formDesigner';
@@ -17,7 +17,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocompleteComponentProps } from './interfaces';
 import { IModelMetadata, isEntityMetadata, isPropertiesArray, IToolboxComponentBase } from '@/interfaces';
 import { toCamelCase, truncateMiddle } from '@/utils/string';
-import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultValuesProvider/defaultModelProvider';
+import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultModelProvider/defaultModelProvider';
 import { isJsonEntityMetadata } from '@/interfaces/metadata';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -206,14 +206,6 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
     const [metadata, setMetadata] = useState<IModelMetadata>();
     const metaDispatcher = useMetadataDispatcher();
 
-    const resetFormToUndefined = (resetedModel: IConfigurableFormComponent, values: object): void => {
-      const undefinedFields = Object.keys(resetedModel).reduce((acc, fieldName) => {
-        acc[fieldName] = undefined;
-        return acc;
-      }, {} as Record<string, undefined>);
-      calculatedModel.setFieldsValue({ ...undefinedFields, ...values });
-    };
-
     const setContextMetadata = (meta: IModelMetadata, propName: string, component: IToolboxComponentBase): IConfigurableFormComponent | undefined => {
       const propertyName = toCamelCase(propName);
       const propertyMetadata = isPropertiesArray(meta?.properties)
@@ -228,11 +220,13 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
     };
 
     useEffect(() => {
-      metaDispatcher.getMetadata({ modelType: designerModelType ?? calculatedModel.modelType, dataType: 'entity' })
-        .then((meta) => {
-          setMetadata(meta);
-          setContextMetadata(meta, calculatedModel.propertyName, formComponent);
-        });
+      if (formComponent.allowInherite) {
+        metaDispatcher.getMetadata({ modelType: designerModelType ?? calculatedModel.modelType, dataType: 'entity' })
+          .then((meta) => {
+            setMetadata(meta);
+            setContextMetadata(meta, calculatedModel.propertyName, formComponent);
+          });
+      }
     }, []);
 
     const onValuesChange = useCallback((values) => {
@@ -240,7 +234,11 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
         // update default model
         const metadataConfig = setContextMetadata(metadata, values.propertyName, formComponent);
         // reset inherited values if inherited
-        resetFormToUndefined(metadataConfig, { ...values, id: calculatedModel.componentid, type: calculatedModel.commponentType });
+        const undefinedFields = Object.keys(metadataConfig).reduce((acc, fieldName) => {
+          acc[fieldName] = undefined;
+          return acc;
+        }, {} as Record<string, undefined>);
+        calculatedModel.setFieldsValue({ ...undefinedFields, ...values, id: calculatedModel.componentid, type: calculatedModel.commponentType });
       } else
         // update propertyName and componentName (all other values will be updated by nested propertyAutocomplete)
         calculatedModel.setFieldsValue(values);

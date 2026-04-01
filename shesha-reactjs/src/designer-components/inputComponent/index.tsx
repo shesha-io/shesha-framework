@@ -4,7 +4,7 @@ import { BaseInputProps } from '../settingsInput/interfaces';
 import { useFormItem, useShaFormInstance } from '@/providers';
 import { Button, Divider, Popover } from 'antd';
 import { RollbackOutlined, SyncOutlined } from '@ant-design/icons';
-import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultValuesProvider/defaultModelProvider';
+import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName } from '@/utils/object';
 import { convertValueToFriendlyString } from './utils';
 
@@ -30,8 +30,6 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
   };
   const newProps = { ...props, onChange: internalOnChange };
 
-  if (!Editor) return undefined;
-
   const setOverride = (): void => internalOnChange(defaultValue);
   const resetToDefault = (): void => internalOnChange(undefined);
 
@@ -55,7 +53,9 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
         : <Button type="link" onClick={() => resetToDefault()}><RollbackOutlined /> Reset to default</Button>}
       </div>
     </div>
-  ), [isInherited, isOverrided, defaultValue, additionalInfo]);
+  ), [props.tooltip, additionalInfo, isInherited, valueInfo.latestDefaultModelName, isOverrided, defaultValue, setOverride, resetToDefault]);
+
+  if (!Editor) return undefined;
 
   if (isInherited || isOverrided) {
     return (

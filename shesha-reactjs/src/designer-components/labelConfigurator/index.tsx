@@ -28,7 +28,6 @@ const LabelConfigurator: LabelConfiguratorDefinition = {
               readOnly={model.readOnly}
               label={model.label}
               placeholder={model.placeholder}
-              metadataValue={model.metadataValue}
             />
           )}
         </ConfigurableFormItem>

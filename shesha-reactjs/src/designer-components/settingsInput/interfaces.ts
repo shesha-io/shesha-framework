@@ -4,7 +4,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { ComponentType } from '@/components/formComponentSelector';
-import { ComponentDefinition, EditMode, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting, ValueOrCodeEvaluator } from '@/interfaces';
+import { ComponentDefinition, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting, ValueOrCodeEvaluator } from '@/interfaces';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
@@ -57,10 +57,6 @@ export interface ISettingsInputBase extends IComponentLabelProps,
 
   width?: string | number;
   inline?: boolean;
-
-  fromMetadata?: string;
-  fromMetadataToProperty?: string;
-  metadataValue?: string | number | boolean | EditMode | IPropertySetting<unknown>;
 }
 
 // Color Picker
@@ -172,7 +168,7 @@ export interface ICodeEditorSettingsInputProps extends ISettingsInputBase {
   resultType?: ResultType;
   resultTypeExpression?: string | GetResultTypeFunc;
   availableConstantsExpression?: string;
-  availableConstants?: IObjectMetadata;
+  availableConstants?: IObjectMetadata | undefined;
   exposedVariables?: string[] | ICodeExposedVariable[];
 }
 

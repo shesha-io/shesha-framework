@@ -8,7 +8,7 @@ import { useFormDesigner } from '@/providers/formDesigner';
 import { wrapDisplayName } from '@/utils/react';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
-import DefaultModelProvider from '@/designer-components/_settings/defaultValuesProvider/defaultModelProvider';
+import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponentBase;
@@ -54,27 +54,6 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const { getCachedComponentEditor } = useFormDesigner();
   const fbf = useFormBuilderFactory();
 
-  /*
-  const formSettings = useFormDesignerSettings();
-  const metaDispatcher = useMetadataDispatcher();
-  const designerModelType = formSettings?.modelType;
-
-  const [metadataConfig, setMetadataConfig] = useState<IConfigurableFormComponent>(undefined);
-
-  if (designerModelType)
-    metaDispatcher.getMetadata({ modelType: designerModelType, dataType: 'entity' })
-      .then((meta) => {
-        const propertyName = toCamelCase(componentModel.propertyName);
-        const propertyMetadata = isPropertiesArray(meta?.properties)
-          ? meta?.properties?.find((p) => toCamelCase(p.path) === propertyName)
-          : null;
-        if (!propertyMetadata) return;
-        setMetadataConfig(linkComponentToModelMetadata(toolboxComponent, { id: '', type: '' }, propertyMetadata));
-      });
-  else
-    setMetadataConfig(linkComponentToModelMetadata(toolboxComponent, { id: '', type: '' }, { path: '', dataType: '' }));
-  */
-
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
     return toolboxComponent.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
@@ -103,12 +82,11 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     // not used
   };
 
-  return SettingsForm // && metadataConfig
+  return SettingsForm
     ? (
       <SettingsForm
         readOnly={readOnly}
         model={componentModel}
-        // defaultConfig={metadataConfig}
         onSave={onSave}
         onCancel={onCancel}
         onValuesChange={onValuesChange}

@@ -6,6 +6,7 @@ import { createNamedContext } from '@/utils/react';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableFormActionsProvider } from '@/providers/form/actions';
 import { deepMergeValues } from '@/utils/object';
+import { IConfigurableFormComponent, useShaFormInstance } from '@/providers';
 
 interface SettingsFormState<TModel> {
   model?: TModel;
@@ -27,7 +28,7 @@ export const SettingsFormActionsContext = createNamedContext<ISettingsFormAction
 
 export type SettingsFormProps<TModel> = ISettingsFormFactoryArgs<TModel>;
 
-const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
+const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
   const {
     onSave,
     model,
@@ -39,6 +40,7 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
   } = props;
 
   const [form] = Form.useForm();
+  const shaForm = useShaFormInstance();
   const [state, setState] = useState<SettingsFormState<TModel>>({ model, values: getValuesFromSettings(model) });
 
   if (formRef)
@@ -48,7 +50,7 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
     };
 
   const valuesChange = (changedValues): void => {
-    const model = form.getFieldValue([]);
+    const model = shaForm.formData;
     const incomingState = updateSettingsFromValues(model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
     onValuesChange(changedValues, incomingState);
@@ -72,7 +74,7 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
   };
 
   const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
-    const currentModel = form.getFieldValue([]);
+    const currentModel = shaForm.formData as IConfigurableFormComponent;
     const newModel = linkComponentToModelMetadata(toolboxComponent, currentModel, metadata);
     valuesChange(newModel);
 

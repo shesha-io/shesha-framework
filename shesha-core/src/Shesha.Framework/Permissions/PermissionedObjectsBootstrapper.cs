@@ -83,13 +83,13 @@ namespace Shesha.Permission
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent ?? string.Empty;
                         dbItem.Name = item.Name;
-                        if (!(dbItem.Hardcoded != true && item.Hardcoded != true && dbItem.Access != Domain.Enums.RefListPermissionedAccess.Inherited))
+                        if (item.Hardcoded == true || dbItem.Access == Domain.Enums.RefListPermissionedAccess.Inherited)
                         {
                             dbItem.Access = item.Access ?? Domain.Enums.RefListPermissionedAccess.Inherited;
                             dbItem.Permissions = string.Join(",", item.Permissions ?? []);
                             dbItem.Hardcoded = item.Hardcoded ?? false;
-                            dbItem.Md5 = item.Md5 ?? "";
                         }
+                        dbItem.Md5 = item.Md5 ?? "";
 
                         await _permissionedObjectRepository.UpdateAsync(dbItem);
                         foreach (var parameter in item.AdditionalParameters)

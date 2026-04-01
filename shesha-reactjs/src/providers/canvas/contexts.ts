@@ -17,7 +17,7 @@ export interface ICanvasStateContext {
 
 export interface ICanvasWidthProps {
   width: number | string;
-  deviceType: IDeviceTypes;
+  deviceType: DeviceTypes;
 }
 export interface ICanvasActionsContext {
   setDesignerDevice: (deviceType: DeviceTypes) => void;

@@ -48,7 +48,7 @@ import { TextComponentDefinition } from '@/designer-components/text/models';
 import { TextAreaComponentDefinition } from '@/designer-components/textArea/interfaces';
 import { TextFieldComponentDefinition } from '@/designer-components/textField/interfaces';
 import { TimeFieldComponentDefinition } from '@/designer-components/timeField/models';
-import { ComponentDefinition, EditMode, IConfigurableFormComponent, IPropertyMetadata, IPropertySetting } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent, IPropertyMetadata, IPropertySetting } from '@/interfaces';
 
 // Create a union of all your component definitions
 type AllComponentDefinitions =
@@ -132,10 +132,6 @@ export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T,
   readOnly?: boolean | IPropertySetting<boolean> | undefined;
   visible?: boolean;
   visibleJs?: string | undefined;
-
-  fromMetadata?: string | undefined;
-  fromMetadataToProperty?: string | undefined;
-  metadataValue?: string | number | boolean | EditMode | IPropertySetting<unknown> | undefined;
 };
 
 /** Extract settings from component definition */

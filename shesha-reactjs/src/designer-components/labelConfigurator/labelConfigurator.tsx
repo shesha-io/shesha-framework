@@ -11,10 +11,9 @@ export interface ILabelProps {
   value?: boolean;
   labelAlignOptions?: IRadioOption[];
   placeholder?: string;
-  metadataValue?: string;
 }
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions: labelAlign, placeholder, metadataValue }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions: labelAlign, placeholder }) => {
   const { styles } = useStyles();
 
   return (
@@ -63,8 +62,6 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
         readOnly={readOnly}
         jsSetting={!value}
         placeholder={placeholder}
-        metadataValue={metadataValue}
-        hidden={undefined}
         visible={!value}
       />
     </>

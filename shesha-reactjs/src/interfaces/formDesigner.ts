@@ -11,7 +11,7 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, UnwrapCodeEvaluators } from '..';
+import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, IObjectMetadata, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -45,11 +45,12 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   onSave: (values: TModel) => void;
   onCancel: () => void;
   onValuesChange?: (changedValues: Partial<TModel>, values: TModel) => void;
-  toolboxComponent: IToolboxComponentBase;
+  toolboxComponent?: IToolboxComponentBase;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
   isInModal?: boolean;
+  availableConstants?: IObjectMetadata | undefined;
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;

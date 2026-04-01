@@ -4,7 +4,7 @@ import { FCUnwrapped } from '@/providers/form/models';
 import { useStyles } from '../styles';
 import ThreeStateSwitch from '@/components/threeStateSwitch';
 
-export const ThreeStateSwitchWrapper: FCUnwrapped<IThreeStateSwitchSettingsInputProps> = ({ value, onChange, readOnly, size, metadataValue }) => {
+export const ThreeStateSwitchWrapper: FCUnwrapped<IThreeStateSwitchSettingsInputProps> = ({ value, onChange, readOnly, size }) => {
   const { styles } = useStyles();
 
   return (
@@ -14,7 +14,6 @@ export const ThreeStateSwitchWrapper: FCUnwrapped<IThreeStateSwitchSettingsInput
       onChange={onChange}
       size={size}
       className={styles.radioBtns}
-      defaultValue={metadataValue as boolean | undefined}
     />
   );
 };

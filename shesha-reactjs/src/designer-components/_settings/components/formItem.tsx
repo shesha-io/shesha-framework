@@ -3,7 +3,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import SettingsControl from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 import { useStyles } from '../styles/styles';
-import { useDefaultModelProviderStateOrUndefined } from '../defaultValuesProvider/defaultModelProvider';
+import { useDefaultModelProviderStateOrUndefined } from '../defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/index';
 

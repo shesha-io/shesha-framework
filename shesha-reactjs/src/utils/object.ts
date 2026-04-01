@@ -54,12 +54,12 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   return isProxy(result) ? unproxyValue<TValue>(result) : result;
 };
 
-export const deepMergeValues = <TObject, TSource>(
+export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
   target: TObject,
   source: TSource,
-  skipProp: ((target: TObject, source: TSource, key: string) => boolean) | undefined = undefined):
+  skipProp: ((target: object, source: object, key: string) => boolean) | undefined = undefined):
 TObject & TSource => {
-  return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
+  return mergeWith({ ...target }, source, (objValue: unknown, srcValue: unknown, key: string, obj: TObject | null) => {
     // Check if the property should be skipped
     const skip = skipProp && typeof skipProp === 'function' ? skipProp(target, source, key) : false;
     // if skip is true, return original value
@@ -94,7 +94,7 @@ TObject & TSource => {
     }
 
     // handle objects
-    if (typeof objValue === "object" && typeof srcValue === "object") {
+    if (typeof objValue === "object" && typeof srcValue === "object" && objValue !== null) {
       // make a copy of merged objects
       return deepMergeValues(objValue, srcValue, skipProp);
     }

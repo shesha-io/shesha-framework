@@ -10,7 +10,6 @@ export interface ILabelComponentProps extends IConfigurableFormComponent {
   hideLabelPropName?: string;
   labelAlignOptions?: IRadioOption[];
   placeholder?: string;
-  metadataValue?: string;
 }
 
 export interface IlabelComponentCalcProps {

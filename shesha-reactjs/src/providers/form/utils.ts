@@ -89,7 +89,7 @@ import {
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
-import { IDefaultModelProviderState, useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultValuesProvider/defaultModelProvider';
+import { IDefaultModelProviderState, useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 
 export {
   executeExpression, executeScript,

@@ -152,7 +152,7 @@ export const usePinchZoom = (
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
   isAutoWidth: boolean = false,
-): MutableRefObject<HTMLDivElement> => {
+): MutableRefObject<HTMLDivElement | null> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
   const initialZoom = useRef<number>(currentZoom);
@@ -266,7 +266,7 @@ export const screenSizeOptions = [
   },
 ];
 
-export const getDeviceStyle = (data: object, device: DeviceTypes, defaultDevice: DeviceTypes = 'desktop'): object => {
+export const getDeviceStyle = (data: Record<string, object | undefined> | undefined, device: DeviceTypes | undefined, defaultDevice: DeviceTypes = 'desktop'): object | undefined => {
   if (!data) return {};
   if (!device) return data[defaultDevice];
   return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
