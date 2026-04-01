@@ -63,7 +63,7 @@ const types = {
 
 const typeModifiers: IDictionary<TypeModifier> = {
   boolean: {
-    valueSources: standardSourceTypes,
+    valueSources: ['value'],
   },
   date: {
     valueSources: standardSourceTypes,

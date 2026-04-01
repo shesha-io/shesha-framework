@@ -247,6 +247,8 @@ const getEvaluateFunctionName = (fieldType?: string): string => {
   return `EVALUATE_${fieldType ?? 'text'}`.toUpperCase();
 };
 
+const isBooleanFieldType = (fieldType?: string): boolean => fieldType === 'boolean' || fieldType === 'strict-boolean';
+
 const createEvaluateFunctionValue = (fieldType: string | undefined, expression: string, ignoreIfUnassigned: boolean): unknown => {
   return QbUtils.TreeUtils.jsToImmutable({
     func: getEvaluateFunctionName(fieldType),
@@ -587,6 +589,27 @@ const RuleValueEditor: React.FC<{
 
   if (cardinality === 0) {
     return <div className="sha-query-builder-value-shell sha-query-builder-value-shell--empty" />;
+  }
+
+  if (isBooleanFieldType(fieldType)) {
+    return (
+      <div className="sha-query-builder-boolean-value">
+        <RuleWidgetEditor
+          actions={actions}
+          config={config}
+          delta={0}
+          field={selectedField}
+          fieldType={fieldType}
+          operator={selectedOperator}
+          path={path}
+          readOnly={getValueReadonly(config, readOnly)}
+          value={values[0]}
+          valueError={valueErrors[0]}
+          valueSrc="value"
+          valueType={valueTypes[0]}
+        />
+      </div>
+    );
   }
 
   const availableSources = getValueSources(config, selectedField, selectedOperator);

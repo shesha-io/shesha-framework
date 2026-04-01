@@ -251,7 +251,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-query-builder-rule-row {
             width: 100%;
             min-width: 0;
-            min-height: 58px;
+            min-height: 32px;
             display: grid;
             grid-template-columns: 183px 155px minmax(0, 1fr);
             align-items: center;
@@ -263,7 +263,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             grid-template-columns: repeat(2, 32px);
             width: 64px;
             min-width: 64px;
-            height: 58px;
+            height: 32px;
             background: transparent;
             border-radius: 5px;
             overflow: hidden;
@@ -276,7 +276,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-rail-button {
             width: 32px;
-            height: 58px;
+            height: 32px;
             padding: 0;
             border: 0;
             background: transparent;
@@ -514,6 +514,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             overflow: hidden;
         }
 
+        .sha-query-builder-boolean-value {
+            width: 100%;
+            min-width: 0;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+        }
+
         .sha-query-builder-value-editor.is-range {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -624,8 +632,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-item-row:has(.sha-expression-editor-input:focus) .sha-query-builder-func-checkbox {
-            align-items: flex-start;
-            padding-top: 10px;
+            align-items: center;
+            justify-content: center;
+            padding-top: 0;
             box-sizing: border-box;
         }
 
@@ -1740,10 +1749,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-bool-btn-group {
             display: inline-flex;
             height: 32px;
+            min-height: 32px;
+            max-height: 32px;
+            align-items: stretch;
             border: 1px solid #d0d5dd;
             border-radius: 8px;
             box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
             overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .sha-query-builder-boolean-value .sha-bool-btn-group {
+            flex: 0 0 auto;
         }
 
         .sha-bool-btn-group.is-disabled {
@@ -1753,7 +1770,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-bool-btn-group__btn {
             min-width: 40px;
-            height: 32px;
+            height: 100%;
+            min-height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;

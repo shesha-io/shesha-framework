@@ -165,6 +165,14 @@ describe('QueryBuilder config matrix', () => {
     expect(queryBuilderConfig.operators.like?.valueTypes).toBeUndefined();
     expect(queryBuilderConfig.operators.not_like?.valueTypes).toBeUndefined();
   });
+
+  it('boolean fields only allow direct value sources', () => {
+    const booleanOperators = QbUtils.ConfigUtils.getOperatorsForField(config, 'boolPrimary') ?? [];
+
+    booleanOperators.forEach((operator) => {
+      expect(getValueSources(config, 'boolPrimary', operator)).toEqual(['value']);
+    });
+  });
 });
 
 describe('QueryBuilder sample-data coverage', () => {
