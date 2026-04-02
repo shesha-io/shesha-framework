@@ -6,9 +6,9 @@ import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { LayerGroupConfiguratorProvider } from '@/providers/layersProvider';
-import { migratePrevStyles } from '@/index';
 import { defaultStyles } from './utils';
 import { ICalendarProps } from './interfaces';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   type: 'calendar',

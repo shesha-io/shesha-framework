@@ -13,7 +13,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { defaultContainerStyles, defaultStyles } from './utils';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { useStyles } from './styles/styles';
 import { nanoid } from '@/utils/uuid';
 import { migrateButtonGroupDynamicItems } from '@/designer-components/_common-migrations/migrateButtonGroupDynamicItems';

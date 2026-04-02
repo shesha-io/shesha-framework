@@ -1,13 +1,10 @@
 import React, { useMemo } from 'react';
 import { Button } from 'antd';
-import { IListEditor, IListEditorContext } from './contexts';
-import { ItemChangeDetails, ListEditorChildrenFn, ListEditorSectionRenderingFn } from '.';
-import { ListItem, SortableItem } from './models';
+import { ListItem, SortableItem, ListItemFactory, ListEditorSectionRenderingFn, IListEditorContext, ListEditorChildrenFn, IListEditor, ItemChangeDetails } from './models';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { ReactSortable } from 'react-sortablejs';
 import { useStyles } from './styles/styles';
 import { ListItemWrapper } from './listItemWrapper';
-import { ListItemFactory } from './provider';
 
 export interface IListEditorRendererProps<TItem = any> {
   contextAccessor: () => IListEditorContext<TItem>;

@@ -1,8 +1,7 @@
 import classNames from 'classnames';
 import * as React from 'react';
 import { ConfigProvider } from 'antd';
-
-import useStyle from './style';
+// import useStyle from './style';
 
 const { ConfigContext } = ConfigProvider;
 
@@ -45,7 +44,7 @@ const Comment: React.FC<CommentProps> = ({
   );
 
   const prefixCls = getPrefixCls('comment', customizePrefixCls);
-  const [wrapSSR, hashId] = useStyle(prefixCls);
+  // const [wrapSSR, hashId] = useStyle(prefixCls);
 
   const avatarDom = avatar ? (
     <div className={`${prefixCls}-avatar`}>
@@ -83,9 +82,10 @@ const Comment: React.FC<CommentProps> = ({
       [`${prefixCls}-rtl`]: direction === 'rtl',
     },
     className,
-    hashId,
+    // hashId,
   );
 
+  /*
   return wrapSSR(
     <div {...otherProps} className={cls}>
       <div className={`${prefixCls}-inner`}>
@@ -94,6 +94,16 @@ const Comment: React.FC<CommentProps> = ({
       </div>
       {children ? renderNested(prefixCls, children) : null}
     </div>,
+  );
+  */
+  return (
+    <div {...otherProps} className={cls}>
+      <div className={`${prefixCls}-inner`}>
+        {avatarDom}
+        {contentDom}
+      </div>
+      {children ? renderNested(prefixCls, children) : null}
+    </div>
   );
 };
 

@@ -20,8 +20,9 @@ import {
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
 import { useShaFormInstanceOrUndefined } from '@/providers/form/providers/shaFormProvider';
-import { ShaSpin, useAvailableConstantsData } from '@/index';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { useAvailableConstantsData } from '@/providers/form/utils';
+import ShaSpin from '../shaSpin';
 
 interface IDataNode {
   title: JSX.Element;

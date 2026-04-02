@@ -3,7 +3,7 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { Form } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
 import { ColumnsItemProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';

@@ -1,15 +1,4 @@
-import {
-  IConfigurableActionConfiguration,
-  ConfigurableForm,
-  FormIdentifier,
-  IConfigurableFormComponent,
-  IToolboxComponent,
-  useAuth,
-  useForm,
-  useGlobalState,
-  useSheshaApplication,
-} from '@/index';
-import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import {
@@ -35,6 +24,13 @@ import {
 import { SingleDynamicItemEvaluator } from '@/providers/dynamicActions/evaluator/singleDynamicItemEvaluator';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
+import { FormIdentifier } from '@/providers/form/models';
+import { useAuth } from '@/providers/auth';
+import { useForm } from '@/providers/form';
+import { useGlobalState } from '@/providers/globalState';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { ConfigurableForm } from '@/components/configurableForm';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
   items?: IButtonGroupItemBase[];

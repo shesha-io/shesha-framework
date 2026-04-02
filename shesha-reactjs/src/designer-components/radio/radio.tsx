@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RadioGroup from './radioGroup';
 import React from 'react';
 import { CheckCircleOutlined } from '@ant-design/icons';

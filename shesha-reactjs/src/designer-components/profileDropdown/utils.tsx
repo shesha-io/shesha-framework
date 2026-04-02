@@ -1,8 +1,5 @@
-import {
-  IConfigurableActionConfiguration,
-  IconType,
-  ShaIcon,
-} from '@/index';
+import { ShaIcon, IconType } from '@/components/shaIcon';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import {
   ButtonGroupItemProps,
   IButtonGroup,

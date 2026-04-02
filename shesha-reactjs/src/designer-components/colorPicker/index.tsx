@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { FormatPainterOutlined } from '@ant-design/icons';
 import { ColorPickerComponentDefinition, IColorPickerComponentProps } from './interfaces';
@@ -6,7 +6,7 @@ import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ColorPicker } from '@/components';
+import { ColorPicker } from '@/components/colorPicker';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 

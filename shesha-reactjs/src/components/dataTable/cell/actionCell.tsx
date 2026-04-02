@@ -1,6 +1,5 @@
 import { Tooltip } from 'antd';
 import React from 'react';
-import { IconType, ShaIcon } from '@/components';
 import {
   isNavigationActionConfiguration,
   useConfigurableActionDispatcher,
@@ -11,8 +10,9 @@ import { ITableActionColumn } from '@/providers/dataTable/interfaces';
 import { ICommonCellProps } from './interfaces';
 import Link from 'next/link';
 import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
-import { TypedProxy, useAvailableConstantsData } from '@/index';
-
+import { TypedProxy } from '@/providers/form/observableProxy';
+import { useAvailableConstantsData } from '@/providers/form/utils';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 
 export type IActionCellProps<D extends object = object, V = any> = ICommonCellProps<ITableActionColumn, D, V>;
 

@@ -1,4 +1,4 @@
-import { IStyleType } from "@/index";
+import { IStyleType } from "@/providers/form/models";
 
 export const defaultStyles = (): IStyleType => {
   return {

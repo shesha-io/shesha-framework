@@ -1,4 +1,3 @@
-import { ShaIcon, ShaLink, ValidationErrors } from '@/components';
 import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
@@ -28,6 +27,9 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { buildUrl } from '@/utils';
 import { extractAjaxResponse, IAjaxResponse, IAnyObject } from '@/interfaces';
+import { ShaIcon } from '../shaIcon';
+import ShaLink from '../shaLink';
+import ValidationErrors from '../validationErrors';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 

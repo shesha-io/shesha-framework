@@ -1,6 +1,5 @@
 import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { getPropertySettingsFromValue } from './utils';
-import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { useStyles } from './styles/styles';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
@@ -10,6 +9,8 @@ import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 import { Button } from 'antd';
 import { CodeOutlined, CodeFilled } from '@ant-design/icons';
+import { IPropertySetting, PropertySettingMode } from '@/providers/form/models';
+import { CodeEditor } from '../codeEditor/codeEditor';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement | ReactNode;
 

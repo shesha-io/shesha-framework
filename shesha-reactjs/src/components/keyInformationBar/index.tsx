@@ -1,5 +1,4 @@
 import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
-import { ComponentsContainer, isValidGuid, StyleBoxValue, useFormData, useSheshaApplication, ValidationErrors } from '@/index';
 import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { Flex } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
@@ -11,6 +10,12 @@ import { getBackgroundStyle } from '@/designer-components/_settings/utils/backgr
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { addPx } from '@/utils/style';
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { useFormData } from '@/providers/formContext';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { StyleBoxValue } from '@/providers/form/models';
+import { ValidationErrors } from '../validationErrors';
+import { isValidGuid } from '../formDesigner/components/utils';
+import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   const { data } = useFormData();
   const {

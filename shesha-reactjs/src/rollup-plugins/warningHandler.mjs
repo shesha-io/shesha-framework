@@ -6,7 +6,8 @@ export function warningHandlerPlugin(options = {}) {
     logLevel = 'all',
     timestampFormat = 'iso',
     maxFileSize = 1048576,
-    backupOldLogs = true
+    backupOldLogs = true,
+    removeOldLogs = true
   } = options;
 
   let logStream;
@@ -84,12 +85,16 @@ ${warning.pos ? `📍 Position: ${warning.pos}` : ''}
       try {
         // Check if log file exists and needs rotation
         if (fs.existsSync(logFile)) {
-          const stats = fs.statSync(logFile);
-          if (stats.size > maxFileSize && backupOldLogs) {
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const backupFile = `${logFile}.${timestamp}.bak`;
-            fs.renameSync(logFile, backupFile);
-            internal.writeLog(`Log file rotated: ${backupFile}`, 'info');
+          if (removeOldLogs){
+            fs.rmSync(logFile);
+          } else {
+            const stats = fs.statSync(logFile);
+            if (stats.size > maxFileSize && backupOldLogs) {
+              const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+              const backupFile = `${logFile}.${timestamp}.bak`;
+              fs.renameSync(logFile, backupFile);
+              internal.writeLog(`Log file rotated: ${backupFile}`, 'info');
+            }
           }
         }
 

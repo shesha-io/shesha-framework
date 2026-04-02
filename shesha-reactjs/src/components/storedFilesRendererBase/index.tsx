@@ -2,8 +2,7 @@ import { DraggerStub } from '@/components/fileUpload/stubs';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
-import { IFormComponentStyles } from '@/providers/form/models';
+import { IFormComponentStyles, IInputStyles, IStyleType } from '@/providers/form/models';
 import { addPx } from '@/utils/style';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
@@ -31,9 +30,11 @@ import { DataContextProvider } from '@/providers/dataContextProvider';
 import { FileVersionsButton, ExtraContent, PLACEHOLDER_FILE, getListTypeAndLayout, fetchStoredFile, FileNameDisplay } from './utils';
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel, UploadFileAsAttachmentArgs } from '@/utils/storedFile/models';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { ValidationErrors } from '../validationErrors';
 
 interface IUploaderFileTypes {
   name: string;
@@ -49,13 +50,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile: () => Promise<void>;
   downloadFile: (args: DownloadFileArgs) => Promise<void>;
 
-  /*
-  uploadFile: (payload: IUploadFilePayload) => void;
-  replaceFile?: (payload: IReplaceFilePayload) => void;
-  deleteFile: (fileIdToDelete: string) => void | Promise<void>;
-  downloadZipFile?: () => void;
-  downloadFile: (payload: IDownloadFilePayload) => void;
-  */
   onChange?: (fileList: StoredFileModel[]) => void;
   onDownload?: (fileList: StoredFileModel[]) => void;
 

@@ -1,4 +1,4 @@
-import { ComponentsContainer } from '@/components';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { FormItemProvider, IConfigurableFormComponent } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';

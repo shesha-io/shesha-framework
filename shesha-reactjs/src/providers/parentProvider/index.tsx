@@ -1,12 +1,16 @@
-import React, { useContext, PropsWithChildren, useMemo, useId } from "react";
-import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IDataContextProviderProps, IFlatComponentsStructure, isConfigurableFormComponent, useShaFormInstanceOrUndefined } from "../index";
-import { createNamedContext } from "@/utils/react";
 import ConditionalWrap from "@/components/conditionalWrapper";
-import ValidateProvider from "../validateProvider";
-import { IFormApi } from "../form/formApi";
-import { SheshaCommonContexts } from "../dataContextManager/models";
 import { throwError } from "@/utils/errors";
 import { isDefined } from "@/utils/nullables";
+import { createNamedContext } from "@/utils/react";
+import React, { PropsWithChildren, useContext, useId, useMemo } from "react";
+import { SheshaCommonContexts } from "../dataContextManager/models";
+import { IFormApi } from "../form/formApi";
+import ValidateProvider from "../validateProvider";
+import { ConfigurableActionDispatcherProvider } from "../configurableActionsDispatcher";
+import { DataContextManager } from "../dataContextManager";
+import { DataContextProvider, IDataContextProviderProps } from "../dataContextProvider";
+import { useShaFormInstanceOrUndefined } from "../form/providers/shaFormProvider";
+import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, isConfigurableFormComponent } from "../form/models";
 
 export interface IParentProviderStateContext<Values extends object = object> {
   id: string;
