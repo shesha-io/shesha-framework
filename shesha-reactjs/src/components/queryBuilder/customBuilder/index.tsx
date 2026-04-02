@@ -177,13 +177,33 @@ const getValueSourceItems = (config: Config, sources: ValueSource[]): Array<[str
   return sources.map((source) => [source, { label: getSourceLabel(config, source) }]);
 };
 
+type IOperatorAwareFieldDefinition = {
+  type?: string;
+  returnType?: string;
+  operators?: string[];
+};
+
+const getFallbackOperatorsForType = (config: Config, typeName?: string): string[] => {
+  if (!typeName)
+    return [];
+
+  const typeDefinition = config.types?.[typeName] as { operators?: string[] } | undefined;
+  return Array.isArray(typeDefinition?.operators) ? typeDefinition.operators : [];
+};
+
 const getOperatorOptions = (config: Config, field?: string): Array<{ label: string; value: string }> => {
   if (!field)
     return [];
 
-  const operatorKeys = ((QbUtils.ConfigUtils as unknown as {
-    getOperatorsForField: (cfg: Config, fieldName: string) => string[] | null;
-  }).getOperatorsForField(config, field) ?? []);
+  const fieldDefinition = QbUtils.ConfigUtils.getFieldConfig(config, field) as IOperatorAwareFieldDefinition | null | undefined;
+  const configUtils = QbUtils.ConfigUtils as unknown as {
+    getOperatorsForField?: (cfg: Config, fieldName: string) => string[] | null;
+  };
+  const operatorKeys = typeof configUtils.getOperatorsForField === 'function'
+    ? (configUtils.getOperatorsForField(config, field) ?? [])
+    : Array.isArray(fieldDefinition?.operators) && fieldDefinition.operators.length > 0
+      ? fieldDefinition.operators
+      : getFallbackOperatorsForType(config, fieldDefinition?.type ?? fieldDefinition?.returnType);
 
   return operatorKeys.map((value) => ({
     value,
@@ -192,9 +212,12 @@ const getOperatorOptions = (config: Config, field?: string): Array<{ label: stri
 };
 
 const getOperatorOptionsForType = (config: Config, typeName: string): Array<{ label: string; value: string }> => {
-  const operatorKeys = ((QbUtils.ConfigUtils as unknown as {
-    getOperatorsForType: (cfg: Config, type: string) => string[] | null;
-  }).getOperatorsForType?.(config, typeName) ?? []);
+  const configUtils = QbUtils.ConfigUtils as unknown as {
+    getOperatorsForType?: (cfg: Config, type: string) => string[] | null;
+  };
+  const operatorKeys = typeof configUtils.getOperatorsForType === 'function'
+    ? (configUtils.getOperatorsForType(config, typeName) ?? [])
+    : getFallbackOperatorsForType(config, typeName);
 
   return operatorKeys.map((value) => ({
     value,
@@ -210,27 +233,81 @@ const getOperatorCardinality = (config: Config, operator?: string): number => {
   return typeof operatorDefinition?.cardinality === 'number' ? operatorDefinition.cardinality : 1;
 };
 
+type IValueSourceAwareFieldDefinition = {
+  type?: string;
+  returnType?: string;
+  valueSources?: ValueSource[];
+};
+
+type IValueSourceAwareOperatorDefinition = {
+  valueSources?: ValueSource[];
+};
+
+const getConfigValueSources = (config: Config): ValueSource[] => {
+  const valueSourceKeys = Object.keys(config.settings?.valueSourcesInfo ?? {});
+  return (valueSourceKeys.length > 0 ? valueSourceKeys : ['value']) as ValueSource[];
+};
+
+const getFallbackValueSources = (
+  config: Config,
+  fieldDefinition: IValueSourceAwareFieldDefinition | null | undefined,
+  operator?: string,
+): ValueSource[] => {
+  const fieldType = fieldDefinition?.type ?? fieldDefinition?.returnType;
+  const typeDefinition = fieldType ? (config.types?.[fieldType] as { valueSources?: ValueSource[] } | undefined) : undefined;
+  const operatorDefinition = operator ? (config.operators?.[operator] as IValueSourceAwareOperatorDefinition | undefined) : undefined;
+
+  const fieldValueSources = Array.isArray(fieldDefinition?.valueSources) && fieldDefinition.valueSources.length > 0
+    ? fieldDefinition.valueSources
+    : Array.isArray(typeDefinition?.valueSources) && typeDefinition.valueSources.length > 0
+      ? typeDefinition.valueSources
+      : getConfigValueSources(config);
+
+  if (!Array.isArray(operatorDefinition?.valueSources) || operatorDefinition.valueSources.length === 0)
+    return fieldValueSources;
+
+  const filteredValueSources = fieldValueSources.filter((source) => operatorDefinition.valueSources.includes(source));
+  return filteredValueSources.length > 0 ? filteredValueSources : ['value'];
+};
+
 const getValueSources = (config: Config, field?: string, operator?: string): ValueSource[] => {
   if (!field || !operator)
     return ['value'];
 
   const fieldDefinition = QbUtils.ConfigUtils.getFieldConfig(config, field);
-  const getValueSourcesForFieldOp = (QbUtils.ConfigUtils as unknown as {
-    getValueSourcesForFieldOp: (cfg: Config, fieldName: string, operatorName: string, fieldDefinition?: unknown) => ValueSource[];
-  }).getValueSourcesForFieldOp;
+  const configUtils = QbUtils.ConfigUtils as unknown as {
+    getValueSourcesForFieldOp?: (cfg: Config, fieldName: string, operatorName: string, fieldDefinition?: unknown) => ValueSource[];
+    filterValueSourcesForField?: (cfg: Config, valueSources: ValueSource[], fieldDefinition?: unknown, operatorName?: string | null) => ValueSource[];
+  };
+  const fallbackValueSources = getFallbackValueSources(
+    config,
+    fieldDefinition as IValueSourceAwareFieldDefinition | null | undefined,
+    operator,
+  );
 
-  return getValueSourcesForFieldOp(config, field, operator, fieldDefinition) ?? ['value'];
+  if (typeof configUtils.getValueSourcesForFieldOp === 'function')
+    return configUtils.getValueSourcesForFieldOp(config, field, operator, fieldDefinition) ?? fallbackValueSources;
+
+  if (typeof configUtils.filterValueSourcesForField === 'function')
+    return configUtils.filterValueSourcesForField(config, fallbackValueSources, fieldDefinition, operator) ?? fallbackValueSources;
+
+  return fallbackValueSources;
 };
 
 const getWidgetKey = (config: Config, field?: string, operator?: string, valueSrc?: ValueSource): string | null => {
   if (!field || !operator || !valueSrc)
     return null;
 
-  const getWidgetForFieldOp = (QbUtils.ConfigUtils as unknown as {
-    getWidgetForFieldOp: (cfg: Config, fieldName: string, operatorName: string, valueSrc?: ValueSource | null) => string | null;
-  }).getWidgetForFieldOp;
+  const configUtils = QbUtils.ConfigUtils as unknown as {
+    getWidgetForFieldOp?: (cfg: Config, fieldName: string, operatorName: string, valueSrc?: ValueSource | null) => string | null;
+    getWidgetsForFieldOp?: (cfg: Config, fieldName: string, operatorName: string, valueSrc?: ValueSource | null) => string[] | null;
+  };
 
-  return getWidgetForFieldOp(config, field, operator, valueSrc);
+  if (typeof configUtils.getWidgetForFieldOp === 'function')
+    return configUtils.getWidgetForFieldOp(config, field, operator, valueSrc);
+
+  const widgets = configUtils.getWidgetsForFieldOp?.(config, field, operator, valueSrc) ?? [];
+  return widgets[0] ?? null;
 };
 
 const getFieldSourceReadonly = (config: Config, readOnly: boolean): boolean => {
