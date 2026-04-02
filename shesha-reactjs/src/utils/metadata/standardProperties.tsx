@@ -112,7 +112,7 @@ export const registerSetGlobalStateAction: MetadataBuilderAction = (builder, nam
 export const registerSelectedRowAction: MetadataBuilderAction = (builder, name = "selectedRow") => {
   builder.addCustom(name, "Selected row of nearest table (null if not available)", () => {
     const definition: TypeDefinition = {
-      typeName: 'any',
+      typeName: 'unknown',
       files: [],
     };
     return Promise.resolve(definition);
