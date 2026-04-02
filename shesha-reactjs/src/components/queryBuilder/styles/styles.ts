@@ -253,7 +253,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
             min-height: 32px;
             display: grid;
-            grid-template-columns: 183px 155px minmax(0, 1fr);
+            grid-template-columns: 200px 155px minmax(0, 1fr);
             align-items: center;
             gap: 10px;
         }
@@ -348,10 +348,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-packed-control {
-            width: 183px;
+            width: 200px;
             min-height: 32px;
             display: grid;
-            grid-template-columns: 60px 123px;
+            grid-template-columns: 60px 140px;
             align-items: stretch;
             border: 1px solid #d0d5dd;
             border-radius: 8px;
@@ -375,8 +375,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-field-slot {
-            width: 123px;
-            min-width: 123px;
+            width: 140px;
+            min-width: 140px;
             min-height: 32px;
             display: flex;
             align-items: stretch;
@@ -2005,21 +2005,21 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .rule--field-wrapper {
-            width: 183px;
-            min-width: 183px;
-            max-width: 183px;
-            flex: 0 0 183px;
+            width: 200px;
+            min-width: 200px;
+            max-width: 200px;
+            flex: 0 0 200px;
         }
 
         .query-builder .rule--field {
             border: none;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
-            width: 123px;
-            min-width: 123px;
-            max-width: 123px;
+            width: 140px;
+            min-width: 140px;
+            max-width: 140px;
             height: 32px;
-            flex: 0 0 123px;
+            flex: 0 0 140px;
         }
 
         .query-builder .rule--operator {
@@ -2196,14 +2196,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-input {
             flex: 1 1 auto !important;
-            width: 0 !important;
+            width: 100% !important;
             overflow: hidden !important;
+            display: flex !important;
+            align-items: center !important;
             padding: 0 16px !important;
             box-sizing: border-box !important;
         }
 
         .query-builder .rule--value .${prefixCls}-picker .${prefixCls}-picker-input > input {
             width: 100% !important;
+            line-height: 30px !important;
+            font-size: 14px !important;
             text-overflow: ellipsis !important;
         }
 
