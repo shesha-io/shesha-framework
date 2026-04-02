@@ -20,7 +20,7 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
 
 /**
  * Helper to render content that can be:
- * - string 
+ * - string
  */
 const renderContent = (content: ReactNode | string): ReactNode => {
   if (typeof content === 'string') {
