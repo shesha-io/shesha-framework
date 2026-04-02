@@ -629,6 +629,24 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-sizing: border-box;
         }
 
+        .sha-query-builder-value-editor.is-range.has-separator {
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            gap: 4px;
+            align-items: center;
+        }
+
+        .sha-query-builder-value-range-separator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 8px;
+            height: 32px;
+            color: #667085;
+            font-size: 14px;
+            line-height: 32px;
+            user-select: none;
+        }
+
         .sha-query-builder-value-editor-slot {
             width: 100%;
             flex: 1 1 0;
@@ -1864,12 +1882,26 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-inner {
+            width: 16px;
+            height: 16px;
             border-radius: 4px;
+            display: block;
+            position: relative;
         }
 
         .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked .${prefixCls}-checkbox-inner {
             background-color: #52c41a;
             border-color: #52c41a;
+        }
+
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked .${prefixCls}-checkbox-inner::after {
+            top: 50%;
+            inset-inline-start: 50%;
+            width: 5px;
+            height: 9px;
+            display: block;
+            transform: translate(-50%, -58%) rotate(45deg) scale(1);
+            transform-origin: center;
         }
 
         .sha-query-builder-ignore-unassigned-icon {

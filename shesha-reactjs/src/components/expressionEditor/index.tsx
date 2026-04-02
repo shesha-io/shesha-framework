@@ -865,28 +865,25 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
 
   const renderEditorSurface = (mode: 'inline' | 'floating'): JSX.Element => (
     <div className={joinClassNames('sha-expression-editor-overlay', mode === 'floating' && 'sha-expression-editor-overlay--floating')} style={mode === 'floating' ? floatingStyle : undefined}>
-      {mode === 'floating' && (
-        <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
-          <div className="sha-expression-editor-backdrop-content">
-            {highlightTokens.map((token, index) => (
-              token.className
-                ? (
-                  <span key={index} className={token.className}>
-                    {token.text}
-                  </span>
-                )
-                : <span key={index}>{token.text}</span>
-            ))}
-            {value.endsWith('\n') && <span>{'\n'}</span>}
-          </div>
+      <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
+        <div className="sha-expression-editor-backdrop-content">
+          {highlightTokens.map((token, index) => (
+            token.className
+              ? (
+                <span key={index} className={token.className}>
+                  {token.text}
+                </span>
+              )
+              : <span key={index}>{token.text}</span>
+          ))}
+          {value.endsWith('\n') && <span>{'\n'}</span>}
         </div>
-      )}
+      </div>
 
       <textarea
         ref={textareaRef}
         className={joinClassNames(
           'sha-expression-editor-input',
-          mode === 'inline' && 'sha-expression-editor-input--plain',
           resolvedControlClassName,
         )}
         value={value}

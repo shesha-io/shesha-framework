@@ -341,6 +341,7 @@ const getEvaluateFunctionName = (fieldType?: string): string => {
 };
 
 const isBooleanFieldType = (fieldType?: string): boolean => fieldType === 'boolean' || fieldType === 'strict-boolean';
+const isDateLikeFieldType = (fieldType?: string): boolean => fieldType === 'date' || fieldType === 'datetime' || fieldType === 'time';
 
 const createEvaluateFunctionValue = (fieldType: string | undefined, expression: string, ignoreIfUnassigned: boolean): unknown => {
   return QbUtils.TreeUtils.jsToImmutable({
@@ -806,6 +807,7 @@ const RuleValueEditor: React.FC<{
   const availableSources = getValueSources(config, selectedField, selectedOperator);
   const currentSource = availableSources.includes(valueSrcs[0]) ? valueSrcs[0] : availableSources[0];
   const isFunction = currentSource === 'func' && cardinality === 1;
+  const showRangeSeparator = cardinality === 2 && isDateLikeFieldType(fieldType);
   const sourceItems = getValueSourceItems(config, availableSources);
   const valueReadonly = getValueReadonly(config, readOnly);
 
@@ -856,26 +858,31 @@ const RuleValueEditor: React.FC<{
           value={values[0]}
         />
       ) : (
-        <div className={classNames('sha-query-builder-value-editor', cardinality > 1 && 'is-range')}>
+        <div className={classNames('sha-query-builder-value-editor', cardinality > 1 && 'is-range', showRangeSeparator && 'has-separator')}>
           {Array.from({ length: cardinality }).map((_, delta) => {
             const deltaSource = availableSources.includes(valueSrcs[delta]) ? valueSrcs[delta] : currentSource;
             return (
-              <div key={`${node.id}-${delta}`} className="sha-query-builder-value-editor-slot">
-                <RuleWidgetEditor
-                  actions={actions}
-                  config={config}
-                  delta={delta}
-                  field={selectedField}
-                  fieldType={fieldType}
-                  operator={selectedOperator}
-                  path={path}
-                  readOnly={valueReadonly}
-                  value={values[delta]}
-                  valueError={valueErrors[delta]}
-                  valueSrc={deltaSource}
-                  valueType={valueTypes[delta]}
-                />
-              </div>
+              <React.Fragment key={`${node.id}-${delta}`}>
+                {showRangeSeparator && delta > 0 && (
+                  <div className="sha-query-builder-value-range-separator" aria-hidden="true">-</div>
+                )}
+                <div className="sha-query-builder-value-editor-slot">
+                  <RuleWidgetEditor
+                    actions={actions}
+                    config={config}
+                    delta={delta}
+                    field={selectedField}
+                    fieldType={fieldType}
+                    operator={selectedOperator}
+                    path={path}
+                    readOnly={valueReadonly}
+                    value={values[delta]}
+                    valueError={valueErrors[delta]}
+                    valueSrc={deltaSource}
+                    valueType={valueTypes[delta]}
+                  />
+                </div>
+              </React.Fragment>
             );
           })}
         </div>

@@ -87,12 +87,6 @@
   padding: 0 4px;
 }
 
-.sha-expression-editor-input--plain {
-  color: #1f1f1f;
-  caret-color: #1f1f1f;
-  -webkit-text-fill-color: currentColor;
-}
-
 .sha-expression-editor-overlay {
   position: absolute;
   left: 0;
@@ -157,9 +151,8 @@
 }
 
 .sha-expression-editor.is-inline .sha-expression-editor-backdrop-content {
-  padding: 0 32px 0 12px;
-  display: flex;
-  align-items: center;
+  padding: 0 4px;
+  display: block;
 }
 
 .sha-expression-editor-backdrop-content > span {

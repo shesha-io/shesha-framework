@@ -57,6 +57,30 @@ interface IAutocompleteState {
   prefix: string;
 }
 
+const propertyOptionContainerStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+};
+
+const propertyOptionIconStyle: CSSProperties = {
+  flex: '0 0 auto',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const propertyOptionTextStyle: CSSProperties = {
+  flex: '1 1 auto',
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+
 const getOptionTitle = (option: IOption | undefined): string | undefined => {
   if (!option)
     return undefined;
@@ -98,11 +122,11 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
   if (isSpecification(item)) {
     const value = item.name;
     const label = (
-      <span className="sha-property-select-option" title={item.friendlyName}>
-        <span className="sha-property-select-option-icon">
+      <span className="sha-property-select-option" title={item.friendlyName} style={propertyOptionContainerStyle}>
+        <span className="sha-property-select-option-icon" style={propertyOptionIconStyle}>
           {item.description ? <Tooltip title={item.description}><BulbTwoTone twoToneColor="orange" style={{ cursor: 'help' }} /></Tooltip> : <BulbOutlined />}
         </span>
-        <span className="sha-property-select-option-text">{item.friendlyName}</span>
+        <span className="sha-property-select-option-text" style={propertyOptionTextStyle}>{item.friendlyName}</span>
       </span>
     );
 
@@ -117,9 +141,9 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
     const value = getPropertyItemIdentifier(item, prefix);
     const icon = getIconByPropertyMetadata(property);
     const label = (
-      <span className="sha-property-select-option" title={value}>
-        <span className="sha-property-select-option-icon">{icon}</span>
-        <span className="sha-property-select-option-text">{value}</span>
+      <span className="sha-property-select-option" title={value} style={propertyOptionContainerStyle}>
+        <span className="sha-property-select-option-icon" style={propertyOptionIconStyle}>{icon}</span>
+        <span className="sha-property-select-option-text" style={propertyOptionTextStyle}>{value}</span>
       </span>
     );
 
