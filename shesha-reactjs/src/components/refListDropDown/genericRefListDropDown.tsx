@@ -1,5 +1,5 @@
 import { Empty, Select, SelectProps, Spin } from 'antd';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import React, { useMemo } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';

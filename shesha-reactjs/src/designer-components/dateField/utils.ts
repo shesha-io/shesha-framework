@@ -3,17 +3,9 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { getDataProperty } from '@/utils/metadata';
 import { DisabledDateTemplate, IDateFieldProps } from './interfaces';
 import { range } from 'lodash';
-import { IStyleType } from '@/index';
+import { IStyleType } from "@/providers/form/models";
 import { DatePicker } from '@/components/antd';
-
-export const DATE_TIME_FORMATS = {
-  time: 'HH:mm:ss',
-  week: 'YYYY-wo',
-  date: 'DD/MM/YYYY',
-  quarter: 'YYYY-\\QQ',
-  month: 'YYYY-MM',
-  year: 'YYYY',
-};
+import { DATE_TIME_FORMATS } from '@/constants/formats';
 
 export function disabledDate(props: IDateFieldProps, current: Moment, data: object, globalState: object): boolean {
   const { disabledDateMode, disabledDateTemplate, disabledDateFunc } = props;

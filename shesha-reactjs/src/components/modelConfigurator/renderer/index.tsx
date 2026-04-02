@@ -1,7 +1,7 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
 import React, { FC, useMemo } from 'react';
-import { CustomErrorBoundary } from '@/components';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { FormMarkup } from '@/providers/form/models';
 import { Alert, App } from 'antd';
 import { PermissionEditorComponent } from '../permissionEditor';

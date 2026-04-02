@@ -2,12 +2,11 @@
 
 import { Alert, Card, Col, Row } from 'antd';
 import data from 'public/meta.json';
-import React from 'react';
-import { CollapsiblePanel } from '@/components';
+import React, { FC } from 'react';
 import styled from 'styled-components';
-import { PageWithLayout } from '@/interfaces';
 import { useLayoutSelection } from '@/hooks';
 import { LAYOUT_MODE } from '@/components/mainLayout/constant';
+import CollapsiblePanel from '@/components/panel';
 
 /**
  * There was an error
@@ -22,7 +21,7 @@ const StyledAlert: any = styled(Alert)`
   margin-bottom: 15px;
 `;
 
-const Home: PageWithLayout = () => {
+const Home: FC = () => {
   const { LayoutComponent } = useLayoutSelection(LAYOUT_MODE);
 
   return (

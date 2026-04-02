@@ -1,4 +1,4 @@
-import { IStyleType } from '@/index';
+import { IStyleType } from "@/providers/form/models";
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { CSSProperties } from 'react';

@@ -1,3 +1,5 @@
+"use client";
+
 import classNames from 'classnames';
 import ConfigurableSidebarMenu from '@/components/configurableSidebarMenu';
 import LayoutHeader from './header';
@@ -23,7 +25,7 @@ import { useLocalStorage } from '@/hooks';
 import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
-import { ConfigurableForm } from '@/index';
+import { ConfigurableForm } from '../configurableForm';
 
 const { Header, Content, Footer, Sider } = Layout;
 

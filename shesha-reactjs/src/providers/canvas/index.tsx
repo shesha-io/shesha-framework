@@ -3,10 +3,11 @@ import { reducer } from './reducer';
 import { setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction, setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, IDeviceTypes, IViewType } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
-import { DataTypes, IObjectMetadata } from '@/index';
 import { canvasContextCode } from '@/publicJsApis';
 import { isDefined } from '@/utils/nullables';
 import { throwError } from '@/utils/errors';
+import { IObjectMetadata } from '@/interfaces/metadata';
+import { DataTypes } from '@/interfaces/dataTypes';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,

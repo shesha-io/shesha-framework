@@ -1,7 +1,7 @@
 import { IPropertyAutocompleteSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
-import { PropertyAutocomplete } from '@/components';
+import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 
 export const PropertyAutocompleteWrapper: FCUnwrapped<IPropertyAutocompleteSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size, autoFillProps, allowClear, mode, id } = props;

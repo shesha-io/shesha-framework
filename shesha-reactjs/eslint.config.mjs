@@ -294,7 +294,7 @@ const baseTsConfig = {
         "react/prop-types": ["off"],
         "require-await": "error",
         "no-restricted-imports": ["error", {
-            paths: ["@/utils/publicUtils",
+            paths: ["@/utils/publicUtils", "@/index", "@/components",
                 {
                     name: "nanoid/non-secure",
                     message: "Please import nanoid from `@/utils/uuid` instead.",

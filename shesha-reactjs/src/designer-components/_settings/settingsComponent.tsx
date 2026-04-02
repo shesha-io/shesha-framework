@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import SettingsControl from './settingsControl';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
 import { IConfigurableFormComponent, ShaForm } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';

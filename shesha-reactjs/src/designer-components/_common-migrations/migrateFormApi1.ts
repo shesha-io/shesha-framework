@@ -1,7 +1,7 @@
-import { IConfigurableFormComponent } from "@/index";
 import { StandardNodeTypes } from "@/interfaces/formComponent";
 import { isPropertySettings } from "../_settings/utils";
 import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { IConfigurableFormComponent } from "@/providers/form/models";
 
 const migrateExpression = (expression: string | undefined, regexp: RegExp, newValue: string): string | undefined => {
   if (isNullOrWhiteSpace(expression))

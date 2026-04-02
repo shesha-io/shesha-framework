@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React, { useMemo } from 'react';
 import settingsFormJson from './settingsForm.json';
 import { ApartmentOutlined } from '@ant-design/icons';

@@ -1,9 +1,4 @@
-import { Rule, RuleObject } from 'antd/lib/form';
-import Schema, { Rules, ValidateSource } from 'async-validator';
-import camelcase from 'camelcase';
-import Mustache from 'mustache';
-import { nanoid } from '@/utils/uuid';
-import { CSSProperties, useRef } from 'react';
+import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
 import {
   IToolboxComponent,
   IToolboxComponentGroup,
@@ -12,40 +7,6 @@ import {
   SettingsMigrationContext,
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { Migrator } from '@/utils/fluentMigrator/migrator';
-import { getFullPath } from '@/utils/metadata/helpers';
-import { IAnyObject } from './../../interfaces/anyObject';
-import {
-  ActionParametersDictionary,
-  DEFAULT_FORM_SETTINGS,
-  FormFullName,
-  FormIdentifier,
-  FormMarkup,
-  FormMarkupWithSettings,
-  FormUid,
-  IComponentsContainer,
-  IConfigurableFormComponent,
-  IFlatComponentsStructure,
-  IFormSettings,
-  IFormValidationRulesOptions,
-  EditMode,
-  ROOT_COMPONENT_KEY,
-  FormRawMarkup,
-} from './models';
-import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
-import {
-  IDataContextManagerActionsContext,
-  IDataContextManagerFullInstance,
-  IDataContextsData,
-  RootContexts,
-  useDataContextManagerActionsOrUndefined,
-  useDataContextManagerOrUndefined,
-} from '@/providers/dataContextManager';
-import moment from 'moment';
-import FileSaver from 'file-saver';
-import { App } from 'antd';
-import { ISelectionProps } from '@/providers/dataTable/interfaces';
-import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import {
   FormMode,
   HttpClientApi,
@@ -60,46 +21,82 @@ import {
   useGlobalState,
   useHttpClient,
 } from '@/providers';
-import { MessageInstance } from 'antd/es/message/interface';
-import { executeFunction } from '@/utils';
-import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
-import { SheshaCommonContexts } from '../dataContextManager/models';
-import { IFormApi } from './formApi';
-import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
-import { ISetStatePayload } from '../globalState/contexts';
-import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from './providers/shaFormProvider';
-import { QueryStringParams } from '@/utils/url';
-import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
-import { jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { getActualModel, getActualPropertyValue } from './utils/js-settings';
 import {
-  executeScriptSync,
+  IDataContextManagerActionsContext,
+  IDataContextManagerFullInstance,
+  IDataContextsData,
+  RootContexts,
+  useDataContextManagerActionsOrUndefined,
+  useDataContextManagerOrUndefined,
+} from '@/providers/dataContextManager';
+import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
+import { ISelectionProps } from '@/providers/dataTable/interfaces';
+import { executeFunction } from '@/utils';
+import { Migrator } from '@/utils/fluentMigrator/migrator';
+import { ExpressionNodeValue } from '@/utils/jsonLogic';
+import { getFullPath } from '@/utils/metadata/helpers';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
+import { QueryStringParams } from '@/utils/url';
+import { nanoid } from '@/utils/uuid';
+import { App } from 'antd';
+import { MessageInstance } from 'antd/es/message/interface';
+import { Rule, RuleObject } from 'antd/lib/form';
+import Schema, { Rules, ValidateSource } from 'async-validator';
+import camelcase from 'camelcase';
+import FileSaver from 'file-saver';
+import moment from 'moment';
+import Mustache from 'mustache';
+import { CSSProperties, useRef } from 'react';
+import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
+import { SheshaCommonContexts } from '../dataContextManager/models';
+import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
+import { ISetStatePayload } from '../globalState/contexts';
+import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
+import { IAnyObject } from './../../interfaces/anyObject';
+import { IFormApi } from './formApi';
+import {
+  ActionParametersDictionary,
+  DEFAULT_FORM_SETTINGS,
+  EditMode,
+  FormFullName,
+  FormIdentifier,
+  FormMarkup,
+  FormMarkupWithSettings,
+  FormRawMarkup,
+  FormUid,
+  IComponentsContainer,
+  IConfigurableFormComponent,
+  IFlatComponentsStructure,
+  IFormSettings,
+  IFormValidationRulesOptions,
+  ROOT_COMPONENT_KEY,
+} from './models';
+import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
+import { useShaFormDataUpdate, useShaFormInstanceOrUndefined } from './providers/shaFormProvider';
+import { IShaFormInstance } from './store/interfaces';
+import { isHasDataGetter } from './touchableProperty';
+import { getActualModel, getActualPropertyValue } from './utils/js-settings';
+import { findToolboxComponent, getToolboxComponent } from './utils/markup';
+import {
   executeExpression,
+  executeScript,
+  executeScriptSync,
   FunctionExecutor,
   getFunctionExecutor,
-  executeScript,
   IExpressionExecuterArguments,
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
-import { findToolboxComponent, getToolboxComponent } from './utils/markup';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
-import { ExpressionNodeValue } from '@/utils/jsonLogic';
-import { isHasDataGetter } from './touchableProperty';
-import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
 
 export {
-  // prop settings
-  getActualModel,
-  getActualPropertyValue,
+  executeExpression, executeScript,
   // scripts
   executeScriptSync,
-  executeExpression,
-  getFunctionExecutor,
-  executeScript,
-  type FunctionExecutor,
+  // prop settings
+  getActualModel,
+  getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
   type IExpressionExecuterArguments,
   type IExpressionExecuterFailedHandler,
 };
@@ -313,7 +310,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
   return accessors;
 };
 
-const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
+const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData: object): IApplicationContext => {
   const accessors = wrapConstantsData({ fullContext, ...args });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
@@ -535,28 +532,29 @@ export const componentsFlatStructureToTree = (
     if (!componentIds) return;
 
     const ownerComponent = flat.allComponents[ownerId];
-    if (!ownerComponent)
-      throw new Error('Owner component not found');
 
-    const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
-      ? toolboxComponents[ownerComponent.type]
-      : undefined;
     const staticContainerIds: string[] = [];
-    if (ownerDefinition?.customContainerNames) {
-      ownerDefinition.customContainerNames.forEach((sc) => {
-        const subContainer = unsafeGetValueByPropertyName(ownerComponent, sc);
-        if (subContainer) {
+    if (ownerComponent) {
+      const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
+        ? toolboxComponents[ownerComponent.type]
+        : undefined;
+
+      if (isDefined(ownerDefinition) && ownerDefinition.customContainerNames) {
+        ownerDefinition.customContainerNames.forEach((sc) => {
+          const subContainer = unsafeGetValueByPropertyName(ownerComponent, sc);
+          if (subContainer) {
           // container with id
-          if (isObjectWithStringId(subContainer))
-            staticContainerIds.push(subContainer.id);
+            if (isObjectWithStringId(subContainer))
+              staticContainerIds.push(subContainer.id);
             // container without id (array of components)
-          if (Array.isArray(subContainer))
-            subContainer.forEach((c) => {
-              if (isObjectWithStringId(c))
-                staticContainerIds.push(c.id);
-            });
-        }
-      });
+            if (Array.isArray(subContainer))
+              subContainer.forEach((c) => {
+                if (isObjectWithStringId(c))
+                  staticContainerIds.push(c.id);
+              });
+          }
+        });
+      }
     }
 
     // iterate all component ids on the current level

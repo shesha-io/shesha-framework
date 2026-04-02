@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Col, Divider } from 'antd';
-import { CollapsiblePanel } from '@/components';
+import { CollapsiblePanel } from '@/components/panel';
 import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 import { useDataContextManagerOrUndefined } from '@/providers';
 

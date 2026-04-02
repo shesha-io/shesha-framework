@@ -1,5 +1,4 @@
 import { useGet } from '@/hooks';
-import { DataTypes, useMetadataDispatcher } from '@/index';
 import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
@@ -13,6 +12,8 @@ import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems
 import ChartLoader from './components/chartLoader';
 import { EntityData, IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
+import { DataTypes } from '@/interfaces/dataTypes';
 
 const chartInnerStyle = {
   width: '100%',

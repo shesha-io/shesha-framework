@@ -7,7 +7,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { GenericSettingsEditor } from './genericSettingsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
-import { CollapsiblePanel } from '@/components';
+import { CollapsiblePanel } from '@/components/panel';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 export interface IProviderSettingsEditorProps {

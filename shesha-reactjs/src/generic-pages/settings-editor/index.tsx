@@ -1,12 +1,12 @@
-import React from 'react';
-import { Page, SettingsEditor } from '@/components';
-import { PageWithLayout } from '@/interfaces';
+import React, { FC } from 'react';
+import { SettingsEditor } from '@/components/settingsEditor';
+import { Page } from '@/components/page';
 
 export interface ISettingsPageProps {
   id?: string;
 }
 
-export const SettingsPage: PageWithLayout<ISettingsPageProps> = () => {
+export const SettingsPage: FC<ISettingsPageProps> = () => {
   return (
     <Page
       title="Application Settings"

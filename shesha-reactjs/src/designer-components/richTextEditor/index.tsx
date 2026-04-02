@@ -1,7 +1,7 @@
 import React from 'react';
 import RichTextEditor from '@/components/richTextEditor';
 import settingsFormJson from './settingsForm.json';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { EditOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle } from '@/providers/form/utils';

@@ -5,12 +5,13 @@ import React, {
   useEffect,
 } from 'react';
 import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
-import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
 import { Form, FormItemProps } from 'antd';
 import { getPropertySettingsFromData } from './utils';
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
-import { getFieldNameFromExpression } from '@/index';
+import { getFieldNameFromExpression } from '@/providers/form/utils';
+import { IConfigurableFormItemProps } from '@/components/formDesigner/components/model';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 
 export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
   name?: string;

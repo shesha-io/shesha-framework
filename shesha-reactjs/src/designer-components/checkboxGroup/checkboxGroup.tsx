@@ -5,7 +5,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateValue, executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
 import { ICheckboxGroupProps } from './utils';
 import {

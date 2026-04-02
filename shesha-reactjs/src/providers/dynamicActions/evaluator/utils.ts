@@ -1,4 +1,3 @@
-import { IStyleType } from '@/index';
 import {
   ButtonGroupItemProps,
   IButtonGroupItemBase,
@@ -6,6 +5,7 @@ import {
   isDynamicItem,
   isGroup,
 } from '@/providers/buttonGroupConfigurator/models';
+import { IStyleType } from '@/providers/form/models';
 import { ButtonType } from 'antd/lib/button';
 
 export interface IDynamicItemsEvaluationStore {

@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { IDocumentInstance } from '../../models';
 import { useConfigurationStudio } from '../../cs/contexts';
-import { CustomErrorBoundary } from '@/components';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { useActiveDoc } from '../../cs/hooks';
 import { usePortal } from '@/hooks/usePortal';
 import { isDefined } from '../../../utils/nullables';

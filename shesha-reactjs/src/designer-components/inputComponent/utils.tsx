@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Select, Row } from 'antd';
-import { CodeEditor, ListEditor } from '@/components';
+import { ListEditor } from '@/components/listEditor';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 import { ILabelValueEditorProps, ILabelValueItem } from '@/components/labelValueEditor/labelValueEditor';
 import { useStyles } from './styles';

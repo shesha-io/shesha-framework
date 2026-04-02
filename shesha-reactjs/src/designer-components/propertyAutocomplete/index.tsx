@@ -1,5 +1,5 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import settingsFormJson from './settingsForm.json';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';

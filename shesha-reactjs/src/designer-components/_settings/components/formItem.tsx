@@ -1,5 +1,5 @@
 import React, { cloneElement, FC, ReactElement, useState } from 'react';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import SettingsControl from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 import { useStyles } from '../styles/styles';

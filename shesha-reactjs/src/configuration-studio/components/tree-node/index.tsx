@@ -1,4 +1,4 @@
-import { DateDisplay } from '@/components';
+import { DateDisplay } from '@/components/dateDisplay';
 import { isConfigItemTreeNode, TreeNode } from '@/configuration-studio/models';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { Popover, Typography } from 'antd';

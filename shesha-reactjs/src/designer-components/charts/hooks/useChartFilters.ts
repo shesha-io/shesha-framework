@@ -1,8 +1,12 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { evaluateDynamicFiltersSync } from '@/utils/datatable';
-import { useAvailableConstantsData, useDataContextManager, useMetadataDispatcher, IModelMetadata, DataTypes } from '@/index';
 import { IChartProps } from '../model';
 import { FilterExpression, IStoredFilter } from '@/providers/dataTable/interfaces';
+import { useAvailableConstantsData } from '@/providers/form/utils';
+import { useDataContextManager } from '@/providers/dataContextManager';
+import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
+import { IModelMetadata } from '@/interfaces/metadata';
+import { DataTypes } from '@/interfaces/dataTypes';
 
 interface UseChartFiltersResult {
   stateEvaluatedFilters: string;

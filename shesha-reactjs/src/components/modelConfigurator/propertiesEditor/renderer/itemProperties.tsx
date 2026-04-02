@@ -14,7 +14,7 @@ import { getSettings } from './propertySettings/propertySettings';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
-import { useModelConfigurator } from '@/index';
+import { useModelConfigurator } from '@/providers/modelConfigurator';
 
 export const ToolbarItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem } = usePropertiesEditor();

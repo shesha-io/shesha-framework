@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { IMetadataEditorProps } from './interfaces';
 import { Button, Modal, Space } from 'antd';
-import { Show } from '@/components';
+import { Show } from '@/components/show';
 import { ApartmentOutlined } from '@ant-design/icons';
 import { MetadataEditorModal } from './metadataEditorModal';
 import { IModelItem } from '@/interfaces/modelConfigurator';

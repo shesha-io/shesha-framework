@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import React, { FC } from 'react';
-import { IconType, ShaIcon } from '@/components';
+import { IconType, ShaIcon } from '@/components/shaIcon';
 import {
   ColumnsItemProps,
   IConfigurableActionColumnsProps,
