@@ -3,9 +3,9 @@ import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
-import { DataTypes, getIconByDataType } from '@/index';
-import { NumberFormats } from '@/interfaces/dataTypes';
+import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
 import PropertyWrapper from './propertyWrapper';
+import { getIconByDataType } from '@/utils/metadata/helpers';
 
 export interface IProps extends IModelItem {
   index: number[];

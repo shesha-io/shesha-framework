@@ -1,4 +1,4 @@
-import { IStyleType } from "@/index";
+import { IStyleType } from "@/providers/form/models";
 import { IEntityPickerComponentProps } from ".";
 
 export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleType => {

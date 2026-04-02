@@ -1,10 +1,9 @@
-import { IContent, formatDateStringAndPrefix } from '@/designer-components/text/utils';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import GenericOutlined from '@/icons/genericOutlined';
 import { JsonOutlined } from '@/icons/jsonOutlined';
 import { DataTypes, EntityFormats, ObjectFormats } from '@/interfaces/dataTypes';
 import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
-import { camelcaseDotNotation, getNumberFormat, toCamelCase } from '@/utils/string';
+import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
 
 import React, { ReactNode } from 'react';
 import { ProductOutlined } from '@ant-design/icons';
@@ -64,24 +63,6 @@ export const getFullPath = (property: IPropertyMetadata): string => {
 
 export const getDataProperty = <TProp extends keyof IPropertyMetadata = keyof IPropertyMetadata, TValue = IPropertyMetadata[TProp]>(properties: IPropertyMetadata[], name: string, propertyName: TProp): TValue | undefined =>
   properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName] as TValue | undefined;
-
-export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>): string => {
-  const { dataType, dataFormat } = metadata;
-
-  switch (dataType) {
-    case 'boolean':
-      return !!content ? 'Yes' : 'No';
-
-    case 'date-time':
-      return formatDateStringAndPrefix(content, dataFormat);
-
-    case 'number':
-      return getNumberFormat(content, dataFormat || 'round');
-
-    default:
-      return content;
-  }
-};
 
 export const getEntityIdType = (metadata: IModelMetadata): string | undefined => {
   if (!isEntityMetadata(metadata))

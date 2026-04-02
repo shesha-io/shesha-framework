@@ -15,7 +15,7 @@ import { PasswordCombo } from './passwordCombo';
 import { IInputStyles, useForm } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';

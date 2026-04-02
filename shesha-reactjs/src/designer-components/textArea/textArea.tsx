@@ -6,7 +6,7 @@ import React, { CSSProperties, ReactElement } from 'react';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import {

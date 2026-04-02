@@ -3,10 +3,11 @@ import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import { Button, Collapse, Modal, Space } from 'antd';
 import React, { FC, useState } from 'react';
 import { useMedia } from 'react-use';
-import { QueryBuilder, Show } from '@/components';
 import { CodeEditor } from '@/components/codeEditor/codeEditor';
 import { IQueryBuilderFieldProps } from './models';
 import { useStyles } from './styles/styles';
+import { QueryBuilder } from '@/components/queryBuilder';
+import { Show } from '@/components/show';
 
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const { styles } = useStyles();

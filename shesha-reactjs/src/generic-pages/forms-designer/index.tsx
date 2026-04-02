@@ -1,14 +1,13 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { resetServerContext } from 'react-beautiful-dnd';
-import { FormDesigner } from '@/components';
-import { PageWithLayout } from '@/interfaces';
+import { FormDesigner } from '@/components/formDesigner';
 import { FormIdentifier } from '@/providers/form/models';
 
 export interface IFormsDesignerPagePageProps {
   formId: FormIdentifier;
 }
 
-export const FormsDesignerPage: PageWithLayout<IFormsDesignerPagePageProps> = (props) => {
+export const FormsDesignerPage: FC<IFormsDesignerPagePageProps> = (props) => {
   return (
     <FormDesigner formId={props.formId} />
   );

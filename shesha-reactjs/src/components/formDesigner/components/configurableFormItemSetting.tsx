@@ -2,11 +2,12 @@ import React, { FC, cloneElement } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression } from '@/providers/form/utils';
 import { getPropertySettingsFromData } from '@/designer-components/_settings/utils';
-import { SettingsControl, useShaFormInstance } from '@/index';
 import { IConfigurableFormItemChildFunc, IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
 import { useStyles } from './styles';
 import classNames from 'classnames';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import SettingsControl from '@/designer-components/_settings/settingsControl';
 
 export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   children,

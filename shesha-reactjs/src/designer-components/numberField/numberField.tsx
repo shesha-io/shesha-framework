@@ -1,6 +1,6 @@
 import { NumberOutlined } from '@ant-design/icons';
 import React from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useMetadata } from '@/providers';
@@ -18,7 +18,7 @@ import { getEventHandlers, customOnChangeValueEventHandler } from '@/components/
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { InputNumber, InputNumberProps } from 'antd';
-import { ShaIcon } from '@/components';
+import { ShaIcon } from '@/components/shaIcon';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 

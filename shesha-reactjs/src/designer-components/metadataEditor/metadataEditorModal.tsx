@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { ListEditor } from '@/components';
+import { ListEditor } from '@/components/listEditor';
 import { nanoid } from '@/utils/uuid';
 import { Item } from '@/components/modelConfigurator/propertiesEditor/renderer-new/item';
 import { ModelItemProperties } from '@/components/modelConfigurator/propertiesEditor/renderer-new/modelItemProperties';

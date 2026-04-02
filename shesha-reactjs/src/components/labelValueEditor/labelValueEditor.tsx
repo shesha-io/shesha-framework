@@ -13,7 +13,7 @@ import {
 import { BorderlessTableOutlined } from '@ant-design/icons';
 import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ILabelValueEditorPropsBase } from './interfaces';
-import { ListEditor } from '@/components';
+import { ListEditor } from '@/components/listEditor';
 import { ItemChangeDetails } from '../listEditor';
 
 export interface ILabelValueItem {

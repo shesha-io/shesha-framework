@@ -1,17 +1,18 @@
 import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
+import { IStyleType, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { formComponentActualModelPropertyFilter } from '@/providers/form/utils';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, UnwrapCodeEvaluators, useActualContextData, useCalculatedModel } from '@/index';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { useActualContextData } from '@/hooks';
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { useStyles } from './styles/styles';
 import { FormComponentValidationProvider, useValidationErrorsActionsOrDefault, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
+import { isValidGuid } from './components/utils';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;

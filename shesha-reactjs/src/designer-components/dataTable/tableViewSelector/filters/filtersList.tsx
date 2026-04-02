@@ -1,4 +1,4 @@
-import { ListEditor } from '@/components';
+import { ListEditor } from '@/components/listEditor';
 import { nanoid } from '@/utils/uuid';
 import React, { FC } from 'react';
 import { FilterItem } from './filterItem';

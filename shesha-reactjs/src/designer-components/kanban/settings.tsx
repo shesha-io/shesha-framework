@@ -1,4 +1,9 @@
-import { Autocomplete, CodeEditor, ColorPicker, FormAutocomplete, PropertyAutocomplete, Show } from '@/components';
+import { Autocomplete } from '@/components/autocomplete';
+import { ColorPicker } from '@/components/colorPicker';
+import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
+import { Show } from '@/components/show';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { Checkbox, Input } from 'antd';
 import React, { FC } from 'react';

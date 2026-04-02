@@ -2,10 +2,11 @@ import React, { ComponentType } from 'react';
 import FormItem from "../_settings/components/formItem";
 import { BaseInputProps, hasModelType, ISettingsInputProps, isSettingsInputProps } from './interfaces';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider, useSettingsComponents, FCUnwrapped } from '@/providers';
-import { evaluateString, IToolboxComponentBase, useShaFormInstance } from '@/index';
+import { MetadataProvider, useSettingsComponents, FCUnwrapped, useShaFormInstance } from '@/providers';
 import { InputComponent } from '../inputComponent';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { evaluateString } from '@/providers/form/utils';
+import { IToolboxComponentBase } from '@/interfaces/formDesigner';
 
 export type ISettingsComponent = IToolboxComponentBase & {
   settingsComponent?: React.FC<any>;

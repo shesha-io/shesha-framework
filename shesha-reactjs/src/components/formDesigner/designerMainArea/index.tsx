@@ -1,4 +1,3 @@
-import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { DataContextProvider, MetadataProvider, useDataContextManager, useShaFormInstance } from '@/providers';
 import { useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
@@ -11,6 +10,8 @@ import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { IViewType } from '@/providers/canvas/contexts';
+import { SidebarContainer } from '@/components/sidebarContainer';
+import { ConfigurableFormRenderer } from '@/components/configurableForm/configurableFormRenderer';
 
 const rightSidebarProps = {
   title: () => <ComponentPropertiesTitle />,

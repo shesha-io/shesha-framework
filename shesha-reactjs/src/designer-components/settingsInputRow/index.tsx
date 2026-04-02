@@ -1,5 +1,4 @@
-import { evaluateString, UnwrapCodeEvaluators, useShaFormInstance } from '@/index';
-import { IConfigurableFormComponent } from "@/interfaces";
+import { IConfigurableFormComponent, UnwrapCodeEvaluators } from "@/interfaces";
 import { isDefined } from '@/utils/nullables';
 import { SettingOutlined } from "@ant-design/icons";
 import React, { FC } from 'react';
@@ -7,6 +6,8 @@ import { useStyles } from '../inputComponent/styles';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
 import { IInputRowProps, ISettingsInputRowProps, SettingsInputRowDefinition } from './interfaces';
+import { evaluateString } from "@/providers/form/utils";
+import { useShaFormInstance } from "@/providers/form/providers/shaFormProvider";
 
 export const isSettingsInputRow = (component: IConfigurableFormComponent): component is ISettingsInputRowProps => isDefined(component) && component.type === 'settingsInputRow';
 

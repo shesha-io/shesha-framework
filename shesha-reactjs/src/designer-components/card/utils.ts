@@ -1,4 +1,4 @@
-import { IStyleType } from "@/index";
+import { IStyleType } from "@/providers/form/models";
 import { ICardComponentProps } from "./interfaces";
 
 export const defaultStyles = (prev: ICardComponentProps): IStyleType => {

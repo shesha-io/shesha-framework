@@ -1,8 +1,6 @@
 import React, { Context, PropsWithChildren, useReducer, useState } from 'react';
-import { IListEditorStateContext, IListEditorActionsContext } from './contexts';
 import { ValueMutator } from './interfaces';
-
-export type ListItemFactory<TItem = any> = (items: TItem[]) => TItem;
+import { IListEditorActionsContext, IListEditorStateContext, ListItemFactory } from './models';
 
 export interface IGenericListEditorProviderProps<TItem extends object> {
   initialState: IListEditorStateContext<TItem>;
@@ -108,3 +106,4 @@ const GenericListEditorProvider = <TItem extends object>({
   );
 };
 export { GenericListEditorProvider };
+

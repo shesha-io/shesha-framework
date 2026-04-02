@@ -85,11 +85,12 @@ import {
 } from '../datatableColumnsConfigurator/models';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { dataTableContextCode } from '@/publicJsApis';
-import { DataTypes, IObjectMetadata } from '@/index';
 import { isDefined } from '@/utils/nullables';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
 import { isNonEmptyArray } from '@/utils/array';
 import { IDataTableProviderBaseProps } from './provider.props';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { IObjectMetadata } from '@/interfaces/metadata';
 
 export interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
 

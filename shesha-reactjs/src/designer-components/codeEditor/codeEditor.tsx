@@ -14,7 +14,7 @@ import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor
 import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
-import { Show } from '@/components';
+import { Show } from '@/components/show';
 import { useSourcesFolderOrUndefined } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import type { TabsProps } from 'antd';
 import { useStyles } from './styles';

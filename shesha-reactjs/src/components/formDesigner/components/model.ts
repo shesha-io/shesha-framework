@@ -1,4 +1,4 @@
-import { IComponentModelProps } from "@/index";
+import { IComponentModelProps } from "@/providers/form/models";
 import { ColProps } from "antd";
 import { ReactNode } from "react";
 

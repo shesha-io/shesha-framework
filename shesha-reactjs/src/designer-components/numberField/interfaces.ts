@@ -1,4 +1,4 @@
-import { IconType } from '@/components';
+import { IconType } from '@/components/shaIcon';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models';
 ;

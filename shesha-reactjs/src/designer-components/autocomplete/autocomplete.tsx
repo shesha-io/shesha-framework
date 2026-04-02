@@ -13,7 +13,7 @@ import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/
 import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { getValueByPropertyName } from '@/utils/object';
 import { DisplayValueFunc, FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';

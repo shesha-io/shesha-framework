@@ -1,6 +1,6 @@
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import LabelConfiguratorComponent from './labelConfigurator';
 import { LabelConfiguratorDefinition } from './interfaces';
 import { getSettings } from './settings';

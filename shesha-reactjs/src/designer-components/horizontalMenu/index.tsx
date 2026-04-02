@@ -2,17 +2,6 @@ import LayoutMenu from "@/components/menu";
 import { ILayoutColor } from "@/components/menu/model";
 import { filterObjFromKeys } from "@/utils";
 import { EditOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import {
-  ConfigurableComponentRenderer,
-  getShadowStyle,
-  getStyle,
-  IConfigurableFormComponent,
-  IToolboxComponent,
-  migratePrevStyles,
-  useFormData,
-  useMainMenu,
-  validateConfigurableComponentSettings,
-} from '@/index';
 import React, { CSSProperties, useMemo } from 'react';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ItemType } from "antd/es/menu/interface";
@@ -21,6 +10,13 @@ import Editor from "./modal";
 import { getSettings } from "./settings";
 import { defaultStyles } from "./utils";
 import { ISidebarMenuItem } from "@/interfaces/sidebar";
+import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces/formDesigner";
+import { useFormData } from "@/providers/formContext";
+import { useMainMenu } from "@/providers/mainMenu";
+import { getStyle, validateConfigurableComponentSettings } from "@/providers/form/utils";
+import { getShadowStyle } from "../_settings/utils/shadow/utils";
+import ConfigurableComponentRenderer from "@/components/configurableComponentRenderer";
+import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];

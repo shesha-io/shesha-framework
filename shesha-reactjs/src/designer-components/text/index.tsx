@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';

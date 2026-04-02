@@ -3,11 +3,10 @@ import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemSetting } from './configurableFormItemSetting';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
 
-const ConfigurableFormItem: FC<IConfigurableFormItemProps> = (props) => {
+const ConfigurableFormItemInner: FC<IConfigurableFormItemProps> = (props) => {
   return props.model.jsSetting
     ? <ConfigurableFormItemSetting {...props} />
     : <ConfigurableFormItemLive {...props} />;
 };
 
-
-export default React.memo(ConfigurableFormItem);
+export const ConfigurableFormItem = React.memo(ConfigurableFormItemInner);

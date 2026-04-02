@@ -1,12 +1,13 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Form, Radio, Space, Tooltip, InputNumber } from 'antd';
 import React, { FC, useCallback } from 'react';
-import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
 import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, SHESHA_COLORS, TEXT_PRESET_COLORS } from './presetColors';
 import { formItemLayout } from './form';
+import SectionSeparator from '@/components/sectionSeparator';
+import Show from '@/components/show';
 
 interface IThemeConfig {
   name: string;

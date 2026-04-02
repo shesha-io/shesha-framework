@@ -3,9 +3,8 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import ConditionalWrap from '@/components/conditionalWrapper';
 import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, useEffect, useMemo } from 'react';
-import ShaIcon from '@/components/shaIcon';
+import { ShaIcon } from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
-import { DataTypes, IObjectMetadata, ValidationErrors, getStyle, useDataContextManager, useShaFormInstance } from '@/index';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getWizardButtonStyle } from './utils';
 import { IStepProps, IWizardComponentProps } from './models';
@@ -17,6 +16,12 @@ import { wizardApiCode } from '@/publicJsApis';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { addPx } from '@/utils/style';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { IObjectMetadata } from '@/interfaces/metadata';
+import ValidationErrors from '@/components/validationErrors';
+import { getStyle } from '@/providers/form/utils';
+import { useDataContextManager } from '@/providers/dataContextManager';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({

@@ -1,5 +1,5 @@
 import React, { CSSProperties, FC } from 'react';
-import ShaIcon, { IconType } from '@/components/shaIcon/index';
+import { ShaIcon, IconType } from '@/components/shaIcon/index';
 import {
   Alert,
   Button,

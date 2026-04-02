@@ -6,7 +6,8 @@ import { IAddressCompomentProps } from './models';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
 import { customAddressEventHandler } from '@/components/formDesigner/components/utils';
-import { IStyleType, UnwrapCodeEvaluators, useAvailableConstantsData } from '@/index';
+import { IStyleType, UnwrapCodeEvaluators } from '@/providers/form/models';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
 interface IAutoCompletePlacesFieldProps extends UnwrapCodeEvaluators<IAddressCompomentProps> {
   value?: any;
