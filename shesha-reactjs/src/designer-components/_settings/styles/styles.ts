@@ -3,6 +3,10 @@ import { createStyles, sheshaStyles } from '@/styles';
 export const useStyles = createStyles(({ css, cx, responsive, token }) => {
   const formItem = cx(css`
     margin: 0px !important;
+
+    > label {
+      height: auto !important; 
+    }
   `);
   const contentJs = cx(css`
         position: relative;

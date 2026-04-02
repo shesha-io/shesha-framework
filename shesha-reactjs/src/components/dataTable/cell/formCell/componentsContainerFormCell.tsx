@@ -34,7 +34,7 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
               ...model,
               context: model.context,
               isDynamic: true,
-              readOnly: readOnly === true ? true : model?.readOnly,
+              readOnly: readOnly === true ? true : model.readOnly,
               customEnabled: '',
             }}
             key={model?.id}

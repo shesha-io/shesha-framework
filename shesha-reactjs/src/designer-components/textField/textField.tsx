@@ -35,7 +35,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       dataFormat === StringFormats.password),
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-    const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
+    const { styles } = useStyles({ fontFamily: model.font?.type, fontWeight: model.font?.weight, textAlign: model.font?.align, color: model.font?.color, fontSize: model.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
@@ -60,7 +60,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model?.border?.hideBorder ? 'borderless' : undefined,
+      variant: model.border?.hideBorder ? 'borderless' : undefined,
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,

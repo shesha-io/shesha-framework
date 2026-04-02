@@ -1,12 +1,12 @@
 /**
  * HTTP response
  */
-export interface HttpResponse<T = any> {
+export interface HttpResponse<T = unknown> {
   data: T;
   status: number;
   statusText: string;
-  headers: any;
-  request?: any;
+  headers: Record<string, string>;
+  request?: unknown;
 }
 
 export type ResponseType =
@@ -28,18 +28,21 @@ export interface HttpRequestConfig {
   omitStandardHeaders?: boolean;
   /** Timeout in milliseconds */
   timeout?: number;
+  /** Response type */
   responseType?: ResponseType;
+  /** Abort signal */
+  signal?: AbortSignal;
 }
 
 /**
  * HTTP client API
  */
 export interface HttpClientApi {
-  get<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  delete<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  head<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  options<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  post<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R>;
-  put<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R>;
-  patch<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R>;
+  get<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
+  delete<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
+  head<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
+  options<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
+  post<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
+  put<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
+  patch<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
 }

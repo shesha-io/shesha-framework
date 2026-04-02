@@ -1,3 +1,3 @@
 export interface IChangeable {
-  onChange?: (...params: any[]) => void;
+  onChange?: (...params: unknown[]) => void;
 }

@@ -12,7 +12,7 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo } from '..';
+import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -38,7 +38,7 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   model: TModel;
   onSave: (values: TModel) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
+  onValuesChange?: (changedValues: Partial<TModel>, values: TModel) => void;
   toolboxComponent: IToolboxComponentBase;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
@@ -53,8 +53,8 @@ export type SettingsFormMarkupFactoryArgs = {
 };
 export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
-export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
-  model: TModel;
+export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> {
+  model: UnwrapCodeEvaluators<TModel>;
   children?: JSX.Element;
   calculatedModel?: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
@@ -63,7 +63,7 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
   form: FormInstance;
 }
 
-export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
+export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
 
 export type PropertyInclusionPredicate = (name: string) => boolean;
 
@@ -79,7 +79,7 @@ export type ToolboxComponentAsTemplate = {
   build?: never;
 };
 
-export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = {
+export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> = {
 /**
  * Type of the component. Must be unique in the project.
  */
@@ -159,12 +159,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Settings validator
    */
-  validateSettings?: ((model: TModel) => Promise<any>) | undefined;
+  validateSettings?: ((model: TModel) => Promise<unknown>) | undefined;
 
   /**
    * Return true to indicate that the data type is supported by the component
    */
-  dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string }) => boolean;
+  dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string | undefined }) => boolean;
 
   /**
    * Settings migrations. Returns last version of settings
@@ -174,7 +174,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Returns fields to fetch, used when it is necessary to get additional fields, and not just what is specified in the propertyName field
    */
-  getFieldsToFetch?: (propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[];
+  getFieldsToFetch?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[]) | undefined;
 
   /**
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
@@ -184,7 +184,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Returns true if the property should be calculated for the actual model (calculated from JS code)
    */
-  actualModelPropertyFilter?: (name: string, value: any) => boolean;
+  actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
 
   editorAdapter?: IEditorAdapter;
 
@@ -219,7 +219,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   ) => IDimensionsValue | undefined;
 } & ToolboxComponentAsTemplate;
 
-export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =
+export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =
   Omit<IToolboxComponent<TModel, TCalculatedModel>, 'type'> & {
     type: TType;
   } & ToolboxComponentAsTemplate;

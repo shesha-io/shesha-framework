@@ -18,4 +18,5 @@ export interface IConfigurableFormItemProps {
   wrapperCol?: ColProps;
   labelCol?: ColProps;
   hidden?: boolean;
+  autoAlignLabel?: boolean;
 }

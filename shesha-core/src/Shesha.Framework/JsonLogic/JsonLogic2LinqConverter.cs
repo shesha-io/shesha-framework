@@ -479,6 +479,9 @@ namespace Shesha.JsonLogic
                                 var containsMethod = typeof(string).GetRequiredMethod(nameof(string.Contains), [typeof(string)]);
 
                                 var arg1 = ParseTree<T>(@operator.Arguments[0], param);
+                                if (arg1 is ConstantExpression ce && ce.Value == null)
+                                    arg1 = Expression.Constant(string.Empty);
+
                                 var arg2 = ParseTree<T>(@operator.Arguments[1], param);
 
                                 // note: `in` arguments are reversed

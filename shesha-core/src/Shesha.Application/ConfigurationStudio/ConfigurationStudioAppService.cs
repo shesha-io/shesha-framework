@@ -46,7 +46,7 @@ namespace Shesha.ConfigurationStudio
         {
             var moduleId = await ModuleManager.GetModuleIdAsync(request.Module);
 
-            var item = await ItemRepo.GetAll().Where(e => e.Module != null && e.Module.Id == moduleId && e.Name == request.Name && e.ItemType == request.ItemType).FirstOrDefaultAsync();
+            var item = await ItemRepo.FirstOrDefaultAsync(e => e.Module != null && e.Module.Id == moduleId && e.Name == request.Name && e.ItemType == request.ItemType);
             if (item == null)
                 throw new ConfigurationItemNotFoundException(request.ItemType, request.Module, request.Name, null);
 
@@ -229,7 +229,7 @@ namespace Shesha.ConfigurationStudio
 
         public async Task<GetItemRevisionsResponse> GetItemRevisionsAsync(GetItemRevisionsRequest request) 
         {
-            var revisions = await HistoryRepo.GetAll().Where(e => e.ConfigurationItemId == request.ItemId).OrderByDescending(e => e.CreationTime).ToListAsync();
+            var revisions = await (await HistoryRepo.GetAllAsync()).Where(e => e.ConfigurationItemId == request.ItemId).OrderByDescending(e => e.CreationTime).ToListAsync();
 
             var dtos = revisions.Select(e => new ConfigurationItemRevisionDto
             {

@@ -38,7 +38,6 @@ export { default as DateDisplay, type IDateDisplayProps } from './dateDisplay';
 export { default as EditableDisplayFormItem, type IEditableDisplayLabelProps } from './editableDisplayFormItem';
 export { default as DisplayFormItem, type IDisplayFormItemProps } from './displayFormItem';
 export { default as EntityPicker } from './entityPicker';
-export { default as FormComponent, type IFormComponentProps } from './formComponent';
 export { default as GlobalTableFilter, type IGlobalTableFilterProps } from './globalTableFilter';
 export { default as GlobalTableFilterBase, type IGlobalTableFilterBaseProps } from './globalTableFilterBase';
 export { default as GooglePlacesAutocomplete, type IGooglePlacesAutocompleteProps } from './googlePlacesAutocomplete';
@@ -89,8 +88,6 @@ export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from
 export { default as Show, type IShowProps } from './show';
 export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 export { type ICodeEditorProps, type GetResultTypeFunc, type GetAvailableConstantsFunc } from '@/designer-components/codeEditor/interfaces';
-export { default as ModelConfigurator } from './modelConfigurator';
-export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
 export { Autocomplete, type IAutocompleteProps } from './autocomplete';
 export { Page } from './page';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';

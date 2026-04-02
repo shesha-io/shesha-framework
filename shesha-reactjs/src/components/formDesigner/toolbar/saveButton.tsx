@@ -34,7 +34,8 @@ export const SaveButton: FC<ISaveButtonProps> = (props) => {
           message.success('Form saved successfully');
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Failed to save form', error);
         message.destroy();
         message.error('Failed to save form');
       });

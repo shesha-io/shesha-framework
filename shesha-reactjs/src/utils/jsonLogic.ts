@@ -1,61 +1,68 @@
 import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from '@/providers/form/utils';
 import { executeFunction } from '@/utils';
-import { isDefined } from './nullables';
+import { isDefined, isNullOrWhiteSpace } from './nullables';
 
 export type EvaluationType = 'mustache' | 'javascript';
 export interface IEvaluateNodeArgs {
   expression: string;
-  type: EvaluationType;
-  [key: string]: any;
+  type: EvaluationType | undefined;
+  required?: boolean | undefined;
+  [key: string]: unknown;
 }
 export interface IEvaluateNode {
   evaluate: IEvaluateNodeArgs;
 }
 
 export interface IEvaluateJsonLogicNode {
-  evaluate: IEvaluateNodeArgs[];
+  evaluate: [IEvaluateNodeArgs];
 }
 
-type NodeCallback = (operator: string, args: object[]) => void;
+const isEvaluateJsonLogicNode = (node: object): node is IEvaluateJsonLogicNode => {
+  if ('evaluate' in node && Array.isArray(node.evaluate) && node.evaluate.length === 1) {
+    const evaluateNode: unknown = node.evaluate[0];
+    return isDefined(evaluateNode) && typeof (evaluateNode) === 'object' && 'expression' in evaluateNode && typeof evaluateNode.expression === 'string';
+  } else
+    return false;
+};
+
+type NodeCallback = (operator: string, args: unknown) => void;
 const processRecursive = (jsonLogic: object, callback: NodeCallback): void => {
-  if (!jsonLogic) return;
   for (const operator in jsonLogic) {
     if (!jsonLogic.hasOwnProperty(operator)) continue;
-    const args = jsonLogic[operator];
+    const args = (jsonLogic as Record<string, unknown>)[operator];
 
     callback(operator, args);
 
     if (Array.isArray(args)) {
-      args.forEach((arg) => {
-        if (typeof arg === 'object') processRecursive(arg, callback);
+      args.forEach((arg: unknown) => {
+        if (typeof arg === 'object' && isDefined(arg)) processRecursive(arg, callback);
       });
-    } else if (typeof args === 'object')
+    } else if (typeof args === 'object' && isDefined(args))
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       processRecursive(args, callback);
   }
 };
 
 export const extractVars = (jsonLogic: object): string[] => {
-  const result = [];
+  const result: string[] = [];
 
-  if (jsonLogic)
-    processRecursive(jsonLogic, (operator, args) => {
-      if (operator === 'var') {
-        if (result.indexOf(args) === -1) result.push(args);
-      }
-    });
+  processRecursive(jsonLogic, (operator, args) => {
+    if (operator === 'var' && typeof args === 'string') {
+      if (result.indexOf(args) === -1) result.push(args);
+    }
+  });
 
   return result;
 };
 
 export interface IArgumentEvaluationResult {
   handled: boolean;
-  value?: any;
+  value?: unknown | undefined;
 }
 export type JsonLogicContainerProcessingCallback = (
   operator: string,
-  args: object[],
+  args: unknown[],
   argIndex: number,
 ) => IArgumentEvaluationResult;
 
@@ -80,14 +87,16 @@ export interface IJsonLogicConversionOptionsSync {
 interface IJsonLogicVarNode {
   var: string;
 }
-const asVarNode = (node: object): IJsonLogicVarNode => {
-  const typed = node as IJsonLogicVarNode;
-  return typeof typed?.var === 'string' ? typed : null;
+
+const isVarNode = (node: unknown): node is IJsonLogicVarNode => {
+  return isDefined(node) && typeof (node) === 'object' && "var" in node && typeof node.var === 'string';
 };
+
+export type ExpressionNodeValue = string | number | boolean | object | null;
 
 interface NestedNodeParsingResult {
   hasOptionalNonEvaluatedExpressions: boolean;
-  value: object | string | boolean;
+  value: ExpressionNodeValue;
 }
 
 const evaluateJavaScriptAsync = async (evaluationNode: IEvaluateNode, options: IJsonLogicConversionOptions): Promise<NestedNodeParsingResult> => {
@@ -120,38 +129,46 @@ const evaluateJavaScriptSync = (evaluationNode: IEvaluateNode, options: IJsonLog
   return parsingResult;
 };
 
-const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any[], options: IJsonLogicConversionOptions): Promise<NestedNodeParsingResult> => {
+// TODO: merge with evaluateMustacheSync
+const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: unknown[], options: IJsonLogicConversionOptions): Promise<NestedNodeParsingResult> => {
   const { mappings, onEvaluated: onEvaluation } = options;
 
   const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(
     evaluationNode.evaluate.expression,
     mappings,
-    evaluationNode.evaluate.required,
+    evaluationNode.evaluate.required === true,
   );
 
-  let convertedResult: any = result;
+  let convertedResult: ExpressionNodeValue = result;
   if (success && options.getVariableDataType) {
-    let dataType: string = null;
+    let dataType: string | null = null;
     for (const arg of allArgs) {
-      const varNode = asVarNode(arg);
-      if (!varNode) continue;
-
-      const varDataType = await options.getVariableDataType(varNode.var);
-      if (dataType && dataType !== varDataType) {
+      if (isVarNode(arg)) {
+        const varDataType = await options.getVariableDataType(arg.var);
+        if (dataType && dataType !== varDataType) {
         // data types of arguments are different, we can't convert it them automatically
-        dataType = null;
-        break;
-      } else dataType = varDataType;
+          dataType = null;
+          break;
+        } else dataType = varDataType;
+      }
     }
 
     switch (dataType) {
       case DataTypes.number:
       case DataTypes.referenceListItem: {
-        convertedResult = convertedResult ? parseInt(convertedResult, 10) : null;
+        convertedResult = convertedResult
+          ? typeof (convertedResult) === 'string'
+            ? parseInt(convertedResult, 10)
+            : typeof (convertedResult) === 'number'
+              ? convertedResult
+              : null
+          : null;
         break;
       }
       case DataTypes.boolean: {
-        convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
+        convertedResult = typeof convertedResult === 'string'
+          ? !isNullOrWhiteSpace(convertedResult) && convertedResult.toLowerCase() === 'true'
+          : Boolean(convertedResult);
         break;
       }
     }
@@ -171,39 +188,47 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
   };
 };
 
+// TODO: merge with evaluateMustacheAsync
 // Synchronous version of evaluateMustacheAsync
-const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], options: IJsonLogicConversionOptionsSync): NestedNodeParsingResult => {
+const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: unknown[], options: IJsonLogicConversionOptionsSync): NestedNodeParsingResult => {
   const { mappings, onEvaluated: onEvaluation } = options;
 
   const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(
     evaluationNode.evaluate.expression,
     mappings,
-    evaluationNode.evaluate.required,
+    evaluationNode.evaluate.required === true,
   );
 
-  let convertedResult: any = result;
+  let convertedResult: ExpressionNodeValue = result;
   if (success && options.getVariableDataType) {
-    let dataType: string = null;
+    let dataType: string | null = null;
     for (const arg of allArgs) {
-      const varNode = asVarNode(arg);
-      if (!varNode) continue;
-
-      const varDataType = options.getVariableDataType(varNode.var);
-      if (dataType && dataType !== varDataType) {
+      if (isVarNode(arg)) {
+        const varDataType = options.getVariableDataType(arg.var);
+        if (dataType && dataType !== varDataType) {
         // data types of arguments are different, we can't convert it them automatically
-        dataType = null;
-        break;
-      } else dataType = varDataType;
+          dataType = null;
+          break;
+        } else dataType = varDataType;
+      }
     }
 
     switch (dataType) {
       case DataTypes.number:
       case DataTypes.referenceListItem: {
-        convertedResult = convertedResult ? parseInt(convertedResult, 10) : null;
+        convertedResult = convertedResult
+          ? typeof (convertedResult) === 'string'
+            ? parseInt(convertedResult, 10)
+            : typeof (convertedResult) === 'number'
+              ? convertedResult
+              : null
+          : null;
         break;
       }
       case DataTypes.boolean: {
-        convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
+        convertedResult = typeof convertedResult === 'string'
+          ? !isNullOrWhiteSpace(convertedResult) && convertedResult.toLowerCase() === 'true'
+          : Boolean(convertedResult);
         break;
       }
     }
@@ -224,22 +249,18 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
 };
 
 export const getEvaluationNodeFromJsonLogicNode = (node: object): IEvaluateNode | undefined => {
-  if (isDefined(node) && "evaluate" in node) {
+  if (isEvaluateJsonLogicNode(node)) {
     const { evaluate } = node;
-    const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
-      ? evaluate[0]
-      : undefined;
+    const args = evaluate[0];
 
-    const typedArgs = args as IEvaluateNodeArgs;
-    const result: IEvaluateNode = typeof (typedArgs?.expression) === 'string'
+    return isDefined(args)
       ? {
         evaluate: {
-          ...typedArgs,
-          type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
+          ...args,
+          type: args.type ?? 'mustache' /* fallback to legacy */,
         },
       }
       : undefined;
-    return result;
   } else
     return undefined;
 };
@@ -247,14 +268,12 @@ export const getEvaluationNodeFromJsonLogicNode = (node: object): IEvaluateNode 
 export const convertJsonLogicNode = async (
   jsonLogic: object,
   options: IJsonLogicConversionOptions,
-): Promise<object> => {
-  if (!jsonLogic) return null;
-
+): Promise<object | null> => {
   const { argumentEvaluator } = options;
 
   const parseNestedNodeAsync = async (
     node: object,
-    allArgs: any[],
+    allArgs: unknown[],
     nestedOptions: IJsonLogicConversionOptions,
   ): Promise<NestedNodeParsingResult> => {
     // special handling for evaluation nodes
@@ -276,11 +295,11 @@ export const convertJsonLogicNode = async (
     }
   };
 
-  let result = undefined;
+  let result: Record<string, unknown> | null = null;
   for (const operatorName in jsonLogic) {
     if (!jsonLogic.hasOwnProperty(operatorName)) continue;
 
-    const args = jsonLogic[operatorName];
+    const args: unknown = (jsonLogic as Record<string, unknown>)[operatorName];
 
     let convertedArgs = null;
 
@@ -290,7 +309,7 @@ export const convertJsonLogicNode = async (
       convertedArgs = await Promise.all(
         args.map(async (arg, argIdx) => {
           if (typeof arg === 'object') {
-            const nestedResult = await parseNestedNodeAsync(arg, args, options);
+            const nestedResult = await parseNestedNodeAsync(arg as Record<string, unknown>, args, options);
             hasInvalidArguments = hasInvalidArguments || nestedResult.hasOptionalNonEvaluatedExpressions;
             return nestedResult.value;
           };
@@ -302,9 +321,9 @@ export const convertJsonLogicNode = async (
       convertedArgs = convertedArgs.filter((a) => a !== undefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
-      if (typeof args === 'object') {
-        const nestedResult = await parseNestedNodeAsync(args, [], options);
-        hasInvalidArguments = hasInvalidArguments || nestedResult.hasOptionalNonEvaluatedExpressions;
+      if (typeof args === 'object' && isDefined(args)) {
+        const nestedResult = await parseNestedNodeAsync(args as Record<string, unknown>, [], options);
+        hasInvalidArguments = nestedResult.hasOptionalNonEvaluatedExpressions;
         convertedArgs = nestedResult.value;
       } else {
         const evaluationResult = argumentEvaluator(operatorName, [args], 0);
@@ -331,14 +350,12 @@ export const convertJsonLogicNode = async (
 export const convertJsonLogicNodeSync = (
   jsonLogic: object,
   options: IJsonLogicConversionOptionsSync,
-): object => {
-  if (!jsonLogic) return null;
-
+): object | null => {
   const { argumentEvaluator } = options;
 
   const parseNestedNodeSync = (
     node: object,
-    allArgs: any[],
+    allArgs: unknown[],
     nestedOptions: IJsonLogicConversionOptionsSync,
   ): NestedNodeParsingResult => {
     // special handling for evaluation nodes
@@ -360,11 +377,11 @@ export const convertJsonLogicNodeSync = (
     }
   };
 
-  let result = undefined;
+  let result: Record<string, unknown> | null = null;
   for (const operatorName in jsonLogic) {
     if (!jsonLogic.hasOwnProperty(operatorName)) continue;
 
-    const args = jsonLogic[operatorName];
+    const args: unknown = (jsonLogic as Record<string, unknown>)[operatorName];
 
     let convertedArgs = null;
 
@@ -373,7 +390,7 @@ export const convertJsonLogicNodeSync = (
     if (Array.isArray(args)) {
       convertedArgs = args.map((arg, argIdx) => {
         if (typeof arg === 'object') {
-          const nestedResult = parseNestedNodeSync(arg, args, options);
+          const nestedResult = parseNestedNodeSync(arg as Record<string, unknown>, args, options);
           hasInvalidArguments = hasInvalidArguments || nestedResult.hasOptionalNonEvaluatedExpressions;
           return nestedResult.value;
         };
@@ -384,9 +401,9 @@ export const convertJsonLogicNodeSync = (
       convertedArgs = convertedArgs.filter((a) => a !== undefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
-      if (typeof args === 'object') {
-        const nestedResult = parseNestedNodeSync(args, [], options);
-        hasInvalidArguments = hasInvalidArguments || nestedResult.hasOptionalNonEvaluatedExpressions;
+      if (typeof args === 'object' && isDefined(args)) {
+        const nestedResult = parseNestedNodeSync(args as Record<string, unknown>, [], options);
+        hasInvalidArguments = nestedResult.hasOptionalNonEvaluatedExpressions;
         convertedArgs = nestedResult.value;
       } else {
         const evaluationResult = argumentEvaluator(operatorName, [args], 0);
@@ -417,13 +434,3 @@ export interface IMustacheEvaluateNodeArgs {
 export interface IMustacheEvaluateNode {
   evaluate: IMustacheEvaluateNodeArgs[];
 }
-
-export const isLegacyMustacheEvaluationNode = (node: object): node is IMustacheEvaluateNode => {
-  if ("evaluate" in node) {
-    const { evaluate } = node ?? {};
-    const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
-
-    return evaluate && !expressionType;
-  } else
-    return false;
-};

@@ -6,6 +6,7 @@ import { Path, PathValue } from "./dotnotation";
 import { TouchableArrayProperty, TouchableProperty } from "@/providers/form/touchableProperty";
 import { TouchableProxy } from "@/providers/form/touchableProxy";
 import { ShaArrayAccessProxy, ShaObjectAccessProxy } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
+import { WritableDraft } from "@reduxjs/toolkit";
 
 export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T | undefined => {
   try {
@@ -19,8 +20,8 @@ export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T |
   }
 };
 
-export const isProxy = <TValue extends object = object>(value: TValue): boolean => {
-  return value && (
+export const isProxy = <TValue>(value: TValue): boolean => {
+  return isDefined(value) && (
     value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
     value instanceof TouchableProxy ||
@@ -29,19 +30,19 @@ export const isProxy = <TValue extends object = object>(value: TValue): boolean 
   );
 };
 
-export const unproxyValue = <TValue>(value: TValue): TValue => {
-  const result = value
+export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
+  const result = isDefined(value)
     ? value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
     value instanceof TouchableProxy
-      ? value.getData()
+      ? value.getData() as TValue
       : value instanceof ShaArrayAccessProxy ||
         value instanceof ShaObjectAccessProxy
-        ? value.getAccessorValue()
+        ? value.getAccessorValue() as TValue
         : value
     : value;
 
-  return isProxy(result) ? unproxyValue(result) : result;
+  return isProxy(result) ? unproxyValue<TValue>(result) : result;
 };
 
 export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSource): TObject & TSource => {
@@ -49,14 +50,16 @@ export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSour
     // handle null
     if (srcValue === null) {
       // reset field to null
-      obj[key] = null;
+      if (typeof (obj) === 'object' && obj !== null)
+        (obj as Record<string, unknown>)[key] = null;
       return undefined;
     }
 
     // handle undefined
     if (srcValue === undefined) {
       // reset field to undefined
-      obj[key] = undefined;
+      if (typeof (obj) === 'object' && obj !== null)
+        (obj as Record<string, unknown>)[key] = undefined;
       return undefined;
     }
 
@@ -161,7 +164,7 @@ export const setValueByPropertyName = <TData extends object = object>(data: TDat
   return resultData;
 };
 
-export const deepCopyViaJson = <TValue = any>(value: TValue): TValue => {
+export const deepCopyViaJson = <TValue = unknown>(value: TValue): TValue => {
   if (!value)
     return value;
 
@@ -191,4 +194,27 @@ export const mapProps = <T extends object, K extends keyof T>(
       target[prop] = source[prop];
     }
   });
+};
+
+
+export const unwrapDraft = <T>(draft: WritableDraft<T>): T => {
+  return draft as T;
+};
+
+export const getStringPropertyOrUndefined = (obj: object, key: string | null | undefined): string | undefined => {
+  if (!isNullOrWhiteSpace(key) && key in obj) {
+    const value = (obj as Record<string, unknown>)[key];
+    return typeof value === "string" ? value : undefined;
+  }
+  return undefined;
+};
+
+export const getFirstNonEmptyStringPropertyOrUndefined = (obj: object, keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = getStringPropertyOrUndefined(obj, key);
+    if (value !== undefined) {
+      return value;
+    }
+  }
+  return undefined;
 };

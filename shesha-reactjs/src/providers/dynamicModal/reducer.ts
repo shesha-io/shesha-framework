@@ -1,38 +1,37 @@
 import { nanoid } from '@/utils/uuid';
-import { handleActions } from 'redux-actions';
-import { DynamicModalActionEnums, ICreateModalPayload } from './actions';
-import { DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, IDynamicModalStateContext } from './contexts';
-import { IModalInstance, IModalProps } from './models';
+import { createModalAction, openAction, removeModalAction } from './actions';
+import { DYNAMIC_MODAL_CONTEXT_INITIAL_STATE } from './contexts';
+import { IModalInstance } from './models';
+import { getLatestInstance } from './utils';
+import { createReducer } from '@reduxjs/toolkit';
+import { unwrapDraft } from '@/utils/object';
 
-export default handleActions<IDynamicModalStateContext, any>(
-  {
-    [DynamicModalActionEnums.Open]: (state: IDynamicModalStateContext, action: ReduxActions.Action<IModalProps>) => {
-      const { payload } = action;
-
+export const reducer = createReducer(DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(openAction, (state, { payload }) => {
+      const instances = unwrapDraft(state.instances);
+      const latest = getLatestInstance(instances, () => true);
       const instance: IModalInstance = {
         id: nanoid(),
         props: payload,
         isVisible: true,
+        index: latest ? latest.index + 1 : 0,
       };
 
       return {
         ...state,
-        instances: { ...state.instances, [instance.id]: instance },
+        instances: { ...instances, [instance.id]: instance },
       };
-    },
+    })
+    .addCase(createModalAction, (state, { payload }) => {
+      const instances = unwrapDraft(state.instances);
 
-    [DynamicModalActionEnums.CreateModal]: (
-      state: IDynamicModalStateContext,
-      action: ReduxActions.Action<ICreateModalPayload>,
-    ) => {
-      const { payload } = action;
-      const { instances } = state;
-
+      const latest = getLatestInstance(instances, () => true);
       const instance: IModalInstance = {
         id: payload.modalProps.id,
         props: payload.modalProps,
         isVisible: payload.modalProps.isVisible,
-        index: Object.keys(instances ?? {})?.length,
+        index: latest ? latest.index + 1 : 0,
         onClose: payload.modalProps.onClose,
       };
 
@@ -40,20 +39,16 @@ export default handleActions<IDynamicModalStateContext, any>(
         ...state,
         instances: { ...state.instances, [instance.id]: instance },
       };
-    },
-
-    [DynamicModalActionEnums.RemoveModal]: (state: IDynamicModalStateContext, action: ReduxActions.Action<string>) => {
-      const { payload } = action;
-
-      const newInstances = { ...state.instances };
+    })
+    .addCase(removeModalAction, (state, { payload }) => {
+      const instances = unwrapDraft(state.instances);
+      const newInstances = { ...instances };
       delete newInstances[payload];
 
       return {
         ...state,
         instances: { ...newInstances },
       };
-    },
-  },
-
-  DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
-);
+    })
+  ;
+});

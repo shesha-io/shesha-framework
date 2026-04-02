@@ -4,7 +4,7 @@ import { IApiEndpoint, isEntityMetadata, StandardEntityActions } from '@/interfa
 import { IFormSettings } from '@/providers/form/models';
 import { useMetadataDispatcher } from '@/providers';
 import { useDeepCompareEffect } from 'react-use';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface GetDefaultActionUrlPayload {
@@ -21,11 +21,42 @@ export interface IEntityEndpointsEvaluator {
   getDefaultActionUrl: (payload: GetDefaultActionUrlPayload) => Promise<IApiEndpoint>;
   getFormActionUrl: (payload: GetFormActionUrlPayload) => Promise<IApiEndpoint>;
 }
+const getActionUrlFromFormSettings = (formSettings: IFormSettings, actionName: string): IApiEndpoint => {
+  if (!formSettings)
+    return null;
+
+  let endpoint: IApiEndpoint;
+  switch (actionName) {
+    case StandardEntityActions.create:
+      endpoint = { httpVerb: 'POST', url: formSettings.postUrl };
+      break;
+    case StandardEntityActions.read:
+      endpoint = { httpVerb: 'GET', url: formSettings.getUrl };
+      break;
+    case StandardEntityActions.update:
+      endpoint = { httpVerb: 'PUT', url: formSettings.putUrl };
+      break;
+    case StandardEntityActions.delete:
+      endpoint = { httpVerb: 'DELETE', url: formSettings.deleteUrl };
+      break;
+  }
+
+  if (!endpoint)
+    return null;
+
+  // cleanup the url
+  endpoint.url = removeZeroWidthCharsFromString(endpoint.url ?? '');
+  // don't return endpoint with empty url
+  return endpoint.url
+    ? endpoint
+    : null;
+};
+
 
 export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
   const { getMetadata } = useMetadataDispatcher();
 
-  const getDefaultActionUrl = (payload: GetDefaultActionUrlPayload): Promise<IApiEndpoint> => {
+  const getDefaultActionUrl = useCallback((payload: GetDefaultActionUrlPayload): Promise<IApiEndpoint> => {
     if (!payload.modelType)
       return Promise.reject('`modelType` is not provided');
     if (!payload.actionName)
@@ -37,40 +68,10 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
         : null;
       return endpoint;
     });
-  };
+  }, [getMetadata]);
 
-  const getActionUrlFromFormSettings = (formSettings: IFormSettings, actionName: string): IApiEndpoint => {
-    if (!formSettings)
-      return null;
 
-    let endpoint: IApiEndpoint;
-    switch (actionName) {
-      case StandardEntityActions.create:
-        endpoint = { httpVerb: 'POST', url: formSettings.postUrl };
-        break;
-      case StandardEntityActions.read:
-        endpoint = { httpVerb: 'GET', url: formSettings.getUrl };
-        break;
-      case StandardEntityActions.update:
-        endpoint = { httpVerb: 'PUT', url: formSettings.putUrl };
-        break;
-      case StandardEntityActions.delete:
-        endpoint = { httpVerb: 'DELETE', url: formSettings.deleteUrl };
-        break;
-    }
-
-    if (!endpoint)
-      return null;
-
-    // cleanup the url
-    endpoint.url = removeZeroWidthCharsFromString(endpoint.url ?? '');
-    // don't return endpoint with empty url
-    return endpoint.url
-      ? endpoint
-      : null;
-  };
-
-  const getFormActionUrl = (payload: GetFormActionUrlPayload): Promise<IApiEndpoint> => {
+  const getFormActionUrl = useCallback((payload: GetFormActionUrlPayload): Promise<IApiEndpoint> => {
     const { formSettings, actionName, mappings } = payload;
     const customEndpoint = getActionUrlFromFormSettings(formSettings, actionName);
 
@@ -84,12 +85,13 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
       return formSettings?.modelType
         ? getDefaultActionUrl({ modelType: formSettings.modelType, actionName: actionName })
         : Promise.resolve(null);
-  };
+  }, [getDefaultActionUrl]);
 
-  return {
+  const result = useMemo<IEntityEndpointsEvaluator>(() => ({
     getDefaultActionUrl,
     getFormActionUrl,
-  };
+  }), [getDefaultActionUrl, getFormActionUrl]);
+  return result;
 };
 
 export interface UseEntityEndpointArguments {

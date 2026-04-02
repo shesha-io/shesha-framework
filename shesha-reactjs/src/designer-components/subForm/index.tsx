@@ -16,8 +16,8 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 
 export interface ISubFormComponentProps
-  extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,
-  Omit<IConfigurableFormComponent, 'queryParams'> {
+  extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol' | 'readOnly'>,
+  IConfigurableFormComponent {
   labelCol?: number;
   wrapperCol?: number;
   queryParams?: ISubFormProviderProps['queryParams'];
@@ -36,7 +36,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
 
     if (model.hidden && formMode !== 'designer') return null;
 
-    const name = namePrefix ? [namePrefix, model?.propertyName]?.join('.') : model?.propertyName;
+    const name = namePrefix ? [namePrefix, model.propertyName]?.join('.') : model.propertyName;
 
     const rerenderKey = `${model?.label || ''}-${model?.hideLabel || false}-${model?.labelCol || 0}`;
 
@@ -44,8 +44,8 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       <ConfigurableFormItem
         key={rerenderKey}
         model={model}
-        labelCol={{ span: model?.hideLabel ? 0 : model?.labelCol }}
-        wrapperCol={{ span: model?.hideLabel ? 24 : model?.wrapperCol }}
+        labelCol={{ span: model.hideLabel ? 0 : model.labelCol }}
+        wrapperCol={{ span: model.hideLabel ? 24 : model.wrapperCol }}
       >
         {(value, onChange) => {
           return <SubFormWrapper {...model} value={value} propertyName={name} style={getStyle(model?.style, formData)} onChange={onChange} />;

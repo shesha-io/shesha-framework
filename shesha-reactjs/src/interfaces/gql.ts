@@ -1,7 +1,12 @@
 export interface IHasEntityTypeIdPayload {
-  entityType?: string;
-  module?: string;
-  name?: string;
+  entityType?: string | undefined;
+  module?: string | undefined;
+  name?: string | undefined;
+}
+
+export interface IEntity {
+  id: string;
+  [name: string]: unknown;
 }
 
 /**
@@ -11,9 +16,9 @@ export interface IGetAllPayload {
   readonly maxResultCount: number;
   readonly skipCount: number;
   readonly properties: string;
-  readonly sorting?: string;
-  readonly filter?: string;
-  readonly quickSearch?: string;
+  readonly sorting?: string | undefined;
+  readonly filter?: string | undefined;
+  readonly quickSearch?: string | undefined;
 }
 /**
  * Generic get all payload, is used for the generic entpoint like `/api/services/app/Entities/GetAll`
@@ -60,7 +65,7 @@ export interface GetAllResponse<TItem> {
 
 export interface EntityData {
   id: string | number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type IAbpWrappedResponse<TResponse, TError = ErrorInfo> = AbpWrappedResponse<TResponse, TError>;

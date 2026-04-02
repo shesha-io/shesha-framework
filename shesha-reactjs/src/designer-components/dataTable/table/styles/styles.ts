@@ -59,6 +59,7 @@ export const GlobalTableStyles = createGlobalStyle`
   }
 
   .sha-react-table {
+    overflow: auto;
     .td {
       .${(p) => p.theme.prefixCls}-form-item {
         width: 100%;

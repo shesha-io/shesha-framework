@@ -1,8 +1,9 @@
-import { IChartProps } from "@/designer-components/charts/model";
+import { IChartsProps, IChartProps } from "@/designer-components/charts/model";
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from "react";
 import { CleanDataAction, SetAxisPropertyLabelAction, SetControlPropsAction, SetDataAction, SetIsLoadedAction, SetUrlTypeDataAction, SetValuePropertyLabelAction } from "./actions";
 import { ChartDataActionsContext, ChartDataStateContext, IChartDataAtionsContext, IChartDataContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
+import { throwError } from "@/utils/errors";
 
 interface IChartDataProviderProps {
   model: IChartProps;
@@ -11,7 +12,7 @@ interface IChartDataProviderProps {
 const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ children, model }) => {
   const [state, dispatch] = useReducer(chartDataReducer, { ...INITIAL_STATE, ...model });
 
-  const setControlProps = (controlProps: IChartProps): void => {
+  const setControlProps = (controlProps: IChartsProps): void => {
     dispatch(SetControlPropsAction(controlProps));
   };
 
@@ -61,20 +62,8 @@ const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ chi
   );
 };
 
-export const useChartDataStateContext = (): IChartDataContext => {
-  const context = useContext(ChartDataStateContext);
-  if (!context) {
-    throw new Error("useChartDataStateContext must be used within a ChartDataProvider");
-  }
-  return context;
-};
+export const useChartDataStateContext = (): IChartDataContext => useContext(ChartDataStateContext) ?? throwError("useChartDataStateContext must be used within a ChartDataProvider");
 
-export const useChartDataActionsContext = (): IChartDataAtionsContext => {
-  const context = useContext(ChartDataActionsContext);
-  if (!context) {
-    throw new Error("useChartDataActionsContext must be used within a ChartDataProvider");
-  }
-  return context;
-};
+export const useChartDataActionsContext = (): IChartDataAtionsContext => useContext(ChartDataActionsContext) ?? throwError("useChartDataActionsContext must be used within a ChartDataProvider");
 
 export default React.memo(ChartDataProvider);

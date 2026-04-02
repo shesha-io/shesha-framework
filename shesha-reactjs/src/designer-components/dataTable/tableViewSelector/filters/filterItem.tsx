@@ -1,4 +1,3 @@
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Space, Tooltip } from 'antd';
 import React, { FC, useState } from 'react';
@@ -6,10 +5,11 @@ import { FilterItemSettingsModal } from './filterItemSettingsModal';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { useStyles as useItemStyles } from './styles';
 import { ItemChangeDetails } from '@/components/listEditor';
+import { IStoredFilter } from '@/interfaces';
 
 export interface IFilterItemProps {
-  value?: ITableViewProps;
-  onChange?: (newValue: ITableViewProps, changeDetails: ItemChangeDetails) => void;
+  value?: IStoredFilter;
+  onChange?: (newValue: IStoredFilter, changeDetails: ItemChangeDetails) => void;
   readOnly: boolean;
 }
 
@@ -24,7 +24,7 @@ export const FilterItem: FC<IFilterItemProps> = ({ value, onChange, readOnly }) 
     setSettingsVisible(true);
   };
 
-  const onSaveSettings = (newValue: ITableViewProps): void => {
+  const onSaveSettings = (newValue: IStoredFilter): void => {
     onChange(newValue, undefined);
     setSettingsVisible(false);
   };

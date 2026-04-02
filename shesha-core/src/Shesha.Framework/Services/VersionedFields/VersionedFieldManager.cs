@@ -36,9 +36,7 @@ namespace Shesha.Services.VersionedFields
         {
             var config = _entityConfigurationStore.Get(typeof(TEntity));
 
-            return await _fieldRepository.GetAll()
-                .Where(f => f.OwnerId == owner.Id.ToString() && f.OwnerType == config.TypeShortAlias && f.Name == fieldName)
-                .FirstOrDefaultAsync();
+            return await _fieldRepository.FirstOrDefaultAsync(f => f.OwnerId == owner.Id.ToString() && f.OwnerType == config.TypeShortAlias && f.Name == fieldName);
         }
 
         public VersionedField? GetVersionedField<TEntity, TId>(TEntity owner, string fieldName) 
@@ -117,7 +115,7 @@ namespace Shesha.Services.VersionedFields
 
         public async Task<VersionedFieldVersion> GetLastVersionAsync(VersionedField field)
         {
-            var version = await _fieldVersionRepository.GetAll().Where(v => v.Field == field).OrderByDescending(f => f.CreationTime).FirstOrDefaultAsync();
+            var version = await (await _fieldVersionRepository.GetAllAsync()).Where(v => v.Field == field).OrderByDescending(f => f.CreationTime).FirstOrDefaultAsync();
             return version;
         }
 

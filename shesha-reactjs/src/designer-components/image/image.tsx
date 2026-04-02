@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { App, Button, Image, Tooltip, Upload, UploadProps } from 'antd';
-import { toBase64, useSheshaApplication, useStoredFile } from '@/index';
+import { toBase64, useSheshaApplication, useFileUploadOrUndefined } from '@/index';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
@@ -21,11 +21,11 @@ export interface IImageFieldProps {
 export const ImageField: FC<IImageFieldProps> = (props) => {
   const { imageSource, value, allowPreview = false, styles, onChange, allowedFileTypes } = props;
 
-  const readOnly = props?.readOnly || props.imageSource === 'url';
+  const readOnly = props.readOnly || props.imageSource === 'url';
 
   const { styles: classes } = useStyles();
 
-  const { uploadFile, deleteFile, fileInfo } = useStoredFile(false) ?? {};
+  const { uploadFile, deleteFile, fileInfo } = useFileUploadOrUndefined() ?? {};
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { message } = App.useApp();
 
@@ -88,10 +88,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
         if (onChange)
           onChange(await toBase64(file));
       } else if (imageSource === 'storedFile') {
-        uploadFile({ file: file }, () => {
-          // if (value)
-          // fetchStoredFile();
-        });
+        uploadFile({ file: file });
       }
       return false;
     },

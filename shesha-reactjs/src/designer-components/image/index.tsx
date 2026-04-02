@@ -10,17 +10,17 @@ import {
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { StoredFileProvider } from '@/providers';
+import { FileUploadProvider } from '@/providers';
 import { ImageField } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { removeUndefinedProps } from '@/utils/object';
+import { getFirstNonEmptyStringPropertyOrUndefined, removeUndefinedProps } from '@/utils/object';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useTheme } from 'antd-style';
-import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { IImageProps, IImageStyleProps } from './interfaces';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -32,9 +32,9 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   isOutput: true,
   preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({
-    ownerId: evaluateValueAsString(model.ownerId, allData),
-    dataId: (allData.data as { Id: string })?.Id, // TODO: review and remove
-    formModelType: allData.form.formSettings?.modelType,
+    ownerId: model.ownerId ? evaluateValueAsString(model.ownerId, allData) : undefined,
+    dataId: allData.data ? (allData.data as { Id: string }).Id : undefined, // TODO: review and remove
+    formModelType: allData.form?.formSettings.modelType,
   }),
   Factory: ({ model, calculatedModel }) => {
     const theme = useTheme();
@@ -69,19 +69,20 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               : model.url || value;
 
           const fileProvider = (child): ReactElement => {
+            const ownerId = getFirstNonEmptyStringPropertyOrUndefined(calculatedModel, ["ownerId", "dataId"]);
+            const ownerType = !isEntityTypeIdEmpty(model.ownerType)
+              ? model.ownerType
+              : getFirstNonEmptyStringPropertyOrUndefined(calculatedModel, ["formModelType"]) ?? "";
             return (
-              <StoredFileProvider
+              <FileUploadProvider
                 value={val}
                 onChange={onChange}
-                fileId={val}
-                ownerId={Boolean(calculatedModel.ownerId) ? calculatedModel.ownerId : Boolean(calculatedModel.dataId) ? calculatedModel.dataId : ''}
-                ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(calculatedModel.formModelType) ? calculatedModel.formModelType : ''}
-                fileCategory={model.fileCategory}
+                ownerId={ownerId}
+                ownerType={ownerType}
                 propertyName={!model.context ? model.propertyName : null}
-                // uploadMode={model.useSync ? 'sync' : 'async'}
               >
                 {child}
-              </StoredFileProvider>
+              </FileUploadProvider>
             );
           };
 

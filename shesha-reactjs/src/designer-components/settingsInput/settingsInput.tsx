@@ -2,7 +2,7 @@ import React, { ComponentType } from 'react';
 import FormItem from "../_settings/components/formItem";
 import { BaseInputProps, hasModelType, ISettingsInputProps, isSettingsInputProps } from './interfaces';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider, useSettingsComponents } from '@/providers';
+import { MetadataProvider, useSettingsComponents, FCUnwrapped } from '@/providers';
 import { evaluateString, IToolboxComponentBase, useShaFormInstance } from '@/index';
 import { InputComponent } from '../inputComponent';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
@@ -17,7 +17,7 @@ export interface ISettingsComponentGroup {
   components: ISettingsComponent[];
 }
 
-export const SettingInput: React.FC<ISettingsInputProps> = (props) => {
+export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
   const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, size, validate, inline, width, ...rest } = props;
 
   const { formData } = useShaFormInstance();

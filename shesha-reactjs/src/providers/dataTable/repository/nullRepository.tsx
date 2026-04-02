@@ -6,7 +6,7 @@ import { IHasRepository, IRepository, RowsReorderPayload } from "./interfaces";
 import { wrapDisplayName } from "@/utils/react";
 
 export interface IWithNullRepositoryArgs {
-  value?: object;
+  value?: object | undefined;
 }
 
 const HAS_NO_IMPLEMENTATION_MESSAGE = 'NullRepository has no implementation';
@@ -20,15 +20,15 @@ const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
     return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
   };
 
-  const performUpdate = (_rowIndex: number, _data: any): Promise<any> => {
+  const performUpdate = <TData extends object = object>(_rowIndex: number, _data: TData): Promise<TData> => {
     return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
   };
 
-  const performDelete = (_rowIndex: number, _data: any): Promise<any> => {
+  const performDelete = <TData extends object = object>(_rowIndex: number, _data: TData): Promise<TData> => {
     return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
   };
 
-  const performCreate = (_rowIndex: number, _data: any): Promise<any> => {
+  const performCreate = <TData extends object = object>(_rowIndex: number, _data: TData): Promise<TData> => {
     return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
   };
 
@@ -53,15 +53,16 @@ const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
   return repository;
 };
 
-export const useNullRepository = (args: IWithNullRepositoryArgs): IRepository => useMemo<IRepository>(() => createRepository(args), []);
+export const useNullRepository = (args: IWithNullRepositoryArgs): IRepository => useMemo<IRepository>(() => createRepository(args), [args]);
 
 export function withNullRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository>, args: IWithNullRepositoryArgs): FC<WrappedProps> {
   const { value } = args;
 
-  return wrapDisplayName((props) => {
+  const Component: FC<WrappedProps> = (props) => {
     const repository = useNullRepository({ value });
 
-    return (<WrappedComponent {...props} repository={repository} />);
-  }, "withNullRepository");
+    return <WrappedComponent {...props} repository={repository} />;
+  };
+  return wrapDisplayName<WrappedProps>(Component, "withNullRepository");
 };
 

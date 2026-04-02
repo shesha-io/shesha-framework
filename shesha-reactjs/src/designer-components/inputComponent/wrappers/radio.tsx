@@ -1,10 +1,11 @@
 import { IRadioSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { useStyles } from '../styles';
 import Icon from '@/components/icon/Icon';
 import { Radio } from 'antd';
 
-export const RadioWrapper: FC<IRadioSettingsInputProps> = (props) => {
+export const RadioWrapper: FCUnwrapped<IRadioSettingsInputProps> = (props) => {
   const { styles } = useStyles();
   const { value, onChange, readOnly, buttonGroupOptions, size, allowDeselect } = props;
 

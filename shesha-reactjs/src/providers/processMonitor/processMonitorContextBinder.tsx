@@ -2,8 +2,10 @@ import React, { FC, PropsWithChildren, useMemo } from 'react';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { IProcessMonitor } from './interfaces';
 import { DataTypes, IObjectMetadata } from '@/interfaces';
-import processMonitorContextCode from './publicJsApi/processMonitorContextCode.ts?raw';
+import processMonitorContextRaw from './publicJsApi/processMonitorContextCode.ts?raw';
 import { useProcessMonitorSubscription } from './hooks';
+
+const processMonitorContextCode = processMonitorContextRaw as string;
 
 export interface IProcessMonitorContextBinderProps {
   contextName: string;

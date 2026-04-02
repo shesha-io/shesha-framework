@@ -4,7 +4,6 @@ using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate.Linq;
 using Shesha;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -63,9 +62,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         /// <returns></returns>
         public async Task<List<DynamicDto<MembershipPayment, Guid>>> GetMemberPaymentsAsync(Guid memberId)
         {
-            var memberPayments = await _membershipPaymentRepo.GetAll()
-                .Where(data => data.Member.Id == memberId)
-                .ToListAsync();
+            var memberPayments = await _membershipPaymentRepo.GetAllListAsync(data => data.Member.Id == memberId);
 
             var dtos = (await memberPayments.SelectAsync(async m => await MapToDynamicDtoAsync<MembershipPayment, Guid>(m))).ToList();
             return dtos;
@@ -77,7 +74,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         /// <returns></returns>
         public async Task<List<DynamicDto<MembershipPayment, Guid>>> GetAllMembershipPaymentsAsync()
         {
-            var memberPayments = await _membershipPaymentRepo.GetAll().ToListAsync();
+            var memberPayments = await _membershipPaymentRepo.GetAllListAsync();
 
             var dtos = (await memberPayments.SelectAsync(async m => await MapToDynamicDtoAsync<MembershipPayment, Guid>(m))).ToList();
             return dtos;

@@ -215,7 +215,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
         </Space>
       )}
     >
-      <ParentProvider model={props}>
+      <ParentProvider model={props} name="ShaDrawer">
         <ComponentsContainer
           containerId={id}
           dynamicComponents={isDynamic ? components?.map((c) => ({ ...c, readOnly: readOnly })) : []}

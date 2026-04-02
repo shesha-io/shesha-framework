@@ -3,7 +3,7 @@ import React from 'react';
 import { FileUpload } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { DataTypes } from '@/interfaces';
-import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { FileUploadProvider, useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
 import {
   evaluateValueAsString,
@@ -21,6 +21,8 @@ import { defaultStyles } from './utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { getIdOrUndefined } from '@/utils/entity';
 
 const FileUploadComponent: FileUploadComponentDefinition = {
   type: 'fileUpload',
@@ -32,8 +34,6 @@ const FileUploadComponent: FileUploadComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
-    const { backendUrl } = useSheshaApplication();
-
     const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
@@ -50,12 +50,10 @@ const FileUploadComponent: FileUploadComponentDefinition = {
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           return (
-            <StoredFileProvider
+            <FileUploadProvider
               value={value}
               onChange={onChange}
-              fileId={model.value?.Id ?? model.value}
-              baseUrl={backendUrl}
-              ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+              ownerId={!isNullOrWhiteSpace(ownerId) ? ownerId : getIdOrUndefined(data) ?? ""}
               ownerType={!isEntityTypeIdEmpty(model.ownerType)
                 ? model.ownerType
                 : !isEntityTypeIdEmpty(formSettings?.modelType)
@@ -74,7 +72,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
                 isDragger={model?.isDragger}
                 styles={finalStyle}
               />
-            </StoredFileProvider>
+            </FileUploadProvider>
           );
         }}
       </ConfigurableFormItem>

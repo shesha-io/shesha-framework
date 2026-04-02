@@ -6,7 +6,7 @@ import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { IPropertiesTabsComponentProps } from './models';
-import { useFormState, useFormActions } from '@/providers/form';
+import { useFormStateOrUndefined, useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 interface SearchableTabsProps {
@@ -20,8 +20,8 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const searchRefs = useRef(new Map());
   const { styles } = useStyles();
 
-  const formState = useFormState(false);
-  const formActions = useFormActions(false);
+  const formState = useFormStateOrUndefined();
+  const formActions = useFormActionsOrUndefined();
 
   useShaFormDataUpdate();
 
@@ -130,7 +130,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         children: visibleComponents.length === 0
           ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
           : (
-            <ParentProvider model={model}>
+            <ParentProvider
+              name={`SearchableTab-${tabKey}`}
+              model={model}
+            >
               {renderSearchInput({
                 ref: (el) => {
                   if (el) {

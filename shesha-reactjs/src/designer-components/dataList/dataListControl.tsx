@@ -52,6 +52,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     groupingColumns,
     setRowData,
     fetchTableDataError,
+    selectedRow,
+    selectedRows,
+    setSelectedRow,
+    setMultiSelectedRow,
   } = dataSource || {
     tableData: [],
     isFetchingTableData: false,
@@ -65,7 +69,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     fetchTableDataError: null,
   };
   const { styles } = useStyles();
-  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource || { selectedRow: null, selectedRows: [], setSelectedRow: () => { /* noop */ }, setMultiSelectedRow: () => { /* noop */ } };
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
@@ -380,7 +383,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       model={{ ...props, hideLabel: true }}
       className={classNames(
         styles.shaDatalistComponent,
-        { horizontal: props?.orientation === 'horizontal' && appContext.form?.formMode !== 'designer' }, //
+        { horizontal: props.orientation === 'horizontal' && appContext.form?.formMode !== 'designer' }, //
       )}
       wrapperCol={{ md: 24 }}
     >

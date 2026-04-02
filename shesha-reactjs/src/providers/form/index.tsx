@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useMemo } from 'react';
+import React, { useCallback, MutableRefObject, PropsWithChildren, useContext, useMemo, ReactElement, useEffect } from 'react';
 import {
   IConfigurableFormComponent,
 } from '@/interfaces';
@@ -19,6 +19,7 @@ import { IShaFormInstance } from './store/interfaces';
 import { useShaFormActions } from './configurableActions';
 import { ConfigurableFormActionsProvider } from './actions';
 import { ConfigurableFormSectionsProvider } from './sections';
+import { throwError } from '@/utils/errors';
 
 type ShaFormCompoundedComponent = {
   useMarkup: typeof useFormMarkup;
@@ -35,24 +36,24 @@ const ShaForm: ShaFormCompoundedComponent = {
   MarkupProvider: FormFlatMarkupProvider,
 };
 
-export interface IFormProviderProps {
+export interface IFormProviderProps<TValues extends object = object> {
   name: string;
   formSettings: IFormSettings;
   mode: FormMode;
-  form?: FormInstance<any>;
-  actions?: IFormActions;
-  sections?: IFormSections;
-  formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
+  form?: FormInstance<TValues> | undefined;
+  actions?: IFormActions | undefined;
+  sections?: IFormSections | undefined;
+  formRef?: MutableRefObject<IFormActionsContext<TValues> | undefined> | undefined;
   /**
    * If true, form should register configurable actions. Should be enabled for main forms only
    */
   isActionsOwner: boolean;
 
-  propertyFilter?: (name: string) => boolean;
-  shaForm: IShaFormInstance;
+  propertyFilter?: ((name: string) => boolean) | undefined;
+  shaForm: IShaFormInstance<TValues>;
 }
 
-const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
+const FormProvider = <TValues extends object = object>({
   name,
   children,
   form,
@@ -63,7 +64,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   isActionsOwner,
   propertyFilter,
   ...props
-}) => {
+}: PropsWithChildren<IFormProviderProps<TValues>>): ReactElement => {
   const isComponentFilteredLocal = useCallback((component: IConfigurableFormComponent): boolean => {
     return isComponentFiltered(component, propertyFilter);
   }, [propertyFilter]);
@@ -74,20 +75,23 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   useShaFormActions({ isActionsOwner, name, shaForm: props.shaForm });
 
-  const setFormData = useCallback((payload: ISetFormDataPayload) => {
+  const setFormData = useCallback((payload: ISetFormDataPayload<TValues>) => {
     props.shaForm.setFormData(payload);
   }, [props.shaForm]);
 
   // TODO: memoize after review handling of form data
-  const configurableFormActions: IFormActionsContext = {
+  const configurableFormActions: IFormActionsContext<TValues> = {
     setFormMode,
     setFormData,
     isComponentFiltered: isComponentFilteredLocal,
   };
-  if (formRef)
-    formRef.current = { ...configurableFormActions };
 
-  const realState: Required<IFormStateContext> = {
+  useEffect(() => {
+    if (formRef)
+      formRef.current = configurableFormActions;
+  });
+
+  const realState: IFormStateContext<TValues> = {
     formSettings: props.shaForm.settings,
     modelMetadata: props.shaForm.modelMetadata,
     shaForm: props.shaForm,
@@ -96,14 +100,11 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     formMode: props.shaForm.formMode,
     form: props.shaForm.antdForm,
     formData: props.shaForm.formData,
-
-    // TODO: AS - review and remove
-    initialValues: undefined,
   };
 
   return (
-    <FormStateContext.Provider value={realState}>
-      <FormActionsContext.Provider value={configurableFormActions}>
+    <FormStateContext.Provider value={realState as unknown as IFormStateContext<object>}> {/* TODO V1: implement generic context and fix unsafe cast */}
+      <FormActionsContext.Provider value={configurableFormActions as unknown as IFormActionsContext<object>}> {/* TODO V1: implement generic context and fix unsafe cast */}
         <ConfigurableFormActionsProvider actions={actions}>
           <ConfigurableFormSectionsProvider sections={sections}>
             {children}
@@ -114,37 +115,24 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   );
 };
 
-const useFormState = (required: boolean = true): IFormStateContext => {
-  const context = useContext(FormStateContext);
+const useFormStateOrUndefined = <TValues extends object = object>(): IFormStateContext<TValues> | undefined => useContext(FormStateContext) as unknown as IFormStateContext<TValues>;
 
-  if (required && context === undefined) {
-    throw new Error('useFormState must be used within a FormProvider');
-  }
+const useFormState = <TValues extends object = object>(): IFormStateContext<TValues> => useFormStateOrUndefined<TValues>() ?? throwError("useFormState must be used within a FormProvider");
 
-  return context;
-};
+const useFormActionsOrUndefined = (): IFormActionsContext | undefined => useContext(FormActionsContext);
 
-const useFormActions = (require: boolean = true): IFormActionsContext => {
-  const context = useContext(FormActionsContext);
+const useFormActions = (): IFormActionsContext => useFormActionsOrUndefined() ?? throwError("useFormActions must be used within a FormProvider");
 
-  if (require && context === undefined) {
-    throw new Error('useFormActions must be used within a FormProvider');
-  }
+const useFormOrUndefined = <TValues extends object = object>(): ConfigurableFormInstance<TValues> | undefined => {
+  const actionsContext = useFormActionsOrUndefined();
+  const stateContext = useFormStateOrUndefined<TValues>();
 
-  return context;
-};
-
-const useForm = (require: boolean = true): ConfigurableFormInstance => {
-  const actionsContext = useFormActions(require);
-  const stateContext = useFormState(require);
-
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
 };
+
+const useForm = <TValue extends object = object>(): ConfigurableFormInstance<TValue> => useFormOrUndefined() ?? throwError("useForm must be used within a FormProvider");
 
 const useIsDrawingForm = (): boolean => {
   const { formMode } = useForm();
@@ -159,8 +147,11 @@ const useIsDrawingForm = (): boolean => {
 export {
   ShaForm,
   FormProvider,
+  useFormOrUndefined,
   useForm,
+  useFormActionsOrUndefined,
   useFormActions,
+  useFormStateOrUndefined,
   useFormState,
   useIsDrawingForm,
 };

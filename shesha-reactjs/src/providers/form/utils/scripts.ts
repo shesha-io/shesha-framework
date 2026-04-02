@@ -24,13 +24,13 @@ export function executeScriptSync<TResult, TArgs = unknown>(expression: string, 
   }
 };
 
-export type IExpressionExecuterFailedHandler<TResult> = (error: unknown) => TResult;
+export type IExpressionExecuterFailedHandler<TResult> = (error: unknown) => TResult | null;
 export function executeExpression<TResult>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments,
   defaultValue: TResult,
   onFail: IExpressionExecuterFailedHandler<TResult>,
-): TResult {
+): TResult | null {
   if (expression) {
     try {
       let argsDefinition = '';

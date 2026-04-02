@@ -22,7 +22,7 @@ export interface IShaRoutingActionsContext {
   /**
    * Get url from navigation request
    */
-  getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string;
+  getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string | undefined;
 
   /**
    * Check if navigation to the url is allowed according to the current application state.
@@ -41,4 +41,4 @@ export interface IShaRoutingActionsContext {
 
 export type IShaRouter = IShaRoutingStateContext & IShaRoutingActionsContext;
 
-export const ShaRouterContext = createNamedContext<IShaRouter>(undefined, "ShaRouterContext");
+export const ShaRouterContext = createNamedContext<IShaRouter | undefined>(undefined, "ShaRouterContext");

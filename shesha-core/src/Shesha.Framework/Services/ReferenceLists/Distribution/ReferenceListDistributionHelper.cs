@@ -20,7 +20,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
 
         public async Task<List<DistributedReferenceListItem>> ExportRefListItemsAsync(ReferenceList refList)
         {
-            var items = await _refListItemRepo.GetAll().Where(item => item.ReferenceList == refList).ToListAsync();
+            var items = await _refListItemRepo.GetAllListAsync(item => item.ReferenceList == refList);
 
             async Task ProcessRecursiveAsync(ReferenceListItem? parent, List<DistributedReferenceListItem> container)
             {

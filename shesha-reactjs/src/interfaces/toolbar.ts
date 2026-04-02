@@ -5,7 +5,7 @@ export interface IToolbarItem {
   className?: string;
   title: ReactNode;
   icon?: ReactNode;
-  onClick?: (args: any) => void;
+  onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   hide?: boolean;
   disabled?: boolean;
   render?: () => ReactNode;

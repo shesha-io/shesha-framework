@@ -3,21 +3,21 @@ import { CrudMode } from './models';
 import { createNamedContext } from '@/utils/react';
 
 export interface ICrudStateContext {
-  id?: string;
+  id?: string | undefined;
   isNewObject: boolean;
   allowEdit: boolean;
   allowDelete: boolean;
   mode: CrudMode;
   initialValuesLoading: boolean;
-  initialValues?: object;
+  initialValues?: object | undefined;
   allowChangeMode: boolean;
 
   autoSave: boolean;
   isSaving: boolean;
-  saveError?: IErrorInfo;
+  saveError?: IErrorInfo | undefined;
 
   isDeleting: boolean;
-  deletingError?: IErrorInfo;
+  deletingError?: IErrorInfo | undefined;
 }
 
 export interface ICrudActionsContext {
@@ -29,7 +29,7 @@ export interface ICrudContext extends ICrudStateContext, ICrudActionsContext {
   performCreate: () => Promise<void>;
   performDelete: () => Promise<void>;
   reset: () => Promise<void>;
-  getInitialData: () => object;
+  getInitialData: () => object | undefined;
   getFormData: () => object;
 }
 
@@ -46,4 +46,4 @@ export const CRUD_CONTEXT_INITIAL_STATE: ICrudStateContext = {
   isDeleting: false,
 };
 
-export const CrudContext = createNamedContext<ICrudContext>(undefined, "CrudContext");
+export const CrudContext = createNamedContext<ICrudContext | undefined>(undefined, "CrudContext");

@@ -7,31 +7,34 @@ export const mergeSortedEvents = (sortedEvents1: ILogEvent[], sortedEvents2: ILo
 
   // Merge like in merge sort (O(n))
   while (i < sortedEvents1.length && j < sortedEvents2.length) {
-    const timeStamp1 = sortedEvents1[i].timeStamp;
-    const timeStamp2 = sortedEvents2[j].timeStamp;
-
-    if (!timeStamp1 || !timeStamp2) {
-      // Handle null timestamps appropriately
+    const event1 = sortedEvents1[i];
+    if (!event1 || !event1.timeStamp) {
       i++;
+      continue;
+    }
+    const event2 = sortedEvents2[j];
+    if (!event2 || !event2.timeStamp) {
       j++;
       continue;
     }
 
-    if (timeStamp1.valueOf() <= timeStamp2.valueOf()) {
-      result.push(sortedEvents1[i++]);
+    if (event1.timeStamp.valueOf() <= event2.timeStamp.valueOf()) {
+      result.push(event1);
+      i++;
     } else {
-      result.push(sortedEvents2[j++]);
+      result.push(event2);
+      j++;
     }
   }
 
   // Add remaining events
-  while (i < sortedEvents1.length) result.push(sortedEvents1[i++]);
-  while (j < sortedEvents2.length) result.push(sortedEvents2[j++]);
+  result.push(...sortedEvents1.slice(i));
+  result.push(...sortedEvents2.slice(j));
 
   return result;
 };
 
-export const parseLogLevel = (level: string): LogLevel => {
+export const parseLogLevel = (level: string | undefined | null): LogLevel => {
   switch (level?.toLowerCase()) {
     case 'error':
       return LogLevel.ERROR;
@@ -81,16 +84,16 @@ export const parseLog4NetLine = (logLine: string, id: string | number): ILogEven
 
     return {
       id,
-      level: parseLogLevel(altMatch[1].trim()),
-      timeStamp: moment(altMatch[2].replace(',', '.')),
-      message: altMatch[3].trim(),
+      level: parseLogLevel(altMatch[1]?.trim()),
+      timeStamp: moment(altMatch[2]?.replace(',', '.')),
+      message: (altMatch[3] ?? "").trim(),
     } satisfies ILogEvent;
   }
 
   return {
     id,
-    level: parseLogLevel(match[1].trim()),
-    timeStamp: moment(match[2].replace(',', '.')),
-    message: match[3].trim(),
+    level: parseLogLevel(match[1]?.trim()),
+    timeStamp: moment(match[2]?.replace(',', '.')),
+    message: (match[3] ?? "").trim(),
   } satisfies ILogEvent;
 };

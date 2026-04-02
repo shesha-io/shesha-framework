@@ -47,6 +47,7 @@ import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicM
 import { WebStorageContextProvider } from '../dataContextProvider/contexts/webStorageContext';
 import { ProgressBar } from './progressBar';
 import { ConfigurationStudioEnvironmentProvider } from '@/configuration-studio/cs-environment/contexts';
+import { throwError } from '@/utils/errors';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -59,10 +60,10 @@ export interface IShaApplicationProviderProps {
 
   themeProps?: ThemeProviderProps;
 
-  router?: IRouter;
+  router: IRouter;
   routes?: ISheshaRoutes;
   homePageUrl?: string;
-  getFormUrlFunc?: (formId: FormIdentifier) => string;
+  getFormUrlFunc?: ((formId: FormIdentifier, isLoggedIn: boolean) => string) | undefined;
   urlOverrideFunc?: (url: string) => string;
 
   noAuth?: boolean;
@@ -77,7 +78,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   const application = useSheshaApplicationInstance({ ...props, authorizer: authRef });
   useEffect(() => {
     application.init();
-  }, []);
+  }, [application]);
 
   const {
     initializationState: { status, hint, error },
@@ -91,7 +92,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
             <ShaRoutingProvider
               getFormUrlFunc={getFormUrlFunc}
               router={router}
-              getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
+              getIsLoggedIn={() => (authRef.current?.getIsLoggedIn() || false)}
               urlOverrideFunc={props.urlOverrideFunc}
             >
               <DynamicActionsDispatcherProvider>
@@ -153,7 +154,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                           status="500"
                                                           title="500"
                                                           subTitle={error?.message || 'Sorry, something went wrong.'}
-                                                        // extra={<Button type="primary">Back Home</Button>}
                                                         />
                                                       )}
                                                     </DynamicModalProvider>
@@ -184,14 +184,8 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   );
 };
 
-const useSheshaApplication = (require: boolean = true): ISheshaApplicationInstance => {
-  const context = useContext(SheshaApplicationInstanceContext);
-
-  if (require && context === undefined) {
-    throw new Error('useSheshaApplication must be used within a ShaApplicationProvider');
-  }
-
-  return context;
+const useSheshaApplication = (): ISheshaApplicationInstance => {
+  return useContext(SheshaApplicationInstanceContext) ?? throwError('useSheshaApplication must be used within a ShaApplicationProvider');
 };
 
 /**

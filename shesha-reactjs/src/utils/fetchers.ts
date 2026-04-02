@@ -1,11 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
-import { IAjaxResponse } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { requestHeaders } from './requestHeaders';
 import { buildUrl } from './url';
-import { HttpResponse } from '@/publicJsApis/httpClient';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { Key } from 'react';
+import { IApiEndpoint } from '@/interfaces';
 
 export function constructUrl<TQueryParams extends object = object>(base: string | undefined, path: string, queryParams?: TQueryParams): string {
   let normalizedBase = !isNullOrWhiteSpace(base) ? base : '';
@@ -35,52 +36,52 @@ export interface BaseRequestOptions {
 }
 
 export interface GetProps<
-  _TData = any,
-  _TError = any,
+  _TData = unknown,
+  _TError = unknown,
   TQueryParams = {
-    [key: string]: any;
+    [key: string]: unknown;
   },
-  _TPathParams = any,
+  _TPathParams = unknown,
 > extends BaseRequestOptions {
   queryParams?: TQueryParams;
 }
 
 export const get = <
-  TData = any,
-  TError = any,
+  TData = unknown,
+  TError = unknown,
   TQueryParams = {
-    [key: string]: any;
+    [key: string]: unknown;
   },
-  _TPathParams = any,
+  _TPathParams = unknown,
 >(
   path: string,
   queryParams: TQueryParams | undefined,
   props: Omit<GetProps<TData, TError, TQueryParams, _TPathParams>, 'queryParams'>,
   signal?: RequestInit['signal'],
 ): Promise<TData | null> => {
-  const url = constructUrl(props?.base, path, typeof (queryParams) === 'object' ? queryParams as object : undefined);
+  const url = constructUrl(props.base, path, typeof (queryParams) === 'object' ? queryParams as object : undefined);
   const headers = {
     'content-type': 'application/json',
-    ...(props?.headers || {}),
+    ...(props.headers || {}),
   };
 
   return fetch(url, {
     headers,
-    signal,
+    signal: signal ?? null,
   }).then((res) => {
     return res.ok ? res.json() : res;
   });
 };
 
 export interface MutateProps<
-  _TData = any,
-  _TError = any,
+  _TData = unknown,
+  _TError = unknown,
   TQueryParams = {
-    [key: string]: any;
+    [key: string]: unknown;
   },
-  TRequestBody = any,
+  TRequestBody = unknown,
   /** is used by the react hooks only */
-  _TPathParams = any,
+  _TPathParams = unknown,
 > extends BaseRequestOptions {
   data: TRequestBody | null;
   queryParams?: TQueryParams;
@@ -89,14 +90,14 @@ export interface MutateProps<
 }
 
 export const mutate = <
-  TData = any,
-  TError = any,
+  TData = unknown,
+  TError = unknown,
   TQueryParams = {
-    [key: string]: any;
+    [key: string]: unknown;
   },
-  TRequestBody = any,
+  TRequestBody = unknown,
   /** is used by the react hooks only */
-  _TPathParams = any,
+  _TPathParams = unknown,
 >(
   method: string,
   path: string,
@@ -111,27 +112,29 @@ export const mutate = <
 
   const headers = {
     'content-type': 'application/json',
-    ...(props?.headers || {}),
+    ...(props.headers || {}),
   };
 
-  const { signal } = props || {};
+  const { signal } = props;
 
   return fetch(url, {
     method,
     body: JSON.stringify(data),
     headers,
-    signal,
+    signal: signal ?? null,
   }).then((res) => res.json());
 };
 
-export const getFileNameFromContentDisposition = (disposition: string): string | undefined => {
+export const getFileNameFromContentDisposition = (disposition: string | null | undefined): string | undefined => {
   if (!disposition)
     return undefined;
   const utf8FilenameRegex = /filename\*=UTF-8''([\w%\-\.]+)(?:; ?|$)/i;
   const asciiFilenameRegex = /^filename=(["']?)(.*?[^\\])\1(?:; ?|$)/i;
 
   if (utf8FilenameRegex.test(disposition)) {
-    return decodeURIComponent(utf8FilenameRegex.exec(disposition)[1]);
+    const matches = utf8FilenameRegex.exec(disposition);
+    if (matches != null && matches[1])
+      return decodeURIComponent(matches[1]);
   } else {
     // prevent ReDos attacks by anchoring the ascii regex to string start and
     //  slicing off everything before 'filename='
@@ -147,15 +150,13 @@ export const getFileNameFromContentDisposition = (disposition: string): string |
   return undefined;
 };
 
-export const getFileNameFromResponse = (fileResponse: HttpResponse<any>): string | undefined => {
+export const getFileNameFromResponse = (fileResponse: HttpResponse<unknown>): string | undefined => {
   return getFileNameFromContentDisposition(fileResponse.headers['content-disposition']);
 };
 
-export const unwrapAbpResponse = <TData extends any, TResponse extends TData | IAjaxResponse<TData>>(response: TResponse): TData | TResponse => {
-  if (!response) return response;
-
+export const unwrapAbpResponse = <TData extends object, TResponse extends TData | IAjaxResponse<TData>>(response: TResponse): TData | TResponse => {
   const ajaxResponse = response as IAjaxResponse<TData>;
-  const result = ajaxResponse.success && ajaxResponse.result ? ajaxResponse.result : response;
+  const result = ajaxResponse.success && isDefined(ajaxResponse.result) ? ajaxResponse.result : response;
 
   return result;
 };
@@ -172,5 +173,26 @@ export interface IQueryParams {
 }
 export type FetcherOptions = {
   path: string;
-  queryParams?: IQueryParams;
+  queryParams?: IQueryParams | undefined;
+};
+
+export const callApiEndpoint = async <TData extends object, TResponse = unknown>(httpClient: HttpClientApi, endpoint: IApiEndpoint, data: TData | undefined): Promise<TResponse> => {
+  const normalizedVerb = endpoint.httpVerb.toLowerCase();
+  switch (normalizedVerb) {
+    case "post": {
+      const response = await httpClient.post<IAjaxResponse<TResponse>>(endpoint.url, data);
+      return extractAjaxResponse(response.data);
+    }
+    case "put": {
+      const response = await httpClient.put<IAjaxResponse<TResponse>>(endpoint.url, data);
+      return extractAjaxResponse(response.data);
+    }
+    case "delete": {
+      const finalUrl = buildUrl(endpoint.url, data);
+      const response = await httpClient.delete<IAjaxResponse<TResponse>>(finalUrl);
+      return extractAjaxResponse(response.data);
+    }
+    default:
+      throw new Error(`Unsupported http verb: ${normalizedVerb}`);
+  }
 };

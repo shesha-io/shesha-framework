@@ -38,8 +38,8 @@ export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
   viewType: 'configStudio',
 };
 
-export const CanvasStateContext = createNamedContext<ICanvasStateContext>(CANVAS_CONTEXT_INITIAL_STATE, "CanvasConfigStateContext");
+export const CanvasStateContext = createNamedContext<ICanvasStateContext | undefined>(undefined, "CanvasConfigStateContext");
 
-export const CanvasActionsContext = createNamedContext<ICanvasActionsContext>(undefined, "CanvasConfigActionsContext");
+export const CanvasActionsContext = createNamedContext<ICanvasActionsContext | undefined>(undefined, "CanvasConfigActionsContext");
 
 //#endregion
