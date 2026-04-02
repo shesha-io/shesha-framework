@@ -43,7 +43,7 @@ export interface IDownloadItemAsJsonResponse {
 export const downloadAsJson = ({ httpClient, id }: IDownloadItemAsJsonPayload): Promise<IDownloadItemAsJsonResponse> => {
   const url = `/api/services/Shesha/FormConfiguration/GetJson?id=${id}`;
   return httpClient
-    .get(url, { responseType: 'blob' })
+    .get<BlobPart>(url, { responseType: 'blob' })
     .then((response) => {
       const fileName = getFileNameFromResponse(response) ?? 'form.json';
       FileSaver.saveAs(new Blob([response.data]), fileName);

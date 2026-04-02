@@ -252,7 +252,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
 
     const excelEndpoint = `${GENERIC_ENTITIES_ENDPOINT}/ExportToExcel`;
 
-    const response = await httpClient.post(excelEndpoint, excelPayload, { responseType: 'blob' });
+    const response = await httpClient.post<BlobPart>(excelEndpoint, excelPayload, { responseType: 'blob' });
     FileSaver.saveAs(new Blob([response.data]), 'Export.xlsx');
   };
 

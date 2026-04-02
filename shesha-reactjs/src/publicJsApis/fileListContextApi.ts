@@ -44,20 +44,20 @@ export type IFlagActionedFlags = '__DEFAULT__'; /* NEW_ACTIONED_FLAG_GOES_HERE *
 
 export type UploadFileStatus = 'error' | 'done' | 'uploading' | 'removed';
 
-export interface UploadFile<T = any> {
+export interface UploadFile<T = unknown> {
   uid: string;
   size?: number;
   name: string;
   fileName?: string;
   lastModified?: number;
   lastModifiedDate?: Date;
-  url?: string;
+  url?: string | null | undefined;
   status?: UploadFileStatus;
   percent?: number;
   thumbUrl?: string;
   response?: T;
-  error?: any;
-  linkProps?: any;
+  error?: unknown;
+  linkProps?: unknown;
   type?: string;
   xhr?: T;
   preview?: string;

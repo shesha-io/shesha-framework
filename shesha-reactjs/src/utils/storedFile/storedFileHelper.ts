@@ -138,24 +138,24 @@ export class StoredFileHelper implements IStoredFileHelper {
 
   downloadZipByOwnerAsync = async ({ ownerId, ownerType, filesCategory, ownerName }: DownloadZipByOwnerArgs): Promise<void> => {
     const url = buildUrl(STORED_FILE_URLS.DOWNLOAD_ZIP, { ownerId, ownerType, filesCategory, ownerName });
-    const response = await this.#httpClient.get(url, { responseType: 'blob' });
+    const response = await this.#httpClient.get<BlobPart>(url, { responseType: 'blob' });
     this.saveFile(response, DEFAULT_ZIP_FILENAME);
   };
 
-  saveFile = (response: HttpResponse, defaultFileName?: string): void => {
+  saveFile = (response: HttpResponse<BlobPart>, defaultFileName?: string): void => {
     const fileName = getFileNameFromResponse(response);
     FileSaver.saveAs(new Blob([response.data]), !isNullOrWhiteSpace(fileName) ? fileName : defaultFileName ?? DEFAULT_FILENAME);
   };
 
   downloadZipByIdsAsync = async (payload: DownloadZipByIdsArgs): Promise<void> => {
     const url = buildUrl<FileApiModels.DownloadZipByIdsPayload>(STORED_FILE_URLS.DOWNLOAD_ZIP, { filesId: payload.filesId });
-    const response = await this.#httpClient.get(url, { responseType: 'blob' });
+    const response = await this.#httpClient.get<BlobPart>(url, { responseType: 'blob' });
     this.saveFile(response, DEFAULT_ZIP_FILENAME);
   };
 
   downloadFileAsync = async (payload: DownloadFileArgs): Promise<void> => {
     const url = buildUrl<FileApiModels.DownloadFilePayload>(STORED_FILE_URLS.DOWNLOAD_FILE, { id: payload.fileId, versionNo: payload.versionNo });
-    const response = await this.#httpClient.get(url, { responseType: 'blob' });
+    const response = await this.#httpClient.get<BlobPart>(url, { responseType: 'blob' });
     this.saveFile(response, payload.fileName);
   };
 

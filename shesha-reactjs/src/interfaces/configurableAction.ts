@@ -11,7 +11,7 @@ import { isDefined } from '@/utils/nullables';
 import { IArgumentsEvaluationContext } from '@/providers/configurableActionsDispatcher/contexts';
 
 export interface IHasPreviousActionResponse {
-  actionResponse?: any;
+  actionResponse?: unknown;
 }
 export interface IHasPreviousActionError {
   actionError?: unknown;
@@ -26,11 +26,11 @@ export type IActionExecutionContext = /* GenericDictionary &*/ HasPreviousAction
 };
 
 export const hasPreviousActionError = (value: HasPreviousActionResult): value is IHasPreviousActionError => {
-  return value && (value as IHasPreviousActionError).actionError !== undefined;
+  return isDefined(value) && (value as IHasPreviousActionError).actionError !== undefined;
 };
 
 export const HasPreviousActionResponse = (value: HasPreviousActionResult): value is IHasPreviousActionResponse => {
-  return value && (value as IHasPreviousActionResponse).actionResponse !== undefined;
+  return isDefined(value) && (value as IHasPreviousActionResponse).actionResponse !== undefined;
 };
 
 /**
@@ -45,7 +45,7 @@ export interface ISettingsFormFactoryArgs<TModel extends object = object> {
   model: TModel;
   onSave: (values: TModel) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
+  onValuesChange?: (changedValues: Partial<TModel>, values: TModel) => void;
   readOnly?: boolean;
   exposedVariables?: ICodeExposedVariable[];
   availableConstants?: IObjectMetadata;

@@ -38,7 +38,7 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   model: TModel;
   onSave: (values: TModel) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
+  onValuesChange?: (changedValues: Partial<TModel>, values: TModel) => void;
   toolboxComponent: IToolboxComponentBase;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
@@ -53,7 +53,7 @@ export type SettingsFormMarkupFactoryArgs = {
 };
 export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
-export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
+export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> {
   model: UnwrapCodeEvaluators<TModel>;
   children?: JSX.Element;
   calculatedModel?: TCalculatedModel;
@@ -63,7 +63,7 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
   form: FormInstance;
 }
 
-export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
+export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
 
 export type PropertyInclusionPredicate = (name: string) => boolean;
 
@@ -79,7 +79,7 @@ export type ToolboxComponentAsTemplate = {
   build?: never;
 };
 
-export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = {
+export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> = {
 /**
  * Type of the component. Must be unique in the project.
  */
@@ -159,7 +159,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Settings validator
    */
-  validateSettings?: ((model: TModel) => Promise<any>) | undefined;
+  validateSettings?: ((model: TModel) => Promise<unknown>) | undefined;
 
   /**
    * Return true to indicate that the data type is supported by the component
@@ -184,7 +184,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Returns true if the property should be calculated for the actual model (calculated from JS code)
    */
-  actualModelPropertyFilter?: (name: string, value: any) => boolean;
+  actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
 
   editorAdapter?: IEditorAdapter;
 
@@ -219,7 +219,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   ) => IDimensionsValue | undefined;
 } & ToolboxComponentAsTemplate;
 
-export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =
+export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =
   Omit<IToolboxComponent<TModel, TCalculatedModel>, 'type'> & {
     type: TType;
   } & ToolboxComponentAsTemplate;
