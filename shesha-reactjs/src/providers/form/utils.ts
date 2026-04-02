@@ -523,28 +523,29 @@ export const componentsFlatStructureToTree = (
     if (!componentIds) return;
 
     const ownerComponent = flat.allComponents[ownerId];
-    if (!ownerComponent)
-      throw new Error('Owner component not found');
 
-    const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
-      ? toolboxComponents[ownerComponent.type]
-      : undefined;
     const staticContainerIds: string[] = [];
-    if (ownerDefinition?.customContainerNames) {
-      ownerDefinition.customContainerNames.forEach((sc) => {
-        const subContainer = unsafeGetValueByPropertyName(ownerComponent, sc);
-        if (subContainer) {
+    if (ownerComponent) {
+      const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
+        ? toolboxComponents[ownerComponent.type]
+        : undefined;
+
+      if (isDefined(ownerDefinition) && ownerDefinition.customContainerNames) {
+        ownerDefinition.customContainerNames.forEach((sc) => {
+          const subContainer = unsafeGetValueByPropertyName(ownerComponent, sc);
+          if (subContainer) {
           // container with id
-          if (isObjectWithStringId(subContainer))
-            staticContainerIds.push(subContainer.id);
+            if (isObjectWithStringId(subContainer))
+              staticContainerIds.push(subContainer.id);
             // container without id (array of components)
-          if (Array.isArray(subContainer))
-            subContainer.forEach((c) => {
-              if (isObjectWithStringId(c))
-                staticContainerIds.push(c.id);
-            });
-        }
-      });
+            if (Array.isArray(subContainer))
+              subContainer.forEach((c) => {
+                if (isObjectWithStringId(c))
+                  staticContainerIds.push(c.id);
+              });
+          }
+        });
+      }
     }
 
     // iterate all component ids on the current level
