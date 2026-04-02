@@ -24,6 +24,7 @@ import {
   WidgetProps,
 } from '@react-awesome-query-builder/antd';
 import { FieldAutocomplete } from '../fieldAutocomplete';
+import QueryRuleElement from '../groupEmptyState/queryRuleElement';
 import { SourceSelector } from '../sourceSelector';
 import { getRootLogicLabel, IPlainTreeNode } from '../treeRelations';
 import { ignoreIfUnassignedTooltip } from '../widgets/ignoreIfUnassigned/constants';
@@ -1133,12 +1134,25 @@ function QueryBuilderGroup({
 
   if (isRoot) {
     const hasChildren = children.length > 0;
-    const headingText = hasChildren ? getRootLogicLabel(node) : 'No filter conditions are applied';
+
+    if (!hasChildren) {
+      return (
+        <div className="sha-query-builder-surface is-empty">
+          <QueryRuleElement
+            onAddRule={() => actions.addRule(path)}
+            onAddGroup={() => actions.addGroup(path)}
+            disabled={groupReadonly}
+          />
+        </div>
+      );
+    }
+
+    const headingText = getRootLogicLabel(node);
 
     return (
-      <div className={classNames('sha-query-builder-surface', !hasChildren && 'is-empty')}>
+      <div className="sha-query-builder-surface">
         <div className="sha-query-builder-heading">{headingText}</div>
-        <div className={classNames('sha-query-builder-filter', !hasChildren && 'is-empty')}>
+        <div className="sha-query-builder-filter">
           <div className="sha-query-builder-filter-body">
             {children.map((child, index) => (
               <QueryBuilderItem
@@ -1162,9 +1176,8 @@ function QueryBuilderGroup({
                 onDropAppend={onDropAppend}
               />
             ))}
-            {!hasChildren && <div className="sha-query-builder-empty-spacer" aria-hidden="true" />}
           </div>
-          <div className={classNames('sha-query-builder-filter-actions', !hasChildren && 'is-empty')}>
+          <div className="sha-query-builder-filter-actions">
             <Button
               type="primary"
               icon={<PlusOutlined />}

@@ -7,11 +7,13 @@ const { Text } = Typography;
 interface IQueryRuleElementProps {
   onAddRule?: () => void;
   onAddGroup?: () => void;
+  disabled?: boolean;
 }
 
 export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
   onAddRule,
   onAddGroup,
+  disabled,
 }) => {
   return (
     <Flex
@@ -26,6 +28,7 @@ export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
           icon={<PlusOutlined />}
           onClick={onAddRule}
           className="action action--ADD-RULE"
+          disabled={disabled}
         >
           Add Rule
         </Button>
@@ -34,6 +37,7 @@ export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
           icon={<FolderOutlined />}
           onClick={onAddGroup}
           className="action action--ADD-GROUP"
+          disabled={disabled}
         >
           Add Group
         </Button>

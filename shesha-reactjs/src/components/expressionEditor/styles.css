@@ -15,9 +15,9 @@
 
 .sha-expression-editor-control {
   width: 100%;
-  border: 1px solid #d9d9d9;
+  border: none;
   border-radius: 6px;
-  background: #fff;
+  background: transparent;
   color: #1f1f1f;
   font-size: 12px;
   line-height: 20px;
@@ -29,7 +29,7 @@
   width: 100% !important;
   max-width: 100%;
   min-height: 20px;
-  padding: 0 12px;
+  padding: 0 4px;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -63,8 +63,8 @@
   width: 100% !important;
   max-width: 100%;
   resize: vertical;
-  padding: 8px 12px;
-  border: 1px solid #d9d9d9;
+  padding: 4px;
+  border: 1px solid transparent;
   border-radius: 6px;
   background: transparent;
   color: transparent;
@@ -84,7 +84,7 @@
 .sha-expression-editor.is-inline .sha-expression-editor-input {
   min-height: 100%;
   resize: none;
-  padding: 0 32px 0 12px;
+  padding: 0 4px;
 }
 
 .sha-expression-editor-input--plain {
