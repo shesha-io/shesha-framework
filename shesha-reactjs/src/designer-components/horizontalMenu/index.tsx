@@ -4,7 +4,6 @@ import { filterObjFromKeys } from "@/utils";
 import { EditOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import {
   ConfigurableComponentRenderer,
-  getShadowStyle,
   getStyle,
   IConfigurableFormComponent,
   IToolboxComponent,
@@ -33,13 +32,6 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   styleOnSelected?: string;
   styleOnSubMenu?: string;
   width?: string;
-  menuItemShadow?: {
-    color: string;
-    offsetX?: number;
-    offsetY?: number;
-    blurRadius?: number;
-    spreadRadius?: number;
-  };
 }
 
 type MenuOverflowValue = "dropdown" | "menu" | "scroll";
@@ -63,6 +55,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   name: "Menu List",
   isInput: false,
   isOutput: false,
+  preserveDimensionsInDesigner: true,
   icon: <MenuUnfoldOutlined />,
   Factory: ({ model }) => {
     const { data } = useFormData();
@@ -124,6 +117,11 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         computedStyle.backgroundColor = 'transparent';
       }
 
+      // Ensure box-sizing is border-box so borders don't add to dimensions
+      if (!computedStyle.boxSizing) {
+        computedStyle.boxSizing = 'border-box';
+      }
+
       return computedStyle;
     }, [model.allStyles, model.containerStyle, data]);
 
@@ -142,10 +140,6 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       };
     }, [model.font, fontSize]);
 
-    const menuItemShadowStyle = useMemo(() => {
-      return getShadowStyle(model?.menuItemShadow);
-    }, [model?.menuItemShadow]);
-
     if (model.hidden) return null;
 
     return (
@@ -156,7 +150,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`} style={{ overflow: 'visible' }}>
+            <div className={`sidebar ${componentState.wrapperClassName}`}>
               <BlockOverlay>
                 <EditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>
@@ -174,7 +168,6 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 styleOnHover={getStyle(model?.styleOnHover, data)}
                 styleOnSelected={getStyle(model?.styleOnSelected, data)}
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
-                menuItemStyle={menuItemShadowStyle}
                 overflow={resolveMenuOverflow(model.menuOverflow)}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
@@ -192,10 +185,21 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     .add<IMenuListProps>(0, (prev) => ({
       ...migratePrevStyles(prev, defaultStyles()),
     }))
-    .add<IMenuListProps>(1, (prev) => ({
-      ...prev,
-      menuOverflow: prev.menuOverflow ?? resolveMenuOverflow(prev.overflow as MenuOverflowValue | string | undefined),
-    })),
+    .add<IMenuListProps>(1, (prev) => {
+      const isValidOverflow = (value: unknown): value is MenuOverflowValue =>
+        value === 'dropdown' || value === 'menu' || value === 'scroll';
+
+      const overflow = isValidOverflow(prev.menuOverflow)
+        ? prev.menuOverflow
+        : isValidOverflow(prev.overflow)
+          ? prev.overflow
+          : undefined;
+
+      return {
+        ...prev,
+        menuOverflow: overflow ?? 'dropdown',
+      };
+    }),
 };
 
 export default MenuListComponent;
