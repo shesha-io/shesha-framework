@@ -82,9 +82,10 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     `);
 
   const valueHighlightSelectors = `
-    input, textarea,
+    textarea,
     .properties-label,
-    .ant-select-selector,
+    .ant-input-number,
+    .ant-select,
     .ant-switch-handle:before,
     .ant-input-affix-wrapper,
     .ant-radio-button-wrapper-checked
