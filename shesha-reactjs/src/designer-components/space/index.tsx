@@ -32,7 +32,7 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
     const { marginLeft, marginRight, ...model } = passedModel;
     const props: SpaceProps = {
       align: model.align,
-      direction: model.direction,
+      orientation: model.direction,
       size: model.size || model.sizeNumber,
       wrap: model.wrap,
     };

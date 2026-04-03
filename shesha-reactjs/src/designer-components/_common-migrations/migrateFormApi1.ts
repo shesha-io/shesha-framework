@@ -1,5 +1,5 @@
 import { StandardNodeTypes } from "@/interfaces/formComponent";
-import { isPropertySettings } from "../_settings/utils";
+import { isPropertySettings } from "../_settings/utils/utils";
 import { isNullOrWhiteSpace } from "@/utils/nullables";
 import { IConfigurableFormComponent } from "@/providers/form/models";
 

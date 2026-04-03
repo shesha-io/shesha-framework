@@ -33,8 +33,7 @@ const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc 
       onClose={onClose}
       open={doc.isHistoryVisible}
       getContainer={false}
-      maskClosable={false}
-      mask={false}
+      mask={{ closable: false }}
       size="large"
     >
       {data && (

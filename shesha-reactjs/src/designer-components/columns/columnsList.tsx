@@ -267,7 +267,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
         onCancel={toggleModal}
         cancelText={readOnly ? 'Close' : undefined}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space orientation="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="columns">
               {(provided: DroppableProvided) => (

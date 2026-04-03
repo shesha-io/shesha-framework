@@ -161,7 +161,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
         return <RenderButton props={{ ...item }} uuid={item.id} form={form} />;
       case 'separator':
       case 'line':
-        return <Divider type="vertical" key={uuid} style={{ width: addPx(item.dividerWidth, appContext), backgroundColor: item.dividerColor }} />;
+        return <Divider orientation="vertical" key={uuid} style={{ width: addPx(item.dividerWidth, appContext), backgroundColor: item.dividerColor }} />;
       default:
         return null;
     }

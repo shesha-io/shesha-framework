@@ -1,4 +1,4 @@
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import {
   IPropertySetting,
 } from '@/interfaces';
@@ -24,10 +24,11 @@ const getSettingValue = <TValue = unknown>(
 
   const unproxiedValue = unproxyValue(value);
 
-  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
-    return value;
+  let result: TValue = value;
 
-  if (typeof unproxiedValue === 'object' &&
+  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
+    result = value;
+  else if (typeof unproxiedValue === 'object' &&
     processed.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
   ) {
     // If array - update all items
@@ -39,35 +40,35 @@ const getSettingValue = <TValue = unknown>(
           return getActualModel(x, allData, parentReadOnly, propertyFilter, processed);
         });
       processed.push(v);
-      return v as TValue;
-    }
+      result = v as TValue;
+    } else
+      // update setting value to actual but only if not lazy
+      if (isPropertySettings(unproxiedValue) && unproxiedValue._lazy !== true) {
+        const v = unproxiedValue._mode === 'code'
+          ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
+          : unproxiedValue._value;
+        const upv = unproxyValue(v);
+        processed.push(upv);
+        result = upv as TValue;
+      } else {
+        // update nested objects
 
-    // update setting value to actual
-    if (isPropertySettings(unproxiedValue)) {
-      const v = unproxiedValue._mode === 'code'
-        ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
-        : unproxiedValue._value;
-      const upv = unproxyValue(v);
-      processed.push(upv);
-      return upv as TValue;
-    }
+        // TODO: review and enable rule
 
-    // update nested objects
-
-    // TODO: review and enable rule
-
-    const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processed);
-    processed.push(v);
-    return v;
+        const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processed);
+        processed.push(v);
+        result = v;
+      }
   }
-  return value;
+
+  return result;
 };
 
 const getValue = <TValue>(val: TValue, allData: object, calcValue: (setting: IPropertySetting, allData: object) => unknown): unknown => {
   return getSettingValue('', val, allData, calcValue);
 };
 
-type AllDataWrapper<TValue> = {
+interface IJsSettingsConstants<TValue> {
   staticValue: unknown;
   getSettingValue: (val: TValue) => unknown;
 };
@@ -80,7 +81,7 @@ const calcValue = <TValue>(setting: IPropertySetting, allData: object): TValue |
       allData.addAccessor('getSettingValue', () => getSettingValueInScript);
     } else {
       // TODO: Alex, please review. I've added type just to make linter happy
-      const casted = allData as AllDataWrapper<TValue>;
+      const casted = allData as IJsSettingsConstants<TValue>;
       casted.staticValue = setting._value;
       casted.getSettingValue = getSettingValueInScript;
     }

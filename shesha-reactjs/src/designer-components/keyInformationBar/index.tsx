@@ -8,7 +8,7 @@ import { BorderLeftOutlined } from '@ant-design/icons';
 import React from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
-import { KeyInformationBarComponentDefinition, IKeyInformationBarProps } from './interfaces';
+import { KeyInformationBarComponentDefinition, IKeyInformationBarComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
@@ -26,13 +26,13 @@ const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
   },
   migrator: (m) =>
     m
-      .add<IKeyInformationBarProps>(
+      .add<IKeyInformationBarComponentProps>(
         0,
-        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarProps,
+        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarComponentProps,
       )
-      .add<IKeyInformationBarProps>(1, (prev) => migrateVisibility(prev))
-      .add<IKeyInformationBarProps>(2, (prev) => removeComponents(prev))
-      .add<IKeyInformationBarProps>(3, (prev) => {
+      .add<IKeyInformationBarComponentProps>(1, (prev) => migrateVisibility(prev))
+      .add<IKeyInformationBarComponentProps>(2, (prev) => removeComponents(prev))
+      .add<IKeyInformationBarComponentProps>(3, (prev) => {
         const prevDividerStyles = {
           orientation: prev?.orientation,
           dividerWidth: prev?.dividerWidth,
@@ -48,9 +48,9 @@ const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
           tablet: { ...prev.tablet, ...prevDividerStyles },
         });
       })
-      .add<IKeyInformationBarProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IKeyInformationBarComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   initModel: (model) => {
-    const tabsModel: IKeyInformationBarProps = {
+    const tabsModel: IKeyInformationBarComponentProps = {
       ...model,
       propertyName: 'column 1',
       columns: [

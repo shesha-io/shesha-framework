@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ICanvasWidthProps, IDeviceTypes, IViewType } from './contexts';
+import { ICanvasWidthProps, DeviceTypes, IViewType } from './contexts';
 
 export enum CanvasConfigActionEnums {
   SetCanvasWidth = 'SET_FORM_WIDTH',
@@ -17,7 +17,7 @@ export const setCanvasWidthAction = createAction<ICanvasWidthProps>(CanvasConfig
 
 export const setScreenWidthAction = createAction<number>(CanvasConfigActionEnums.SetScreenWidth);
 
-export const setDesignerDeviceAction = createAction<IDeviceTypes>(CanvasConfigActionEnums.SetDesignerDevice);
+export const setDesignerDeviceAction = createAction<DeviceTypes>(CanvasConfigActionEnums.SetDesignerDevice);
 
 export const setCanvasAutoZoomAction = createAction(CanvasConfigActionEnums.SetCanvasAutoZoom);
 

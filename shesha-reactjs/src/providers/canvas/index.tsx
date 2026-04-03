@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useCallback } from 'react';
 import { reducer } from './reducer';
 import { setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction, setViewTypeAction } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, IDeviceTypes, IViewType } from './contexts';
+import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, DeviceTypes, IViewType } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { canvasContextCode } from '@/publicJsApis';
 import { isDefined } from '@/utils/nullables';
@@ -45,11 +45,11 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const setDesignerDevice = useCallback((deviceType: IDeviceTypes) => {
+  const setDesignerDevice = useCallback((deviceType: DeviceTypes) => {
     dispatch(setDesignerDeviceAction(deviceType));
   }, []);
 
-  const setCanvasWidth = useCallback((width: number | string, deviceType: IDeviceTypes) => {
+  const setCanvasWidth = useCallback((width: number | string, deviceType: DeviceTypes) => {
     dispatch(setCanvasWidthAction({ width: typeof width === 'string' ? width : `${width}px`, deviceType }));
   }, []);
 

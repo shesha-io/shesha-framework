@@ -142,9 +142,9 @@ export const DebugPanel: FC<PropsWithChildren> = ({ children }) => {
           open={open}
           onClose={onClose}
           closable={false}
+          mask={{ closable: false }}
           height={height}
           width={width}
-          maskClosable={false}
           className={styles.debugPanelDrawer}
           styles={{
             mask: { height: 0 },

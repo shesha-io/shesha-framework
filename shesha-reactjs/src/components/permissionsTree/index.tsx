@@ -593,7 +593,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   };
 
   return (
-    <Space direction="vertical" style={{ width: '100%' }}>
+    <Space orientation="vertical" style={{ width: '100%' }}>
       <ShaSpin spinning={isFetchingData || isDeleting || isParentUpdating} tip={getLoadingHint()}>
         {!rest.hideSearch && <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />}
         <Tree

@@ -1,17 +1,17 @@
-export type IDeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
+export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
 
 export interface ICanvasActions {
-  setDesignerDevice(deviceType: IDeviceTypes): void;
-  setCanvasWidth(width: number | string, deviceType: IDeviceTypes): void;
+  setDesignerDevice(deviceType: DeviceTypes): void;
+  setCanvasWidth(width: number | string, deviceType: DeviceTypes): void;
   setCanvasZoom(zoom: number): void;
 }
 
 export interface ICanvasContextApi {
   zoom?: number;
   designerWidth?: string;
-  designerDevice?: IDeviceTypes;
-  physicalDevice?: IDeviceTypes;
-  activeDevice?: IDeviceTypes;
+  designerDevice?: DeviceTypes;
+  physicalDevice?: DeviceTypes;
+  activeDevice?: DeviceTypes;
   api: ICanvasActions;
 }
 

@@ -78,15 +78,14 @@ export function useActualContextData<T extends object = object>(
       ? executor(preparedData, contextProxyRef.current)
       : getActualModel(preparedData, contextProxyRef.current, pReadonly, propertyFilter);
 
-    prevActualModelRef.current = JSON.stringify(actualModel);
+    // ToDo: AS - review copy and compare for performance and reliability
+    const actualModelJson = JSON.stringify(actualModel);
+    if (prevActualModelRef.current !== actualModelJson) {
+      actualModelRef.current = actualModel;
+    }
+    prevActualModelRef.current = actualModelJson;
     prevParentReadonly.current = pReadonly;
   }
-
-  actualModelRef.current = useMemo(() => {
-    return actualModel;
-    // TODO: Alex, please review. Refs are used by a wrong way here
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prevActualModelRef.current]);
 
   if (modelChanged)
     prevModel.current = model;

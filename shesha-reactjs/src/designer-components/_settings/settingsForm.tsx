@@ -1,11 +1,12 @@
 import React, { PropsWithChildren, ReactElement, useContext, useState } from 'react';
 import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, IPropertyMetadata, ISettingsFormFactoryArgs } from "@/interfaces";
-import { getValuesFromSettings, updateSettingsFromValues } from './utils';
+import { getValuesFromSettings, updateSettingsFromValues } from './utils/utils';
 import { createNamedContext } from '@/utils/react';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableFormActionsProvider } from '@/providers/form/actions';
 import { deepMergeValues } from '@/utils/object';
+import { IConfigurableFormComponent, useShaFormInstance } from '@/providers';
 
 interface SettingsFormState<TModel> {
   model?: TModel;
@@ -27,7 +28,7 @@ export const SettingsFormActionsContext = createNamedContext<ISettingsFormAction
 
 export type SettingsFormProps<TModel> = ISettingsFormFactoryArgs<TModel>;
 
-const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
+const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
   const {
     onSave,
     model,
@@ -35,9 +36,11 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
     propertyFilter,
     formRef,
     layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
+    toolboxComponent,
   } = props;
 
   const [form] = Form.useForm();
+  const shaForm = useShaFormInstance();
   const [state, setState] = useState<SettingsFormState<TModel>>({ model, values: getValuesFromSettings(model) });
 
   if (formRef)
@@ -47,7 +50,7 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
     };
 
   const valuesChange = (changedValues): void => {
-    const model = form.getFieldValue([]);
+    const model = shaForm.formData;
     const incomingState = updateSettingsFromValues(model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
     onValuesChange(changedValues, incomingState);
@@ -71,19 +74,23 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
   };
 
   const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
-    const currentModel = form.getFieldValue([]) as TModel;
+    if (!toolboxComponent) {
+      console.warn(`toolboxComponent is undefined, cannot link to model metadata`);
+      return;
+    }
+    const currentModel = shaForm.formData as IConfigurableFormComponent;
+    const newModel = linkComponentToModelMetadata(toolboxComponent, currentModel, metadata);
 
-    const wrapper = props.toolboxComponent.linkToModelMetadata
-      ? (m) => linkComponentToModelMetadata(props.toolboxComponent, m, metadata)
-      : (m) => m;
-
-    const newModel: TModel = wrapper({
-      ...currentModel,
-      label: metadata.label || metadata.path,
-      description: metadata.description,
-    });
-
-    valuesChange(newModel);
+    if (toolboxComponent.initModelFromMetadata) {
+      toolboxComponent.initModelFromMetadata(currentModel, newModel, metadata)
+        .then((r) => valuesChange(r))
+        .catch((error) => {
+          console.error('Failed to initialize model from metadata:', error);
+          valuesChange(newModel);
+        });
+    } else {
+      valuesChange(newModel);
+    }
   };
 
   return (

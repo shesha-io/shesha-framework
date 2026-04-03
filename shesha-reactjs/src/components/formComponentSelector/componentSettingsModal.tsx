@@ -52,7 +52,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
       onCancel={onCancelClick}
       onOk={onOkClick}
       confirmLoading={saving}
-      maskClosable={false}
+      mask={{ closable: false }}
     >
       <Spin spinning={saving} tip="Please wait...">
         {/* <ValidationErrors error={error?.data}></ValidationErrors> */}

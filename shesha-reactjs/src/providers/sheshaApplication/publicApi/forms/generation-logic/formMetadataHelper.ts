@@ -157,7 +157,7 @@ export class FormMetadataHelper {
 
       case DataTypes.entityReference:
         if (!property.entityType) {
-          throw new Error('Entity type is required for entityReference type');
+          throw new Error(`Entity type is required for entityReference type. Property: ${property.path}`);
         }
         builder.addAutocomplete({
           ...commonProps,

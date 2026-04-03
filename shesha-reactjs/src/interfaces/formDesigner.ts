@@ -11,7 +11,7 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, UnwrapCodeEvaluators } from '..';
+import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, IObjectMetadata, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -41,14 +41,16 @@ export const DEFAULT_FORM_LAYOUT_SETTINGS: IFormLayoutSettings = {
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   readOnly: boolean;
   model: TModel;
+  defaultConfig?: TModel;
   onSave: (values: TModel) => void;
   onCancel: () => void;
   onValuesChange?: (changedValues: Partial<TModel>, values: TModel) => void;
-  toolboxComponent: IToolboxComponentBase;
+  toolboxComponent?: IToolboxComponentBase;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
   isInModal?: boolean;
+  availableConstants?: IObjectMetadata | undefined;
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
@@ -85,9 +87,15 @@ export type ToolboxComponentAsTemplate = {
 };
 
 export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> = {
-/**
- * Type of the component. Must be unique in the project.
- */
+  // ToDo: AS - remove after all components are migrated to inheritance
+  /**
+   * If true, indicates that the component properties can be inherited
+   */
+  allowInherit?: boolean;
+
+  /**
+   * Type of the component. Must be unique in the project.
+   */
   type: string;
   /**
    * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
@@ -145,6 +153,14 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Link component to a model metadata
    */
   linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
+  /**
+   * Init model from metadata. Fired when the user drops a component to the form and bind component to the Entity property
+   * @param currentModel - current component model
+   * @param newModel - new component model
+   * @param metadata - property metadata
+   * @returns - component model
+   */
+  initModelFromMetadata?: (currentModel: TModel, newModel: TModel, metadata: IPropertyMetadata) => Promise<TModel>;
   /**
    * Returns nested component containers. Is used in the complex components like tabs, panels etc.
    */

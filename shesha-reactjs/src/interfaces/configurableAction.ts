@@ -1,4 +1,3 @@
-import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ReactNode } from 'react';
 import { FormMarkup, GenericDictionary } from '@/providers/form/models';
 import { StandardNodeTypes } from './formComponent';
@@ -9,6 +8,7 @@ import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { isDefined } from '@/utils/nullables';
 import { IArgumentsEvaluationContext } from '@/providers/configurableActionsDispatcher/contexts';
+import { ISettingsFormFactoryArgs } from '..';
 
 export interface IHasPreviousActionResponse {
   actionResponse?: unknown;
@@ -41,19 +41,8 @@ export type IConfigurableActionExecuter<TArguments, TReponse, TExecutionContext 
   context: TExecutionContext,
 ) => Promise<TReponse>;
 
-export interface ISettingsFormFactoryArgs<TModel extends object = object> {
-  model: TModel;
-  onSave: (values: TModel) => void;
-  onCancel: () => void;
-  onValuesChange?: (changedValues: Partial<TModel>, values: TModel) => void;
-  readOnly?: boolean;
-  exposedVariables?: ICodeExposedVariable[];
-  availableConstants?: IObjectMetadata;
-}
-
 export interface FormMarkupFactoryArgs {
-  exposedVariables?: ICodeExposedVariable[];
-  availableConstants?: IObjectMetadata;
+  availableConstants?: IObjectMetadata | undefined;
   fbf: FormBuilderFactory;
 }
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
