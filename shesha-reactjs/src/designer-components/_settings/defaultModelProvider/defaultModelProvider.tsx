@@ -24,7 +24,7 @@ const DefaultModelProviderStateContext = createContext<IDefaultModelProviderStat
 export const useDefaultModelProviderStateOrUndefined = (): IDefaultModelProviderState<object> | undefined => useContext(DefaultModelProviderStateContext);
 
 const DefaultModelProvider = <TData extends object = object>(props: PropsWithChildren<IDefaultModelProviderProps<TData>>): ReactElement => {
-  const [, forceRefresh] = useState({});
+  const [refreshState, forceRefresh] = useState({});
 
   const valueInfo = useRef<Map<string, IDefaultModelValueInfo>>(new Map());
   const needUpdateInfo = useRef<Map<string, boolean>>(new Map());
@@ -78,7 +78,7 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
       forceRefresh({});
     },
     getCurrentValueAdditionalInfo: instance.getCurrentValueAdditionalInfo,
-  }), [instance]);
+  }), [refreshState, instance]);
 
   return (
     <DefaultModelProviderStateContext.Provider value={state}>
