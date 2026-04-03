@@ -9,7 +9,7 @@ import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
-import { StyledLabel } from '../_settings/utils';
+import { StyledLabel } from '../_settings/utils/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
 import FormItem from '../_settings/components/formItem';

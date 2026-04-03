@@ -1,8 +1,6 @@
 import { IconType } from '@/components/shaIcon';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleType } from '@/providers/form/models';
-import { ValueType } from 'rc-input-number';
-
 
 export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent, IInputStyles, IStyleType {
   hideBorder?: boolean;
@@ -36,7 +34,7 @@ export interface INumberFieldComponentProps extends IConfigurableFormComponent, 
 interface INumberFieldComponentCalculatedValues {
   defaultValue?: string;
   eventHandlers?: any;
-  executeCustomFormat?: (value: ValueType, code: string) => string;
+  executeCustomFormat?: (value: unknown, code: string) => string;
 }
 
 export type NumberFieldComponentDefinition = ComponentDefinition<"numberField", INumberFieldComponentProps, INumberFieldComponentCalculatedValues>;

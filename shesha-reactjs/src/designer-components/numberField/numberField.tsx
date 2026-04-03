@@ -19,8 +19,7 @@ import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { InputNumber, InputNumberProps } from 'antd';
 import { ShaIcon } from '@/components/shaIcon';
-import { isPropertySettings } from '../_settings/utils';
-import { ValueType } from 'rc-input-number';
+import { isPropertySettings } from '../_settings/utils/utils';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -37,7 +36,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
   calculateModel: (model, allData) => {
     return {
       eventHandlers: { ...getEventHandlers(model, allData), ...customOnChangeValueEventHandler(model, allData) },
-      executeCustomFormat: (value: ValueType, code: string): string => executeScriptSync(code, addContextData(allData, { value })),
+      executeCustomFormat: (value: unknown, code: string): string => executeScriptSync(code, addContextData(allData, { value })),
     };
   },
   Factory: ({ model, calculatedModel }) => {

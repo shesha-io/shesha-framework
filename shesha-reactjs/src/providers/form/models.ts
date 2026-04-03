@@ -14,7 +14,7 @@ import { IShadowValue } from '@/designer-components/_settings/utils/shadow/inter
 import { isDefined } from '@/utils/nullables';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IActionExecutionContext } from '@/interfaces/configurableAction';
-import { GetAvailableConstantsFunc } from '@/components';
+import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';

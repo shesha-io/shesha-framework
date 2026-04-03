@@ -1,7 +1,7 @@
 import React, { FC, cloneElement } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression } from '@/providers/form/utils';
-import { getPropertySettingsFromData } from '@/designer-components/_settings/utils';
+import { getPropertySettingsFromData } from '@/designer-components/_settings/utils/utils';
 import { IConfigurableFormItemChildFunc, IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
 import { useStyles } from './styles';

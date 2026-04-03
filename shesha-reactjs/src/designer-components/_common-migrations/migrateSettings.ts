@@ -1,5 +1,5 @@
 import { EditMode, IConfigurableFormComponent, IPropertySetting } from '@/providers';
-import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils';
+import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils/utils';
 
 export const migrateFunctionToProp = <T = unknown>(
   prev: T,

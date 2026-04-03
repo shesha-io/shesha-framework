@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, ReactElement, useContext, useState } from 'react';
 import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, IPropertyMetadata, ISettingsFormFactoryArgs } from "@/interfaces";
-import { getValuesFromSettings, updateSettingsFromValues } from './utils';
+import { getValuesFromSettings, updateSettingsFromValues } from './utils/utils';
 import { createNamedContext } from '@/utils/react';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableFormActionsProvider } from '@/providers/form/actions';

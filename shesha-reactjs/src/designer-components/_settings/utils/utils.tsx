@@ -1,7 +1,7 @@
 import { IContainerComponentProps } from '@/designer-components/container/interfaces';
 import React from 'react';
 import { IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from '@/interfaces';
-import { useStyles } from './styles/styles';
+import { useStyles } from '../styles/styles';
 
 /**
  * Checks if the provided data is an instance of IPropertySetting.

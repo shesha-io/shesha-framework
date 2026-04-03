@@ -1,4 +1,4 @@
-import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
+import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
 import {
   IToolboxComponent,
   IToolboxComponentGroup,

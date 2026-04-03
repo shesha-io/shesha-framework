@@ -5,7 +5,7 @@ import { ISettingsFormItemProps } from '../settingsFormItem';
 import { useStyles } from '../styles/styles';
 import { useDefaultModelProviderStateOrUndefined } from '../defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName } from '@/utils/object';
-import { useFormItem } from '@/index';
+import { useFormItem } from '@/providers';
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { styles } = useStyles();

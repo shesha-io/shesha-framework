@@ -6,7 +6,7 @@ import React, {
 } from 'react';
 import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
 import { Form, FormItemProps } from 'antd';
-import { getPropertySettingsFromData } from './utils';
+import { getPropertySettingsFromData } from './utils/utils';
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getFieldNameFromExpression } from '@/providers/form/utils';

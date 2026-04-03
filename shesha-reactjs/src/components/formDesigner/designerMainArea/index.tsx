@@ -28,7 +28,7 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const { antdForm: form } = shaForm;
   const { styles } = useStyles();
 
-  const showMarkup = true;
+  const showMarkup = false;
   const markup = useFormDesignerMarkup();
 
   const noPageContext = !Boolean(useDataContextManager().getPageContext());

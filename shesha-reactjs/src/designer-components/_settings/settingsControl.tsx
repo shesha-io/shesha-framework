@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode, useEffect } from 'react';
-import { getPropertySettingsFromValue } from './utils';
+import { getPropertySettingsFromValue } from './utils/utils';
 import { useStyles } from './styles/styles';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';

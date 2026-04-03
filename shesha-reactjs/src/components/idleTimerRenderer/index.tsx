@@ -471,7 +471,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
         onOk={onOk}
         onCancel={onCancel}
         closable={false}
-        maskClosable={false}
+        mask={{ closable: false }}
       >
         <div className={styles.idleTimerContent}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>

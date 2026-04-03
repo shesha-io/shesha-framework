@@ -1,4 +1,4 @@
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import {
   IPropertySetting,
 } from '@/interfaces';

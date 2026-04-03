@@ -18,7 +18,7 @@ import {
   StopOutlined,
 } from '@ant-design/icons';
 import { getStyle } from '@/providers/form/utils';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { Show } from '@/components/show';
 import { Tooltip } from 'antd';
 import { ShaForm, useIsDrawingForm } from '@/providers/form';
