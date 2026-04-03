@@ -633,7 +633,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
           {previewImage && (
             <Image
-              wrapperClassName={styles.hiddenElement}
+              classNames={{ root: styles.hiddenElement }}
               preview={{
                 visible: previewOpen,
                 onVisibleChange: (visible) => setPreviewOpen(visible),

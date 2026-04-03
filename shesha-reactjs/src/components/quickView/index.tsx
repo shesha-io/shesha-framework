@@ -247,7 +247,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     <Popover
       styles={{
         root: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string) ? { width: cappedWidth } : undefined,
-        body: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)
+        content: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)
           ? { width: '100%', maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
           : { width: cappedWidth, minWidth: cappedWidth, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' },
       }}

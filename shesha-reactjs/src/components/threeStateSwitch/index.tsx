@@ -2,12 +2,13 @@ import React, { FC } from 'react';
 import { CheckOutlined, CloseOutlined, QuestionOutlined } from '@ant-design/icons';
 import { useDeepCompareMemo } from '@/hooks';
 import IconRadioGroup, { IIconRadioGroupValue } from '../iconRadioGroup';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IThreeStateSwitchProps {
   value?: boolean | undefined;
   readOnly?: boolean;
   onChange?: (value: boolean | undefined) => void;
-  size?: 'small' | 'middle' | 'large';
+  size?: SizeType;
   className?: string;
   yesValue?: Partial<IIconRadioGroupValue>;
   noValue?: Partial<IIconRadioGroupValue>;

@@ -2,12 +2,13 @@ import { EditMode } from '@/interfaces';
 import { Radio } from 'antd';
 import React, { FC } from 'react';
 import Icon from '../icon/Icon';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IReadOnlyModeSelectorProps {
   value?: boolean | EditMode;
   readOnly?: boolean;
   onChange?: (value: EditMode) => void;
-  size?: 'small' | 'middle' | 'large';
+  size?: SizeType;
   className?: string;
 }
 

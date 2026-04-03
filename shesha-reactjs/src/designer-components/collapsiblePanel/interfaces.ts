@@ -2,8 +2,11 @@ import { ComponentDefinition } from '@/interfaces';
 import { headerType } from './../../components/panel/index';
 import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 import { isDefined } from '@/utils/nullables';
-import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
+import { Collapse } from 'antd';
+import { ComponentProps } from 'react';
+
+type ExpandIconPlacement = ComponentProps<typeof Collapse>['expandIconPlacement'];
 
 export interface ICollapsiblePanelContent {
   id: string;
@@ -12,7 +15,7 @@ export interface ICollapsiblePanelContent {
 
 export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent, IStyleType {
   collapsedByDefault?: boolean;
-  expandIconPosition?: ExpandIconPosition | 'hide';
+  expandIconPosition?: ExpandIconPlacement | 'hide';
   header?: ICollapsiblePanelContent;
   content?: ICollapsiblePanelContent | undefined;
   collapsible?: CollapsibleType;
@@ -37,9 +40,11 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
 // TODO: implement generic guard on the component level
 export const isCollapsiblePanel = (component: IConfigurableFormComponent): component is ICollapsiblePanelComponentProps => isDefined(component) && component.type === 'collapsiblePanel';
 
+type ExpandIconPositionLegacy = 'left' | 'right';
+
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {
   collapsedByDefault?: boolean;
-  expandIconPosition?: ExpandIconPosition;
+  expandIconPosition?: ExpandIconPositionLegacy;
   components?: IConfigurableFormComponent[];
 }
 

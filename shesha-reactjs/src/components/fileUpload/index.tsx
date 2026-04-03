@@ -10,7 +10,6 @@ import { App, Button, Space, Upload } from 'antd';
 import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
-import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
@@ -90,7 +89,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   }, [fileInfo]);
 
-  const onCustomRequest = ({ file }: RcCustomRequestOptions): void => {
+  const onCustomRequest: UploadProps['customRequest'] = ({ file }): void => {
     if (file instanceof File) {
       uploadFile({ file }).then(() => {
         callback?.();

@@ -1,7 +1,6 @@
 import { ColProps, FormInstance } from 'antd';
 import { FormLayout } from 'antd/lib/form/Form';
-import { InternalNamePath } from 'rc-field-form/lib/interface';
-import { FC, MutableRefObject, ReactNode } from 'react';
+import { ComponentProps, FC, MutableRefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import {
   FormMarkup,
@@ -16,6 +15,12 @@ import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, U
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { Form } from 'antd';
+
+type FormProps<T> = ComponentProps<typeof Form<T>>;
+type OnFormFinishFailed<T> = FormProps<T>['onFinishFailed'];
+type FirstArgument<T> = T extends (arg: infer A, ...args: unknown[]) => unknown ? A : never;
+type ValidateErrorEntity<T = unknown> = FirstArgument<OnFormFinishFailed<T>>;
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -252,12 +257,7 @@ export interface IToolboxComponents {
 
 export { type IConfigurableFormComponent as IConfigurableFormComponent, type IFormComponentContainer };
 
-export interface IFieldValidationErrors {
-  name: InternalNamePath;
-  errors: string[];
-}
-
-export { type ValidateErrorEntity } from 'rc-field-form/lib/interface';
+export { type ValidateErrorEntity, type OnFormFinishFailed };
 
 export interface IAsyncValidationError {
   field: string;
