@@ -90,6 +90,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       min: model.validate?.minValue !== undefined ? model.validate?.minValue : null,
     };
 
+    // ToDo: AS - implement custom number formatting
     if (model.thousandsSeparator || model.numberFormat === 'percent' || (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && model.customFormat._code)) {
       inputProps.formatter = (value) => {
         if (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && model.customFormat._code) {
@@ -193,9 +194,11 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       .add<INumberFieldComponentProps>(6, (prev) => {
         const model = { ...migrateHiddenToVisible(prev) };
         if (prev.min !== undefined || prev.max !== undefined) {
-          model.validate = prev.validate ?? {} as IComponentValidationRules;
-          model.validate.minValue = prev.min;
-          model.validate.maxValue = prev.max;
+          model.validate = {
+            ...(prev.validate ?? {}),
+            minValue: prev.min,
+            maxValue: prev.max,
+          } as IComponentValidationRules;
         }
         return model;
       }),

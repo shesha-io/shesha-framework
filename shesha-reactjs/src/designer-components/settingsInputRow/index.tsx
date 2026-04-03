@@ -9,12 +9,17 @@ import { IInputRowProps, ISettingsInputRowProps, SettingsInputRowDefinition } fr
 import { evaluateString } from "@/providers/form/utils";
 import { useShaFormInstance } from "@/providers/form/providers/shaFormProvider";
 import { nanoid } from '@/utils/uuid';
+import { ISettingsInputProps } from '../settingsInput/interfaces';
 
 export const isSettingsInputRow = (component: IConfigurableFormComponent): component is ISettingsInputRowProps => isDefined(component) && component.type === 'settingsInputRow';
 
 type UnwrappedInputRowProps = UnwrapCodeEvaluators<IInputRowProps>;
+type IInputRowInputProps = UnwrapCodeEvaluators<IInputRowProps['inputs'][number]> & {
+  parentReadOnly?: boolean;
+  formData: object;
+};
 
-const InputRowInput = (props): React.JSX.Element => {
+const InputRowInput = (props: IInputRowInputProps): React.JSX.Element => {
   const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: props.formData }) : props.hidden;
   const width = getWidth(props.type, props.width);
   // eslint-disable-next-line react-hooks/refs
@@ -39,8 +44,8 @@ export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, childre
   const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
   return isHidden ? null : (
     <div className={inline ? styles.inlineInputs : styles.rowInputs}>
-      {inputs?.map((props, i) => {
-        return <InputRowInput key={i} {...props} parentReadOnly={readOnly} formData={formData} />;
+      {inputs?.map((props: UnwrapCodeEvaluators<ISettingsInputProps>, i) => {
+        return <InputRowInput key={props.id ?? props.propertyName ?? i} {...props} parentReadOnly={readOnly} formData={formData} />;
       })}
       {children}
     </div>

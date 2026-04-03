@@ -30,26 +30,35 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
   const needUpdateInfo = useRef<Map<string, boolean>>(new Map());
   const [instance] = useState<IDefaultModelInstance<TData>>(new DefaultModelInstance<TData>());
 
+  const needUpdateAllInfo = (): void => needUpdateInfo.current.forEach((_, name) => needUpdateInfo.current.set(name, true));
+
   useEffect(() => {
-    if (props.model !== undefined)
+    if (props.model !== undefined) {
       instance.setModel(props.model);
-    if (props.defaultModel !== undefined)
+      needUpdateAllInfo();
+    }
+    if (props.defaultModel !== undefined) {
       instance.setDefaultModel(props.name, props.defaultModel);
+      needUpdateAllInfo();
+    }
   }, [instance, props.defaultModel, props.model, props.name]);
 
   // ToDo: AS - check and optimize, probably need to memoize to prevent unnecessary rendering
   const state: IDefaultModelProviderState<TData> = useMemo(() => ({
     setDefaultModel: (name: string, model: TData) => {
       instance.setDefaultModel(name, model);
-      needUpdateInfo.current.forEach((_, name) => needUpdateInfo.current.set(name, true));
+      needUpdateAllInfo();
+      forceRefresh({});
     },
     setModel: (model: TData) => {
       instance.setModel(model);
-      needUpdateInfo.current.forEach((_, name) => needUpdateInfo.current.set(name, true));
+      needUpdateAllInfo();
+      forceRefresh({});
     },
     overrideValue: (propName: string) => {
       instance.overrideValue(propName);
-      needUpdateInfo.current.forEach((_, name) => needUpdateInfo.current.set(name, true));
+      needUpdateAllInfo();
+      forceRefresh({});
     },
     getMergedModel: instance.getMergedModel,
     getModel: instance.getModel,

@@ -9,7 +9,7 @@ export const PasswordWrapper: FCUnwrapped<IPasswordSettingsInputProps> = (props)
   const { value, onChange, readOnly, size, variant } = props;
   return (
     <Password
-      value={value}
+      value={value as string}
       onChange={onChange}
       readOnly={readOnly}
       size={size}

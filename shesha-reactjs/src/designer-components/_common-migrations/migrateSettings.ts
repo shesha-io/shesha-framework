@@ -1,4 +1,4 @@
-import { EditMode, IConfigurableFormComponent } from '@/providers';
+import { EditMode, IConfigurableFormComponent, IPropertySetting } from '@/providers';
 import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils';
 
 export const migrateFunctionToProp = <T = unknown>(
@@ -51,7 +51,7 @@ export const migratePropertyName = <T extends IConfigurableFormComponent>(prev: 
     return { ...prev } as T;
 };
 
-export const migratePropToInverseProp = <T>(prev: T, fromProp: string, toProp: string, inverseFunc?: (value: unknown) => unknown, defaultValue?: EditMode): T => {
+export const migratePropToInverseProp = <T, V>(prev: T, fromProp: string, toProp: string, inverseFunc?: (value: V | IPropertySetting<V>) => V | IPropertySetting<V>, defaultValue?: V | IPropertySetting<V>): T => {
   const from = prev[fromProp];
   const model = {
     ...prev,
@@ -69,10 +69,10 @@ export const migratePropToInverseProp = <T>(prev: T, fromProp: string, toProp: s
     const existingCode = model[toProp]['_code'];
     if (!existingCode) return model;
     const func = `// Automatically updated from '${fromProp}' property, please review\n\nreturn !(() => {\n    // Source code\n\n${existingCode}\n\n})();`;
-    model[toProp] = { ...model[toProp] as any, _code: func };
+    model[toProp] = { ...model[toProp] as IPropertySetting<V>, _code: func, _value: model[toProp]['_value'] };
   }
 
-  if (model[toProp] === undefined && Boolean(defaultValue))
+  if (model[toProp] === undefined && defaultValue !== undefined)
     model[toProp] = defaultValue;
 
   return model;

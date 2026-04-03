@@ -24,9 +24,9 @@ export type ConfigurableFormProps<Values extends object = object> = Omit<IConfig
   shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
   isSettingsForm?: boolean;
   externalShaForm?: IShaFormInstance<Values> | undefined;
-  formDataGetter?: () => any;
-  formDataSetter?: (data: any) => void;
-  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => any;
+  formDataGetter?: () => Values;
+  formDataSetter?: (data: Values) => void;
+  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values;
 } & SheshaFormProps;
 
 export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {

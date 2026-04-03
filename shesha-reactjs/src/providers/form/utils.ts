@@ -89,7 +89,6 @@ import {
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
-import { IDefaultModelProviderState, useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 
 export {
   executeExpression, executeScript,
@@ -170,7 +169,6 @@ export type AvailableConstantsContext = {
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
   httpClient: HttpClientApi;
-  defaultModel: IDefaultModelProviderState | undefined;
 };
 
 
@@ -188,8 +186,6 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const closestContextId = useDataContextOrUndefined()?.id;
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
-  const defaultModel = useDefaultModelProviderStateOrUndefined();
-
   const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
@@ -197,7 +193,6 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
     selectedRow,
     dcm: undefined,
     metadataDispatcher: undefined,
-    defaultModel,
     closestContextId,
     globalState,
     setGlobalState,
@@ -329,8 +324,7 @@ const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, a
   else
     contextProxyRef.current.refreshAccessors(accessors);
 
-  if (additionalData)
-    contextProxyRef.current.setAdditionalData(additionalData);
+  contextProxyRef.current.setAdditionalData(additionalData ?? {});
 
   return contextProxyRef.current;
 };

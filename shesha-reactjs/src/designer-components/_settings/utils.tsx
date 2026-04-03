@@ -51,9 +51,11 @@ export const getValuesFromSettings = <T = unknown>(model: T): T => {
   return copy;
 };
 
-export const getPropertySettingsFromValue = (value: unknown): IPropertySetting => {
-  if (!isPropertySettings(value) || !value) return { _mode: 'value', _code: undefined, _value: value };
-  else return value;
+export const getPropertySettingsFromValue = <Value extends unknown>(value: Value | IPropertySetting<Value>): IPropertySetting<Value> => {
+  if (isPropertySettings(value))
+    return value as IPropertySetting<Value>;
+  else
+    return { _mode: 'value', _code: undefined, _value: value };
 };
 
 /**

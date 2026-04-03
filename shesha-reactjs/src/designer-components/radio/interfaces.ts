@@ -32,10 +32,10 @@ export interface IRadioProps {
 
 export interface IRadioComponentProps extends Omit<IRadioProps, 'style' | "readOnly">, IConfigurableFormComponent { }
 
-interface IRadioComopnentCalulatedValues {
+interface IRadioComponentCalculatedValues {
   eventHandlers: IEventHandlers;
   dataSourceUrl?: string;
   defaultValue?: any;
 }
 
-export type RadioComponentDefinition = ComponentDefinition<"radio", IRadioComponentProps, IRadioComopnentCalulatedValues>;
+export type RadioComponentDefinition = ComponentDefinition<"radio", IRadioComponentProps, IRadioComponentCalculatedValues>;

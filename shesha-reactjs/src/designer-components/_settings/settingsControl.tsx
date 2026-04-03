@@ -52,7 +52,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
 
   const { styles } = useStyles();
 
-  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode): void => {
+  const onInternalChange = (value: IPropertySetting<Value>, m?: PropertySettingMode): void => {
     const newSetting = { ...value, _mode: (m ?? mode) };
     const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
     if (props.onChange)
@@ -64,12 +64,12 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       onInternalChange({ ...setting, _mode: mode }, mode);
   }, [mode]);
 
-  const codeOnChange = (val: any): void => {
-    const newValue: IPropertySetting = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy };
+  const codeOnChange = (val: string): void => {
+    const newValue: IPropertySetting<Value> = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy } as IPropertySetting<Value>;
     onInternalChange(newValue);
   };
 
-  const valueOnChange = (val: any): void => {
+  const valueOnChange = (val: Value): void => {
     const newValue = { ...setting, _value: val };
     onInternalChange(newValue);
   };

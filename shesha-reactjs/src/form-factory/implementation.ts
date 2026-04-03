@@ -186,27 +186,28 @@ export class FormBuilderImplementation implements FormBuilder {
   addTableViewSelector = (props: FluentSettings<ITableViewSelectorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'tableViewSelector', meta);
 
   addCollapsiblePanel = (props: FluentSettings<ICollapsiblePanelComponentProps>, meta?: IPropertyMetadata): FormBuilder => {
-    const fixedProps = {
+    const fixedProps: FluentSettings<ICollapsiblePanelComponentProps> = {
       ...props,
       label: props.label ?? '',
       labelAlign: props.labelAlign ?? 'right',
       ghost: props.ghost ?? true,
       collapsible: props.collapsible ?? 'header',
       isDynamic: props.isDynamic === undefined ? true : props.isDynamic,
-      header: props.header ?? {
-        id: nanoid(),
-        components: [],
-      },
+      header: props.header ?? { id: nanoid(), components: [] },
+      content: props.content ?? { id: nanoid(), components: [] },
     };
 
-    if (fixedProps.content?.components?.length) {
-      fixedProps.content.components = fixedProps.content.components.map((component) => {
-        return {
-          ...component,
-          parentId: component.parentId ?? fixedProps.id,
-        };
-      });
-    }
+    // update header id and parentId for nested components
+    if (fixedProps.header && !fixedProps.header.id)
+      fixedProps.header.id = nanoid();
+    if (fixedProps.header && fixedProps.header.components?.length)
+      fixedProps.header.components = fixedProps.header.components.map((component) => ({ ...component, parentId: component.parentId ?? fixedProps.header?.id }));
+
+    // update content id and parentId for nested components
+    if (fixedProps.content && !fixedProps.content.id)
+      fixedProps.content.id = nanoid();
+    if (fixedProps.content && fixedProps.content.components?.length)
+      fixedProps.content.components = fixedProps.content.components.map((component) => ({ ...component, parentId: component.parentId ?? fixedProps.content?.id }));
 
     return this._addProperty(fixedProps, 'collapsiblePanel', meta);
   };
@@ -358,16 +359,16 @@ export class FormBuilderImplementation implements FormBuilder {
     this.stdCollapsiblePanel('Background', (f) => f
       .addSettingsInput({ label: 'Type', jsSetting: false, propertyName: 'background.type', inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions })
       .addSettingsInput({ label: 'Color', propertyName: 'background.color', hideLabel: true, jsSetting: false, inputType: 'colorPicker',
-        visibleJs: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
+        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
       })
       .addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: 'background.gradient.colors', jsSetting: false, hideLabel: true,
-        visibleJs: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "gradient";',
+        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "gradient";',
       })
       .addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: 'background.url', jsSetting: false,
-        visibleJs: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "url";',
+        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "url";',
       })
       .addSettingsInput({ label: 'Image', inputType: 'imageUploader', propertyName: 'background.uploadFile', jsSetting: false,
-        visibleJs: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "image";',
+        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "image";',
       })
       .addSettingsInput({ label: 'File ID', inputType: 'textField', jsSetting: false, propertyName: 'background.storedFile.id',
         visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "storedFile";',

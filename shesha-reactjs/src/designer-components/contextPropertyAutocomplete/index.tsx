@@ -32,7 +32,7 @@ export interface IContextPropertyAutocompleteProps extends Omit<UnwrapCodeEvalua
   style?: CSSProperties;
   dropdownStyle?: CSSProperties;
   defaultModelType: string | IEntityTypeIdentifier;
-  onValuesChange?: (changedValues: any) => void;
+  onValuesChange?: (changedValues: object) => void;
 }
 
 interface IContextPropertyAutocompleteState {
@@ -208,7 +208,7 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
     const designerModelType = formSettings?.modelType;
     const validate = useMemo(() => ({ ...model.validate, required: false }), [model.validate]);
 
-    const [metadata, setMetadata] = useState<IModelMetadata>();
+    const [metadata, setMetadata] = useState<IModelMetadata>(undefined);
     const metaDispatcher = useMetadataDispatcher();
 
     const setContextMetadata = useCallback((meta: IModelMetadata, propName: string, component: IToolboxComponentBase): IConfigurableFormComponent | undefined => {
@@ -224,6 +224,7 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
       return metadataConfig;
     }, [defaultValue, inst]);
 
+    // ToDo: AS - review getting metadata and updating default model, merge this actions with PropertyAutocomplete
     useEffectOnce(() => {
       if (formComponent.allowInherit) {
         const modelType = designerModelType ?? calculatedModel.modelType;

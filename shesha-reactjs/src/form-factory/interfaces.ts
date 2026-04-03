@@ -127,7 +127,7 @@ type CustomOmit<T, K extends keyof T> = {
 export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T, "id" | "type" | "hidden" | "readOnly"> & {
   id?: string;
   // ToDo: AS - remove hidden from this check
-  /** @deprecated Use `visible` instead (inverson of `hidden`) */
+  /** @deprecated Use `visible` instead (inversion of `hidden`) */
   hidden?: boolean | IPropertySetting<boolean> | undefined;
   readOnly?: boolean | IPropertySetting<boolean> | undefined;
   visible?: boolean;

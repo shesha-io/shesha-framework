@@ -41,9 +41,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             })
             .addCheckbox({
               id: nanoid(),
-              propertyName: 'hidden',
+              propertyName: 'visible',
               parentId: '7d8493e3-141f-4507-a983-7f3ff7f2cf86',
-              label: 'Hidden',
+              label: 'Visible',
               labelAlign: 'right',
             })
             .toJson(),

@@ -20,8 +20,8 @@ interface IContextPropertyAutocompleteCalculatedModel {
   style: CSSProperties;
   dropdownStyle: CSSProperties;
   modelType: string | IEntityTypeIdentifier;
-  getFieldsValue: () => any;
-  setFieldsValue: (values: any) => void;
+  getFieldsValue: () => object;
+  setFieldsValue: (values: object) => void;
   clearFieldsValue: () => void;
   getPropertyName: () => string;
 }

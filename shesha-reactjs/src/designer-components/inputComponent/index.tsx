@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { editorRegistry } from './wrappers';
 import { BaseInputProps } from '../settingsInput/interfaces';
 import { useFormItem, useShaFormInstance } from '@/providers';
@@ -12,26 +12,23 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
   const Editor = editorRegistry[props.type] as FC<BaseInputProps>;
   const tempData = useRef<unknown>(null);
   const { formData, setFormData } = useShaFormInstance();
-
-  const { onChange, onChangeSetting } = props;
-
+  const defaultModel = useDefaultModelProviderStateOrUndefined();
   const { namePrefix } = useFormItem();
   const defaultModelPropName = namePrefix ? namePrefix + '.' + props.propertyName : props.propertyName;
 
-  const defaultModel = useDefaultModelProviderStateOrUndefined();
+  const { onChange, onChangeSetting } = props;
+
   // do not memoize because default model can be not initialized
   const defaultValue = defaultModel
     ? getValueByPropertyName(defaultModel.getDefaultModel() as Record<string, unknown>, defaultModelPropName)
     : undefined;
 
-  const internalOnChange = (v: unknown): void => {
+  const internalOnChange = useCallback((v: unknown): void => {
     tempData.current = onChangeSetting?.(v, formData, setFormData, tempData.current);
     onChange?.(v);
-  };
-  const newProps = { ...props, onChange: internalOnChange };
-
-  const setOverride = (): void => internalOnChange(defaultValue);
-  const resetToDefault = (): void => internalOnChange(undefined);
+  }, [onChange, onChangeSetting, formData, setFormData]);
+  const setOverride = useCallback((): void => internalOnChange(defaultValue), [internalOnChange, defaultValue]);
+  const resetToDefault = useCallback((): void => internalOnChange(undefined), [internalOnChange]);
 
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
   const isInherited = valueInfo?.state === 'usedDefault';
@@ -54,7 +51,9 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
         : <Button type="link" onClick={() => resetToDefault()}><RollbackOutlined /> Reset to default</Button>}
       </div>
     </div>
-  ), [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue]);
+  ), [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue, setOverride, resetToDefault]);
+
+  const newProps = { ...props, onChange: internalOnChange };
 
   if (!Editor) return null;
 

@@ -33,26 +33,25 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
 
   constructor() {
     this.defaultModels = new Map<string, T>();
-  };
+  }
 
-  #mergeModels = (model: T, defaultModel: T): T => {
-    return deepMergeValues(deepCopyViaJson(model), defaultModel, (t, s, key) => {
+  #updateMergedModel = (): void => {
+    this.mergedModel = deepMergeValues(deepCopyViaJson(this.model), this.defaultModel, (t, s, key) => {
       // skip merge
-      // metadata value is empty
+      // default value is empty
       return s[key] === undefined ||
         // model value is not empty (null is also a value) and if model value is object, it has at least one property
         (t[key] !== undefined && typeof t[key] !== 'object');
     });
   };
 
-  #updateMergedModel = (): void => {
-    this.mergedModel = this.#mergeModels(this.model, this.defaultModel);
-  };
-
   #updateDefaultModel = (): void => {
     let model = {} as T;
     this.defaultModels.forEach((m) => {
-      model = this.#mergeModels(model, m);
+      model = deepMergeValues(deepCopyViaJson(model), m, (_, s, key) => {
+        // skip merge if default value is empty
+        return s[key] === undefined;
+      });
     });
 
     this.defaultModel = model;
@@ -117,4 +116,4 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
   getCurrentValueAdditionalInfo = (propName: string): (() => string | ReactElement) | undefined => {
     return this.valuesAdditionalInfo.get(propName);
   };
-};
+}

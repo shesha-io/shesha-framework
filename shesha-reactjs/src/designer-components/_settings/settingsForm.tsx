@@ -74,16 +74,22 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
   };
 
   const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
+    if (!toolboxComponent) {
+      console.warn(`toolboxComponent is undefined, cannot link to model metadata`);
+      return;
+    }
     const currentModel = shaForm.formData as IConfigurableFormComponent;
     const newModel = linkComponentToModelMetadata(toolboxComponent, currentModel, metadata);
-    valuesChange(newModel);
 
     if (toolboxComponent.initModelFromMetadata) {
       toolboxComponent.initModelFromMetadata(currentModel, newModel, metadata)
         .then((r) => valuesChange(r))
         .catch((error) => {
           console.error('Failed to initialize model from metadata:', error);
+          valuesChange(newModel);
         });
+    } else {
+      valuesChange(newModel);
     }
   };
 

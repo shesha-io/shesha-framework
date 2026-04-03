@@ -78,6 +78,7 @@ export function useActualContextData<T extends object = object>(
       ? executor(preparedData, contextProxyRef.current)
       : getActualModel(preparedData, contextProxyRef.current, pReadonly, propertyFilter);
 
+    // ToDo: AS - review copy and compare for performance and reliability
     const actualModelJson = JSON.stringify(actualModel);
     if (prevActualModelRef.current !== actualModelJson) {
       actualModelRef.current = actualModel;

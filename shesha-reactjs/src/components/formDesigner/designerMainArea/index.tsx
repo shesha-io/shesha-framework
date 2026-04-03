@@ -1,6 +1,6 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { DataContextProvider, MetadataProvider, useDataContextManager, useShaFormInstance } from '@/providers';
-import { useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
+import { useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerMarkup, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo, useEffect } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
@@ -28,7 +28,8 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const { antdForm: form } = shaForm;
   const { styles } = useStyles();
 
-  // const markup = useFormDesignerMarkup();
+  const showMarkup = true;
+  const markup = useFormDesignerMarkup();
 
   const noPageContext = !Boolean(useDataContextManager().getPageContext());
 
@@ -100,8 +101,7 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
               )}
             >
 
-              {/* <textarea value={JSON.stringify(markup, null, 2)} /> */}
-
+              {showMarkup && <textarea readOnly value={JSON.stringify(markup, null, 2)} /> /* ToDo: AS - remove after inheritance implementation */}
               <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
                 {isDebug && (
                   <DebugPanel />

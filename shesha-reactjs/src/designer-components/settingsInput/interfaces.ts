@@ -1,10 +1,10 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { CodeTemplateSettings, ResultType } from '@/components/codeEditor/models';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
-import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
-import { ComponentType } from '@/components/formComponentSelector';
-import { ComponentDefinition, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting, ValueOrCodeEvaluator } from '@/interfaces';
+import { EntityIdentifier, EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
+import { EndpointsAutocompleteValue, EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
+import { ComponentSelectorValue, ComponentType } from '@/components/formComponentSelector';
+import { ComponentDefinition, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting, IReferenceListIdentifier, ValueOrCodeEvaluator } from '@/interfaces';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
@@ -12,6 +12,13 @@ import { GetResultTypeFunc } from '../codeEditor/interfaces';
 import { CodeLanguages } from '../codeEditor/types';
 import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
+import { ButtonGroupItemProps, EditMode, FormFullName, IConfigurableActionConfiguration } from '@/providers';
+import { ISortingItem, IStoredFilter } from '@/providers/dataTable/interfaces';
+import { UploadFile } from 'antd';
+import { ListItemWithId } from '@/components/listEditor/models';
+import { ILayerFormModel } from '@/providers/layersProvider/models';
+import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
+import { ILabelValueItem } from '@/components/labelValueEditor/labelValueEditor';
 
 export interface IRadioOption {
   value: string | number;
@@ -32,15 +39,15 @@ export interface IHasModelType {
 }
 
 // Base interface without type-specific properties
-export interface ISettingsInputBase extends IComponentLabelProps,
+export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelProps,
   Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName' | 'hidden'> {
   id?: string;
   label: string | React.ReactNode;
   propertyName: string;
   readOnly?: ValueOrCodeEvaluator<boolean>;
-  value?: any;
-  onChange?: (value: any) => void;
-  onChangeSetting?: (value: any, data?: any, setFormData?: (data: ISetFormDataPayload) => void, tempData?: any) => any;
+  value?: TValue | undefined;
+  onChange?: (value: unknown) => void;
+  onChangeSetting?: (value: unknown, data?: unknown, setFormData?: (data: ISetFormDataPayload) => void, tempData?: unknown) => unknown;
   level?: number;
   tooltip?: string;
   hideLabel?: boolean;
@@ -82,7 +89,7 @@ export interface IDropdownSettingsInputProps extends ISettingsInputBase {
 export const isDropdownProps = (value: ISettingsInputBase): value is IDropdownSettingsInputProps => value.type === 'dropdown';
 
 // Custom Dropdown
-export interface ICustomDropdownSettingsInputProps extends ISettingsInputBase {
+export interface ICustomDropdownSettingsInputProps extends ISettingsInputBase<string> {
   type: 'customDropdown';
   dropdownOptions?: IDropdownOption[];
   customDropdownMode?: 'single' | 'multiple';
@@ -101,7 +108,7 @@ export interface IRadioSettingsInputProps extends ISettingsInputBase {
 export const isRadioProps = (value: ISettingsInputBase): value is IRadioSettingsInputProps => value.type === 'radio';
 
 // Switch
-export interface ISwitchSettingsInputProps extends ISettingsInputBase {
+export interface ISwitchSettingsInputProps extends ISettingsInputBase<boolean> {
   type: 'switch';
   defaultChecked?: boolean;
 }
@@ -109,10 +116,7 @@ export const isSwitchProps = (value: ISettingsInputBase): value is ISwitchSettin
 
 export interface ISectionSeparatorSettingsInputProps extends ISettingsInputBase {
   type: 'sectionSeparator';
-  id?: string;
   title?: string;
-  tooltip?: string;
-  inline?: boolean;
   lineColor?: string;
   lineThickness?: number;
   lineWidth?: string;
@@ -126,7 +130,7 @@ export interface ISectionSeparatorSettingsInputProps extends ISettingsInputBase 
 export const isSectionSeparatorProps = (value: ISettingsInputBase): value is ISectionSeparatorSettingsInputProps => value.type === 'sectionSeparator';
 
 // Number Field
-export interface INumberFieldSettingsInputProps extends ISettingsInputBase {
+export interface INumberFieldSettingsInputProps extends ISettingsInputBase<number | string | undefined> {
   type: 'numberField';
   min?: number;
   max?: number;
@@ -162,7 +166,7 @@ export interface ITextAreaSettingsInputProps extends ISettingsInputBase {
 export const isTextAreaProps = (value: ISettingsInputBase): value is ITextAreaSettingsInputProps => value.type === 'textArea';
 
 // Code Editor
-export interface ICodeEditorSettingsInputProps extends ISettingsInputBase {
+export interface ICodeEditorSettingsInputProps extends ISettingsInputBase<string> {
   type: 'codeEditor';
   mode?: 'inline' | 'dialog';
   language?: CodeLanguages;
@@ -189,7 +193,7 @@ export interface IButtonSettingsInputProps extends ISettingsInputBase {
 export const isButtonProps = (value: ISettingsInputBase): value is IButtonSettingsInputProps => value.type === 'button';
 
 // Button Group Configurator
-export interface IButtonGroupConfiguratorSettingsInputProps extends ISettingsInputBase {
+export interface IButtonGroupConfiguratorSettingsInputProps extends ISettingsInputBase<ButtonGroupItemProps[]> {
   type: 'buttonGroupConfigurator';
   buttonGroupOptions?: IRadioOption[];
   buttonText?: string;
@@ -199,7 +203,7 @@ export interface IButtonGroupConfiguratorSettingsInputProps extends ISettingsInp
 export const isButtonGroupConfiguratorProps = (value: ISettingsInputBase): value is IButtonGroupConfiguratorSettingsInputProps => value.type === 'buttonGroupConfigurator';
 
 // Editable Tag Group
-export interface IEditableTagGroupSettingsInputProps extends ISettingsInputBase {
+export interface IEditableTagGroupSettingsInputProps extends ISettingsInputBase<string[]> {
   type: 'editableTagGroupProps';
 }
 export const isEditableTagGroupProps = (value: ISettingsInputBase): value is IEditableTagGroupSettingsInputProps => value.type === 'editableTagGroupProps';
@@ -232,7 +236,7 @@ export interface IAutocompleteSettingsInputProps extends ISettingsInputBase, IHa
 }
 export const isAutocompleteProps = (value: ISettingsInputBase): value is IAutocompleteSettingsInputProps => value.type === 'autocomplete';
 
-export interface IEndpointsAutocompleteSettingsInputProps extends ISettingsInputBase {
+export interface IEndpointsAutocompleteSettingsInputProps extends ISettingsInputBase<EndpointsAutocompleteValue> {
   type: 'endpointsAutocomplete';
   filter?: any;
   allowClear?: boolean;
@@ -244,7 +248,7 @@ export interface IEndpointsAutocompleteSettingsInputProps extends ISettingsInput
 }
 export const isEndpointsAutocompleteProps = (value: ISettingsInputBase): value is IEndpointsAutocompleteSettingsInputProps => value.type === 'endpointsAutocomplete';
 
-export interface IReferenceListAutocompleteSettingsInputProps extends ISettingsInputBase {
+export interface IReferenceListAutocompleteSettingsInputProps extends ISettingsInputBase<IReferenceListIdentifier> {
   type: 'referenceListAutocomplete';
   dataSourceType?: AutocompleteDataSourceType;
   dataSourceUrl?: string;
@@ -261,7 +265,7 @@ export interface IReferenceListAutocompleteSettingsInputProps extends ISettingsI
 }
 export const isReferenceListAutocompleteProps = (value: ISettingsInputBase): value is IReferenceListAutocompleteSettingsInputProps => value.type === 'referenceListAutocomplete';
 
-export interface IPropertyAutocompleteSettingsInputProps extends ISettingsInputBase, IHasModelType {
+export interface IPropertyAutocompleteSettingsInputProps extends ISettingsInputBase<string | string[]>, IHasModelType {
   type: 'propertyAutocomplete';
   filter?: any;
   displayPropName?: string;
@@ -295,7 +299,7 @@ export interface IContextPropertyAutocompleteSettingsInputProps extends ISetting
 }
 export const isContextPropertyAutocompleteProps = (value: ISettingsInputBase): value is IContextPropertyAutocompleteSettingsInputProps => value.type === 'contextPropertyAutocomplete';
 
-export interface IFormAutocompleteSettingsInputProps extends ISettingsInputBase {
+export interface IFormAutocompleteSettingsInputProps extends ISettingsInputBase<FormFullName> {
   type: 'formAutocomplete';
   filter?: any;
   displayPropName?: string;
@@ -307,7 +311,7 @@ export interface IFormAutocompleteSettingsInputProps extends ISettingsInputBase 
 export const isFormAutocompleteProps = (value: ISettingsInputBase): value is IFormAutocompleteSettingsInputProps => value.type === 'formAutocomplete';
 
 // Entity Type Autocomplete
-export interface IEntityTypeAutocompleteSettingsInputProps extends ISettingsInputBase {
+export interface IEntityTypeAutocompleteSettingsInputProps extends ISettingsInputBase<EntityIdentifier> {
   type: 'entityTypeAutocomplete';
   entityAutocompleteType?: EntityTypeAutocompleteType;
 }
@@ -320,7 +324,7 @@ export interface IFormTypeAutocompleteSettingsInputProps extends ISettingsInputB
 export const isFormTypeAutocompleteProps = (value: ISettingsInputBase): value is IFormTypeAutocompleteSettingsInputProps => value.type === 'formTypeAutocomplete';
 
 // Image Uploader
-export interface IImageUploaderSettingsInputProps extends ISettingsInputBase {
+export interface IImageUploaderSettingsInputProps extends ISettingsInputBase<UploadFile> {
   type: 'imageUploader';
   fileName?: string;
 }
@@ -340,7 +344,7 @@ export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase 
 export const isMultiColorPickerProps = (value: ISettingsInputBase): value is IMultiColorPickerSettingsInputProps => value.type === 'multiColorPicker';
 
 // Columns Config
-export interface IColumnsConfigSettingsInputProps extends ISettingsInputBase {
+export interface IColumnsConfigSettingsInputProps extends ISettingsInputBase<ColumnsItemProps[]> {
   type: 'columnsConfig';
   parentComponentType?: string;
 }
@@ -363,7 +367,7 @@ export interface IKeyInformationBarColumnsInputProps extends ISettingsInputBase 
 export const isKeyInformationBarColumnsProps = (value: ISettingsInputBase): value is IKeyInformationBarColumnsInputProps => value.type === 'keyInformationBarColumnsList';
 
 // Label Value Editor
-export interface BaseLabelValueEditorProps extends ISettingsInputBase {
+export interface BaseLabelValueEditorProps extends ISettingsInputBase<ILabelValueItem[]> {
   labelTitle?: string;
   labelName?: string;
   valueTitle?: string;
@@ -386,7 +390,7 @@ export interface ICustomLabelValueEditorSettingsInputProps extends BaseLabelValu
 export const isCustomLabelValueEditorProps = (value: ISettingsInputBase): value is ICustomLabelValueEditorSettingsInputProps => value.type === 'customLabelValueEditor';
 
 // Component Selector
-export interface IComponentSelectorSettingsInputProps extends ISettingsInputBase {
+export interface IComponentSelectorSettingsInputProps extends ISettingsInputBase<ComponentSelectorValue> {
   type: 'componentSelector';
   componentType?: ComponentType;
   parentComponentType?: string;
@@ -397,7 +401,7 @@ export interface IComponentSelectorSettingsInputProps extends ISettingsInputBase
 export const isComponentSelectorProps = (value: ISettingsInputBase): value is IComponentSelectorSettingsInputProps => value.type === 'componentSelector';
 
 // Item List Configurator Modal
-export interface IItemListConfiguratorModalSettingsInputProps extends ISettingsInputBase {
+export interface IItemListConfiguratorModalSettingsInputProps extends ISettingsInputBase<ListItemWithId[]> {
   type: 'itemListConfiguratorModal';
   onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
   listItemSettingsMarkup?: IConfigurableFormComponent[];
@@ -411,7 +415,7 @@ export interface IItemListConfiguratorModalSettingsInputProps extends ISettingsI
 export const isItemListConfiguratorModalProps = (value: ISettingsInputBase): value is IItemListConfiguratorModalSettingsInputProps => value.type === 'itemListConfiguratorModal';
 
 // Data Sorting Editor
-export interface IDataSortingEditorSettingsInputProps extends ISettingsInputBase {
+export interface IDataSortingEditorSettingsInputProps extends ISettingsInputBase<ISortingItem[]> {
   type: 'dataSortingEditor';
   maxItemsCount?: number;
   modelType: string;
@@ -428,31 +432,31 @@ export interface IQueryBuilderSettingsInputProps extends ISettingsInputBase, IHa
 export const isQueryBuilderProps = (value: ISettingsInputBase): value is IQueryBuilderSettingsInputProps => value.type === 'queryBuilder';
 
 // Filters List
-export interface IFiltersListSettingsInputProps extends ISettingsInputBase {
+export interface IFiltersListSettingsInputProps extends ISettingsInputBase<IStoredFilter[]> {
   type: 'filtersList';
 }
 export const isFiltersListProps = (value: ISettingsInputBase): value is IFiltersListSettingsInputProps => value.type === 'filtersList';
 
 // Edit Mode Selector
-export interface IEditModeSelectorSettingsInputProps extends ISettingsInputBase {
+export interface IEditModeSelectorSettingsInputProps extends ISettingsInputBase<EditMode> {
   type: 'editModeSelector';
 }
 export const isEditModeSelectorProps = (value: ISettingsInputBase): value is IEditModeSelectorSettingsInputProps => value.type === 'editModeSelector';
 
 // Three State Switch
-export interface IThreeStateSwitchSettingsInputProps extends ISettingsInputBase {
+export interface IThreeStateSwitchSettingsInputProps extends ISettingsInputBase<boolean> {
   type: 'threeStateSwitch';
 }
 export const isThreeStateSwitchProps = (value: ISettingsInputBase): value is IThreeStateSwitchSettingsInputProps => value.type === 'threeStateSwitch';
 
 // Permissions
-export interface IPermissionsSettingsInputProps extends ISettingsInputBase {
+export interface IPermissionsSettingsInputProps extends ISettingsInputBase<string[]> {
   type: 'permissions';
 }
 export const isPermissionsEditorProps = (value: ISettingsInputBase): value is IPermissionsSettingsInputProps => value.type === 'permissions';
 
 // Configurable Action Configurator
-export interface IConfigurableActionConfiguratorSettingsInputProps extends ISettingsInputBase {
+export interface IConfigurableActionConfiguratorSettingsInputProps extends ISettingsInputBase<IConfigurableActionConfiguration> {
   type: 'configurableActionConfigurator';
   editorConfig?: IConfigurableActionConfiguratorComponentProps;
   allowedActions?: string[];
@@ -487,7 +491,7 @@ export interface ITooltipSettingsInputProps extends ISettingsInputBase {
 export const isTooltipProps = (value: ISettingsInputBase): value is ITooltipSettingsInputProps => value.type === 'tooltip';
 
 // Layer Selector Settings Modal
-export interface ILayerSelectorSettingsInputProps extends ISettingsInputBase {
+export interface ILayerSelectorSettingsInputProps extends ISettingsInputBase<ILayerFormModel[]> {
   type: 'layerSelectorSettingsModal';
   settings?: FormMarkup;
 }

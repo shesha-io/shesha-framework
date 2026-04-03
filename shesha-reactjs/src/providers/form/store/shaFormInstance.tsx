@@ -341,7 +341,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       this.antdForm.setFieldsValue(values);
     }
 
-    this.#setInternalFormData(values as Partial<Values>, newData as Values);
+    this.#setInternalFormData(values as Partial<Values>, newData ?? {} as Values);
 
     this.updateData?.();
   };

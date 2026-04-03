@@ -1,6 +1,6 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useRef } from 'react';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { FormMarkup } from '@/providers/form/models';
 import { Alert, App } from 'antd';
@@ -21,8 +21,8 @@ export const ModelConfiguratorRenderer: FC = () => {
   const { message } = App.useApp();
   const { showErrors, errors, modelConfiguration, initialConfiguration, getForm, saveForm, setModified, validateModel } = useModelConfigurator();
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization, react-hooks/exhaustive-deps
-  const initialModel = useMemo(() => cloneDeep(initialConfiguration), []);
+  const initialModel = useRef(cloneDeep(initialConfiguration));
+  if (initialModel.current === undefined) initialModel.current = cloneDeep(initialConfiguration);
 
   const errorsText = useMemo((): React.ReactNode => {
     return (
@@ -100,7 +100,8 @@ export const ModelConfiguratorRenderer: FC = () => {
           onValuesChange={onValuesChange}
           onFinish={onSettingsSave}
           form={getForm()}
-          initialValues={initialModel}
+          // eslint-disable-next-line react-hooks/refs
+          initialValues={initialModel.current}
           sections={{
             properties: () => <PropertiesEditorComponent />,
             permission: () => <PermissionEditorComponent name="permission" />,
