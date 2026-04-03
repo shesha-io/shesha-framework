@@ -101,7 +101,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
         key={actualModel.id}
       />
     );
-  }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
+  }, [toolboxComponent, shaForm.antdForm, actualModel, calculatedModel, shaApplication]);
 
   // Run validation in both designer and runtime modes
   // Collect errors from:
