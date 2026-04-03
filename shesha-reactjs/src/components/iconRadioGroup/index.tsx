@@ -1,6 +1,7 @@
 import { Radio } from 'antd';
 import React, { FC } from 'react';
 import Icon from '../icon/Icon';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IIconRadioGroupValue {
   value: unknown;
@@ -12,7 +13,7 @@ export interface IIconRadioGroupProps {
   value?: unknown;
   readOnly?: boolean;
   onChange?: (value: unknown) => void;
-  size?: 'small' | 'middle' | 'large';
+  size?: SizeType;
   className?: string;
   values: IIconRadioGroupValue[];
 }

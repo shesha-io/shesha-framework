@@ -8,7 +8,6 @@ import {
 } from '@shesha-io/reactjs';
 import { OrganisationsActionsProvider } from '@/components/dynamic-list/dynamic-actions';
 import { IHttpHeadersDictionary } from '@shesha-io/reactjs/dist/providers/sheshaApplication/contexts';
-import '@ant-design/v5-patch-for-react-19';
 
 export interface IAppProviderProps {
     backendUrl: string;

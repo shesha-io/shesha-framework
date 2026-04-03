@@ -1,7 +1,6 @@
-import React, { ReactNode, useEffect, useRef, useState, FC } from 'react';
+import React, { ReactNode, useEffect, useRef, useState, FC, Key } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
-import { Key } from 'rc-tree/lib/interface';
 import {
   App,
   Space,

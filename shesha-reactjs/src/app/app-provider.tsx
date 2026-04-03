@@ -6,7 +6,6 @@ import { useNextRouter } from '@/hooks/useNextRouter';
 import { StandardApis } from '@/providers/dynamicActions/implementations/standardApis';
 import { UrlActions } from '@/providers/dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
 import { EntityActions } from '@/providers/dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
-import '@ant-design/v5-patch-for-react-19';
 
 export interface IAppProviderProps {
   backendUrl: string;
