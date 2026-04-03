@@ -174,6 +174,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       `{ name: "moment", description: "moment", type: "object" }`,
                       `{ name: "http", description: "axiosHttp", type: "object" }`,
                       `{ name: "message", description: "message framework", type: "object" }`,
+                      `{ name: "modal", description: "API for displaying modal dialogs and forms", type: "object" }`,
                     ],
                   },
                 ],

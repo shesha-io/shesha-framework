@@ -87,6 +87,8 @@ import {
   IExpressionExecuterArguments,
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
+import { IModalApi } from '../dynamicModal/modalApi';
+import { useModalApiWithFallback } from '../dynamicModal';
 
 export {
   executeExpression, executeScript,
@@ -121,6 +123,8 @@ export interface IApplicationContext<Value extends object = object> {
   http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
+  /** Modal API - for displaying dialogs and forms in modals (limited functionality if DynamicModalProvider is not available) */
+  modal: IModalApi;
   /** File Saver API */
   fileSaver: typeof FileSaver;
 
@@ -162,6 +166,7 @@ export type AvailableConstantsContext = {
   globalState: IAnyObject | undefined;
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
+  modal: IModalApi;
   httpClient: HttpClientApi;
 };
 
@@ -175,6 +180,7 @@ export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((re
 
 const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
+  const modal = useModalApiWithFallback();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
   const closestContextId = useDataContextOrUndefined()?.id;
@@ -192,6 +198,7 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
     setGlobalState,
     httpClient,
     message,
+    modal,
   };
   return result;
 };
@@ -260,6 +267,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     setGlobalState,
     httpClient,
     message,
+    modal,
   } = fullContext;
   const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
@@ -289,6 +297,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     moment: () => moment,
     http: () => httpClient,
     message: () => message,
+    modal: () => modal,
     fileSaver: () => FileSaver,
     data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
     form: () => shaFormInstance,
@@ -301,7 +310,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
   return accessors;
 };
 
-const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
+const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData: object): IApplicationContext => {
   const accessors = wrapConstantsData({ fullContext, ...args });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
