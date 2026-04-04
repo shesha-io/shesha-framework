@@ -8,6 +8,7 @@ import { filterDynamicComponents } from './utils';
 import { IPropertiesTabsComponentProps } from './models';
 import { useFormStateOrUndefined, useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import { useFormDesignerActiveSettingsTabKey, useFormDesigner } from '@/providers/formDesigner';
 
 interface SearchableTabsProps {
   model: IPropertiesTabsComponentProps;
@@ -16,12 +17,16 @@ interface SearchableTabsProps {
 const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const { tabs } = model;
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTabKey, setActiveTabKey] = useState('1');
   const searchRefs = useRef(new Map());
   const { styles } = useStyles();
 
   const formState = useFormStateOrUndefined();
   const formActions = useFormActionsOrUndefined();
+  const formDesigner = useFormDesigner();
+  const persistedActiveTabKey = useFormDesignerActiveSettingsTabKey();
+
+  // Use persisted tab key if available, otherwise default to first tab
+  const activeTabKey = persistedActiveTabKey ?? '1';
 
   useShaFormDataUpdate();
 
@@ -70,7 +75,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   }, [activeTabKey]);
 
   const handleTabChange = (newActiveKey: string): void => {
-    setActiveTabKey(newActiveKey);
+    formDesigner.setActiveSettingsTabKey(newActiveKey);
   };
 
   // Focus search input when search query changes and we have matching results
@@ -163,17 +168,17 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         Array.isArray(tab.components) ? tab.components.length > 0 : !!tab.components,
       );
       if (firstVisibleTab && firstVisibleTab.key !== activeTabKey) {
-        setActiveTabKey(firstVisibleTab.key);
+        formDesigner.setActiveSettingsTabKey(firstVisibleTab.key);
       }
     }
-  }, [searchQuery, newFilteredTabs, activeTabKey]);
+  }, [searchQuery, newFilteredTabs, activeTabKey, formDesigner]);
 
   // Ensure we have a valid active tab key
   useEffect(() => {
     if (newFilteredTabs.length > 0 && !newFilteredTabs.find((tab) => tab.key === activeTabKey)) {
-      setActiveTabKey(newFilteredTabs[0].key);
+      formDesigner.setActiveSettingsTabKey(newFilteredTabs[0].key);
     }
-  }, [newFilteredTabs, activeTabKey]);
+  }, [newFilteredTabs, activeTabKey, formDesigner]);
 
 
   return (
