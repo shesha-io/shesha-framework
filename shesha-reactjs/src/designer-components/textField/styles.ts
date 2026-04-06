@@ -13,9 +13,12 @@ export const useStyles = createStyles(({ css, cx, token }, { fontWeight, fontFam
         :hover {
             border-color: ${token.colorPrimary} !important;
         }
-
   `);
+
+  const passwordFieldWrapper = cx("sha-password-field-wrapper", css``);
+
   return {
     textField,
+    passwordFieldWrapper,
   };
 });

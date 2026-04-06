@@ -184,6 +184,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: validationTabId,
+                hidden: {
+                  _code: 'return getSettingValue(data?.textType) === "password";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
                 inputs: [
                   {
                     type: 'numberField',

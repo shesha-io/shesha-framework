@@ -1,7 +1,8 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
+import { Input, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
@@ -16,7 +17,7 @@ import { IconType, ShaIcon } from '@/components';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
-import { defaultStyles } from './utils';
+import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySettings, validatePasswordValue } from './utils';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
@@ -51,7 +52,90 @@ const TextFieldComponent: TextFieldComponentDefinition = {
         console.warn(`Invalid regExp pattern for '${model.propertyName}':`, model, error);
         return null;
       }
-    }, [model.regExp]);
+    }, [model]);
+
+    const isPassword = model.textType === 'password';
+    const passwordComplexity = usePasswordComplexitySettings();
+    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const tooltipRootRef = useRef<Root | null>(null);
+    const tooltipContainerRef = useRef<HTMLSpanElement | null>(null);
+
+    const passwordValidator = useMemo(() =>
+      isPassword ? buildPasswordValidatorString(passwordComplexity) : null,
+    [isPassword, passwordComplexity],
+    );
+
+    const modelWithValidation = useMemo(() => {
+      if (!isPassword || !passwordValidator) return model;
+      return {
+        ...model,
+        validate: {
+          ...(model.validate || {}),
+          minLength: undefined,
+          maxLength: undefined,
+          validator: passwordValidator,
+        },
+      };
+    }, [model, isPassword, passwordValidator]);
+
+    useEffect(() => {
+      if (!wrapperRef.current) return;
+
+      const renderTooltip = (): void => {
+        const explainError = wrapperRef.current?.querySelector('.ant-form-item-explain-error');
+        if (!explainError) return;
+
+        // Check if our tooltip element still exists inside explainError
+        const hasOurTooltip = explainError.querySelector('.sha-password-error-text') !== null;
+
+        // Unmount previous root if the element was replaced
+        if (tooltipRootRef.current && !hasOurTooltip) {
+          tooltipRootRef.current.unmount();
+          tooltipRootRef.current = null;
+          tooltipContainerRef.current = null;
+        }
+
+        // Only render if there's an error and we haven't already rendered
+        if (passwordError && !tooltipRootRef.current) {
+          const container = document.createElement('span');
+          container.className = 'sha-password-error-text';
+          const text = explainError.textContent || '';
+
+          // Clear and replace with our container
+          explainError.innerHTML = '';
+          explainError.appendChild(container);
+
+          tooltipContainerRef.current = container;
+          tooltipRootRef.current = createRoot(container);
+          tooltipRootRef.current.render(
+            <Tooltip title={passwordError} placement="top">
+              <span style={{ display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {text}
+              </span>
+            </Tooltip>
+          );
+        } else if (!passwordError && tooltipRootRef.current) {
+          tooltipRootRef.current.unmount();
+          tooltipRootRef.current = null;
+          tooltipContainerRef.current = null;
+        }
+      };
+
+      renderTooltip();
+
+      const observer = new MutationObserver(renderTooltip);
+      observer.observe(wrapperRef.current, { childList: true, subtree: true });
+
+      return () => {
+        observer.disconnect();
+        if (tooltipRootRef.current) {
+          tooltipRootRef.current.unmount();
+          tooltipRootRef.current = null;
+          tooltipContainerRef.current = null;
+        }
+      };
+    }, [passwordError]);
 
     if (model.hidden) return null;
 
@@ -66,18 +150,23 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
       style: model.allStyles.fullStyle,
-      maxLength: model.validate?.maxLength,
-      max: model.validate?.maxLength,
-      minLength: model.validate?.minLength,
     };
 
-    return (
-      <ConfigurableFormItem model={model}>
+    const fieldContent = (
+      <ConfigurableFormItem model={modelWithValidation}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]): void => {
             const inputValue: string | undefined = args[0]?.currentTarget?.value?.toString();
             const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
+
+            if (isPassword && inputValue) {
+              const errors = validatePasswordValue(inputValue, passwordComplexity);
+              setPasswordError(errors.length > 0 ? `Password must contain ${errors.join(', ')}` : null);
+            } else if (isPassword) {
+              setPasswordError(null);
+            }
+
             const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
             if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
               const changedValue = customEvents.onChange({ value: inputValue }, args[0]);
@@ -98,6 +187,12 @@ const TextFieldComponent: TextFieldComponentDefinition = {
         }}
       </ConfigurableFormItem>
     );
+
+    if (isPassword) {
+      return <div ref={wrapperRef} className={styles.passwordFieldWrapper}>{fieldContent}</div>;
+    }
+
+    return fieldContent;
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
