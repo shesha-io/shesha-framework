@@ -1,4 +1,4 @@
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { CellStyleFunc, IAnchoredColumnProps, ITableColumn } from '@/providers/dataTable/interfaces';
 import { FunctionExecutor, getFunctionExecutor } from '@/providers/form/utils';
 import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils/datatable';

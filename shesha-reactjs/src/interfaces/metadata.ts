@@ -198,14 +198,15 @@ export const isHasFilter = (value: object | null | undefined): value is IHasFilt
   isDefined(value) && "filter" in value && typeof (value.filter) === 'object' && !Array.isArray(value.filter) && value.filter !== null;
 
 export interface INumberFormatting {
-  showThousandsSeparator?: boolean;
-  customFormat?: string | null;
+  thousandsSeparator?: string;
+  customFormat?: string;
+  step?: string;
 }
-export const isHNumberFormatting = (value: object | null | undefined): value is INumberFormatting =>
-  isDefined(value) && ("showThousandsSeparator" in value || "customFormat" in value);
+export const isNumberFormatting = (value: object | null | undefined): value is INumberFormatting =>
+  isDefined(value) && ("thousandsSeparator" in value || "customFormat" in value || "step" in value);
 
 export interface IDecimalFormatting extends INumberFormatting {
-  numDecimalPlaces?: number | null;
+  numDecimalPlaces?: number;
   showAsPercentage?: boolean;
 }
 export const isDecimalFormatting = (value: object | null | undefined): value is IDecimalFormatting =>

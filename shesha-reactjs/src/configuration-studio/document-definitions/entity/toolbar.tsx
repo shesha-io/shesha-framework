@@ -8,7 +8,7 @@ export interface IEntityToolbarProps {
 
 export const EntityToolbar: FC<IEntityToolbarProps> = () => {
   return (
-    <Space direction="horizontal" size={5}>
+    <Space orientation="horizontal" size={5}>
       <SaveButton size="small" type="primary" />
     </Space>
   );

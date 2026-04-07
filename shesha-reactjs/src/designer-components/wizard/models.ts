@@ -1,6 +1,12 @@
 import { IConfigurableFormComponent, IStyleType } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { FormInstance, StepProps } from 'antd';
+import { FormInstance } from 'antd';
+import { Steps } from 'antd';
+import { ComponentProps } from 'react';
+
+type StepsProps = ComponentProps<typeof Steps>;
+type StepProps = StepsProps['items'][number];
+type StepStatus = 'wait' | 'process' | 'finish' | 'error';
 
 export interface IWizardStepProps extends IStyleType {
   id: string;
@@ -10,7 +16,7 @@ export interface IWizardStepProps extends IStyleType {
   subTitle: string;
   description: string;
   allowCancel?: boolean;
-  status?: StepProps['status'];
+  status?: StepStatus;
 
   label?: string;
   name?: string;
@@ -65,7 +71,8 @@ export interface IStepProps extends StepProps {
   content?: JSX.Element;
 }
 
-export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'>, Omit<IStyleType, 'size'> {
+export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Omit<IStyleType, 'size'> {
+  status?: StepStatus;
   steps: IWizardStepProps[];
   wizardType?: 'default' | 'navigation';
   form?: FormInstance<any>;

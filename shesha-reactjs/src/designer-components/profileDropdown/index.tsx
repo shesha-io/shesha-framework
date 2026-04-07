@@ -101,7 +101,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     }, [model.items]);
 
     const finalItems = useMemo(() => {
-      return getItemsWithResolved(evaluation.items);
+      return getItemsWithResolved(evaluation.items, numResolved);
     }, [evaluation.items, numResolved]);
 
     const isVisibleBase = (item: ButtonGroupItemProps): boolean => {

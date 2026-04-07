@@ -1,7 +1,7 @@
 import React, { FC, cloneElement } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression } from '@/providers/form/utils';
-import { getPropertySettingsFromData } from '@/designer-components/_settings/utils';
+import { getPropertySettingsFromData } from '@/designer-components/_settings/utils/utils';
 import { IConfigurableFormItemChildFunc, IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
 import { useStyles } from './styles';
@@ -14,6 +14,8 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   model,
   valuePropName,
   autoAlignLabel = true,
+  lazy,
+  availableConstantsExpression,
 }) => {
   const { formData } = useShaFormInstance();
   const { styles } = useStyles({ autoAlignLabel });
@@ -34,7 +36,7 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
     const childrenFunc = children as IConfigurableFormItemChildFunc;
     return (
       <Form.Item {...formProps}>
-        <SettingsControl propertyName={model.propertyName} mode={mode}>
+        <SettingsControl propertyName={model.propertyName} mode={mode} lazy={lazy} availableConstantsExpression={availableConstantsExpression}>
           {(value, onChange, propertyName) => childrenFunc(value, onChange, propertyName)}
         </SettingsControl>
       </Form.Item>
@@ -68,6 +70,8 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
             onChange={onChange}
             value={value}
             readOnly={readOnly}
+            lazy={lazy}
+            availableConstantsExpression={availableConstantsExpression}
           >
             {(value, onChange) => {
               return cloneElement(

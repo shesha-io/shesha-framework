@@ -1,4 +1,4 @@
-import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
+import { IKeyInformationBarComponentProps } from '@/designer-components/keyInformationBar/interfaces';
 import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { Flex } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
@@ -16,7 +16,8 @@ import { StyleBoxValue } from '@/providers/form/models';
 import { ValidationErrors } from '../validationErrors';
 import { isValidGuid } from '../formDesigner/components/utils';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
-export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
+
+export const KeyInformationBar: FC<IKeyInformationBarComponentProps> = (props) => {
   const { data } = useFormData();
   const {
     columns,

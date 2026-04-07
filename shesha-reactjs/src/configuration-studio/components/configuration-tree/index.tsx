@@ -172,7 +172,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   return (
     <Spin
       spinning={treeLoadingState.status === 'loading'}
-      wrapperClassName={styles.csNavPanelSpinner}
+      classNames={{ root: styles.csNavPanelSpinner }}
     >
       {treeLoadingState.status === 'ready' && isDefined(treeNodes) && (
         <div className={styles.csNavPanelContent}>
