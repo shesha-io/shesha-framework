@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Shesha.Application.Services.Dto;
 using Shesha.GraphQL.NewtonsoftJson;
+using System;
 
 namespace Shesha.GraphQL.Mvc
 {
@@ -13,13 +14,14 @@ namespace Shesha.GraphQL.Mvc
     /// </summary>
     public class GraphQLDataResult : JsonResult, IDynamicDataResult
     {
-        public GraphQLDataResult(ExecutionResult executionResult) : base(executionResult)
+        private static JsonSerializerSettings MakeSerializerSettings() 
         {
             var errorInfoProvider = new ErrorInfoProvider();
-            SerializerSettings = new JsonSerializerSettings
+            return new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented,
-                ContractResolver = new ShaGraphQLContractResolver(errorInfoProvider) {
+                ContractResolver = new ShaGraphQLContractResolver(errorInfoProvider)
+                {
                     NamingStrategy = new CamelCaseNamingStrategy
                     {
                         ProcessDictionaryKeys = true,
@@ -27,6 +29,13 @@ namespace Shesha.GraphQL.Mvc
                     }
                 },
             };
+        }
+
+        private Lazy<JsonSerializerSettings> LazySerializerSettings = new Lazy<JsonSerializerSettings>(MakeSerializerSettings);
+
+        public GraphQLDataResult(ExecutionResult executionResult) : base(executionResult)
+        {
+            SerializerSettings = LazySerializerSettings.Value;
         }
     }
 
