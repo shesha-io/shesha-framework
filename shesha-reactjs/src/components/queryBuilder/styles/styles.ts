@@ -2048,7 +2048,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-ignore-unassigned-icon {
-            display: inline-flex;
+            display: none;
             align-items: center;
             justify-content: center;
             width: 24px;
@@ -2057,6 +2057,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             aspect-ratio: 1 / 1;
             color: #52c41a;
             font-size: 11px;
+        }
+
+        .sha-query-builder-ignore-unassigned.is-checked .sha-query-builder-ignore-unassigned-icon {
+            display: inline-flex;
         }
 
         .sha-bool-btn-group {
