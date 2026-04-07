@@ -61,6 +61,7 @@ export const migratePasswordComboToTextField = (
     description: prev.confirmDescription,
     textType: 'password',
     hidden: prev.hidden,
+    hideLabel: true,
     editMode: prev.editMode,
     readOnly: prev.readOnly,
     parentId: prev.parentId,
