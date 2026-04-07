@@ -15,6 +15,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
 
 export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
+  id?: string;
   name?: string;
   label?: string | React.ReactNode;
   jsSetting?: boolean | 'lazy';

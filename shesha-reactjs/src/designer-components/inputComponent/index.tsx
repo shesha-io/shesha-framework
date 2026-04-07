@@ -59,7 +59,7 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
 
   if (isInherited || isOverridden) {
     return (
-      <Popover content={content} trigger="hover" autoAdjustOverflow={true} placement="topRight">
+      <Popover content={content} trigger="hover" autoAdjustOverflow={true} placement="topLeft">
         <div> {/* div is required to make Popover work for some input components */}
           <Editor {...newProps} />
         </div>
