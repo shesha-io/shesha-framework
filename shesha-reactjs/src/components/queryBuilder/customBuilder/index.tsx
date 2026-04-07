@@ -136,7 +136,12 @@ const getDefaultConjunction = (config: Config): RelationValue => {
 
 const getGroupLogicLabel = (node: IPlainTreeItem, config: Config): string => {
   const conjunction = node.properties?.conjunction ?? getDefaultConjunction(config);
-  return conjunction === 'OR'
+  if (conjunction === 'OR')
+    return 'Any of the following are true...';
+
+  const children = getChildren(node);
+  const hasOrRelation = children.some((child) => child.properties?.__relation === 'OR');
+  return hasOrRelation
     ? 'Any of the following are true...'
     : 'All of the following are true...';
 };
@@ -1081,7 +1086,8 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
   const isDropAfter = dropHint?.placement === 'after' && getPathKey(dropHint.path) === pathKey;
   const canDelete = !readOnly;
   const siblingCount = getChildren(parentNode).length;
-  const canDrag = !readOnly && config.settings?.canReorder !== false && siblingCount > 1;
+  const isNested = path.length > 2;
+  const canDrag = !readOnly && config.settings?.canReorder !== false && (siblingCount > 1 || isNested);
 
   const handleRelationChange = (nextRelation: RelationValue): void => {
     if (!actions.setTree)
