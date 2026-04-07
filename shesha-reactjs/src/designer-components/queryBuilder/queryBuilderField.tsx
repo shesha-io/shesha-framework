@@ -12,27 +12,6 @@ const queryBuilderTabKey = 'queryBuilderTab';
 const jsonInputTabKey = 'jsonInputTab';
 const baseQueryBuilderModalWidth = 1038;
 
-const getJsonLogicGroupDepth = (node: unknown): number => {
-  if (!node || typeof node !== 'object' || Array.isArray(node))
-    return 0;
-
-  const expression = node as Record<string, unknown>;
-  const branches = ['and', 'or']
-    .map((key) => expression[key])
-    .filter((value): value is unknown[] => Array.isArray(value));
-
-  if (branches.length === 0)
-    return 0;
-
-  return branches.reduce((maxDepth, branch) => {
-    const childDepth = branch.reduce<number>((branchDepth, child) => {
-      return Math.max(branchDepth, getJsonLogicGroupDepth(child));
-    }, 0);
-
-    return Math.max(maxDepth, 1 + childDepth);
-  }, 0);
-};
-
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const queryBuilderDocUrl = 'https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context';
   const { styles } = useStyles();
