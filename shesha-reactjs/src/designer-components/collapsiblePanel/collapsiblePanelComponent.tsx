@@ -47,7 +47,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       typeof label === 'string' ? evaluateString(label, data) : label
     ), [label, data]);
 
-    const headerComponents = model?.header?.components ?? [];
+    const headerComponents = model.header?.components ?? [];
 
     const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles?.border } }).fullStyle;
 
@@ -103,7 +103,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           expandIconPosition: 'right',
         };
       })
-      .add<ICollapsiblePanelComponentProps>(1, (prev, context) => {
+      .add<ICollapsiblePanelComponentPropsV0>(1, (prev, context) => {
         const header = { id: nanoid(), components: [] };
         const content = { id: nanoid(), components: [] };
 
@@ -125,15 +125,15 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           overflow: true,
         };
       })
-      .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ICollapsiblePanelComponentPropsV0>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ICollapsiblePanelComponentProps>(3, (prev) => ({
         ...prev,
         expandIconPosition:
-          prev.expandIconPosition === 'left'
+          (prev.expandIconPosition as string) === 'left'
             ? 'start'
-            : prev.expandIconPosition === 'right'
+            : (prev.expandIconPosition as string) === 'right'
               ? 'end'
-              : prev.expandIconPosition,
+              : undefined,
       }))
       .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev))
       .add<ICollapsiblePanelComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))

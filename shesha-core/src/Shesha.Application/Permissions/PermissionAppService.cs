@@ -51,7 +51,7 @@ namespace Shesha.Permissions
 
         public async Task<List<PermissionDto>> GetAllAsync()
         {
-            var permissions = PermissionManager.GetAllPermissions();
+            var permissions = await PermissionManager.GetAllPermissionsAsync();
 
             var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions);
             var finalDtos = (await dtos.SelectAsync(async x => 
@@ -71,7 +71,7 @@ namespace Shesha.Permissions
 
         public async Task<List<PermissionDto>> GetAllTreeAsync()
         {
-            var permissions = PermissionManager.GetAllPermissions();
+            var permissions = await PermissionManager.GetAllPermissionsAsync();
 
             var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions);
             var dtoList = (await dtos
@@ -165,11 +165,11 @@ namespace Shesha.Permissions
         }
 
         [HttpGet]
-        public Task<List<AutocompleteItemDto>> AutocompleteAsync(string? term)
+        public async Task<List<AutocompleteItemDto>> AutocompleteAsync(string? term)
         {
             term = (term ?? "").ToLower();
             
-            var permissions = PermissionManager.GetAllPermissions()
+            var permissions = (await PermissionManager.GetAllPermissionsAsync())
                 .Where(p => (p.Name ?? "").ToLower().Contains(term)
                             || (p.Description?.Localize(_localizationContext) ?? "").ToLower().Contains(term)
                             || (p.DisplayName?.Localize(_localizationContext) ?? "").ToLower().Contains(term)
@@ -183,7 +183,7 @@ namespace Shesha.Permissions
                 })
                 .ToList();
 
-            return Task.FromResult(permissions);
+            return permissions;
         }
 
         /// <summary>

@@ -1,4 +1,3 @@
-import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ReactNode } from 'react';
 import { FormMarkup, GenericDictionary } from '@/providers/form/models';
 import { StandardNodeTypes } from './formComponent';
@@ -9,9 +8,10 @@ import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { isDefined } from '@/utils/nullables';
 import { IArgumentsEvaluationContext } from '@/providers/configurableActionsDispatcher/contexts';
+import { ISettingsFormFactoryArgs } from '..';
 
 export interface IHasPreviousActionResponse {
-  actionResponse?: any;
+  actionResponse?: unknown;
 }
 export interface IHasPreviousActionError {
   actionError?: unknown;
@@ -26,11 +26,11 @@ export type IActionExecutionContext = /* GenericDictionary &*/ HasPreviousAction
 };
 
 export const hasPreviousActionError = (value: HasPreviousActionResult): value is IHasPreviousActionError => {
-  return value && (value as IHasPreviousActionError).actionError !== undefined;
+  return isDefined(value) && (value as IHasPreviousActionError).actionError !== undefined;
 };
 
 export const HasPreviousActionResponse = (value: HasPreviousActionResult): value is IHasPreviousActionResponse => {
-  return value && (value as IHasPreviousActionResponse).actionResponse !== undefined;
+  return isDefined(value) && (value as IHasPreviousActionResponse).actionResponse !== undefined;
 };
 
 /**
@@ -41,19 +41,8 @@ export type IConfigurableActionExecuter<TArguments, TReponse, TExecutionContext 
   context: TExecutionContext,
 ) => Promise<TReponse>;
 
-export interface ISettingsFormFactoryArgs<TModel extends object = object> {
-  model: TModel;
-  onSave: (values: TModel) => void;
-  onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
-  readOnly?: boolean;
-  exposedVariables?: ICodeExposedVariable[];
-  availableConstants?: IObjectMetadata;
-}
-
 export interface FormMarkupFactoryArgs {
-  exposedVariables?: ICodeExposedVariable[];
-  availableConstants?: IObjectMetadata;
+  availableConstants?: IObjectMetadata | undefined;
   fbf: FormBuilderFactory;
 }
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;

@@ -9,7 +9,6 @@ using GraphQL.Types;
 using GraphQLParser.AST;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using Shesha.Application.Services.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
@@ -52,6 +51,14 @@ namespace Shesha.GraphQL.Provider.Queries
             var quickSearcher = serviceProvider.GetRequiredService<IQuickSearcher>();
             var specificationManager = serviceProvider.GetRequiredService<ISpecificationManager>();
 
+            Field<GraphQLGenericType<TEntity>>(entityName)
+                .Argument(MakeGetInputType(), nameof(IEntity.Id))
+                .ResolveAsync(async context => {
+                    var id = context.GetArgument<TId>(nameof(IEntity.Id));
+
+                    return await repository.GetAsync(id);
+                });
+            /*
             FieldAsync<GraphQLGenericType<TEntity>>(entityName,
                 arguments: new QueryArguments(new QueryArgument(MakeGetInputType()) { Name = nameof(IEntity.Id) }),
                 resolve: async context => {
@@ -60,7 +67,53 @@ namespace Shesha.GraphQL.Provider.Queries
                     return await repository.GetAsync(id);
                 }                    
             );
+            */
 
+            Field<PagedResultDtoType<TEntity>>($"{entityName}List")
+                .Argument<GraphQLInputGenericType<ListRequestDto>>("input").DefaultValue(new ListRequestDto())
+                //.Argument<ListRequestDto>("input").DefaultValue(new ListRequestDto())
+                .ResolveAsync(async context => {
+                    var input = context.GetArgument<ListRequestDto>("input");
+
+                    var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
+                    var uow = unitOfWorkManager.Current;
+
+                    var query = await repository.GetAllAsync();
+
+                    // apply specifications
+                    query = specificationManager.ApplySpecifications(query, input.Specifications);
+
+                    // filter entities
+                    query = AddFilter(query, input.Filter);
+
+                    // add quick search
+                    if (!string.IsNullOrWhiteSpace(input.QuickSearch))
+                        query = quickSearcher.ApplyQuickSearch(query, input.QuickSearch, input.QuickSearchProperties);
+
+                    // calculate total count
+                    var totalCount = query.Count();
+
+                    // apply sorting
+                    query = ApplySorting(query, input.Sorting);
+
+                    // apply paging
+                    var pageQuery = query.Skip(input.SkipCount);
+                    if (input.MaxResultCount > 0)
+                        pageQuery = pageQuery.Take(input.MaxResultCount);
+
+                    var entities = entityFetcher != null
+                        ? await entityFetcher.ToListAsync(pageQuery, GetEntityPropertiesFromContext(context))
+                        : await asyncExecuter.ToListAsync(pageQuery);
+
+                    var result = new PagedResultDto<TEntity>
+                    {
+                        Items = entities,
+                        TotalCount = totalCount
+                    };
+
+                    return result;
+                });
+            /*
             FieldAsync<PagedResultDtoType<TEntity>>($"{entityName}List",
                 arguments: new QueryArguments(
                     new QueryArgument<GraphQLInputGenericType<ListRequestDto>> { Name = "input", DefaultValue = new ListRequestDto() }
@@ -71,7 +124,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
                     var uow = unitOfWorkManager.Current;
 
-                    var query = repository.GetAll();
+                    var query = await repository.GetAllAsync();
 
                     // apply specifications
                     query = specificationManager.ApplySpecifications(query, input.Specifications);
@@ -106,6 +159,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     return result;
                 }
             );
+            */
         }
 
         private List<string> GetEntityPropertiesFromContext(IResolveFieldContext context) 

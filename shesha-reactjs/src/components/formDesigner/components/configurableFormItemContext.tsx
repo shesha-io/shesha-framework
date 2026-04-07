@@ -1,8 +1,8 @@
 import React, { FC } from "react";
 import { Form, FormItemProps } from "antd";
 import { IConfigurableFormItemChildFunc } from "./model";
-import { useDataContextManager } from "@/index";
 import { DataBinder } from "@/hocs/dataBinder";
+import { useDataContextManager } from "@/providers/dataContextManager";
 
 interface IConfigurableFormItem_ContextProps {
   componentId: string;

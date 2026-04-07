@@ -14,7 +14,7 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { buildUrl } from '@/utils';
-import { extractAjaxResponse } from '@/interfaces';
+import { extractAjaxResponse, IAjaxResponse } from '@/interfaces';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -133,7 +133,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       }
 
       const url = buildUrl(getUrl, { id: entityId });
-      httpClient.get(url)
+      httpClient.get<IAjaxResponse<object>>(url)
         .then((resp) => {
           const result = extractAjaxResponse(resp.data, 'Error fetching entity data');
           setFormData(result);
@@ -247,7 +247,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     <Popover
       styles={{
         root: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string) ? { width: cappedWidth } : undefined,
-        body: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)
+        content: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)
           ? { width: '100%', maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
           : { width: cappedWidth, minWidth: cappedWidth, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' },
       }}

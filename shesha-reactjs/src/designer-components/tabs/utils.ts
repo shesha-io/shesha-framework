@@ -1,6 +1,6 @@
 import { nanoid } from "@/utils/uuid";
 import { ITabPaneProps } from "./models";
-import { IStyleType } from "@/index";
+import { IStyleType } from "@/providers/form/models";
 
 const initialBorder: IStyleType['border']['border']['all'] = { width: '1px', color: '#f0f0f0', style: 'solid' };
 

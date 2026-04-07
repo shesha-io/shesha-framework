@@ -1,6 +1,6 @@
 import { IToolboxComponent } from '@/interfaces';
 import { CodeOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React, { FC } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
@@ -22,7 +22,7 @@ const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   const dataContexts = getDataContexts('all');
 
   const onChange = (value: any): void => {
-    props?.onChange(value);
+    props.onChange(value);
   };
 
   return (

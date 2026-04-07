@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { IToolboxComponentBase } from '@/interfaces';
-import { Show } from '@/components';
+import { Show } from '@/components/show';
 import { Space, Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
 

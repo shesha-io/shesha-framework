@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { FileImageOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { evaluateValueAsString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React, { ReactElement } from 'react';
@@ -14,13 +14,13 @@ import { FileUploadProvider } from '@/providers';
 import { ImageField } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { removeUndefinedProps } from '@/utils/object';
+import { getFirstNonEmptyStringPropertyOrUndefined, removeUndefinedProps } from '@/utils/object';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useTheme } from 'antd-style';
-import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { IImageProps, IImageStyleProps } from './interfaces';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -69,12 +69,16 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               : model.url || value;
 
           const fileProvider = (child): ReactElement => {
+            const ownerId = getFirstNonEmptyStringPropertyOrUndefined(calculatedModel, ["ownerId", "dataId"]);
+            const ownerType = !isEntityTypeIdEmpty(model.ownerType)
+              ? model.ownerType
+              : getFirstNonEmptyStringPropertyOrUndefined(calculatedModel, ["formModelType"]) ?? "";
             return (
               <FileUploadProvider
                 value={val}
                 onChange={onChange}
-                ownerId={Boolean(calculatedModel.ownerId) ? calculatedModel.ownerId : Boolean(calculatedModel.dataId) ? calculatedModel.dataId : ''}
-                ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(calculatedModel.formModelType) ? calculatedModel.formModelType : ''}
+                ownerId={ownerId}
+                ownerType={ownerType}
                 propertyName={!model.context ? model.propertyName : null}
               >
                 {child}

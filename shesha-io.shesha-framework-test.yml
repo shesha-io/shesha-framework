@@ -63,10 +63,10 @@ stages:
           restoreSolution: 'shesha-core/Shesha.sln'
           nugetConfigPath: 'shesha-core/.nuget/NuGet.Azure.Config'
       - task: UseDotNet@2
-        displayName: Use .NET Core sdk 8.x
+        displayName: Use .NET Core sdk 10.x
         retryCountOnTaskFailure: 3
         inputs:
-          version: 8.x
+          version: 10.x
       - task: DotNetCoreCLI@2
         displayName: dotnet build
         inputs:
@@ -156,9 +156,9 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'api-info-1'
     - task: UseDotNet@2
-      displayName: Use .NET Core sdk 8.x
+      displayName: Use .NET Core sdk 10.x
       inputs:
-        version: 8.x
+        version: 10.x
     - task: Assembly-Info-NetCore@3
       displayName: 'Set Assembly Manifest Data'
       inputs:
@@ -168,6 +168,7 @@ stages:
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
       # condition: ne(variables['currentBranch'], 'refs/heads/main')
+
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -179,7 +180,8 @@ stages:
       displayName: dotnet build
       inputs:
         projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
-        arguments: --configuration $(BuildParameters.configuration) -p:DefineConstants=DisableEditModule
+        arguments: --configuration $(BuildParameters.configuration) -p:DefineConstants=DisableEditModule -p:AssemblyMetadata_BuildId=$(Build.BuildId)
+    
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
@@ -265,9 +267,9 @@ stages:
           write-host "NODE_OPTIONS is: $env:NODE_OPTIONS"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 21.x'
+      displayName: 'Use Node 22.x'
       inputs:
-        versionSpec: 21.x
+        versionSpec: 22.x
       retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
@@ -532,9 +534,9 @@ stages:
   #         write-host "The current version is: $(versionNo)"
   #       workingDirectory: 'shesha-functional-tests/publicportal'
   #   - task: NodeTool@0
-  #     displayName: 'Use Node 21.x'
+  #     displayName: 'Use Node 22.x'
   #     inputs:
-  #       versionSpec: 21.x
+  #       versionSpec: 22.x
   #     retryCountOnTaskFailure: 5
   #   # - task: Npm@1
   #   #   displayName: 'Npm Update Version'

@@ -51,7 +51,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
       onValuesChange={handleValuesChange}
       initialValues={{
         ...model,
-        properties: typeof model?.properties === 'string' ? model?.properties : model?.properties?.join(' '),
+        properties: typeof model.properties === 'string' ? model.properties : model.properties?.join(' '),
       }}
     >
       <SectionSeparator title="Display" />

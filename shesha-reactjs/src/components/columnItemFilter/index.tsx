@@ -35,6 +35,7 @@ import {
 } from '@/providers/dataTable/utils';
 import { useMetadataDispatcher } from '@/providers';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { getStringPropertyOrUndefined } from '@/utils/object';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -228,7 +229,7 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
       {dataLoaded &&
         data.map((d: EntityData) => (
           <Select.Option value={d.id} key={d.id}>
-            {d._displayName}
+            {getStringPropertyOrUndefined(d, "_displayName")}
           </Select.Option>
         ))}
     </Select>

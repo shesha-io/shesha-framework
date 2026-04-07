@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { ILinkProps } from '@/designer-components/link/interfaces';
+import { ILinkComponentProps } from '@/designer-components/link/interfaces';
 import { ConfigurableItemFullName, extractAjaxResponse, GetAllResponse, IAjaxResponse, IGenericGetAllPayload } from '@/interfaces';
 import { isConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { FormFullName, HttpClientApi, IComponentsDictionary, IConfigurableFormComponent, IConfigurableMainMenu, isNavigationActionConfiguration, isScriptActionConfiguration, useFormManager, useHttpClient, useSettings, useSheshaApplication } from '@/providers';
@@ -115,7 +115,7 @@ const findSpecificRefs = (components: IComponentsDictionary, callback: (ref: Con
       const component = components[key];
       if (isComponent(component)) {
         if (component.type === 'link') {
-          tryAddFormByLink((component as ILinkProps).href);
+          tryAddFormByLink((component as ILinkComponentProps).href);
         }
         // tryAddFormsFromJs;
       }

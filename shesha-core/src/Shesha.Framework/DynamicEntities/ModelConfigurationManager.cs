@@ -195,14 +195,14 @@ namespace Shesha.DynamicEntities
         public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input)
         {
             var inheritedFrom = input.InheritedFromId != null
-                ? await Repository.GetAll().FirstOrDefaultAsync(x => 
+                ? await Repository.FirstOrDefaultAsync(x => 
                     x.Name == input.InheritedFromId.Name 
                     && (x.Module != null && x.Module.Name == input.InheritedFromId.Module
                         || x.Module == null && (input.InheritedFromId.Module == null || input.InheritedFromId.Module == "")
                     )
                 )
                 : !input.InheritedFromClassName.IsNullOrEmpty() && !input.InheritedFromNamespace.IsNullOrEmpty()
-                    ? await Repository.GetAll().FirstOrDefaultAsync(x => x.ClassName == input.InheritedFromClassName && x.Namespace == input.InheritedFromNamespace)
+                    ? await Repository.FirstOrDefaultAsync(x => x.ClassName == input.InheritedFromClassName && x.Namespace == input.InheritedFromNamespace)
                     : null;
 
             if (inheritedFrom != null)
@@ -288,7 +288,7 @@ namespace Shesha.DynamicEntities
         [UnitOfWork]
         public async Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input)
         {
-            var entityConfig = await Repository.GetAll().Where(m => m.Id == input.Id).FirstOrDefaultAsync();
+            var entityConfig = await Repository.FirstOrDefaultAsync(m => m.Id == input.Id);
             if (entityConfig == null)
                 throw new ModelConfigurationNotFoundException(input.Namespace, input.Name);
 
@@ -398,7 +398,7 @@ namespace Shesha.DynamicEntities
             if (isNew && metadataRefresh)
                 await _dbGenerator.ProcessEntityConfigAsync(entityConfig, new List<EntityProperty>()); // use empty list because properties will be processed later
 
-            var properties = await PropertyConfigRepo.GetAll().Where(p => p.EntityConfig == entityConfig).OrderBy(p => p.SortOrder).ToListAsync();
+            var properties = await (await PropertyConfigRepo.GetAllAsync()).Where(p => p.EntityConfig == entityConfig).OrderBy(p => p.SortOrder).ToListAsync();
 
             await BindPropertiesAndReturnItemsTypeAsync(properties, input.Properties, entityConfig, null, false, new List<EntityProperty>());
 
@@ -413,7 +413,7 @@ namespace Shesha.DynamicEntities
             foreach (var prop in toDelete)
             {
                 // ToDo: AS - review if we should remove inheritance of the properties
-                var toReOverride = await PropertyConfigRepo.GetAll().Where(x => x.InheritedFrom == prop).ToListAsync();
+                var toReOverride = await PropertyConfigRepo.GetAllListAsync(x => x.InheritedFrom == prop);
                 foreach (var reOverride in toReOverride)
                 {
                     reOverride.InheritedFrom = null;
@@ -430,7 +430,7 @@ namespace Shesha.DynamicEntities
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
-            var needRestart = await PropertyConfigRepo.GetAll()
+            var needRestart = await (await PropertyConfigRepo.GetAllAsync())
                 .AnyAsync(x =>
                     x.EntityConfig == entityConfig
                     && (x.InitStatus.HasFlag(EntityInitFlags.InitializationRequired) || x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)));
@@ -627,7 +627,7 @@ namespace Shesha.DynamicEntities
                     // Add to inherited entities
                     if (isNew)
                     {
-                        var inheritedEntities = await Repository.GetAll().Where(x => x.InheritedFrom == entityConfig).ToListAsync();
+                        var inheritedEntities = await Repository.GetAllListAsync(x => x.InheritedFrom == entityConfig);
                         foreach (var inheritedEntity in inheritedEntities)
                         {
                             await BindPropertiesAndReturnItemsTypeAsync(
@@ -645,7 +645,7 @@ namespace Shesha.DynamicEntities
                     // Update inherited entities
                     else
                     {
-                        var inheritedProperties = await PropertyConfigRepo.GetAll().Where(x => x.InheritedFrom == dbProp).ToListAsync();
+                        var inheritedProperties = await PropertyConfigRepo.GetAllListAsync(x => x.InheritedFrom == dbProp);
                         foreach (var inheritedProperty in inheritedProperties)
                         {
                             var inhProp = _propertyCopy.Map<ModelPropertyDto>(inputProp);
@@ -892,7 +892,7 @@ namespace Shesha.DynamicEntities
             dto.InheritedFromNamespace = baseConfig?.Namespace;
 
 
-            var properties = await PropertyConfigRepo.GetAll()
+            var properties = await (await PropertyConfigRepo.GetAllAsync())
                 .Where(p => p.EntityConfig == entityConfig && p.ParentProperty == null)
                 .OrderBy(p => p.SortOrder)
                 .ToListAsync();
@@ -990,9 +990,7 @@ namespace Shesha.DynamicEntities
                 var cacheRootKey = GetCacheKey(ROOT_ENTITY, @namespace, entityTypeName);
                 rootEntity = await _modelConfigsCache.GetAsync(cacheRootKey, async () =>
                 {
-                    var modelConfig = await Repository.GetAll()
-                        .Where(m => m.ClassName == entityTypeName && m.Namespace == @namespace && !m.IsDeleted && !m.IsExposed)
-                        .FirstOrDefaultAsync();
+                    var modelConfig = await Repository.FirstOrDefaultAsync(m => m.ClassName == entityTypeName && m.Namespace == @namespace && !m.IsDeleted && !m.IsExposed);
                     if (modelConfig == null)
                         return null;
 
@@ -1031,7 +1029,7 @@ namespace Shesha.DynamicEntities
             // or get Entity for third option if the namespace paremeter is empty
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () =>
             {
-                var modelConfig = await Repository.GetAll()
+                var modelConfig = await (await Repository.GetAllAsync())
                     .WhereIf(@namespace.IsNullOrEmpty(), m => m.Module == module && m.ClassName == entityTypeName && !m.IsDeleted)
                     .WhereIf(!@namespace.IsNullOrEmpty(), m => m.Module == module && m.Namespace == @namespace && m.ClassName == entityTypeName && !m.IsDeleted)
                     .FirstOrDefaultAsync();

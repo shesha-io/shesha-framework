@@ -1,4 +1,5 @@
 import { IConfigurableActionConfiguration } from '@/providers/configurableActionsDispatcher/index';
+import { isDefined } from '@/utils/nullables';
 import { ReactNode } from 'react';
 
 export type SidebarItemType = 'button' | 'item' | 'divider' | 'group';
@@ -42,13 +43,13 @@ export interface ISidebarGroup extends ISidebarMenuItem {
 }
 
 export const isSidebarGroup = (item: ISidebarMenuItem): item is ISidebarGroup => {
-  return item && item.itemType === 'group';
+  return isDefined(item) && item.itemType === 'group';
 };
 
 export const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
-  return item && item.itemType === 'button';
+  return isDefined(item) && item.itemType === 'button';
 };
 
 export const isSidebarDivider = (item: ISidebarMenuItem): item is ISidebarButton => {
-  return item && item.itemType === 'divider';
+  return isDefined(item) && item.itemType === 'divider';
 };

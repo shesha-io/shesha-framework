@@ -1,4 +1,4 @@
-import { FormDesigner } from "@/components";
+import { FormDesigner } from "@/components/formDesigner";
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { DocumentDefinition, ITEM_TYPES, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
 import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";
@@ -52,7 +52,7 @@ export const FormDocumentDefinition: DocumentDefinition = {
   Toolbar: (_props: ItemEditorProps): ReactNode => {
     return (
       <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space direction="horizontal" size={5}>
+        <Space orientation="horizontal" size={5}>
           <CanvasConfig />
           <FormToolbar />
         </Space>

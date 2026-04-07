@@ -6,7 +6,7 @@ import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import PermissionedObjectsTree from '@/components/permissionedObjectsTree';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { IConfigurableActionConfiguration } from '@/index';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 
 export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent {
   objectsType?: string;

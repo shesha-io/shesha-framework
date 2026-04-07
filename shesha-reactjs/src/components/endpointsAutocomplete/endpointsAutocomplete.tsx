@@ -7,7 +7,7 @@ import { IApiEndpoint } from '@/interfaces';
 import { DefaultOptionType } from 'antd/lib/select';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { useFormData } from '@/providers';
-import { evaluateValueAsString } from '@/index';
+import { evaluateValueAsString } from '@/providers/form/utils';
 
 export interface IHttpVerb {
   id: string;

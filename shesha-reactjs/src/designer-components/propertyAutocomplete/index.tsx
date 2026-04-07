@@ -1,11 +1,10 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import settingsFormJson from './settingsForm.json';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
-
 import { IPropertyAutocompleteComponentProps, PropertyAutocompleteComponentDefinition } from './interfaces';
 import { MetadataProvider } from '@/providers';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';

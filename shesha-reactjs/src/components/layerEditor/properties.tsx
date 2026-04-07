@@ -1,9 +1,12 @@
 import { getComponentModel } from '@/providers/layersProvider/utils';
 import { useLayerGroupConfigurator } from '@/providers/layersProvider';
-import { ConfigurableForm, ConfigurableFormInstance, FormMarkup, MetadataProvider } from '@/index';
 import { Empty, Form } from 'antd';
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
+import { FormMarkup } from '@/providers/form/models';
+import { MetadataProvider } from '@/providers/metadata';
+import { ConfigurableForm } from '../configurableForm';
 
 export interface ILayerPropertiesProps {
   settings: FormMarkup;

@@ -2,7 +2,7 @@ import { CodeOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useMemo } from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
@@ -12,7 +12,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IconType, ShaIcon } from '@/components';
+import { IconType, ShaIcon } from '@/components/shaIcon';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
@@ -35,7 +35,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       dataFormat === StringFormats.password),
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-    const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
+    const { styles } = useStyles({ fontFamily: model.font?.type, fontWeight: model.font?.weight, textAlign: model.font?.align, color: model.font?.color, fontSize: model.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
@@ -60,7 +60,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model?.border?.hideBorder ? 'borderless' : undefined,
+      variant: model.border?.hideBorder ? 'borderless' : undefined,
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,

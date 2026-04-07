@@ -1,4 +1,4 @@
-import { ComponentsContainer } from "@/components";
+import ComponentsContainer from "@/components/formDesigner/containers/componentsContainer";
 import { FormRawMarkup, IFormSettings } from "@/interfaces";
 import { FormItemProvider } from "@/providers";
 import { DataListCrudProvider } from "@/providers/dataListCrudContext/index";

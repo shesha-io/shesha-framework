@@ -2,7 +2,7 @@ import React, { ComponentType, FC, Fragment, useEffect } from 'react';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import SheshaLoader from '@/components/sheshaLoader';
-import { wrapDisplayName } from '@/utils/react';
+import { IdleTimerWrapper } from '@/components/idleTimerRenderer/wrapper';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
@@ -35,17 +35,20 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
  * Ensures that a particular page cannot be accessed if you're not authenticated
  */
 export const withAuth =
-  <P extends object>(Component: ComponentType<P>, unauthorizedRedirectUrl = '/login', landingPage = '/'): FC<P> =>
-    wrapDisplayName((props) => {
+  <P extends object>(Component: ComponentType<P>, unauthorizedRedirectUrl = '/login', landingPage = '/'): FC<P> => {
+    const WithAuth: FC<P> = (props) => {
       const propsObj = Array.isArray(props) ? props[0] : props;
 
       return (
         <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
           {(query) => (
-            // <IdleTimerRenderer>
-            <Component {...propsObj} id={query?.id} />
-            // </IdleTimerRenderer>
+            <IdleTimerWrapper>
+              <Component {...propsObj} id={query?.id} />
+            </IdleTimerWrapper>
           )}
         </ComponentWithAuth>
       );
-    }, "withAuth");
+    };
+    WithAuth.displayName = `withAuth(${Component.displayName ?? Component.name ?? 'Component'})`;
+    return WithAuth;
+  };

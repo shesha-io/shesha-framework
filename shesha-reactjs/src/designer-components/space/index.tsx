@@ -8,11 +8,12 @@ import { FormMarkup } from '@/providers/form/models';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface ISpaceProps extends IConfigurableFormComponent {
   align?: 'start' | 'end' | 'center' | 'baseline';
   direction?: 'vertical' | 'horizontal';
-  size?: 'small' | 'middle' | 'large'; // number
+  size?: SizeType;
   wrap?: boolean;
   sizeNumber?: number;
   marginLeft?: number;
@@ -30,10 +31,10 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   Factory: ({ model: passedModel }) => {
     const { marginLeft, marginRight, ...model } = passedModel;
     const props: SpaceProps = {
-      align: model?.align,
-      direction: model?.direction,
-      size: model?.size || model?.sizeNumber,
-      wrap: model?.wrap,
+      align: model.align,
+      orientation: model.direction,
+      size: model.size || model.sizeNumber,
+      wrap: model.wrap,
     };
 
     return (

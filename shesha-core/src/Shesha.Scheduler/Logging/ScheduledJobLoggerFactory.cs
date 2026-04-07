@@ -3,6 +3,7 @@ using Castle.Core.Logging;
 using log4net;
 using log4net.Config;
 using log4net.Repository;
+using Shesha.Reflection;
 using System;
 using System.IO;
 using System.Xml;
@@ -29,7 +30,7 @@ namespace Shesha.Scheduler.Logging
             var log4NetConfig = new XmlDocument();
             using var configFile = File.OpenRead(configFileName);
             log4NetConfig.Load(configFile);
-            XmlConfigurator.Configure(_loggerRepository, log4NetConfig["log4net"]);
+            XmlConfigurator.Configure(_loggerRepository, GetLog4NetElement(log4NetConfig));
         }
 
         public ScheduledJobLoggerFactory(string configFileName, bool reloadOnChange)
@@ -48,8 +49,13 @@ namespace Shesha.Scheduler.Logging
                 var log4NetConfig = new XmlDocument();
                 using var configFile = File.OpenRead(configFileName);
                 log4NetConfig.Load(configFile);
-                XmlConfigurator.Configure(_loggerRepository, log4NetConfig["log4net"]);
+                XmlConfigurator.Configure(_loggerRepository, GetLog4NetElement(log4NetConfig));
             }
+        }
+
+        private XmlElement GetLog4NetElement(XmlDocument log4NetConfig) 
+        {
+            return log4NetConfig["log4net"].NotNull("log4net config not found");
         }
 
         public override ILogger Create(string name)

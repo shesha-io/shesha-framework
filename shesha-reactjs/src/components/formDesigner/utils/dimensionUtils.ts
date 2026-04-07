@@ -1,6 +1,7 @@
 import { CSSProperties } from 'react';
-import { IStyleType, IToolboxComponent } from '@/index';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
+import { IStyleType } from '@/providers/form/models';
 
 /**
  * Dimension keys that can be selectively preserved in designer mode.

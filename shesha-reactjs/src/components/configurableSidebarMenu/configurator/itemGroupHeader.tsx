@@ -44,7 +44,7 @@ export const ItemGroupHeader: FC<ListEditorSectionRenderingArgs<ISidebarMenuItem
         ? (
           <Divider style={{ marginTop: 0, marginBottom: 0 }}>
             <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>
-            <Divider type="vertical" />
+            <Divider orientation="vertical" />
             <Button shape="round" size="small" type="link" onClick={onAddGroupClick}>Add group</Button>
           </Divider>
         )

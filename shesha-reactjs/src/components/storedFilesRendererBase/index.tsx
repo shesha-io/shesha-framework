@@ -2,8 +2,7 @@ import { DraggerStub } from '@/components/fileUpload/stubs';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
-import { IFormComponentStyles } from '@/providers/form/models';
+import { IFormComponentStyles, IInputStyles, IStyleType } from '@/providers/form/models';
 import { addPx } from '@/utils/style';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
@@ -31,9 +30,11 @@ import { DataContextProvider } from '@/providers/dataContextProvider';
 import { FileVersionsButton, ExtraContent, PLACEHOLDER_FILE, getListTypeAndLayout, fetchStoredFile, FileNameDisplay } from './utils';
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel, UploadFileAsAttachmentArgs } from '@/utils/storedFile/models';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { ValidationErrors } from '../validationErrors';
 
 interface IUploaderFileTypes {
   name: string;
@@ -49,13 +50,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile: () => Promise<void>;
   downloadFile: (args: DownloadFileArgs) => Promise<void>;
 
-  /*
-  uploadFile: (payload: IUploadFilePayload) => void;
-  replaceFile?: (payload: IReplaceFilePayload) => void;
-  deleteFile: (fileIdToDelete: string) => void | Promise<void>;
-  downloadZipFile?: () => void;
-  downloadFile: (payload: IDownloadFilePayload) => void;
-  */
   onChange?: (fileList: StoredFileModel[]) => void;
   onDownload?: (fileList: StoredFileModel[]) => void;
 
@@ -213,13 +207,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isDragger,
       isStub,
       downloadZip,
-      fontStyles: model?.allStyles?.fontStyles,
+      fontStyles: model.allStyles?.fontStyles,
       listType,
       hasFiles: fileList.length > 0,
     },
   });
 
-  const { width, minWidth, maxWidth } = model?.allStyles?.dimensionsStyles ?? {};
+  const { width, minWidth, maxWidth } = model.allStyles?.dimensionsStyles ?? {};
   const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
 
   const openFilesZipNotification = (): void => {
@@ -324,7 +318,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
 
 
-    return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
+    return getFileIcon(type, model.allStyles?.fontStyles?.fontSize);
   };
 
   // Helper function to get or create cached file context data
@@ -346,7 +340,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return fileContextCache.current.get(cacheKey)!;
   }, []);
 
-  if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+  if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
@@ -639,7 +633,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
           {previewImage && (
             <Image
-              wrapperClassName={styles.hiddenElement}
+              classNames={{ root: styles.hiddenElement }}
               preview={{
                 visible: previewOpen,
                 onVisibleChange: (visible) => setPreviewOpen(visible),

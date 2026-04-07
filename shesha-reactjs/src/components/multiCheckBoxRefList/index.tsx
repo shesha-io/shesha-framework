@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Checkbox, Col, Row } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { ShaSpin } from '@/components';
+import { ShaSpin } from '@/components/shaSpin';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 
 export interface IMultiCheckBoxRefListProps {

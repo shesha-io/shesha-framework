@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using System;
 using System.Collections.Generic;
@@ -33,7 +32,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
 
         private async Task<List<DistributedNotificationTemplateDto>> ExportTemplatesAsync(NotificationTypeConfig item)
         {
-            var templates = await _templateRepo.GetAll().Where(t => t.PartOf == item).ToListAsync();
+            var templates = await _templateRepo.GetAllListAsync(t => t.PartOf == item);
             return templates.Select(e => new DistributedNotificationTemplateDto { Id = e.Id }.CopyTemplatePropsFrom(e)).ToList();
         }
     }

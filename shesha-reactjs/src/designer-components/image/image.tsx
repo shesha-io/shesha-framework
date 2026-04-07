@@ -1,9 +1,11 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { App, Button, Image, Tooltip, Upload, UploadProps } from 'antd';
-import { toBase64, useSheshaApplication, useFileUploadOrUndefined } from '@/index';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
+import { useFileUploadOrUndefined } from '@/providers/storedFile';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { toBase64 } from '@/providers/form/utils';
 
 export type ImageSourceType = 'url' | 'storedFile' | 'base64';
 
@@ -21,7 +23,7 @@ export interface IImageFieldProps {
 export const ImageField: FC<IImageFieldProps> = (props) => {
   const { imageSource, value, allowPreview = false, styles, onChange, allowedFileTypes } = props;
 
-  const readOnly = props?.readOnly || props.imageSource === 'url';
+  const readOnly = props.readOnly || props.imageSource === 'url';
 
   const { styles: classes } = useStyles();
 

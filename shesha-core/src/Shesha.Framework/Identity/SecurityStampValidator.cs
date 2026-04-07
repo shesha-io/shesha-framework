@@ -1,6 +1,5 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Uow;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,14 +14,12 @@ namespace Shesha.Identity
         public SecurityStampValidator(
             IOptions<SecurityStampValidatorOptions> options, 
             SignInManager signInManager,
-            ISystemClock systemClock,
             ILoggerFactory loggerFactory,
             IUnitOfWorkManager unitOfWorkManager
             ) 
             : base(
                   options, 
                   signInManager, 
-                  systemClock,
                   loggerFactory,
                   unitOfWorkManager
                   )

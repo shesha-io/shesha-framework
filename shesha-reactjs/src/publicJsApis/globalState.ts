@@ -1,9 +1,9 @@
 export interface GlobalStateType {
-  [name: string]: any;
+  [name: string]: unknown;
 }
 
 export interface ISetStatePayload {
-  data?: any;
+  data?: unknown;
   key?: string;
 }
 

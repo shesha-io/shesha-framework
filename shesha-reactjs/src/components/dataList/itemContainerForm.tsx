@@ -1,9 +1,9 @@
 import { ShaForm } from '@/providers';
-import { ConfigurableFormComponent } from '@/components';
 import { useParent } from '@/providers/parentProvider/index';
 import React, { CSSProperties, FC, PropsWithChildren, ReactNode } from 'react';
 import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';
 import classNames from 'classnames';
+import { ConfigurableFormComponent } from '../formDesigner/configurableFormComponent';
 
 type AlignmentProps = Pick<
   IComponentsContainerProps,

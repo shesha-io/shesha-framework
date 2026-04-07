@@ -1,6 +1,7 @@
 import { EllipsisOutlined } from '@ant-design/icons';
 import React, { CSSProperties, useCallback, useMemo } from 'react';
-import { EntityPicker, ValidationErrors } from '@/components';
+import { EntityPicker } from '@/components/entityPicker';
+import { ValidationErrors } from '@/components/validationErrors';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IStoredFilter, IToolboxComponent } from '@/interfaces';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
@@ -8,7 +9,7 @@ import { ButtonGroupItemProps, IStyleType, useMetadataDispatcher } from '@/provi
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { IEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
@@ -108,7 +109,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       return !!value ? value.id : null;
     }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, metadata]);
 
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -147,8 +148,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
                   modalTitle: model.modalTitle,
                   showModalFooter: model.showModalFooter,
                   modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-                  buttons: model?.buttons,
-                  footerButtons: model?.footerButtons,
+                  buttons: model.buttons,
+                  footerButtons: model.footerButtons,
                 }
                 : undefined}
               name={model?.componentName}

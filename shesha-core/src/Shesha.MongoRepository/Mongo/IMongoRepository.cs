@@ -1,6 +1,6 @@
-﻿using MongoDB.Driver.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Shesha.MongoRepository.Mongo
@@ -8,7 +8,7 @@ namespace Shesha.MongoRepository.Mongo
     public interface IMongoRepository<T> where T : MongoEntity
     {
         IMongoDbContext Context { get; }
-        IMongoQueryable<T> Table { get; }
+        IQueryable<T> Table { get; }
         int Count { get; }
         void Insert(T entity);
         void Insert(IEnumerable<T> entities);

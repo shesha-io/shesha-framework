@@ -18,8 +18,7 @@ export interface IEntityTypeIdentifierQueryParams {
 export type IMemberType = IPublicMemberType;
 
 export const isIMemberType = (value: object): value is IMemberType => {
-  const typed = value as IMemberType;
-  return typed && typeof typed.dataType === 'string' && isDefined(typed.dataType);
+  return isDefined(value) && "dataType" in value && typeof value.dataType === 'string' && isDefined(value.dataType);
 };
 
 export interface SourceFile {
@@ -70,7 +69,7 @@ export interface IHasTypeDefinition {
   typeDefinitionLoader: TypeDefinitionLoader;
 }
 
-export const hasTypeDefinition = (value: object): value is IHasTypeDefinition => value && "typeDefinitionLoader" in value && typeof value.typeDefinitionLoader === 'function';
+export const hasTypeDefinition = (value: object): value is IHasTypeDefinition => isDefined(value) && "typeDefinitionLoader" in value && typeof value.typeDefinitionLoader === 'function';
 
 export interface IMetadata extends Partial<IHasTypeDefinition> {
   dataType: string;
@@ -82,14 +81,14 @@ export interface IMemberMetadata extends IPublicMemberMetadata, Partial<IHasType
 
 }
 
-export const isIMemberMetadata = (value: object): value is IMemberMetadata => value && isIMemberType(value) && "path" in value && typeof (value.path) === 'string';
+export const isIMemberMetadata = (value: object): value is IMemberMetadata => isDefined(value) && isIMemberType(value) && "path" in value && typeof (value.path) === 'string';
 export const isPublicIMemberMetadata = (value: object): value is IPublicMemberMetadata => isIMemberMetadata(value);
 
 export interface IHasItemsType {
   itemsType: IMemberType;
 }
 
-export const isIHasItemsType = (value: object): value is IHasItemsType => value && "itemsType" in value && typeof (value.itemsType) === 'object' && isDefined(value.itemsType) && isIMemberType(value.itemsType);
+export const isIHasItemsType = (value: object): value is IHasItemsType => isDefined(value) && "itemsType" in value && typeof (value.itemsType) === 'object' && isDefined(value.itemsType) && isIMemberType(value.itemsType);
 
 export interface IHasChildPropertiesMetadata {
   properties: IPropertyMetadata[];
@@ -111,7 +110,7 @@ export interface IHasFullyQualifiedEntityType {
   entityModule: string;
 }
 
-export const isHasFullyQualifiedEntityType = (value: IHasEntityType): value is IHasFullyQualifiedEntityType => value && typeof value.entityType === 'string' && typeof value.entityModule === 'string';
+export const isHasFullyQualifiedEntityType = (value: IHasEntityType): value is IHasFullyQualifiedEntityType => isDefined(value) && typeof value.entityType === 'string' && typeof value.entityModule === 'string';
 
 export interface IHasFullEntityType {
   fullClassName: string;
@@ -130,8 +129,7 @@ export interface IHasInheritedFromEntityType {
 }
 
 export const isIHasInheritedFromEntityType = (value: unknown): value is IHasInheritedFromEntityType => {
-  const typed = value as IHasInheritedFromEntityType;
-  return typed && typeof typed.inheritedFromEntityType === 'string';
+  return isDefined(value) && "inheritedFromEntityType" in value && typeof value.inheritedFromEntityType === 'string';
 };
 
 export interface IObjectProperty extends IPropertyMetadata, IHasTypeDefinition {
@@ -144,8 +142,7 @@ export interface IEntityProperty extends IPropertyMetadata, IHasEntityType {
 }
 
 export const isIHasEntityType = (value: unknown): value is IHasEntityType => {
-  const typed = value as IHasEntityType;
-  return typed && typeof typed.entityType === 'string';
+  return isDefined(value) && "entityType" in value && typeof value.entityType === 'string';
 };
 
 export interface IObjectReferencePropertyMetadata extends IMemberMetadata, IHasEntityType, IHasChildPropertiesMetadata {
@@ -158,15 +155,15 @@ export interface IEntityReferenceArrayPropertyMetadata extends IMemberMetadata, 
 }
 
 export const isEntityReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferencePropertyMetadata => {
-  return propMeta && propMeta.dataType === DataTypes.entityReference;
+  return isDefined(propMeta) && propMeta.dataType === DataTypes.entityReference;
 };
 
 export const isEntityReferenceArrayPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferenceArrayPropertyMetadata => {
-  return propMeta && propMeta.dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(propMeta.dataFormat);
+  return isDefined(propMeta) && propMeta.dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(propMeta.dataFormat);
 };
 
 export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {
-  return propMeta && propMeta.dataType === DataTypes.object && propMeta.dataFormat === ObjectFormats.interface;
+  return isDefined(propMeta) && propMeta.dataType === DataTypes.object && propMeta.dataFormat === ObjectFormats.interface;
 };
 
 export interface IRefListPropertyMetadata extends IMemberMetadata {
@@ -175,7 +172,7 @@ export interface IRefListPropertyMetadata extends IMemberMetadata {
 }
 
 export const isRefListPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IRefListPropertyMetadata => {
-  return propMeta && propMeta.dataType === DataTypes.referenceListItem;
+  return isDefined(propMeta) && propMeta.dataType === DataTypes.referenceListItem;
 };
 
 export interface IFunctionMetadata extends IMemberMetadata {
@@ -201,14 +198,15 @@ export const isHasFilter = (value: object | null | undefined): value is IHasFilt
   isDefined(value) && "filter" in value && typeof (value.filter) === 'object' && !Array.isArray(value.filter) && value.filter !== null;
 
 export interface INumberFormatting {
-  showThousandsSeparator?: boolean;
-  customFormat?: string | null;
+  thousandsSeparator?: string;
+  customFormat?: string;
+  step?: string;
 }
-export const isHNumberFormatting = (value: object | null | undefined): value is INumberFormatting =>
-  isDefined(value) && ("showThousandsSeparator" in value || "customFormat" in value);
+export const isNumberFormatting = (value: object | null | undefined): value is INumberFormatting =>
+  isDefined(value) && ("thousandsSeparator" in value || "customFormat" in value || "step" in value);
 
 export interface IDecimalFormatting extends INumberFormatting {
-  numDecimalPlaces?: number | null;
+  numDecimalPlaces?: number;
   showAsPercentage?: boolean;
 }
 export const isDecimalFormatting = (value: object | null | undefined): value is IDecimalFormatting =>
@@ -238,10 +236,10 @@ export const asPropertiesArray = (value: NestedProperties, fallback: IPropertyMe
 };
 
 export const isFunctionMetadata = (value: IMemberMetadata): value is IFunctionMetadata => {
-  return value && value.dataType === DataTypes.function;
+  return isDefined(value) && value.dataType === DataTypes.function;
 };
 export const isDataPropertyMetadata = (value: IMemberMetadata): value is IPropertyMetadata => {
-  return value && value.dataType !== DataTypes.function;
+  return isDefined(value) && value.dataType !== DataTypes.function;
 };
 
 export type ProperyDataType =

@@ -1,4 +1,3 @@
-import { ShaIcon, ShaLink, ValidationErrors } from '@/components';
 import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
@@ -28,6 +27,9 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { buildUrl } from '@/utils';
 import { extractAjaxResponse, IAjaxResponse, IAnyObject } from '@/interfaces';
+import { ShaIcon } from '../shaIcon';
+import ShaLink from '../shaLink';
+import ValidationErrors from '../validationErrors';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -231,7 +233,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       displayValue = (typeof propValue === 'string' ? propValue : '') || props.value._displayName || '';
     }
     setDisplayText(displayValue);
-  }, [entityId, entityType, props?.placeholder, props?.value, props.displayProperty]);
+  }, [entityId, entityType, props.placeholder, props.value, props.displayProperty]);
 
   useEffect(() => {
     if (props.formIdentifier) {
@@ -255,7 +257,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         formId: formIdentifier,
         modalTitle: props.modalTitle,
         buttons: props.buttons,
-        footerButtons: props?.footerButtons,
+        footerButtons: props.footerButtons,
         additionalProperties:
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some((p) => p.key === 'id')
             ? props.additionalProperties

@@ -6,9 +6,10 @@ import { FCUnwrapped, useForm, useGlobalState, useMetadata } from '@/providers';
 import { getMoment, getRangeMoment } from '@/utils/date';
 import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
-import { DATE_TIME_FORMATS, disabledDate, disabledTime, getFormat } from './utils';
+import { disabledDate, disabledTime, getFormat } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
 import { useStyles } from './style';
+import { DATE_TIME_FORMATS } from '@/constants/formats';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
@@ -36,8 +37,8 @@ export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
   } = props;
 
 
-  const dateFormat = props?.dateFormat || getDataProperty(properties, name, 'dataFormat') || DATE_TIME_FORMATS.date;
-  const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
+  const dateFormat = props.dateFormat || getDataProperty(properties, name, 'dataFormat') || DATE_TIME_FORMATS.date;
+  const timeFormat = props.timeFormat || DATE_TIME_FORMATS.time;
   const { styles } = useStyles({ fullStyles: additionalStyles });
   const finalStyles: CSSProperties = { ...additionalStyles };
 

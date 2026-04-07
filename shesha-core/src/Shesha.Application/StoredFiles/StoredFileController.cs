@@ -6,7 +6,6 @@ using Abp.ObjectMapping;
 using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Abp.UI;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain;
@@ -101,16 +100,13 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("HasDownloaded")]
         public async Task<ActionResult> HasDownloadedAsync(Guid storedFileId)
         {
-            var file = await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == storedFileId);
+            var file = await _fileRepository.FirstOrDefaultAsync(f => f.Id == storedFileId);
             if (file == null)
                 throw new UserFriendlyException("File not found");
 
             var currentLoggedInUserId = _abpSession.UserId;
-            var hasDownloaded = await _fileVersionDownloadRepository.GetAll()
-                .Where((x => x.FileVersion.File.Id == storedFileId && x.CreatorUserId == currentLoggedInUserId))
-               .AnyAsync();
+            var hasDownloaded = await _fileVersionDownloadRepository.AnyAsync((x => x.FileVersion.File.Id == storedFileId && x.CreatorUserId == currentLoggedInUserId));
             return Ok(new { hasDownloaded });
-
         }
 
         [HttpGet, Route("Base64String")]
@@ -137,8 +133,7 @@ namespace Shesha.StoredFiles
 
             var fileVersion = !versionNo.HasValue
                 ? file.LastVersion()
-                : _fileVersionRepository.GetAll()
-                    .FirstOrDefault(v => v.File == file && v.VersionNo == versionNo.Value);
+                : await _fileVersionRepository.FirstOrDefaultAsync(v => v.File == file && v.VersionNo == versionNo.Value);
 
             if (fileVersion == null)
                 throw new Exception("File version not found");
@@ -296,7 +291,7 @@ namespace Shesha.StoredFiles
             using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 storedFile = input.Id != null && input.Id.HasValue && input.Id.Value != Guid.Empty
-                    ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == input.Id.Value)
+                    ? await _fileRepository.FirstOrDefaultAsync(f => f.Id == input.Id.Value)
                     : null;
             }
 
@@ -443,11 +438,11 @@ namespace Shesha.StoredFiles
                 throw new AbpValidationException("Failed to delete file", validationResults);
 
             var storedFile = input.FileId != null
-                ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == input.FileId.Value)
+                ? await _fileRepository.FirstOrDefaultAsync(f => f.Id == input.FileId.Value)
                 : property != null
                     ? property.GetValue(owner) as StoredFile
                     : !string.IsNullOrWhiteSpace(input.FileCategory)
-                        ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Owner == null && f.Category == input.FileCategory)
+                        ? await _fileRepository.FirstOrDefaultAsync(f => f.Owner == null && f.Category == input.FileCategory)
                         : null;
 
             if (storedFile != null)
@@ -572,7 +567,7 @@ namespace Shesha.StoredFiles
                 return fileVersions.Select(GetFileDto).WhereNotNull().ToList();
 
             var versionIds = fileVersions.Select(v => v.Id).ToList();
-            var downloadedVersionIds = await _fileVersionDownloadRepository.GetAll()
+            var downloadedVersionIds = await (await _fileVersionDownloadRepository.GetAllAsync())
                 .Where(x => x.CreatorUserId == currentUserId && versionIds.Contains(x.FileVersion.Id))
                 .Select(x => x.FileVersion.Id)
                 .ToListAsync();
@@ -647,7 +642,7 @@ namespace Shesha.StoredFiles
             using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 storedFile = input.Id != null
-                    ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == input.Id.Value)
+                    ? await _fileRepository.FirstOrDefaultAsync(f => f.Id == input.Id.Value)
                     : property != null && owner != null
                         ? property.GetValue(owner) as StoredFile
                         : !string.IsNullOrWhiteSpace(input.FilesCategory)
@@ -736,7 +731,7 @@ namespace Shesha.StoredFiles
             var currentUserId = _abpSession.UserId;
             if (currentUserId.HasValue)
             {
-                dto!.UserHasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                dto!.UserHasDownloaded = await _fileVersionDownloadRepository
                     .AnyAsync(x => x.CreatorUserId == currentUserId.Value &&
                                    x.FileVersion.Id == fileVersion.Id);
             }
@@ -781,7 +776,7 @@ namespace Shesha.StoredFiles
             {
                 if (hasCategory)
                 {
-                    var version = await _fileVersionRepository.GetAll().FirstOrDefaultAsync(x => x.IsLast && x.File.Owner == null && x.File.Category == input.FileCategory);
+                    var version = await _fileVersionRepository.FirstOrDefaultAsync(x => x.IsLast && x.File.Owner == null && x.File.Category == input.FileCategory);
                     return GetFileDto(version);
                 }
             }
@@ -808,7 +803,7 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("StoredFile/{fileId}/Versions")]
         public async Task<List<StoredFileVersionInfoDto>> GetFileVersionsAsync(Guid fileId)
         {
-            var documentUploads = await _fileVersionRepository.GetAll()
+            var documentUploads = await (await _fileVersionRepository.GetAllAsync())
                 .Where(c => c.File.Id == fileId)
                 .OrderBy(u => u.CreationTime)
                 .ToListAsync();

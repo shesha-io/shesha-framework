@@ -2,7 +2,7 @@ import { DataTypes, IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { NotesRenderer } from '@/components';
+import { NotesRenderer } from '@/components/notesRenderer';
 import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { evaluateValueAsString, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';

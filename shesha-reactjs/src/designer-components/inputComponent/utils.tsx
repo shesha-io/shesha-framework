@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Select, Row } from 'antd';
-import { CodeEditor, ListEditor } from '@/components';
+import { ListEditor } from '@/components/listEditor';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 import { ILabelValueEditorProps, ILabelValueItem } from '@/components/labelValueEditor/labelValueEditor';
 import { useStyles } from './styles';
@@ -8,6 +9,17 @@ import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { InputComponent } from '.';
 import { getWidth } from '../settingsInput/utils';
+
+const stringToFriendlyMap = new Map<string, string>([['true', 'On'], ['false', 'Off'], ['editable', 'Editable'], ['readOnly', 'Read only'], ['inherited', 'Inherited']]);
+
+export const convertValueToFriendlyString = (value: unknown): string => {
+  if (typeof value === 'string') {
+    return stringToFriendlyMap.has(value) ? stringToFriendlyMap.get(value) : value;
+  }
+
+  return String(value);
+};
+
 export const getEditor = (
   availableConstantsExpression: string,
   codeEditorProps: ICodeEditorProps,
@@ -46,7 +58,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
             propertyName={labelName}
             value={item[labelName]}
             width={getWidth("textField", 100)}
-            onChange={(value) => {
+            onChange={(value: string) => {
               itemOnChange({ ...item, [labelName]: value }, undefined);
             }}
           />
@@ -59,7 +71,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
             propertyName={valueName}
             value={item[valueName]}
             width={getWidth("textField", 100)}
-            onChange={(value) => {
+            onChange={(value: string) => {
               itemOnChange({ ...item, [valueName]: value }, undefined);
             }}
           />
@@ -73,7 +85,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
               propertyName={colorName}
               value={item[colorName]}
               width={getWidth("colorPicker", 24)}
-              onChange={(value) => {
+              onChange={(value: string) => {
                 itemOnChange({ ...item, [colorName]: value }, undefined);
               }}
             />
@@ -110,7 +122,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
             value={item[iconName]}
             iconSize={16}
             width={getWidth("iconPicker", 24)}
-            onChange={(value) => {
+            onChange={(value: string) => {
               itemOnChange({ ...item, [iconName]: value }, undefined);
             }}
           />

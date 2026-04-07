@@ -107,9 +107,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             // Get all user configs
-            var userConfigs = await _entityConfigRepo.GetAll()
-                .Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted)
-                .ToListAsync();
+            var userConfigs = await _entityConfigRepo.GetAllListAsync(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted);
 
             Logger.Warn("DynamicEntityTypeBuilder: CreateDynamicAssemblies");
 
@@ -251,7 +249,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 
         public async Task<Type> CreateTypeAsync(EntityTypeBuilderType typeBuilderType, EntityTypeBuilderContext context)
         {
-            var properties = await _propertyConfigRepo.GetAll().Where(x => x.EntityConfig.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted).ToListAsync();
+            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted);
             var t = await CreateTypeAsync(typeBuilderType, properties, context);
 
             await UpdateSuccessAsync(typeBuilderType.EntityConfig);

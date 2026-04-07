@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxProps } from 'antd';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';

@@ -1,7 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Linq;
 using Abp.MemoryDb;
 using Abp.MemoryDb.Repositories;
 using FluentAssertions;
@@ -103,9 +102,7 @@ namespace Shesha.Tests.ConfigurationItems
             await base.WithUnitOfWorkAsync((Func<Task>)(async() => {
                 var dstFormRepo = Resolve<IRepository<FormConfiguration, Guid>>();
 
-                var formExistsBeforeImport = await dstFormRepo.GetAll()
-                    .Where(f => f.Name == srcForm.Name && f.Module != null && f.Module.Name == srcModule.Name)
-                    .AnyAsync();
+                var formExistsBeforeImport = await dstFormRepo.AnyAsync(f => f.Name == srcForm.Name && f.Module != null && f.Module.Name == srcModule.Name);
                 ShouldBeBooleanExtensions.ShouldBeFalse(formExistsBeforeImport, "Form must not exist before import");
 
                 var dstModuleRepo = Resolve<IRepository<Module, Guid>>();
@@ -120,12 +117,10 @@ namespace Shesha.Tests.ConfigurationItems
                 imported.ShouldNotBeNull();
 
                 var dstModule = srcForm.Module != null
-                    ? await dstModuleRepo.GetAll().FirstOrDefaultAsync(m => m.Name == srcForm.Module.Name)
+                    ? await dstModuleRepo.FirstOrDefaultAsync(m => m.Name == srcForm.Module.Name)
                     : null;
 
-                var importedFormFromRepo = await dstFormRepo.GetAll()
-                    .Where(f => f.Name == srcForm.Name && f.Module == dstModule)
-                    .FirstOrDefaultAsync();
+                var importedFormFromRepo = await dstFormRepo.FirstOrDefaultAsync(f => f.Name == srcForm.Name && f.Module == dstModule);
 
                 importedFormFromRepo.ShouldNotBeNull("Form should be created in the destination DB");
                 importedFormFromRepo.Name.ShouldBe((string)srcForm.Name);
@@ -203,12 +198,10 @@ namespace Shesha.Tests.ConfigurationItems
                 imported.ShouldNotBeNull("Form should be created in the destination DB");
 
                 var dstModule = srcForm.Module != null
-                    ? dstModuleRepo.GetAll().FirstOrDefault(m => m.Name == srcForm.Module.Name)
+                    ? await dstModuleRepo.FirstOrDefaultAsync(m => m.Name == srcForm.Module.Name)
                     : null;
 
-                var importedFormFromRepo = await dstFormRepo.GetAll()
-                    .Where(f => f.Name == srcForm.Name && f.Module == dstModule)
-                    .FirstOrDefaultAsync();
+                var importedFormFromRepo = await dstFormRepo.FirstOrDefaultAsync(f => f.Name == srcForm.Name && f.Module == dstModule);
 
                 var dstForm = await dstFormRepo.GetAsync(dstFormId);
 
@@ -285,7 +278,7 @@ namespace Shesha.Tests.ConfigurationItems
                 var dstForm = await dstFormRepo.GetByByFullName(srcModule.Name, srcForm.Name).FirstOrDefaultAsync();
 
                 var formsCountBeforeImport = await dstFormRepo.CountAsync();
-                var revisionsCountBeforeImport = await dstFormRevisionRepo.GetAll().Where(e => e.ConfigurationItem == dstForm).CountAsync();
+                var revisionsCountBeforeImport = await dstFormRevisionRepo.CountAsync(e => e.ConfigurationItem == dstForm);
 
                 var importer = Resolve<FormConfigurationImport>();
                 var importContext = new PackageImportContext()
@@ -300,7 +293,7 @@ namespace Shesha.Tests.ConfigurationItems
                 var formsCountAfterFirstImport = await dstFormRepo.CountAsync();
                 formsCountAfterFirstImport.ShouldBe(formsCountBeforeImport, "First import should not create new form");
                 
-                var revisionsCountAfterFirstImport = await dstFormRevisionRepo.GetAll().Where(e => e.ConfigurationItem == dstForm).CountAsync();
+                var revisionsCountAfterFirstImport = await dstFormRevisionRepo.CountAsync(e => e.ConfigurationItem == dstForm);
                 revisionsCountAfterFirstImport.ShouldBe(revisionsCountBeforeImport + 1, "First import should create new form revision");
 
                 var imported2 = await importer.ImportItemAsync(exported, importContext) as FormConfiguration;
@@ -311,7 +304,7 @@ namespace Shesha.Tests.ConfigurationItems
                 var formsCountAfterSecondImport = await dstFormRepo.CountAsync();
                 formsCountAfterSecondImport.ShouldBe(formsCountBeforeImport, "Second import shouldn't create new form");
 
-                var revisionsCountAfterSecondImport = await dstFormRevisionRepo.GetAll().Where(e => e.ConfigurationItem == dstForm).CountAsync();
+                var revisionsCountAfterSecondImport = await dstFormRevisionRepo.CountAsync(e => e.ConfigurationItem == dstForm);
                 revisionsCountAfterSecondImport.ShouldBe(revisionsCountAfterFirstImport, "Second import shouldn't create new form revision");
 
                 await uow.CompleteAsync();
@@ -340,12 +333,7 @@ namespace Shesha.Tests.ConfigurationItems
                 "form-templates", "form-template-create", "form-template-details",
                 "modules", "module-create", "module-details"            };
             await WithUnitOfWorkAsync(async () => {
-                var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
-                var items = await asyncExecuter.ToListAsync(itemsBaseRepo.GetAll()
-                    // TODO: V1 review
-                    //.Where(i => i.IsLast)
-                    .Where(i => i.Module != null && i.Module.Name.ToLower() == "shesha" && formsToExport.Contains(i.Name))
-                );
+                var items = await itemsBaseRepo.GetAllListAsync(i => i.Module != null && i.Module.Name.ToLower() == "shesha" && formsToExport.Contains(i.Name));
 
                 var exportContext = new PreparePackageContext(items, LocalIocManager);
                 var exportResult = await packageManager.PreparePackageAsync(exportContext);
@@ -388,7 +376,7 @@ namespace Shesha.Tests.ConfigurationItems
             await WithUnitOfWorkAsync(async () => {
                 using (uowManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
                 {
-                    var module = await moduleRepo.GetAll().FirstOrDefaultAsync(e => e.Name == moduleName);
+                    var module = await moduleRepo.FirstOrDefaultAsync(e => e.Name == moduleName);
                     if (module != null && module.IsDeleted) 
                     {
                         module.IsDeleted = false;
@@ -430,7 +418,7 @@ namespace Shesha.Tests.ConfigurationItems
             });
 
             await WithUnitOfWorkAsync(async() => {
-                var module = await moduleRepo.GetAll().FirstOrDefaultAsync(e => e.Name == moduleName);
+                var module = await moduleRepo.FirstOrDefaultAsync(e => e.Name == moduleName);
                 module.ShouldNotBeNull($"Module '{moduleName}' should be imported from the package");
 
                 var formRepo = Resolve<IRepository<FormConfiguration, Guid>>();
@@ -448,7 +436,7 @@ namespace Shesha.Tests.ConfigurationItems
 
         private async Task<Module> GetOrCreateModuleAsync(IRepository<Module, Guid> repo, string moduleName) 
         {
-            var module = await repo.GetAll().FirstOrDefaultAsync(e => e.Name == moduleName);
+            var module = await repo.FirstOrDefaultAsync(e => e.Name == moduleName);
             if (module == null) 
             {
                 module = await repo.InsertAsync(new Module { Name = moduleName });

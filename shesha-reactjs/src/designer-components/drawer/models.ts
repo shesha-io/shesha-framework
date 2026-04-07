@@ -1,7 +1,7 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
-import { IInputStyles } from '@/index';
 import { IBackgroundValue } from '../_settings/utils/background/interfaces';
+import { IInputStyles } from '@/providers/form/models';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
   showFooter?: boolean;

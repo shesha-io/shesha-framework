@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Abp.Runtime.Security;
+using Shesha.Authentication.JwtBearer;
 using Shesha.Configuration;
 
 namespace Shesha.Web.Host.Startup
@@ -47,7 +48,8 @@ namespace Shesha.Web.Host.Startup
 
                     options.Events = new JwtBearerEvents
                     {
-                        OnMessageReceived = QueryStringTokenResolver
+                        OnMessageReceived = QueryStringTokenResolver,
+                        OnTokenValidated = async context => await context.EnsureTokenIsNotBlacklistedAsync()
                     };
                 });
             }

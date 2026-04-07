@@ -58,7 +58,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			_hostEnvironment = hostEnvironment;
 		}
 
-		public IServiceProvider ConfigureServices(IServiceCollection services)
+		public void ConfigureServices(IServiceCollection services)
 		{
 			services.UseDynamicWebApi();
 
@@ -134,7 +134,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 			// Add ABP and initialize 
 			// Configure Abp and Dependency Injection
-			return services.AddAbp<SheshaWebHostModule>(
+			services.AddAbpWithoutCreatingServiceProvider<SheshaWebHostModule>(
 				options =>
 				{
 					// Configure Log4Net logging

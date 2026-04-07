@@ -1,6 +1,6 @@
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { customOnClickEventHandler, getEventHandlers } from '@/components/formDesigner/components/utils';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles, useForm } from '@/providers';
@@ -53,8 +53,8 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const allData = useAvailableConstantsData();
     const { formMode } = useForm();
     const { allStyles } = model;
-    const valueFont = model?.valueFont;
-    const titleFont = model?.titleFont;
+    const valueFont = model.valueFont;
+    const titleFont = model.titleFont;
     const valueStyles = getStyle(valueStyle);
     const titleStyles = getStyle(titleStyle);
     const valueFontStyles = useMemo(() => getFontStyle(valueFont), [valueFont]);

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { CSSProperties, FC, PropsWithChildren, useEffect, useState } from 'react';
-import { ContentType, ITextTypographyProps, ITypographyProps } from './models';
+import { ContentType, ITextComponentProps, ITypographyProps } from './models';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TitleProps } from 'antd/lib/typography/Title';
 import { BaseType } from 'antd/lib/typography/Base';
@@ -13,7 +13,7 @@ const { Paragraph, Title } = Typography;
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
 interface IGenericTextProps
-  extends Omit<ITextTypographyProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content' | 'value'> {
+  extends Omit<ITextComponentProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content' | 'value'> {
   style?: CSSProperties;
 }
 
@@ -66,14 +66,14 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   const chosenType: BaseType | undefined = contentType === 'secondary' ? undefined : (contentType as BaseType);
 
   const baseProps: ITypographyProps = {
-    code: model?.code,
-    copyable: model?.copyable,
-    delete: model?.delete,
-    ellipsis: model?.ellipsis,
-    mark: model?.mark,
-    underline: model?.underline,
-    keyboard: model?.keyboard,
-    italic: model?.italic,
+    code: model.code,
+    copyable: model.copyable,
+    delete: model.delete,
+    ellipsis: model.ellipsis,
+    mark: model.mark,
+    underline: model.underline,
+    keyboard: model.keyboard,
+    italic: model.italic,
     type: chosenType,
     style: {
       padding: 0,
@@ -88,7 +88,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   const paragraphProps: ParagraphProps = {
     ...baseProps,
-    strong: model?.strong,
+    strong: model.strong,
   };
 
   const titleProps: TitleProps = {

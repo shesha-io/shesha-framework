@@ -1,7 +1,7 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import DataTableProvider from '@/providers/dataTable';
 import React, { FC, ReactElement, useMemo } from 'react';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
 import { useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';

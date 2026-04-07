@@ -12,7 +12,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export type ComponentType = 'input' | 'output';
 
-interface ComponentSelectorValue {
+export interface ComponentSelectorValue {
   type: string;
   settings?: IConfigurableFormComponent;
 }

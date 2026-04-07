@@ -1,13 +1,6 @@
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import KanbanReactComponent from '@/components/kanban';
 import { IKanbanProps } from '@/components/kanban/model';
-import {
-  getStyle,
-  IToolboxComponent,
-  useDataTableStoreOrUndefined,
-  useSheshaApplication,
-  validateConfigurableComponentSettings,
-} from '@/index';
 import { RefListItemGroupConfiguratorProvider } from '@/components/refListSelectorDisplay/provider';
 import { removeUndefinedProps } from '@/utils/object';
 import { FormOutlined } from '@ant-design/icons';
@@ -19,6 +12,10 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultColumnStyles, defaultStyles } from './utils';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
+import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -32,8 +29,8 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     const { httpHeaders, backendUrl } = useSheshaApplication();
     const { background: columnBackground, border: columnBorder, shadow: columnShadow } = model.columnStyles;
     const { shadow, border, background } = model;
-    const headerStyle = getStyle(model?.headerStyles as string, data);
-    const columnStyle = getStyle(model?.columnStyle as string, data);
+    const headerStyle = getStyle(model.headerStyles as string, data);
+    const columnStyle = getStyle(model.columnStyle as string, data);
     const borderStyles = useMemo(() => getBorderStyle(border, headerStyle), [border, headerStyle]);
     const columnBorderStyles = useMemo(() => getBorderStyle(columnBorder, columnStyle), [columnBorder, columnStyle]);
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);

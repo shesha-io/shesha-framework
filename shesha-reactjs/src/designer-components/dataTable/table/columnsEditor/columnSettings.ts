@@ -1,5 +1,5 @@
 import { FormBuilderFactory } from "@/form-factory/interfaces";
-import { FormMarkupWithSettings } from "@/index";
+import { FormMarkupWithSettings } from "@/providers/form/models";
 import { isDefined } from "@/utils/nullables";
 
 export const getColumnSettings = (fbf: FormBuilderFactory, data?: object): FormMarkupWithSettings => {

@@ -46,10 +46,13 @@ const strictFolders = isLightBuild
     : [
         "src/configuration-studio",
         "src/providers",
+        "src/interfaces",
         "src/utils",
         "src/hooks",
         "src/designer-components/_settings/utils/background",
         "src/form-factory",
+        "src/publicJsApis",
+        "src/designer-components/_settings/utils/background",        
     ];
 
 const stylisticOverrides = {
@@ -291,7 +294,7 @@ const baseTsConfig = {
         "react/prop-types": ["off"],
         "require-await": "error",
         "no-restricted-imports": ["error", {
-            paths: ["@/utils/publicUtils",
+            paths: ["@/utils/publicUtils", "@/index", "@/components",
                 {
                     name: "nanoid/non-secure",
                     message: "Please import nanoid from `@/utils/uuid` instead.",

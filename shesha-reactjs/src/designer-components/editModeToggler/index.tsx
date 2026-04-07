@@ -1,10 +1,13 @@
 import { Space } from 'antd';
 import React from 'react';
-import { AppEditModeToggler, IToolboxComponentBase, PERM_APP_CONFIGURATOR, ProtectedContent } from '@/index';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider';
 import { SwapOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
+import { IToolboxComponentBase } from '@/interfaces/formDesigner';
+import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
+import ProtectedContent from '@/components/protectedContent';
+import AppEditModeToggler from '@/components/appConfigurator/editModeToggler';
 
 const HeaderAppControl: IToolboxComponentBase = {
   type: 'headerAppControl',
