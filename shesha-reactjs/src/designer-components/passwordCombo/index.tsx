@@ -31,26 +31,11 @@ const CONFIRM_MATCH_VALIDATOR = `
   }
 `;
 
-const PASSWORD_STRENGTH_VALIDATOR = `
-  try {
-    const pwd = typeof value === 'string' ? value : '';
-    const errors = [];
-    if (pwd.length < __MIN_LENGTH__) errors.push('at least __MIN_LENGTH__ characters');
-    if (errors.length > 0) return Promise.reject('Password must contain ' + errors.join(', '));
-    else return Promise.resolve();
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error('[TextField] Password validator error:', msg);
-    return Promise.reject('Password validation failed: ' + msg);
-  }
-`;
-
 export const migratePasswordComboToTextField = (
   prev: IPasswordComponentProps,
   context: SettingsMigrationContext,
 ): ITextFieldComponentProps => {
   const { flatStructure } = context;
-  const minLength = prev.minLength ?? 4;
 
   const confirmId = nanoid();
   const confirmComponent: ITextFieldComponentProps = {
@@ -102,10 +87,6 @@ export const migratePasswordComboToTextField = (
     parentId: prev.parentId,
     validate: {
       required: prev.validate?.required,
-      minLength: minLength,
-      validator: PASSWORD_STRENGTH_VALIDATOR
-        .replace(/__MIN_LENGTH__/g, String(minLength)),
-      message: prev.message || 'Password does not meet strength requirements',
     },
     version: 6,
     ...textFieldDefaultStyles(),

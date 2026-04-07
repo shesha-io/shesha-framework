@@ -63,7 +63,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     );
 
     const modelWithValidation = useMemo(() => {
-      if (!isPassword || !passwordValidator) return model;
+      if (!isPassword || !passwordValidator || model.validate?.validator) return model;
       return {
         ...model,
         validate: {
