@@ -48,9 +48,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
   const isSmall = useMedia('(max-width: 480px)');
   const groupDepth = getJsonLogicGroupDepth(draftLogic);
-  const modalWidth = isSmall
-    ? '90%'
-    : `min(${baseQueryBuilderModalWidth + Math.max(0, groupDepth - 1) * queryBuilderModalWidthStep}px, calc(100vw - 48px))`;
+  const modalWidth = baseQueryBuilderModalWidth;
   const modalStyles = isSmall ? undefined : {
     content: {
       height: 585,

@@ -33,7 +33,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-canvas {
-            --sha-query-builder-prefix-width: 88px;
+            --sha-query-builder-prefix-width: 70px;
             width: 100%;
             min-width: 0;
             overflow: hidden;
@@ -168,7 +168,49 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-group-card.is-drop-append {
-            box-shadow: inset 0 0 0 2px ${token.colorPrimary};
+            border-color: ${token.colorPrimary};
+            box-shadow: 0 0 0 2px ${token.colorPrimaryBg};
+            background: color-mix(in srgb, ${token.colorPrimary} 8%, #4b6384);
+        }
+
+        .sha-query-builder-group-card.is-drop-append > .sha-query-builder-group-children:empty,
+        .sha-query-builder-group-card.is-drop-append > .sha-query-builder-group-children:has(.sha-query-builder-drop-placeholder:only-child) {
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sha-query-builder-drop-placeholder {
+            position: relative;
+            height: 2px;
+            background: ${token.colorPrimary};
+            border-radius: 999px;
+            margin: 4px 0;
+        }
+
+        .sha-query-builder-drop-placeholder::before {
+            content: "";
+            position: absolute;
+            left: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: ${token.colorPrimary};
+        }
+
+        .sha-query-builder-drop-placeholder::after {
+            content: "";
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: ${token.colorPrimary};
         }
 
         .sha-query-builder-group-header {
@@ -373,12 +415,31 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             overflow: hidden;
         }
 
+        .sha-query-builder-rule-scroll {
+            overflow-x: hidden;
+            overflow-y: hidden;
+            min-width: 100%;
+        }
+
+        .sha-query-builder-rule-scroll:has(.sha-query-builder-mustache-expression-input) {
+            overflow-x: auto;
+        }
+
+        .group--children .sha-query-builder-rule-scroll,
+        .sha-query-builder-group-children .sha-query-builder-rule-scroll {
+            overflow-x: auto;
+        }
+
+        .sha-query-builder-group-children .sha-query-builder-item-shell {
+            overflow: visible;
+        }
+
         .sha-query-builder-rule-row {
-            width: 100%;
-            min-width: 0;
-            min-height: 58px;
+            width: 871px;
+            min-width: 871px;
+            min-height: 32px;
             display: grid;
-            grid-template-columns: minmax(0, 200px) 155px minmax(0, 1fr);
+            grid-template-columns: 200px 155px 1fr;
             align-items: center;
             gap: 10px;
             padding: 13px 10px;
@@ -387,7 +448,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
 
         .sha-query-builder-rule-row.has-field-func {
-            grid-template-columns: minmax(0, 1fr) 155px minmax(0, 1fr);
+            grid-template-columns: 1fr 155px 1fr;
         }
 
         .sha-query-builder-rule-row.is-unary {
@@ -401,30 +462,29 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-rule-row.is-unary .sha-query-builder-value-shell.is-function {
-            width: 418px;
-            max-width: 100%;
+            width: 409px;
         }
 
         .sha-query-builder-rule-row.is-deep-nested {
             display: grid;
-            grid-template-columns: minmax(0, 200px) 155px minmax(0, 1fr);
+            grid-template-columns: 200px 155px 1fr;
             align-items: center;
             gap: 10px;
+            width: 871px;
+            min-width: 871px;
         }
 
         .sha-query-builder-rule-row.is-deep-nested.has-field-func {
-            grid-template-columns: minmax(0, 1fr) 155px minmax(0, 1fr);
+            grid-template-columns: 1fr 155px 1fr;
         }
 
         .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-packed-control,
         .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-value-shell.is-function {
             width: 100%;
-            max-width: none;
-            flex: 0 0 auto;
+            min-width: 0;
         }
 
         .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-operator-slot {
-            flex: 0 0 auto;
             width: 155px;
             min-width: 155px;
             max-width: 155px;
@@ -434,7 +494,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             width: 100%;
             min-width: 0;
             max-width: none;
-            flex: 0 0 auto;
         }
 
         .sha-query-builder-item-rail {
@@ -565,8 +624,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-source-slot {
-            width: 60px;
-            min-width: 60px;
+            width: 58px;
+            min-width: 58px;
             height: 32px;
             border-right: 1px solid #d0d5dd;
             background: #f9fafb;
@@ -585,7 +644,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-source-dropdown-trigger,
         .sha-query-builder-source-trigger {
-            width: 100%;
+            width: 58px;
             height: 100%;
         }
 
@@ -597,7 +656,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0;
+            gap: 0 !important;
             box-shadow: none;
         }
 
@@ -610,11 +669,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .sha-query-builder-source-trigger-icon .anticon,
-        .sha-query-builder-source-trigger-arrow.anticon {
-            font-size: 20px;
         }
 
         .sha-query-builder-source-trigger-label {
@@ -733,7 +787,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-value-shell {
-            width: 100%;
+            width: 409px;
             min-width: 0;
             max-width: none;
             min-height: 32px;
@@ -748,7 +802,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-value-shell.is-function {
-            grid-template-columns: 60px minmax(0, 1fr) 54px;
+            grid-template-columns: 60px minmax(0, 1fr) 33px;
+        }
+
+        .sha-query-builder-value-shell.is-function:has(.sha-query-builder-ignore-unassigned.is-checked) {
+            grid-template-columns: 60px minmax(0, 1fr) auto;
         }
 
         .sha-query-builder-value-shell--empty {
@@ -849,11 +907,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-func-checkbox {
-            width: 54px;
-            min-width: 54px;
-            height: 32px;
+            width: 100%;
+            min-width: 0;
+            height: 100%;
             border-left: 1px solid #d0d5dd;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             background: #fff;
@@ -1685,7 +1743,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
             cursor: pointer;
             box-sizing: border-box;
             transition: background-color 0.15s ease, color 0.15s ease;
@@ -2007,10 +2064,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             align-items: center;
             justify-content: center;
             gap: 0;
-            width: 100%;
-            height: 100%;
-            padding: 0 3px;
+            width: 33px;
+            height: 32px;
+            padding: 10px 4px;
             box-sizing: border-box;
+        }
+
+        .sha-query-builder-ignore-unassigned.is-checked {
+            width: auto;
         }
 
         .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-wrapper,
@@ -2841,14 +2902,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         /* ── Ignore-if-unassigned: compact right-side addon with divider ── */
 
         .query-builder .rule--value:has(.sha-query-builder-mustache-expression-input) [class*="rule--func--arg--ignoreIfUnassigned"] {
-            flex: 0 0 48px !important;
-            width: 48px !important;
-            min-width: 48px !important;
-            padding: 0 8px !important;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: 33px !important;
+            padding: 0 !important;
             border-left: 1px solid #d0d5dd !important;
             opacity: 1 !important;
             overflow: hidden !important;
             pointer-events: auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] {
@@ -2856,7 +2920,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             width: auto !important;
             height: 30px !important;
             margin: 0 !important;
-            padding: 0 8px !important;
+            padding: 0 !important;
             border-left: 1px solid #d0d5dd !important;
             display: flex !important;
             align-items: center !important;
@@ -2867,12 +2931,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .rule--func--arg-value {
             display: flex !important;
             align-items: center !important;
+            justify-content: center !important;
             height: 100% !important;
         }
 
         .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .rule--func--arg-value > .rule--widget {
             display: flex !important;
             align-items: center !important;
+            justify-content: center !important;
             height: 100% !important;
             width: auto !important;
             flex: 0 0 auto !important;
@@ -2881,6 +2947,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .query-builder .rule--value [class*="rule--func--arg--ignoreIfUnassigned"] .widget--widget {
             display: flex !important;
             align-items: center !important;
+            justify-content: center !important;
             flex: 0 0 auto !important;
             width: auto !important;
             height: auto !important;

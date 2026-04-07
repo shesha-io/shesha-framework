@@ -1147,13 +1147,15 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
           />
         ) : (
           <div className="sha-query-builder-item-shell">
-            <QueryRuleRow
-              node={node}
-              path={path}
-              config={config}
-              actions={actions}
-              readOnly={readOnly}
-            />
+            <div className="sha-query-builder-rule-scroll">
+              <QueryRuleRow
+                node={node}
+                path={path}
+                config={config}
+                actions={actions}
+                readOnly={readOnly}
+              />
+            </div>
             <QueryBuilderItemAction
               action="delete"
               disabled={!canDelete}
@@ -1350,6 +1352,9 @@ function QueryBuilderGroup({
             onDropAppend={onDropAppend}
           />
         ))}
+        {children.length === 0 && dropHint?.placement === 'append' && dropHint?.path && getPathKey(dropHint.path) === getPathKey(path) && (
+          <div className="sha-query-builder-drop-placeholder" />
+        )}
       </div>
     </div>
   );
