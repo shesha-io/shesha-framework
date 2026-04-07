@@ -1405,12 +1405,14 @@ export const CustomQueryBuilder: React.FC<BuilderProps> = ({ actions, config, tr
       return;
 
     event.preventDefault();
+    event.stopPropagation();
     setDropHint({ path, placement });
     event.dataTransfer.dropEffect = 'move';
   }, [canAcceptDrop]);
 
   const onDropOnItem = React.useCallback((path: string[]) => (event: React.DragEvent<HTMLDivElement>): void => {
     event.preventDefault();
+    event.stopPropagation();
     const bounds = event.currentTarget.getBoundingClientRect();
     const placement: DropPlacement = event.clientY < bounds.top + (bounds.height / 2) ? 'before' : 'after';
     if (!dragState || !canAcceptDrop(path, placement)) {
