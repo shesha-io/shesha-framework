@@ -11,7 +11,6 @@ import { useStyles } from './styles/styles';
 const queryBuilderTabKey = 'queryBuilderTab';
 const jsonInputTabKey = 'jsonInputTab';
 const baseQueryBuilderModalWidth = 1038;
-const queryBuilderModalWidthStep = 72;
 
 const getJsonLogicGroupDepth = (node: unknown): number => {
   if (!node || typeof node !== 'object' || Array.isArray(node))
@@ -47,7 +46,6 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const [activeTab, setActiveTab] = useState(queryBuilderTabKey);
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
   const isSmall = useMedia('(max-width: 480px)');
-  const groupDepth = getJsonLogicGroupDepth(draftLogic);
   const modalWidth = baseQueryBuilderModalWidth;
   const modalStyles = isSmall ? undefined : {
     content: {

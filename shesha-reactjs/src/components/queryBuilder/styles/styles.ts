@@ -164,13 +164,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-sizing: border-box;
             border-radius: 12px;
             border: 1px solid #2b78e4;
-            background: #4b6384;
+            background: #2B78E44D;
         }
 
         .sha-query-builder-group-card.is-drop-append {
             border-color: ${token.colorPrimary};
             box-shadow: 0 0 0 2px ${token.colorPrimaryBg};
-            background: color-mix(in srgb, ${token.colorPrimary} 8%, #4b6384);
+            background: color-mix(in srgb, ${token.colorPrimary} 15%, #2B78E44D);
         }
 
         .sha-query-builder-group-card.is-drop-append > .sha-query-builder-group-children:empty,
