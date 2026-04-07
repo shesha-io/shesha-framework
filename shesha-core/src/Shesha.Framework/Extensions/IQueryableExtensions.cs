@@ -197,5 +197,14 @@ namespace Shesha.Extensions
         }
 
         #endregion
+
+        /// <summary>
+        /// Sets queryable as read-only. Is used for optimization. It disabled additional logic that is applied to mutable entities (e.g. dirty checking)
+        /// </summary>
+        public static IQueryable<T> SetReadOnly<T>(this IQueryable<T> queryable) 
+        {
+            var fetcher = StaticContext.IocManager.Resolve<IEntityFetcher>();
+            return fetcher.SetReadOnly(queryable);
+        }
     }
 }
