@@ -502,8 +502,14 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const inlinePortalRef = useRef<HTMLDivElement>(null);
 
   const [inlineDropdownStyle, setInlineDropdownStyle] = useState<React.CSSProperties>({
+    top: 0,
+    left: 0,
+    width: 0,
+  });
+  const [inlineEditorStyle, setInlineEditorStyle] = useState<React.CSSProperties>({
     top: 0,
     left: 0,
     width: 0,
@@ -557,25 +563,43 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     });
   }, []);
 
+  const updateInlineEditorPosition = useCallback(() => {
+    const anchor = wrapperRef.current;
+    if (!anchor) return;
+
+    const rect = anchor.getBoundingClientRect();
+
+    setInlineEditorStyle({
+      position: 'fixed',
+      top: rect.top,
+      left: rect.left,
+      width: rect.width,
+    });
+  }, []);
+
   const openEditor = useCallback(() => {
     if (disabled) return;
 
     setIsFocused(true);
     setIsExpanded(!inline);
     if (inline) {
+      updateInlineEditorPosition();
       updateInlineDropdownPosition();
     }
     requestAnimationFrame(() => {
-      const textarea = textareaRef.current;
-      if (!textarea) return;
+      requestAnimationFrame(() => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
 
-      const cursorPos = textarea.value.length;
-      textarea.focus();
-      textarea.setSelectionRange(cursorPos, cursorPos);
-      updateSuggestions(textarea.value, cursorPos);
-      updateInlineDropdownPosition();
+        const cursorPos = textarea.value.length;
+        textarea.focus();
+        textarea.setSelectionRange(cursorPos, cursorPos);
+        updateSuggestions(textarea.value, cursorPos);
+        updateInlineEditorPosition();
+        updateInlineDropdownPosition();
+      });
     });
-  }, [disabled, inline, updateInlineDropdownPosition, updateSuggestions]);
+  }, [disabled, inline, updateInlineDropdownPosition, updateInlineEditorPosition, updateSuggestions]);
 
   const expandEditor = useCallback(() => {
     if (disabled) return;
@@ -694,7 +718,8 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     const nextTarget = event.relatedTarget as Node | null;
     if (nextTarget && (
       wrapperRef.current?.contains(nextTarget) ||
-      dropdownRef.current?.contains(nextTarget)
+      dropdownRef.current?.contains(nextTarget) ||
+      inlinePortalRef.current?.contains(nextTarget)
     )) {
       return;
     }
@@ -754,6 +779,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
 
     const handleWindowChange = (): void => {
       if (!isExpanded) {
+        updateInlineEditorPosition();
         updateInlineDropdownPosition();
       }
     };
@@ -766,7 +792,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       window.removeEventListener('resize', handleWindowChange);
       window.removeEventListener('scroll', handleWindowChange, true);
     };
-  }, [isExpanded, isFocused, updateInlineDropdownPosition]);
+  }, [isExpanded, isFocused, updateInlineDropdownPosition, updateInlineEditorPosition]);
 
   useEffect(() => {
     if (!isFocused || isExpanded)
@@ -778,6 +804,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
 
       if (wrapperRef.current?.contains(target)) return;
       if (dropdownRef.current?.contains(target)) return;
+      if (inlinePortalRef.current?.contains(target)) return;
       closeEditor();
     };
 
@@ -912,28 +939,31 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
 
   return (
     <div ref={wrapperRef} className={joinClassNames('sha-expression-editor', className, (inline || isExpanded) && 'is-expanded', inline && 'is-inline', disabled && 'is-disabled')}>
-      {inline && !isExpanded && isFocused ? (
-        renderEditorSurface('inline')
-      ) : (
-        <button
-          type="button"
-          className={joinClassNames(
-            'sha-expression-editor-preview',
-            resolvedControlClassName,
-            !hasValue && 'is-placeholder',
-          )}
-          title={hasValue ? value : placeholder}
-          onClick={openEditor}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              openEditor();
-            }
-          }}
-          disabled={disabled}
-        >
-          {renderPreviewContent()}
-        </button>
+      <button
+        type="button"
+        className={joinClassNames(
+          'sha-expression-editor-preview',
+          resolvedControlClassName,
+          !hasValue && 'is-placeholder',
+        )}
+        title={hasValue ? value : placeholder}
+        onClick={openEditor}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openEditor();
+          }
+        }}
+        disabled={disabled}
+      >
+        {renderPreviewContent()}
+      </button>
+
+      {inline && !isExpanded && isFocused && typeof document !== 'undefined' && createPortal(
+        <div ref={inlinePortalRef} className="sha-expression-editor-inline-portal" style={inlineEditorStyle}>
+          {renderEditorSurface('inline')}
+        </div>,
+        document.body,
       )}
 
       {!isExpanded && isFocused && typeof document !== 'undefined' && createPortal(
@@ -949,7 +979,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
         okText="Ok"
         cancelText="Cancel"
         width={560}
-        destroyOnClose
+        destroyOnHidden
         className="sha-expression-editor-modal"
         afterOpenChange={(open) => {
           if (open) {

@@ -121,6 +121,35 @@
   z-index: auto;
 }
 
+.sha-expression-editor-inline-portal {
+  z-index: 1200;
+  box-sizing: border-box;
+}
+
+.sha-expression-editor-inline-portal .sha-expression-editor-overlay {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  z-index: auto;
+  background: #fff;
+  border-radius: 6px;
+  border: none;
+  box-shadow: 0 0 0 1px #2b78e4, 0 4px 16px rgba(15, 23, 42, 0.12);
+}
+
+.sha-expression-editor-inline-portal .sha-expression-editor-input {
+  min-height: 80px;
+  padding: 6px 4px 4px;
+}
+
+.sha-expression-editor-inline-portal .sha-expression-editor-backdrop-content {
+  padding: 6px 4px 4px;
+}
+
 .sha-expression-editor-modal .ant-modal-body {
   padding: 12px 16px;
 }
