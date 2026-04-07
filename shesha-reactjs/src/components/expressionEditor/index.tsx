@@ -1,6 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { FullscreenOutlined } from '@ant-design/icons';
+import { FullscreenOutlined, FunctionOutlined } from '@ant-design/icons';
+import { Modal } from 'antd';
 import {
   getMustacheFunctionDefinitions,
 } from '@/utils/mustacheExpressionFunctions';
@@ -475,7 +476,6 @@ const joinClassNames = (...classNames: Array<string | undefined | null | false>)
 };
 
 const toPreviewText = (value: string): string => value.replace(/\s+/g, ' ').trim();
-const FLOATING_EDITOR_WIDTH = 400;
 const FLOATING_EDITOR_VIEWPORT_PADDING = 12;
 
 export const ExpressionEditor: FC<ExpressionEditorProps> = ({
@@ -495,18 +495,14 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [suggestions, setSuggestions] = useState<ExpressionSuggestion[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [draftValue, setDraftValue] = useState<string | null>(null);
+  const valueBeforeExpandRef = useRef<string>('');
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
 
-  const [floatingStyle, setFloatingStyle] = useState<React.CSSProperties>({
-    top: 0,
-    left: 0,
-    width: 0,
-  });
   const [inlineDropdownStyle, setInlineDropdownStyle] = useState<React.CSSProperties>({
     top: 0,
     left: 0,
@@ -521,9 +517,11 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     });
     return names;
   }, [functionDefinitions]);
+  const activeValue = isExpanded && draftValue !== null ? draftValue : value;
+
   const highlightTokens = useMemo(
-    () => highlightText(value ?? '', knownFunctionNames),
-    [knownFunctionNames, value],
+    () => highlightText(activeValue ?? '', knownFunctionNames),
+    [knownFunctionNames, activeValue],
   );
   const showDropdown = isFocused && suggestions.length > 0;
 
@@ -537,26 +535,6 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     setIsFocused(false);
     setSuggestions([]);
     setIsExpanded(false);
-  }, []);
-
-  const updateFloatingPosition = useCallback(() => {
-    const anchor = wrapperRef.current;
-    if (!anchor) return;
-
-    const rect = anchor.getBoundingClientRect();
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-    const availableWidth = Math.max(0, viewportWidth - (FLOATING_EDITOR_VIEWPORT_PADDING * 2));
-    const preferredWidth = Math.max(Math.ceil(rect.width), FLOATING_EDITOR_WIDTH);
-    const nextWidth = Math.min(preferredWidth, availableWidth);
-    const minLeft = FLOATING_EDITOR_VIEWPORT_PADDING;
-    const maxLeft = Math.max(minLeft, viewportWidth - FLOATING_EDITOR_VIEWPORT_PADDING - nextWidth);
-    const nextLeft = Math.min(Math.max(rect.left, minLeft), maxLeft);
-
-    setFloatingStyle({
-      top: rect.top,
-      left: nextLeft,
-      width: nextWidth,
-    });
   }, []);
 
   const updateInlineDropdownPosition = useCallback(() => {
@@ -586,8 +564,6 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     setIsExpanded(!inline);
     if (inline) {
       updateInlineDropdownPosition();
-    } else {
-      updateFloatingPosition();
     }
     requestAnimationFrame(() => {
       const textarea = textareaRef.current;
@@ -599,31 +575,41 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       updateSuggestions(textarea.value, cursorPos);
       updateInlineDropdownPosition();
     });
-  }, [disabled, inline, updateFloatingPosition, updateInlineDropdownPosition, updateSuggestions]);
+  }, [disabled, inline, updateInlineDropdownPosition, updateSuggestions]);
 
   const expandEditor = useCallback(() => {
     if (disabled) return;
 
+    valueBeforeExpandRef.current = value;
+    setDraftValue(value);
     setIsFocused(true);
     setIsExpanded(true);
-    updateFloatingPosition();
-    requestAnimationFrame(() => {
-      const textarea = textareaRef.current;
-      if (!textarea) return;
+  }, [disabled, value]);
 
-      const cursorPos = textarea.selectionStart ?? textarea.value.length;
-      textarea.focus();
-      textarea.setSelectionRange(cursorPos, cursorPos);
-      updateSuggestions(textarea.value, cursorPos);
-    });
-  }, [disabled, updateFloatingPosition, updateSuggestions]);
+  const confirmModal = useCallback(() => {
+    if (draftValue !== null) {
+      onChange(draftValue);
+    }
+    setDraftValue(null);
+    setIsFocused(false);
+    setSuggestions([]);
+    setIsExpanded(false);
+  }, [draftValue, onChange]);
+
+  const cancelModal = useCallback(() => {
+    onChange(valueBeforeExpandRef.current);
+    setDraftValue(null);
+    setIsFocused(false);
+    setSuggestions([]);
+    setIsExpanded(false);
+  }, [onChange]);
 
   const insertSuggestion = useCallback((suggestion: ExpressionSuggestion) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
     const cursorPos = textarea.selectionStart;
-    const mustacheContext = getMustacheContext(value, cursorPos);
+    const mustacheContext = getMustacheContext(activeValue, cursorPos);
     if (!mustacheContext) return;
 
     const { partial } = mustacheContext;
@@ -632,7 +618,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     let replaceStart = cursorPos - token.length;
 
     if (prefixPath.length === 0) {
-      const beforeCursor = value.slice(mustacheContext.startPos, cursorPos);
+      const beforeCursor = activeValue.slice(mustacheContext.startPos, cursorPos);
       let tokenStartInPartial = 0;
       let inString = false;
       let stringChar = '';
@@ -665,10 +651,14 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       replaceStart = mustacheContext.startPos + tokenStartInPartial;
     }
 
-    const nextValue = value.slice(0, replaceStart) + suggestion.insertText + value.slice(replaceEnd);
+    const nextValue = activeValue.slice(0, replaceStart) + suggestion.insertText + activeValue.slice(replaceEnd);
     const nextCursorPos = replaceStart + suggestion.insertText.length;
 
-    onChange(nextValue);
+    if (isExpanded) {
+      setDraftValue(nextValue);
+    } else {
+      onChange(nextValue);
+    }
     setSuggestions([]);
 
     requestAnimationFrame(() => {
@@ -679,40 +669,45 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
         updateSuggestions(nextValue, nextCursorPos);
       }
     });
-  }, [onChange, updateSuggestions, value]);
+  }, [activeValue, isExpanded, onChange, updateSuggestions]);
 
   const handleChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const nextValue = event.target.value;
     const cursorPos = event.target.selectionStart;
-    onChange(nextValue);
+    if (isExpanded) {
+      setDraftValue(nextValue);
+    } else {
+      onChange(nextValue);
+    }
     updateSuggestions(nextValue, cursorPos);
-  }, [onChange, updateSuggestions]);
+  }, [isExpanded, onChange, updateSuggestions]);
 
   const handleSelect = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-    updateSuggestions(value, textarea.selectionStart);
-  }, [updateSuggestions, value]);
+    updateSuggestions(activeValue, textarea.selectionStart);
+  }, [updateSuggestions, activeValue]);
 
   const handleBlur = useCallback((event: React.FocusEvent<HTMLTextAreaElement>) => {
+    if (isExpanded) return;
+
     const nextTarget = event.relatedTarget as Node | null;
     if (nextTarget && (
       wrapperRef.current?.contains(nextTarget) ||
-      overlayRef.current?.contains(nextTarget) ||
       dropdownRef.current?.contains(nextTarget)
     )) {
       return;
     }
 
     closeEditor();
-  }, [closeEditor]);
+  }, [closeEditor, isExpanded]);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((event.ctrlKey || event.metaKey) && event.key === ' ') {
       event.preventDefault();
       const textarea = textareaRef.current;
       if (!textarea) return;
-      updateSuggestions(value, textarea.selectionStart);
+      updateSuggestions(activeValue, textarea.selectionStart);
       return;
     }
 
@@ -745,7 +740,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       default:
         break;
     }
-  }, [activeIndex, closeEditor, insertSuggestion, showDropdown, suggestions, updateSuggestions, value]);
+  }, [activeIndex, activeValue, closeEditor, insertSuggestion, showDropdown, suggestions, updateSuggestions]);
 
   useEffect(() => {
     if (!showDropdown || !dropdownRef.current) return;
@@ -758,9 +753,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       return undefined;
 
     const handleWindowChange = (): void => {
-      if (isExpanded) {
-        updateFloatingPosition();
-      } else {
+      if (!isExpanded) {
         updateInlineDropdownPosition();
       }
     };
@@ -773,10 +766,10 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       window.removeEventListener('resize', handleWindowChange);
       window.removeEventListener('scroll', handleWindowChange, true);
     };
-  }, [isExpanded, isFocused, updateFloatingPosition, updateInlineDropdownPosition]);
+  }, [isExpanded, isFocused, updateInlineDropdownPosition]);
 
   useEffect(() => {
-    if (!isFocused)
+    if (!isFocused || isExpanded)
       return undefined;
 
     const handleOutsideClick = (event: MouseEvent): void => {
@@ -784,7 +777,6 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       if (!target) return;
 
       if (wrapperRef.current?.contains(target)) return;
-      if (overlayRef.current?.contains(target)) return;
       if (dropdownRef.current?.contains(target)) return;
       closeEditor();
     };
@@ -793,7 +785,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
     };
-  }, [closeEditor, isFocused]);
+  }, [closeEditor, isFocused, isExpanded]);
 
   const handleScroll = useCallback(() => {
     if (!textareaRef.current || !backdropRef.current) return;
@@ -865,7 +857,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   };
 
   const renderEditorSurface = (mode: 'inline' | 'floating'): JSX.Element => (
-    <div className={joinClassNames('sha-expression-editor-overlay', mode === 'floating' && 'sha-expression-editor-overlay--floating')} style={mode === 'floating' ? floatingStyle : undefined}>
+    <div className={joinClassNames('sha-expression-editor-overlay', mode === 'floating' && 'sha-expression-editor-overlay--floating')}>
       <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
         <div className="sha-expression-editor-backdrop-content">
           {highlightTokens.map((token, index) => (
@@ -877,7 +869,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
               )
               : <span key={index}>{token.text}</span>
           ))}
-          {value.endsWith('\n') && <span>{'\n'}</span>}
+          {activeValue.endsWith('\n') && <span>{'\n'}</span>}
         </div>
       </div>
 
@@ -887,7 +879,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
           'sha-expression-editor-input',
           resolvedControlClassName,
         )}
-        value={value}
+        value={activeValue}
         rows={mode === 'floating' ? focusRows : (isFocused ? Math.max(3, Math.min(focusRows, 4)) : 1)}
         onBlur={handleBlur}
         onFocus={() => setIsFocused(true)}
@@ -949,15 +941,29 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
         document.body,
       )}
 
-      {isFocused && isExpanded && typeof document !== 'undefined' && createPortal(
-        <div
-          ref={overlayRef}
-          className="sha-expression-editor-portal"
-        >
-          {renderEditorSurface('floating')}
-        </div>,
-        document.body,
-      )}
+      <Modal
+        open={isFocused && isExpanded}
+        title={<><FunctionOutlined /> Expression Editor</>}
+        onCancel={cancelModal}
+        onOk={confirmModal}
+        okText="Ok"
+        cancelText="Cancel"
+        width={560}
+        destroyOnClose
+        className="sha-expression-editor-modal"
+        afterOpenChange={(open) => {
+          if (open) {
+            const textarea = textareaRef.current;
+            if (!textarea) return;
+            const cursorPos = textarea.value.length;
+            textarea.focus();
+            textarea.setSelectionRange(cursorPos, cursorPos);
+            updateSuggestions(textarea.value, cursorPos);
+          }
+        }}
+      >
+        {isFocused && isExpanded && renderEditorSurface('floating')}
+      </Modal>
     </div>
   );
 };
