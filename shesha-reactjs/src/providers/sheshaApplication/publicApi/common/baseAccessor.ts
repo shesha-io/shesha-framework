@@ -1,7 +1,9 @@
+import { hasProperty } from "@/utils/object";
+
 /**
  * Base group accessor
  */
-export class BaseAccessor<TChild extends object = object, TManager = any> {
+export class BaseAccessor<TChild extends object = object, TManager = unknown> {
   readonly _accessor: string;
 
   readonly _children: Map<string, TChild>;
@@ -29,7 +31,7 @@ export class BaseAccessor<TChild extends object = object, TManager = any> {
 
     return new Proxy(this, {
       get(target, name) {
-        if (name in target) {
+        if (hasProperty(target, name)) {
           const result = target[name];
           return typeof result === 'function' ? result.bind(target) : result;
         }

@@ -1,14 +1,14 @@
 import { App } from 'antd';
 import classNames from 'classnames';
-import React, { Fragment, useCallback, useMemo, useRef } from 'react';
-import { ConfigurableForm } from '@/components';
-import { ConfigurableFormInstance, PageWithLayout } from '@/interfaces';
+import React, { FC, Fragment, useCallback, useMemo, useRef } from 'react';
+import { ConfigurableForm } from '@/components/configurableForm';
+import { ConfigurableFormInstance } from '@/interfaces';
 import { IDynamicPageProps } from './interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { PageMarkupLoadingError } from './pageMarkupLoadError';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
-const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
+const DynamicPageInternal: FC<IDynamicPageProps> = (props) => {
   const { message } = App.useApp();
   const formRef = useRef<ConfigurableFormInstance>();
   const { id, formId, mode } = props;
@@ -44,7 +44,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   );
 };
 
-export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
+export const DynamicPage: FC<IDynamicPageProps> = (props) => {
   return (
     <DataContextProvider
       id={SheshaCommonContexts.PageContext}

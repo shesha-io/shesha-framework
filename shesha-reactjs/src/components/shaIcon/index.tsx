@@ -14,7 +14,7 @@ export interface IShaIconProps extends IconBaseProps {
   style?: CSSProperties;
 }
 
-const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', ...props }) => {
+export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', ...props }) => {
   const { theme } = useThemeState();
 
   if (!antdIcons[iconName]) {
@@ -27,5 +27,3 @@ const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', ...props }) =>
 
   return <IconComponent {...props} />;
 };
-
-export default ShaIcon;

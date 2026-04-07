@@ -1,9 +1,9 @@
 import React, { FC, PropsWithChildren, useMemo } from 'react';
 import { useIsDrawingForm } from '@/providers/form';
 import { IComponentsContainerProps } from '@/components/formDesigner/containers/componentsContainer';
-import { IConfigurableFormComponent } from '@/index';
 import { SettingsContainerLive } from './settingContainerLive';
 import { SettingContainerDesigner } from './settingContainerDesigner';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface ISettingContainerProps extends PropsWithChildren<IComponentsContainerProps> {
   component: IConfigurableFormComponent | undefined;

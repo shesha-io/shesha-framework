@@ -6,7 +6,7 @@ import React, { CSSProperties, ReactElement } from 'react';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import {
@@ -84,13 +84,13 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       showCount: false, // will use a custom counter outside the textarea
       maxLength: model.validate?.maxLength,
       allowClear: model.allowClear,
-      variant: model?.border?.hideBorder ? 'borderless' : undefined,
-      size: model?.size,
+      variant: model.border?.hideBorder ? 'borderless' : undefined,
+      size: model.size,
       style: {
         ...finalStyle,
         ...getOverflowStyle(true, false),
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
-          ? { marginBottom: model?.showCount ? '4px' : '0px' }
+          ? { marginBottom: model.showCount ? '4px' : '0px' }
           : {}),
       },
       spellCheck: model.spellCheck,

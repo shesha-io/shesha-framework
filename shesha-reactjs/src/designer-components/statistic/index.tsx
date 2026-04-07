@@ -1,6 +1,6 @@
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { customOnClickEventHandler, getEventHandlers } from '@/components/formDesigner/components/utils';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles, useForm } from '@/providers';
@@ -19,7 +19,6 @@ import { IFontValue } from '../_settings/utils/font/interfaces';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { IBorderValue } from '../_settings/utils/border/interfaces';
 
 interface IStatisticComponentProps extends Omit<IInputStyles, 'font'>, IConfigurableFormComponent {
   value?: number | string;
@@ -54,8 +53,8 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const allData = useAvailableConstantsData();
     const { formMode } = useForm();
     const { allStyles } = model;
-    const valueFont = model?.valueFont;
-    const titleFont = model?.titleFont;
+    const valueFont = model.valueFont;
+    const titleFont = model.titleFont;
     const valueStyles = getStyle(valueStyle);
     const titleStyles = getStyle(titleStyle);
     const valueFontStyles = useMemo(() => getFontStyle(valueFont), [valueFont]);
@@ -164,7 +163,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
           hideBorder: prev?.hideBorder,
           shadow: defaultStyles().shadow,
           border: {
-            border: defaultStyles().border.border as IBorderValue,
+            border: defaultStyles().border.border,
           },
         };
 

@@ -44,7 +44,7 @@ export interface IDataContextBinderProps<TData extends object = object> {
   getFieldValue?: ContextGetFieldValue | undefined;
   setData?: ContextSetData<TData> | undefined;
   setFieldValue?: ContextSetFieldValue<TData> | undefined;
-  onChangeData?: ContextOnChangeData | undefined;
+  onChangeData?: ContextOnChangeData<TData> | undefined;
   actionsOverride?: IDataContextProviderActionsContextOverride | undefined;
 }
 
@@ -109,7 +109,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     if (props.setFieldValue) {
       props.setFieldValue(name, value, onChangeContextData);
     } else {
-      const newData = setValueByPropertyName({ ...dataRef.current ?? {} }, name.toString(), value, true);
+      const newData = setValueByPropertyName({ ...dataRef.current ?? {} as TData }, name.toString(), value, true);
       const changedData = setValueByPropertyName({}, name.toString(), value);
 
       if (onChangeData)
@@ -135,9 +135,9 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
   const getFull: ContextGetFull = () => {
     const data: IDataContextFull = getData();
     const api = getApi();
-    if (api)
-      data.api = api;
-    return data;
+    return api
+      ? { ...data, api }
+      : data;
   };
 
   const actionContext: IDataContextProviderActionsContext = {

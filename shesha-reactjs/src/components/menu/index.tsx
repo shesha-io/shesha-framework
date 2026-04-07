@@ -1,20 +1,5 @@
-import {
-  IConfigurableActionConfiguration,
-  convertJsonToCss,
-  convertJsonToCssWithImportant,
-  evaluateString,
-  isNavigationActionConfiguration,
-  normalizeUrl,
-  sidebarMenuItemToMenuItem,
-  useAvailableConstantsData,
-  useConfigurableActionDispatcher,
-  useDeepCompareMemo,
-  useLocalStorage,
-  useMainMenu,
-  useShaRouting,
-} from "@/index";
 import { ISidebarButton, ISidebarMenuItem } from "@/interfaces/sidebar";
-import { getSelectedKeys } from "@/utils";
+import { convertJsonToCss, convertJsonToCssWithImportant, getSelectedKeys, normalizeUrl } from "@/utils";
 import { MenuOutlined } from "@ant-design/icons";
 import { Button, Menu } from "antd";
 import classNames from "classnames";
@@ -31,6 +16,13 @@ import OverflowedIndicator, { getMutatedMenuItem } from "./overflowedIndicator";
 import { ScrollControls } from "./scrolls";
 import { GlobalMenuStyles, ScopedMenuStyles, useStyles } from "./styles";
 import { useHorizontalMenuDropdownStyles } from "./useHorizontalMenuDropdownStyles";
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from "@/providers/configurableActionsDispatcher";
+import { useDeepCompareMemo } from "@/hooks/useDeepCompareMemo";
+import { sidebarMenuItemToMenuItem } from "../sidebarMenu/utils";
+import { evaluateString, useAvailableConstantsData } from "@/providers/form/utils";
+import { isNavigationActionConfiguration, useShaRouting } from "@/providers/shaRouting";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useMainMenu } from "@/providers/mainMenu";
 
 interface IProps {
   colors?: ILayoutColor;
@@ -290,7 +282,7 @@ export const LayoutMenu: FC<IProps> = ({
           defaultOpenKeys={keys}
           items={menuItems}
           onOpenChange={onOpenChange}
-          selectedKeys={getSelectedKeys(router?.fullPath, items)}
+          selectedKeys={getSelectedKeys(router?.fullPath ?? "", items)}
           overflowedIndicator={<OverflowedIndicator className={styles.shaHamburgerItem} />}
           overflowedIndicatorPopupClassName={menuId ? `horizontal-menu-${menuId}-dropdown` : undefined}
           disabledOverflow={isScrolling}

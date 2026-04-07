@@ -1,7 +1,9 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Shesha.Extensions
@@ -44,13 +46,79 @@ namespace Shesha.Extensions
             var batches = distinctIds.SplitList(batchSize);
             foreach (var batch in batches) 
             {
-                var batchItems = await repository.GetAll()
-                    .Where(x => batch.Contains(x.Id))
-                    .ToListAsync();
+                var batchItems = await repository.GetAllListAsync(x => batch.Contains(x.Id));
                 result.AddRange(batchItems);
             }
             
             return result;
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains any elements matching the specified predicate.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <typeparam name="TPrimaryKey">Propary key type</typeparam>
+        /// <param name="repository">Repository</param>
+        /// <param name="predicate">Predicate to check</param>
+        /// <returns></returns>
+        public static async Task<bool> AnyAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, Expression<Func<TEntity, bool>> predicate) where TEntity : class, IEntity<TPrimaryKey> 
+        {
+            var query = await repository.GetAllAsync();
+            return await query.Where(predicate).AnyAsync();
+        }
+
+        /// <summary>
+        /// Returns the first element of a sequence that satisfies a condition or a default value if no such element is found.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <typeparam name="TPrimaryKey">Propary key type</typeparam>
+        /// <param name="repository">Repository</param>
+        /// <param name="predicate">Predicate to check</param>
+        /// <returns></returns>
+        public static async Task<TEntity?> FirstOrDefaultAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, Expression<Func<TEntity, bool>> predicate) where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var query = await repository.GetAllAsync();
+            return await query.Where(predicate).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Returns the first element of a sequence, or a default value if the sequence contains no elements.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <typeparam name="TPrimaryKey">Propary key type</typeparam>
+        /// <param name="repository">Repository</param>
+        /// <returns></returns>
+        public static async Task<TEntity?> FirstOrDefaultAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository) where TEntity : class, IEntity<TPrimaryKey> 
+        {
+            var query = await repository.GetAllAsync();
+            return await query.FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Returns the first element of a sequence that satisfies a condition
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <typeparam name="TPrimaryKey">Propary key type</typeparam>
+        /// <param name="repository">Repository</param>
+        /// <param name="predicate">Predicate to check</param>
+        /// <returns></returns>
+        public static async Task<TEntity> FirstAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository, Expression<Func<TEntity, bool>> predicate) where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var query = await repository.GetAllAsync();
+            return await query.Where(predicate).FirstAsync();
+        }
+
+        /// <summary>
+        /// Returns the first element of a sequence
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <typeparam name="TPrimaryKey">Propary key type</typeparam>
+        /// <param name="repository">Repository</param>
+        /// <returns></returns>
+        public static async Task<TEntity> FirstAsync<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository) where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var query = await repository.GetAllAsync();
+            return await query.FirstAsync();
         }
     }
 }

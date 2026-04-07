@@ -3,14 +3,15 @@ import { ListEditorRenderer } from '@/components/listEditorRenderer';
 import QueryBuilderExpressionViewer from '@/designer-components/queryBuilder/queryBuilderExpressionViewer';
 import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/queryBuilderFieldPlain';
 import { QueryBuilderProvider, useMetadata } from '@/providers';
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import { Tabs } from 'antd';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { FilterItemProperties } from './filterItemProperties';
+import { IStoredFilter } from '@/interfaces';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IFilterItemSettingsEditorProps {
-  value?: ITableViewProps;
-  onChange: (newValue: ITableViewProps) => void;
+  value?: IStoredFilter;
+  onChange: (newValue: IStoredFilter) => void;
   readOnly: boolean;
 }
 
@@ -18,6 +19,14 @@ export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ v
   const metadata = useMetadata(false);
 
   const { expression, ...filterProps } = value;
+  const expressionObject = useMemo<object | undefined>(() => {
+    if (!isDefined(expression) || (typeof (expression) === 'string' && isNullOrWhiteSpace(expression)))
+      return undefined;
+
+    return typeof (expression) === 'string'
+      ? JSON.parse(expression)
+      : expression;
+  }, [expression]);
 
   const onChangeExpression = (newValue): void => {
     onChange({ ...value, expression: newValue });
@@ -41,12 +50,12 @@ export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ v
             {
               key: 'queryBuilderConfigureTab',
               label: 'Query builder',
-              children: <QueryBuilderPlainRenderer onChange={onChangeExpression} value={expression} readOnly={readOnly} />,
+              children: <QueryBuilderPlainRenderer onChange={onChangeExpression} value={expressionObject} readOnly={readOnly} />,
             },
             {
               key: 'expressionViewerTab',
               label: 'Query expression viewer',
-              children: <QueryBuilderExpressionViewer value={value?.expression} />,
+              children: <QueryBuilderExpressionViewer value={expressionObject} />,
             },
             {
               key: 'exposedVariables',

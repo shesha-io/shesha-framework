@@ -1,11 +1,10 @@
 "use client";
 
-import React from 'react';
+import React, { FC } from 'react';
 import { SettingsPage } from '@/generic-pages/settings-editor';
-import { PageWithLayout } from '@/interfaces';
 
-const Page: PageWithLayout = (props) => {
-  return <SettingsPage {...props} />;
+const Page: FC = () => {
+  return <SettingsPage />;
 };
 
 export default Page;

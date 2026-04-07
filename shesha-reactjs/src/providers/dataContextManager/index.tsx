@@ -61,7 +61,6 @@ export const DataContextManagerActionsContext = createNamedContext<IDataContextM
 
 export interface IDataContextManagerProps {
   id: string;
-  name?: string;
 }
 
 export const useDataContextManagerUpdate = (): object => {
@@ -231,7 +230,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     const dataContexts: IDataContextDescriptor[] = [];
     for (let key in contexts.current)
-      if (Object.hasOwn(contexts.current, key) && contexts.current[key]?.type !== 'settings')
+      if (Object.hasOwn(contexts.current, key))
         dataContexts.push(contexts.current[key] as IDataContextDescriptor);
 
     if (!topId)
@@ -362,7 +361,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       getRoot,
       getParent,
     } satisfies IDataContextManagerActionsContext;
-  // TODO: Alex, please review this. Looks like it's better to convert to singletone class
+  // TODO (performance): Alex, please review this. Looks like it's better to convert to singletone class
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [true]);
 

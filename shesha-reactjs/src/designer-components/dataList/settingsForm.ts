@@ -81,7 +81,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 parentId: commonTabId,
                 label: "Hide",
                 jsSetting: true,
-                value: 'checked',
               })
               .toJson(),
             ],
@@ -333,7 +332,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     parentId: dataTabId,
                     label: "Show Edit Icon",
                     jsSetting: true,
-                    value: 'checked',
                   },
                 ],
               })

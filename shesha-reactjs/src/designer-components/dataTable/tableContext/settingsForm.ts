@@ -55,7 +55,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _mode: 'code',
                         _value: false,
                       } as any,
-                      jsSetting: true,
                       availableConstantsExpression:
                         '    return metadataBuilder.object("constants").addAllStandard().build();',
                       placeholder: '',

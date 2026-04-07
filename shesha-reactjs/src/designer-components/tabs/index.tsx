@@ -1,6 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import React, { Fragment, useState, useEffect } from 'react';
-import ShaIcon from '@/components/shaIcon';
+import { ShaIcon } from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
@@ -87,7 +87,10 @@ const TabsComponent: TabsComponentDefinition = {
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
           disabled: selectMode === 'readOnly' || (selectMode === 'inherited' && readOnly),
           children: (
-            <ParentProvider model={item}>
+            <ParentProvider
+              name={`Tab-${key}`}
+              model={item}
+            >
               <ComponentsContainer
                 containerId={id}
                 dynamicComponents={model?.isDynamic ? components : []}

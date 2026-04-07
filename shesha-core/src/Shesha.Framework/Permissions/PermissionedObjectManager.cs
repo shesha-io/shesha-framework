@@ -104,7 +104,7 @@ namespace Shesha.Permissions
         [UnitOfWork]
         public virtual async Task<List<PermissionedObjectDto>> GetAllFlatAsync(string? type = null, bool withNested = true, bool withHidden = false)
         {
-            var rootItems = await _permissionedObjectRepository.GetAll()
+            var rootItems = await (await _permissionedObjectRepository.GetAllAsync())
                 .WhereIf(!string.IsNullOrEmpty(type?.Trim()), x => x.Type == type)
                 .WhereIf(!withHidden, x => !x.Hidden)
                 .ToListAsync();
@@ -115,7 +115,7 @@ namespace Shesha.Permissions
 
             if (withNested && !string.IsNullOrEmpty(type?.Trim()))
             {
-                var nestedItems = await _permissionedObjectRepository.GetAll()
+                var nestedItems = await (await _permissionedObjectRepository.GetAllAsync())
                     .Where(x => x.Type != null && x.Type.StartsWith($"{type}."))
                     .WhereIf(!withHidden, x => !x.Hidden)
                     .ToListAsync();
@@ -142,7 +142,7 @@ namespace Shesha.Permissions
 
         public virtual async Task<PermissionedObjectDto?> GetObjectWithChildOrNullAsync(string objectName, string? type = null, bool withHidden = false)
         {
-            var pObject = (await _permissionedObjectRepository.GetAll()
+            var pObject = (await (await _permissionedObjectRepository.GetAllAsync())
                 .WhereIf(!string.IsNullOrEmpty(type?.Trim()), x => x.Type == type)
                 .WhereIf(!withHidden, x => !x.Hidden)
                 .FirstOrDefaultAsync());
@@ -315,7 +315,7 @@ namespace Shesha.Permissions
         [UnitOfWork]
         public virtual async Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string? inheritedFromName = null)
         {
-            var dbObj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
+            var dbObj = await _permissionedObjectRepository.FirstOrDefaultAsync(x => x.Object == objectName);
             return dbObj != null
                 ? (await GetDtoOrNullAsync(dbObj, true, true)).NotNull()
                 : await CreateAsync(objectName, objectType, inheritedFromName);
@@ -323,7 +323,7 @@ namespace Shesha.Permissions
 
         public virtual async Task<PermissionedObjectDto> GetAsync(Guid id)
         {
-            var dbObj = await _permissionedObjectRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+            var dbObj = await _permissionedObjectRepository.FirstOrDefaultAsync(x => x.Id == id);
             return await GetCacheOrDtoAsync(dbObj);
         }
 
@@ -337,7 +337,7 @@ namespace Shesha.Permissions
             CacheItemWrapper<PermissionedObjectDto>? item = null;
             using (var uow = _unitOfWorkManager.Current == null ? _unitOfWorkManager.Begin() : null)
             {
-                var dbObj = await _permissionedObjectRepository.GetAll()
+                var dbObj = await (await _permissionedObjectRepository.GetAllAsync())
                     .WhereIf(!string.IsNullOrWhiteSpace(objectType), x => x.Type == objectType)
                     .Where(x => x.Object == objectName)
                     .FirstOrDefaultAsync();
@@ -372,8 +372,7 @@ namespace Shesha.Permissions
         {
             // ToDo: AS - check if permission names exist
             var obj =
-                await _permissionedObjectRepository.GetAll()
-                    .Where(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type).FirstOrDefaultAsync()
+                await _permissionedObjectRepository.FirstOrDefaultAsync(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type)
                 ??
                 new PermissionedObject()
                 {
@@ -405,7 +404,7 @@ namespace Shesha.Permissions
         public virtual async Task<PermissionedObjectDto?> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions)
         {
             // ToDo: AS - check permission names exist
-            var obj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
+            var obj = await _permissionedObjectRepository.FirstOrDefaultAsync(x => x.Object == objectName);
 
             if (obj == null)
                 return null;
@@ -507,7 +506,7 @@ namespace Shesha.Permissions
         /// <returns></returns>
         public async Task<List<PermissionedObjectDto>> GetObjectsByAccessAsync(string type, RefListPermissionedAccess access)
         {
-            var permissionedObjects = await _permissionedObjectRepository.GetAll().Where(o => o.Type == type).ToListAsync();
+            var permissionedObjects = await _permissionedObjectRepository.GetAllListAsync(o => o.Type == type);
 
             var dtos = await permissionedObjects.SelectAsync(async x => await GetCacheOrDtoAsync(x));
 

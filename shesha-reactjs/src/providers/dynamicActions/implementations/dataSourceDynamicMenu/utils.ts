@@ -6,13 +6,13 @@ import { useGlobalState } from '@/providers/globalState';
 import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
 import { evaluateString } from '@/providers/form/utils';
 import { FetcherOptions, IQueryParams } from '@/utils/fetchers';
-import { getEntityTypeIdentifierQueryParams } from '@/providers/metadataDispatcher/entities/utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 type UseUrlTemplatesResponse = {
-  getUrlTemplateState: (evaluatedFilters?: any) => FetcherOptions;
+  getUrlTemplateState: () => FetcherOptions | undefined;
 };
 
-export const useUrlTemplates = (settings: IDataSourceArguments): UseUrlTemplatesResponse => {
+export const useUrlTemplates = (settings: IDataSourceArguments | undefined): UseUrlTemplatesResponse => {
   const { dataSourceUrl, queryParams } = settings ?? {};
   const { data } = useFormData();
   const { globalState } = useGlobalState();
@@ -23,10 +23,9 @@ export const useUrlTemplates = (settings: IDataSourceArguments): UseUrlTemplates
       const queryParamObj: IQueryParams = {};
       if (queryParams?.length) {
         queryParams.forEach(({ param, value }) => {
-          const valueAsString = value as string;
-          if (param?.length && valueAsString?.length) {
-            queryParamObj[param] = /{.*}/i.test(valueAsString)
-              ? evaluateString(valueAsString, { data, globalState, pageContext: { ...pageContext?.getFull() } })
+          if (!isNullOrWhiteSpace(param) && !isNullOrWhiteSpace(value)) {
+            queryParamObj[param] = /{.*}/i.test(value)
+              ? evaluateString(value, { data, globalState, pageContext: { ...pageContext?.getFull() } })
               : value;
           }
         });
@@ -37,34 +36,13 @@ export const useUrlTemplates = (settings: IDataSourceArguments): UseUrlTemplates
 
   const getUrlTemplateState = useMemo(() => {
     return () => {
-      if (!dataSourceUrl) return null;
+      if (isNullOrWhiteSpace(dataSourceUrl))
+        return undefined;
 
-      const dataSourceUrlString = dataSourceUrl.id ?? dataSourceUrl;
-      const path = buildUrl(dataSourceUrlString, getQueryParams());
+      const path = buildUrl(dataSourceUrl, getQueryParams());
       return { path };
     };
   }, [dataSourceUrl, getQueryParams]);
 
   return { getUrlTemplateState };
-};
-
-type UseEntityTemplatesResponse = {
-  getEntityTemplateState: (evaluatedFilters?: any, properties?: string) => FetcherOptions;
-};
-
-export const useEntityTemplates = (settings: IDataSourceArguments): UseEntityTemplatesResponse => {
-  const { entityType, maxResultCount } = settings ?? {};
-  const getEntityTemplateState = (evaluatedFilters?: any, properties?: string): FetcherOptions => {
-    return {
-      path: `/api/services/app/Entities/GetAll`,
-      queryParams: {
-        ...getEntityTypeIdentifierQueryParams(entityType),
-        maxResultCount: maxResultCount || 100,
-        properties: properties,
-        filter: evaluatedFilters,
-      },
-    };
-  };
-
-  return { getEntityTemplateState };
 };

@@ -5,7 +5,6 @@ import { GroupOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/index';
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings, evaluateString } from '@/providers/form/utils';
-
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
 import { MetadataProvider } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
@@ -19,7 +18,11 @@ export interface ISortingEditorComponentProps extends IConfigurableFormComponent
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentProps> = {
+export type SortingEditorCalculatedProps = {
+  modelType: string | IEntityTypeIdentifier | undefined;
+};
+
+export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentProps, SortingEditorCalculatedProps> = {
   type: 'dataSortingEditor',
   name: 'Data Sorting Editor',
   isInput: true,

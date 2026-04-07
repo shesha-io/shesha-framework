@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { Page } from '@/components';
+import { Page } from '@/components/page';
 import { ConfigurableThemeContent } from './content';
-import { useTheme } from '@/index';
+import { useTheme } from '@/providers/theme';
 
 export const ConfigurableThemePage: FC = () => {
   const { theme, changeTheme } = useTheme();

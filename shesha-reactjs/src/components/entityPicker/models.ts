@@ -4,15 +4,15 @@ import { CSSProperties, ReactNode } from 'react';
 import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier } from '@/providers/form/models';
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { ButtonGroupItemProps } from '@/index';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IStoredFilter } from '@/publicJsApis/dataTableContextApi';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
 interface IWrappedEntityPickerProps {
   entityType?: string | IEntityTypeIdentifier;
-  filters?: ITableViewProps[];
+  filters?: IStoredFilter[] | undefined;
   allowNewRecord?: boolean;
   onDblClick?: (data: any) => void;
 }

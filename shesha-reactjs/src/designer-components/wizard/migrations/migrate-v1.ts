@@ -1,10 +1,11 @@
-import { StepProps } from 'antd';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, SettingsMigrationContext } from '@/interfaces/formDesigner';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { getDispatchEventReplacement } from '@/components/formDesigner/components/_common-migrations/migrate-events';
 import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
 import { IWizardSequence, IWizardStepProps } from '../models';
+
+type StepStatus = 'wait' | 'process' | 'finish' | 'error';
 
 const getActionConfig = (
   action: ButtonActionTypeV0,
@@ -131,10 +132,11 @@ export interface IWizardStepPropsV1 {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
-  status?: StepProps['status'];
+  status?: StepStatus;
 }
 
-export interface IWizardComponentPropsV1 extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'> {
+export interface IWizardComponentPropsV1 extends Omit<IConfigurableFormComponent, 'size'> {
+  status?: StepStatus;
   steps: IWizardStepPropsV1[];
   wizardType?: 'default' | 'navigation';
   visibility?: 'Yes' | 'No' | 'Removed';

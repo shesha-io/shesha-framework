@@ -5,27 +5,29 @@ import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { buildUrl } from "@/utils/url";
 import { IKeyValue } from "@/interfaces/keyValue";
 import { IShaRouter } from "./contexts";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 const LOGGED_IN_DYNAMIC_PAGE = 'dynamic';
 const ANONYMOUS_DYNAMIC_PAGE = 'no-auth';
 
 type FormUrlEvaluator = (formId: FormIdentifier, isLoggedIn: boolean) => string;
+type StringConverterFunc = (value: string) => string;
 
 export type ShaRouterArgs = {
   router: IRouter;
   getFormUrlFunc?: FormUrlEvaluator | undefined;
   getIsLoggedIn: () => boolean;
-  urlOverrideFunc?: (url: string) => string;
+  urlOverrideFunc?: StringConverterFunc | undefined;
 };
 
 export class ShaRouter implements IShaRouter {
   private _router: IRouter;
 
-  private _getFormUrlFunc?: (formId: FormIdentifier, isLoggedIn: boolean) => string;
+  private _getFormUrlFunc?: FormUrlEvaluator | undefined;
 
   private _getIsLoggedIn: () => boolean;
 
-  private _urlOverrideFunc?: (url: string) => string;
+  private _urlOverrideFunc?: StringConverterFunc | undefined;
 
   private _navigationValidators: Array<(url: string) => Promise<boolean>> = [];
 
@@ -93,9 +95,13 @@ export class ShaRouter implements IShaRouter {
   };
 
   getUrlFromNavigationRequest = (request: INavigateActoinArguments): string | undefined => {
-    switch (request?.navigationType) {
-      case 'url': return this._buildFinalUrl(request.url, request.queryParameters);
+    switch (request.navigationType) {
+      case 'url': return !isNullOrWhiteSpace(request.url)
+        ? this._buildFinalUrl(request.url, request.queryParameters)
+        : undefined;
       case 'form': {
+        if (!isDefined(request.formId))
+          return undefined;
         const formUrl = this.getFormUrl(request.formId);
         return this._buildFinalUrl(formUrl, request.queryParameters);
       }

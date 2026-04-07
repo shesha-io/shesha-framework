@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
-import { IPersistedFormProps } from '@/index';
+import { IPersistedFormProps } from '@/providers/form/models';
 
 export interface IEditViewMsgProps {
   persistedFormProps?: IPersistedFormProps;

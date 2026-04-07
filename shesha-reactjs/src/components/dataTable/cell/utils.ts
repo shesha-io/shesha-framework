@@ -1,5 +1,3 @@
-import { IComponentMetadata } from "@/index";
-import { IComponentWrapperProps } from "./interfaces";
 import { YesNoInheritJs } from "../interfaces";
 
 interface ICrudOptions {
@@ -41,18 +39,6 @@ export const adjustWidth = (crudOptions: ICrudOptions): { maxWidth: number; minW
   }
 
   return { minWidth: 0, maxWidth: 0 };
-};
-
-export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperProps): IComponentMetadata => {
-  let result: IComponentMetadata = {};
-
-  /** Adds injectedTableRow to result if applicable **/
-  if (defaultRow) result = { ...result, injectedTableRow: defaultRow };
-
-  /** Adds injectedDefaultValue to result if applicable **/
-  if (defaultValue) result = { ...result, injectedDefaultValue: defaultValue };
-
-  return result;
 };
 
 export const asNumber = (value: unknown): number => {

@@ -1,11 +1,10 @@
 ﻿using ElmahCore;
-using Microsoft.CodeAnalysis;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace Shesha.Elmah.SqlServer

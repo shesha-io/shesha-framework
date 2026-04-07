@@ -10,10 +10,9 @@ interface IComponentsContainerFormCellProps extends IComponentsContainerBaseProp
 
 export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> = (props) => {
   const { containerId, readOnly } = props;
-  const { getChildComponents } = useParent() ?? {};
 
   const parent = useParent();
-  const components = getChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const components = parent?.getChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, '')) ?? [];
 
   const style = getAlignmentStyle(props);
 
@@ -34,7 +33,7 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
               ...model,
               context: model.context,
               isDynamic: true,
-              readOnly: readOnly === true ? true : model?.readOnly,
+              readOnly: readOnly === true ? true : model.readOnly,
               customEnabled: '',
             }}
             key={model?.id}

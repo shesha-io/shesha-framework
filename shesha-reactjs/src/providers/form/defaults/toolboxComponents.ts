@@ -102,7 +102,7 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
-import LabelConfigurator from '@/designer-components/styleLabel';
+import LabelConfigurator from '@/designer-components/labelConfigurator';
 import SearchableTabs from '@/designer-components/propertiesTabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
@@ -121,7 +121,7 @@ import TableContextComponentLegacy from '@/designer-components/dataTable/tableCo
 
 export const getToolboxComponents = (
   devMode: boolean,
-  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>,
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'> | undefined,
 ): IToolboxComponentGroup[] => {
   return [
     {
@@ -282,7 +282,7 @@ export const getToolboxComponents = (
     },
     {
       name: 'Header Components',
-      visible: getToolboxComponentsVisibility(formMetadata?.formProps, [
+      visible: formMetadata?.formProps && getToolboxComponentsVisibility(formMetadata.formProps, [
         HEADER_CONFIGURATION,
         HEADER_PUB_PORTAL_CONFIGURATION,
       ]),

@@ -116,46 +116,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   },
                 ],
               })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
-                    type: 'textField',
-                    id: nanoid(),
-                    propertyName: 'prefix',
-                    label: 'Prefix',
-                    jsSetting: true,
-                  },
-                  {
-                    type: 'iconPicker',
-                    id: nanoid(),
-                    propertyName: 'prefixIcon',
-                    label: 'Prefix Icon',
-                    jsSetting: true,
-                  },
-                ],
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
-                    type: 'textField',
-                    id: nanoid(),
-                    propertyName: 'suffix',
-                    label: 'Suffix',
-                    jsSetting: true,
-                  },
-                  {
-                    type: 'iconPicker',
-                    id: nanoid(),
-                    propertyName: 'suffixIcon',
-                    label: 'Suffix Icon',
-                    jsSetting: true,
-                  },
-                ],
-              })
+              .stdPrefixSuffixInputs()
               .addSettingsInput({
                 propertyName: 'spellCheck',
                 id: nanoid(),

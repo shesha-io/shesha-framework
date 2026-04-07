@@ -24,7 +24,7 @@ namespace Shesha.ConfigurationStudio
         [HttpGet]
         public async Task<List<FlatTreeNode>> GetFlatTreeAsync(long? rootNodeId = null)
         {
-            var treeNodes = await TreeNodeRepository.GetAll().OrderBy(e => e.ParentId).ThenBy(e => e.NodeType == Domain.Enums.ConfigurationItemTreeNodeType.Item ? 1 : 0).ThenBy(e => e.Name)
+            var treeNodes = await (await TreeNodeRepository.GetAllAsync()).OrderBy(e => e.ParentId).ThenBy(e => e.NodeType == Domain.Enums.ConfigurationItemTreeNodeType.Item ? 1 : 0).ThenBy(e => e.Name)
                 .Select(e => new FlatTreeNode { 
                     Id = e.Id,
                     ParentId = e.ParentId,
@@ -98,7 +98,7 @@ namespace Shesha.ConfigurationStudio
             var items = ItemRepo.DeleteAsync(e => e.Folder == folder);
 
             // process subfolders
-            var subFolders = await FolderRepository.GetAll().Where(e => e.Parent == folder).ToListAsync();
+            var subFolders = await FolderRepository.GetAllListAsync(e => e.Parent == folder);
             foreach (var subFolder in subFolders) 
             {
                 await DeleteFolderRecursiveAsync(subFolder);
@@ -117,7 +117,7 @@ namespace Shesha.ConfigurationStudio
 
         private async Task<ConfigurationItemNode> GetNodeAsync(Guid id) 
         {
-            return await NodeRepository.GetAll().Where(e => e.Id == id).FirstOrDefaultAsync();
+            return await NodeRepository.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task MoveNodeToFolderAsync(MoveNodeToFolderRequest input) 

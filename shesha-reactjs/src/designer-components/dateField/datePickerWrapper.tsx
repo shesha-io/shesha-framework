@@ -1,20 +1,21 @@
 import { DatePicker } from '@/components/antd';
 import moment, { isMoment, Moment } from 'moment';
-import React, { CSSProperties, FC, useMemo, useRef } from 'react';
+import React, { CSSProperties, useMemo, useRef } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { useForm, useGlobalState, useMetadata } from '@/providers';
+import { FCUnwrapped, useForm, useGlobalState, useMetadata } from '@/providers';
 import { getMoment, getRangeMoment } from '@/utils/date';
 import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
-import { DATE_TIME_FORMATS, disabledDate, disabledTime, getFormat } from './utils';
+import { disabledDate, disabledTime, getFormat } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
 import { useStyles } from './style';
+import { DATE_TIME_FORMATS } from '@/constants/formats';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
 const { RangePicker } = DatePicker;
 
-export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
+export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
   const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
   const properties = asPropertiesArray(metaProperties, []);
 
@@ -36,8 +37,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   } = props;
 
 
-  const dateFormat = props?.dateFormat || getDataProperty(properties, name, 'dataFormat') || DATE_TIME_FORMATS.date;
-  const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
+  const dateFormat = props.dateFormat || getDataProperty(properties, name, 'dataFormat') || DATE_TIME_FORMATS.date;
+  const timeFormat = props.timeFormat || DATE_TIME_FORMATS.time;
   const { styles } = useStyles({ fullStyles: additionalStyles });
   const finalStyles: CSSProperties = { ...additionalStyles };
 

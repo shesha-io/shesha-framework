@@ -1,16 +1,4 @@
-import {
-  IConfigurableActionConfiguration,
-  ConfigurableForm,
-  FormIdentifier,
-  IConfigurableFormComponent,
-  IToolboxComponent,
-  useAuth,
-  useForm,
-  useGlobalState,
-  useSidebarMenu,
-  useSheshaApplication,
-} from '@/index';
-import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import {
@@ -21,12 +9,12 @@ import {
   isItem,
 } from '@/providers/buttonGroupConfigurator/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Popover } from 'antd';
 import React, { CSSProperties, useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
-import { getAccountMenuItems, getMenuItem } from './utils';
+import { getMenuItem } from './utils';
 import {
   getDynamicActionsItemsLevel,
   getItemsWithResolved,
@@ -36,6 +24,13 @@ import {
 import { SingleDynamicItemEvaluator } from '@/providers/dynamicActions/evaluator/singleDynamicItemEvaluator';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
+import { FormIdentifier } from '@/providers/form/models';
+import { useAuth } from '@/providers/auth';
+import { useForm } from '@/providers/form';
+import { useGlobalState } from '@/providers/globalState';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { ConfigurableForm } from '@/components/configurableForm';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
   items?: IButtonGroupItemBase[];
@@ -85,9 +80,6 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
 
-    const sidebar = useSidebarMenu(false);
-    const { accountDropdownListItems } = sidebar || {};
-
     const subTextStyling = {
       color: subTextColor,
       fontSize: subTextFontSize,
@@ -109,7 +101,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     }, [model.items]);
 
     const finalItems = useMemo(() => {
-      return getItemsWithResolved(evaluation.items);
+      return getItemsWithResolved(evaluation.items, numResolved);
     }, [evaluation.items, numResolved]);
 
     const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
@@ -156,7 +148,13 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     const menuItems = getMenuItem(finalItems, executeActionWithDynamicContext, getIsVisible);
 
-    const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
+    const accountMenuItems = [
+      {
+        key: 'logout',
+        onClick: logoutUser,
+        label: <><LoginOutlined /> Logout</>,
+      },
+    ];
 
     const onDynamicItemEvaluated = (): void => {
       setNumResolved((prev) => prev + 1);

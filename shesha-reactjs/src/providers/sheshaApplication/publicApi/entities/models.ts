@@ -6,7 +6,7 @@ export interface EntityApiItem {
 
 export interface DataTypeInfo {
   dataType: string;
-  dataFormat?: string;
+  dataFormat?: string | null;
   objectType?: string;
 }
 

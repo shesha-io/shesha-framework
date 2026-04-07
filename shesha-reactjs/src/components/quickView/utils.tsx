@@ -1,7 +1,25 @@
 import React, { ReactNode } from 'react';
 import { Spin } from 'antd';
-import { getDataProperty, getFormatContent } from '@/utils/metadata';
+import { getDataProperty } from '@/utils/metadata';
 import { IPropertyMetadata } from '@/interfaces/metadata';
+import { formatDateStringAndPrefix } from '@/utils/formatting';
+import { getNumberFormat } from '@/utils/string';
+
+const getFormatContent = (content: string, dataType: string | undefined, dataFormat: string | undefined): string => {
+  switch (dataType) {
+    case 'boolean':
+      return !!content ? 'Yes' : 'No';
+
+    case 'date-time':
+      return formatDateStringAndPrefix(content, dataFormat);
+
+    case 'number':
+      return getNumberFormat(content, dataFormat || 'round');
+
+    default:
+      return content;
+  }
+};
 
 export const formItemLayout = {
   labelCol: {
@@ -41,7 +59,7 @@ export const compareValueToProperty = (key: string, value: string, properties: I
   const dataType = getDataProperty(properties, key, 'dataType');
   const dataFormat = getDataProperty(properties, key, 'dataFormat');
 
-  return [key, getFormatContent(value, { dataType, dataFormat })];
+  return [key, getFormatContent(value, dataType, dataFormat)];
 };
 
 export const getQuickViewInitialValues = (

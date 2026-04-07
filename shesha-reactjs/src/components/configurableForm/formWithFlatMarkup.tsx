@@ -7,10 +7,10 @@ import { useAppConfigurator } from '@/providers/appConfigurator';
 import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
 import { ConditionalMetadataProvider } from '@/providers';
-import { IShaFormInstance } from '@/index';
+import { IShaFormInstance } from '@/providers/form/store/interfaces';
 
 export type IFormWithFlatMarkupProps<TValues extends object = object> = Omit<IConfigurableFormRuntimeProps<TValues>, 'shaForm'> & {
-  shaForm: IShaFormInstance<any>;
+  shaForm: IShaFormInstance<TValues>;
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   persistedFormProps?: IPersistedFormProps;
@@ -46,7 +46,7 @@ export const FormWithFlatMarkup = <TValues extends object = object>(props: IForm
     <FormInfo visible={showFormInfo} formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated}>
       <ConditionalMetadataProvider modelType={formSettings?.modelType}>
         <FormFlatMarkupProvider markup={formFlatMarkup}>
-          <FormProvider
+          <FormProvider<TValues>
             shaForm={shaForm}
             name={props.formName}
             formSettings={formSettings}

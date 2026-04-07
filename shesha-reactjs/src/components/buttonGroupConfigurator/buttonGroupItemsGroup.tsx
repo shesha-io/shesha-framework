@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { ButtonGroupItemProps, IButtonGroup } from '@/providers/buttonGroupConfigurator/models';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { ItemChangeDetails } from '../listEditor';
 import { useActualContextData } from '@/hooks';

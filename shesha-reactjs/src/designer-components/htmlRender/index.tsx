@@ -5,9 +5,9 @@ import parse from 'html-react-parser';
 import React from 'react';
 import { IHtmlComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { addContextData } from '@/index';
+import { addContextData } from '@/components/formDesigner/components/utils';
 
 interface IHtmlComponentCalulatedModel {
   getContent: (value: any) => string;

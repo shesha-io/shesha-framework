@@ -7,7 +7,7 @@ import { Empty, Form } from 'antd';
 import React, { useMemo, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ItemSettingsMarkupFactory } from './interfaces';
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 
 export interface IPropertiesPanelProps<TItem extends ListItemWithId> extends ItemPropertiesRendererProps<TItem> {
   settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;

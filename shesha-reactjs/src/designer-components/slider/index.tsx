@@ -1,6 +1,6 @@
 import { Slider } from 'antd';
 import React from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { useFormData } from '@/providers';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SlidersFilled } from '@ant-design/icons';

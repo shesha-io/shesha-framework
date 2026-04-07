@@ -1,3 +1,5 @@
+"use client";
+
 import classNames from 'classnames';
 import ConfigurableSidebarMenu from '@/components/configurableSidebarMenu';
 import LayoutHeader from './header';
@@ -21,10 +23,9 @@ import { SIDEBAR_COLLAPSE } from './constant';
 import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
 import { useLocalStorage } from '@/hooks';
 import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
-import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
-import { ConfigurableForm } from '@/index';
+import { ConfigurableForm } from '../configurableForm';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -93,7 +94,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   } = props;
   const { theme: themeFromStorage } = useTheme();
   const { styles } = useStyles();
-  const sidebarDefaults = useSidebarMenuDefaults();
 
   const { setGlobalVariables } = useSheshaApplication();
 
@@ -223,7 +223,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
           theme={sideMenuTheme}
           name={SIDEBAR_MENU_NAME}
           isApplicationSpecific={true}
-          defaultSettings={sidebarDefaults}
+          // defaultSettings={sidebarDefaults}
         />
       </Sider>
 

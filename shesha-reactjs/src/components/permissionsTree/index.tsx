@@ -1,7 +1,6 @@
-import React, { ReactNode, useEffect, useRef, useState, FC } from 'react';
+import React, { ReactNode, useEffect, useRef, useState, FC, Key } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
-import { Key } from 'rc-tree/lib/interface';
 import {
   App,
   Space,
@@ -20,8 +19,9 @@ import {
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
 import { useShaFormInstanceOrUndefined } from '@/providers/form/providers/shaFormProvider';
-import { ShaSpin, useAvailableConstantsData } from '@/index';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { useAvailableConstantsData } from '@/providers/form/utils';
+import ShaSpin from '../shaSpin';
 
 interface IDataNode {
   title: JSX.Element;
@@ -593,7 +593,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   };
 
   return (
-    <Space direction="vertical" style={{ width: '100%' }}>
+    <Space orientation="vertical" style={{ width: '100%' }}>
       <ShaSpin spinning={isFetchingData || isDeleting || isParentUpdating} tip={getLoadingHint()}>
         {!rest.hideSearch && <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />}
         <Tree

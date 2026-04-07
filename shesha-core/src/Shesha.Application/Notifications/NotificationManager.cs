@@ -47,7 +47,7 @@ namespace Shesha.Notifications
             var recipientPerson = receiver?.GetPerson();
             if (recipientPerson != null)
             {
-                var defaultChannels = await _userNotificationPreference.GetAll().Where(x => x.User.Id == recipientPerson.Id && x.NotificationType.Id == type.Id && x.DefaultChannel != null)
+                var defaultChannels = await (await _userNotificationPreference.GetAllAsync()).Where(x => x.User.Id == recipientPerson.Id && x.NotificationType.Id == type.Id && x.DefaultChannel != null)
                     .Select(e => e.DefaultChannel)
                     .ToListAsync();
                 
@@ -63,8 +63,7 @@ namespace Shesha.Notifications
                 foreach (var channel in type.OverrideChannels) 
                 {
                     // TODO: check versioned query
-                    var dbChannel = await _notificationChannelRepository.GetAll().Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression())
-                        .FirstOrDefaultAsync();
+                    var dbChannel = await _notificationChannelRepository.FirstOrDefaultAsync(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression());
                     if (dbChannel != null)
                         overrideChannels.Add(dbChannel);
                 }
@@ -85,8 +84,7 @@ namespace Shesha.Notifications
             if (selectedNotifications == null)
                 return new();
 
-            // TODO: check versioned query
-            var liveChannels = _notificationChannelRepository.GetAll();
+            var liveChannels = await _notificationChannelRepository.GetAllAsync();
 
             var result = selectedNotifications
                 .SelectMany(identifier => liveChannels
@@ -110,7 +108,7 @@ namespace Shesha.Notifications
 
         private async Task CopyTemplatesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
         {
-            var srcItems = await _templateRepository.GetAll().Where(i => i.PartOf == source).ToListAsync();
+            var srcItems = await _templateRepository.GetAllListAsync(i => i.PartOf == source);
 
             foreach (var srcItem in srcItems)
             {

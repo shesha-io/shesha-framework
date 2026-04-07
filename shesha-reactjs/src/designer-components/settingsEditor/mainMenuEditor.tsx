@@ -1,13 +1,6 @@
-import { IToolboxComponent } from '@/interfaces';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { EditOutlined } from '@ant-design/icons';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  IConfigurableFormComponent,
-  SidebarConfigurator,
-  useForm,
-  useSheshaApplication,
-  validateConfigurableComponentSettings,
-} from '@/index';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { mainMenuMigration } from '@/providers/mainMenu/migrations/migration';
 import { useSettingsEditor } from '@/components/settingsEditor/provider';
@@ -17,6 +10,10 @@ import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/m
 import { getSettings } from './settingsForm';
 import { App, Button, Modal } from 'antd';
 import { useMedia } from 'react-use';
+import { SidebarConfigurator } from '@/components/configurableSidebarMenu/configurator';
+import { useForm } from '@/providers/form';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 export interface IMainMenuEditorComponentProps extends IConfigurableFormComponent {
   height?: string;
@@ -38,7 +35,7 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
     const { applicationKey = null } = useSheshaApplication();
     const { selectedApplication = null, saveStatus, editorMode, saveSetting } = useSettingsEditor(false) ?? {};
     const { changeMainMenu, saveMainMenu } = useMainMenu();
-    const form = useForm();
+    const form = useForm<IConfigurableMainMenu>();
     const initialValues = useRef<IConfigurableMainMenu>();
 
     const updateMenu = (value: IConfigurableMainMenu): void => {

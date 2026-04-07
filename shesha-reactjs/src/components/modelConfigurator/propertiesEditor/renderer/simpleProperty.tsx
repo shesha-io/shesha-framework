@@ -4,8 +4,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { getIconByDataType } from '@/utils/metadata';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
-import { DataTypes } from '@/index';
-import { EntityFormats, ObjectFormats } from '@/interfaces/dataTypes';
+import { DataTypes, EntityFormats, ObjectFormats } from '@/interfaces/dataTypes';
 import PropertyWrapper from './propertyWrapper';
 import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils';
 

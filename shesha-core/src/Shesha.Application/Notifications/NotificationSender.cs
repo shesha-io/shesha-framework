@@ -10,7 +10,6 @@ using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
-using Shesha.NHibernate;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Exceptions;
 using Shesha.Notifications.MessageParticipants;
@@ -68,7 +67,7 @@ namespace Shesha.Notifications
 
         private async Task<List<EmailAttachment>> GetAttachmentsAsync(NotificationMessage message)
         {
-            var attachments = await _attachmentRepository.GetAll().Where(a => a.Message.Id == message.Id).ToListAsync();
+            var attachments = await _attachmentRepository.GetAllListAsync(a => a.Message.Id == message.Id);
 
             var result = new List<EmailAttachment>();
             foreach (var attachment in attachments) 

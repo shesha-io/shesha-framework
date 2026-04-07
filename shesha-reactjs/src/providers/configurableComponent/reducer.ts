@@ -1,35 +1,24 @@
-import { ReduxCompatibleReducer, handleActions } from 'redux-actions';
-import { ConfigurableComponentActionEnums } from './actions';
+import { loadErrorAction, loadRequestAction, loadSuccessAction, saveErrorAction, saveRequestAction, saveSuccessAction } from './actions';
 import {
-  IComponentLoadErrorPayload,
-  IComponentLoadSuccessPayload,
-  IComponentSaveErrorPayload,
-  IComponentSaveSuccessPayload,
   IConfigurableComponentStateContext,
 } from './contexts';
+import { createReducer } from '@reduxjs/toolkit';
 
-const reducerFactory = <TSettings extends any>(
+type ReducerType<TSettings extends object> = ReturnType<typeof createReducer<IConfigurableComponentStateContext<TSettings>>>;
+
+const reducerFactory = <TSettings extends object>(
   initialState: IConfigurableComponentStateContext<TSettings>,
-): ReduxCompatibleReducer<IConfigurableComponentStateContext<TSettings>, any> =>
-  handleActions<IConfigurableComponentStateContext<TSettings>, any>(
-    {
-      [ConfigurableComponentActionEnums.LoadRequest]: (
-        state: IConfigurableComponentStateContext<TSettings>,
-        _action: ReduxActions.Action<void>,
-      ) => {
+): ReducerType<TSettings> =>
+  createReducer(initialState, (builder) => {
+    builder
+      .addCase(loadRequestAction, (state) => {
         return {
           ...state,
           isInProgress: { ...state.isInProgress, loading: true },
         };
-      },
-
-      [ConfigurableComponentActionEnums.LoadSuccess]: (
-        state: IConfigurableComponentStateContext<TSettings>,
-        action: ReduxActions.Action<IComponentLoadSuccessPayload>,
-      ) => {
-        const { payload } = action;
-
-        const settings = payload?.settings as TSettings;
+      })
+      .addCase(loadSuccessAction, (state, { payload }) => {
+        const settings = payload.settings as TSettings;
 
         const typedPayload = { ...payload, settings };
 
@@ -39,38 +28,22 @@ const reducerFactory = <TSettings extends any>(
           isInProgress: { ...state.isInProgress, loading: false },
           error: { ...state.error, loading: null },
         };
-      },
-
-      [ConfigurableComponentActionEnums.LoadError]: (
-        state: IConfigurableComponentStateContext<TSettings>,
-        action: ReduxActions.Action<IComponentLoadErrorPayload>,
-      ) => {
-        const { payload } = action;
-
+      })
+      .addCase(loadErrorAction, (state, { payload }) => {
         return {
           ...state,
           isInProgress: { ...state.isInProgress, loading: false },
           error: { ...state.error, loading: payload.error },
         };
-      },
-
-      [ConfigurableComponentActionEnums.SaveRequest]: (
-        state: IConfigurableComponentStateContext<TSettings>,
-        _action: ReduxActions.Action<void>,
-      ) => {
+      })
+      .addCase(saveRequestAction, (state) => {
         return {
           ...state,
           isInProgress: { ...state.isInProgress, save: true },
-          error: { ...state.error, save: null },
+          error: { ...state.error, save: undefined },
         };
-      },
-
-      [ConfigurableComponentActionEnums.SaveSuccess]: (
-        state: IConfigurableComponentStateContext<TSettings>,
-        action: ReduxActions.Action<IComponentSaveSuccessPayload>,
-      ) => {
-        const { payload } = action;
-
+      })
+      .addCase(saveSuccessAction, (state, { payload }) => {
         const settings = payload.settings as TSettings;
 
         return {
@@ -79,22 +52,16 @@ const reducerFactory = <TSettings extends any>(
           isInProgress: { ...state.isInProgress, save: false },
           error: { ...state.error, save: null },
         };
-      },
-
-      [ConfigurableComponentActionEnums.SaveError]: (
-        state: IConfigurableComponentStateContext<TSettings>,
-        action: ReduxActions.Action<IComponentSaveErrorPayload>,
-      ) => {
-        const { payload } = action;
-
+      })
+      .addCase(saveErrorAction, (state, { payload }) => {
         return {
           ...state,
           isInProgress: { ...state.isInProgress, save: false },
           error: { ...state.error, save: payload.error },
         };
-      },
-    },
-    initialState,
+      })
+    ;
+  },
   );
 
 export default reducerFactory;

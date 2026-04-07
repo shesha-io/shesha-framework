@@ -13,7 +13,7 @@ interface IQueryParamProp {
 }
 
 export interface IAutocompleteComponentProps extends IConfigurableFormComponent {
-  entityType?: string | IEntityTypeIdentifier;
+  entityType?: string | IEntityTypeIdentifier | undefined;
   hideBorder?: boolean;
   dataSourceUrl?: string;
   dataSourceType: AutocompleteDataSourceType;

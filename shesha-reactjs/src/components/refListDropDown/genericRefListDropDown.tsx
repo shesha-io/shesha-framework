@@ -1,5 +1,5 @@
 import { Empty, Select, SelectProps, Spin } from 'antd';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import React, { useMemo } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
@@ -116,7 +116,6 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return (
       <ReadOnlyDisplayFormItem
         value={wrapValue(value, options)}
-        disabled={disabled}
         showIcon={showIcon}
         showItemName={showItemName}
         solidColor={solidColor}

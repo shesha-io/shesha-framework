@@ -1,7 +1,6 @@
 import { FormInstance } from 'antd';
 import { IModelMetadata, IToolboxComponentGroup } from '@/interfaces';
 import {
-  DEFAULT_FORM_SETTINGS,
   FormMode,
   IConfigurableFormComponent,
   IFormSettings,
@@ -13,47 +12,38 @@ export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
 }
 
-export interface IFormStateInternalContext {
+export interface IFormStateContext<TData extends object = object> {
   name?: string;
-  formSettings: IFormSettings;
+  formSettings: IFormSettings | undefined;
   formMode: FormMode;
-  form?: FormInstance<any>;
+  form?: FormInstance<TData> | undefined;
 
   // runtime props
-  initialValues?: any;
-  formData?: any;
+  formData?: TData | undefined;
 
   // TODO: review and remove
-  modelMetadata?: IModelMetadata;
-  shaForm?: IShaFormInstance;
+  modelMetadata?: IModelMetadata | undefined;
+  shaForm: IShaFormInstance<TData>;
 }
 
-export type IFormStateContext = IFormStateInternalContext;
-
-export interface ISetFormDataPayload {
+export interface ISetFormDataPayload<TValue extends object = object> {
   /** form field values */
-  values: any;
+  values: TValue;
 
   /** if true, previous data will be merged with current values */
   mergeValues: boolean;
 }
 
-export interface IFormActionsContext {
+export interface IFormActionsContext<TData extends object = object> {
   setFormMode: (formMode: FormMode) => void;
-  setFormData: (payload: ISetFormDataPayload) => void;
+  setFormData: (payload: ISetFormDataPayload<TData>) => void;
 
   isComponentFiltered: (component: IConfigurableFormComponent) => boolean;
 }
 
-/** Form initial state */
-export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
-  formMode: 'designer',
-  formSettings: DEFAULT_FORM_SETTINGS,
-};
-
 export interface FieldData {
   name: string | number | (string | number)[];
-  value?: any;
+  value?: unknown;
   touched?: boolean;
   validating?: boolean;
   errors?: string[];
@@ -67,11 +57,11 @@ export interface IFormDataActionsContext {
   setFields: (fields: FieldData[]) => void;
 }
 
-export const FormDataStateContext = createNamedContext<IFormDataStateContext>(undefined, "FormDataStateContext");
-export const FormDataActionsContext = createNamedContext<IFormDataActionsContext>(undefined, "FormDataActionsContext");
+export const FormDataStateContext = createNamedContext<IFormDataStateContext | undefined>(undefined, "FormDataStateContext");
+export const FormDataActionsContext = createNamedContext<IFormDataActionsContext | undefined>(undefined, "FormDataActionsContext");
 
-export interface ConfigurableFormInstance extends IFormActionsContext, IFormStateContext { }
+export interface ConfigurableFormInstance<TValue extends object = object> extends IFormActionsContext, IFormStateContext<TValue> { }
 
-export const FormStateContext = createNamedContext<IFormStateContext>(FORM_CONTEXT_INITIAL_STATE, "FormStateContext");
+export const FormStateContext = createNamedContext<IFormStateContext | undefined>(undefined, "FormStateContext");
 
-export const FormActionsContext = createNamedContext<IFormActionsContext>(undefined, "FormActionsContext");
+export const FormActionsContext = createNamedContext<IFormActionsContext | undefined>(undefined, "FormActionsContext");

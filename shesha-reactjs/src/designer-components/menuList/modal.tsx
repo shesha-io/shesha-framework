@@ -1,6 +1,6 @@
-import { ComponentSettingsModal } from "@/components";
 import { ISettingsEditorProps } from "@/components/configurableComponent";
 import { ISideBarMenuProps } from "@/components/configurableSidebarMenu";
+import { ComponentSettingsModal } from "@/components/configurableSidebarMenu/settingsModal";
 import React, { FC } from "react";
 
 type IProps = ISettingsEditorProps<ISideBarMenuProps>;

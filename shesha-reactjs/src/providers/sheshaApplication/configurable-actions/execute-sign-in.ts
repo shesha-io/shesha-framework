@@ -19,7 +19,7 @@ export const useExecuteSignIn = (): void => {
         if (!auth)
           throw new Error("Authentication is not available");
 
-        const data = actionContext?.form?.data as ILoginForm;
+        const data = actionContext.form?.data as ILoginForm;
         return auth.loginUserAsync(data);
       },
     },

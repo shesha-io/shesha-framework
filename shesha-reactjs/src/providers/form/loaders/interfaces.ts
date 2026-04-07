@@ -3,22 +3,22 @@ import { IErrorInfo } from "@/interfaces/errorInfo";
 import { ExpressionExecuter } from "../submitters/interfaces";
 
 export interface FormDataLoadingPayload {
-  formArguments?: any;
+  formArguments?: object | undefined;
   formSettings: IFormSettings;
   formFlatStructure: IFlatComponentsStructure;
-  loadingCallback?: LoadingCallback;
+  loadingCallback?: LoadingCallback | undefined;
   expressionExecuter: ExpressionExecuter;
 }
 
-export interface IFormDataLoader {
-  loadAsync: (payload: FormDataLoadingPayload) => Promise<any>;
-  canLoadData: (formArguments: any) => boolean;
+export interface IFormDataLoader<Values extends object = object> {
+  loadAsync: (payload: FormDataLoadingPayload) => Promise<Values | undefined>;
+  canLoadData: (formArguments: object | undefined) => boolean;
 }
 
 export interface IFieldData {
   name: string;
   child: IFieldData[];
-  property: IPropertyMetadata;
+  property: IPropertyMetadata | undefined;
 }
 
 export interface GetFormFieldsPayload {
@@ -30,18 +30,18 @@ export type GetGqlFieldsPayload = GetFormFieldsPayload;
 
 export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface LoadingCallbackState {
-  loaderHint?: string;
+  loaderHint?: string | undefined;
   loadingState: LoadingState;
-  error?: IErrorInfo;
+  error?: IErrorInfo | undefined;
 }
 export type LoadingCallback = (loadingState: LoadingCallbackState) => void;
 
 export type LoaderEndpointType = 'default' | 'static' | 'dynamic';
 export interface GqlLoaderSettings {
-  fieldsToFetch?: string[];
+  fieldsToFetch?: string[] | undefined;
   endpointType: LoaderEndpointType;
-  staticEndpoint?: IApiEndpoint;
-  dynamicEndpoint?: string;
+  staticEndpoint?: IApiEndpoint | undefined;
+  dynamicEndpoint?: string | undefined;
 }
 
 export interface CustomLoaderSettings {

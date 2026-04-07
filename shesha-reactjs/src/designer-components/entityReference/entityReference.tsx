@@ -1,5 +1,5 @@
 import { EntityReference, EntityReferenceValue, IEntityReferenceProps } from '@/components/entityReference';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { ShaIconTypes } from '@/components/iconPicker';
 import {
   migrateCustomFunctions,

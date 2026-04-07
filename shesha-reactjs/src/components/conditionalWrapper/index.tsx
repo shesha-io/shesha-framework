@@ -9,4 +9,16 @@ export const ConditionalWrap: FC<PropsWithChildren<IConditionalWrapProps>> = ({ 
   return <>{condition ? wrap(children) : children}</>;
 };
 
+export const withWrapper = <WrapperProps extends object = object>(
+  content: ReactNode,
+  Wrapper: FC<PropsWithChildren<WrapperProps>>,
+  wrapperProps?: WrapperProps,
+): ReactNode => {
+  return (
+    <Wrapper {...wrapperProps}>
+      {content}
+    </Wrapper>
+  );
+};
+
 export default ConditionalWrap;

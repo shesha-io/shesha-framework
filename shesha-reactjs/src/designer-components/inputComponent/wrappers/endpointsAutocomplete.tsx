@@ -1,8 +1,9 @@
 import { IEndpointsAutocompleteSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
-import { EndpointsAutocomplete } from '@/components';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
+import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 
-export const EndpointsAutocompleteWrapper: FC<IEndpointsAutocompleteSettingsInputProps> = (props) => {
+export const EndpointsAutocompleteWrapper: FCUnwrapped<IEndpointsAutocompleteSettingsInputProps> = (props) => {
   const { value, onChange, size, httpVerb } = props;
   return (
     <EndpointsAutocomplete

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { DependencyList, useEffect, useMemo } from 'react';
 import { IModelValidation } from '@/utils/errors';
 import { useValidationErrorsActionsOrDefault } from './index';
 
@@ -17,7 +17,7 @@ import { useValidationErrorsActionsOrDefault } from './index';
  * @example
  * ```tsx
  * const MyComponent = () => {
- *   const store = useDataTableStore(false);
+ *   const store = useDataTableStoreOrUndefined();
  *
  *   useComponentValidation(
  *     () => {
@@ -43,7 +43,7 @@ import { useValidationErrorsActionsOrDefault } from './index';
  */
 export const useComponentValidation = (
   validationFn: () => Partial<IModelValidation> | undefined,
-  deps: unknown[],
+  deps: DependencyList,
 ): IModelValidation | undefined => {
   // Get the validation actions from the provider
   const { registerValidation, unregisterValidation } = useValidationErrorsActionsOrDefault();
@@ -59,6 +59,8 @@ export const useComponentValidation = (
       ...partialResult,
       hasErrors: true,
     };
+    // TODO: review usage of validationFn and include into dependenceis
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   useEffect(() => {

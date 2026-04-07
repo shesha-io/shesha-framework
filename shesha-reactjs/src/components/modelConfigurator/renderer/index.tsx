@@ -1,7 +1,7 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
-import React, { FC, useMemo } from 'react';
-import { CustomErrorBoundary } from '@/components';
+import React, { FC, useMemo, useRef } from 'react';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { FormMarkup } from '@/providers/form/models';
 import { Alert, App } from 'antd';
 import { PermissionEditorComponent } from '../permissionEditor';
@@ -9,16 +9,20 @@ import { PropertiesEditorComponent } from '../propertiesEditor';
 import { useModelConfigurator } from '@/providers';
 import { ViewsEditorComponent } from '../viewsEditor';
 import { useStyles } from '../styles/styles';
-import { filter, isEqual, keys, union } from 'lodash';
+import { cloneDeep, filter, isEqual, keys, union } from 'lodash';
 import { isDefined } from '@/utils/nullables';
 import { IPropertyErrors } from '@/providers/modelConfigurator/contexts';
+import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 
 const markup = modelSettingsMarkup as FormMarkup;
 
 export const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles({ height: 180 });
   const { message } = App.useApp();
-  const { showErrors, errors, modelConfiguration, initialConfiguration, form, saveForm, setModified, validateModel } = useModelConfigurator();
+  const { showErrors, errors, modelConfiguration, initialConfiguration, getForm, saveForm, setModified, validateModel } = useModelConfigurator();
+
+  const initialModel = useRef(cloneDeep(initialConfiguration));
+  if (initialModel.current === undefined) initialModel.current = cloneDeep(initialConfiguration);
 
   const errorsText = useMemo((): React.ReactNode => {
     return (
@@ -65,7 +69,7 @@ export const ModelConfiguratorRenderer: FC = () => {
     let newChanged: string[] = [];
     // Return only latest keys
     for (const key of filtered) {
-      if (isDefined(o1) && isDefined(o2) && (typeof o1[key] === 'object' || typeof o2[key] === 'object'))
+      if (isDefined(o1) && isDefined(o2) && ((typeof o1[key] === 'object' && o1[key] !== null) || (typeof o2[key] === 'object' && o2[key] !== null)))
         newChanged = newChanged.concat(changedKeys(o1[key], o2[key], name ? name + '.' + key : key));
       // Exclude some framework keys
       else if (['chosen', 'selected', 'dependency'].indexOf(key) === -1)
@@ -74,7 +78,7 @@ export const ModelConfiguratorRenderer: FC = () => {
     return newChanged;
   };
 
-  const onValuesChange = (_changedValues: unknown, values: unknown): void => {
+  const onValuesChange = (_changedValues: unknown, values: ModelConfigurationDto): void => {
     const keys = changedKeys(modelConfiguration, values);
     // Modified if there are changed keys
     const modified = keys.length > 0;
@@ -95,8 +99,9 @@ export const ModelConfiguratorRenderer: FC = () => {
           markup={markup}
           onValuesChange={onValuesChange}
           onFinish={onSettingsSave}
-          form={form}
-          initialValues={initialConfiguration}
+          form={getForm()}
+          // eslint-disable-next-line react-hooks/refs
+          initialValues={initialModel.current}
           sections={{
             properties: () => <PropertiesEditorComponent />,
             permission: () => <PermissionEditorComponent name="permission" />,

@@ -69,7 +69,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
     if (onChange) {
       const jsonLogicResult = QbUtils.jsonLogicFormat(_tree, _config);
 
-      lastLocallyChangedValue.current = jsonLogicResult.logic;
+      lastLocallyChangedValue.current = jsonLogicResult;
       onChange(jsonLogicResult);
     }
   };

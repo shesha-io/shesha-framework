@@ -10,7 +10,7 @@ export interface IInputRowProps {
   children?: React.ReactNode;
   hidden?: boolean;
 }
-export interface ISettingsInputRowProps extends IConfigurableFormComponent, IInputRowProps {
+export interface ISettingsInputRowProps extends IConfigurableFormComponent, Omit<IInputRowProps, "readOnly"> {
 }
 
 export type SettingsInputRowDefinition = ComponentDefinition<"settingsInputRow", ISettingsInputRowProps & IConfigurableFormComponent>;

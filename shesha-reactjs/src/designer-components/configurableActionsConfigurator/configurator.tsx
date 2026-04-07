@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import { Collapse, Form } from 'antd';
 import { useForm, useConfigurableActionDispatcher } from '@/providers';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
@@ -9,7 +9,7 @@ import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
-import { StyledLabel } from '../_settings/utils';
+import { StyledLabel } from '../_settings/utils/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
 import FormItem from '../_settings/components/formItem';
@@ -96,7 +96,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       : null;
   }, [actionName, actionOwner]);
 
-  const filteredActions = props?.allowedActions?.reduce((acc, key) => {
+  const filteredActions = props.allowedActions?.reduce((acc, key) => {
     if (actions[key]) {
       acc[key] = actions[key];
     }
@@ -173,7 +173,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 };
 
 interface IConfigurableActionConfiguratorProps {
-  label?: string;
+  label?: string | ReactNode;
   hideLabel?: boolean;
   description?: string;
   editorConfig: IConfigurableActionConfiguratorComponentProps;
