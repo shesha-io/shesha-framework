@@ -94,7 +94,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       <ConfigurableFormItem model={modelWithValidation}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]): void => {
+          const onChangeInternal = (...args: unknown[]): void => {
             const inputValue: string | undefined = args[0]?.currentTarget?.value?.toString();
             const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
 
