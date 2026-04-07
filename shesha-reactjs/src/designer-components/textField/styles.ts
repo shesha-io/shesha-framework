@@ -15,7 +15,14 @@ export const useStyles = createStyles(({ css, cx, token }, { fontWeight, fontFam
         }
   `);
 
-  const passwordFieldWrapper = cx("sha-password-field-wrapper", css``);
+  const passwordFieldWrapper = cx("sha-password-field-wrapper", css`
+    .ant-form-item-explain-error {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: default;
+    }
+  `);
 
   return {
     textField,

@@ -1,8 +1,7 @@
 import { CodeOutlined } from '@ant-design/icons';
 import { Input, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { createRoot, Root } from 'react-dom/client';
+import React, { useMemo, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
@@ -57,9 +56,6 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const isPassword = model.textType === 'password';
     const passwordComplexity = usePasswordComplexitySettings();
     const [passwordError, setPasswordError] = useState<string | null>(null);
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const tooltipRootRef = useRef<Root | null>(null);
-    const tooltipContainerRef = useRef<HTMLSpanElement | null>(null);
 
     const passwordValidator = useMemo(() =>
       isPassword ? buildPasswordValidatorString(passwordComplexity) : null,
@@ -78,64 +74,6 @@ const TextFieldComponent: TextFieldComponentDefinition = {
         },
       };
     }, [model, isPassword, passwordValidator]);
-
-    useEffect(() => {
-      if (!wrapperRef.current) return undefined;
-
-      const renderTooltip = (): void => {
-        const explainError = wrapperRef.current?.querySelector('.ant-form-item-explain-error');
-        if (!explainError) return;
-
-        // Check if our tooltip element still exists inside explainError
-        const hasOurTooltip = explainError.querySelector('.sha-password-error-text') !== null;
-
-        // Unmount previous root if the element was replaced
-        if (tooltipRootRef.current && !hasOurTooltip) {
-          tooltipRootRef.current.unmount();
-          tooltipRootRef.current = null;
-          tooltipContainerRef.current = null;
-        }
-
-        // Only render if there's an error and we haven't already rendered
-        if (passwordError && !tooltipRootRef.current) {
-          const container = document.createElement('span');
-          container.className = 'sha-password-error-text';
-          const text = explainError.textContent || '';
-
-          // Clear and replace with our container
-          explainError.innerHTML = '';
-          explainError.appendChild(container);
-
-          tooltipContainerRef.current = container;
-          tooltipRootRef.current = createRoot(container);
-          tooltipRootRef.current.render(
-            <Tooltip title={passwordError} placement="top">
-              <span style={{ display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {text}
-              </span>
-            </Tooltip>,
-          );
-        } else if (!passwordError && tooltipRootRef.current) {
-          tooltipRootRef.current.unmount();
-          tooltipRootRef.current = null;
-          tooltipContainerRef.current = null;
-        }
-      };
-
-      renderTooltip();
-
-      const observer = new MutationObserver(renderTooltip);
-      observer.observe(wrapperRef.current, { childList: true, subtree: true });
-
-      return () => {
-        observer.disconnect();
-        if (tooltipRootRef.current) {
-          tooltipRootRef.current.unmount();
-          tooltipRootRef.current = null;
-          tooltipContainerRef.current = null;
-        }
-      };
-    }, [passwordError]);
 
     if (model.hidden) return null;
 
@@ -189,7 +127,11 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     );
 
     if (isPassword) {
-      return <div ref={wrapperRef} className={styles.passwordFieldWrapper}>{fieldContent}</div>;
+      return (
+        <Tooltip title={passwordError ?? undefined} placement="top">
+          <div className={styles.passwordFieldWrapper}>{fieldContent}</div>
+        </Tooltip>
+      );
     }
 
     return fieldContent;
