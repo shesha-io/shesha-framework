@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { FolderOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Flex, Typography } from 'antd';
+import { Button, Flex, Tooltip, Typography } from 'antd';
 
 const { Text } = Typography;
 
@@ -8,12 +8,14 @@ interface IQueryRuleElementProps {
   onAddRule?: () => void;
   onAddGroup?: () => void;
   disabled?: boolean;
+  addGroupDisabled?: boolean;
 }
 
 export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
   onAddRule,
   onAddGroup,
   disabled,
+  addGroupDisabled,
 }) => {
   return (
     <Flex
@@ -32,15 +34,17 @@ export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
         >
           Add Rule
         </Button>
-        <Button
-          size="small"
-          icon={<FolderOutlined />}
-          onClick={onAddGroup}
-          className="action action--ADD-GROUP"
-          disabled={disabled}
-        >
-          Add Group
-        </Button>
+        <Tooltip title={addGroupDisabled ? 'Maximum group nesting level reached' : undefined}>
+          <Button
+            size="small"
+            icon={<FolderOutlined />}
+            onClick={onAddGroup}
+            className="action action--ADD-GROUP"
+            disabled={disabled || addGroupDisabled}
+          >
+            Add Group
+          </Button>
+        </Tooltip>
       </Flex>
     </Flex>
   );

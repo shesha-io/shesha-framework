@@ -33,8 +33,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-canvas {
+            --sha-query-builder-prefix-width: 88px;
             width: 100%;
             min-width: 0;
+            overflow: hidden;
         }
 
         .sha-query-builder-surface {
@@ -157,12 +159,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-height: 0;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            padding: 10px;
+            gap: 10px;
+            padding: 6px 10px 10px;
             box-sizing: border-box;
-            border-radius: 11px;
-            border: 1px solid #7fa8dc;
-            background: rgba(43, 120, 228, 0.08);
+            border-radius: 12px;
+            border: 1px solid #2b78e4;
+            background: #4b6384;
         }
 
         .sha-query-builder-group-card.is-drop-append {
@@ -170,22 +172,64 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-group-header {
-            display: flex;
-            justify-content: flex-end;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
             align-items: center;
-            min-height: 32px;
+            gap: 12px;
+            width: 100%;
+            min-height: 36px;
+            min-width: 0;
+        }
+
+        .sha-query-builder-group-heading,
+        .query-builder .sha-query-builder-group-card .sha-query-builder-group-footer-logic {
+            display: block;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 22px;
+            font-weight: 400;
+            color: #101828;
+        }
+
+        .sha-query-builder-group-header .sha-query-builder-group-heading {
+            min-width: 0;
         }
 
         .sha-query-builder-group-actions {
+            display: inline-flex;
+            align-items: center;
             gap: 8px;
+            padding: 5px 0;
+            flex: 0 0 auto;
+            width: auto;
+            justify-content: flex-end;
         }
 
         .sha-query-builder-group-action-button.${prefixCls}-btn {
-            width: 32px;
-            min-width: 32px;
-            height: 32px;
+            width: 26px;
+            min-width: 26px;
+            height: 26px !important;
             padding: 0;
             border-radius: 6px;
+            border: 1px solid #d0d5dd;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+        }
+
+        .sha-query-builder-group-action-button.${prefixCls}-btn.${prefixCls}-btn-primary {
+            background: #fff;
+            color: #667085;
+        }
+
+        .sha-query-builder-group-action-button.${prefixCls}-btn:hover:not(:disabled),
+        .sha-query-builder-group-action-button.${prefixCls}-btn:focus-visible:not(:disabled) {
+            border-color: #98a2b3;
+            background: #f8fafc;
+            color: #344054;
         }
 
         .sha-query-builder-group-action-button.${prefixCls}-btn .${prefixCls}-btn-icon {
@@ -193,24 +237,49 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-group-action-button.${prefixCls}-btn .anticon {
-            font-size: 16px;
+            font-size: 14px;
+        }
+
+        .sha-query-builder-group-action-button--danger.${prefixCls}-btn,
+        .sha-query-builder-group-action-button--danger.${prefixCls}-btn:hover,
+        .sha-query-builder-group-action-button--danger.${prefixCls}-btn:focus-visible {
+            background: #fffaf9;
+            border-color: #fcb4ab;
+        }
+
+        .sha-query-builder-group-action-button--drag.${prefixCls}-btn,
+        .sha-query-builder-group-action-button--drag.${prefixCls}-btn:hover,
+        .sha-query-builder-group-action-button--drag.${prefixCls}-btn:focus,
+        .sha-query-builder-group-action-button--drag.${prefixCls}-btn:active {
+            width: 24px;
+            min-width: 24px;
+            height: 24px !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #f8fafc;
         }
 
         .sha-query-builder-item-row {
             position: relative;
             display: grid;
-            grid-template-columns: 69px minmax(0, 1fr) 64px;
+            grid-template-columns: var(--sha-query-builder-prefix-width) minmax(0, 1fr);
             align-items: stretch;
             gap: 10px;
             width: 100%;
             min-width: 0;
         }
 
+        .sha-query-builder-item-row:not(.is-group) .sha-query-builder-item-prefix {
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
+
         .sha-query-builder-item-row.is-drop-before::before,
         .sha-query-builder-item-row.is-drop-after::after {
             content: "";
             position: absolute;
-            left: 69px;
+            left: var(--sha-query-builder-prefix-width);
             right: 0;
             height: 2px;
             background: ${token.colorPrimary};
@@ -226,7 +295,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-item-prefix {
-            min-width: 0;
+            width: var(--sha-query-builder-prefix-width);
+            min-width: var(--sha-query-builder-prefix-width);
+            max-width: var(--sha-query-builder-prefix-width);
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -240,10 +311,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-item-row.is-group {
-            grid-template-columns: 69px minmax(0, 1fr);
+            grid-template-columns: var(--sha-query-builder-prefix-width) minmax(0, 1fr);
         }
 
         .sha-query-builder-prefix-label {
+            width: 100%;
             color: ${token.colorPrimary};
             font-size: 14px;
             line-height: 20px;
@@ -253,18 +325,26 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-prefix-select {
             width: 100%;
-            min-width: 0;
+            min-width: var(--sha-query-builder-prefix-width);
         }
 
         .sha-query-builder-prefix-select .${prefixCls}-select {
             width: 100%;
+            height: 32px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
         }
 
         .sha-query-builder-prefix-select .${prefixCls}-select-selector {
-            padding: 0 !important;
+            min-height: 30px !important;
+            padding: 0 10px !important;
             border: 0 !important;
             background: transparent !important;
             box-shadow: none !important;
+            display: flex !important;
+            align-items: center !important;
         }
 
         .sha-query-builder-prefix-select .${prefixCls}-select-selection-item,
@@ -279,18 +359,34 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
         }
 
+        .sha-query-builder-item-shell {
+            width: 100%;
+            min-width: 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 32px 32px;
+            align-items: stretch;
+            column-gap: 0;
+            min-height: 58px;
+            box-sizing: border-box;
+            background: #fff;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
         .sha-query-builder-rule-row {
             width: 100%;
             min-width: 0;
-            min-height: 32px;
+            min-height: 58px;
             display: grid;
-            grid-template-columns: 200px 155px minmax(0, 1fr);
+            grid-template-columns: minmax(0, 200px) 155px minmax(0, 1fr);
             align-items: center;
             gap: 10px;
+            padding: 13px 10px;
+            box-sizing: border-box;
         }
 
         .sha-query-builder-rule-row.has-field-func {
-            grid-template-columns: minmax(0, 418px) 155px minmax(0, 418px);
+            grid-template-columns: minmax(0, 1fr) 155px minmax(0, 1fr);
         }
 
         .sha-query-builder-rule-row.is-unary {
@@ -305,30 +401,39 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-rule-row.is-unary .sha-query-builder-value-shell.is-function {
             width: 418px;
-            max-width: 418px;
+            max-width: 100%;
         }
 
         .sha-query-builder-rule-row.is-deep-nested {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: minmax(0, 200px) 155px minmax(0, 1fr);
             align-items: center;
+            gap: 10px;
+        }
+
+        .sha-query-builder-rule-row.is-deep-nested.has-field-func {
+            grid-template-columns: minmax(0, 1fr) 155px minmax(0, 1fr);
         }
 
         .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-packed-control,
         .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-value-shell.is-function {
-            flex: 1 1 160px;
-            width: auto;
-            max-width: 418px;
+            width: 100%;
+            max-width: none;
+            flex: 0 0 auto;
         }
 
         .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-operator-slot {
             flex: 0 0 auto;
+            width: 155px;
+            min-width: 155px;
+            max-width: 155px;
         }
 
         .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-value-shell {
-            flex: 1 1 160px;
-            width: auto;
-            max-width: 418px;
+            width: 100%;
+            min-width: 0;
+            max-width: none;
+            flex: 0 0 auto;
         }
 
         .sha-query-builder-item-rail {
@@ -377,18 +482,75 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             font-size: 18px;
         }
 
+        .sha-query-builder-item-action {
+            width: 32px;
+            min-width: 32px;
+            min-height: 58px;
+            padding: 0;
+            border: 0;
+            border-left: 1px solid #eaecf0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            color: #667085;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            align-self: stretch;
+            cursor: pointer;
+        }
+
+        .sha-query-builder-item-action + .sha-query-builder-item-action {
+            border-left-color: #f4f5f6;
+        }
+
+        .sha-query-builder-item-action .anticon {
+            font-size: 18px;
+        }
+
+        .sha-query-builder-item-action:hover:not(:disabled),
+        .sha-query-builder-item-action:focus-visible:not(:disabled) {
+            background: #f8fafc;
+            color: #344054;
+        }
+
+        .sha-query-builder-item-action:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .sha-query-builder-item-action--drag {
+            cursor: grab;
+        }
+
+        .sha-query-builder-item-action--drag:disabled {
+            cursor: not-allowed;
+        }
+
+        .sha-query-builder-item-action--delete {
+            color: #f04438;
+        }
+
+        .sha-query-builder-item-action--delete:hover:not(:disabled),
+        .sha-query-builder-item-action--delete:focus-visible:not(:disabled) {
+            background: #fff5f3;
+            color: #d92d20;
+        }
+
         .sha-query-builder-packed-control,
         .sha-query-builder-operator-slot,
         .sha-query-builder-value-shell {
             box-sizing: border-box;
             min-width: 0;
+            transition: border-color 0.16s ease, box-shadow 0.16s ease;
         }
 
         .sha-query-builder-packed-control {
-            width: 200px;
+            width: 100%;
+            max-width: 200px;
             min-height: 32px;
             display: grid;
-            grid-template-columns: 60px 140px;
+            grid-template-columns: 60px minmax(0, 1fr);
             align-items: stretch;
             border: 1px solid #d0d5dd;
             border-radius: 8px;
@@ -412,8 +574,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-field-slot {
-            width: 140px;
-            min-width: 140px;
+            width: 100%;
+            min-width: 0;
             min-height: 32px;
             display: flex;
             align-items: stretch;
@@ -571,8 +733,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-value-shell {
             width: 100%;
-            max-width: 418px;
             min-width: 0;
+            max-width: none;
             min-height: 32px;
             display: grid;
             grid-template-columns: 60px minmax(0, 1fr);
@@ -590,6 +752,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-value-shell--empty {
             background: rgba(255, 255, 255, 0.6);
+        }
+
+        .sha-query-builder-packed-control:has(.${prefixCls}-select-focused),
+        .sha-query-builder-packed-control:has(.sha-expression-editor-input:focus),
+        .sha-query-builder-operator-slot:has(.${prefixCls}-select-focused),
+        .sha-query-builder-value-shell:has(.${prefixCls}-select-focused),
+        .sha-query-builder-value-shell:has(.${prefixCls}-picker-focused),
+        .sha-query-builder-value-shell:has(.${prefixCls}-input-affix-wrapper-focused),
+        .sha-query-builder-value-shell:has(.${prefixCls}-input-number-focused),
+        .sha-query-builder-value-shell:has(.sha-expression-editor-input:focus),
+        .sha-query-builder-value-shell:has(input:focus) {
+            border-color: #2b78e4;
+            box-shadow: 0 0 0 1px #2b78e4;
         }
 
         .sha-query-builder-value-editor {
@@ -762,32 +937,40 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
         }
 
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) {
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus) {
             align-items: stretch;
         }
 
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row,
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-rail,
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-value-shell.is-function {
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-item-action,
+        .sha-query-builder-item-row:has(
+            > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus
+        ) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-query-builder-value-shell.is-function {
             min-height: 94px;
             align-items: stretch;
         }
 
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-expression,
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-source-slot,
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-checkbox {
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-query-builder-func-expression,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-query-builder-source-slot,
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-query-builder-func-checkbox {
             height: auto;
             min-height: 94px;
         }
 
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor,
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor-overlay,
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor-input {
+        .sha-query-builder-item-row:has(
+            > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus
+        ) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor,
+        .sha-query-builder-item-row:has(
+            > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus
+        ) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor-overlay,
+        .sha-query-builder-item-row:has(
+            > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus
+        ) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-query-builder-func-expression .sha-expression-editor-input {
             height: 100%;
             min-height: 94px;
         }
 
-        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-rule-row .sha-query-builder-func-checkbox {
+        .sha-query-builder-item-row:has(> .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-expression-editor-input:focus) > .sha-query-builder-item-main > .sha-query-builder-item-shell > .sha-query-builder-rule-row .sha-query-builder-func-checkbox {
             align-items: center;
             justify-content: center;
             padding-top: 0;

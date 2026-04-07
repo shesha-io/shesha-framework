@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   Button,
   Checkbox,
+  Dropdown,
   Select,
   Tooltip,
 } from 'antd';
@@ -114,6 +115,7 @@ const FIELD_SOURCE_ITEMS: Array<[string, { label: string }]> = [
   ['field', { label: 'Field' }],
   ['func', { label: 'Function' }],
 ];
+const MAX_GROUP_NESTING = 3;
 
 
 const isGroupNode = (node?: IPlainTreeItem): boolean => node?.type === 'group';
@@ -130,6 +132,13 @@ const getRelationOptions = (config: Config): Array<{ label: string; value: Relat
 const getDefaultConjunction = (config: Config): RelationValue => {
   const configured = config.settings?.defaultConjunction;
   return configured === 'OR' ? 'OR' : 'AND';
+};
+
+const getGroupLogicLabel = (node: IPlainTreeItem, config: Config): string => {
+  const conjunction = node.properties?.conjunction ?? getDefaultConjunction(config);
+  return conjunction === 'OR'
+    ? 'Any of the following are true...'
+    : 'All of the following are true...';
 };
 
 const getSelectedRelation = (node: IPlainTreeItem, parentNode: IPlainTreeItem, config: Config): RelationValue => {
@@ -160,6 +169,52 @@ const isPathPrefix = (prefix: string[], target: string[]): boolean => {
     return false;
 
   return prefix.every((segment, index) => target[index] === segment);
+};
+
+const getNodeAtPath = (root: IPlainTreeItem | undefined, path: string[]): IPlainTreeItem | undefined => {
+  if (!root || path.length === 0 || root.id !== path[0])
+    return undefined;
+
+  let current: IPlainTreeItem | undefined = root;
+  for (let index = 1; index < path.length; index += 1) {
+    current = getChildren(current).find((child) => child.id === path[index]);
+    if (!current)
+      return undefined;
+  }
+
+  return current;
+};
+
+const getGroupNestingLevel = (path: string[]): number => {
+  return Math.max(0, path.length - 1);
+};
+
+const canAddGroupAtPath = (path: string[]): boolean => {
+  return getGroupNestingLevel(path) < MAX_GROUP_NESTING;
+};
+
+const getGroupSubtreeDepth = (node?: IPlainTreeItem): number => {
+  if (!isGroupNode(node))
+    return 0;
+
+  return 1 + getChildren(node).reduce((maxDepth, child) => {
+    return Math.max(maxDepth, getGroupSubtreeDepth(child));
+  }, 0);
+};
+
+const canMoveNodeToParentPath = (
+  root: IPlainTreeItem | undefined,
+  draggedPath: string[],
+  targetParentPath: string[],
+): boolean => {
+  const draggedNode = getNodeAtPath(root, draggedPath);
+  if (!draggedNode)
+    return false;
+
+  if (!isGroupNode(draggedNode))
+    return true;
+
+  return getGroupNestingLevel(targetParentPath) + getGroupSubtreeDepth(draggedNode) <= MAX_GROUP_NESTING;
 };
 
 const getSourceLabel = (config: Config, source: string): string => {
@@ -409,39 +464,34 @@ const RelationPrefix: React.FC<{
   );
 };
 
-const QueryBuilderItemRail: React.FC<{
-  canDelete: boolean;
-  canDrag: boolean;
-  isGroup: boolean;
-  onDelete: () => void;
-  onDragStart: React.DragEventHandler<HTMLButtonElement>;
-  onDragEnd: React.DragEventHandler<HTMLButtonElement>;
-}> = ({ canDelete, canDrag, isGroup, onDelete, onDragEnd, onDragStart }) => {
+const QueryBuilderItemAction: React.FC<{
+  action: 'delete' | 'drag';
+  disabled: boolean;
+  onDelete?: () => void;
+  onDragStart?: React.DragEventHandler<HTMLButtonElement>;
+  onDragEnd?: React.DragEventHandler<HTMLButtonElement>;
+}> = ({ action, disabled, onDelete, onDragEnd, onDragStart }) => {
+  const isDelete = action === 'delete';
+
   return (
-    <div className={classNames('sha-query-builder-item-rail', isGroup && 'is-group')}>
-      <button
-        type="button"
-        className="sha-query-builder-rail-button"
-        onClick={onDelete}
-        disabled={!canDelete}
-        aria-label="Delete"
-        title="Delete"
-      >
-        <DeleteOutlined />
-      </button>
-      <button
-        type="button"
-        className="sha-query-builder-rail-button"
-        draggable={canDrag}
-        disabled={!canDrag}
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
-        aria-label="Drag"
-        title="Drag"
-      >
-        <HolderOutlined />
-      </button>
-    </div>
+    <button
+      type="button"
+      className={classNames(
+        'sha-query-builder-item-action',
+        isDelete
+          ? 'sha-query-builder-item-action--delete'
+          : 'sha-query-builder-item-action--drag',
+      )}
+      onClick={isDelete ? onDelete : undefined}
+      draggable={!isDelete && !disabled}
+      disabled={disabled}
+      onDragStart={!isDelete ? onDragStart : undefined}
+      onDragEnd={!isDelete ? onDragEnd : undefined}
+      aria-label={isDelete ? 'Delete' : 'Drag'}
+      title={isDelete ? 'Delete' : 'Drag'}
+    >
+      {isDelete ? <DeleteOutlined /> : <HolderOutlined />}
+    </button>
   );
 };
 
@@ -1090,28 +1140,30 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
             onDropAppend={onDropAppend}
           />
         ) : (
-          <QueryRuleRow
-            node={node}
-            path={path}
-            config={config}
-            actions={actions}
-            readOnly={readOnly}
-          />
+          <div className="sha-query-builder-item-shell">
+            <QueryRuleRow
+              node={node}
+              path={path}
+              config={config}
+              actions={actions}
+              readOnly={readOnly}
+            />
+            <QueryBuilderItemAction
+              action="delete"
+              disabled={!canDelete}
+              onDelete={() => {
+                actions.removeRule(path);
+              }}
+            />
+            <QueryBuilderItemAction
+              action="drag"
+              disabled={!canDrag}
+              onDragStart={onStartDrag(path)}
+              onDragEnd={onFinishDrag}
+            />
+          </div>
         )}
       </div>
-
-      {!isGroupNode(node) && (
-        <QueryBuilderItemRail
-          canDelete={canDelete}
-          canDrag={canDrag}
-          isGroup={false}
-          onDelete={() => {
-            actions.removeRule(path);
-          }}
-          onDragStart={onStartDrag(path)}
-          onDragEnd={onFinishDrag}
-        />
-      )}
     </div>
   );
 };
@@ -1138,6 +1190,7 @@ function QueryBuilderGroup({
 }: IGroupProps): JSX.Element {
   const children = getChildren(node);
   const groupReadonly = getGroupReadonly(config, readOnly);
+  const canAddGroup = canAddGroupAtPath(path);
 
   if (isRoot) {
     const hasChildren = children.length > 0;
@@ -1147,8 +1200,9 @@ function QueryBuilderGroup({
         <div className="sha-query-builder-surface is-empty">
           <QueryRuleElement
             onAddRule={() => actions.addRule(path)}
-            onAddGroup={() => actions.addGroup(path)}
+            onAddGroup={canAddGroup ? () => actions.addGroup(path) : undefined}
             disabled={groupReadonly}
+            addGroupDisabled={!canAddGroup}
           />
         </div>
       );
@@ -1193,18 +1247,22 @@ function QueryBuilderGroup({
             >
               Add Rule
             </Button>
-            <Button
-              icon={<FolderOutlined />}
-              onClick={() => actions.addGroup(path)}
-              disabled={groupReadonly}
-            >
-              Add Group
-            </Button>
+            <Tooltip title={!canAddGroup ? 'Maximum group nesting level reached' : undefined}>
+              <Button
+                icon={<FolderOutlined />}
+                onClick={() => actions.addGroup(path)}
+                disabled={groupReadonly || !canAddGroup}
+              >
+                Add Group
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </div>
     );
   }
+
+  const groupLogicText = getGroupLogicLabel(node, config);
 
   return (
     <div
@@ -1217,26 +1275,30 @@ function QueryBuilderGroup({
       onDragLeave={onDragLeaveItem}
     >
       <div className="sha-query-builder-group-header">
+        <div className="sha-query-builder-group-heading" title={groupLogicText}>
+          {groupLogicText}
+        </div>
+
         <div className="sha-query-builder-group-actions">
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => actions.addRule(path)}
+          <Dropdown
+            menu={{
+              items: [
+                { key: 'rule', icon: <PlusOutlined />, label: 'Add Rule', onClick: () => actions.addRule(path) },
+                { key: 'group', icon: <FolderOutlined />, label: !canAddGroup ? <Tooltip title="Maximum group nesting level reached">Add Group</Tooltip> : 'Add Group', onClick: () => actions.addGroup(path), disabled: !canAddGroup },
+              ],
+            }}
+            trigger={['click']}
             disabled={groupReadonly}
-            className="sha-query-builder-group-action-button"
-            aria-label="Add Rule"
-            title="Add Rule"
           >
-          </Button>
-          <Button
-            icon={<FolderOutlined />}
-            onClick={() => actions.addGroup(path)}
-            disabled={groupReadonly}
-            className="sha-query-builder-group-action-button"
-            aria-label="Add Group"
-            title="Add Group"
-          >
-          </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              disabled={groupReadonly}
+              className="sha-query-builder-group-action-button"
+              aria-label="Add"
+              title="Add"
+            />
+          </Dropdown>
           <Button
             icon={<DeleteOutlined />}
             onClick={() => actions.removeGroup(path)}
@@ -1252,7 +1314,7 @@ function QueryBuilderGroup({
             disabled={!canDrag}
             onDragStart={onStartDrag(path)}
             onDragEnd={onFinishDrag}
-            className="sha-query-builder-group-action-button"
+            className="sha-query-builder-group-action-button sha-query-builder-group-action-button--drag"
             aria-label="Drag Group"
             title="Drag Group"
           />
@@ -1299,15 +1361,22 @@ export const CustomQueryBuilder: React.FC<BuilderProps> = ({ actions, config, tr
     setDropHint(null);
   }, []);
 
-  const canAcceptDrop = React.useCallback((targetPath: string[]): boolean => {
+  const canAcceptDrop = React.useCallback((targetPath: string[], placement: DropPlacement): boolean => {
     if (!dragState)
       return false;
 
     if (getPathKey(dragState) === getPathKey(targetPath))
       return false;
 
-    return !isPathPrefix(dragState, targetPath);
-  }, [dragState]);
+    if (isPathPrefix(dragState, targetPath))
+      return false;
+
+    const targetParentPath = placement === 'append'
+      ? targetPath
+      : targetPath.slice(0, -1);
+
+    return canMoveNodeToParentPath(plainTree, dragState, targetParentPath);
+  }, [dragState, plainTree]);
 
   const onStartDrag = React.useCallback((path: string[]) => (event: React.DragEvent<HTMLButtonElement>): void => {
     if (readOnly)
@@ -1324,31 +1393,31 @@ export const CustomQueryBuilder: React.FC<BuilderProps> = ({ actions, config, tr
   }, [resetDragState]);
 
   const onDragOverItem = React.useCallback((path: string[]) => (event: React.DragEvent<HTMLDivElement>): void => {
-    if (!canAcceptDrop(path))
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const placement: DropPlacement = event.clientY < bounds.top + (bounds.height / 2) ? 'before' : 'after';
+    if (!canAcceptDrop(path, placement))
       return;
 
     event.preventDefault();
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const placement: DropPlacement = event.clientY < bounds.top + (bounds.height / 2) ? 'before' : 'after';
     setDropHint({ path, placement });
     event.dataTransfer.dropEffect = 'move';
   }, [canAcceptDrop]);
 
   const onDropOnItem = React.useCallback((path: string[]) => (event: React.DragEvent<HTMLDivElement>): void => {
     event.preventDefault();
-    if (!dragState || !canAcceptDrop(path)) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const placement: DropPlacement = event.clientY < bounds.top + (bounds.height / 2) ? 'before' : 'after';
+    if (!dragState || !canAcceptDrop(path, placement)) {
       resetDragState();
       return;
     }
 
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const placement: DropPlacement = event.clientY < bounds.top + (bounds.height / 2) ? 'before' : 'after';
     actions.moveItem(dragState, path, placement);
     resetDragState();
   }, [actions, canAcceptDrop, dragState, resetDragState]);
 
   const onDragOverAppend = React.useCallback((path: string[]) => (event: React.DragEvent<HTMLDivElement>): void => {
-    if (!canAcceptDrop(path))
+    if (!canAcceptDrop(path, 'append'))
       return;
 
     event.preventDefault();
@@ -1358,7 +1427,7 @@ export const CustomQueryBuilder: React.FC<BuilderProps> = ({ actions, config, tr
 
   const onDropAppend = React.useCallback((path: string[]) => (event: React.DragEvent<HTMLDivElement>): void => {
     event.preventDefault();
-    if (!dragState || !canAcceptDrop(path)) {
+    if (!dragState || !canAcceptDrop(path, 'append')) {
       resetDragState();
       return;
     }

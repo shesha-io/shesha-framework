@@ -10,6 +10,29 @@ import { useStyles } from './styles/styles';
 
 const queryBuilderTabKey = 'queryBuilderTab';
 const jsonInputTabKey = 'jsonInputTab';
+const baseQueryBuilderModalWidth = 1038;
+const queryBuilderModalWidthStep = 72;
+
+const getJsonLogicGroupDepth = (node: unknown): number => {
+  if (!node || typeof node !== 'object' || Array.isArray(node))
+    return 0;
+
+  const expression = node as Record<string, unknown>;
+  const branches = ['and', 'or']
+    .map((key) => expression[key])
+    .filter((value): value is unknown[] => Array.isArray(value));
+
+  if (branches.length === 0)
+    return 0;
+
+  return branches.reduce((maxDepth, branch) => {
+    const childDepth = branch.reduce<number>((branchDepth, child) => {
+      return Math.max(branchDepth, getJsonLogicGroupDepth(child));
+    }, 0);
+
+    return Math.max(maxDepth, 1 + childDepth);
+  }, 0);
+};
 
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const queryBuilderDocUrl = 'https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context';
@@ -24,6 +47,10 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const [activeTab, setActiveTab] = useState(queryBuilderTabKey);
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
   const isSmall = useMedia('(max-width: 480px)');
+  const groupDepth = getJsonLogicGroupDepth(draftLogic);
+  const modalWidth = isSmall
+    ? '90%'
+    : `min(${baseQueryBuilderModalWidth + Math.max(0, groupDepth - 1) * queryBuilderModalWidthStep}px, calc(100vw - 48px))`;
   const modalStyles = isSmall ? undefined : {
     content: {
       height: 585,
@@ -214,7 +241,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
       />
       <Modal
         open={modalVisible}
-        width={isSmall ? '90%' : 1038}
+        width={modalWidth}
         styles={modalStyles}
         title={(
           <Space size={10} className={styles.shaQueryBuilderModalTitle}>
