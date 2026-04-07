@@ -39,8 +39,9 @@ const PASSWORD_STRENGTH_VALIDATOR = `
     if (errors.length > 0) return Promise.reject('Password must contain ' + errors.join(', '));
     else return Promise.resolve();
   } catch (e) {
-    console.error('[TextField] Password validator error:', e);
-    return Promise.reject('Password validation failed: ' + e.message);
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('[TextField] Password validator error:', msg);
+    return Promise.reject('Password validation failed: ' + msg);
   }
 `;
 
