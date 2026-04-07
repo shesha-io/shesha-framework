@@ -164,13 +164,17 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       options={options}
       onSelect={onChangeUrl}
       onChange={onChangeUrl}
-      onSearch={handleSearch}
+      showSearch={{ onSearch: handleSearch }}
       notFoundContent={null}
       // size={props.size}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
     >
-      <Input addonBefore={props.prefix} addonAfter={props.suffix} size={props.size} />
+      <Space.Compact style={{ width: "100%" }}>
+        {props.prefix && <Space.Addon>{props.prefix}</Space.Addon>}
+        <Input size={props.size} />
+        {props.suffix && <Space.Addon>{props.suffix}</Space.Addon>}
+      </Space.Compact>
     </AutoComplete>
   );
 
