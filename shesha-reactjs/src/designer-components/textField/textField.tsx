@@ -95,7 +95,12 @@ const TextFieldComponent: TextFieldComponentDefinition = {
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: unknown[]): void => {
-            const inputValue: string | undefined = args[0]?.currentTarget?.value?.toString();
+            const arg = args[0];
+            const inputValue: string | undefined =
+              arg !== null && typeof arg === 'object' && 'currentTarget' in arg &&
+              arg.currentTarget !== null && typeof arg.currentTarget === 'object' && 'value' in arg.currentTarget
+                ? arg.currentTarget.value?.toString()
+                : undefined;
             const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
 
             if (isPassword && inputValue) {
