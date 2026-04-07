@@ -80,7 +80,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     }, [model, isPassword, passwordValidator]);
 
     useEffect(() => {
-      if (!wrapperRef.current) return;
+      if (!wrapperRef.current) return undefined;
 
       const renderTooltip = (): void => {
         const explainError = wrapperRef.current?.querySelector('.ant-form-item-explain-error');
@@ -113,7 +113,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
               <span style={{ display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {text}
               </span>
-            </Tooltip>
+            </Tooltip>,
           );
         } else if (!passwordError && tooltipRootRef.current) {
           tooltipRootRef.current.unmount();
