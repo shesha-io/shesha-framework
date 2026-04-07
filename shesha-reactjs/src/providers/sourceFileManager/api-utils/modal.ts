@@ -70,19 +70,44 @@ export interface AlertModalArgs {
 }
 
 /**
+ * Discriminated union for modal content types
+ */
+export type ModalContent = {
+  type: 'text';
+  value: string;
+} | {
+  type: 'html';
+  value: string;
+} | {
+  type: 'node';
+  value: any; // ReactNode not available in script context
+};
+
+/**
  * Arguments for custom content modals
  */
 export interface ShowContentModalArgs {
   /** Modal title */
   title?: string;
-  /** Modal content - HTML string that will be rendered in the modal body */
-  content: string;
+  /**
+   * Modal content - can be:
+   * - ModalContent discriminated union (recommended):
+   *   - { type: 'text', value: 'Plain text content' } - renders as plain text
+   *   - { type: 'html', value: '<strong>HTML content</strong>' } - renders as sanitized HTML
+   *   - { type: 'node', value: reactNode } - renders a React node
+   * - string (backward compatible) - renders as plain text
+   */
+  content: ModalContent | string;
   /** Modal width */
   width?: ModalWidth;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
-  /** Custom footer content - HTML string that will be rendered in the modal footer */
-  footer?: string;
+  /**
+   * Custom footer content - same format as content:
+   * - ModalContent discriminated union (recommended)
+   * - string (backward compatible) - renders as plain text
+   */
+  footer?: ModalContent | string;
 }
 
 /**
@@ -181,10 +206,25 @@ export interface ModalApi {
    * @param args - Configuration for the custom content modal
    * @returns Promise that resolves when dialog is closed
    * @example
+   * // Plain text (recommended for simple text)
    * await modal.showContent({
-   *   title: 'Custom Dialog',
-   *   content: '<div>Custom HTML content</div>',
+   *   title: 'Text Dialog',
+   *   content: { type: 'text', value: 'This is plain text. <tags> are shown literally.' }
+   * });
+   *
+   * @example
+   * // HTML content (when you need formatted HTML)
+   * await modal.showContent({
+   *   title: 'HTML Dialog',
+   *   content: { type: 'html', value: '<div><strong>Bold</strong> and <em>italic</em> text</div>' },
    *   width: '800px'
+   * });
+   *
+   * @example
+   * // Backward compatible (string treated as plain text)
+   * await modal.showContent({
+   *   title: 'Simple Dialog',
+   *   content: 'Plain text content'
    * });
    */
   showContent: <T = unknown>(args: ShowContentModalArgs) => Promise<T>;

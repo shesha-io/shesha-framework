@@ -2,7 +2,7 @@ import { Modal as AntModal, App } from 'antd';
 import { ReactNode } from 'react';
 import { nanoid } from '@/utils/uuid';
 import { FormIdentifier, FormMode } from '../form/models';
-import { ICommonModalProps, IModalProps, IModalWithContentProps } from './models';
+import { ICommonModalProps, IModalProps, IModalWithContentProps, ModalContent } from './models';
 import { ModalFuncProps } from 'antd/lib/modal';
 
 /**
@@ -73,21 +73,22 @@ export interface ShowContentModalArgs {
   title?: string;
   /**
    * Modal content - can be:
-   * - String (Text)
-   * - HTML string (will be rendered as HTML)
+   * - ModalContent discriminated union: { type: 'text', value: string } | { type: 'html', value: string } | { type: 'node', value: ReactNode }
+   * - ReactNode (for backward compatibility, treated as 'node')
+   * - string (for backward compatibility, treated as plain text)
    */
-  content: ReactNode | string;
+  content: ModalContent | ReactNode | string;
   /** Modal width */
   width?: ModalWidth;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
   /**
    * Custom footer content - can be:
-   * - React elements (JSX)
-   * - A function that returns React elements
-   * - HTML string
+   * - ModalContent discriminated union
+   * - ReactNode (for backward compatibility)
+   * - string (for backward compatibility, treated as plain text)
    */
-  footer?: ReactNode | string | undefined;
+  footer?: ModalContent | ReactNode | string | undefined;
 }
 
 /**
@@ -231,6 +232,8 @@ export const createModalApi = (
       const { formId, title, width, mode = 'edit', formArguments, initialValues, showCloseIcon = true, footerButtons = 'default' } = args;
 
       return new Promise<T>((resolve, reject) => {
+        let settled = false;
+
         const modalProps: IModalProps = {
           id: modalId,
           formId,
@@ -243,14 +246,20 @@ export const createModalApi = (
           showCloseIcon,
           footerButtons,
           onSubmitted: ((values: T) => {
+            if (settled) return;
+            settled = true;
             removeModal(modalId);
             resolve(values);
           }) as (values?: object) => void,
           onCancel: () => {
+            if (settled) return;
+            settled = true;
             removeModal(modalId);
             reject(new Error('Modal cancelled'));
           },
           onClose: ((positive = false, _result?: T) => {
+            if (settled) return;
+            settled = true;
             removeModal(modalId);
             if (positive) {
               resolve(_result as T);
@@ -294,6 +303,8 @@ export const createModalApi = (
       const { title, content, width, showCloseIcon = true, footer } = args;
 
       return new Promise<T>((resolve, reject) => {
+        let settled = false;
+
         const modalProps: IModalWithContentProps = {
           id: modalId,
           content,
@@ -303,10 +314,14 @@ export const createModalApi = (
           isVisible: true,
           showCloseIcon,
           onCancel: () => {
+            if (settled) return;
+            settled = true;
             removeModal(modalId);
             reject(new Error('Modal cancelled'));
           },
           onClose: ((positive = false, _result?: T) => {
+            if (settled) return;
+            settled = true;
             removeModal(modalId);
             if (positive) {
               resolve(_result as T);

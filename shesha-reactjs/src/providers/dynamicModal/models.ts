@@ -4,6 +4,20 @@ import { IKeyValue } from '@/interfaces/keyValue';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { FormIdentifier, FormMode } from './../form/models';
 
+/**
+ * Discriminated union for modal content types
+ */
+export type ModalContent = {
+  type: 'text';
+  value: string;
+} | {
+  type: 'html';
+  value: string;
+} | {
+  type: 'node';
+  value: ReactNode;
+};
+
 export interface IModalBaseProps {
   /**
    * Id of the modal
@@ -84,8 +98,8 @@ export interface IModalWithConfigurableFormProps<Values extends object = object>
 }
 
 export interface IModalWithContentProps<Values extends object = object> extends IModalBaseProps {
-  footer?: ReactNode | string | undefined;
-  content: ReactNode | string;
+  footer?: ModalContent | ReactNode | string | undefined;
+  content: ModalContent | ReactNode | string;
   onClose?: ((positive?: boolean, result?: Values | undefined) => void) | undefined;
 }
 /**
