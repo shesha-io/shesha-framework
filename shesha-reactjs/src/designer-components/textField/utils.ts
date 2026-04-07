@@ -98,11 +98,11 @@ export const buildPasswordValidatorString = (settings: IPasswordComplexitySettin
       const pwd = typeof value === 'string' ? value : '';
       const errors = [];
       ${checks.join('\n      ')}
-      if (errors.length > 0) callback('Password must contain ' + errors.join(', '));
-      else callback();
+      if (errors.length > 0) return Promise.reject('Password must contain ' + errors.join(', '));
+      return Promise.resolve();
     } catch (e) {
       console.error('[TextField] Password validator error:', e);
-      callback('Password validation failed: ' + e.message);
+      return Promise.reject('Password validation failed: ' + e.message);
     }
   `;
 };

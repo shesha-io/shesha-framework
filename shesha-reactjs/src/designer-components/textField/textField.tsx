@@ -128,7 +128,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
 
     if (isPassword) {
       return (
-        <Tooltip title={passwordError ?? undefined} placement="top">
+        <Tooltip title={passwordError ?? undefined} placement="bottom">
           <div className={styles.passwordFieldWrapper}>{fieldContent}</div>
         </Tooltip>
       );

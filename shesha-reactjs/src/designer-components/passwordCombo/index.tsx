@@ -22,12 +22,12 @@ const CONFIRM_MATCH_VALIDATOR = `
     const formValues = form?.getFieldsValue() ?? {};
     const confirmValue = formValues['__PROPERTY_NAME__Confirm'] ?? formValues['__PROPERTY_NAME__confirm'];
     if (value && confirmValue && value !== confirmValue) {
-      callback('Passwords do not match');
+      return Promise.reject('Passwords do not match');
     } else {
-      callback();
+      return Promise.resolve();
     }
   } catch (e) {
-    callback();
+    return Promise.resolve();
   }
 `;
 
@@ -36,11 +36,11 @@ const PASSWORD_STRENGTH_VALIDATOR = `
     const pwd = typeof value === 'string' ? value : '';
     const errors = [];
     if (pwd.length < __MIN_LENGTH__) errors.push('at least __MIN_LENGTH__ characters');
-    if (errors.length > 0) callback('Password must contain ' + errors.join(', '));
-    else callback();
+    if (errors.length > 0) return Promise.reject('Password must contain ' + errors.join(', '));
+    else return Promise.resolve();
   } catch (e) {
     console.error('[TextField] Password validator error:', e);
-    callback('Password validation failed: ' + e.message);
+    return Promise.reject('Password validation failed: ' + e.message);
   }
 `;
 
