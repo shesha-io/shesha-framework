@@ -5,7 +5,10 @@ import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
 import { CodeTemplateSettings } from '@/components/codeEditor/models';
 import { Environment, IMetadataBuilder } from '@/publicJsApis/metadataBuilder';
 import { IObjectMetadataBuilder as IInternalObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
-import { BaseButtonProps } from 'antd/lib/button/button';
+import { Button } from 'antd';
+import { ComponentProps } from 'react';
+
+type ButtonType = ComponentProps<typeof Button>['type'];
 
 export interface IExecutableCodeEditor {
   fileName?: string;
@@ -25,7 +28,7 @@ export interface ICodeEditorProps extends Omit<UnwrapCodeEvaluators<IConfigurabl
   onChange?: (value: string) => void;
   mode?: 'inline' | 'dialog';
   language?: CodeLanguages;
-  type?: BaseButtonProps['type'];
+  type?: ButtonType;
   className?: string;
   ghost?: boolean;
   availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>);

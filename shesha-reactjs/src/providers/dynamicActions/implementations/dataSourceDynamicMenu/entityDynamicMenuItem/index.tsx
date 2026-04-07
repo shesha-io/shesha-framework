@@ -6,6 +6,7 @@ import {
   useDataContextManagerActionsOrUndefined,
   useFormData,
   useGlobalState,
+  useHttpClient,
   useNestedPropertyMetadatAccessor,
 } from '@/providers';
 import { IDataSourceArguments } from '../model';
@@ -15,10 +16,11 @@ import { IAjaxResponse } from '@/interfaces';
 import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
 import { ButtonType } from 'antd/lib/button';
 import { useFormViaFactory } from '@/form-factory/hooks';
-import { buildUrl, convertDotNotationPropertiesToGraphQL, useHttpClient } from '@/index';
 import { unsafeGetValueByPropertyName } from '@/utils/object';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdentifier } from '@/providers/metadataDispatcher/entities/utils';
+import { buildUrl } from '@/utils/url';
+import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 
 type ArrayOrObjectWithItems<T> = T[] | {
   items: T[];

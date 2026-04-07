@@ -7,7 +7,7 @@ import { useAppConfigurator } from '@/providers/appConfigurator';
 import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
 import { ConditionalMetadataProvider } from '@/providers';
-import { IShaFormInstance } from '@/index';
+import { IShaFormInstance } from '@/providers/form/store/interfaces';
 
 export type IFormWithFlatMarkupProps<TValues extends object = object> = Omit<IConfigurableFormRuntimeProps<TValues>, 'shaForm'> & {
   shaForm: IShaFormInstance<TValues>;

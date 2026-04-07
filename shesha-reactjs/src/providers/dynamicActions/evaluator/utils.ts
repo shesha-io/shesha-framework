@@ -1,4 +1,3 @@
-import { IStyleType } from '@/index';
 import {
   ButtonGroupItemProps,
   IButtonGroupItemBase,
@@ -6,6 +5,7 @@ import {
   isDynamicItem,
   isGroup,
 } from '@/providers/buttonGroupConfigurator/models';
+import { IStyleType } from '@/providers/form/models';
 import { ButtonType } from 'antd/lib/button';
 
 export interface IDynamicItemsEvaluationStore {
@@ -55,14 +55,14 @@ export const getDynamicActionsItemsLevel = (
   return result;
 };
 
-export const getItemsWithResolved = (items: ButtonGroupItemProps[]): ButtonGroupItemProps[] => {
+export const getItemsWithResolved = (items: ButtonGroupItemProps[], _numResolved: number): ButtonGroupItemProps[] => {
   const result: ButtonGroupItemProps[] = [];
 
   items.forEach((item) => {
     if (isDynamicItem(item)) {
       if (isResolvedDynamicItem(item) && item.isResolved) result.push(...item.resolvedItems);
     } else if (isGroup(item)) {
-      result.push({ ...item, childItems: item.childItems ? getItemsWithResolved(item.childItems) : undefined });
+      result.push({ ...item, childItems: item.childItems ? getItemsWithResolved(item.childItems, _numResolved) : undefined });
     } else result.push(item);
   });
 

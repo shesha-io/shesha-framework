@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useState, FC } from 'react';
+import React, { MutableRefObject, useState, FC, ComponentProps } from 'react';
 import {
   DeleteOutlined,
   FileZipTwoTone,
@@ -9,8 +9,6 @@ import {
 import { Form, Spin, Upload } from 'antd';
 import { nanoid } from '@/utils/uuid';
 import { RcFile, UploadFile } from 'antd/lib/upload/interface';
-
-import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import { useHttpClient } from '@/providers';
 import { useStyles } from './styles/styles';
 import { AxiosResponse } from 'axios';
@@ -19,6 +17,9 @@ import { AnalyzePackageResponse } from './models';
 import { PackageContent } from '../packageContent';
 
 const { Dragger } = Upload;
+
+type DraggerProps = ComponentProps<typeof Dragger>;
+type OnCustomRequest = DraggerProps['customRequest'];
 
 export interface IImportInterface {
   importExecuter: () => Promise<any>;
@@ -39,7 +40,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
   const [packageContent, setPackageContent] = useState<AnalyzePackageResponse>(null);
   const [isPackLoading, setIsPackLoading] = useState(false);
 
-  const onUploadRequest = async (payload: RcCustomRequestOptions): Promise<void> => {
+  const onUploadRequest: OnCustomRequest = async (payload): Promise<void> => {
     const formData = new FormData();
     const { file } = payload;
 

@@ -3,8 +3,8 @@ import { Form } from 'antd';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { PropertiesEditorProvider } from './provider';
 import { PropertiesEditorRenderer } from './renderer';
-import { useModelConfigurator } from '@/index';
 import { MetadataSourceTypeUseDefined } from '@/apis/modelConfigurations';
+import { useModelConfigurator } from '@/providers/modelConfigurator';
 
 export interface IPropertiesEditorProps {
   allowAdd?: Boolean;

@@ -1,6 +1,6 @@
 import React from "react";
-import { ComponentSettingsModal } from "@/index";
 import { ISideBarMenuProps } from "@/components/configurableSidebarMenu";
+import { ComponentSettingsModal } from "@/components/configurableSidebarMenu/settingsModal";
 
 
 const EmptySidebarProps: ISideBarMenuProps = {

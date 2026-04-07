@@ -3,12 +3,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-big-calendar';
 import { evaluateFilters, getCalendarRefetchParams, getLayerEventsData, getResponseListToState } from './utils';
 import { useGet, useMutate } from '@/hooks';
-
 import { DataTypes } from '@/interfaces';
 import { useLayerGroupConfigurator } from '@/providers/layersProvider';
-import { evaluateString, useFormData, useGlobalState, useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
 import { ICalendarLayersProps } from '@/providers/layersProvider/models';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { evaluateString } from '@/providers/form/utils';
+import { useFormData } from '@/providers/formContext';
+import { useGlobalState } from '@/providers/globalState';
+import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
+import { useNestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher';
 
 interface IGetData {
   fetchData: () => void;

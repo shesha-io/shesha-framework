@@ -1,13 +1,15 @@
 import React, { FC, useMemo } from 'react';
-import { CustomErrorBoundary } from '@/components';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { useActualContextData, useActualContextExecution, useCalculatedModel, useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { formComponentActualModelPropertyFilter } from '@/providers/form/utils';
 import { IModelValidation } from '@/utils/errors';
 import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
 import AttributeDecorator from '@/components/attributeDecorator';
-import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { useCanvas } from '@/providers/canvas';
+import { useActualContextData, useActualContextExecution, useCalculatedModel } from '@/hooks/formComponentHooks';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;

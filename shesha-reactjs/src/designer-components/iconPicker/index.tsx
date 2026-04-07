@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { HeartOutlined } from '@ant-design/icons';
 import { IconPickerWrapper } from './iconPickerWrapper';

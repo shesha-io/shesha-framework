@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { IModelMetadata } from "@/index";
 import { createNamedContext } from '@/utils/react';
 import { DEFAULT_CONTEXT_METADATA } from '../dataContextManager/models';
 import { Path, PathValue } from '@/utils/dotnotation';
+import { IModelMetadata } from '@/interfaces/metadata';
 
 export interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }
 

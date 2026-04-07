@@ -1,16 +1,15 @@
 import { MessageInstance } from 'antd/es/message/interface';
 import { DOMAttributes, FocusEvent } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
-import { IGooglePlacesAutocompleteProps } from '@/components';
 import { ISetStatePayload } from '@/providers/globalState/contexts';
-import { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
+import { IAddressAndCoords, IGooglePlacesAutocompleteProps } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
 import { IFormApi } from '@/providers/form/formApi';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
-import { IApplicationContext, executeScriptSync } from '@/index';
 import { ObservableProxy } from '@/providers/form/observableProxy';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { TouchableProxy } from '@/providers/form/touchableProxy';
+import { executeScriptSync, IApplicationContext } from '@/providers/form/utils';
 
 export interface ICustomEventHandler {
   model: IConfigurableFormComponent;

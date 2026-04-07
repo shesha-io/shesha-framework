@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CodeOutlined } from '@ant-design/icons';
-import { ComponentsContainer } from '@/components';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { DataContextSettingsForm } from './settings';
 import { IModelMetadata } from '@/interfaces/metadata';

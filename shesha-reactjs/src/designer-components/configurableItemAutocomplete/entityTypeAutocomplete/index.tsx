@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigurableFormItem } from "@/components";
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import EntityTypeAutocomplete from "@/components/configurableItemAutocomplete/entityTypeAutocomplete";
 import { FormMarkup } from "@/interfaces";
 import { FileSearchOutlined } from "@ant-design/icons";

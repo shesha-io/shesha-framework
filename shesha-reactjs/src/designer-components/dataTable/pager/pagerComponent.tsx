@@ -1,4 +1,4 @@
-import { TablePager } from '@/components';
+import { TablePager } from '@/components/tablePager';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';

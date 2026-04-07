@@ -1,10 +1,11 @@
 import { nanoid } from '@/utils/uuid';
 import { ColumnsItemProps, IConfigurableColumnsProps, IDataColumnsProps, isDataColumn } from '@/providers/datatableColumnsConfigurator/models';
 import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/form/utils';
-import { IConfigurableFormComponent, IStyleType } from "@/index";
 import { IModelMetadata, IPropertyMetadata, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
 import { camelcaseDotNotation, toCamelCase, humanizeString } from '@/utils/string';
 import { isDefined } from '@/utils/nullables';
+import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
+import { IStyleType } from '@/providers/form/models';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 const MAX_NUMBER_OF_DEFAULT_COLS = 20;

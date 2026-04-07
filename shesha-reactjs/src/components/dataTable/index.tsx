@@ -785,7 +785,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       <Collapse
         key={key}
         defaultActiveKey={['1']}
-        expandIconPosition="start"
+        expandIconPlacement="start"
         className={`sha-group-level-${group.index}`}
       >
         <Collapse.Panel header={<>{title}</>} key="1">

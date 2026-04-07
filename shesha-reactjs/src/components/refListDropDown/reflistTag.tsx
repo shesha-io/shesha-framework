@@ -2,7 +2,7 @@ import { getTagStyle } from '@/utils/style';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Tag, Tooltip, TooltipProps } from 'antd';
 import React, { CSSProperties } from 'react';
-import ShaIcon, { IconType } from '../shaIcon';
+import { ShaIcon, IconType } from '../shaIcon';
 
 interface IReflistTagProps {
   value?: string | number;

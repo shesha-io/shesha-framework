@@ -5,7 +5,7 @@ import { evaluateString, validateConfigurableComponentSettings } from '@/formDes
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { getStyle } from '@/providers/form/utils';
 import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusMappings, IStatusTagProps as ITagProps } from '@/components/statusTag';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';

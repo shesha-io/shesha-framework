@@ -168,7 +168,7 @@ namespace Shesha.Domain
             if (!string.IsNullOrWhiteSpace(columnAttribute?.Name))
                 return columnAttribute.Name;
 
-            // Handle overrided properties. Try to search the same property in the base class and if it declared on the upper level - use name from base class
+            // Handle overridden properties. Try to search the same property in the base class and if it declared on the upper level - use name from base class
             if (!IsRootEntity(memberInfo.DeclaringType.NotNull()) && memberInfo.DeclaringType.BaseType != null)
             {
                 var upperLevelProperty = memberInfo.DeclaringType.BaseType.GetProperty(memberInfo.Name);
@@ -579,7 +579,7 @@ namespace Shesha.Domain
         }
 
         /// <summary>
-        /// Returns true if the property is persisted to the DB. Note: this method performs only base check, it may be overrided on the ORM mapping level
+        /// Returns true if the property is persisted to the DB. Note: this method performs only base check, it may be overridden on the ORM mapping level
         /// </summary>
         public static bool IsPersistentProperty(MemberInfo prop)
         {

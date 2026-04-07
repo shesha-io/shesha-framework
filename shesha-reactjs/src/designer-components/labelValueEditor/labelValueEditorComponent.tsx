@@ -1,7 +1,7 @@
 import { FormMarkup } from '@/providers/form/models';
 import { OneToOneOutlined } from '@ant-design/icons';
 import { LabelValueEditor } from '@/components/labelValueEditor/labelValueEditor';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { ILabelValueEditorComponentProps, LabelValueEditorComponentDefinition } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';

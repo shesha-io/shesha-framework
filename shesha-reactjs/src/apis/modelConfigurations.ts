@@ -1,3 +1,4 @@
+import { IconType } from '@/components';
 import { IReferenceListIdentifier } from '@/interfaces';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
@@ -44,8 +45,16 @@ export interface IHasFilter {
 }
 
 export interface INumberFormatting {
-  showThousandsSeparator?: boolean;
+  thousandsSeparator?: string;
   customFormat?: string | null;
+}
+
+export interface IAdditionalInfoFormatting {
+  placeholder?: string;
+  prefix?: string;
+  suffix?: string;
+  suffixIcon?: IconType;
+  prefixIcon?: IconType;
 }
 
 export interface IDecimalFormatting extends INumberFormatting {
@@ -210,7 +219,7 @@ export interface ModelPropertyDto {
    */
   cascadeDeleteUnreferencedHardcoded?: boolean;
 
-  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
+  formatting?: IHasDefaultEditor & IAdditionalInfoFormatting & (IHasFilter | IDecimalFormatting);
 
   listConfiguration?: IEntityPropertyListConfiguration;
 

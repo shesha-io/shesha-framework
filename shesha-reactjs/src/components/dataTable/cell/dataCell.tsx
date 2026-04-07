@@ -6,7 +6,7 @@ import NumberCell from './default/numberCell';
 import React, { FC, useMemo } from 'react';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
-import { CustomErrorBoundary } from '@/components';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { DEFAULT_FORM_SETTINGS, FormItemProvider, IConfigurableFormComponent, useForm } from '@/providers';
 import { upgradeComponent } from '@/providers/form/utils';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';

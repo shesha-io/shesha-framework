@@ -11,11 +11,9 @@ import { Rate } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IConfigurableFormComponent } from '@/providers';
-import {
-  ConfigurableFormItem,
-  ShaIcon,
-} from '@/components';
+import { ShaIcon } from '@/components/shaIcon';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;

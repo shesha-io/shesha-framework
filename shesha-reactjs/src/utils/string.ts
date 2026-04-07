@@ -148,7 +148,7 @@ export function toCamelCase(str: string | null | undefined, options?: CamelCaseO
     : '';
 
   const result = camelcase(text.replace(leadingSeparatorsRegex, ''), {
-    locale: options?.locale ?? undefined,
+    locale: options?.locale ?? false,
     pascalCase: options?.pascalCase ?? false,
     preserveConsecutiveUppercase: options?.preserveConsecutiveUppercase ?? false,
   });
@@ -222,4 +222,15 @@ export const trimPrefix = (s: string, w: string): string => {
 
 export const isEmptyString = (value: unknown): boolean => {
   return typeof (value) === 'string' && value.trim() === '';
+};
+
+export const truncateMiddle = (str: string, maxLength: number, ellipsis: string = '...'): string => {
+  if (!str) return str;
+  if (maxLength <= 0) return '';
+  if (str.length <= maxLength) return str;
+  if (maxLength <= ellipsis.length) return ellipsis.slice(0, maxLength);
+  const charsToShow = maxLength - ellipsis.length;
+  const start = Math.ceil(charsToShow / 2);
+  const end = Math.floor(charsToShow / 2);
+  return str.slice(0, start) + ellipsis + (end > 0 ? str.slice(-end) : '');
 };

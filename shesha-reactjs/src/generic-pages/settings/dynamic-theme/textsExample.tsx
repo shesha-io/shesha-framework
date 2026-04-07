@@ -5,7 +5,7 @@ import { useTheme } from '@/providers';
 const TextsExample: FC = () => {
   const { theme } = useTheme();
   return (
-    <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+    <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
       <Typography.Text style={{ color: theme?.text?.default }}>
         Default text
       </Typography.Text>

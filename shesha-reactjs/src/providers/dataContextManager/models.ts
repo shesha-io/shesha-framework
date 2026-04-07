@@ -2,7 +2,7 @@ import { DataTypes } from "@/interfaces";
 import { IContextMetadata } from "@/interfaces/metadata";
 import { DataContextType, IDataContextProviderActionsContext } from "../dataContextProvider/contexts";
 
-export interface IDataContextDescriptor extends IDataContextProviderActionsContext {
+export interface IDataContextDescriptor<TData extends object = object> extends IDataContextProviderActionsContext<TData> {
   id: string;
   uid: string;
   name: string;

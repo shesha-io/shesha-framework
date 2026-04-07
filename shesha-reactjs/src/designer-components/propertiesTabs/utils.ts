@@ -16,7 +16,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
 
   // Helper function to evaluate hidden property
   const evaluateHidden = (hidden: boolean, directMatch: boolean, hasVisibleChildren: boolean): boolean => {
-    return hidden || (!directMatch && !hasVisibleChildren);
+    return hidden === true || (!directMatch && !hasVisibleChildren);
   };
 
   // Helper function to check if text

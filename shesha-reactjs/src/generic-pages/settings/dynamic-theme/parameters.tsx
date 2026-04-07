@@ -1,12 +1,13 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Form, Radio, Space, Tooltip, InputNumber } from 'antd';
 import React, { FC, useCallback } from 'react';
-import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
 import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, SHESHA_COLORS, TEXT_PRESET_COLORS } from './presetColors';
 import { formItemLayout } from './form';
+import SectionSeparator from '@/components/sectionSeparator';
+import Show from '@/components/show';
 
 interface IThemeConfig {
   name: string;
@@ -94,8 +95,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
     <div style={{ marginTop: '10px' }}>
       <SectionSeparator title="Theme" />
 
-      <Space direction="vertical" align="start" size={24}>
-        <Space direction="vertical" align="start">
+      <Space orientation="vertical" align="start" size={24}>
+        <Space orientation="vertical" align="start">
           {colorConfigs.map((config, index) =>
             renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex)),
           )}
@@ -113,7 +114,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
       <SectionSeparator title="Text" containerStyle={{ marginTop: '8px' }} />
 
-      <Space direction="vertical" align="start">
+      <Space orientation="vertical" align="start">
         {textConfigs.map((config, index) =>
           renderColor(
             `text_${index}`,

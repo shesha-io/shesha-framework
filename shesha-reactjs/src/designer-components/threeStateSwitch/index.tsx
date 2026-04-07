@@ -1,7 +1,7 @@
 import { CodeOutlined } from '@ant-design/icons';
 import React from 'react';
 import { FormMarkup } from '@/providers/form/models';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { ThreeStateSwitchComponentDefinition } from './interfaces';
 import ThreeStateSwitch from '@/components/threeStateSwitch';
@@ -13,7 +13,7 @@ const ThreeStateSwitchComponent: ThreeStateSwitchComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  name: 'Edit mode Selector',
+  name: 'Three State Switch',
   icon: <CodeOutlined />,
   Factory: ({ model }) => {
     return <ConfigurableFormItem model={model}><ThreeStateSwitch readOnly={model.readOnly} /></ConfigurableFormItem>;
