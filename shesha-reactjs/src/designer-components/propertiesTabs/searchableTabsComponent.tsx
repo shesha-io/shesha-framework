@@ -181,8 +181,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     }
   }, [newFilteredTabs, activeTabKey, formDesigner]);
 
-  const tabPlacement = model.position === 'left' ? 'start' : model.position === 'right' ? 'end' : model.position;
-
   const localTabs = useMemo(() => (
     <Tabs
       key="searchable-tabs"
@@ -190,11 +188,11 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       onChange={handleTabChange}
       size={model.size}
       type={model.tabType || 'card'}
-      tabPlacement={tabPlacement || 'top'}
+      tabPosition={model.position || 'top'}
       items={newFilteredTabs}
       className={styles.content}
     />
-  ), [activeTabKey, handleTabChange, model.size, model.tabType, newFilteredTabs, styles.content, tabPlacement]);
+  ), [activeTabKey, handleTabChange, model.size, model.tabType, newFilteredTabs, styles.content, model.position]);
 
   return (
     <>
