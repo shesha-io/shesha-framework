@@ -4,64 +4,68 @@ import { ConfigurableFormInstance } from '@/interfaces';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
 import { Empty, Form } from 'antd';
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ItemSettingsMarkupFactory } from './interfaces';
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 
 export interface IPropertiesPanelProps<TItem extends ListItemWithId> extends ItemPropertiesRendererProps<TItem> {
-    settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
+  settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
 }
 
-export const PropertiesPanel = <TItem extends ListItemWithId>(props: IPropertiesPanelProps<TItem>) => {
-    const { item, onChange, readOnly, settingsMarkupFactory } = props;
+export const PropertiesPanel = <TItem extends ListItemWithId>(props: IPropertiesPanelProps<TItem>): JSX.Element => {
+  const { item, onChange, readOnly, settingsMarkupFactory } = props;
 
-    const [form] = Form.useForm();
+  const [form] = Form.useForm();
 
-    const formRef = useRef<ConfigurableFormInstance>(null);
+  const formRef = useRef<ConfigurableFormInstance>(null);
 
-    // Use a ref to always have access to the latest item value
-    const itemRef = useRef<TItem>(item);
-    itemRef.current = item;
+  // Use a ref to always have access to the latest item value
+  const itemRef = useRef<TItem>(item);
+  itemRef.current = item;
 
-    const debouncedSave = useDebouncedCallback(
-        (values: Partial<TItem>) => {            // Use the ref to get the latest item value, avoiding stale closure issues
-            onChange?.({ ...itemRef.current, ...values });
-        },
-        // delay in ms
-        300
-    );
-
+  const debouncedSave = useDebouncedCallback(
+    (values) => {
+      // Use the ref to get the latest item value, avoiding stale closure issues
+      onChange?.({ ...itemRef.current, ...values });
+    },
+    // delay in ms
+    300,
+  );
     //Guard debounced saves when switching items to prevent applying stale values to new items
     useEffect(() => {
         debouncedSave.cancel();
     }, [item?.id]);
 
-    if (!item) {
-        return (
-            <div>
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
-            </div>
-        );
-    }
+  const editor = useMemo(() => {
+    const emptyEditor = null;
+    if (!item) return emptyEditor;
 
     const markup = settingsMarkupFactory(item) ?? [];
-
     return (
-        <SourceFilesFolderProvider folder={`item-${item.id}`}>
-            <FormWithRawMarkup
-                key={item.id} // Force remount only when switching between different items
-                formRef={formRef}
-                labelCol={{ span: 24 }}
-                wrapperCol={{ span: 24 }}
-                mode={readOnly ? 'readonly' : 'edit'}
-                markup={markup}
-                form={form}
-                initialValues={item}
-                onValuesChange={debouncedSave}
-                className={sheshaStyles.verticalSettingsClass}
-                isSettingsForm={true}
-            />
-        </SourceFilesFolderProvider>
+      <SourceFilesFolderProvider folder={`item-${item.id}`}>
+        <ConfigurableForm
+          // key={selectedItemId} // rerender for each item to initialize all controls
+          formRef={formRef}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          mode={readOnly ? 'readonly' : 'edit'}
+          markup={markup}
+          form={form}
+          initialValues={item}
+          onValuesChange={debouncedSave}
+          className={sheshaStyles.verticalSettingsClass}
+          isSettingsForm={true}
+        />
+      </SourceFilesFolderProvider>
+    );
+  }, [item]);
+
+  return Boolean(item)
+    ? (<>{editor}</>)
+    : (
+      <div>
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
+      </div>
     );
 };

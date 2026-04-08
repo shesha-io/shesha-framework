@@ -39,24 +39,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         stepWidth
     } = model;
 
-    // Get or create footer container for current step
-    const currentStepFooter = useMemo(() => {
-        if (!currentStep) return undefined;
-
-        // Try to find existing footer
-        let footer = currentStep.stepFooter;
-
-        // If customActions is enabled but no footer exists, create a temporary one
-        if (!footer && currentStep.hasCustomFooter) {
-            footer = {
-                id: currentStep.id + '_footer',
-                components: []
-            };
-        }
-
-        return footer;
-    }, [ currentStep]);
-
     const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
     const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
     const activeStepStyle = useFormComponentStyles(visibleSteps[current]);
@@ -102,6 +84,8 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     if (model.hidden) return null;
     const btnStyle = getWizardButtonStyle(buttonsLayout);
 
+
+    console.log("Current step :: ", currentStep);
     return (
         <DataContextBinder
             id={'ctx_' + model.id}
@@ -125,10 +109,11 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                         />
                         <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                     </div>
-                    {currentStep?.hasCustomFooter && currentStepFooter ? (
+                    {currentStep?.hasCustomFooter ? (
                     <div className={styles.shaStepsButtonsContainer}>
                         <ComponentsContainer
-                            containerId={currentStepFooter.id}
+                            containerId={currentStep.id + '_footer'}
+                            dynamicComponents={isDynamic ? currentStep.stepFooter.components : []}
                         />
                     </div>
                 ) : (

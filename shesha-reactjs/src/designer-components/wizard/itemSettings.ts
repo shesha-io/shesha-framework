@@ -141,26 +141,33 @@ export const getItemSettings = () => {
                   jsSetting: true,
                 }]
             })
-            .addSettingsInput({
-              inputType: 'switch',
+            .addSettingsInputRow({
               id: nanoid(),
-              propertyName: 'canSkipTo',
-              label: 'Can Skip To',
-              labelAlign: 'right',
               parentId: commonTabId,
-              hidden: false,
-              defaultValue: false,
-              validate: {},
-              jsSetting: true,
-            })
-            .addSwitch({
-              id: nanoid(),
-              propertyName: 'hasCustomFooter',
-              label: 'Custom Footer',
-              labelAlign: 'right',
-              parentId: commonTabId,
-              defaultValue: false,
-              validate: {},
+              inputs: [
+                {
+                  type: 'switch',
+                  id: nanoid(),
+                  propertyName: 'canSkipTo',
+                  label: 'Can Skip To',
+                  labelAlign: 'right',
+                  parentId: commonTabId,
+                  hidden: false,
+                  defaultValue: false,
+                  validate: {},
+                  jsSetting: true,
+                },
+                {
+                  type: 'switch',
+                  id: nanoid(),
+                  propertyName: 'hasCustomFooter',
+                  label: 'Custom Footer',
+                  labelAlign: 'right',
+                  parentId: commonTabId,
+                  defaultValue: false,
+                  validate: {},
+                }
+              ]
             })
             .addCollapsiblePanel({
               id: nanoid(),

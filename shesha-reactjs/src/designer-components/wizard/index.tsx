@@ -97,9 +97,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         steps: prev.steps?.map(step => ({
           ...step,
           hasCustomFooter: step.hasCustomFooter ?? false,
-          stepFooter: step?.stepFooter ?? {
-            id: `${step.id}_footer`,
-            components: step.stepFooter?.components ?? [],
+          stepFooter: {
+            id: step.stepFooter?.id ?? `${step.id}_footer`,
           }
         })) ?? []
       })),
@@ -118,7 +117,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
     // Add step footer containers
     const footerContainers = model.steps
       .filter((s) => s.hasCustomFooter && s.stepFooter?.id)
-      .map((s) => ({ id: s.stepFooter.id, parentId: model.id }));
+      .map((s) => ({ id: `${s.id}_footer`, parentId: model.id }));
     return [...containers, ...footerContainers];
   },
 };
