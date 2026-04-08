@@ -18,45 +18,15 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   showCloseIcon?: boolean;
 }
 
-/**
- * Discriminated union for modal content types
- */
-export type ModalContent = {
-  type: 'text';
-  value: string;
-} | {
-  type: 'html';
-  value: string;
-} | {
-  type: 'node';
-  value: ReactNode;
-};
 
 /**
  * Helper to render content based on its type:
- * - 'text': Plain text (no HTML interpretation)
- * - 'html': Sanitized HTML (uses dangerouslySetInnerHTML)
+ * - 'string': Sanitized HTML (uses dangerouslySetInnerHTML)
  * - 'node': React node
  */
-const renderContent = (content: ModalContent | ReactNode | string | undefined): ReactNode => {
+const renderContent = (content: ReactNode | string | undefined): ReactNode => {
   if (!content) return null;
-
-  // Handle discriminated union
-  if (typeof content === 'object' && content !== null && 'type' in content) {
-    switch (content.type) {
-      case 'text':
-        return <div>{content.value}</div>;
-      case 'html':
-        return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.value) }} />;
-      case 'node':
-        return content.value;
-    }
-  }
-
-  // Backward compatibility: treat plain ReactNode as 'node', plain string as 'text'
-  if (typeof content === 'string') {
-    return <div>{content}</div>;
-  }
+  if (typeof content == 'string') return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />;
 
   return content as ReactNode;
 };
