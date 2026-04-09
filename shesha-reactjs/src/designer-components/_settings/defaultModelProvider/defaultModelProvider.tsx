@@ -50,6 +50,7 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
       needUpdateAllInfo();
       forceRefresh({});
     },
+    // ToDo: AS - forceRefresh needs only for cases when inheritable values y
     setModel: (model: TData) => {
       instance.setModel(model);
       needUpdateAllInfo();

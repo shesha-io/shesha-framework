@@ -33,6 +33,8 @@ const TabsComponent: TabsComponentDefinition = {
 
     const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor } = model;
 
+    const tabPlacement = tabPosition === 'left' ? 'start' : tabPosition === 'right' ? 'end' : tabPosition;
+
     useEffect(() => {
       if (defaultActiveKey) {
         setActiveKey(defaultActiveKey);
@@ -110,7 +112,7 @@ const TabsComponent: TabsComponentDefinition = {
         onChange={setActiveKey}
         size={size}
         type={tabType}
-        tabPosition={tabPosition}
+        tabPlacement={tabPlacement}
         items={items}
         className={styles.content}
       />
