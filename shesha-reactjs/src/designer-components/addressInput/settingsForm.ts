@@ -71,7 +71,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     type: 'editModeSelector',
                     id: nanoid(),
                     propertyName: 'editMode',
-                    defaultValue: 'inherited',
                     label: 'Edit Mode',
                     jsSetting: true,
                   },
