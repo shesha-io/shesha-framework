@@ -2,7 +2,7 @@ import { Modal as AntModal, App } from 'antd';
 import { ReactNode } from 'react';
 import { nanoid } from '@/utils/uuid';
 import { FormIdentifier, FormMode } from '../form/models';
-import { ICommonModalProps, IModalProps, IModalWithContentProps, ModalContent } from './models';
+import { ICommonModalProps, IModalProps, IModalWithContentProps } from './models';
 import { ModalFuncProps } from 'antd/lib/modal';
 
 /**
@@ -73,22 +73,20 @@ export interface ShowContentModalArgs {
   title?: string;
   /**
    * Modal content - can be:
-   * - ModalContent discriminated union: { type: 'text', value: string } | { type: 'html', value: string } | { type: 'node', value: ReactNode }
-   * - ReactNode (for backward compatibility, treated as 'node')
-   * - string (for backward compatibility, treated as plain text)
+   * - ReactNode (React component or element)
+   * - string (treated as plain text)
    */
-  content: ModalContent | ReactNode | string;
+  content: ReactNode | string;
   /** Modal width */
   width?: ModalWidth;
   /** Show close icon in modal header */
   showCloseIcon?: boolean;
   /**
    * Custom footer content - can be:
-   * - ModalContent discriminated union
-   * - ReactNode (for backward compatibility)
-   * - string (for backward compatibility, treated as plain text)
+   * - ReactNode (React component or element)
+   * - string (treated as plain text)
    */
-  footer?: ModalContent | ReactNode | string | undefined;
+  footer?: ReactNode | string | undefined;
 }
 
 /**

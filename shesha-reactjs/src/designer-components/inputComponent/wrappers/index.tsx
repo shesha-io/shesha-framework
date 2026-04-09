@@ -44,7 +44,7 @@ import { SizableColumnsConfigWrapper } from "./sizableColumnsConfig";
 import { LayerSelectorSettingsModalWrapper } from "./layerSelectorSettingsModal";
 import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
 import { SectionSeparatorWrapper } from "./sectionSeparator";
-import { UnwrapCodeEvaluators } from "@/index";
+import { UnwrapCodeEvaluators } from "@/providers/form/models";
 
 
 type InputType = ISettingsInputProps['type'];
