@@ -165,7 +165,7 @@ export const Dropdown: FC<IDropdownProps> = ({
         return options.find((o) => o.value === selectedValue);
       }
       if (displayStyle === 'tags') {
-        const valuesArray = Array.isArray(selectedValue) ? selectedValue : selectedValue != null ? [selectedValue] : [];
+        const valuesArray = Array.isArray(selectedValue) ? selectedValue : [];
         return valuesArray.map((x) => options.find((o) => o.value === x)).filter((o): o is ILabelValue => o !== undefined);
       }
       return getSelectValue();
