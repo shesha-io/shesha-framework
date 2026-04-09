@@ -74,7 +74,8 @@ const AddressInputComponent: IToolboxComponent<IAddressInputComponentProps> = {
         migratePropertyName(migrateCustomFunctions(prev)),
       )
       .add<IAddressInputComponentProps>(1, (prev) => migrateVisibility(prev))
-      .add<IAddressInputComponentProps>(2, (prev) => migrateReadOnly(prev))
+      .add<IAddressInputComponentProps>(2, (prev) =>
+        migrateReadOnly(prev as IAddressInputComponentProps, 'inherited'))
       .add<IAddressInputComponentProps>(3, (prev) => ({
         ...migrateFormApi.eventsAndProperties(prev),
       })),

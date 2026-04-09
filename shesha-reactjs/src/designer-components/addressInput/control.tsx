@@ -3,7 +3,7 @@ import { App, AutoComplete, Button, Input, Modal, Space, Tooltip } from 'antd';
 import { AimOutlined, CloseCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useFormActions } from '@/providers/form';
 import { useFormData } from '@/providers/formContext';
-import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
+import { unsafeGetValueByPropertyName, setValueByPropertyName } from '@/utils/object';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -170,7 +170,13 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
       // Load the new Places library (not the legacy one).
       const maps = getGoogleMaps();
       if (maps?.importLibrary) {
-        maps.importLibrary('places').then(() => resolve()).catch(reject);
+        maps.importLibrary('places')
+          .then(() => resolve())
+          .catch((error: unknown) => {
+            googleMapsLoadedApiKey = null;
+            googleMapsLoadPromise = null;
+            reject(error);
+          });
       } else {
         resolve();
       }
@@ -628,8 +634,8 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
     let lng = DEFAULT_LNG;
 
     if (formData) {
-      const storedLat = latitudePropertyName ? getValueByPropertyName(formData, latitudePropertyName) : null;
-      const storedLng = longitudePropertyName ? getValueByPropertyName(formData, longitudePropertyName) : null;
+      const storedLat = latitudePropertyName ? unsafeGetValueByPropertyName(formData, latitudePropertyName) : null;
+      const storedLng = longitudePropertyName ? unsafeGetValueByPropertyName(formData, longitudePropertyName) : null;
       if (typeof storedLat === 'number' && typeof storedLng === 'number') {
         lat = storedLat;
         lng = storedLng;
@@ -664,14 +670,23 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
 
   const showMapButton = enableMapInterface && !!googleMapsApiKey && googlePlaceReady;
   const displayText = toDisplayString(value);
+  const canOpenReadOnlyMap = enableMapInterface && googlePlaceReady && !!displayText;
 
   // ── Read-only ──────────────────────────────────────────────────────────────
 
   if (readOnly) {
     return (
       <>
-        {enableMapInterface && displayText
-          ? <a onClick={openMap} style={{ cursor: 'pointer' }}>{displayText}</a>
+        {canOpenReadOnlyMap
+          ? (
+            <button
+              type="button"
+              onClick={openMap}
+              style={{ padding: 0, border: 0, background: 'none', cursor: 'pointer' }}
+            >
+              {displayText}
+            </button>
+          )
           : <span>{displayText}</span>}
         {mapVisible && (
           <MapModal
