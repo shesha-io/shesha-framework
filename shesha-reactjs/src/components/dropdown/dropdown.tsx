@@ -43,7 +43,7 @@ export const Dropdown: FC<IDropdownProps> = ({
 
   const getOptions = (): ILabelValue[] => {
     const hasNumericValue = typeof value === 'number' || (Array.isArray(value) && value.some((v) => typeof v === 'number'));
-    return value && hasNumericValue ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
+    return value !== null && value !== undefined && hasNumericValue ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
   };
 
   const incomeValueFunc: IncomeValueFunc = useCallback((value: any, args?: any) => {
