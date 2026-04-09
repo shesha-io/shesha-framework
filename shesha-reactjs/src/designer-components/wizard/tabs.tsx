@@ -101,8 +101,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     if (model.hidden) return null;
     const btnStyle = getWizardButtonStyle(buttonsLayout);
 
-
-    console.log("Current step :: ", currentStep);
     return (
         <DataContextBinder
             id={'ctx_' + model.id}
