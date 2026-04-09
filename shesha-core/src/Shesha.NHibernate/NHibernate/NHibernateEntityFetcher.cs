@@ -68,9 +68,12 @@ namespace Shesha.NHibernate
                     var propertyWithPath = ReflectionHelper.GetPropertyWithPath(typeof(T), propName, useCamelCase: true);
                     if (propertyWithPath != null)
                     {
-                        var realPath = propertyWithPath.Path.Delimited(".");
-                        if (!propertiesToFetch.Contains(realPath))
-                            propertiesToFetch.Add(realPath);
+                        if (propertyWithPath.PropertyInfo.CanWrite) 
+                        {
+                            var realPath = propertyWithPath.Path.Delimited(".");
+                            if (!propertiesToFetch.Contains(realPath))
+                                propertiesToFetch.Add(realPath);
+                        }                        
                     }
                     else
                     {
