@@ -1,6 +1,6 @@
 import { EnvironmentOutlined } from '@ant-design/icons';
 import React from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import {
   migrateCustomFunctions,
@@ -26,9 +26,9 @@ const AddressInputComponent: IToolboxComponent<IAddressInputComponentProps> = {
     const finalStyle =
       !model.enableStyleOnReadonly && model.readOnly
         ? {
-            ...model.allStyles.fontStyles,
-            ...model.allStyles.dimensionsStyles,
-          }
+          ...model.allStyles.fontStyles,
+          ...model.allStyles.dimensionsStyles,
+        }
         : model.allStyles.fullStyle;
 
     if (model.hidden) return null;
@@ -36,7 +36,7 @@ const AddressInputComponent: IToolboxComponent<IAddressInputComponentProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>
-          model.readOnly ? (
+          model.readOnly && !model.enableMapInterface ? (
             <ReadOnlyDisplayFormItem value={value} style={finalStyle} />
           ) : (
             <AddressInputControl
@@ -51,8 +51,7 @@ const AddressInputComponent: IToolboxComponent<IAddressInputComponentProps> = {
               defaultZoom={model.defaultZoom ?? 15}
               mapHeight={model.mapHeight ?? 400}
             />
-          )
-        }
+          )}
       </ConfigurableFormItem>
     );
   },
@@ -72,7 +71,7 @@ const AddressInputComponent: IToolboxComponent<IAddressInputComponentProps> = {
   migrator: (m) =>
     m
       .add<IAddressInputComponentProps>(0, (prev) =>
-        migratePropertyName(migrateCustomFunctions(prev))
+        migratePropertyName(migrateCustomFunctions(prev)),
       )
       .add<IAddressInputComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<IAddressInputComponentProps>(2, (prev) => migrateReadOnly(prev))

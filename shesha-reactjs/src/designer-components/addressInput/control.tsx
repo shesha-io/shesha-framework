@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { AutoComplete, Button, Input, Space, Tooltip, message } from 'antd';
+import { App, AutoComplete, Button, Input, Modal, Space, Tooltip } from 'antd';
 import { AimOutlined, CloseCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useFormActions } from '@/providers/form';
 import { useFormData } from '@/providers/formContext';
@@ -8,7 +8,7 @@ import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface IAddressInputControlProps {
-  value?: any;
+  value?: unknown;
   onChange?: (value: string) => void;
   placeholder?: string;
   readOnly?: boolean;
@@ -20,12 +20,117 @@ export interface IAddressInputControlProps {
   mapHeight?: number;
 }
 
+// ─── Google Maps type contracts ───────────────────────────────────────────────
+
+interface IGeocoderLocation {
+  lat(): number;
+  lng(): number;
+}
+
+interface IGeocoderResult {
+  formatted_address: string;
+  geometry?: {
+    location?: IGeocoderLocation;
+  };
+}
+
+interface IGeocoder {
+  geocode(
+    request: { location: { lat: number; lng: number } } | { address: string },
+    callback: (results: IGeocoderResult[], status: string) => void,
+  ): void;
+}
+
+interface ILatLng {
+  lat(): number;
+  lng(): number;
+}
+
+interface IMapInstance {
+  setCenter(pos: { lat: number; lng: number } | ILatLng): void;
+  addListener(event: string, handler: (...args: unknown[]) => unknown): void;
+}
+
+interface IMarkerInstance {
+  setPosition(pos: { lat: number; lng: number } | ILatLng): void;
+  getPosition(): ILatLng | null | undefined;
+  addListener(event: string, handler: (...args: unknown[]) => unknown): void;
+}
+
+interface IMapClickEvent {
+  latLng: ILatLng;
+}
+
+interface IAutocompletePrediction {
+  text?: { toString(): string };
+  placeId?: string;
+}
+
+interface IAutocompleteSuggestionItem {
+  placePrediction?: IAutocompletePrediction;
+}
+
+interface INewPlace {
+  formattedAddress?: string;
+  location?: ILatLng;
+  fetchFields(options: { fields: string[] }): Promise<void>;
+}
+
+interface IGoogleMapsApi {
+  Map: new (container: HTMLElement, options: { center: { lat: number; lng: number }; zoom: number }) => IMapInstance;
+  Marker: new (options: { position: { lat: number; lng: number }; map: IMapInstance; draggable: boolean }) => IMarkerInstance;
+  Geocoder: new () => IGeocoder;
+  importLibrary?(library: string): Promise<unknown>;
+  places?: {
+    AutocompleteSuggestion?: {
+      fetchAutocompleteSuggestions(request: { input: string }): Promise<{ suggestions: IAutocompleteSuggestionItem[] }>;
+    };
+    Place?: new (options: { id: string }) => INewPlace;
+  };
+}
+
+// ─── Type guards ──────────────────────────────────────────────────────────────
+
+function getGoogleMaps(): IGoogleMapsApi | null {
+  if (typeof window === 'undefined') return null;
+  const win = window as unknown as Record<string, unknown>;
+  if (typeof win.google !== 'object' || win.google === null) return null;
+  const google = win.google as Record<string, unknown>;
+  if (typeof google.maps !== 'object' || google.maps === null) return null;
+  return google.maps as IGoogleMapsApi;
+}
+
+function isGeocoder(value: unknown): value is IGeocoder {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'geocode' in value &&
+    typeof (value as Record<string, unknown>).geocode === 'function'
+  );
+}
+
+function isMapClickEvent(e: unknown): e is IMapClickEvent {
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    'latLng' in e &&
+    typeof (e as { latLng: unknown }).latLng === 'object' &&
+    (e as { latLng: unknown }).latLng !== null
+  );
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const toDisplayString = (value: any): string => {
+const toDisplayString = (value: unknown): string => {
   if (!value) return '';
   if (typeof value === 'string') return value;
-  if (typeof value._displayName === 'string') return value._displayName;
+  if (
+    typeof value === 'object' &&
+    '_displayName' in value &&
+    typeof (value as Record<string, unknown>)._displayName === 'string'
+  ) {
+    return (value as Record<string, unknown>)._displayName as string;
+  }
   return '';
 };
 
@@ -35,17 +140,25 @@ const DEFAULT_LAT = -26.2041;
 const DEFAULT_LNG = 28.0473;
 
 // Load the Google Maps JS SDK exactly once per page.
-let _loadPromise: Promise<void> | null = null;
+let googleMapsLoadPromise: Promise<void> | null = null;
+let googleMapsLoadedApiKey: string | null = null;
 
 function loadGoogleMapsScript(apiKey: string): Promise<void> {
-  if (_loadPromise) return _loadPromise;
+  if (googleMapsLoadPromise && googleMapsLoadedApiKey && googleMapsLoadedApiKey !== apiKey) {
+    return Promise.reject(
+      new Error('Google Maps is already initialised with a different API key'),
+    );
+  }
+  if (googleMapsLoadPromise) return googleMapsLoadPromise;
 
-  if (typeof window !== 'undefined' && (window as any).google?.maps) {
-    _loadPromise = Promise.resolve();
-    return _loadPromise;
+  if (getGoogleMaps() !== null) {
+    googleMapsLoadedApiKey = apiKey;
+    googleMapsLoadPromise = Promise.resolve();
+    return googleMapsLoadPromise;
   }
 
-  _loadPromise = new Promise<void>((resolve, reject) => {
+  googleMapsLoadedApiKey = apiKey;
+  googleMapsLoadPromise = new Promise<void>((resolve, reject) => {
     const script = document.createElement('script');
     // Do NOT include libraries=places — that loads the legacy Places library
     // and immediately triggers deprecation warnings. Instead we call
@@ -55,35 +168,38 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
     script.defer = true;
     script.onload = () => {
       // Load the new Places library (not the legacy one).
-      (window as any).google.maps
-        .importLibrary('places')
-        .then(() => resolve())
-        .catch(reject);
+      const maps = getGoogleMaps();
+      if (maps?.importLibrary) {
+        maps.importLibrary('places').then(() => resolve()).catch(reject);
+      } else {
+        resolve();
+      }
     };
     script.onerror = () => {
-      _loadPromise = null;
+      googleMapsLoadedApiKey = null;
+      googleMapsLoadPromise = null;
       reject(new Error('Failed to load Google Maps script'));
     };
     document.head.appendChild(script);
   });
 
-  return _loadPromise;
+  return googleMapsLoadPromise;
 }
 
-function geocodeLatLng(geocoder: any, lat: number, lng: number): Promise<string> {
+function geocodeLatLng(geocoder: IGeocoder, lat: number, lng: number): Promise<string> {
   return new Promise((resolve, reject) => {
-    geocoder.geocode({ location: { lat, lng } }, (results: any[], status: string) => {
-      if (status === 'OK' && results?.[0]) resolve(results[0].formatted_address as string);
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      if (status === 'OK' && results?.[0]) resolve(results[0].formatted_address);
       else reject(new Error(`Reverse geocode failed: ${status}`));
     });
   });
 }
 
-function geocodeAddressString(geocoder: any, address: string): Promise<{ lat: number; lng: number }> {
+function geocodeAddressString(geocoder: IGeocoder, address: string): Promise<{ lat: number; lng: number }> {
   return new Promise((resolve, reject) => {
-    geocoder.geocode({ address }, (results: any[], status: string) => {
-      if (status === 'OK' && results?.[0]?.geometry?.location) {
-        const loc = results[0].geometry.location;
+    geocoder.geocode({ address }, (results, status) => {
+      const loc = status === 'OK' ? results?.[0]?.geometry?.location : undefined;
+      if (loc) {
         resolve({ lat: loc.lat(), lng: loc.lng() });
       } else {
         reject(new Error(`Geocode failed: ${status}`));
@@ -94,8 +210,6 @@ function geocodeAddressString(geocoder: any, address: string): Promise<{ lat: nu
 
 // ─── Map Modal ────────────────────────────────────────────────────────────────
 
-import { Modal } from 'antd';
-
 interface IMapModalProps {
   visible: boolean;
   readOnly: boolean;
@@ -104,7 +218,7 @@ interface IMapModalProps {
   initialAddress: string;
   defaultZoom: number;
   mapHeight: number;
-  geocoder: any;
+  geocoder: unknown;
   onOk: (address: string, lat: number, lng: number) => void;
   onCancel: () => void;
 }
@@ -113,9 +227,10 @@ const MapModal: FC<IMapModalProps> = ({
   visible, readOnly, initialLat, initialLng, initialAddress,
   defaultZoom, mapHeight, geocoder, onOk, onCancel,
 }) => {
+  const { message } = App.useApp();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<any>(null);
-  const markerRef = useRef<any>(null);
+  const mapRef = useRef<IMapInstance | null>(null);
+  const markerRef = useRef<IMarkerInstance | null>(null);
 
   const [currentLat, setCurrentLat] = useState(initialLat);
   const [currentLng, setCurrentLng] = useState(initialLng);
@@ -139,38 +254,47 @@ const MapModal: FC<IMapModalProps> = ({
     if (!visible) return undefined;
 
     const timer = setTimeout(() => {
-      if (!mapContainerRef.current || !(window as any).google?.maps) return;
+      const maps = getGoogleMaps();
+      if (!mapContainerRef.current || !maps) return;
 
-      const google = (window as any).google;
       const center = { lat: initialLat, lng: initialLng };
-
-      mapRef.current = new google.maps.Map(mapContainerRef.current, { center, zoom: defaultZoom });
-      markerRef.current = new google.maps.Marker({ position: center, map: mapRef.current, draggable: !readOnly });
+      const mapInstance = new maps.Map(mapContainerRef.current, { center, zoom: defaultZoom });
+      const markerInstance = new maps.Marker({ position: center, map: mapInstance, draggable: !readOnly });
+      mapRef.current = mapInstance;
+      markerRef.current = markerInstance;
 
       if (!readOnly) {
-        markerRef.current.addListener('dragend', async () => {
+        markerInstance.addListener('dragend', async () => {
           const pos = markerRef.current?.getPosition();
           if (!pos) return;
-          const lat: number = pos.lat();
-          const lng: number = pos.lng();
+          const lat = pos.lat();
+          const lng = pos.lng();
           setCurrentLat(lat);
           setCurrentLng(lng);
-          if (geocoder) {
-            try { setCurrentAddress(await geocodeLatLng(geocoder, lat, lng)); } catch { /* keep address */ }
+          if (isGeocoder(geocoder)) {
+            try {
+              setCurrentAddress(await geocodeLatLng(geocoder, lat, lng));
+            } catch {
+              /* keep address */
+            }
           }
         });
 
-        mapRef.current.addListener('click', async (e: any) => {
-          const lat: number = e.latLng.lat();
-          const lng: number = e.latLng.lng();
+        mapInstance.addListener('click', async (e: unknown) => {
+          if (!isMapClickEvent(e)) return;
+          const lat = e.latLng.lat();
+          const lng = e.latLng.lng();
           setCurrentLat(lat);
           setCurrentLng(lng);
           markerRef.current?.setPosition({ lat, lng });
-          if (geocoder) {
-            try { setCurrentAddress(await geocodeLatLng(geocoder, lat, lng)); } catch { /* keep address */ }
+          if (isGeocoder(geocoder)) {
+            try {
+              setCurrentAddress(await geocodeLatLng(geocoder, lat, lng));
+            } catch {
+              /* keep address */
+            }
           }
         });
-
       }
     }, 100);
 
@@ -178,7 +302,7 @@ const MapModal: FC<IMapModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const handleCurrentLocation = () => {
+  const handleCurrentLocation = (): void => {
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
       async ({ coords }) => {
@@ -189,8 +313,12 @@ const MapModal: FC<IMapModalProps> = ({
         setCurrentLng(lng);
         mapRef.current?.setCenter({ lat, lng });
         markerRef.current?.setPosition({ lat, lng });
-        if (geocoder) {
-          try { setCurrentAddress(await geocodeLatLng(geocoder, lat, lng)); } catch { /* keep address */ }
+        if (isGeocoder(geocoder)) {
+          try {
+            setCurrentAddress(await geocodeLatLng(geocoder, lat, lng));
+          } catch {
+            /* keep address */
+          }
         }
       },
       (err) => {
@@ -200,27 +328,27 @@ const MapModal: FC<IMapModalProps> = ({
         else
           message.error('Unable to retrieve your location.');
       },
-      { timeout: 10000, maximumAge: 60000 }
+      { timeout: 10000, maximumAge: 60000 },
     );
   };
 
   // ── Suggestions for modal search (debounced 300 ms) ─────────────────────
 
-  const fetchModalSuggestions = (text: string) => {
+  const fetchModalSuggestions = (text: string): void => {
     if (modalSearchTimerRef.current) clearTimeout(modalSearchTimerRef.current);
-    if (!text || !(window as any).google?.maps?.places?.AutocompleteSuggestion) {
+    const autocomplete = getGoogleMaps()?.places?.AutocompleteSuggestion;
+    if (!text || !autocomplete) {
       setModalSuggestions([]);
       return;
     }
     modalSearchTimerRef.current = setTimeout(async () => {
       try {
-        const { AutocompleteSuggestion } = (window as any).google.maps.places;
-        const { suggestions: preds } = await AutocompleteSuggestion.fetchAutocompleteSuggestions({ input: text });
+        const { suggestions: preds } = await autocomplete.fetchAutocompleteSuggestions({ input: text });
         setModalSuggestions(
-          (preds ?? []).map((s: any) => {
+          (preds ?? []).map((s) => {
             const pred = s.placePrediction;
             return { value: pred?.text?.toString() ?? '', label: pred?.text?.toString() ?? '', placeId: pred?.placeId ?? '' };
-          })
+          }),
         );
       } catch {
         setModalSuggestions([]);
@@ -230,12 +358,12 @@ const MapModal: FC<IMapModalProps> = ({
 
   // ── Select a suggestion → fetch coords and pan map ────────────────────────
 
-  const handleModalSelect = async (_address: string, option: { placeId: string }) => {
+  const handleModalSelect = async (_address: string, option: { placeId: string }): Promise<void> => {
     setModalSuggestions([]);
-    const google = (window as any).google;
-    if (!option?.placeId || !google?.maps?.places?.Place) return;
+    const PlaceClass = getGoogleMaps()?.places?.Place;
+    if (!option?.placeId || !PlaceClass) return;
     try {
-      const place = new google.maps.places.Place({ id: option.placeId });
+      const place = new PlaceClass({ id: option.placeId });
       await place.fetchFields({ fields: ['formattedAddress', 'location'] });
       const lat: number = place.location?.lat() ?? currentLat;
       const lng: number = place.location?.lng() ?? currentLng;
@@ -246,16 +374,18 @@ const MapModal: FC<IMapModalProps> = ({
       setModalSearchText(addr);
       mapRef.current?.setCenter({ lat, lng });
       markerRef.current?.setPosition({ lat, lng });
-    } catch { /* keep current position */ }
+    } catch {
+      /* keep current position */
+    }
   };
 
-  const handleOk = () => {
+  const handleOk = (): void => {
     onOk(currentAddress, currentLat, currentLng);
     mapRef.current = null;
     markerRef.current = null;
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     onCancel();
     mapRef.current = null;
     markerRef.current = null;
@@ -268,7 +398,7 @@ const MapModal: FC<IMapModalProps> = ({
       onOk={handleOk}
       onCancel={handleCancel}
       footer={readOnly ? null : undefined}
-      destroyOnClose
+      destroyOnHidden
       width={600}
     >
       {!readOnly && (
@@ -277,11 +407,17 @@ const MapModal: FC<IMapModalProps> = ({
             style={{ flex: 1, minWidth: 0 }}
             value={modalSearchText}
             options={modalSuggestions}
-            onSearch={(text) => { setModalSearchText(text); fetchModalSuggestions(text); }}
+            onSearch={(text) => {
+              setModalSearchText(text);
+              fetchModalSuggestions(text);
+            }}
             onSelect={handleModalSelect}
             placeholder="Search address on map…"
             allowClear
-            onClear={() => { setModalSearchText(''); setModalSuggestions([]); }}
+            onClear={() => {
+              setModalSearchText('');
+              setModalSuggestions([]);
+            }}
             getPopupContainer={() => document.body}
           />
           {geolocationAvailable && (
@@ -320,8 +456,9 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   defaultZoom = 15,
   mapHeight = 400,
 }) => {
+  const { message } = App.useApp();
   const [googlePlaceReady, setGooglePlaceReady] = useState(
-    () => typeof window !== 'undefined' && !!(window as any).google?.maps
+    () => getGoogleMaps() !== null,
   );
 
   const [searchText, setSearchText] = useState(toDisplayString(value));
@@ -334,21 +471,22 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   const [mapLng, setMapLng] = useState(DEFAULT_LNG);
   const [mapAddress, setMapAddress] = useState('');
 
-  const geocoderRef = useRef<any>(null);
+  const geocoderRef = useRef<IGeocoder | null>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { setFormData } = useFormActions(false) ?? {};
+  const { setFormData } = useFormActions() ?? {};
   const { data: formData } = useFormData() ?? {};
 
   // ── Load / detect Google Maps ──────────────────────────────────────────────
 
   useEffect(() => {
-    if ((window as any).google?.maps) {
+    const maps = getGoogleMaps();
+    if (maps) {
       if (!geocoderRef.current)
-        geocoderRef.current = new (window as any).google.maps.Geocoder();
+        geocoderRef.current = new maps.Geocoder();
       // Ensure the new places library is loaded (importLibrary is a no-op if
       // already loaded, so this is safe to call multiple times).
-      (window as any).google.maps.importLibrary?.('places').catch(() => {/* ignore */});
+      maps.importLibrary?.('places').catch(() => { /* ignore */ });
       if (!googlePlaceReady) setGooglePlaceReady(true);
       return;
     }
@@ -357,7 +495,8 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
 
     loadGoogleMapsScript(googleMapsApiKey)
       .then(() => {
-        geocoderRef.current = new (window as any).google.maps.Geocoder();
+        const loadedMaps = getGoogleMaps();
+        if (loadedMaps) geocoderRef.current = new loadedMaps.Geocoder();
         setGooglePlaceReady(true);
       })
       .catch(() => {
@@ -378,9 +517,9 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   // ── Write lat/lng into parent form ────────────────────────────────────────
 
   const writeLatLng = useCallback(
-    (lat: number, lng: number) => {
+    (lat: number | null, lng: number | null) => {
       if (!setFormData) return;
-      let values: Record<string, any> = {};
+      let values: Record<string, unknown> = {};
       if (latitudePropertyName)
         values = setValueByPropertyName(values, latitudePropertyName, lat, true);
       if (longitudePropertyName)
@@ -388,30 +527,30 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
       if (Object.keys(values).length > 0)
         setFormData({ values, mergeValues: true });
     },
-    [setFormData, latitudePropertyName, longitudePropertyName]
+    [setFormData, latitudePropertyName, longitudePropertyName],
   );
 
   // ── Fetch suggestions via AutocompleteService (debounced 300 ms) ──────────
 
-  const fetchSuggestions = (text: string) => {
+  const fetchSuggestions = (text: string): void => {
     if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    if (!text || !(window as any).google?.maps?.places?.AutocompleteSuggestion) {
+    const autocomplete = getGoogleMaps()?.places?.AutocompleteSuggestion;
+    if (!text || !autocomplete) {
       setSuggestions([]);
       return;
     }
     searchTimerRef.current = setTimeout(async () => {
       try {
-        const { AutocompleteSuggestion } = (window as any).google.maps.places;
-        const { suggestions: preds } = await AutocompleteSuggestion.fetchAutocompleteSuggestions({ input: text });
+        const { suggestions: preds } = await autocomplete.fetchAutocompleteSuggestions({ input: text });
         setSuggestions(
-          (preds ?? []).map((s: any) => {
+          (preds ?? []).map((s) => {
             const pred = s.placePrediction;
             return {
               value: pred?.text?.toString() ?? '',
               label: pred?.text?.toString() ?? '',
               placeId: pred?.placeId ?? '',
             };
-          })
+          }),
         );
       } catch {
         setSuggestions([]);
@@ -421,26 +560,27 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
 
   // ── Handle typing in the AutoComplete input ───────────────────────────────
 
-  const handleSearch = (text: string) => {
+  const handleSearch = (text: string): void => {
     setSearchText(text);
     fetchSuggestions(text);
   };
 
   // ── Handle selecting a suggestion ────────────────────────────────────────
 
-  const handleSelect = async (_address: string, option: ISuggestion) => {
+  const handleSelect = async (_address: string, option: ISuggestion): Promise<void> => {
     setSuggestions([]);
-    const google = (window as any).google;
-    if (!option?.placeId || !google?.maps?.places?.Place) {
+    const PlaceClass = getGoogleMaps()?.places?.Place;
+    if (!option?.placeId || !PlaceClass) {
       lastExternalValueRef.current = _address;
       setSearchText(_address);
       onChange?.(_address);
+      writeLatLng(null, null);
       return;
     }
 
     try {
       // New Places API — no deprecated PlacesService needed
-      const place = new google.maps.places.Place({ id: option.placeId });
+      const place = new PlaceClass({ id: option.placeId });
       await place.fetchFields({ fields: ['formattedAddress', 'location'] });
       const finalAddress: string = place.formattedAddress || _address;
       const lat: number = place.location?.lat() ?? DEFAULT_LAT;
@@ -453,12 +593,13 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
       lastExternalValueRef.current = _address;
       setSearchText(_address);
       onChange?.(_address);
+      writeLatLng(null, null);
     }
   };
 
   // ── Direct lat/lng coordinate input on Enter ──────────────────────────────
 
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>): Promise<void> => {
     if (e.key !== 'Enter') return;
     const currentText = (e.target as HTMLInputElement).value;
     const match = currentText.match(LAT_LNG_RE);
@@ -482,7 +623,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
 
   // ── Open map modal ────────────────────────────────────────────────────────
 
-  const openMap = async () => {
+  const openMap = async (): Promise<void> => {
     let lat = DEFAULT_LAT;
     let lng = DEFAULT_LNG;
 
@@ -500,7 +641,9 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
         const coords = await geocodeAddressString(geocoderRef.current, searchText);
         lat = coords.lat;
         lng = coords.lng;
-      } catch { /* keep defaults */ }
+      } catch {
+        /* keep defaults */
+      }
     }
 
     setMapLat(lat);
@@ -509,7 +652,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
     setMapVisible(true);
   };
 
-  const handleMapOk = (address: string, lat: number, lng: number) => {
+  const handleMapOk = (address: string, lat: number, lng: number): void => {
     lastExternalValueRef.current = address;
     setSearchText(address);
     onChange?.(address);
@@ -517,7 +660,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
     setMapVisible(false);
   };
 
-  const handleMapCancel = () => setMapVisible(false);
+  const handleMapCancel = (): void => setMapVisible(false);
 
   const showMapButton = enableMapInterface && !!googleMapsApiKey && googlePlaceReady;
   const displayText = toDisplayString(value);
@@ -529,14 +672,19 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
       <>
         {enableMapInterface && displayText
           ? <a onClick={openMap} style={{ cursor: 'pointer' }}>{displayText}</a>
-          : <span>{displayText}</span>
-        }
+          : <span>{displayText}</span>}
         {mapVisible && (
           <MapModal
-            visible={mapVisible} readOnly
-            initialLat={mapLat} initialLng={mapLng} initialAddress={mapAddress}
-            defaultZoom={defaultZoom} mapHeight={mapHeight} geocoder={geocoderRef.current}
-            onOk={handleMapOk} onCancel={handleMapCancel}
+            visible={mapVisible}
+            readOnly
+            initialLat={mapLat}
+            initialLng={mapLng}
+            initialAddress={mapAddress}
+            defaultZoom={defaultZoom}
+            mapHeight={mapHeight}
+            geocoder={geocoderRef.current}
+            onOk={handleMapOk}
+            onCancel={handleMapCancel}
           />
         )}
       </>
@@ -544,6 +692,23 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   }
 
   // ── Edit mode ──────────────────────────────────────────────────────────────
+
+  // Always render a non-null suffix so AntD keeps the affix-wrapper
+  // DOM structure stable (swapping null ↔ element remounts <input>).
+  const suffixIcon = searchText ? (
+    <CloseCircleOutlined
+      style={{ color: '#bbb', cursor: 'pointer' }}
+      onClick={() => {
+        lastExternalValueRef.current = '';
+        setSearchText('');
+        onChange?.('');
+        setSuggestions([]);
+        writeLatLng(null, null);
+      }}
+    />
+  ) : (
+    <span style={{ display: 'inline-block', width: 14 }} />
+  );
 
   return (
     <>
@@ -560,6 +725,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
             if (searchText !== toDisplayString(value)) {
               lastExternalValueRef.current = searchText;
               onChange?.(searchText);
+              writeLatLng(null, null);
             }
             setSuggestions([]);
           }}
@@ -567,23 +733,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
           <Input
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            suffix={
-              // Always render a non-null suffix so AntD keeps the affix-wrapper
-              // DOM structure stable (swapping null ↔ element remounts <input>).
-              searchText ? (
-                <CloseCircleOutlined
-                  style={{ color: '#bbb', cursor: 'pointer' }}
-                  onClick={() => {
-                    lastExternalValueRef.current = '';
-                    setSearchText('');
-                    onChange?.('');
-                    setSuggestions([]);
-                  }}
-                />
-              ) : (
-                <span style={{ display: 'inline-block', width: 14 }} />
-              )
-            }
+            suffix={suffixIcon}
           />
         </AutoComplete>
         {showMapButton && (
@@ -593,10 +743,16 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
 
       {mapVisible && (
         <MapModal
-          visible={mapVisible} readOnly={false}
-          initialLat={mapLat} initialLng={mapLng} initialAddress={mapAddress}
-          defaultZoom={defaultZoom} mapHeight={mapHeight} geocoder={geocoderRef.current}
-          onOk={handleMapOk} onCancel={handleMapCancel}
+          visible={mapVisible}
+          readOnly={false}
+          initialLat={mapLat}
+          initialLng={mapLng}
+          initialAddress={mapAddress}
+          defaultZoom={defaultZoom}
+          mapHeight={mapHeight}
+          geocoder={geocoderRef.current}
+          onOk={handleMapOk}
+          onCancel={handleMapCancel}
         />
       )}
     </>
