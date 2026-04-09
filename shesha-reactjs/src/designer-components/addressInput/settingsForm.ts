@@ -1,5 +1,4 @@
 import { nanoid } from '@/utils/uuid';
-import { FormLayout } from 'antd/es/form/Form';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
@@ -200,7 +199,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       .toJson(),
     formSettings: {
       colon: false,
-      layout: 'vertical' as FormLayout,
+      layout: 'vertical',
       labelCol: { span: 24 },
       wrapperCol: { span: 24 },
     },
