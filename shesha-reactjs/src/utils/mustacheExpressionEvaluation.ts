@@ -29,8 +29,6 @@ export const buildMustacheExpressionContext = (mappings: IExpressionMatchData[])
   const context: Record<string, unknown> = {};
 
   mappings.forEach((mapping) => {
-    if (!mapping) return;
-
     const { match, data } = mapping;
     if (!match) {
       if (isObjectValue(data)) {

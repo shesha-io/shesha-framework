@@ -88,8 +88,8 @@ import {
   IExpressionExecuterArguments,
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
-import { findToolboxComponent, getToolboxComponent } from './utils/markup';
 import { buildMustacheExpressionContext, tryEvaluateMustacheTemplate } from '@/utils/mustacheExpressionEvaluation';
+import { type IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 
 export {
   executeExpression, executeScript,
@@ -865,7 +865,7 @@ export const evaluateComplexStringWithResult = (
   Array.from(matches).forEach((template) => {
     const expressionEvaluation = tryEvaluateMustacheTemplate(template, expressionContext);
     if (expressionEvaluation.handled) {
-      if (requireNonEmptyResult && !expressionEvaluation.value?.trim()) {
+      if (requireNonEmptyResult && !expressionEvaluation.value.trim()) {
         success = false;
         unevaluatedExpressions.push(template);
       }
@@ -1159,7 +1159,7 @@ export function updateComponentModelFromMetadata<TModel extends IConfigurableFor
   metadata: IPropertyMetadata,
 ): TModel {
   const mm = getComponentModelFromMetadata(component, model, metadata);
-  const m = deepMergeValues(deepCopyViaJson(model), mm, (t: Record<string, unknown>, s: Record<string, unknown>, key) => {
+  const m = deepMergeValues(deepCopyViaJson(model), mm, (t: Record<string, unknown>, s: Record<string, unknown>, key: string) => {
     // skip merge
     // metadata value is empty
     return s[key] === undefined ||
