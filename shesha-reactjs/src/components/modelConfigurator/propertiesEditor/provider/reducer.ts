@@ -10,9 +10,8 @@ import {
   IUpdateItemSettingsPayload,
   PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { DataTypes } from '@/index';
 import { nanoid } from '@/utils/uuid';
-import { ArrayFormats } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { EntityInitFlags } from '@/apis/modelConfigurations';
 
 const findItemById = (items: IModelItem[], id: string): IModelItem => {

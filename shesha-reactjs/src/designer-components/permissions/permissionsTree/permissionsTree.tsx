@@ -5,10 +5,10 @@ import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { PermissionsTree, PermissionsTreeMode } from '@/components/permissionsTree';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { IConfigurableActionConfiguration } from '@/index';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   value?: string[];

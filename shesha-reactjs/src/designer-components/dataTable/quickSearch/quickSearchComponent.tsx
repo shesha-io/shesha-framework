@@ -1,5 +1,5 @@
 import React, { CSSProperties, useMemo } from 'react';
-import { GlobalTableFilter } from '@/components';
+import { GlobalTableFilter } from '@/components/globalTableFilter';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SearchOutlined } from '@ant-design/icons';
@@ -7,7 +7,6 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './tabbedSettingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import Search from 'antd/lib/input/Search';
-import { useDataTableStoreOrUndefined } from '@/index';
 import { useStyles } from '../tableContext/styles';
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { removeUndefinedProps } from '@/utils/object';
@@ -15,6 +14,7 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { validationError } from '../utils';
+import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
 
 const outsideContextValidationError = validationError('Quick Search');
 

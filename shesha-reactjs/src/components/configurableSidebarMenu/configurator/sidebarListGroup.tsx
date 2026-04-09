@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import { ISidebarGroup, ISidebarMenuItem } from '@/interfaces/sidebar';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { ItemChangeDetails } from '@/components/listEditor';

@@ -2,11 +2,11 @@ import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
-import { EditMode, IStyleType } from '@/index';
 import React from 'react';
 import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import { ListItemWithId } from '@/components/listEditor/models';
 import { isDefined } from '@/utils/nullables';
+import { EditMode, IStyleType } from '../form/models';
 
 type ButtonGroupItemType = 'item' | 'group';
 

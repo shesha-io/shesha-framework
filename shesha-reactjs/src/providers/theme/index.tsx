@@ -61,7 +61,9 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       : {};
 
     const result: ThemeConfig = {
-      cssVar: true,
+      cssVar: {
+        prefix: 'ant',
+      },
       token: { ...themeDefaults, ...theme },
       components: {
         Menu: {

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { DefaultItemRenderingProps } from './interfaces';
-import { IconType, ShaIcon } from '@/components';
+import { IconType, ShaIcon } from '@/components/shaIcon';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useStyles } from '@/components/listEditor/styles/styles';

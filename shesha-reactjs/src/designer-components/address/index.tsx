@@ -2,16 +2,17 @@ import { HomeOutlined } from '@ant-design/icons';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import AutoCompletePlacesControl from './control';
 import { IAddressCompomentProps } from './models';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';
-import { getEventHandlers, useAvailableConstantsData } from '@/index';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',

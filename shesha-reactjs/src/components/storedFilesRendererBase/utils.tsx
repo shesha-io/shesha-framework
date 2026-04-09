@@ -2,12 +2,13 @@ import React, { FC } from 'react';
 import { Button, Popover, Skeleton, Typography, UploadFile } from 'antd';
 import { HistoryOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
-import { ConfigurableForm, DateDisplay } from '@/components';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import { FormIdentifier } from '@/providers/form/models';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { buildUrl } from '@/utils/url';
 import { StoredFileModel } from '@/utils/storedFile/models';
+import { ConfigurableForm } from '../configurableForm';
+import DateDisplay from '../dateDisplay';
 
 export interface IFileVersionsButtonProps {
   fileId: string;

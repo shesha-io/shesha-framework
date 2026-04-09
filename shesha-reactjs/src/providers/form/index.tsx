@@ -12,7 +12,6 @@ import {
   ISetFormDataPayload,
 } from './contexts';
 import { FormMode, IFormActions, IFormSections, IFormSettings } from './models';
-import { isComponentFiltered } from '@/index';
 import { FormFlatMarkupProvider, useChildComponentIds, useChildComponents, useComponentModel, useFormMarkup } from './providers/formMarkupProvider';
 import { useFormDesignerOrUndefined } from '../formDesigner';
 import { IShaFormInstance } from './store/interfaces';
@@ -20,6 +19,7 @@ import { useShaFormActions } from './configurableActions';
 import { ConfigurableFormActionsProvider } from './actions';
 import { ConfigurableFormSectionsProvider } from './sections';
 import { throwError } from '@/utils/errors';
+import { isComponentFiltered } from './utils';
 
 type ShaFormCompoundedComponent = {
   useMarkup: typeof useFormMarkup;

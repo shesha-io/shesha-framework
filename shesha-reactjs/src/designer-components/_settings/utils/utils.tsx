@@ -1,7 +1,7 @@
 import { IContainerComponentProps } from '@/designer-components/container/interfaces';
 import React from 'react';
 import { IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from '@/interfaces';
-import { useStyles } from './styles/styles';
+import { useStyles } from '../styles/styles';
 
 /**
  * Checks if the provided data is an instance of IPropertySetting.
@@ -51,9 +51,11 @@ export const getValuesFromSettings = <T = unknown>(model: T): T => {
   return copy;
 };
 
-export const getPropertySettingsFromValue = (value: unknown): IPropertySetting => {
-  if (!isPropertySettings(value) || !value) return { _mode: 'value', _code: undefined, _value: value };
-  else return value;
+export const getPropertySettingsFromValue = <Value extends unknown>(value: Value | IPropertySetting<Value>): IPropertySetting<Value> => {
+  if (isPropertySettings(value))
+    return value as IPropertySetting<Value>;
+  else
+    return { _mode: 'value', _code: undefined, _value: value };
 };
 
 /**
@@ -71,15 +73,15 @@ export const updateSettingsComponents = (
     const componentRegistration = toolboxComponents[component.type];
 
     const newComponent: IConfigurableFormComponent = { ...component, jsSetting: false };
-    if ((componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true) {
+    if ((componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting) {
       const oldComponent: IConfigurableFormComponent = { ...newComponent };
 
       // If should be wrapped as Setting
       newComponent.type = 'setting';
       newComponent.id = oldComponent.id + '_setting';
 
-      // copy `exposedVariables`. NOTE: it's a temporary solution, will be removed later
-      if (oldComponent['exposedVariables']) newComponent['exposedVariables'] = oldComponent['exposedVariables'];
+      if (component.jsSetting === 'lazy') newComponent['lazy'] = true;
+      if (oldComponent['availableConstantsExpression']) newComponent['availableConstantsExpression'] = oldComponent['availableConstantsExpression'];
 
       // Add source component as a child of Setting component
       if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {
@@ -135,7 +137,9 @@ export const updateJsSettingsForComponents = (
     const componentRegistration = toolboxComponents[component.type];
     const newComponent: IConfigurableFormComponent = {
       ...component,
-      jsSetting: (componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true,
+      jsSetting: component.jsSetting === 'lazy'
+        ? 'lazy'
+        : (componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true,
     };
 
     // Check all child containers

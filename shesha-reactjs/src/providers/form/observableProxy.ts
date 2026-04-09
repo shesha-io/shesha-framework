@@ -25,7 +25,7 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
 
     this._touchedProps.add(propName);
     const getter = this._propAccessors.get(propName);
-    const propValue = getter();
+    const propValue = getter?.();
     return propValue;
   }
 

@@ -2,7 +2,7 @@ import { CodeOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useMemo } from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
@@ -12,7 +12,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IconType, ShaIcon } from '@/components';
+import { IconType, ShaIcon } from '@/components/shaIcon';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';

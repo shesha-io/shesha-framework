@@ -1,6 +1,7 @@
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { IStyleType } from '@/providers/form/models';
 import { MenuProps } from 'antd';
 import React from 'react';
-import { ButtonGroupItemProps, IStyleType } from '@/index';
 
 type MenuItem = MenuProps['items'][number];
 

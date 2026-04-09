@@ -1,4 +1,4 @@
-import { IInputStyles, IStyleType } from '@/index';
+import { IInputStyles, IStyleType } from '@/providers/form/models';
 import { ICheckboxComponentProps } from './interfaces';
 
 export const defaultStyles = (prev: ICheckboxComponentProps & IInputStyles): IStyleType => {

@@ -1,12 +1,13 @@
 import { Col, Row, Alert, Typography } from 'antd';
 import React, { FC } from 'react';
-import { CollapsiblePanel, SectionSeparator } from '@/components';
+import { CollapsiblePanel } from '@/components/panel';
+import { SectionSeparator } from '@/components/sectionSeparator';
 import AlertsExample from './alertsExamples';
 import FormExample from './form';
 import ThemeParameters from './parameters';
 import TextsExample from './textsExample';
 import { useStyles } from './styles/styles';
-import { IConfigurableTheme } from '@/index';
+import { IConfigurableTheme } from '@/providers/theme/contexts';
 
 export interface IConfigurableThemePageProps {
   value?: IConfigurableTheme;

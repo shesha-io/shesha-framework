@@ -1,5 +1,5 @@
 import React, { FC, useContext, useState } from 'react';
-import { CollapsiblePanel, ICollapsiblePanelProps } from '@/components';
+import { CollapsiblePanel, ICollapsiblePanelProps } from '@/components/panel';
 import { useSettingsForm } from './settingsForm';
 import { createNamedContext } from '@/utils/react';
 

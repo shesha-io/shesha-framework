@@ -7,7 +7,7 @@ import { camelcaseDotNotation } from '@/utils/string';
 import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
 import { useMetadata } from '@/providers/metadata';
 import DynamicContainer from './dynamicContainer';
-import { isConfigurableFormComponent } from '@/index';
+import { isConfigurableFormComponent } from '@/providers/form/models';
 
 export type DynamicViewProps = IConfigurableFormComponent;
 

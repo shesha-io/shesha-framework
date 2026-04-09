@@ -1,6 +1,6 @@
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { customOnClickEventHandler, getEventHandlers } from '@/components/formDesigner/components/utils';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles, useForm } from '@/providers';

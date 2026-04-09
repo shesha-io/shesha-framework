@@ -10,18 +10,15 @@ import { EventComponent } from './eventComponent';
 import { useCalendarLayers } from './hooks';
 import { getLayerOptions, getLayerEvents, isDateDisabled, getDayStyles } from './utils';
 import { useCalendarStyles } from './styles/styles';
-import {
-  evaluateString,
-  useActualContextExecution,
-  useAvailableConstantsData,
-  useConfigurableActionDispatcher,
-  useFormState,
-  useTheme,
-} from '@/index';
 import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { ICalendarEvent } from '@/providers/layersProvider/models';
-import { useCanvas } from '../../providers';
+import { evaluateString, useAvailableConstantsData } from '@/providers/form/utils';
+import { useActualContextExecution } from '@/hooks/formComponentHooks';
+import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { useTheme } from '@/providers/theme';
+import { useCanvas } from '@/providers/canvas';
+import { useFormState } from '@/providers/form';
 
 
 export const CalendarControl: FC<ICalendarProps> = (props) => {

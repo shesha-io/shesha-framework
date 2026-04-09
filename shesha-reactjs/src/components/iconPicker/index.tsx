@@ -1,7 +1,7 @@
 import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes, FILLED_ICON_GROUPS } from './iconNamesFilled';
-import ShaIcon from '@/components/shaIcon';
+import { ShaIcon } from '@/components/shaIcon';
 import { Button, Input, Radio, RadioChangeEvent, Modal } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';

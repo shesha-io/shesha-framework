@@ -7,9 +7,9 @@ import classNames from 'classnames';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
-import { DataTypes, useModelConfigurator } from '@/index';
-import { ArrayFormats } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { EntityInitFlags } from '@/apis/modelConfigurations';
+import { useModelConfigurator } from '@/providers/modelConfigurator';
 
 export interface IProps extends IModelItem {
   index: number[];

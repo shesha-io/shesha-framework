@@ -1,7 +1,6 @@
-import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { DataContextProvider, MetadataProvider, useDataContextManager, useShaFormInstance } from '@/providers';
-import { useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
+import { useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerMarkup, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo, useEffect } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
@@ -11,6 +10,8 @@ import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { IViewType } from '@/providers/canvas/contexts';
+import { SidebarContainer } from '@/components/sidebarContainer';
+import { ConfigurableFormRenderer } from '@/components/configurableForm/configurableFormRenderer';
 
 const rightSidebarProps = {
   title: () => <ComponentPropertiesTitle />,
@@ -23,10 +24,12 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const readOnly = useFormDesignerReadOnly();
   const formSettings = useFormDesignerSettings();
   const formMode = useFormDesignerFormMode();
-
   const shaForm = useShaFormInstance();
   const { antdForm: form } = shaForm;
   const { styles } = useStyles();
+
+  const showMarkup = false;
+  const markup = useFormDesignerMarkup();
 
   const noPageContext = !Boolean(useDataContextManager().getPageContext());
 
@@ -97,6 +100,8 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
                 </DataContextProvider>
               )}
             >
+
+              {showMarkup && <textarea readOnly value={JSON.stringify(markup, null, 2)} /> /* ToDo: AS - remove after inheritance implementation */}
               <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
                 {isDebug && (
                   <DebugPanel />

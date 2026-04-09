@@ -5,7 +5,7 @@ import { IConfigurableFormComponent } from '@/providers';
 import { ReactNode } from 'react';
 import { IFontValue } from '../_settings/utils/font/interfaces';
 
-export interface ILinkProps extends IConfigurableFormComponent {
+export interface ILinkComponentProps extends IConfigurableFormComponent {
   href?: string;
   content?: string;
   propertyName: string;
@@ -27,4 +27,4 @@ export type LinkCalculatedModel = {
   isDesignerMode: boolean | undefined;
 };
 
-export type LinkComponentDefinition = ComponentDefinition<"link", ILinkProps, LinkCalculatedModel>;
+export type LinkComponentDefinition = ComponentDefinition<"link", ILinkComponentProps, LinkCalculatedModel>;

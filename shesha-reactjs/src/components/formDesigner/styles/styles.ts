@@ -396,7 +396,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
 
             /* Hide drop hint in main canvas when background SVG is showing */
-            > div > .${shaDropHint} {
+            > .${shaComponentsContainer} > .${shaDropHint} {
                 display: none;
             }
         }

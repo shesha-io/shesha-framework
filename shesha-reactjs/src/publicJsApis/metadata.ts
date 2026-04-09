@@ -31,8 +31,9 @@ export interface IHasFilter {
 }
 
 export interface INumberFormatting {
-  showThousandsSeparator?: boolean;
+  thousandsSeparator?: string;
   customFormat?: string | null;
+  step?: string | null;
 }
 
 export interface IDecimalFormatting extends INumberFormatting {

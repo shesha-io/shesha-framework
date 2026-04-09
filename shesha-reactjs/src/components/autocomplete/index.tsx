@@ -1,4 +1,4 @@
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { DataTableProvider, useDataTableStoreOrUndefined, useNestedPropertyMetadatAccessor, useShaFormInstanceOrUndefined } from '@/providers';
@@ -367,11 +367,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       value={keys}
       className={styles.autocomplete}
       styles={{ popup: { root: restOfDropdownStyles } }}
-      showSearch={!props.disableSearch}
+      showSearch={props.disableSearch ? false : { filterOption: false, onSearch: handleSearch }}
       notFoundContent={props.notFoundContent}
       defaultActiveFirstOption={false}
-      filterOption={false}
-      onSearch={handleSearch}
       onChange={handleChange}
       allowClear={allowClear}
       loading={source?.isFetchingTableData || loadingValues}

@@ -1,5 +1,4 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
-export { default as ConfigurableLogo } from './configurableLogo';
 export { default as FileUpload, type IFileUploadProps } from './fileUpload';
 export { ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
 export { default as MultiCheckBoxRefList, type IMultiCheckBoxRefListProps } from './multiCheckBoxRefList';
@@ -14,7 +13,7 @@ export {
   ConfigurableFormComponent,
   type IConfigurableFormComponentProps,
 } from './formDesigner/configurableFormComponent';
-export { default as ConfigurableFormItem } from './formDesigner/components/formItem';
+export { ConfigurableFormItem } from './formDesigner/components/formItem';
 export { type IConfigurableFormItemProps } from './formDesigner/components/model';
 export { default as BooleanDropDown } from './booleanDropDown';
 export { SidebarContainer } from './sidebarContainer';
@@ -72,7 +71,7 @@ export { default as TablePager, type ITablePagerProps } from './tablePager';
 export { default as TablePaging, type ITablePagerBaseProps } from './tablePager/tablePaging';
 export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
-export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
+export { ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
 export { default as EmptyState, type IEmptyStateProps } from './emptyState';
 export {

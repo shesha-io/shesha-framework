@@ -8,6 +8,7 @@ import { useFormDesigner } from '@/providers/formDesigner';
 import { wrapDisplayName } from '@/utils/react';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
+import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponentBase;
@@ -26,21 +27,23 @@ const getDefaultFactory = (fbf: FormBuilderFactory, markup: FormMarkup | Setting
     ? markup({ fbf })
     : markup;
 
-  return wrapDisplayName(({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
+  return wrapDisplayName(({ readOnly, model, defaultConfig, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
     return (
-      <GenericSettingsForm
-        readOnly={readOnly}
-        model={model}
-        onSave={onSave}
-        onCancel={onCancel}
-        markup={evaluatedMarkup}
-        onValuesChange={onValuesChange}
-        toolboxComponent={toolboxComponent}
-        formRef={formRef}
-        propertyFilter={propertyFilter}
-        layoutSettings={layoutSettings}
-        isInModal={isInModal}
-      />
+      <DefaultModelProvider name="Basic component settings" model={model} defaultModel={defaultConfig}>
+        <GenericSettingsForm
+          readOnly={readOnly}
+          model={model}
+          onSave={onSave}
+          onCancel={onCancel}
+          markup={evaluatedMarkup}
+          onValuesChange={onValuesChange}
+          toolboxComponent={toolboxComponent}
+          formRef={formRef}
+          propertyFilter={propertyFilter}
+          layoutSettings={layoutSettings}
+          isInModal={isInModal}
+        />
+      </DefaultModelProvider>
     );
   }, "ComponentDefaultSettings");
 };
@@ -58,6 +61,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         ? getDefaultFactory(fbf, toolboxComponent.settingsFormMarkup, isInModal)
         : null;
   });
+
 
   const { autoSave, onSave, formRef, propertyFilter, layoutSettings } = props;
 

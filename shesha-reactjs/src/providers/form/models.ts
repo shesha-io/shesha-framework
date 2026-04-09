@@ -14,6 +14,7 @@ import { IShadowValue } from '@/designer-components/_settings/utils/shadow/inter
 import { isDefined } from '@/utils/nullables';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IActionExecutionContext } from '@/interfaces/configurableAction';
+import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -41,6 +42,7 @@ export interface IPropertySetting<Value = unknown> {
   _mode?: PropertySettingMode;
   _value?: Value;
   _code?: string;
+  _lazy?: boolean;
 }
 
 export type ValueOrCodeEvaluator<Value = unknown> = Value | IPropertySetting<Value>;
@@ -81,7 +83,7 @@ export interface IComponentValidationRules {
   validator?: string;
 }
 
-export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type EditMode = 'editable' | 'readOnly' | 'inherited' | 'default' | boolean;
 export type PositionType = 'relative' | 'fixed';
 export interface IStyleType {
   border?: IBorderValue | undefined;
@@ -201,6 +203,12 @@ export interface IComponentVisibilityProps {
   /** Hidden field is still a part of the form but not visible on it */
   hidden?: boolean | undefined;
 
+  /** Visible field contains only the value from the component settings (set explicitly or calculated),
+   * but does not reflect the actual visibility of the component.
+   * It may also depend on the permissions and/or state of the parent container/form
+   * Use `hidden` to get actual visible/hidden state of the component */
+  visible?: boolean | undefined;
+
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */
   customVisibility?: string | undefined;
@@ -260,8 +268,14 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   /** If true, indicates that component is rendered dynamically and some of rules (e.g. visibility) shouldn't be applied to this component */
   isDynamic?: boolean;
 
-  /** If true, indicates that component should be wrapped by SettingComponent and use JS customization  */
-  jsSetting?: boolean;
+  /** If true, indicates that component should be wrapped by SettingComponent and use JS customization.
+   *
+   * If 'lazy', indicates that component should be wrapped by SettingComponent, but will be calculated inside component rendering
+   */
+  jsSetting?: boolean | 'lazy';
+
+  /** Used for calculating available constants for the JS setting Code Editor */
+  availableConstantsExpression?: string | GetAvailableConstantsFunc;
 
   subscribedEventNames?: string[];
 

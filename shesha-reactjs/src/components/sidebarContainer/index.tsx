@@ -6,9 +6,12 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { SIDEBAR_COLLAPSE, useCanvas, useLocalStorage, useShaFormInstance } from '@/index';
 import { calculateAutoZoom, DEFAULT_OPTIONS, defaultDesignerWidth, usePinchZoom } from '@/providers/canvas/utils';
 import { IViewType } from '@/providers/canvas/contexts';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useCanvas } from '@/providers/canvas';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { SIDEBAR_COLLAPSE } from '../mainLayout/constant';
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
   rightSidebarProps?: ISidebarProps;

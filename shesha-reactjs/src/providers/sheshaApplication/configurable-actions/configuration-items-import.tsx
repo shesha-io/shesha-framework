@@ -12,7 +12,7 @@ import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { throwError } from '@/utils/errors';
 
 const actionsOwner = 'Configuration Items';

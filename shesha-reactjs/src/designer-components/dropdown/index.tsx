@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';

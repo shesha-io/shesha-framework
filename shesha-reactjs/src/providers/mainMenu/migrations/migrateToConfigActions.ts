@@ -10,7 +10,8 @@ import {
 import { ISideBarMenuProps } from '../../../components/configurableSidebarMenu/index';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { isDefined } from '@/utils/nullables';
-import { FormIdentifier, isFormFullName } from '@/index';
+import { FormIdentifier } from '@/providers/form/models';
+import { isFormFullName } from '@/providers/form/utils';
 
 const getActionConfiguration = (item: ISidebarMenuItemV0): IConfigurableActionConfiguration | undefined => {
   if (item.buttonAction === 'navigate') {

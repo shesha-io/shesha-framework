@@ -45,7 +45,7 @@ export const EntityDocumentDefinition: DocumentDefinition = {
   Toolbar: (_props: ItemEditorProps): ReactNode => {
     return (
       <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space direction="horizontal" size={5}>
+        <Space orientation="horizontal" size={5}>
           <EntityToolbar />
         </Space>
       </div>

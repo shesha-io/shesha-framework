@@ -1,4 +1,4 @@
-import { LabelValueEditor } from '@/components';
+import { LabelValueEditor } from '@/components/labelValueEditor/labelValueEditor';
 import { defaultExposedVariables } from '@/designer-components/_settings/settingsControl';
 import { ILabelValueEditorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import React from 'react';

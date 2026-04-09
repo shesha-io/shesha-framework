@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { getFiltersSettingsForm } from './filterItemSettings';
 import { useFormViaFactory } from '@/form-factory/hooks';
 import { IStoredFilter } from '@/interfaces';

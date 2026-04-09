@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { IconType } from '@/components';
+import { IconType } from '@/components/shaIcon';
 import { IEventHandlers } from '@/components/formDesigner/components/utils';
 import { ComponentDefinition } from '@/interfaces';
 

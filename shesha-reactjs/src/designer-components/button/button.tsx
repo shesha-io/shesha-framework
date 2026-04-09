@@ -100,6 +100,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonGroupItemBaseV0>(0, (prev) => {
         const buttonModel: IButtonGroupItemBaseV0 = {
           ...prev,
+          size: prev.size as IButtonGroupItemBaseV0['size'],
           hidden: prev.hidden,
           label: prev.label ?? 'Submit',
           sortOrder: 0,

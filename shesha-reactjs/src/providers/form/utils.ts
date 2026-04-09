@@ -1,9 +1,4 @@
-import { Rule, RuleObject } from 'antd/lib/form';
-import Schema, { Rules, ValidateSource } from 'async-validator';
-import camelcase from 'camelcase';
-import Mustache from 'mustache';
-import { nanoid } from '@/utils/uuid';
-import { CSSProperties, useRef } from 'react';
+import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
 import {
   IToolboxComponent,
   IToolboxComponentGroup,
@@ -12,40 +7,6 @@ import {
   SettingsMigrationContext,
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { Migrator } from '@/utils/fluentMigrator/migrator';
-import { getFullPath } from '@/utils/metadata/helpers';
-import { IAnyObject } from './../../interfaces/anyObject';
-import {
-  ActionParametersDictionary,
-  DEFAULT_FORM_SETTINGS,
-  FormFullName,
-  FormIdentifier,
-  FormMarkup,
-  FormMarkupWithSettings,
-  FormUid,
-  IComponentsContainer,
-  IConfigurableFormComponent,
-  IFlatComponentsStructure,
-  IFormSettings,
-  IFormValidationRulesOptions,
-  EditMode,
-  ROOT_COMPONENT_KEY,
-  FormRawMarkup,
-} from './models';
-import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
-import {
-  IDataContextManagerActionsContext,
-  IDataContextManagerFullInstance,
-  IDataContextsData,
-  RootContexts,
-  useDataContextManagerActionsOrUndefined,
-  useDataContextManagerOrUndefined,
-} from '@/providers/dataContextManager';
-import moment from 'moment';
-import FileSaver from 'file-saver';
-import { App } from 'antd';
-import { ISelectionProps } from '@/providers/dataTable/interfaces';
-import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import {
   FormMode,
   HttpClientApi,
@@ -59,45 +20,83 @@ import {
   useDataTableStateOrUndefined,
   useGlobalState,
   useHttpClient,
+  useMetadataDispatcher,
 } from '@/providers';
-import { MessageInstance } from 'antd/es/message/interface';
-import { executeFunction } from '@/utils';
-import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
-import { SheshaCommonContexts } from '../dataContextManager/models';
-import { IFormApi } from './formApi';
-import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
-import { ISetStatePayload } from '../globalState/contexts';
-import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from './providers/shaFormProvider';
-import { QueryStringParams } from '@/utils/url';
-import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
-import { jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { getActualModel, getActualPropertyValue } from './utils/js-settings';
 import {
-  executeScriptSync,
+  IDataContextManagerActionsContext,
+  IDataContextManagerFullInstance,
+  IDataContextsData,
+  RootContexts,
+  useDataContextManagerActionsOrUndefined,
+  useDataContextManagerOrUndefined,
+} from '@/providers/dataContextManager';
+import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
+import { ISelectionProps } from '@/providers/dataTable/interfaces';
+import { executeFunction } from '@/utils';
+import { Migrator } from '@/utils/fluentMigrator/migrator';
+import { ExpressionNodeValue } from '@/utils/jsonLogic';
+import { getFullPath } from '@/utils/metadata/helpers';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { deepCopyViaJson, deepMergeValues, jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
+import { QueryStringParams } from '@/utils/url';
+import { nanoid } from '@/utils/uuid';
+import { App } from 'antd';
+import { MessageInstance } from 'antd/es/message/interface';
+import { Rule, RuleObject } from 'antd/lib/form';
+import Schema, { Rules, ValidateSource } from 'async-validator';
+import camelcase from 'camelcase';
+import FileSaver from 'file-saver';
+import moment from 'moment';
+import Mustache from 'mustache';
+import { CSSProperties, useRef } from 'react';
+import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
+import { SheshaCommonContexts } from '../dataContextManager/models';
+import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
+import { ISetStatePayload } from '../globalState/contexts';
+import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
+import { IAnyObject } from './../../interfaces/anyObject';
+import { IFormApi } from './formApi';
+import {
+  ActionParametersDictionary,
+  DEFAULT_FORM_SETTINGS,
+  EditMode,
+  FormFullName,
+  FormIdentifier,
+  FormMarkup,
+  FormMarkupWithSettings,
+  FormRawMarkup,
+  FormUid,
+  IComponentsContainer,
+  IConfigurableFormComponent,
+  IFlatComponentsStructure,
+  IFormSettings,
+  IFormValidationRulesOptions,
+  ROOT_COMPONENT_KEY,
+} from './models';
+import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
+import { useShaFormDataUpdate, useShaFormInstanceOrUndefined } from './providers/shaFormProvider';
+import { IShaFormInstance } from './store/interfaces';
+import { isHasDataGetter } from './touchableProperty';
+import { getActualModel, getActualPropertyValue } from './utils/js-settings';
+import { findToolboxComponent, getToolboxComponent } from './utils/markup';
+import {
   executeExpression,
+  executeScript,
+  executeScriptSync,
   FunctionExecutor,
   getFunctionExecutor,
-  executeScript,
   IExpressionExecuterArguments,
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
-import { findToolboxComponent, getToolboxComponent } from './utils/markup';
-import { ExpressionNodeValue } from '@/utils/jsonLogic';
-import { isHasDataGetter } from './touchableProperty';
-import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
+import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 
 export {
-  // prop settings
-  getActualModel,
-  getActualPropertyValue,
+  executeExpression, executeScript,
   // scripts
   executeScriptSync,
-  executeExpression,
-  getFunctionExecutor,
-  executeScript,
-  type FunctionExecutor,
+  // prop settings
+  getActualModel,
+  getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
   type IExpressionExecuterArguments,
   type IExpressionExecuterFailedHandler,
 };
@@ -108,6 +107,7 @@ type MomentType = typeof moment;
 export interface IApplicationContext<Value extends object = object> {
   application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
+  metadataDispatcher?: IMetadataDispatcher;
   /** Form data */
   data?: Value | undefined;
 
@@ -151,6 +151,8 @@ export interface IApplicationContext<Value extends object = object> {
   test?: { getArguments: (args: Array<object> | object) => unknown[] };
 }
 
+export const isApplicationContext = (obj: object): obj is IApplicationContext => Boolean(obj) && 'data' in obj && 'contexts' in obj && 'application' in obj && 'form' in obj;
+
 export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
   topContextId?: string;
   shaForm?: IShaFormInstance<TValues>;
@@ -161,6 +163,7 @@ export type AvailableConstantsContext = {
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
   dcm: IDataContextManagerActionsContext | undefined;
+  metadataDispatcher: IMetadataDispatcher | undefined;
   closestContextId: string | undefined;
   globalState: IAnyObject | undefined;
   setGlobalState: (payload: ISetStatePayload) => void;
@@ -183,13 +186,13 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const closestContextId = useDataContextOrUndefined()?.id;
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
-
   const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
     closestShaFormApi: undefined,
     selectedRow,
     dcm: undefined,
+    metadataDispatcher: undefined,
     closestContextId,
     globalState,
     setGlobalState,
@@ -205,10 +208,12 @@ export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsCont
   const dcm = useDataContextManagerActionsOrUndefined();
 
   const parent = useParentOrUndefined();
+  const metadataDispatcher = useMetadataDispatcher();
   const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   baseContext.closestShaFormApi = closestShaFormApi;
   baseContext.dcm = dcm;
+  baseContext.metadataDispatcher = metadataDispatcher;
   return baseContext;
 };
 
@@ -216,6 +221,9 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const baseContext = useBaseAvailableConstantsContexts();
   // get DataContext Manager
   const dcm = useDataContextManagerOrUndefined();
+
+  const metadataDispatcher = useMetadataDispatcher();
+
   useShaFormDataUpdate();
 
   const parent = useParentOrUndefined();
@@ -223,6 +231,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   baseContext.closestShaFormApi = closestShaFormApi;
   baseContext.dcm = dcm;
+  baseContext.metadataDispatcher = metadataDispatcher;
   return baseContext;
 };
 
@@ -263,6 +272,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     setGlobalState,
     httpClient,
     message,
+    metadataDispatcher,
   } = fullContext;
   const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
@@ -273,6 +283,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
       const applicationData = application?.getData();
       return applicationData as IApplicationApi;
     },
+    metadataDispatcher: () => metadataDispatcher,
     contexts: () => {
       const tcId = topContextId || closestContextId;
       return isDefined(dcm)
@@ -313,7 +324,7 @@ const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, a
   else
     contextProxyRef.current.refreshAccessors(accessors);
 
-  contextProxyRef.current.setAdditionalData(additionalData);
+  contextProxyRef.current.setAdditionalData(additionalData ?? {});
 
   return contextProxyRef.current;
 };
@@ -526,28 +537,29 @@ export const componentsFlatStructureToTree = (
     if (!componentIds) return;
 
     const ownerComponent = flat.allComponents[ownerId];
-    if (!ownerComponent)
-      throw new Error('Owner component not found');
 
-    const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
-      ? toolboxComponents[ownerComponent.type]
-      : undefined;
     const staticContainerIds: string[] = [];
-    if (ownerDefinition?.customContainerNames) {
-      ownerDefinition.customContainerNames.forEach((sc) => {
-        const subContainer = unsafeGetValueByPropertyName(ownerComponent, sc);
-        if (subContainer) {
+    if (ownerComponent) {
+      const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
+        ? toolboxComponents[ownerComponent.type]
+        : undefined;
+
+      if (isDefined(ownerDefinition) && ownerDefinition.customContainerNames) {
+        ownerDefinition.customContainerNames.forEach((sc) => {
+          const subContainer = unsafeGetValueByPropertyName(ownerComponent, sc);
+          if (subContainer) {
           // container with id
-          if (isObjectWithStringId(subContainer))
-            staticContainerIds.push(subContainer.id);
+            if (isObjectWithStringId(subContainer))
+              staticContainerIds.push(subContainer.id);
             // container without id (array of components)
-          if (Array.isArray(subContainer))
-            subContainer.forEach((c) => {
-              if (isObjectWithStringId(c))
-                staticContainerIds.push(c.id);
-            });
-        }
-      });
+            if (Array.isArray(subContainer))
+              subContainer.forEach((c) => {
+                if (isObjectWithStringId(c))
+                  staticContainerIds.push(c.id);
+              });
+          }
+        });
+      }
     }
 
     // iterate all component ids on the current level
@@ -1099,6 +1111,45 @@ export function linkComponentToModelMetadata<TModel extends IConfigurableFormCom
   return mappedModel;
 }
 
+export function getComponentModelFromMetadata<TModel extends IConfigurableFormComponent>(
+  component: IToolboxComponent<TModel>,
+  model: TModel,
+  metadata: IPropertyMetadata,
+): TModel {
+  // make copy of component model but with undefined values
+  let m = deepCopyViaJson(model) as Record<string, unknown>;
+  for (const key in m)
+    if (Object.hasOwn(m, key))
+      m[key] = undefined;
+
+  // apply metadata
+  m = linkComponentToModelMetadata(component, m as TModel, metadata) as Record<string, unknown>;
+
+  // remove fields with undefined values
+  for (const key in m)
+    if (Object.hasOwn(m, key))
+      if (m[key] === undefined)
+        delete m[key];
+
+  return m as TModel;
+};
+
+export function updateComponentModelFromMetadata<TModel extends IConfigurableFormComponent>(
+  component: IToolboxComponent<TModel>,
+  model: TModel,
+  metadata: IPropertyMetadata,
+): TModel {
+  const mm = getComponentModelFromMetadata(component, model, metadata);
+  const m = deepMergeValues(deepCopyViaJson(model), mm, (t: Record<string, unknown>, s: Record<string, unknown>, key) => {
+    // skip merge
+    // metadata value is empty
+    return s[key] === undefined ||
+      // model value is a non-empty primitive (non-object values are not merged if already set)
+      (t[key] !== undefined && t[key] !== null && t[key] !== '' && typeof t[key] !== 'object');
+  });
+  return m;
+};
+
 export type ProcessingFunc = (child: IConfigurableFormComponent, parentId: string) => void;
 
 export const processRecursive = (
@@ -1201,10 +1252,9 @@ export const createComponentModelForDataProperty = (
     type: toolboxComponent.type,
     propertyName: fullName,
     componentName: fullName,
-    label: propertyMetadata.label,
     labelAlign: 'right',
     // parentId: containerId,
-    hidden: false,
+    visible: true,
     isDynamic: false,
     validate: {},
   };
@@ -1212,7 +1262,8 @@ export const createComponentModelForDataProperty = (
 
   if (toolboxComponent.migrator && migrator) componentModel = migrator(componentModel, toolboxComponent);
 
-  componentModel = linkComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
+  if (!toolboxComponent.allowInherit)
+    componentModel = linkComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 
   return componentModel;
 };

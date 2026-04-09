@@ -12,12 +12,10 @@ import { ITableComponentProps } from './models';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
-import {
-  SidebarContainer,
-  DataTable,
-  DatatableAdvancedFilter,
-  DatatableColumnsSelector,
-} from '@/components';
+import { SidebarContainer } from '@/components/sidebarContainer';
+import { DataTable } from '@/components/dataTable';
+import { DatatableAdvancedFilter } from '@/components/dataTable/advancedFilter';
+import { DatatableColumnsSelector } from '@/components/dataTable/columnsSelector';
 import {
   useDataTableStore,
   useForm,

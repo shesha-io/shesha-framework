@@ -1,4 +1,3 @@
-import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, useDataContextManagerActionsOrUndefined, useDataTableStore, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { getTableDefaults } from '@/designer-components/dataTable/table/utils';
 import React, { useEffect, useState } from 'react';
@@ -12,6 +11,16 @@ import { isEmpty } from 'lodash';
 import { hasDynamicFilter } from '@/providers/dataTable/utils';
 import { SheshaError } from '@/utils/errors';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useDataTableStore } from '@/providers/dataTable/hooks';
+import { useGlobalState } from '@/providers/globalState';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
+import { useModal } from '@/providers/dynamicModal';
+import { useNestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher';
+import { IAnyObject } from '@/interfaces/anyObject';
+import GlobalTableFilter from '../globalTableFilter';
+import TablePager from '../tablePager';
+import { DataTable } from '../dataTable';
+import DataTableProvider from '@/providers/dataTable';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 

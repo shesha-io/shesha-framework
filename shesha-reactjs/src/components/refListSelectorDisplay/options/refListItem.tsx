@@ -6,7 +6,7 @@ import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 import { IRefListItemFormModel } from '../provider/models';
 import { useRefListItemGroupConfigurator } from '../provider';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 
 export interface IRefListGroupItemProps extends IRefListItemFormModel {
   index: number[];

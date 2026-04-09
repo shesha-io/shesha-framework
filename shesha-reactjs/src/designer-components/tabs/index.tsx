@@ -1,6 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import React, { Fragment, useState, useEffect } from 'react';
-import ShaIcon from '@/components/shaIcon';
+import { ShaIcon } from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
@@ -32,6 +32,8 @@ const TabsComponent: TabsComponentDefinition = {
     const [activeKey, setActiveKey] = useState<string>(model.defaultActiveKey || (model.tabs?.length && model.tabs[0]?.key));
 
     const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor } = model;
+
+    const tabPlacement = tabPosition === 'left' ? 'start' : tabPosition === 'right' ? 'end' : tabPosition;
 
     useEffect(() => {
       if (defaultActiveKey) {
@@ -110,7 +112,7 @@ const TabsComponent: TabsComponentDefinition = {
         onChange={setActiveKey}
         size={size}
         type={tabType}
-        tabPosition={tabPosition}
+        tabPlacement={tabPlacement}
         items={items}
         className={styles.content}
       />

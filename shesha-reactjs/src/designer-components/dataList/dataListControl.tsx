@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { DataList } from '@/components/dataList';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
 import { IDataListWithDataSourceProps } from './model';
 import { useConfigurableAction, useConfigurableActionDispatcher, useForm } from '@/providers';
@@ -9,7 +9,7 @@ import { useStyles } from '@/components/dataList/styles/styles';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
-import { EmptyState } from '@/components';
+import EmptyState from '@/components/emptyState';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { parseFetchError } from '@/designer-components/dataTable/utils';
