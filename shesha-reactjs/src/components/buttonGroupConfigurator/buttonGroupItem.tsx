@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { Button, Flex, Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration, useDynamicActionsDispatcher } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import classNames from 'classnames';

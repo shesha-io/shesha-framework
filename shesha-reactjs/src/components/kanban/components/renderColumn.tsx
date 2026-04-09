@@ -1,6 +1,5 @@
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
-import { ConfigurableForm, ShaIcon, useAvailableConstantsData, useConfigurableActionDispatcher } from '@/index';
 import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { LeftOutlined, MoreOutlined, PlusOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Flex, MenuProps, Popconfirm } from 'antd';
@@ -8,6 +7,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { useStyles } from '../styles/styles';
 import { useKanbanActions } from '../utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
+import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { ShaIcon } from '@/components/shaIcon';
+import { ConfigurableForm } from '@/components/configurableForm';
 
 interface KanbanColumnProps {
   column: any;

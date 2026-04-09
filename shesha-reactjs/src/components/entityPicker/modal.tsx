@@ -1,5 +1,5 @@
-import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, useDataContextManagerActionsOrUndefined, useDataTable, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
 import { evaluateDynamicFilters } from '@/utils/datatable';
+import { getTableDefaults } from '@/designer-components/dataTable/table/utils';
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
@@ -11,6 +11,16 @@ import { isEmpty } from 'lodash';
 import { hasDynamicFilter } from '@/providers/dataTable/utils';
 import { SheshaError } from '@/utils/errors';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useDataTableStore } from '@/providers/dataTable/hooks';
+import { useGlobalState } from '@/providers/globalState';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
+import { useModal } from '@/providers/dynamicModal';
+import { useNestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher';
+import { IAnyObject } from '@/interfaces/anyObject';
+import GlobalTableFilter from '../globalTableFilter';
+import TablePager from '../tablePager';
+import { DataTable } from '../dataTable';
+import DataTableProvider from '@/providers/dataTable';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 
@@ -51,7 +61,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
     selectedStoredFilterIds,
     registerConfigurableColumns,
     setPredefinedFilters,
-  } = useDataTable();
+  } = useDataTableStore();
 
   // ToDo: AS - need to optimize
   useShaFormDataUpdate();
@@ -70,7 +80,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
 
   const isMultiple = mode === 'multiple';
 
-  const onDblClick = (row: IAnyObject): void => {
+  const onDblClick = (row: { id: string }): void => {
     if (!row) return;
     if (onSelect) {
       onSelect(row);
@@ -109,7 +119,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
 
   const hasFilters = filters?.length > 0;
 
-  const foundDynamicFilter = hasDynamicFilter(filters);
+  const foundDynamicFilter = filters && hasDynamicFilter(filters);
 
   const hasFormData = !isEmpty(formData);
   const hasGlobalState = !isEmpty(formData);
@@ -230,7 +240,18 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
           <TablePager />
         </div>
 
-        <DataTable onSelectRow={onSelectRow} onDblClick={onDblClick} options={{ omitClick: true }} />
+        <DataTable
+          onSelectRow={onSelectRow}
+          onDblClick={onDblClick}
+          options={{ omitClick: true }}
+          striped
+          rowDividers
+          rowAlternateBackgroundColor={getTableDefaults().rowAlternateBackgroundColor}
+          headerBackgroundColor="#ffffff"
+          headerFontSize={getTableDefaults().headerFontSize}
+          headerFontWeight={getTableDefaults().headerFontWeight}
+          headerFontFamily={getTableDefaults().headerFontFamily}
+        />
       </>
     </Modal>
   );

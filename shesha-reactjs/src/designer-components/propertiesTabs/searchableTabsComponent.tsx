@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Tabs, Input, Empty } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
-import { ComponentsContainer } from '@/components';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { IPropertiesTabsComponentProps } from './models';
-import { useFormState, useFormActions } from '@/providers/form';
+import { useFormStateOrUndefined, useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 interface SearchableTabsProps {
@@ -20,8 +20,8 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const searchRefs = useRef(new Map());
   const { styles } = useStyles();
 
-  const formState = useFormState(false);
-  const formActions = useFormActions(false);
+  const formState = useFormStateOrUndefined();
+  const formActions = useFormActionsOrUndefined();
 
   useShaFormDataUpdate();
 
@@ -69,9 +69,9 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     }
   }, [activeTabKey]);
 
-  const handleTabChange = (newActiveKey: string): void => {
+  const handleTabChange = useCallback((newActiveKey: string): void => {
     setActiveTabKey(newActiveKey);
-  };
+  }, [setActiveTabKey]);
 
   // Focus search input when search query changes and we have matching results
   useEffect(() => {
@@ -108,7 +108,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     }
   };
 
-  const newFilteredTabs = tabs
+  const newFilteredTabs = useMemo(() => (tabs
     .map((tab: any, index: number) => {
       const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery);
 
@@ -130,7 +130,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         children: visibleComponents.length === 0
           ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
           : (
-            <ParentProvider model={model}>
+            <ParentProvider
+              name={`SearchableTab-${tabKey}`}
+              model={model}
+            >
               {renderSearchInput({
                 ref: (el) => {
                   if (el) {
@@ -151,7 +154,8 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         hidden: tab.hidden || !hasVisibleComponents,
       };
     })
-    .filter((tab) => !tab.hidden);
+    .filter((tab) => !tab.hidden)
+  ), [model, searchQuery, tabs]);
 
   // Auto-switch to the first tab that has visible components when searching
   useEffect(() => {
@@ -172,6 +176,20 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     }
   }, [newFilteredTabs, activeTabKey]);
 
+  const tabPlacement = model.position === 'left' ? 'start' : model.position === 'right' ? 'end' : model.position;
+
+  const localTabs = useMemo(() => (
+    <Tabs
+      key="searchable-tabs"
+      activeKey={activeTabKey}
+      onChange={handleTabChange}
+      size={model.size}
+      type={model.tabType || 'card'}
+      tabPlacement={tabPlacement || 'top'}
+      items={newFilteredTabs}
+      className={styles.content}
+    />
+  ), [activeTabKey, handleTabChange, model.size, model.tabType, newFilteredTabs, styles.content, tabPlacement]);
 
   return (
     <>
@@ -181,17 +199,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         })}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
-        : (
-          <Tabs
-            activeKey={activeTabKey}
-            onChange={handleTabChange}
-            size={model.size}
-            type={model.tabType || 'card'}
-            tabPosition={model.position || 'top'}
-            items={newFilteredTabs}
-            className={styles.content}
-          />
-        )}
+        : localTabs}
     </>
   );
 };

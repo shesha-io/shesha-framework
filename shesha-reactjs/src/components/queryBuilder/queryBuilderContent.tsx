@@ -79,7 +79,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
       const normalizedTree = QbUtils.loadTree(normalizeTreeForJsonLogic(QbUtils.getTree(_tree) as unknown as IPlainTreeNode) as unknown as JsonTree);
       const jsonLogicResult = QbUtils.jsonLogicFormat(normalizedTree, _config);
 
-      lastLocallyChangedValue.current = jsonLogicResult.logic;
+      lastLocallyChangedValue.current = jsonLogicResult;
       onChange(jsonLogicResult);
     }
   };

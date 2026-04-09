@@ -1,7 +1,7 @@
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { DataTableProvider, useDataTableStore, useNestedPropertyMetadatAccessor, useShaFormInstanceOrUndefined } from '@/providers';
+import { DataTableProvider, useDataTableStoreOrUndefined, useNestedPropertyMetadatAccessor, useShaFormInstanceOrUndefined } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { isDataColumn } from '@/providers/dataTable/interfaces';
 import { evaluateString } from '@/providers/form/utils';
@@ -29,7 +29,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const { styles } = useStyles({ style });
 
   // sources
-  const source = useDataTableStore(false);
+  const source = useDataTableStoreOrUndefined();
   const allData = {};// useAvailableConstantsData();
   const selectRef = useRef(null);
 
@@ -83,8 +83,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // reset loading state on error
   useEffect(() => {
-    setLoadingValues(false);
-  }, [source.error]);
+    if (source?.hasFetchTableDataError)
+      setLoadingValues(false);
+  }, [source?.hasFetchTableDataError]);
 
   // Complete loading when data source finishes loading (success or failure)
   useEffect(() => {
@@ -140,7 +141,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           // Check if the source is ready for filtering
           if (source.setPredefinedFilters) {
             try {
-              source.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
+              source.setPredefinedFilters([{
+                id: 'selectedFilter',
+                name: 'selectedFilter',
+                expression: selectedFilter,
+                sortOrder: 0,
+              }]);
             } catch (error) {
               console.error('Failed to set predefined filters:', error);
               setLoadingValues(false);
@@ -177,7 +183,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         ? selected.current.map((s) => outcomeValueFunc(s, allData))
         : undefined;
       const selectedFilter = selectedValue ? filterNotKeysFunc(selectedValue) : null;
-      source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
+      source?.setPredefinedFilters([{
+        id: 'selectedFilter',
+        name: 'selectedFilter',
+        expression: selectedFilter,
+        sortOrder: 0,
+      }]);
       source?.performQuickSearch('');
     }
   }, [open]);
@@ -223,7 +234,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     const selectedFilter = selectedValue && (!Array.isArray(selectedValue) || selectedValue.length)
       ? filterNotKeysFunc(selectedValue)
       : null;
-    source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
+    source?.setPredefinedFilters([{
+      id: 'selectedFilter',
+      name: 'selectedFilter',
+      expression: selectedFilter,
+      sortOrder: 0,
+    }]);
     debouncedSearch('');
 
     if (!Boolean(props.onChange))
@@ -334,7 +350,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       <ReadOnlyDisplayFormItem
         value={readonlyValue}
         type={props.mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
-        disabled={props.readOnly}
         style={style}
         quickviewEnabled={props.quickviewEnabled}
         quickviewFormPath={props.quickviewFormPath}
@@ -355,14 +370,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       value={keys}
       className={styles.autocomplete}
       styles={{ popup: { root: restOfDropdownStyles } }}
-      showSearch={!props.disableSearch}
+      showSearch={props.disableSearch ? false : { filterOption: false, onSearch: handleSearch }}
       notFoundContent={props.notFoundContent}
       defaultActiveFirstOption={false}
-      filterOption={false}
-      onSearch={handleSearch}
       onChange={handleChange}
       allowClear={allowClear}
-      loading={source?.isInProgress?.fetchTableData || loadingValues}
+      loading={source?.isFetchingTableData || loadingValues}
       placeholder={props.placeholder}
       disabled={props.readOnly}
       onSelect={handleSelect}

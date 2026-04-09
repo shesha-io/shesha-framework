@@ -2,9 +2,9 @@ import { IFormLifecycleSettings, IFormSettings } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
 import { GqlLoaderSettings } from "@/providers/form/loaders/interfaces";
 import { GqlSubmitterSettings } from "@/providers/form/submitters/interfaces";
-import { convertFormMarkupToFlatStructure } from "@/index";
 import { IFormMigrationContext } from "./models";
 import { setValueByPropertyName } from "@/utils/object";
+import { convertFormMarkupToFlatStructure } from "@/providers/form/utils";
 
 const getPrepareSubmitData = (preparedValues: string): string => {
   const normalizedPreparedValues = (preparedValues ?? "").trim();

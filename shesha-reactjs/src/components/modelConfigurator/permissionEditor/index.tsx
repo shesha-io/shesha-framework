@@ -26,7 +26,7 @@ const PermissionEditor: FC<IPermissionEditorProps> = (props) => {
       onValuesChange={(v) => {
         const d = { ...props?.value, ...v };
         if (!isEqual(props?.value, d)) {
-          props?.onChange(d);
+          props.onChange(d);
         }
       }}
     />

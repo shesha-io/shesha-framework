@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';

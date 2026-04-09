@@ -1,16 +1,15 @@
 import { MessageInstance } from 'antd/es/message/interface';
 import { DOMAttributes, FocusEvent } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
-import { IGooglePlacesAutocompleteProps } from '@/components';
 import { ISetStatePayload } from '@/providers/globalState/contexts';
-import { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
+import { IAddressAndCoords, IGooglePlacesAutocompleteProps } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
 import { IFormApi } from '@/providers/form/formApi';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
-import { IApplicationContext, executeScriptSync } from '@/index';
 import { ObservableProxy } from '@/providers/form/observableProxy';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { TouchableProxy } from '@/providers/form/touchableProxy';
+import { executeScriptSync, IApplicationContext } from '@/providers/form/utils';
 
 export interface ICustomEventHandler {
   model: IConfigurableFormComponent;
@@ -51,7 +50,7 @@ export interface IEventHandlers<T = any> extends Pick<DOMAttributes<T>, 'onBlur'
 /** @deprecated use getAllEventHandlers instead */
 export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): EventHandlerAttributes<T> => {
   const onCustomEvent = (event: any, key: string): void => {
-    const expression = model?.[key];
+    const expression = model[key];
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { event, value: event?.currentTarget.value }));
     }
@@ -67,14 +66,14 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
 
 export const getAllEventHandlers = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers<T> => {
   const onCustomEvent = (event: any, key: string): void => {
-    const expression = model?.[key];
+    const expression = model[key];
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { event, value: event?.currentTarget.value }));
     }
   };
 
   const onChange = (values: object, event: any): void => {
-    const expression = model?.onChangeCustom;
+    const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { event, ...values }));
     }
@@ -93,7 +92,7 @@ export const customDateEventHandler = (
   context: IApplicationContext,
 ): IEventHandlers => ({
   onChange: (value: any | null, dateString: string | [string, string]) => {
-    const expression = model?.onChangeCustom;
+    const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
@@ -103,7 +102,7 @@ export const customDateEventHandler = (
   },
 
   onFocus: (event: FocusEvent<HTMLInputElement>) => {
-    const expression = model?.onFocusCustom;
+    const expression = model.onFocusCustom;
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
@@ -113,7 +112,7 @@ export const customDateEventHandler = (
   },
 
   onBlur: (event: FocusEvent<HTMLInputElement>) => {
-    const expression = model?.onBlurCustom;
+    const expression = model.onBlurCustom;
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
@@ -125,7 +124,7 @@ export const customDateEventHandler = (
 
 export const customTimeEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
   onChange: (value: any | null, timeString: string | [string, string]) => {
-    const expression = model?.onChangeCustom;
+    const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { timeString, value }));
     }
@@ -134,7 +133,7 @@ export const customTimeEventHandler = (model: IConfigurableFormComponent, contex
 
 export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
   onChange: (value: CustomLabeledValue<T>, option: any) => {
-    const expression = model?.onChangeCustom;
+    const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { option, value }));
     }
@@ -143,7 +142,7 @@ export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComp
 
 export const customOnChangeValueEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
   onChange: (value: any) => {
-    const expression = model?.onChangeCustom;
+    const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { value }));
     }
@@ -154,7 +153,7 @@ export const customOnClickEventHandler = (model: IConfigurableFormComponent, con
   onClick: (value: any) => {
     if (typeof clickEvent === 'function')
       clickEvent(value);
-    const expression = model?.onClickCustom;
+    const expression = model.onClickCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { value }));
     }
@@ -170,7 +169,7 @@ export const customAddressEventHandler = (
 ): IGooglePlacesAutocompleteProps => {
   const onChange = (e: string): void => {
     onChangeCustom(e);
-    const expression = model?.onChangeCustom;
+    const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { event: e, value: e }));
     }
@@ -178,7 +177,7 @@ export const customAddressEventHandler = (
 
   const onFocus = (e: string): void => {
     onFocusCustom(e);
-    const expression = model?.onFocusCustom;
+    const expression = model.onFocusCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { event: e, value: e }));
     }
@@ -186,7 +185,7 @@ export const customAddressEventHandler = (
 
   const onGeocodeChange = (event: IAddressAndCoords): Promise<void> =>
     onSelectCustom(event).then((payload) => {
-      const expression = model?.onSelectCustom;
+      const expression = model.onSelectCustom;
       if (Boolean(expression)) {
         // Ensure lat/lng are preserved from event in case they were lost
         const addressData = {

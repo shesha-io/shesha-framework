@@ -30,7 +30,7 @@ const getDefaultFactory = (
   readOnly: boolean,
 ): IConfigurableActionArgumentsFormFactory => {
   const { argumentsFormMarkup: markup } = action;
-  return wrapDisplayName(({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
+  return wrapDisplayName(({ model, onSave, onCancel, onValuesChange, availableConstants }) => {
     const markupFactory = typeof markup === 'function'
       ? (markup as FormMarkupFactory)
       : () => markup as FormMarkup;
@@ -38,7 +38,7 @@ const getDefaultFactory = (
       ? `${action.ownerUid}-${action.name}-args`
       : undefined;
 
-    const formMarkup = markupFactory({ fbf, exposedVariables, availableConstants });
+    const formMarkup = markupFactory({ fbf, availableConstants });
     return (
       <GenericArgumentsEditor
         model={model}
@@ -58,7 +58,6 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   value,
   onChange,
   readOnly = false,
-  exposedVariables,
   availableConstants,
 }) => {
   const { styles } = useStyles();
@@ -92,7 +91,6 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
         onCancel,
         onValuesChange,
         readOnly,
-        exposedVariables,
         availableConstants,
       })
       : null;

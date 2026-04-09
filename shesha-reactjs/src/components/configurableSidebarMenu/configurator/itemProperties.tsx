@@ -7,10 +7,10 @@ import { useDebouncedCallback } from 'use-debounce';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
-import { ConfigurableForm } from '@/components';
 import { getGroupSettings } from './groupSettings';
 import { getItemSettings } from './itemSettings';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { ConfigurableForm } from '@/components/configurableForm';
 
 export interface ISidebarItemPropertiesProps {
   item?: ISidebarMenuItem;

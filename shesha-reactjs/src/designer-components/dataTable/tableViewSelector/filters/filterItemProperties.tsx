@@ -1,11 +1,11 @@
 import React, { FC, useMemo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableForm } from '@/components';
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { getFiltersSettingsForm } from './filterItemSettings';
 import { useFormViaFactory } from '@/form-factory/hooks';
+import { IStoredFilter } from '@/interfaces';
 
-export type BaseFilterProperties = Omit<ITableViewProps, "expression">;
+export type BaseFilterProperties = Omit<IStoredFilter, "expression">;
 
 export interface IFilterItemPropertiesProps {
   value?: BaseFilterProperties;

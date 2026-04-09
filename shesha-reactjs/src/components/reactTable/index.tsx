@@ -26,7 +26,7 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstanceOrUndefined } from '@/providers';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useStyles, useMainStyles } from './styles/styles';
-import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
+import { IAnchoredColumnProps, ITableRowData } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
 import { EmptyState } from '..';
 import { ErrorDetails } from '@/utils/configurationFramework/actions';
@@ -229,15 +229,15 @@ export const ReactTable: FC<IReactTableProps> = ({
     [],
   );
 
-  const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
+  const onChangeHeader = (callback: (...args: any) => void, rows: Row<ITableRowData>[] | Row<ITableRowData>) => (e: ChangeEvent) => {
     callback(e);
 
     if (onMultiRowSelect) {
       const isSelected = !!(e.target as any)?.checked;
-      let selectedRows: Row<any>[] | Row;
+      let selectedRows: Row<ITableRowData>[] | Row<ITableRowData>;
 
       if (Array.isArray(rows)) {
-        selectedRows = getPlainValue(rows).map((i) => ({ ...i, isSelected }));
+        selectedRows = getPlainValue(rows).map<Row<ITableRowData>>((i) => ({ ...i, isSelected }));
       } else {
         selectedRows = { ...getPlainValue(rows), isSelected };
       }

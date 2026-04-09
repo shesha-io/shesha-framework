@@ -2,8 +2,8 @@ import { MutableRefObject } from 'react';
 import { ColProps } from 'antd/lib/col';
 import { FormInstance, FormProps } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ConfigurableFormInstance } from '@/providers/form/contexts';
-import { FormMode, Store, HasFormIdOrMarkup, IFormActions, IFormSections, FormIdentifier } from '@/providers/form/models';
+import { IFormActionsContext } from '@/providers/form/contexts';
+import { FormMode, HasFormIdOrMarkup, IFormActions, IFormSections, FormIdentifier } from '@/providers/form/models';
 import { IConfigurableFormComponent, ValidateErrorEntity } from '@/interfaces';
 import { IShaFormInstance, ProcessingState } from '@/providers/form/store/interfaces';
 
@@ -15,8 +15,8 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
   labelCol?: ColProps;
   wrapperCol?: ColProps;
   layout?: FormLayout;
-  initialValues?: Store;
-  parentFormValues?: Store;
+  initialValues?: object | undefined;
+  parentFormValues?: object | undefined;
   className?: string;
   onValuesChange?: (changedValues: any, values: Values) => void;
 
@@ -69,8 +69,8 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
 
 }
 
-export type IConfigurableFormRuntimeProps<Values extends object = object> = {
-  shaForm?: IShaFormInstance<Values>;
+export type IConfigurableFormRuntimeProps<TValues extends object = object> = {
+  shaForm?: IShaFormInstance<TValues>;
 
   formName?: string;
 
@@ -80,11 +80,11 @@ export type IConfigurableFormRuntimeProps<Values extends object = object> = {
    *
    * @param values form data
    */
-  onFinish?: (values: Values, options?: object) => void;
+  onFinish?: (values: TValues, options?: object) => void;
   /**
    * Trigger after submitting the form and verifying data failed
    */
-  onFinishFailed?: (errorInfo: ValidateErrorEntity<Values>) => void;
+  onFinishFailed?: (errorInfo: ValidateErrorEntity<TValues>) => void;
 
   /**
    * Form argurments
@@ -94,19 +94,19 @@ export type IConfigurableFormRuntimeProps<Values extends object = object> = {
   /**
    * Form initial values
    */
-  initialValues?: Store;
+  initialValues?: object | undefined;
   /**
    * Parent form values. Note: is used for backward compatibility only
    */
-  parentFormValues?: Store;
+  parentFormValues?: object | undefined;
   labelCol?: ColProps;
   wrapperCol?: ColProps;
-  onValuesChange?: (changedValues: any, values: Values) => void;
+  onValuesChange?: (changedValues: any, values: TValues) => void;
   /**
    * If specified, the form will only be submitted if this function return true
    * Note: doesn't work when the `onFinish` is specified
    */
-  beforeSubmit?: (values: Values) => Promise<boolean>;
+  beforeSubmit?: (values: TValues) => Promise<boolean>;
 
   /**
    * Returns the form data and the response data as well, only if an API was made and came back successful
@@ -115,13 +115,13 @@ export type IConfigurableFormRuntimeProps<Values extends object = object> = {
    * @param values form data before being submitted
    * @param response response data
    */
-  onSubmitted?: (values: Values, response?: any, options?: object) => void;
+  onSubmitted?: (values: TValues, response?: any, options?: object) => void;
 
   /**
    * Fires after loading of the form markup. Can be used for additional initialization purposes.
    * @returns Promise<void>
    */
-  onMarkupLoaded?: (shaForm: IShaFormInstance<Values>) => Promise<void>;
+  onMarkupLoaded?: (shaForm: IShaFormInstance<TValues>) => Promise<void>;
 
   layout?: FormLayout;
   size?: SizeType;
@@ -139,7 +139,7 @@ export type IConfigurableFormRuntimeProps<Values extends object = object> = {
   /**/
 
   mode: FormMode;
-  formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
+  formRef?: MutableRefObject<IFormActionsContext<TValues>> | undefined;
   className?: string;
   isActionsOwner?: boolean;
   propertyFilter?: (name: string) => boolean;

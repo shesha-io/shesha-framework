@@ -1,4 +1,5 @@
 import {
+  IActionExecutionContext,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
@@ -14,14 +15,15 @@ export interface IGetConfigurableActionPayload {
   name: string;
 }
 
-export interface IArgumentsEvaluationContext extends GenericDictionary {
-  form?: IFormApi;
-  application?: IApplicationApi;
+export interface IArgumentsEvaluationContext /* extends GenericDictionary*/ {
+  form?: IFormApi | undefined;
+  application?: IApplicationApi | undefined;
 }
 
-export interface IExecuteActionPayload<TResponse = unknown> {
+// IActionExecutionContext
+export interface IExecuteActionPayload<TResponse = unknown, TContext extends IArgumentsEvaluationContext = IArgumentsEvaluationContext> {
   actionConfiguration: IConfigurableActionConfiguration;
-  argumentsEvaluationContext: IArgumentsEvaluationContext;
+  argumentsEvaluationContext: TContext;
   success?: ((actionResponse: TResponse) => void) | undefined;
   fail?: ((error: unknown) => void) | undefined;
 }
@@ -31,18 +33,16 @@ export interface IPrepareActionArgumentsPayload<TArguments extends ActionParamet
   argumentsEvaluationContext: IArgumentsEvaluationContext;
 }
 
-export interface IRegisterActionPayload<TArguments extends object = object, TReponse = unknown>
-  extends IConfigurableActionDescriptor<TArguments, TReponse> {
-  isPermament?: boolean;
+export interface IRegisterActionPayload<TArguments extends object = object, TReponse = unknown, TExecutionContext extends IActionExecutionContext = IActionExecutionContext>
+  extends IConfigurableActionDescriptor<TArguments, TReponse, TExecutionContext> {
+  isPermament?: boolean | undefined;
 }
 
 export interface RegisterActionType {
-  <TArguments extends object = object, TResponse = unknown>(
-    arg: IRegisterActionPayload<TArguments, TResponse>
+  <TArguments extends object = object, TResponse = unknown, TExecutionContext extends IActionExecutionContext = IActionExecutionContext>(
+    arg: IRegisterActionPayload<TArguments, TResponse, TExecutionContext>
   ): void;
 }
-
-export type ConfigurableActionExecuter = (payload: IExecuteActionPayload) => Promise<void>;
 
 export type ActionDynamicContextEvaluationHook = (actionConfig: IConfigurableActionConfiguration) => GenericDictionary;
 
@@ -52,9 +52,9 @@ export interface IConfigurableActionDispatcherActionsContext {
   getActions: () => IConfigurableActionGroupDictionary;
   registerAction: RegisterActionType;
   unregisterAction: (actionIdentifier: IConfigurableActionIdentifier) => void;
-  prepareArguments: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IPrepareActionArgumentsPayload<TArguments>) => Promise<TArguments>;
+  prepareArguments: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IPrepareActionArgumentsPayload<TArguments>) => Promise<TArguments | undefined>;
 
-  executeAction: ConfigurableActionExecuter;
+  executeAction: <TContext extends IArgumentsEvaluationContext = IArgumentsEvaluationContext>(payload: IExecuteActionPayload<unknown, TContext>) => Promise<void>;
   useActionDynamicContext: ActionDynamicContextEvaluationHook;
 }
 

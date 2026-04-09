@@ -1,5 +1,5 @@
 import { IConfigurableActionConfiguration } from '@/providers';
-import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
+import { IAnchoredDirection, ITableRowData } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
@@ -23,12 +23,9 @@ export interface IColumnResizing {
 }
 
 export interface OnRowsReorderedArgs {
-  // allRows: object[];
-  // reorderedRows: object[];
-
-  getOld: () => object[];
-  getNew: () => object[];
-  applyOrder: (orderedItems: object[]) => void;
+  getOld: () => ITableRowData[];
+  getNew: () => ITableRowData[];
+  applyOrder: (orderedItems: ITableRowData[]) => void;
   oldIndex?: number;
   newIndex?: number;
 }
@@ -37,7 +34,7 @@ export interface ITableRowDragProps {
   allowReordering?: boolean;
 }
 
-export type RowDataInitializer = () => Promise<object>;
+export type RowDataInitializer<TValue extends object = object> = () => Promise<TValue>;
 
 export type InlineEditMode = 'one-by-one' | 'all-at-once';
 export type InlineSaveMode = 'auto' | 'manual';
@@ -187,7 +184,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   /**
    * A callback for when multiple rows are selected with checkbox. Applicable if useMultiSelect is true
    */
-  onMultiRowSelect?: (rows: Array<Row> | Row) => void;
+  onMultiRowSelect?: (rows: Array<Row<ITableRowData>> | Row<ITableRowData>) => void;
 
   /**
    * Configurable action for row click event

@@ -11,7 +11,7 @@ import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
 import { CreateFormCell, ICreateFormCellProps } from '../dataTable/cell/formCell/formCell';
-import { isFormFullName } from '@/index';
+import { isFormFullName } from '@/providers/form/utils';
 
 const cellProps: HeaderPropGetter<object> = (props) => [
   props,
@@ -44,13 +44,13 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
   let leftColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
   let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
-  const rowColumns = row?.map((col) => ({ column: col })) as Cell<any, any, any>[];
+  const rowColumns = row.map((col) => ({ column: col })) as Cell<any, any, any>[];
 
   if (anchored?.isFixed && index > 0) {
     // use first row cell values to calculate the left shift
 
     if (anchored?.direction === 'right') {
-      const totalColumns = row?.length;
+      const totalColumns = row.length;
       rightColumn.shadowPosition = totalColumns - calculateTotalColumnsOnFixed(rowColumns, 'right');
 
       rightColumn.shift = calculatePositionShift(rowColumns, index, totalColumns - 1)?.reduce(

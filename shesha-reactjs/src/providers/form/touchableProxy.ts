@@ -1,11 +1,13 @@
 import { unproxyValue } from "@/utils/object";
 import { ProxyPropertiesAccessors, ProxyWithRefresh, ValueAccessor } from "./observableProxy";
 import { CreateTouchableProperty, IPropertyTouched } from "./touchableProperty";
+import { isDefined } from "@/utils/nullables";
+import { IAnyObject } from "@/interfaces";
 
 export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched {
-  private _touchedProps: Map<string, any>;
+  private _touchedProps: Map<string, unknown>;
 
-  private _propAccessors: Map<string, ValueAccessor<any>>;
+  private _propAccessors: Map<string, ValueAccessor<unknown>>;
 
   private _changed: boolean;
 
@@ -21,13 +23,13 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     if (!this._propAccessors.has(propName))
       return undefined;
 
-    const getter = this._propAccessors.get(propName);
+    const getter = this._propAccessors.get(propName) ?? (() => undefined);
     const propValue = getter();
 
     if (typeof propValue === 'function')
       return propValue.bind(this);
 
-    if (typeof propValue === 'object' && propValue !== null && propValue !== undefined)
+    if (typeof propValue === 'object' && isDefined(propValue))
       return CreateTouchableProperty(propValue, this, propName);
 
     this._touchedProps.set(propName, propValue);
@@ -48,7 +50,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     return this._changed;
   };
 
-  addAccessor(propName: string, accessor: ValueAccessor<any>): void {
+  addAccessor(propName: string, accessor: ValueAccessor<unknown>): void {
     this._propAccessors.set(propName, accessor);
   };
 
@@ -60,7 +62,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
       if (changed)
         return;
       const props = key.split('.');
-      let prop = props.shift();
+      let prop = props.shift() ?? "";
       let data = unproxyValue(this.getPropertyValue(prop));
       if (data === null || data === undefined) {
         changed = true;
@@ -71,12 +73,13 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
           changed = true;
           return;
         }
-        prop = props.shift();
-        if (data[prop] === undefined && props.length > 0) {
+        prop = props.shift() ?? "";
+        const propValue = (data as IAnyObject)[prop];
+        if (propValue === undefined && props.length > 0) {
           changed = true;
           return;
         }
-        data = data[prop];
+        data = propValue;
       }
 
       if (typeof data === 'object' && (value === null || typeof value !== 'object'))
@@ -99,15 +102,17 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     });
   };
 
-  setAdditionalData = (data: object): void => {
+  setAdditionalData = (data: unknown): void => {
+    if (typeof data !== 'object')
+      return;
     for (let key in data)
       if (Object.hasOwn(data, key))
-        this.addAccessor(key, () => data[key]);
+        this.addAccessor(key, () => (data as IAnyObject)[key]);
   };
 
   constructor(accessors: ProxyPropertiesAccessors<T>) {
     this._propAccessors = new Map<string, ValueAccessor>();
-    this._touchedProps = new Map<string, any>();
+    this._touchedProps = new Map<string, unknown>();
     this.refreshAccessors(accessors);
     this._changed = true;
 
@@ -126,7 +131,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
           return target.getPropertyValue(propertyName);
 
         if (propertyName in target) {
-          const result = target[name];
+          const result = (target as IAnyObject)[name];
           return typeof result === 'function' ? result.bind(target) : result;
         }
 

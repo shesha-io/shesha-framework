@@ -1,17 +1,17 @@
 import { ICodeEditorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import { FC, useCallback } from 'react';
+import { useCallback } from 'react';
 import camelcase from 'camelcase';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { executeScript } from '@/providers/form/utils/scripts';
-import { useShaFormInstance } from '@/providers';
+import { FCUnwrapped, useShaFormInstance } from '@/providers';
 import { useMetadataBuilderFactory } from '@/utils';
 import { getEditor } from '../utils';
 import { defaultExposedVariables } from '@/designer-components/_settings/settingsControl';
 
-export const CodeEditorWrapper: FC<ICodeEditorSettingsInputProps> = (props) => {
+export const CodeEditorWrapper: FCUnwrapped<ICodeEditorSettingsInputProps> = (props) => {
   const { mode, language, availableConstantsExpression, resultTypeExpression, value, readOnly, description, label, propertyName, onChange, templateSettings, wrapInTemplate } = props;
-  const functionName = `get${camelcase(label ?? propertyName, { pascalCase: true })}`;
+  const functionName = `get${camelcase((typeof label === 'string' ? label : undefined) || propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: readOnly,

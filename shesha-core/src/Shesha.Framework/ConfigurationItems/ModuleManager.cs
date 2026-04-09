@@ -62,7 +62,7 @@ namespace Shesha.ConfigurationItems
             if (string.IsNullOrWhiteSpace(moduleName))
                 throw new ArgumentNullException(nameof(moduleName));
 
-            return await _moduleRepository.GetAll().FirstOrDefaultAsync(m => m.Name == moduleName);
+            return await _moduleRepository.FirstOrDefaultAsync(m => m.Name == moduleName);
         }
 
         /// inheritedDoc
@@ -89,7 +89,7 @@ namespace Shesha.ConfigurationItems
             if (string.IsNullOrWhiteSpace(moduleName))
                 throw new ArgumentNullException(nameof(moduleName));
 
-            var module = _moduleRepository.GetAll().FirstOrDefault(m => m.Name == moduleName);
+            var module = await _moduleRepository.FirstOrDefaultAsync(m => m.Name == moduleName);
             if (module == null) 
             {
                 module = new Module
@@ -112,13 +112,5 @@ namespace Shesha.ConfigurationItems
                 ? await GetOrCreateModuleAsync(moduleName)
                 : null;
         }
-
-        /*
-        /// inheritedDoc
-        public async Task<Module?> GetModuleByAliasOrNullAsync(string moduleAlias)
-        {
-            return _moduleRepository.GetAll().FirstOrDefaultAsync(m => m.Name == moduleName);
-        }
-        */
     }
 }

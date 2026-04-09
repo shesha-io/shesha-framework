@@ -1,56 +1,67 @@
-import React, { useContext, FC, PropsWithChildren, useMemo, useId, useRef, useEffect } from "react";
-import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IDataContextProviderProps, IFlatComponentsStructure, isConfigurableFormComponent, useShaFormInstanceOrUndefined } from "../index";
-import { createNamedContext } from "@/utils/react";
 import ConditionalWrap from "@/components/conditionalWrapper";
-import ValidateProvider from "../validateProvider";
-import { IFormApi } from "../form/formApi";
+import { throwError } from "@/utils/errors";
+import { isDefined } from "@/utils/nullables";
+import { createNamedContext } from "@/utils/react";
+import React, { PropsWithChildren, useContext, useId, useMemo } from "react";
 import { SheshaCommonContexts } from "../dataContextManager/models";
+import { IFormApi } from "../form/formApi";
+import ValidateProvider from "../validateProvider";
+import { ConfigurableActionDispatcherProvider } from "../configurableActionsDispatcher";
+import { DataContextManager } from "../dataContextManager";
+import { DataContextProvider, IDataContextProviderProps } from "../dataContextProvider";
+import { useShaFormInstanceOrUndefined } from "../form/providers/shaFormProvider";
+import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, isConfigurableFormComponent } from "../form/models";
 
-export interface IParentProviderStateContext {
+export interface IParentProviderStateContext<Values extends object = object> {
   id: string;
-  formMode?: FormMode;
-  subFormIdPrefix?: string;
-  context?: string;
-  model: any;
-  formFlatMarkup?: IFlatComponentsStructure;
-  formApi?: IFormApi<any>;
+  formMode?: FormMode | undefined;
+  subFormIdPrefix?: string | undefined;
+  context?: string | undefined;
+  model: Values;
+  formFlatMarkup?: IFlatComponentsStructure | undefined;
+  formApi?: IFormApi<Values> | undefined;
   getChildComponents: (componentId: string) => IConfigurableFormComponent[];
-  registerChild: (input: IParentProviderStateContext) => void;
-  unRegisterChild: (input: IParentProviderStateContext) => void;
 }
 
-export interface IParentProviderProps {
-  name?: string;
-  formMode?: FormMode;
-  context?: string;
-  model: any;
+export interface IParentProviderProps<TValue extends object = object> {
+  name?: string | undefined;
+  formMode?: FormMode | undefined;
+  context?: string | undefined;
+  model: TValue | undefined;
   formFlatMarkup?: IFlatComponentsStructure | undefined;
-  formApi?: IFormApi<any>;
-  isScope?: boolean;
-  addContext?: boolean;
-  contextProps?: IDataContextProviderProps<object>;
+  formApi?: IFormApi<TValue> | undefined;
+  isScope?: boolean | undefined;
+  addContext?: boolean | undefined;
+  contextProps?: IDataContextProviderProps<object> | undefined;
 }
 
 export const ParentProviderStateContext = createNamedContext<IParentProviderStateContext>(
   {
     id: '',
     model: {},
-    getChildComponents: () => undefined,
-    registerChild: () => undefined,
-    unRegisterChild: () => undefined,
+    getChildComponents: () => [],
   },
   "ParentProviderStateContext");
 
-export function useParent(require: boolean = true): IParentProviderStateContext | undefined {
-  const stateContext = useContext(ParentProviderStateContext);
+export const useParentOrUndefined = (): IParentProviderStateContext | undefined => useContext(ParentProviderStateContext);
 
-  if (stateContext === undefined && require) {
-    throw new Error('useParent must be used within a ParentProvider');
+export const useParent = (): IParentProviderStateContext => useParentOrUndefined() ?? throwError("useParent must be used within a ParentProvider");
+
+const getChildComponents = (formFlatMarkup: IFlatComponentsStructure, componentId: string): IConfigurableFormComponent[] => {
+  if (isDefined(formFlatMarkup)) {
+    const childIds = formFlatMarkup.componentRelations[componentId];
+    if (!childIds) return [];
+    const components: IConfigurableFormComponent[] = [];
+    childIds.forEach((childId) => {
+      if (isConfigurableFormComponent(formFlatMarkup.allComponents[childId]))
+        components.push(formFlatMarkup.allComponents[childId]);
+    });
+    return components;
   }
-  return stateContext;
-}
+  return [];
+};
 
-const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
+const ParentProvider = <TValue extends object = object>(props: PropsWithChildren<IParentProviderProps<TValue>>): React.ReactElement => {
   const {
     children,
     model,
@@ -63,73 +74,35 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
   } = props;
 
   const form = useShaFormInstanceOrUndefined();
-  const parent = useParent(false);
+  const parent = useParentOrUndefined();
   const id = useId();
 
-  const childParentProvider = useRef<IParentProviderStateContext[]>([]);
   const formModeLocal = formMode ?? parent?.formMode;
-  const formFlatMarkupLocal = formFlatMarkup ?? (isScope ? form.flatStructure : parent?.formFlatMarkup);
-  const formApiLocal = formApi ?? (isScope ? form.getPublicFormApi() : parent?.formApi);
+  const formFlatMarkupLocal = formFlatMarkup ?? (isScope ? form?.flatStructure : parent?.formFlatMarkup);
+  const formApiLocal = formApi ?? (isScope ? form?.getPublicFormApi() : parent?.formApi);
   const contextLocal = context ?? parent?.context;
-
-  const getChildComponents = (componentId: string): IConfigurableFormComponent[] => {
-    if (!!formFlatMarkupLocal) {
-      const childIds = formFlatMarkupLocal.componentRelations[componentId];
-      if (!childIds) return [];
-      const components: IConfigurableFormComponent[] = [];
-      childIds.forEach((childId) => {
-        if (isConfigurableFormComponent(formFlatMarkupLocal.allComponents[childId]))
-          components.push(formFlatMarkupLocal.allComponents[childId]);
-      });
-      return components;
-    }
-    return null;
-  };
-
-  const registerChild = (input: IParentProviderStateContext): void => {
-    const exists = childParentProvider.current.find((item) => item.id === input.id);
-    if (!exists)
-      childParentProvider.current = [...childParentProvider.current, input];
-    else
-      childParentProvider.current = childParentProvider.current.map((item) => {
-        return item.id === input.id ? input : item;
-      });
-  };
-
-  const unRegisterChild = (input: IParentProviderStateContext): void => {
-    const existsPos = childParentProvider.current.findIndex((item) => item.id === input.id);
-    if (existsPos > -1)
-      childParentProvider.current.splice(existsPos, 1);
-  };
 
   const value = useMemo((): IParentProviderStateContext => {
     return {
       id,
-      formMode: formModeLocal,
+      formMode: formModeLocal ?? "readonly",
       context: contextLocal,
       formFlatMarkup: formFlatMarkupLocal,
-      formApi: formApiLocal,
+      formApi: formApiLocal as IFormApi<object>,
       model: { ...parent?.model, ...model },
-      getChildComponents,
-      registerChild,
-      unRegisterChild,
+      getChildComponents: (id) => formFlatMarkupLocal ? getChildComponents(formFlatMarkupLocal, id) : [],
     };
   }, [
-    formModeLocal, contextLocal, formFlatMarkupLocal, formApiLocal, model,
-    parent?.model, childParentProvider.current,
+    id,
+    formModeLocal,
+    contextLocal,
+    formFlatMarkupLocal,
+    formApiLocal,
+    model,
+    parent?.model,
   ]);
 
-  useEffect(() => {
-    if (parent) {
-      parent.registerChild(value);
-    }
-    return () => {
-      if (parent)
-        parent.unRegisterChild(value);
-    };
-  }, [value]);
-
-  const contextProps: IDataContextProviderProps<object> = addContext && !props.contextProps
+  const contextProps: IDataContextProviderProps<object> | undefined = addContext && !props.contextProps
     ? { id, name: SheshaCommonContexts.FormContext, type: "form", webStorageType: "sessionStorage", description: `${props.name || id}` }
     : props.contextProps;
 
@@ -139,20 +112,11 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
       wrap={(children: React.ReactNode) => {
         return (
           <ValidateProvider>
-            <DataContextManager id={id} name={props.name}>
+            <DataContextManager id={id}>
               <ConfigurableActionDispatcherProvider>
-                <ConditionalWrap
-                  condition={addContext}
-                  wrap={(children: React.ReactNode) => {
-                    return (
-                      <DataContextProvider {...contextProps}>
-                        {children}
-                      </DataContextProvider>
-                    );
-                  }}
-                >
-                  {children}
-                </ConditionalWrap>
+                {addContext && contextProps
+                  ? <DataContextProvider {...contextProps}>{children}</DataContextProvider>
+                  : children}
               </ConfigurableActionDispatcherProvider>
             </DataContextManager>
           </ValidateProvider>

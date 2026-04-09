@@ -1,13 +1,12 @@
 import { CalendarOutlined } from '@ant-design/icons';
 import React, { Fragment, useMemo } from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DateFieldDefinition, IDateFieldProps } from './interfaces';
 import {
-  DATE_TIME_FORMATS,
   defaultStyles,
 } from './utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -16,6 +15,7 @@ import { DatePickerWrapper } from './datePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { DATE_TIME_FORMATS } from '@/constants/formats';
 
 
 const DateField: DateFieldDefinition = {

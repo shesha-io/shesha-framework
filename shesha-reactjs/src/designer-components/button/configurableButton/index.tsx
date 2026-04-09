@@ -1,16 +1,18 @@
 import React, { FC, useState, CSSProperties } from 'react';
 import { Button, FormInstance } from 'antd';
 import { ButtonType } from 'antd/es/button/buttonHelpers';
-import { ShaIcon, IconType } from '@/components';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import classNames from 'classnames';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { DataContextTopLevels, isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import { useStyles } from './style';
 import { getGhostStyleOverrides } from '@/utils/style';
+import { DataContextTopLevels } from '@/providers/dataContextManager';
+import { isNavigationActionConfiguration, useShaRouting } from '@/providers/shaRouting';
+import { useTheme } from '@/providers/theme';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
@@ -32,7 +34,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
   const { buttonLoading, buttonDisabled } = {
     buttonLoading: loading && !isModal,
-    buttonDisabled: props?.readOnly || (loading && isModal),
+    buttonDisabled: props.readOnly || (loading && isModal),
   };
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {

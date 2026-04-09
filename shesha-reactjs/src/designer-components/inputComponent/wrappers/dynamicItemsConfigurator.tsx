@@ -1,8 +1,9 @@
 import { IDynamicItemsConfiguratorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { DynamicActionsConfigurator } from '@/designer-components/dynamicActionsConfigurator/configurator';
 
-export const DynamicItemsConfiguratorWrapper: FC<IDynamicItemsConfiguratorSettingsInputProps> = (props) => {
+export const DynamicItemsConfiguratorWrapper: FCUnwrapped<IDynamicItemsConfiguratorSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size } = props;
   return (
     <DynamicActionsConfigurator

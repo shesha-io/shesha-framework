@@ -14,7 +14,7 @@ export interface IValidateProviderStateContext {
   validate: () => Promise<void>;
 }
 
-export const ValidateProviderStateContext = createNamedContext<IValidateProviderStateContext>(
+export const ValidateProviderStateContext = createNamedContext<IValidateProviderStateContext | undefined>(
   {
     id: '',
     registerChild: () => {
@@ -79,7 +79,7 @@ const ValidateProvider: FC<PropsWithChildren> = ({ children }) => {
     childValidateProvider.current.forEach((child) => {
       promises.push(child.validate());
     });
-    return Promise.all(promises).then((_x) => null);
+    return Promise.all(promises).then((_x) => void 0);
   };
 
   const value = useMemo((): IValidateProviderStateContext => {
@@ -90,6 +90,8 @@ const ValidateProvider: FC<PropsWithChildren> = ({ children }) => {
       registerValidator,
       validate,
     };
+    // TODO (V1): review and update dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [childValidateProvider.current, validators.current]);
 
   useEffect(() => {
@@ -100,7 +102,7 @@ const ValidateProvider: FC<PropsWithChildren> = ({ children }) => {
       if (parent)
         parent.unRegisterChild(value);
     };
-  }, [value]);
+  }, [parent, value]);
 
   return (
     <ValidateProviderStateContext.Provider value={value}>

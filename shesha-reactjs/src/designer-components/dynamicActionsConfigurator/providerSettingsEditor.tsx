@@ -5,9 +5,9 @@ import {
 } from '@/interfaces/configurableAction';
 import { FormMarkup } from '@/providers/form/models';
 import { GenericSettingsEditor } from './genericSettingsEditor';
-import { IObjectMetadata } from '@/interfaces';
+import { IObjectMetadata, ISettingsFormFactoryArgs } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
-import { CollapsiblePanel } from '@/components';
+import { CollapsiblePanel } from '@/components/panel';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 export interface IProviderSettingsEditorProps {
@@ -24,10 +24,13 @@ const getDefaultFactory = (
   markup: FormMarkup | FormMarkupFactory,
   readOnly: boolean,
 ): IConfigurableActionArgumentsFormFactory => {
-  const component = ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }): JSX.Element => {
+  const component: {
+    ({ model, onSave, onCancel, onValuesChange, availableConstants }: ISettingsFormFactoryArgs): JSX.Element;
+    displayName: string;
+  } = ({ model, onSave, onCancel, onValuesChange, availableConstants }) => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
 
-    const formMarkup = markupFactory({ fbf, exposedVariables, availableConstants });
+    const formMarkup = markupFactory({ fbf, availableConstants });
     return (
       <GenericSettingsEditor
         model={model}
@@ -79,7 +82,6 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
           onCancel,
           onValuesChange,
           readOnly,
-          // exposedVariables,
           availableConstants,
         })
         : null;

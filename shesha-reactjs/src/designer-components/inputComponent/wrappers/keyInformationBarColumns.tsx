@@ -1,8 +1,9 @@
 import { IKeyInformationBarColumnsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import KeyInformationBarColumnsList from '../../keyInformationBar/columnsList';
 
-export const KeyInformationBarColumnsWrapper: FC<IKeyInformationBarColumnsInputProps> = (props) => {
+export const KeyInformationBarColumnsWrapper: FCUnwrapped<IKeyInformationBarColumnsInputProps> = (props) => {
   const { value, onChange, readOnly, size } = props;
   return (
     <KeyInformationBarColumnsList

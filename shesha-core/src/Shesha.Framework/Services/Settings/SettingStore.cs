@@ -52,7 +52,7 @@ namespace Shesha.Services.Settings
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
+            var alreadyExist = await (await Repository.GetAllAsync()).Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     module != null
@@ -92,9 +92,7 @@ namespace Shesha.Services.Settings
         /// inheritedDoc
         public Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
         {
-            return Repository.GetAll()
-                .Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression())
-                .FirstOrDefaultAsync();
+            return Repository.FirstOrDefaultAsync(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression());
         }
 
         /// inheritedDoc
@@ -105,7 +103,7 @@ namespace Shesha.Services.Settings
                 if (settingConfiguration == null)
                     return null;
 
-                var query = _settingValueRepository.GetAll()
+                var query = (await _settingValueRepository.GetAllAsync())
                     .Where(v => v.SettingConfiguration.Id == settingConfiguration.Id);
 
                 if (setting.IsClientSpecific)

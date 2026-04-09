@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from 'antd';
-import { ShaIcon, IconType } from '@/index';
 import { useStyles } from './styles/styles';
+import { ShaIcon, IconType } from '../shaIcon';
 
 const { Title, Paragraph } = Typography;
 

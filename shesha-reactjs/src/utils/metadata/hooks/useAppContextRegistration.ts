@@ -9,14 +9,16 @@ export const useAppContextRegistration = (): MetadataBuilderAction => {
 
   const action = useCallback((builder: IObjectMetadataBuilder) => {
     const appContext = getDataContext(SheshaCommonContexts.ApplicationContext);
-    if (appContext?.metadata) {
+    const metadata = appContext?.metadata;
+    if (metadata) {
       builder.addObject(SheshaCommonContexts.ApplicationContext, "", (builder) => {
-        if (isPropertiesArray(appContext.metadata.properties))
-          builder.setProperties(appContext.metadata.properties);
+        if (isPropertiesArray(metadata.properties))
+          builder.setProperties(metadata.properties);
         return builder;
       });
     }
-  }, []);
+    // TODO (performance): test re-renders and optimize if required
+  }, [getDataContext]);
 
   return action;
 };

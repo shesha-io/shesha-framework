@@ -10,11 +10,10 @@ import { App, Button, Space, Upload } from 'antd';
 import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
-import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { useSheshaApplication, useStoredFile, useTheme } from '@/providers';
+import { useFileUploadState, useSheshaApplication, useFileUpload, useTheme } from '@/providers';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
@@ -54,12 +53,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
   styles: stylesProp,
 }) => {
   const {
-    fileInfo,
     downloadFile,
     deleteFile,
     uploadFile,
-    isInProgress: { uploadFile: isUploading },
-  } = useStoredFile();
+  } = useFileUpload();
+  const fileInfo = useFileUploadState();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const props = {
     style: stylesProp,
@@ -79,6 +77,8 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
 
+  const isUploading = false; // TODO: replace with status of file
+
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
   useEffect(() => {
     if (fileInfo && url) {
@@ -89,8 +89,13 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   }, [fileInfo]);
 
-  const onCustomRequest = ({ file }: RcCustomRequestOptions): void => {
-    uploadFile({ file: file as File }, callback);
+  const onCustomRequest: UploadProps['customRequest'] = ({ file }): void => {
+    if (file instanceof File) {
+      uploadFile({ file }).then(() => {
+        callback?.();
+      });
+    } else
+      throw new Error('File is not an instance of File. Please check the file object.');
   };
 
   const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => {
@@ -196,7 +201,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        <a title={file.name}>
+        <span title={file.name}>
           <Space>
             <div className="thumbnail-item-name">
               {(listType === 'text' || !hideFileName) && (
@@ -210,7 +215,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               {showTextControls && fileControls(theme.application.primaryColor)}
             </div>
           </Space>
-        </a>
+        </span>
       </div>
     );
   };
@@ -335,7 +340,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               e.target.value = '';
               return;
             }
-            uploadFile({ file }, callback);
+            uploadFile({ file }).then(() => callback?.());
           }
           e.target.value = '';
         }}

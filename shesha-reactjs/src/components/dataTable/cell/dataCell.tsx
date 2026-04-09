@@ -6,10 +6,9 @@ import NumberCell from './default/numberCell';
 import React, { FC, useMemo } from 'react';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
-import { CustomErrorBoundary } from '@/components';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { DEFAULT_FORM_SETTINGS, FormItemProvider, IConfigurableFormComponent, useForm } from '@/providers';
 import { upgradeComponent } from '@/providers/form/utils';
-import { getInjectables } from './utils';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
 import { ITableDataColumn } from '@/providers/dataTable/interfaces';
@@ -64,14 +63,12 @@ export const DefaultDataDisplayCell = <D extends object = object, V = number>(pr
 };
 
 const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
-  const { columnConfig, propertyMeta, customComponent, defaultRow, defaultValue } = props;
+  const { columnConfig, propertyMeta, customComponent, defaultRow } = props;
   const { styles, cx } = useStyles();
 
   const toolboxComponents = useFormDesignerComponents();
 
   const component = toolboxComponents[customComponent.type];
-
-  const injectables = useMemo(() => getInjectables(props), [defaultRow, defaultValue]);
 
   const model = useMemo(() => upgradeComponent(
     customComponent.settings,
@@ -83,7 +80,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
   const actualModel = useActualContextData(
     model, props.readOnly ? true : undefined,
     {
-      tableRow: injectables.injectedTableRow,
+      tableRow: defaultRow,
     },
   );
 
@@ -91,7 +88,6 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
     // migrate component
     let editorModel: IColumnEditorProps = {
       ...actualModel,
-      ...injectables,
       id: props.columnConfig.columnId,
       type: customComponent.type,
       propertyName: columnConfig.propertyName,
@@ -110,7 +106,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
     }
 
     return editorModel;
-  }, [actualModel, columnConfig, propertyMeta, injectables, customComponent.type, props.readOnly]);
+  }, [actualModel, columnConfig, propertyMeta, customComponent.type, props.readOnly]);
 
   if (!component) {
     return <div>Component not found</div>;
@@ -145,7 +141,7 @@ const ReadDataCell = <D extends object = object, V = number>(props: IDataCellPro
   const customComponent = columnConfig?.displayComponent;
 
   const componentType = customComponent?.type ?? standardCellComponentTypes.defaultDisplay;
-  const row = props?.row?.original;
+  const row = props.row?.original;
 
   return componentType === standardCellComponentTypes.defaultDisplay ? (
     <DefaultDataDisplayCell {...props} />

@@ -13,6 +13,7 @@ import {
   FieldOrGroup,
   Settings,
 } from '@react-awesome-query-builder/antd';
+import { isDefined } from '@/utils/nullables';
 
 const normalizeTypeAlias = (value?: string): string => {
   return value?.replace(/[\s_-]/g, '').toLowerCase() ?? '';
@@ -50,7 +51,9 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
   const { value } = props;
   const { fields, fetchFields, customWidgets } = useQueryBuilder();
 
-  const missingFields = useMemo(() => {
+  const missingFields = useMemo<string[]>(() => {
+    if (!isDefined(value))
+      return [];
     const vars = extractVars(value);
     const result = vars.filter((v) => !fields.find((f) => f.propertyName === v));
     return result;
@@ -93,7 +96,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
 
       const { dataType, visible, label, fieldSettings, preferWidgets, childProperties: childProps } = property;
       let type: string = dataType;
-      let defaultPreferWidgets = [];
+      let defaultPreferWidgets: string[] | undefined = undefined;
 
       /*
       Fields can be of type:
@@ -150,7 +153,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
         }
       }
 
-      const fieldPreferWidgets = preferWidgets || defaultPreferWidgets || [];
+      const fieldPreferWidgets = preferWidgets ?? defaultPreferWidgets ?? [];
 
       const subfields = dataType === '!struct' ? {} : undefined;
       if (subfields) {

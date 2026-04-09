@@ -30,7 +30,7 @@ export type GroupingItem = ISortingItem;
 export interface ITableFilter {
   readonly columnId: string;
   readonly filterOption: IndexColumnFilterOption;
-  readonly filter: any;
+  readonly filter: unknown;
 }
 
 export type ColumnFilter = string[] | number[] | /* Moment[] |*/ Date[] | string | number | /* Moment |*/ Date | boolean;
@@ -59,9 +59,8 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
   changeQuickSearch?: (val: string) => void;
   /** change quick search and refresh table data */
   performQuickSearch?: (val: string) => void;
-  toggleSaveFilterModal?: (visible: boolean) => void;
-  changeActionedRow?: (data: any) => void;
-  changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => void;
+  changeActionedRow?: (data: unknown) => void;
+  changeSelectedStoredFilterIds?: (selectedStoredFilterIds: string[]) => Promise<void>;
 
   setPredefinedFilters: (filters: IStoredFilter[]) => void;
   setPermanentFilter: (filter: IStoredFilter) => void;
@@ -72,9 +71,6 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
   changeSelectedIds?: (selectedIds: string[]) => void;
   getCurrentFilter: () => ITableFilter[];
 
-  changeDisplayColumn: (displayColumnName: string) => void;
-  changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
-
   /**
    * Get current repository of the datatable
    */
@@ -82,9 +78,9 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
   /**
    * Set row data after inline editing
    */
-  setRowData: (rowIndex: number, data: any) => void;
+  setRowData: (rowIndex: number, data: unknown) => void;
 
-  setSelectedRow: (index: number, row: any) => void;
+  setSelectedRow: (index: number, row: unknown) => void;
   setColumnWidths: (widths: IColumnWidth[]) => void;
 }
 
@@ -121,9 +117,9 @@ export interface IDataTableContexApi extends IHasModelType {
   selectedStoredFilterIds?: string[];
 
   /** index of selected row */
-  selectedRow?: any;
+  selectedRow?: unknown;
 
-  actionedRow?: any;
+  actionedRow?: unknown;
 
   /** List of Ids of selected rows */
   selectedIds?: string[];
@@ -144,13 +140,16 @@ export interface IStoredFilter {
   name: string;
 
   tooltip?: string;
-  // Exclusive filters cannot be applied on top of other filters. Only one can be selected
 
   expression?: FilterExpression;
 
   selected?: boolean;
 
   defaultSelected?: boolean;
+
+  sortOrder?: number;
+
+  permissions?: string[];
 
   //#region dynamic expressions
   hasDynamicExpression?: boolean;

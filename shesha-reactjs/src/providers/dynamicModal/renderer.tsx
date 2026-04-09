@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, ReactElement, useContext, useEffect, useRef } from 'react';
+import React, { DependencyList, FC, PropsWithChildren, ReactElement, useContext, useEffect, useRef } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
 import { DynamicModalInstanceContext, DynamicModalRendererContext } from './contexts';
 import { useDynamicModals } from '.';
@@ -7,7 +7,7 @@ export interface IDynamicModalRendererProps {
   id: string;
 };
 
-function useDynamicRendererRegistar(id: string, dep: any[]): void {
+function useDynamicRendererRegistar(id: string, dep: DependencyList): void {
   const renderer = useContext(DynamicModalRendererContext);
 
   useEffect(() => {
@@ -17,17 +17,16 @@ function useDynamicRendererRegistar(id: string, dep: any[]): void {
         renderer.unregisterChildren(id);
       };
     }
-    return () => {
-      // nop
-    };
-  }, dep);
+    return undefined;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...dep, renderer, id]);
 }
 
 const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = (props) => {
   useDynamicRendererRegistar(props.id, [props.id]);
 
   const { instances, removeModal } = useDynamicModals();
-  const children = useRef([]);
+  const children = useRef<string[]>([]);
 
   const registerChildren = (id: string): void => {
     if (children.current.indexOf(id) === -1)
@@ -43,19 +42,21 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
     for (const id in instances) {
       if (instances.hasOwnProperty(id)) {
         const instance = instances[id];
-        rendered.push(
-          <DynamicModalInstanceContext.Provider
-            key={instance.id}
-            value={{
-              instance,
-              close: () => {
-                removeModal(instance.id);
-              },
-            }}
-          >
-            <DynamicModal {...instance.props} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
-          </DynamicModalInstanceContext.Provider>,
-        );
+        if (instance) {
+          rendered.push(
+            <DynamicModalInstanceContext.Provider
+              key={instance.id}
+              value={{
+                instance,
+                close: () => {
+                  removeModal(instance.id);
+                },
+              }}
+            >
+              <DynamicModal {...instance.props} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
+            </DynamicModalInstanceContext.Provider>,
+          );
+        }
       }
     }
     return rendered;

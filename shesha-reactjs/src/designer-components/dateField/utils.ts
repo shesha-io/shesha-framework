@@ -3,17 +3,9 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { getDataProperty } from '@/utils/metadata';
 import { DisabledDateTemplate, IDateFieldProps } from './interfaces';
 import { range } from 'lodash';
-import { IStyleType } from '@/index';
+import { IStyleType } from "@/providers/form/models";
 import { DatePicker } from '@/components/antd';
-
-export const DATE_TIME_FORMATS = {
-  time: 'HH:mm:ss',
-  week: 'YYYY-wo',
-  date: 'DD/MM/YYYY',
-  quarter: 'YYYY-\\QQ',
-  month: 'YYYY-MM',
-  year: 'YYYY',
-};
+import { DATE_TIME_FORMATS } from '@/constants/formats';
 
 export function disabledDate(props: IDateFieldProps, current: Moment, data: object, globalState: object): boolean {
   const { disabledDateMode, disabledDateTemplate, disabledDateFunc } = props;
@@ -91,12 +83,12 @@ export const disabledTime = (props: IDateFieldProps, data: object, globalState: 
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]): string => {
   const { propertyName, picker, showTime } = props || {};
 
-  const dateFormat = props?.dateFormat || getDataProperty(properties, propertyName, 'dataFormat') || DATE_TIME_FORMATS.date;
-  const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-  const yearFormat = props?.yearFormat || DATE_TIME_FORMATS.year;
-  const quarterFormat = props?.quarterFormat || DATE_TIME_FORMATS.quarter;
-  const monthFormat = props?.monthFormat || DATE_TIME_FORMATS.month;
-  const weekFormat = props?.weekFormat || DATE_TIME_FORMATS.week;
+  const dateFormat = props.dateFormat || getDataProperty(properties, propertyName, 'dataFormat') || DATE_TIME_FORMATS.date;
+  const timeFormat = props.timeFormat || DATE_TIME_FORMATS.time;
+  const yearFormat = props.yearFormat || DATE_TIME_FORMATS.year;
+  const quarterFormat = props.quarterFormat || DATE_TIME_FORMATS.quarter;
+  const monthFormat = props.monthFormat || DATE_TIME_FORMATS.month;
+  const weekFormat = props.weekFormat || DATE_TIME_FORMATS.week;
 
   switch (picker) {
     case 'date':

@@ -1,5 +1,5 @@
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import React, { CSSProperties, FC, ReactNode, useState, useRef, useEffect } from 'react';
+import React, { CSSProperties, FC, ReactNode, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { IApplicationContext } from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
@@ -46,16 +46,17 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const hasSaved = useRef(false);
 
 
-  const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes): void => {
+  const onIconChange = useCallback((_icon: ReactNode, iconName: ShaIconTypes): void => {
     if (onChange) onChange(iconName);
-  };
+  }, [onChange]);
 
   const fontSize = parseFloat(String(fullStyles?.fontSize).replace('px', ''));
 
-  const style: CSSProperties = {
+  const style: CSSProperties = useMemo(() => ({
+    ...fullStyles,
     fontSize: fullStyles?.fontSize || 24,
-    color: fullStyles?.color,
-  };
+    background: 'transparent',
+  }), [fullStyles]);
 
 
   useEffect(() => {
@@ -68,8 +69,8 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const iconValue = finalValue ?? defaultValue;
 
   return (
-    <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
-      <Tooltip title={props?.description}>
+    <Tooltip title={props?.description}>
+      <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
         <IconPicker
           value={iconValue as ShaIconTypes}
           defaultValue={iconValue as ShaIconTypes}
@@ -77,12 +78,11 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
           selectBtnSize={selectBtnSize}
           iconSize={iconSize ?? fontSize}
           readOnly={readOnly}
-          style={{ ...style,
-            ...fullStyles, background: 'transparent' }}
-          color={props.color}
+          style={style}
+          color={color}
           twoToneColor={color}
         />
-      </Tooltip>
-    </div>
+      </div>
+    </Tooltip>
   );
 };

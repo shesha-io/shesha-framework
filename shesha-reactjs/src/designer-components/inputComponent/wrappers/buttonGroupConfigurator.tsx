@@ -1,8 +1,9 @@
 import { IButtonGroupConfiguratorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
-import { ButtonGroupConfigurator } from '@/components';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
+import { ButtonGroupConfigurator } from '@/components/buttonGroupConfigurator';
 
-export const ButtonGroupConfiguratorWrapper: FC<IButtonGroupConfiguratorSettingsInputProps> = (props) => {
+export const ButtonGroupConfiguratorWrapper: FCUnwrapped<IButtonGroupConfiguratorSettingsInputProps> = (props) => {
   const { value, readOnly, size, onChange, buttonText, buttonTextReadOnly, title } = props;
   return (
     <ButtonGroupConfigurator

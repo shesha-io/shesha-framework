@@ -45,7 +45,7 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
     const meta = apiBuilder.build();
 
     return Promise.resolve(meta);
-  }, [httpClient, props.plugins]);
+  }, [httpClient, props.plugins, metadataBuilderFactory]);
 
   return contextMetadata;
 };

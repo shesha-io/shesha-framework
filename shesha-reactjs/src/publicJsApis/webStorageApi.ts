@@ -5,7 +5,7 @@ export interface IWebStorageApi {
   clear(): void;
   key(index: number): string | null;
   length: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface IWebStorage {

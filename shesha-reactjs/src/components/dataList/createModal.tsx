@@ -1,7 +1,6 @@
 import FormInfo from '../configurableForm/formInfo';
 import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, useState } from 'react';
-import { ComponentsContainer, ValidationErrors } from '@/components';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';
@@ -9,6 +8,8 @@ import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/interfaces'
 import { IDataListProps, NewItemInitializer } from './models';
 import { ItemContainerForm } from './itemContainerForm';
 import { Modal, Skeleton } from 'antd';
+import ComponentsContainer from '../formDesigner/containers/componentsContainer';
+import ValidationErrors from '../validationErrors';
 
 interface ICreateModalProps extends IDataListProps {
   formInfo?: IPersistedFormProps;

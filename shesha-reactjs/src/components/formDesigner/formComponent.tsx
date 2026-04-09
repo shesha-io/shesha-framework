@@ -1,27 +1,29 @@
-import React, { FC, useMemo } from 'react';
-import { IConfigurableFormComponent } from '@/interfaces';
-import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
+import React, { FC, useEffect, useMemo, useState } from 'react';
+import { IConfigurableFormComponent, IPropertyMetadata } from '@/interfaces';
+import { IStyleType, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
-import { formComponentActualModelPropertyFilter } from '@/providers/form/utils';
+import { formComponentActualModelPropertyFilter, updateComponentModelFromMetadata } from '@/providers/form/utils';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { useStyles } from './styles/styles';
 import { FormComponentValidationProvider, useValidationErrorsActionsOrDefault, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
+import { isValidGuid } from './components/utils';
+import { toCamelCase } from '@/utils/string';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
 }
 
-const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
+const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceComponentModel }) => {
   const { styles } = useStyles();
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
-  const { isComponentFiltered, formMode } = useForm();
+  const { isComponentFiltered, formMode, modelMetadata } = useForm();
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
@@ -29,10 +31,34 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   const { errors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
   const errorCount = errors.size; // Track size to trigger useMemo
 
-  // Early return if componentModel is undefined
-  if (!componentModel) {
-    return null;
-  }
+  const toolboxComponent = getToolboxComponent(sourceComponentModel.type);
+
+  const [propMetadata, setPropMetadata] = useState<IPropertyMetadata>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (modelMetadata?.properties && sourceComponentModel?.propertyName) {
+      const pName = toCamelCase(sourceComponentModel.propertyName);
+      if (Array.isArray(modelMetadata.properties)) {
+        setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
+      } else {
+        modelMetadata.properties().then((propsMeta) => {
+          if (!cancelled) setPropMetadata(propsMeta.find((p) => toCamelCase(p.path) === pName));
+        }).catch((error) => {
+          if (!cancelled) console.error('Failed to fetch property metadata:', error);
+        });
+      }
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [modelMetadata, sourceComponentModel?.propertyName]);
+
+  const componentModel = useDeepCompareMemo(() => {
+    return toolboxComponent && propMetadata
+      ? updateComponentModelFromMetadata(toolboxComponent, sourceComponentModel, propMetadata)
+      : sourceComponentModel;
+  }, [sourceComponentModel, toolboxComponent, propMetadata]);
 
   // Default to 'desktop' when there's no canvas context (e.g., in datatables)
   const effectiveDevice = activeDevice || 'desktop';
@@ -56,19 +82,19 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
     ),
   };
 
-  const toolboxComponent = getToolboxComponent(componentModel.type);
-
   const actualModel = useActualContextData<IConfigurableFormComponent & IStyleType>(
     deviceModel,
     undefined,
     undefined,
     (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
-  );
+  ) as UnwrapCodeEvaluators<IConfigurableFormComponent & IStyleType>; // TODO: move type cast to useActualContextData after refactoring
 
   actualModel.hidden = shaForm.formMode !== 'designer' &&
     (
+      // ToDo: AS - remove hidden from this check
       actualModel.hidden ||
+      actualModel.visible === false ||
       !anyOfPermissionsGranted(actualModel?.permissions || []) ||
       !isComponentFiltered(actualModel));
 
@@ -105,7 +131,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
         key={actualModel.id}
       />
     );
-  }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
+  }, [toolboxComponent, shaForm.antdForm, actualModel, calculatedModel, shaApplication]);
 
   // Run validation in both designer and runtime modes
   // Collect errors from:

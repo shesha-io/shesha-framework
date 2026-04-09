@@ -4,7 +4,8 @@ import { ColorValueType } from 'antd/es/color-picker/interface';
 import { AggregationColor } from 'antd/es/color-picker/color';
 import type { ColorPickerProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { useTheme, IConfigurableTheme } from '@/index';
+import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { useTheme } from '@/providers/theme';
 
 type Preset = Required<ColorPickerProps>['presets'][number];
 type ColorFormat = ColorPickerProps['format'];

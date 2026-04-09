@@ -1,106 +1,487 @@
-import React, { FC, PropsWithChildren, useState } from 'react';
+import React, { FC, PropsWithChildren, useState, useEffect, useCallback } from 'react';
 import {
   getPercentage,
   getStatus,
-  getTimeFormat,
-  MIN_TIME,
+  secondsToMilliseconds,
   ONE_SECOND,
-  SIXTY,
+  WARNING_DURATION,
 } from './util';
-import { IdleTimerComponent } from 'react-idle-timer';
-import { ISettingIdentifier } from '@/providers/settings/models';
+import { useIdleTimer } from 'react-idle-timer';
 import { Modal, Progress } from 'antd';
 import { useAuth } from '@/providers/auth';
 import { useInterval } from 'react-use';
-import { useSettingValue } from '@/providers/settings';
 import { useStyles } from './styles/styles';
+import { getLocalStorage } from '@/utils/storage';
+import { isTokenAboutToExpire, saveUserToken } from '@/utils/auth';
+import { useHttpClient } from '@/providers';
+import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
+import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
+import { URLS } from '@/providers/auth/models';
+
+export interface ISecuritySettings {
+  autoLogoffTimeout: number;
+  useAutoLogoff: boolean;
+  defaultEndpointAccess: number;
+  mobileLoginPinLifetime: number;
+  resetPasswordEmailLinkLifetime: number;
+  resetPasswordSmsOtpLifetime: number;
+  resetPasswordViaSecurityQuestionsNumQuestionsAllowed: number;
+  useResetPasswordViaEmailLink: boolean;
+  useResetPasswordViaSecurityQuestions: boolean;
+  useResetPasswordViaSmsOtp: boolean;
+}
+
+export interface IIdleTimerRendererProps {
+  securitySettings?: ISecuritySettings;
+}
 
 interface IIdleTimerState {
-  readonly isIdle: boolean;
+  readonly isWarningVisible: boolean;
   readonly remainingTime: number;
+  readonly isCountingDown: boolean;
+  readonly pendingLogout: boolean;
+}
+
+interface IWarningState {
+  isVisible: boolean;
+  timestamp: number;
+}
+
+interface ITokenRefreshData {
+  expireOn?: string;
+  timestamp: number;
 }
 
 const INIT_STATE: IIdleTimerState = {
-  isIdle: false,
-  remainingTime: SIXTY,
+  isWarningVisible: false,
+  remainingTime: WARNING_DURATION,
+  isCountingDown: false,
+  pendingLogout: false,
 };
 
-const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security.AutoLogoffTimeout', module: 'Shesha' };
+const STORAGE_KEYS = {
+  IDLE_TIMER_LOGOUT: 'shesha:idleTimer:logout',
+  IDLE_TIMER_WARNING_STATE: 'shesha:idleTimer:warningState',
+  IDLE_TIMER_TOKEN_REFRESH: 'shesha:idleTimer:tokenRefresh',
+};
 
-export const IdleTimerRenderer: FC<PropsWithChildren> = ({ children }) => {
-  const { styles } = useStyles();
-  const { value: autoLogoffTimeout } = useSettingValue<number>(autoLogoffTimeoutSettingId);
-  const timeoutSeconds = autoLogoffTimeout ?? 0;
+// Type guards for storage event data
+const isWarningState = (value: unknown): value is IWarningState => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'isVisible' in value &&
+    typeof (value as Record<string, unknown>).isVisible === 'boolean'
+  );
+};
 
-  const { logoutUser, loginInfo } = useAuth();
+const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'timestamp' in value &&
+    typeof (value as Record<string, unknown>).timestamp === 'number'
+  );
+};
 
-  const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
-  const { isIdle, remainingTime: rt } = state;
+interface IIdleHandler {
+  setActivate: (activate: () => void) => void;
+  setAutoLogoffActive: (active: boolean) => void;
+  logout: () => void;
+  refreshToken: () => Promise<boolean>;
+  handlePrompt: () => void;
+  handleActive: () => void;
+  handleIdle: () => void;
+  onAction: () => void;
+  handleStorageChange: (e: StorageEvent) => void;
+  isWarningVisible: () => boolean;
+}
 
-  const isTimeoutSet = timeoutSeconds >= MIN_TIME && !!loginInfo;
-  const timeout = getTimeFormat(timeoutSeconds);
-  const visible = isIdle && isTimeoutSet;
+class IdleHandler implements IIdleHandler {
+  private activateFn: (() => void) | null = null;
 
-  const onAction = (_event: Event): void => {
-    /* nop*/
+  private warningVisible: boolean = false;
+
+  private logoutInProgress: boolean = false;
+
+  private lastRefreshAttempt: number = 0;
+
+  private refreshInFlight: boolean = false;
+
+  private refreshPromise: Promise<boolean> | null = null;
+
+  private autoLogoffActive: boolean = false;
+
+  private static readonly REFRESH_COOLDOWN_MS = 30_000;
+
+  constructor(
+    private authenticator: ReturnType<typeof useAuth>,
+    private httpClient: ReturnType<typeof useHttpClient>,
+    private logoutUser: () => Promise<void>,
+    private setStateFn: (state: IIdleTimerState | ((prev: IIdleTimerState) => IIdleTimerState)) => void,
+  ) {}
+
+  setActivate = (activate: () => void): void => {
+    this.activateFn = activate;
   };
 
-  const onActive = (_event: Event): void => {
-    /* nop*/
-  };
+  setAutoLogoffActive = (active: boolean): void => {
+    const wasActive = this.autoLogoffActive;
+    this.autoLogoffActive = active;
 
-  const onIdle = (_event: Event): void => setState((s) => ({ ...s, isIdle: true }));
-
-  const logout = (): Promise<void> => logoutUser().then(() => setState(INIT_STATE));
-
-  const doCountdown = (): void => {
-    if (!rt) {
-      logout();
-    } else {
-      setState(({ remainingTime: r, ...s }) => ({ ...s, remainingTime: r - 1 }));
+    if (!active && (wasActive || this.warningVisible)) {
+      this.warningVisible = false;
+      this.setStateFn?.(INIT_STATE);
+      try {
+        getLocalStorage()?.removeItem(STORAGE_KEYS.IDLE_TIMER_WARNING_STATE);
+      } catch (err) {
+        console.error('Failed to clear warning state from storage', err);
+      }
     }
   };
 
+  private broadcastLogout = (): void => {
+    try {
+      const storage = getLocalStorage();
+      if (storage) {
+        storage.setItem(STORAGE_KEYS.IDLE_TIMER_LOGOUT, Date.now().toString());
+      }
+    } catch (err) {
+      console.error('Failed to broadcast logout', err);
+    }
+  };
+
+  private broadcastWarningState = (isVisible: boolean): void => {
+    try {
+      const storage = getLocalStorage();
+      if (storage) {
+        storage.setItem(
+          STORAGE_KEYS.IDLE_TIMER_WARNING_STATE,
+          JSON.stringify({ isVisible, timestamp: Date.now() }),
+        );
+      }
+    } catch (err) {
+      console.error('Failed to broadcast warning state', err);
+    }
+  };
+
+  private broadcastTokenRefresh = (expireOn?: string): void => {
+    try {
+      const storage = getLocalStorage();
+      if (storage) {
+        storage.setItem(
+          STORAGE_KEYS.IDLE_TIMER_TOKEN_REFRESH,
+          JSON.stringify({ expireOn, timestamp: Date.now() }),
+        );
+      }
+    } catch (err) {
+      console.error('Failed to broadcast token refresh', err);
+    }
+  };
+
+  logout = (): void => {
+    // Guard against concurrent/re-entrant calls
+    if (this.logoutInProgress) return;
+
+    this.logoutInProgress = true;
+    this.broadcastLogout();
+    this.logoutUser()
+      .then(() => {
+        this.warningVisible = false;
+        this.logoutInProgress = false;
+        this.setStateFn?.(INIT_STATE);
+      })
+      .catch((error) => {
+        console.error('Failed to logout user:', error);
+        this.warningVisible = false;
+        this.logoutInProgress = false;
+        this.setStateFn?.(INIT_STATE);
+      });
+  };
+
+  refreshToken = (): Promise<boolean> => {
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshInFlight = true;
+    this.lastRefreshAttempt = Date.now();
+    this.refreshPromise = this.httpClient.post<RefreshTokenResultModelAjaxResponse>(URLS.REFRESH_TOKEN)
+      .then(({ data: response }) => {
+        const result = extractAjaxResponse(response);
+        if (!result.accessToken) {
+          throw new Error('Token refresh response is missing accessToken');
+        }
+        saveUserToken(
+          {
+            accessToken: result.accessToken,
+            expireInSeconds: result.expireInSeconds,
+            expireOn: result.expireOn,
+          },
+          DEFAULT_ACCESS_TOKEN_NAME,
+        );
+
+        if (result.expireOn) {
+          this.authenticator.updateTokenExpiration(result.expireOn);
+        }
+        this.authenticator.refreshAuthHeaders();
+        this.broadcastTokenRefresh(result.expireOn);
+
+        this.activateFn?.();
+        return true;
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to refresh token:', error);
+        return false;
+      })
+      .finally(() => {
+        this.refreshInFlight = false;
+        this.refreshPromise = null;
+      });
+
+    return this.refreshPromise;
+  };
+
+  handlePrompt = (): void => {
+    this.warningVisible = true;
+    this.setStateFn?.({
+      isWarningVisible: true,
+      remainingTime: WARNING_DURATION,
+      isCountingDown: true,
+      pendingLogout: false,
+    });
+    this.broadcastWarningState(true);
+  };
+
+  handleActive = (): void => {
+    if (this.warningVisible) {
+      this.warningVisible = false;
+      this.setStateFn?.(INIT_STATE);
+      this.broadcastWarningState(false);
+    }
+  };
+
+  handleIdle = (): void => {
+    this.logout();
+  };
+
+  onAction = (): void => {
+    if (this.warningVisible || this.logoutInProgress || this.refreshInFlight) {
+      return;
+    }
+
+    const now = Date.now();
+    if (now - this.lastRefreshAttempt < IdleHandler.REFRESH_COOLDOWN_MS) {
+      return;
+    }
+
+    if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
+      this.refreshToken();
+    }
+  };
+
+  handleStorageChange = (e: StorageEvent): void => {
+    if (e.key === STORAGE_KEYS.IDLE_TIMER_LOGOUT) {
+      this.logout();
+    }
+
+    if (e.key === STORAGE_KEYS.IDLE_TIMER_WARNING_STATE && e.newValue && this.autoLogoffActive) {
+      try {
+        const parsed: unknown = JSON.parse(e.newValue);
+        if (!isWarningState(parsed)) {
+          console.error('Invalid warning state data', parsed);
+          return;
+        }
+
+        const warningState = parsed;
+        if (warningState.isVisible && !this.warningVisible) {
+          this.warningVisible = true;
+          this.setStateFn?.({
+            isWarningVisible: true,
+            remainingTime: WARNING_DURATION,
+            isCountingDown: true,
+            pendingLogout: false,
+          });
+        } else if (!warningState.isVisible && this.warningVisible) {
+          this.warningVisible = false;
+          this.setStateFn?.(INIT_STATE);
+        }
+      } catch (err) {
+        console.error('Failed to parse warning state', err);
+      }
+    }
+
+    if (e.key === STORAGE_KEYS.IDLE_TIMER_TOKEN_REFRESH && e.newValue) {
+      try {
+        const parsed: unknown = JSON.parse(e.newValue);
+        if (!isTokenRefreshData(parsed)) {
+          console.error('Invalid token refresh data', parsed);
+          return;
+        }
+
+        const refreshData = parsed;
+        if (refreshData.expireOn) {
+          this.authenticator.updateTokenExpiration(refreshData.expireOn);
+        }
+        this.authenticator.refreshAuthHeaders();
+        this.activateFn?.();
+
+        if (this.warningVisible) {
+          this.warningVisible = false;
+          this.setStateFn?.(INIT_STATE);
+        }
+      } catch (err) {
+        console.error('Failed to parse token refresh data', err);
+      }
+    }
+  };
+
+  isWarningVisible = (): boolean => this.warningVisible;
+}
+
+export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children, securitySettings }) => {
+  const { styles } = useStyles();
+  const autoLogoffTimeout = securitySettings?.autoLogoffTimeout;
+  const httpClient = useHttpClient();
+  const authenticator = useAuth();
+  const { logoutUser, loginInfo } = authenticator;
+
+  const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
+  const { isWarningVisible, remainingTime: rt, isCountingDown } = state;
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [idleHandler] = useState<IIdleHandler>(() =>
+    new IdleHandler(authenticator, httpClient, logoutUser, setState),
+  );
+
+  const isAutoLogoffActive =
+    !!securitySettings?.useAutoLogoff &&
+    autoLogoffTimeout !== undefined &&
+    autoLogoffTimeout > WARNING_DURATION &&
+    !!loginInfo;
+
+  // When auto-logoff is disabled, use a 24-hour timeout so the timer still runs
+  // for activity-based token refresh without ever reaching the logout threshold.
+  const timeoutSeconds = isAutoLogoffActive ? autoLogoffTimeout : 24 * 60 * 60;
+  const timeout = secondsToMilliseconds(timeoutSeconds);
+  const visible = isWarningVisible && isAutoLogoffActive;
+
+  const { activate } = useIdleTimer({
+    timeout,
+    promptBeforeIdle: WARNING_DURATION * ONE_SECOND,
+    crossTab: true,
+    onPrompt: () => {
+      if (isAutoLogoffActive) idleHandler.handlePrompt();
+    },
+    onIdle: () => {
+      if (isAutoLogoffActive) idleHandler.handleIdle();
+    },
+    onActive: () => {
+      if (isAutoLogoffActive) idleHandler.handleActive();
+    },
+    onAction: idleHandler.onAction,
+    stopOnIdle: false,
+    startOnMount: true,
+    disabled: !loginInfo,
+  });
+
+  useEffect(() => {
+    idleHandler.setActivate(activate);
+  }, [idleHandler, activate]);
+
+  useEffect(() => {
+    idleHandler.setAutoLogoffActive(isAutoLogoffActive);
+  }, [idleHandler, isAutoLogoffActive]);
+
+  // Countdown logic - pure state updater without side effects
+  const doCountdown = (): void => {
+    setState((prev) => {
+      if (prev.remainingTime <= 1) {
+        // Set pendingLogout flag instead of calling logout directly
+        // The logout side effect will be handled by useEffect
+        return { ...prev, remainingTime: 0, pendingLogout: true };
+      }
+      return { ...prev, remainingTime: prev.remainingTime - 1 };
+    });
+  };
+
   useInterval(() => {
-    if (isIdle) {
+    if (isCountingDown && isWarningVisible && !isRefreshing) {
       doCountdown();
     }
   }, ONE_SECOND);
 
-  const onOk = (): void => {
-    logout();
-  };
+  // Storage event listener for cross-tab sync
+  useEffect(() => {
+    window.addEventListener('storage', idleHandler.handleStorageChange);
 
-  const onCancel = (): void => setState((s) => ({ ...s, isIdle: false, remainingTime: SIXTY }));
+    return () => {
+      window.removeEventListener('storage', idleHandler.handleStorageChange);
+    };
+  }, [idleHandler]);
 
-  if (!isTimeoutSet) {
-    return <>{children}</>;
-  }
+  // Effect to handle logout when pendingLogout flag is set
+  // This separates the side effect from the state updater
+  useEffect(() => {
+    if (state.pendingLogout && !isRefreshing) {
+      idleHandler.logout();
+    }
+  }, [state.pendingLogout, idleHandler, isRefreshing]);
+
+  // Modal handlers
+  const onOk = useCallback(() => {
+    // User chose "Log Out Now"
+    idleHandler.logout();
+  }, [idleHandler]);
+
+  const onCancel = useCallback(async () => {
+    // User chose "Stay Logged In"
+
+    if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
+      setIsRefreshing(true);
+      try {
+        const refreshed = await idleHandler.refreshToken();
+        if (!refreshed) {
+          // Token refresh failed — force logout instead of leaving user with expired token
+          idleHandler.logout();
+          return;
+        }
+        // refreshToken() already called activate() internally on success — skip it here
+      } finally {
+        setIsRefreshing(false);
+      }
+    } else {
+      // Token not about to expire; reset idle timer manually
+      activate();
+    }
+
+    // Close warning modal
+    setState(INIT_STATE);
+  }, [idleHandler, activate]);
 
   return (
     <div className={styles.shaIdleTimerRenderer}>
-      <IdleTimerComponent onAction={onAction} onActive={onActive} onIdle={onIdle} timeout={timeout}>
-        {children}
-        <Modal
-          title="You have been idle"
-          open={visible}
-          cancelText="Keep me signed in"
-          okText="Logoff"
-          onOk={onOk}
-          onCancel={onCancel}
-        >
-          <div className={styles.idleTimerContent}>
-            <span className={styles.idleTimerContentTopHint}>
-              You have not been using the application for sometime. Please click on the
-              <strong>Keep me signed in</strong> button, else you`ll be automatically signed out in
-            </span>
+      {children}
+      <Modal
+        title="Session Expiring"
+        open={visible}
+        okText="Log Out Now"
+        cancelText="Stay Logged In"
+        onOk={onOk}
+        onCancel={onCancel}
+        closable={false}
+        mask={{ closable: false }}
+      >
+        <div className={styles.idleTimerContent}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
             <Progress type="circle" percent={getPercentage(rt)} status={getStatus(rt)} format={() => <>{rt}</>} />
-            <span className={styles.idleTimerContentBottomHint}>
-              <strong>seconds</strong>
-            </span>
           </div>
-        </Modal>
-      </IdleTimerComponent>
+          <div style={{ textAlign: 'center' }}>
+            <p>You will be logged out in <strong>{rt} seconds</strong> due to inactivity.</p>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

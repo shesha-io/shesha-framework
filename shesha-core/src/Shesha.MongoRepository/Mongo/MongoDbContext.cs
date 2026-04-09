@@ -5,8 +5,10 @@ using System;
 
 namespace MongoDbRepository
 {
-    public class MongoDbContext : IMongoDbContext
+    public sealed class MongoDbContext : IMongoDbContext
     {
+        private bool disposed;
+
         /// <summary>
         /// Get connection string from Mongo Client
         /// </summary>
@@ -25,12 +27,6 @@ namespace MongoDbRepository
 
         private IMongoClient client;
         private IMongoDatabase database;
-
-        public MongoDbContext()
-        {
-            if (string.IsNullOrEmpty(ConnectionString))
-                throw new ArgumentNullException(nameof(ConnectionString), "Cannot be null or empty !");
-        }
 
         public MongoDbContext(string connectionString)
         {
@@ -54,6 +50,24 @@ namespace MongoDbRepository
             string tableName = PluralizeDocumentName ? PluralizationProvider.Pluralize(typeof(T).Name) : typeof(T).Name;
 
              database.DropCollection(tableName);
+        }
+
+        public void Dispose()
+        {
+            if (disposed)
+                return;
+
+            client?.Dispose();
+
+            disposed = true;
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
         }
     }
 }

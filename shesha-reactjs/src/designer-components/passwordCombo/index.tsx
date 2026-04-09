@@ -15,7 +15,7 @@ import { PasswordCombo } from './passwordCombo';
 import { IInputStyles, useForm } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
@@ -36,10 +36,10 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
 
     const options = { hidden: model.hidden, formData };
 
-    const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
+    const { styles } = useStyles({ fontFamily: model.font?.type, fontWeight: model.font?.weight, textAlign: model.font?.align });
 
 
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 

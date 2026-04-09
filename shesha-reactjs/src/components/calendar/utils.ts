@@ -1,4 +1,3 @@
-import { IMatchData } from "@/index";
 import { evaluateDynamicFilters } from "@/utils/datatable";
 import { IAnyObject } from "@/interfaces";
 import { ICalendarLayersProps } from "@/providers/layersProvider/models";
@@ -7,6 +6,7 @@ import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { ILayerWithMetadata } from "./interfaces";
 import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
+import { IMatchData } from "@/providers/form/utils";
 
 export const getLayerEventItems = (
   item: ICalendarLayersProps,

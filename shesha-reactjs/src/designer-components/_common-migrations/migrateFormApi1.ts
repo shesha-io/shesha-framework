@@ -1,18 +1,19 @@
-import { IConfigurableFormComponent } from "@/index";
 import { StandardNodeTypes } from "@/interfaces/formComponent";
-import { isPropertySettings } from "../_settings/utils";
+import { isPropertySettings } from "../_settings/utils/utils";
+import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { IConfigurableFormComponent } from "@/providers/form/models";
 
-const migrateExpression = (expression: string, regexp: RegExp, newValue: string): string => {
-  if (!expression)
+const migrateExpression = (expression: string | undefined, regexp: RegExp, newValue: string): string | undefined => {
+  if (isNullOrWhiteSpace(expression))
     return expression;
   return expression.replaceAll(regexp, newValue);
 };
 
-const setFormData = (expr: string): string => migrateExpression(expr, /\b(setFormData)\b/mg, 'form.setFormData');
+const setFormData = (expr: string | undefined): string | undefined => migrateExpression(expr, /\b(setFormData)\b/mg, 'form.setFormData');
 const formData = (expr: string): string => migrateExpression(expr, /\b(formData)\b/mg, 'form.data');
-const formMode = (expr: string): string => migrateExpression(expr, /\b(formMode)\b/mg, 'form.formMode');
+const formMode = (expr: string | undefined): string | undefined => migrateExpression(expr, /\b(formMode)\b/mg, 'form.formMode');
 
-const withoutFormData = (expr: string): string => setFormData(formMode(expr));
+const withoutFormData = (expr: string | undefined): string | undefined => setFormData(formMode(expr));
 const full = (expr: string): string => setFormData(formData(formMode(expr)));
 
 const events = <T extends IConfigurableFormComponent>(model: T): T => ({

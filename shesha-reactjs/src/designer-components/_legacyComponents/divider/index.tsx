@@ -29,8 +29,8 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
     const { globalState } = useGlobalState();
 
     const props: DividerProps = {
-      type: model?.dividerType,
-      dashed: model?.dashed,
+      orientation: model.dividerType,
+      dashed: model.dashed,
     };
 
     return (

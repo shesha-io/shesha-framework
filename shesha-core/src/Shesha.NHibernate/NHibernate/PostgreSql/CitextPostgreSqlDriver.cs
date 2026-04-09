@@ -1,4 +1,4 @@
-﻿using NHibernate.Extensions.NpgSql;
+﻿using NHibernate.Driver;
 using NHibernate.SqlTypes;
 using System.Data.Common;
 
@@ -7,7 +7,7 @@ namespace Shesha.NHibernate.PostgreSql
     /// <summary>
     /// PostgreSql driver that uses `citext` for all string query parameters
     /// </summary>
-    public class CitextPostgreSqlDriver : NpgSqlDriver
+    public class CitextPostgreSqlDriver : NpgsqlDriver
     {
         protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
         {

@@ -6,6 +6,6 @@ export const useSettingsComponents = (): ISettingsComponent[] => {
   const { settingsComponentGroups } = useSheshaApplication();
 
   return useMemo(() => {
-    return settingsComponentGroups?.flatMap((group) => group.components || []) || [];
+    return settingsComponentGroups.flatMap((group) => group.components);
   }, [settingsComponentGroups]);
 };

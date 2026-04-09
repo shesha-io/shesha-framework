@@ -5,17 +5,20 @@ import React, {
   useEffect,
 } from 'react';
 import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
-import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
 import { Form, FormItemProps } from 'antd';
-import { getPropertySettingsFromData } from './utils';
+import { getPropertySettingsFromData } from './utils/utils';
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
-import { getFieldNameFromExpression } from '@/index';
+import { getFieldNameFromExpression } from '@/providers/form/utils';
+import { IConfigurableFormItemProps } from '@/components/formDesigner/components/model';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
 
 export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
+  id?: string;
   name?: string;
-  label?: string;
-  jsSetting?: boolean;
+  label?: string | React.ReactNode;
+  jsSetting?: boolean | 'lazy';
   readOnly?: boolean;
   disabled?: boolean;
   style?: React.CSSProperties;
@@ -25,6 +28,7 @@ export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps,
   layout?: 'horizontal' | 'vertical';
   hideLabel?: boolean;
   type?: string;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc;
 }
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
@@ -68,7 +72,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
 
     return (
       <Form.Item {...formProps} label={props.label}>
-        <SettingsControl propertyName={props.name} mode={mode}>
+        <SettingsControl propertyName={props.name} mode={mode} lazy={props.jsSetting === 'lazy'} availableConstantsExpression={props.availableConstantsExpression}>
           {(value, onChange, propertyName) => children(value, onChange, propertyName)}
         </SettingsControl>
       </Form.Item>
@@ -104,6 +108,8 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             onChange={onChange}
             value={value}
             readOnly={readOnly}
+            lazy={props.jsSetting === 'lazy'}
+            availableConstantsExpression={props.availableConstantsExpression}
           >
             {(value, onChange) => {
               return cloneElement(

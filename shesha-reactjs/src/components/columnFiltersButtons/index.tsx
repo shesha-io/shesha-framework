@@ -3,9 +3,9 @@ import { useDataTableStore } from '@/providers';
 import ColumnFiltersButtonsBase from '@/components/columnFiltersButtonsBase';
 
 export const ColumnFiltersButtons: FC = () => {
-  const { applyFilters, clearFilters, toggleSaveFilterModal, isFetchingTableData } = useDataTableStore();
+  const { applyFilters, clearFilters, isFetchingTableData } = useDataTableStore();
 
-  return <ColumnFiltersButtonsBase {...{ applyFilters, clearFilters, toggleSaveFilterModal, isFetchingTableData }} />;
+  return <ColumnFiltersButtonsBase {...{ applyFilters, clearFilters, isFetchingTableData }} />;
 };
 
 export default ColumnFiltersButtons;

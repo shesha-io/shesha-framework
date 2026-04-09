@@ -1,10 +1,11 @@
 import { IComponentSelectorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { useMetadata, useShaFormInstance } from '@/providers';
-import { FormComponentSelector } from '@/components';
+import { FormComponentSelector } from '@/components/formComponentSelector';
 import { evaluateString } from '@/providers/form/utils';
 
-export const ComponentSelectorWrapper: FC<IComponentSelectorSettingsInputProps> = (props) => {
+export const ComponentSelectorWrapper: FCUnwrapped<IComponentSelectorSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size, componentType, propertyAccessor, noSelectionItemText, noSelectionItemValue } = props;
 
   const { formData } = useShaFormInstance();

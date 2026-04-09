@@ -2,7 +2,7 @@ import { HttpClientApi, useHttpClient } from "@/providers/sheshaApplication/publ
 import { FormDataSubmitPayload, GqlSubmitterSettings, IFormDataSubmitter, isGqlSubmitterSettings, SubmitCaller } from "./interfaces";
 import { useState } from "react";
 import { IAjaxResponse, IApiEndpoint, IFormSettings, IToolboxComponents } from "@/interfaces";
-import { StandardEntityActions } from "@/interfaces/metadata";
+import { isApiEndpoint, StandardEntityActions } from "@/interfaces/metadata";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
 import { getQueryParams, getUrlWithoutQueryParams } from "@/utils/url";
 import qs from "qs";
@@ -11,6 +11,9 @@ import { unwrapAbpResponse } from "@/utils/fetchers";
 import { HttpResponse } from "@/publicJsApis/httpClient";
 import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from "@/utils/form";
 import { useFormDesignerComponents } from "../hooks";
+import { addDelayedUpdateProperty } from "@/providers/delayedUpdateProvider";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { getIdOrUndefined } from "@/utils/entity";
 
 export interface GqlSubmitterArguments {
   httpClient: HttpClientApi;
@@ -22,25 +25,19 @@ export class GqlSubmitter implements IFormDataSubmitter {
   #httpClient: HttpClientApi;
 
   #endpointsEvaluator: IEntityEndpointsEvaluator;
-  // #toolboxComponents: IToolboxComponents;
-
 
   constructor(args: GqlSubmitterArguments) {
     this.#httpClient = args.httpClient;
     this.#endpointsEvaluator = args.endpointsEvaluator;
-    // this.#toolboxComponents = args.toolboxComponents;
-
-    if (!this.#httpClient)
-      throw new Error("Http client is mandatory");
   }
 
   #getGqlSettings = (formSettings: IFormSettings): GqlSubmitterSettings => {
     const { dataSubmittersSettings = {} } = formSettings;
-    const submitterSettings = dataSubmittersSettings?.['gql'];
+    const submitterSettings = dataSubmittersSettings['gql'];
     return isGqlSubmitterSettings(submitterSettings) ? submitterSettings : { endpointType: 'default' };
   };
 
-  prepareDataForSubmit = async (payload: FormDataSubmitPayload): Promise<any> => {
+  prepareDataForSubmit = async <Values extends object = object>(payload: FormDataSubmitPayload<Values>): Promise<Values> => {
     const { formSettings, data, antdForm, getDelayedUpdates } = payload;
     const settings = this.#getGqlSettings(formSettings);
 
@@ -57,20 +54,22 @@ export class GqlSubmitter implements IFormDataSubmitter {
 
     // handle delayed updates
     if (Boolean(getDelayedUpdates))
-      postDataWithServiceFields._delayedUpdate = getDelayedUpdates();
+      addDelayedUpdateProperty(postDataWithServiceFields, getDelayedUpdates());
 
-    const postDataFinal = data && hasFiles(postDataWithServiceFields)
+    const postDataFinal = hasFiles(postDataWithServiceFields)
       ? jsonToFormData(postDataWithServiceFields)
       : postDataWithServiceFields;
 
-    return postDataFinal;
+    return postDataFinal as Values;
   };
 
   #getHttpCaller = (endpoint: IApiEndpoint): SubmitCaller => {
-    const normalizedVerb = endpoint.httpVerb?.trim()?.toLowerCase();
+    const normalizedVerb = !isNullOrWhiteSpace(endpoint.httpVerb)
+      ? endpoint.httpVerb.trim().toLowerCase()
+      : "";
 
     // TResponse extends any, TData extends any
-    const unwrapHttpCall = <TData extends any, TResponse extends TData | IAjaxResponse<TData>>(promise: Promise<HttpResponse<TResponse>>): Promise<TData | TResponse> => {
+    const unwrapHttpCall = <TData extends object, TResponse extends TData | IAjaxResponse<TData>>(promise: Promise<HttpResponse<TResponse>>): Promise<TData | TResponse> => {
       const axiosUnwrapped = unwrapAxiosCall(promise);
       return axiosUnwrapped.then((response) => unwrapAbpResponse<TData, TResponse>(response));
     };
@@ -94,11 +93,11 @@ export class GqlSubmitter implements IFormDataSubmitter {
           return unwrapHttpCall(this.#httpClient.delete(finalUrl));
         };
       default:
-        return null;
+        throw new Error(`Unsupported http verb: ${normalizedVerb}`);
     }
   };
 
-  getEndpointAsync = async (payload: FormDataSubmitPayload, entityAction: StandardEntityActions): Promise<IApiEndpoint> => {
+  getEndpointAsync = async <Values extends object = object>(payload: FormDataSubmitPayload<Values>, entityAction: StandardEntityActions): Promise<IApiEndpoint | undefined> => {
     const { formSettings } = payload;
     const gqlSettings = this.#getGqlSettings(formSettings);
     const { endpointType, staticEndpoint, dynamicEndpoint } = gqlSettings;
@@ -111,27 +110,32 @@ export class GqlSubmitter implements IFormDataSubmitter {
         return staticEndpoint;
       }
       case 'dynamic': {
+        if (isNullOrWhiteSpace(dynamicEndpoint))
+          return undefined;
         const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { data: payload.data });
-        return dynamicEvaluated;
+        return isApiEndpoint(dynamicEvaluated) ? dynamicEvaluated : undefined;
       }
       default:
-        return null;
+        return undefined;
     }
   };
 
-  submitAsync = async (payload: FormDataSubmitPayload): Promise<any> => {
+  submitAsync = async <Values extends object = object>(payload: FormDataSubmitPayload<Values>): Promise<unknown> => {
     const data = await this.prepareDataForSubmit(payload);
 
     const { onBeforeSubmit, onSubmitSuccess, onSubmitFailed, customSubmitCaller } = payload;
 
     if (onBeforeSubmit)
-      await onBeforeSubmit({ data: removeGhostKeys({ ...data }) });
+      await onBeforeSubmit({ data: removeGhostKeys<Values>(data) });
 
     const getDefaultSubmitCaller = async (): Promise<SubmitCaller> => {
-      const entityAction = data?.id
+      const id = getIdOrUndefined(data);
+      const entityAction = !isNullOrWhiteSpace(id)
         ? StandardEntityActions.update
         : StandardEntityActions.create;
       const endpoint = await this.getEndpointAsync(payload, entityAction);
+      if (!isDefined(endpoint))
+        throw new Error('Endpoint is not defined');
       return this.#getHttpCaller(endpoint);
     };
 

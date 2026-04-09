@@ -42,7 +42,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
     changePageSize(getPageSize(maxResultCount));
   }, [maxResultCount]);
 
-  useDataSource({ id, name, dataSource }, [id, name, dataSource]);
+  useDataSource({ id, name, dataSource });
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 

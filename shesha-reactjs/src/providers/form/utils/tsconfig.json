@@ -1,9 +1,0 @@
-{
-  "extends": "../../../../tsconfig.strictNulls.json",
-  "compilerOptions": {
-    "composite": true,
-  },
-  "include": [
-    "**/*"
-  ],
-}

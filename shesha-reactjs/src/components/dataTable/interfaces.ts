@@ -4,7 +4,7 @@ import { IAnyObject } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { DataTableFullInstance } from '@/providers/dataTable/contexts';
-import { CellStyleFunc, IAnchoredDirection, IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
+import { CellStyleFunc, IAnchoredDirection, IDataTableInstance, ITableColumn, ITableRowData } from '@/providers/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
 
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
@@ -92,23 +92,14 @@ export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInl
   selectedRowIndex?: number;
   onSelectRow?: (index: number, row: any) => void;
   onSelectedIdsChanged?: (selectedRowIds: string[]) => void;
-  onMultiRowSelect?: (rows: Array<Row> | Row) => void;
+  onMultiRowSelect?: (rows: Array<Row<ITableRowData>> | Row<ITableRowData>) => void;
   customTypeEditors?: ITableCustomTypeEditor[];
   onRowsChanged?: (rows: object[]) => void;
   tableRef?: MutableRefObject<Partial<DataTableFullInstance> | null>;
   /**
-   * A callback for when the file export has succeeded
-   */
-  onExportSuccess?: () => void;
-
-  /**
    * Called when fetch data or refresh is complete is complete
    */
   onFetchDataSuccess?: () => void;
-  /**
-   * A callback for when the file export has failed
-   */
-  onExportError?: () => void;
 }
 
 export interface ITableCellRenderingArgs<TValue = any> {
