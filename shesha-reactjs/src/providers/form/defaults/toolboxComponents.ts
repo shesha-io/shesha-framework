@@ -1,4 +1,5 @@
 import Address from '@/designer-components/address';
+import AddressInput from '@/designer-components/addressInput';
 import Alert from '@/designer-components/alert';
 import AutocompleteTagGroup from '@/designer-components/autocompleteTagGroup';
 import Button from '@/designer-components/button/button';
@@ -154,6 +155,7 @@ export const getToolboxComponents = (
       visible: true,
       components: [
         Address,
+        AddressInput,
         Autocomplete,
         ColorPickerComponent,
         IconPicker,
