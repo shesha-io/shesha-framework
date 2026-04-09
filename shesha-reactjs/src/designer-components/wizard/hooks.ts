@@ -72,8 +72,11 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
         })
         .map((step) => {
-          if (step.hasCustomFooter && step.stepFooter?.id) {
-            const footerComponentIds = componentRelations[step.stepFooter.id] || [];
+          // Get footer id - use existing or generate fallback
+          const footerId = step.stepFooter?.id ?? (step.hasCustomFooter ? `${step.id}_footer` : undefined);
+          
+          if (step.hasCustomFooter && footerId) {
+            const footerComponentIds = componentRelations[footerId] || [];
             const footerComponents = footerComponentIds
               .map((id) => allComponents[id])
               .filter(Boolean);
@@ -81,6 +84,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
             return {
               ...step,
               stepFooter: {
+                id: footerId,
                 ...step.stepFooter,
                 components: footerComponents,
               },

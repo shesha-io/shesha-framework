@@ -50,6 +50,23 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         overflow
     });
 
+    // Get or create footer container id for current step
+    const currentStepFooterId = useMemo(() => {
+        if (!currentStep) return undefined;
+        
+        // Use existing footer id if available
+        if (currentStep.stepFooter?.id) {
+            return currentStep.stepFooter.id;
+        }
+        
+        // Fallback: generate footer id from step id if hasCustomFooter is true but stepFooter is missing
+        if (currentStep.hasCustomFooter) {
+            return `${currentStep.id}_footer`;
+        }
+        
+        return undefined;
+    }, [currentStep]);
+
     const steps = useMemo(() => {
         return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style }, index) => {
             const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
@@ -109,11 +126,10 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                         />
                         <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                     </div>
-                    {currentStep?.hasCustomFooter ? (
+                    {currentStep?.hasCustomFooter && currentStepFooterId ? (
                     <div className={styles.shaStepsButtonsContainer}>
                         <ComponentsContainer
-                            containerId={currentStep.id + '_footer'}
-                            dynamicComponents={isDynamic ? currentStep.stepFooter.components : []}
+                            containerId={currentStepFooterId}
                         />
                     </div>
                 ) : (

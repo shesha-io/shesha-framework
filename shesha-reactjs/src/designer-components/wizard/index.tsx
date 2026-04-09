@@ -104,7 +104,6 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       })),
   settingsFormMarkup: () => getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
-
   customContainerNames: ['steps'],
   getContainers: (model) => {
     const containers: IFormComponentContainer[] = [];
@@ -116,8 +115,11 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     // Add step footer containers
     const footerContainers = model.steps
-      .filter((s) => s.hasCustomFooter && s.stepFooter?.id)
-      .map((s) => ({ id: `${s.id}_footer`, parentId: model.id }));
+      .filter((s) => s.hasCustomFooter)
+      .map((s) => ({ 
+        id: s.stepFooter?.id ?? `${s.id}_footer`, 
+        parentId: model.id 
+      }));
     return [...containers, ...footerContainers];
   },
 };

@@ -124,6 +124,11 @@ export const onAddNewItem = (items: IWizardStepProps[]) => {
     backButtonText: 'Back',
     components: [],
     status: undefined,
+    hasCustomFooter: false,
+    stepFooter: {
+      id: `${id}_footer`,
+      components: [],
+    },
   };
   return buttonProps;
 };
