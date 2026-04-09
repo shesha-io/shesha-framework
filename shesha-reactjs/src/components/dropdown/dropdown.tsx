@@ -158,6 +158,18 @@ export const Dropdown: FC<IDropdownProps> = ({
   };
 
   if (readOnly) {
+    const isMultiple = mode === 'multiple' || mode === 'tags';
+    const getReadOnlyValue = () => {
+      if (!isMultiple) {
+        return options.find((o) => o.value === selectedValue);
+      }
+      if (displayStyle === 'tags') {
+        const valuesArray = Array.isArray(selectedValue) ? selectedValue : selectedValue != null ? [selectedValue] : [];
+        return valuesArray.map((x) => options.find((o) => o.value === x));
+      }
+      return getSelectValue();
+    };
+
     return (
       <ReadOnlyDisplayFormItem
         showIcon={showIcon}
@@ -166,12 +178,8 @@ export const Dropdown: FC<IDropdownProps> = ({
         tagStyle={tagStyle}
         style={style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
-        type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
-        value={mode === 'multiple'
-          ? displayStyle === 'tags'
-            ? selectedValue?.map((x) => options.find((o) => o.value === x))
-            : getSelectValue()
-          : options.find((o) => o.value === selectedValue)}
+        type={isMultiple ? 'dropdownMultiple' : 'dropdown'}
+        value={getReadOnlyValue()}
       />
     );
   }
