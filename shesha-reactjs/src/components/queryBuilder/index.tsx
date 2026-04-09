@@ -2,9 +2,7 @@ import React, { FC, useEffect, useMemo } from 'react';
 import { config as InitialConfig } from './config';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { extractVars } from '@/utils/jsonLogic';
-import { FieldAutocomplete } from './fieldAutocomplete';
-import { FuncSelect } from './funcSelect/index';
-import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
+import { hasCustomQBSettings, IProperty, propertyHasQBConfig, type CustomFieldSettings } from '@/providers/queryBuilder/models';
 import { IQueryBuilderProps } from './interfaces';
 import { QueryBuilderContent } from './queryBuilderContent';
 import { Skeleton } from 'antd';
@@ -16,6 +14,38 @@ import {
   Settings,
 } from '@react-awesome-query-builder/antd';
 import { isDefined } from '@/utils/nullables';
+
+const normalizeTypeAlias = (value?: string): string => {
+  return value?.replace(/[\s_-]/g, '').toLowerCase() ?? '';
+};
+
+const getTypeOverrideFromAlias = (
+  typeShortAlias?: string,
+): { type?: string; preferWidgets?: string[] } => {
+  const alias = normalizeTypeAlias(typeShortAlias);
+  switch (alias) {
+    case 'text':
+    case 'string':
+      return { type: 'text' };
+    case 'number':
+      return { type: 'number' };
+    case 'date':
+      return { type: 'date' };
+    case 'datetime':
+      return { type: 'datetime' };
+    case 'time':
+      return { type: 'time' };
+    case 'guid':
+      return { type: 'guid' };
+    case 'entityreference':
+      return { type: 'entityReference' };
+    case 'reflist':
+    case 'referencelistitem':
+      return { type: 'refList', preferWidgets: ['refListDropdown'] };
+    default:
+      return {};
+  }
+};
 
 const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
   const { value } = props;
@@ -40,13 +70,21 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
 
   const qbSettings: Settings = {
     ...InitialConfig.settings,
+    addRuleLabel: 'Add Rule',
+    addGroupLabel: 'Add Group',
+    addSubRuleLabel: 'Add Rule',
+    addSubGroupLabel: 'Add Group',
+    groupActionsPosition: 'bottomRight',
+    fieldPlaceholder: 'Select field',
+    operatorPlaceholder: 'Select operator',
+    fieldLabel: 'Field',
+    operatorLabel: 'Operator',
+    showNot: false,
     removeIncompleteRulesOnLoad: false,
     removeEmptyGroupsOnLoad: false,
     removeEmptyRulesOnLoad: false,
     removeInvalidMultiSelectValuesOnLoad: false,
-    fieldSources: ["field", "func"],
-    renderFunc: (props) => (<FuncSelect {...props} />),
-    renderField: (props) => (<FieldAutocomplete {...props} /* fields={fields}*/ />),
+    fieldSources: ["field"],
   };
 
   const convertFields = (fields: IProperty[]): Fields => {
@@ -72,41 +110,47 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
       if (!isVisible)
         return null;
 
-      switch (dataType) {
-        case 'string':
-        case DataTypes.string:
-          type = 'text';
-          break;
+      const typeOverride = getTypeOverrideFromAlias((fieldSettings as CustomFieldSettings | undefined)?.typeShortAlias);
+      if (typeOverride.type) {
+        type = typeOverride.type;
+        defaultPreferWidgets = typeOverride.preferWidgets ?? [];
+      } else {
+        switch (dataType) {
+          case 'string':
+          case DataTypes.string:
+            type = 'text';
+            break;
 
-        case DataTypes.date:
-          type = 'date';
-          break;
-        case DataTypes.dateTime:
-          type = 'datetime';
-          break;
-        case DataTypes.time:
-          type = 'time';
-          break;
+          case DataTypes.date:
+            type = 'date';
+            break;
+          case DataTypes.dateTime:
+            type = 'datetime';
+            break;
+          case DataTypes.time:
+            type = 'time';
+            break;
 
-        case DataTypes.number:
-          type = 'number';
-          break;
+          case DataTypes.number:
+            type = 'number';
+            break;
 
-        case 'entityReference':
-        case DataTypes.entityReference:
-          type = 'entityReference';
-          break;
+          case 'entityReference':
+          case DataTypes.entityReference:
+            type = 'entityReference';
+            break;
 
-        case 'refList':
-        case DataTypes.referenceListItem:
-          type = 'refList';
-          defaultPreferWidgets = ['refListDropdown'];
-          break;
-        case '!struct':
-          type = dataType;
-          break;
-        default:
-          break;
+          case 'refList':
+          case DataTypes.referenceListItem:
+            type = 'refList';
+            defaultPreferWidgets = ['refListDropdown'];
+            break;
+          case '!struct':
+            type = dataType;
+            break;
+          default:
+            break;
+        }
       }
 
       const fieldPreferWidgets = preferWidgets ?? defaultPreferWidgets ?? [];
@@ -146,6 +190,17 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
       ...InitialConfig,
       widgets: { ...InitialConfig.widgets, ...customWidgets },
       settings: qbSettings,
+      conjunctions: {
+        ...InitialConfig.conjunctions,
+        AND: {
+          ...InitialConfig.conjunctions.AND,
+          label: 'And',
+        },
+        OR: {
+          ...InitialConfig.conjunctions.OR,
+          label: 'Or',
+        },
+      },
       fields: convertFields(fields),
     };
     if (props.readOnly) {

@@ -4,6 +4,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 
 export interface IQueryBuilderComponentProps extends IConfigurableFormComponent {
   jsonExpanded?: boolean;
+  showJsonTestingTools?: boolean;
   modelType?: string | IEntityTypeIdentifier;
   fieldsUnavailableHint?: string;
 }

@@ -54,17 +54,55 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   return isProxy(result) ? unproxyValue<TValue>(result as TValue) : result as TValue;
 };
 
-export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
-  target: TObject,
-  source: TSource,
-  skipProp: ((target: Record<string, unknown>, source: Record<string, unknown>, key: string) => boolean) | undefined = undefined):
-TObject & TSource => {
-  return mergeWith({ ...target }, source, (objValue: unknown, srcValue: unknown, key: string, obj: TObject | null) => {
-    // Check if the property should be skipped
-    const skip = skipProp && typeof skipProp === 'function' ? skipProp(target as Record<string, unknown>, source as Record<string, unknown>, key) : false;
-    // if skip is true, return original value
-    if (skip) return objValue;
+const jsonLogicOperators = new Set([
+  '!',
+  '!=',
+  '!==',
+  '==',
+  '===',
+  '<',
+  '<=',
+  '>',
+  '>=',
+  'and',
+  'or',
+  'if',
+  'in',
+  'var',
+  'missing',
+  'missing_some',
+  'map',
+  'filter',
+  'reduce',
+  'all',
+  'some',
+  'none',
+  'cat',
+  'substr',
+  'merge',
+  '+',
+  '-',
+  '*',
+  '/',
+  '%',
+  'min',
+  'max',
+  'evaluate',
+  'startsWith',
+  'endsWith',
+  'is_satisfied',
+]);
 
+const isJsonLogicNode = (value: unknown): value is Record<string, unknown> => {
+  if (!value || Array.isArray(value) || typeof value !== 'object')
+    return false;
+
+  const keys = Object.keys(value);
+  return keys.length > 0 && keys.every((key) => jsonLogicOperators.has(key));
+};
+
+export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSource): TObject & TSource => {
+  return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
     // handle null
     if (srcValue === null) {
       // reset field to null
@@ -94,7 +132,11 @@ TObject & TSource => {
     }
 
     // handle objects
-    if (typeof objValue === "object" && typeof srcValue === "object" && objValue !== null) {
+    if (typeof objValue === "object" && typeof srcValue === "object") {
+      // JsonLogic objects are expression AST nodes and must be replaced as a whole.
+      if (isJsonLogicNode(objValue) || isJsonLogicNode(srcValue))
+        return srcValue;
+
       // make a copy of merged objects
       return deepMergeValues(objValue, srcValue, skipProp);
     }

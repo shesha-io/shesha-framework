@@ -16,7 +16,8 @@ module.exports = {
   // extended assertions to Jest
   setupFilesAfterEnv: [
     //"@testing-library/jest-dom/extend-expect"
-    "@testing-library/jest-dom"
+    "@testing-library/jest-dom",
+    "<rootDir>/src/testSetup.ts",
   ],
 
   // Test spec file resolution pattern
@@ -24,12 +25,10 @@ module.exports = {
   // should contain `test` or `spec`.
   //testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(ts|tsx)$',
-  // other Jest configuration options...
-  /*
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  */
+  // other Jest configuration options...
   // Module file extensions for importing
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   globals: {

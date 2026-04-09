@@ -194,6 +194,8 @@ const baseTsConfig = {
     ignores: [
         "src/apis/*",
         "**/__tests__/**/*",
+        "**/*.test.ts",
+        "**/*.test.tsx",
     ],
     plugins: {
         "memory-monitor": memoryTracePlugin,
@@ -418,6 +420,12 @@ const makeStrictConfig = (path) => {
 }
 
 export default [
+    {
+        ignores: [
+            "dist/**",
+            ".next/**",
+        ],
+    },
     {
         ...baseTsConfig,
         files: [

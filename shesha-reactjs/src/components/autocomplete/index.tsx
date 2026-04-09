@@ -314,8 +314,11 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }, [selected.current, source?.tableData, props.grouping]);
 
   const title = useMemo(() => {
-    return selected.current.length === 1 ? displayValueFunc(selected.current[0], allData) : null;
-  }, [selected.current]);
+    if (selected.current.length === 1)
+      return displayValueFunc(selected.current[0], allData);
+
+    return props.placeholder ?? null;
+  }, [allData, displayValueFunc, props.placeholder, selected.current]);
 
   // Show loading when actively fetching data
   const shouldShowLoading = (loadingIndicator || (!props.readOnly && loadingValues));
@@ -527,4 +530,3 @@ export {
   AutocompleteInterface as Autocomplete, type AutocompleteDataSourceType, type IAutocompleteProps,
   type ISelectOption,
 };
-
