@@ -25,8 +25,9 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
   itemRef.current = item;
 
   const debouncedSave = useDebouncedCallback(
-    (values) => {
+    (_changedValues, values) => {
       // Use the ref to get the latest item value, avoiding stale closure issues
+      // Use the full form snapshot (values) to avoid losing updates
       onChange?.({ ...itemRef.current, ...values });
     },
     // delay in ms
@@ -35,7 +36,7 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
     //Guard debounced saves when switching items to prevent applying stale values to new items
     useEffect(() => {
         debouncedSave.cancel();
-    }, [item?.id]);
+    }, [item?.id, debouncedSave]);
 
   const editor = useMemo(() => {
     const emptyEditor = null;
@@ -59,7 +60,7 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
         />
       </SourceFilesFolderProvider>
     );
-  }, [item]);
+  }, [item, settingsMarkupFactory, readOnly, form, debouncedSave]);
 
   return Boolean(item)
     ? (<>{editor}</>)

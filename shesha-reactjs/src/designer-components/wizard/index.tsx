@@ -99,6 +99,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           hasCustomFooter: step.hasCustomFooter ?? false,
           stepFooter: {
             id: step.stepFooter?.id ?? `${step.id}_footer`,
+            components: step.stepFooter?.components ?? [],
           }
         })) ?? []
       })),

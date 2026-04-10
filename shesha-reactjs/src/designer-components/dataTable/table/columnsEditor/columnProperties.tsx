@@ -45,7 +45,8 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
   }, [columnType]);
 
   const debouncedSave = useDebouncedCallback(
-    (values) => {
+    (_changedValues, values) => {
+      // Use the full form snapshot (values) to avoid losing updates
       onChange?.({ ...item, ...values });
     },
     // delay in ms
@@ -63,7 +64,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
     };
     // TODO: handle editors
     form.setFieldsValue(newValues);
-    debouncedSave(newValues);
+    debouncedSave(values, newValues);
   };
 
   return (
