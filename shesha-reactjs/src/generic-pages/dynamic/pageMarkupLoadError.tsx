@@ -1,4 +1,4 @@
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { MarkupLoadingErrorRenderProps } from '@/components/configurableForm/models';
 import { getFormForbiddenMessage } from '@/providers/configurationItemsLoader/utils';
 import { App, Button, Result } from 'antd';

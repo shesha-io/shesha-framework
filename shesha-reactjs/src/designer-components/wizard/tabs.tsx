@@ -3,9 +3,8 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import ConditionalWrap from '@/components/conditionalWrapper';
 import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, useEffect, useMemo } from 'react';
-import ShaIcon from '@/components/shaIcon';
+import { ShaIcon } from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
-import { DataTypes, IObjectMetadata, ValidationErrors, getStyle, useDataContextManager, useShaFormInstance } from '@/index';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getWizardButtonStyle } from './utils';
 import { IStepProps, IWizardComponentProps } from './models';
@@ -17,6 +16,12 @@ import { wizardApiCode } from '@/publicJsApis';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { addPx } from '@/utils/style';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { IObjectMetadata } from '@/interfaces/metadata';
+import ValidationErrors from '@/components/validationErrors';
+import { getStyle } from '@/providers/form/utils';
+import { useDataContextManager } from '@/providers/dataContextManager';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
@@ -29,8 +34,13 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
   const { executeBooleanExpression } = useFormExpression();
   const onChangeContextData = useDataContextManager()?.onChangeContextData;
 
-  const { components, current, currentStep, visibleSteps, back, cancel, content, done, next, setStep } = useWizard(model);
+  const { components, current, currentStep, visibleSteps, back, cancel, close, content, done, next, setStep } = useWizard(model);
   useEffect(() => onChangeContextData(), [current]);
+
+  const contextData = useMemo(
+    () => ({ current, currentStep, visibleSteps }),
+    [current, currentStep, visibleSteps],
+  );
 
   const {
     buttonsLayout = 'spaceBetween',
@@ -71,7 +81,10 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         // render only current step
         content: current === index
           ? (
-            <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
+            <ParentProvider
+              name="WizardStep"
+              model={{ ...model, readOnly: isDisabledByCondition }}
+            >
               <ComponentsContainer wrapperStyle={{ height: '100%', display: 'grid', ...getOverflowStyle(model.overflow ?? true, model.hideScrollBar ?? false) }} containerId={id} dynamicComponents={isDynamic ? components : []} />
             </ParentProvider>
           )
@@ -95,10 +108,13 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
       description={`Wizard context for ${model.componentName}`}
       type="control"
       metadata={contextMetadata}
-      data={{ current, currentStep, visibleSteps }}
-      api={{ back, cancel, content, done, next, setStep }}
+      data={contextData}
+      api={{ back, cancel, close, content, done, next, setStep }}
     >
-      <ParentProvider model={model}>
+      <ParentProvider
+        name="Wizard"
+        model={model}
+      >
         <div className={styles.shaWizard}>
           <div className={classNames(styles.shaWizardContainer, { vertical: direction === 'vertical' })}>
             <Steps

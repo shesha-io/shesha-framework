@@ -1,28 +1,28 @@
-import { ListEditor } from '@/components';
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
+import { ListEditor } from '@/components/listEditor';
 import { nanoid } from '@/utils/uuid';
 import React, { FC } from 'react';
 import { FilterItem } from './filterItem';
 import { ListItem } from '@/components/listEditor/models';
+import { IStoredFilter } from '@/interfaces';
 
 export interface IFiltersListProps {
-  value?: ITableViewProps[];
-  onChange?: (newValue: ITableViewProps[]) => void;
+  value?: IStoredFilter[];
+  onChange?: (newValue: IStoredFilter[]) => void;
   readOnly: boolean;
 }
 
 export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }) => {
-  const makeNewFilter = (items: ITableViewProps[]): ITableViewProps => {
+  const makeNewFilter = (items: IStoredFilter[]): IStoredFilter => {
     const itemsCount = (items ?? []).length;
     const itemNo = itemsCount + 1;
     return {
       id: nanoid(),
       sortOrder: itemsCount,
       name: `Filter ${itemNo}`,
-    } satisfies ITableViewProps;
+    } satisfies IStoredFilter;
   };
 
-  const localOnChange = (newValue: ITableViewProps[]): void => {
+  const localOnChange = (newValue: IStoredFilter[]): void => {
     // Prevent removing the last filter - always ensure at least one filter exists
     if (newValue.length === 0) {
       const defaultFilter = {
@@ -39,7 +39,7 @@ export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }
   };
 
   return (
-    <ListEditor<ITableViewProps & ListItem>
+    <ListEditor<IStoredFilter & ListItem>
       value={value}
       onChange={localOnChange}
       initNewItem={makeNewFilter}

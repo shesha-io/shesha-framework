@@ -1,11 +1,9 @@
-import { entitiesGet } from '@/apis/entities';
 import { ConfigurableForm, ShaIcon } from '@/components/';
 import ValidationErrors from '@/components/validationErrors';
-import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication } from '@/providers';
+import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useHttpClient, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { FormIdentifier } from '@/providers/form/models';
 import ParentProvider from '@/providers/parentProvider';
-import { get } from '@/utils/fetchers';
 import { capPercentageWidth } from '@/utils/style';
 import { App, Button, Popover, PopoverProps } from 'antd';
 import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';
@@ -14,7 +12,9 @@ import { formItemLayout, getQuickViewInitialValues, loadingBox } from './utils';
 import { useStyles } from './styles/styles';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { buildUrl } from '@/utils';
+import { extractAjaxResponse, IAjaxResponse } from '@/interfaces';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -81,6 +81,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { getFormAsync } = useConfigurationItemsLoader();
   const { notification } = App.useApp();
   const { styles } = useStyles();
+  const httpClient = useHttpClient();
 
   // Sync formTitle with displayName prop
   useEffect(() => {
@@ -131,14 +132,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
         return;
       }
 
-      const fetcher = getUrl
-        ? get(getUrl, { id: entityId }, { base: backendUrl, headers: httpHeaders })
-        : entitiesGet({ id: entityId, ...getEntityTypeIdentifierQueryParams(entityType) }, { base: backendUrl, headers: httpHeaders });
-      fetcher
+      const url = buildUrl(getUrl, { id: entityId });
+      httpClient.get<IAjaxResponse<object>>(url)
         .then((resp) => {
-          setFormData(resp.result);
+          const result = extractAjaxResponse(resp.data, 'Error fetching entity data');
+          setFormData(result);
           setLoadingState('success');
-          if (resp.result[displayProperty]) setFormTitle(resp.result[displayProperty]);
+          if (result[displayProperty]) setFormTitle(result[displayProperty]);
         })
         .catch((reason) => {
           setLoadingState('error');
@@ -161,6 +161,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
         <FormItemProvider namePrefix={undefined}>
           <MetadataProvider id="dynamic" modelType={formArguments ? entityType : formMarkup?.formSettings.modelType}>
             <ParentProvider
+              name="QuickView"
               formMode="readonly"
               model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
             >
@@ -246,7 +247,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     <Popover
       styles={{
         root: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string) ? { width: cappedWidth } : undefined,
-        body: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)
+        content: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)
           ? { width: '100%', maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
           : { width: cappedWidth, minWidth: cappedWidth, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' },
       }}

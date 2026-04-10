@@ -1,6 +1,5 @@
 import React, { ReactElement, ReactNode, useEffect } from 'react';
-import { getPropertySettingsFromValue } from './utils';
-import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
+import { getPropertySettingsFromValue } from './utils/utils';
 import { useStyles } from './styles/styles';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
@@ -10,6 +9,8 @@ import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 import { Button } from 'antd';
 import { CodeOutlined, CodeFilled } from '@ant-design/icons';
+import { IPropertySetting, PropertySettingMode } from '@/providers/form/models';
+import { CodeEditor } from '../codeEditor/codeEditor';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement | ReactNode;
 
@@ -25,6 +26,7 @@ export interface ISettingsControlProps<Value = any> {
   availableConstantsExpression?: string | GetAvailableConstantsFunc;
   resultTypeExpression?: string | GetResultTypeFunc;
   useAsyncEvaluation?: boolean;
+  lazy?: boolean;
 }
 
 export const defaultExposedVariables: ICodeExposedVariable[] = [
@@ -50,7 +52,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
 
   const { styles } = useStyles();
 
-  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode): void => {
+  const onInternalChange = (value: IPropertySetting<Value>, m?: PropertySettingMode): void => {
     const newSetting = { ...value, _mode: (m ?? mode) };
     const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
     if (props.onChange)
@@ -62,12 +64,12 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       onInternalChange({ ...setting, _mode: mode }, mode);
   }, [mode]);
 
-  const codeOnChange = (val: any): void => {
-    const newValue = { ...setting, _code: val };
+  const codeOnChange = (val: string): void => {
+    const newValue: IPropertySetting<Value> = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy } as IPropertySetting<Value>;
     onInternalChange(newValue);
   };
 
-  const valueOnChange = (val: any): void => {
+  const valueOnChange = (val: Value): void => {
     const newValue = { ...setting, _value: val };
     onInternalChange(newValue);
   };

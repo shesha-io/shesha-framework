@@ -1,5 +1,4 @@
-import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
-import { ComponentsContainer, isValidGuid, StyleBoxValue, useFormData, useSheshaApplication, ValidationErrors } from '@/index';
+import { IKeyInformationBarComponentProps } from '@/designer-components/keyInformationBar/interfaces';
 import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { Flex } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
@@ -11,7 +10,14 @@ import { getBackgroundStyle } from '@/designer-components/_settings/utils/backgr
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { addPx } from '@/utils/style';
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
-export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
+import { useFormData } from '@/providers/formContext';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { StyleBoxValue } from '@/providers/form/models';
+import { ValidationErrors } from '../validationErrors';
+import { isValidGuid } from '../formDesigner/components/utils';
+import ComponentsContainer from '../formDesigner/containers/componentsContainer';
+
+export const KeyInformationBar: FC<IKeyInformationBarComponentProps> = (props) => {
   const { data } = useFormData();
   const {
     columns,
@@ -30,11 +36,11 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
 
-  const dimensions = props?.dimensions;
-  const border = props?.border;
-  const font = props?.font;
-  const shadow = props?.shadow;
-  const background = props?.background;
+  const dimensions = props.dimensions;
+  const border = props.border;
+  const font = props.font;
+  const shadow = props.shadow;
+  const background = props.background;
   const jsStyle = getStyle(props.style, data);
 
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
@@ -91,8 +97,8 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   });
 
   if (
-    props?.background?.type === 'storedFile' &&
-    props?.background.storedFile?.id &&
+    props.background?.type === 'storedFile' &&
+    props.background.storedFile?.id &&
     !isValidGuid(props?.background.storedFile.id)
   ) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;

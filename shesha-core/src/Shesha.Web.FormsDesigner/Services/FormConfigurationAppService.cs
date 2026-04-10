@@ -188,8 +188,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var moduleEntity = await GetModuleAsync(input.Module);
 
             // todo: move to a generic method
-            var query = Repository.GetAll().Where(f => f.Module == moduleEntity &&
-                f.Name == input.Name);
+            var query = (await Repository.GetAllAsync()).Where(f => f.Module == moduleEntity && f.Name == input.Name);
 
             var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
 
@@ -328,7 +327,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module != null && f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
+            var alreadyExist = await Repository.AnyAsync(f => f.Id != input.Id && f.Module != null && f.Module.Name == input.ModelType && f.Name == input.Name);
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
@@ -368,7 +367,7 @@ namespace Shesha.Web.FormsDesigner.Services
         private async Task<Module?> GetModuleAsync(string? moduleName) 
         {
             return !string.IsNullOrWhiteSpace(moduleName)
-                ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
+                ? await _moduleRepository.FirstOrDefaultAsync(m => m.Name == moduleName)
                 : null;
         }
 

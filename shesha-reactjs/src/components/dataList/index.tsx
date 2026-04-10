@@ -596,7 +596,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       <Collapse
         key={key}
         defaultActiveKey={collapseByDefault ? [] : ['1']}
-        expandIconPosition="start"
+        expandIconPlacement="start"
         className={`sha-group-level-${group.index}`}
         collapsible={collapsible ? undefined : 'disabled'}
         style={computedGroupStyle}

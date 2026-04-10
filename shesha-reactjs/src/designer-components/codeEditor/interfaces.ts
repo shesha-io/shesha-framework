@@ -1,11 +1,14 @@
-import { ComponentDefinition, IConfigurableFormComponent, IShaFormInstance } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent, IShaFormInstance, UnwrapCodeEvaluators } from '@/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { CodeLanguages } from './types';
 import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
 import { CodeTemplateSettings } from '@/components/codeEditor/models';
 import { Environment, IMetadataBuilder } from '@/publicJsApis/metadataBuilder';
 import { IObjectMetadataBuilder as IInternalObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
-import { BaseButtonProps } from 'antd/lib/button/button';
+import { Button } from 'antd';
+import { ComponentProps } from 'react';
+
+type ButtonType = ComponentProps<typeof Button>['type'];
 
 export interface IExecutableCodeEditor {
   fileName?: string;
@@ -18,14 +21,14 @@ export interface IExecutableCodeEditor {
   exposedVariables?: ICodeExposedVariable[];
 }
 
-export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type' | 'id'>, IExecutableCodeEditor {
+export interface ICodeEditorProps extends Omit<UnwrapCodeEvaluators<IConfigurableFormComponent>, 'type' | 'id'>, IExecutableCodeEditor {
   id?: string;
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
   mode?: 'inline' | 'dialog';
   language?: CodeLanguages;
-  type?: BaseButtonProps['type'];
+  type?: ButtonType;
   className?: string;
   ghost?: boolean;
   availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>);

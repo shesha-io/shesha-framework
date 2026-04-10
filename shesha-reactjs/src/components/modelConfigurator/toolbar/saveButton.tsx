@@ -7,7 +7,7 @@ import {
   Button,
   ButtonProps,
 } from 'antd';
-import { useModelConfigurator } from '@/index';
+import { useModelConfigurator } from '@/providers/modelConfigurator';
 
 export interface ISaveButtonProps extends Pick<ButtonProps, 'size' | 'type'> {
   onSaved?: () => void;

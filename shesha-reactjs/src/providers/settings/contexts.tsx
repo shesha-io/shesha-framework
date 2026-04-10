@@ -6,10 +6,9 @@ export interface ILoadSettingPayload {
   name: string;
 }
 
-export interface ISettingsActionsContext {
+export interface ISettingsClientContext {
   getSetting: <TValue = unknown>(settingId: ISettingIdentifier) => Promise<TValue>;
+  setSetting: <TValue = unknown>(settingId: ISettingIdentifier, value: TValue, applicationKey?: string) => Promise<void>;
 }
 
-export type ISettingsContext = ISettingsActionsContext;
-
-export const SettingsContext = createNamedContext<ISettingsActionsContext>(undefined, "SettingsContext");
+export const SettingsClientContext = createNamedContext<ISettingsClientContext | undefined>(undefined, "SettingsClientContext");

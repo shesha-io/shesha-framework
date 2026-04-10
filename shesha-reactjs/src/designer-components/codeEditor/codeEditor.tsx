@@ -14,8 +14,8 @@ import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor
 import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
-import { Show } from '@/components';
-import { useSourcesFolder } from '@/providers/sourceFileManager/sourcesFolderProvider';
+import { Show } from '@/components/show';
+import { useSourcesFolderOrUndefined } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import type { TabsProps } from 'antd';
 import { useStyles } from './styles';
 import classNames from 'classnames';
@@ -35,7 +35,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const [showDialog, setShowDialog] = useState(false);
   const { modal } = App.useApp();
 
-  const src = useSourcesFolder(false);
+  const src = useSourcesFolderOrUndefined();
   const { styles } = useStyles();
 
   const onChange = (_value): void => {

@@ -9,7 +9,6 @@ using GraphQL.Types;
 using GraphQLParser.AST;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using Shesha.Application.Services.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
@@ -32,7 +31,7 @@ namespace Shesha.GraphQL.Provider.Queries
     /// <summary>
     /// Entity query
     /// </summary>
-    public class EntityQuery<TEntity, TId> : ObjectGraphType, ITransientDependency where TEntity : class, IEntity<TId>
+    public class EntityQuery<TEntity, TId> : ObjectGraphType, ITransientDependency where TEntity : class, IEntity<TId>, new()
     {
         private readonly IJsonLogic2LinqConverter _jsonLogicConverter;
         private readonly IEntityTypeConfigurationStore _entityConfigStore;
@@ -52,26 +51,24 @@ namespace Shesha.GraphQL.Provider.Queries
             var quickSearcher = serviceProvider.GetRequiredService<IQuickSearcher>();
             var specificationManager = serviceProvider.GetRequiredService<ISpecificationManager>();
 
-            FieldAsync<GraphQLGenericType<TEntity>>(entityName,
-                arguments: new QueryArguments(new QueryArgument(MakeGetInputType()) { Name = nameof(IEntity.Id) }),
-                resolve: async context => {
+            Field<GraphQLGenericType<TEntity>>(entityName)
+                .Argument(MakeGetInputType(), nameof(IEntity.Id))
+                .ResolveAsync(async context => {
                     var id = context.GetArgument<TId>(nameof(IEntity.Id));
 
                     return await repository.GetAsync(id);
-                }                    
-            );
+                });
 
-            FieldAsync<PagedResultDtoType<TEntity>>($"{entityName}List",
-                arguments: new QueryArguments(
-                    new QueryArgument<GraphQLInputGenericType<ListRequestDto>> { Name = "input", DefaultValue = new ListRequestDto() }
-                ),
-                resolve: async context => {
+            Field<PagedResultDtoType<TEntity>>($"{entityName}List")
+                .Argument<GraphQLInputGenericType<ListRequestDto>>("input").DefaultValue(new ListRequestDto())
+                .ResolveAsync(async context => {
                     var input = context.GetArgument<ListRequestDto>("input");
 
                     var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
                     var uow = unitOfWorkManager.Current;
 
-                    var query = repository.GetAll();
+                    var query = await repository.GetAllAsync();
+                    query.SetReadOnly();
 
                     // apply specifications
                     query = specificationManager.ApplySpecifications(query, input.Specifications);
@@ -98,14 +95,14 @@ namespace Shesha.GraphQL.Provider.Queries
                         ? await entityFetcher.ToListAsync(pageQuery, GetEntityPropertiesFromContext(context))
                         : await asyncExecuter.ToListAsync(pageQuery);
 
-                    var result = new PagedResultDto<TEntity> {
+                    var result = new PagedResultDto<TEntity>
+                    {
                         Items = entities,
                         TotalCount = totalCount
                     };
 
                     return result;
-                }
-            );
+                });
         }
 
         private List<string> GetEntityPropertiesFromContext(IResolveFieldContext context) 

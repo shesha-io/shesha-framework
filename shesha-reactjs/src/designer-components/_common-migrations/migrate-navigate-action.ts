@@ -2,7 +2,7 @@ import { IConfigurableActionConfiguration } from "@/interfaces/configurableActio
 import { StandardNodeTypes } from "@/interfaces/formComponent";
 import { FormIdentifier } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
-import { INavigateActoinArguments as INavigateActionArguments } from "@/providers/shaRouting/index";
+import { INavigateActoinArguments as INavigateActionArguments, INavigateActoinArguments, isNavigationActionConfiguration } from "@/providers/shaRouting/index";
 import { getQueryString, getUrlWithoutQueryParams } from "@/utils/url";
 
 interface DynamicUrlParsingResponse {
@@ -76,8 +76,8 @@ const updateActionRecursive = (prev: IConfigurableActionConfiguration, updater: 
   };
 };
 
-const migrateNavigateProps = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
-  var args = prev?.actionArguments as INavigateActionArguments;
+const migrateNavigateProps = (prev: IConfigurableActionConfiguration<INavigateActoinArguments>): IConfigurableActionConfiguration<INavigateActoinArguments> => {
+  var args = prev.actionArguments as INavigateActionArguments;
 
   const newArgs = migrateNavigateArgs(args);
 
@@ -86,7 +86,7 @@ const migrateNavigateProps = (prev: IConfigurableActionConfiguration): IConfigur
 
 export const migrateNavigateAction = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
   return updateActionRecursive(prev, (action) => {
-    return (action.actionOwner === 'shesha.common' && action.actionName === 'Navigate')
+    return isNavigationActionConfiguration(action)
       ? migrateNavigateProps(action)
       : action;
   });

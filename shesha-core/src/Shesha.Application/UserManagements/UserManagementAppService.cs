@@ -171,7 +171,7 @@ namespace Shesha.UserManagements
             if (string.IsNullOrWhiteSpace(mobileNo))
                 return false;
 
-            return await _repository.GetAll()
+            return await (await _repository.GetAllAsync())
                 .Where(e => e.MobileNumber1 == mobileNo)
                 .WhereIf(id.HasValue, e => e.Id != id)
                 .AnyAsync();
@@ -186,7 +186,7 @@ namespace Shesha.UserManagements
             if (string.IsNullOrWhiteSpace(email))
                 return false;
 
-            return await _repository.GetAll()
+            return await (await _repository.GetAllAsync())
                 .Where(e => e.EmailAddress1 == email)
                 .WhereIf(id.HasValue, e => e.Id != id)
                 .AnyAsync();

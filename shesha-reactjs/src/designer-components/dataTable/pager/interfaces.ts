@@ -1,4 +1,4 @@
-import { ITablePagerProps } from '@/components';
+import { ITablePagerProps } from '@/components/tablePager';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 

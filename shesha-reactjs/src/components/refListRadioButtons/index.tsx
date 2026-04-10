@@ -15,7 +15,7 @@ export interface IRefListDropDownOption {
   value?: Key;
 }
 
-export interface IRefListRadioButtonsProps extends RadioGroupProps {
+export interface IRefListRadioButtonsProps extends Omit<RadioGroupProps, "orientation"> {
   /** Reference list name */
   listName: string;
 

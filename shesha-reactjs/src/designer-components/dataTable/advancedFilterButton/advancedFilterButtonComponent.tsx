@@ -7,7 +7,7 @@ import React from 'react';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { useDataTableStore } from '@/providers';
+import { useDataTableStoreOrUndefined } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
 import { useComponentValidation } from '@/providers/validationErrors';
@@ -21,7 +21,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   name: 'Table Filter',
   icon: <FilterOutlined />,
   Factory: ({ model }) => {
-    const store = useDataTableStore(false);
+    const store = useDataTableStoreOrUndefined();
     const { styles } = useStyles();
 
     const finalStyle = {
@@ -51,7 +51,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
         </div>
       </div>
     ) : (
-      <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />
+      <AdvancedFilterButton {...model} styles={finalStyle} />
     );
   },
   initModel: (model) => {

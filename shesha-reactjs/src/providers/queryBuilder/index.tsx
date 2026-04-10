@@ -1,15 +1,11 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import QueryBuilderReducer from './reducer';
-import { QueryBuilderActionsContext, QueryBuilderStateContext, QUERY_BUILDER_CONTEXT_INITIAL_STATE, IQueryBuilderStateContext, IQueryBuilderActionsContext } from './contexts';
-import {
-  setFieldsAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
-} from './actions';
+import React, { FC, useContext, PropsWithChildren, useState } from 'react';
+import { QueryBuilderActionsContext, QueryBuilderStateContext, IQueryBuilderStateContext, IQueryBuilderActionsContext } from './contexts';
 import { IHasQueryBuilderConfig, IProperty, IPropertyMetadataWithQBSettings, propertyHasQBConfig } from './models';
-import { getPropertyFullPath, propertyMetadata2QbProperty, useMetadataFields } from './utils';
+import { getPropertyFullPath, propertyMetadata2QbProperty } from './utils';
 import { useMetadataDispatcher } from '@/providers';
 import { IModelMetadata, asPropertiesArray, isEntityMetadata } from '@/interfaces/metadata';
 import { Widgets } from '@react-awesome-query-builder/antd';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IQueryBuilderProviderProps {
   metadata: IModelMetadata;
@@ -17,18 +13,33 @@ export interface IQueryBuilderProviderProps {
   customWidgets?: Widgets;
 }
 
-const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = ({ children, customWidgets, metadata, id }) => {
-  const [state, dispatch] = useReducer(QueryBuilderReducer, {
-    ...QUERY_BUILDER_CONTEXT_INITIAL_STATE,
-    fields: [],
-    customWidgets,
-    id,
+const getContainerNode = (properties: IProperty[], containerNames: string[]): IProperty | undefined => {
+  let containerNode: IProperty | undefined = undefined;
+  containerNames.forEach((containerName) => {
+    const container = containerNode
+      ? containerNode.childProperties
+      : properties;
+
+    containerNode = container.find((p) => p.propertyName === containerName);
+
+    if (!containerNode) {
+      containerNode = {
+        dataType: '!struct',
+        label: containerName,
+        visible: true,
+        propertyName: containerName,
+        childProperties: [],
+      };
+      container.push(containerNode);
+    }
   });
+  return containerNode;
+};
+
+const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = ({ children, customWidgets, metadata, id }) => {
+  const [fields, setFields] = useState<IProperty[]>([]);
 
   const { getContainerMetadata } = useMetadataDispatcher();
-  const setFields = (newFields: IProperty[]): void => {
-    dispatch(setFieldsAction(newFields));
-  };
 
   const getPropertiesFromMeta = (modelMeta: IModelMetadata, prefix: string): IProperty[] => {
     // handle properties
@@ -42,40 +53,23 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
       modelMeta.specifications.forEach((specification) => {
         const containerNames = specification.name.split('.');
         const nodeName = containerNames.pop();
+        if (isNullOrWhiteSpace(nodeName))
+          return;
 
-        let containerNode: IProperty = null;
-
-        // process all containers
-        containerNames.forEach((containerName) => {
-          const container = containerNode
-            ? containerNode.childProperties
-            : properties;
-
-          containerNode = (container).find((p) => p.propertyName === containerName);
-
-          if (!containerNode) {
-            containerNode = {
-              dataType: '!struct',
-              label: containerName,
-              visible: true,
-              propertyName: containerName,
-              childProperties: [],
-            };
-            container.push(containerNode);
-          }
-
-          if (!containerNode.childProperties)
-            containerNode.childProperties = [];
-        });
+        const containerNode = getContainerNode(properties, containerNames);
 
         // add leaf node
-        const leafNode = {
+        const leafNode: IProperty = {
           dataType: 'specification',
           label: specification.friendlyName,
           visible: true,
           propertyName: nodeName,
+          childProperties: [],
         };
-        (containerNode?.childProperties ?? properties).push(leafNode);
+        if (isDefined(containerNode)) {
+          containerNode.childProperties.push(leafNode);
+        } else
+          properties.push(leafNode);
       });
     }
 
@@ -83,14 +77,14 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
   };
 
   const fetchFields = (fieldNames: string[]): void => {
-    if (!metadata?.properties)
+    if (!metadata.properties)
       return;
 
-    const containers: string[] = [null/* to ensure that root is loaded*/];
+    const containers: string[] = [""/* to ensure that root is loaded*/];
     fieldNames.forEach((f) => {
       const idx = f.lastIndexOf('.');
       const container = idx === -1
-        ? null
+        ? ""
         : f.substring(0, idx);
       if (containers.indexOf(container) === -1)
         containers.push(container);
@@ -98,16 +92,16 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
 
     const promises = containers.map((prefix) =>
       getContainerMetadata({ metadata: metadata, containerPath: prefix })
-        .then((response) => Boolean(response) ? getPropertiesFromMeta(response, prefix) : []),
+        .then((response) => isDefined(response) ? getPropertiesFromMeta(response, prefix) : []),
     );
 
     Promise.allSettled(promises).then((results) => {
       const missingProperties: IProperty[] = [];
 
       results.filter((r) => r.status === 'fulfilled').forEach((r) => {
-        const properties = (r as PromiseFulfilledResult<IProperty[]>)?.value ?? [];
+        const properties = r.value;
         properties.forEach((prop) => {
-          if (!state.fields.find((p) => p.propertyName === prop.propertyName))
+          if (!fields.find((p) => p.propertyName === prop.propertyName))
             missingProperties.push(prop);
         });
       });
@@ -116,26 +110,32 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
       const unknownFields = fieldNames.filter((f) => !missingProperties.find((p) => p.propertyName === f));
       if (unknownFields.length > 0) {
         unknownFields.forEach((f) => {
-          missingProperties.push({ label: f, propertyName: f, dataType: 'unknown', visible: true });
+          missingProperties.push({
+            label: f,
+            propertyName: f,
+            dataType: 'unknown',
+            visible: true,
+            childProperties: [],
+          } satisfies IProperty);
         });
       }
 
       if (missingProperties.length > 0) {
-        const newFields = [...state.fields, ...missingProperties];
+        const newFields = [...fields, ...missingProperties];
 
         setFields(newFields);
       }
     });
   };
 
-  const fetchContainer = (containerPath: string): Promise<IModelMetadata> => {
+  const fetchContainer = (containerPath: string): Promise<IModelMetadata | null> => {
     const promise = getContainerMetadata({ metadata: metadata, containerPath: containerPath });
 
     promise.then((response) => {
-      const properties = Boolean(response) ? getPropertiesFromMeta(response, containerPath) : [];
-      const missingProperties = properties.filter((prop) => !state.fields.find((p) => p.propertyName === prop.propertyName));
+      const properties = isDefined(response) ? getPropertiesFromMeta(response, containerPath) : [];
+      const missingProperties = properties.filter((prop) => !fields.find((p) => p.propertyName === prop.propertyName));
       if (missingProperties.length > 0) {
-        const newFields = [...state.fields, ...missingProperties];
+        const newFields = [...fields, ...missingProperties];
 
         setFields(newFields);
       }
@@ -145,7 +145,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
   };
 
   return (
-    <QueryBuilderStateContext.Provider value={{ ...state }}>
+    <QueryBuilderStateContext.Provider value={{ fields, id, customWidgets }}>
       <QueryBuilderActionsContext.Provider
         value={{
           setFields,
@@ -196,7 +196,6 @@ export {
   useQueryBuilderState,
   useQueryBuilderActions,
   useQueryBuilder,
-  useMetadataFields,
   type IHasQueryBuilderConfig,
   propertyHasQBConfig,
   type IPropertyMetadataWithQBSettings,

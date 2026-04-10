@@ -45,7 +45,7 @@ export enum LogLevel {
 export interface ILogEvent {
   id: string | number;
   message: string | null;
-  timeStamp?: Moment;
+  timeStamp?: Moment | undefined;
   level: LogLevel;
 }
 

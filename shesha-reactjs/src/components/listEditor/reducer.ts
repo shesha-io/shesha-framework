@@ -1,8 +1,6 @@
-import {
-  IListEditorStateContext,
-} from './contexts';
 import { handleActions, ReduxCompatibleReducer } from 'redux-actions';
-import { ListActionEnums, ISwitchModeActionPayload } from './actions';
+import { ISwitchModeActionPayload, ListActionEnums } from './actions';
+import { IListEditorStateContext } from './models';
 
 const reducerFactory = <TItem extends any>(
   initialState: IListEditorStateContext<TItem>,

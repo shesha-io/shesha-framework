@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
@@ -36,7 +36,7 @@ const DropdownComponent: DropdownComponentDefinition = {
         : undefined,
   }),
   Factory: ({ model, calculatedModel }) => {
-    const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
+    const initialValue = model.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
     // When enableStyleOnReadonly is true, apply all configured styles in readonly mode

@@ -2,25 +2,25 @@ import { Form, FormInstance, FormProps } from 'antd';
 import React, { FC, MutableRefObject, PropsWithChildren } from 'react';
 import { useForm } from '@/providers';
 import { IFormSettings } from '@/providers/form/models';
-import { useDelayedUpdate } from '../delayedUpdateProvider/index';
+import { useDelayedUpdateOrUndefined } from '../delayedUpdateProvider/index';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 
 interface FormWrapperProps {
-  initialValues: object;
+  initialValues: object | undefined;
   onValuesChange: FormProps['onValuesChange'];
   form: FormInstance;
-  formSettings?: IFormSettings;
-  delayedUpdate?: MutableRefObject<IDelayedUpdateGroup[]>;
+  formSettings?: IFormSettings | undefined;
+  delayedUpdate?: MutableRefObject<IDelayedUpdateGroup[] | undefined> | undefined;
 }
 
 export const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, formSettings, delayedUpdate, children }) => {
   const { setFormData } = useForm();
-  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
+  const { getPayload: getDelayedUpdate } = useDelayedUpdateOrUndefined() ?? {};
 
-  if (delayedUpdate)
+  if (delayedUpdate && getDelayedUpdate)
     delayedUpdate.current = getDelayedUpdate();
 
-  const onValuesChangeInternal = (changedValues: any, values: any): void => {
+  const onValuesChangeInternal = (changedValues: object, values: object): void => {
     // recalculate components visibility
     setFormData({ values, mergeValues: true });
 
@@ -31,8 +31,8 @@ export const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialVa
     <Form
       component={false}
       form={form}
-      initialValues={initialValues}
       onValuesChange={onValuesChangeInternal}
+      {...(initialValues ? { initialValues } : {})}
       {...formSettings}
     >
       {children}

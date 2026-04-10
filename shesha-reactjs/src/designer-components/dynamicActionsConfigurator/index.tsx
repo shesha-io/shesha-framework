@@ -5,7 +5,7 @@ import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 
 export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActionsConfiguratorComponentProps> = {
   type: 'dynamicItemsConfigurator',

@@ -1,8 +1,9 @@
 import { IFormAutocompleteSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
-import { FormAutocomplete } from '@/components';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 
-export const FormAutocompleteWrapper: FC<IFormAutocompleteSettingsInputProps> = (props) => {
+export const FormAutocompleteWrapper: FCUnwrapped<IFormAutocompleteSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size } = props;
   return (
     <FormAutocomplete

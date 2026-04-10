@@ -1,13 +1,12 @@
 import React, { FC, Fragment } from 'react';
 import { Alert, AlertProps } from 'antd';
 import classNames from 'classnames';
-import { IErrorInfo, isErrorInfo, isHasErrorInfo } from '@/interfaces/errorInfo';
-import { IAjaxResponseBase, isAxiosResponse, isAjaxErrorResponse, IAjaxErrorResponse } from '@/interfaces/ajaxResponse';
+import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IAjaxResponseBase, IAjaxErrorResponse } from '@/interfaces/ajaxResponse';
 import { useStyles } from './styles/styles';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { ErrorIconPopover } from '@/components/componentErrors/errorIconPopover';
-import { IModelValidation } from '@/utils/errors';
-import { isDefined } from '@/utils/nullables';
+import { extractErrorInfo, IModelValidation } from '@/utils/errors';
 
 export interface IValidationErrorsProps extends AlertProps {
   error: string | IErrorInfo | IAjaxErrorResponse | AxiosResponse<IAjaxResponseBase> | Error | unknown;
@@ -18,35 +17,6 @@ export interface IValidationErrorsProps extends AlertProps {
 }
 
 const DEFAULT_ERROR_MSG = 'Sorry, an error has occurred. Please try again later';
-
-const extractErrorInfo = (error: unknown): IErrorInfo | undefined => {
-  if (!isDefined(error))
-    return undefined;
-
-  if (typeof error === 'string') {
-    return { message: error };
-  }
-
-  if (error instanceof Error) {
-    if (axios.isAxiosError(error)) {
-      const responseData = error.response?.data;
-      if (isAjaxErrorResponse(responseData))
-        return { message: responseData.error.message, details: responseData.error.details };
-    }
-
-    return { message: error.message };
-  } else {
-    return isAxiosResponse(error) && isAjaxErrorResponse(error.data)
-      ? error.data.error
-      : isAjaxErrorResponse(error)
-        ? error.error
-        : isHasErrorInfo(error)
-          ? error.errorInfo
-          : isErrorInfo(error)
-            ? error
-            : undefined;
-  }
-};
 
 /**
  * A component for displaying validation errors

@@ -1,4 +1,4 @@
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -50,10 +50,10 @@ const ColumnsComponent: ColumnsComponentDefinition = {
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const shadow = model?.shadow;
-    const background = model?.background;
+    const dimensions = model.dimensions;
+    const border = model.border;
+    const shadow = model.shadow;
+    const background = model.background;
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
@@ -82,7 +82,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
 
     if (model.hidden) return null;
 
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
     const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');
@@ -120,7 +120,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
     return (
       <div style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
         <Row gutter={[gutterX || 0, gutterY || 0]} style={{ marginLeft: 0, marginRight: 0 }}>
-          <ParentProvider model={model}>
+          <ParentProvider model={model} name={`Columns-${model.id}`}>
             {validatedColumns &&
               validatedColumns.map((col, index) => (
                 <Col

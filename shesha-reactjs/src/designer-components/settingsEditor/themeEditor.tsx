@@ -1,12 +1,14 @@
-import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup, IToolboxComponent } from '@/interfaces';
 import { EditOutlined } from '@ant-design/icons';
 import React, { useEffect, useRef } from 'react';
 import { ConfigurableThemeContent } from '@/generic-pages/settings/dynamic-theme/content';
-import { FormMarkup, IConfigurableTheme, useShaFormInstance, useSheshaApplication, useTheme, validateConfigurableComponentSettings } from '@/index';
 import settingsFormJson from './settingsForm.json';
 import { useSettingsEditor } from '@/components/settingsEditor/provider';
 import { FRONTEND_DEFAULT_APP_KEY, ISettingIdentifier } from '@/components/settingsEditor/provider/models';
-import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { IConfigurableTheme, useTheme } from '@/providers/theme';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

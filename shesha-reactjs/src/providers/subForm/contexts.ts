@@ -13,20 +13,20 @@ export interface IFetchDataErrorPayload {
   error: GetDataError<unknown>;
 }
 
-export interface ISubFormStateContext extends IPersistedFormPayload, IFlatComponentsStructure {
+export interface ISubFormStateContext<TValue extends object = object> extends IPersistedFormPayload, IFlatComponentsStructure {
   /** True only if the config was fetched from the server using formId
    * If the markup was passed to the sub form, this will be false
    */
   hasFetchedConfig?: boolean;
-  initialValues?: any;
-  components?: IConfigurableFormComponent[];
-  formSettings?: IFormSettings;
-  propertyName?: string;
+  initialValues?: unknown | undefined;
+  components?: IConfigurableFormComponent[] | undefined;
+  formSettings?: IFormSettings | undefined;
+  propertyName?: string | undefined;
   errors?: {
-    getData?: GetDataError<unknown>;
-    getForm?: GetDataError<unknown>;
-    postData?: GetDataError<unknown>;
-    putData?: GetDataError<unknown>;
+    getData?: GetDataError<unknown> | undefined;
+    getForm?: unknown | undefined;
+    postData?: GetDataError<unknown> | undefined;
+    putData?: GetDataError<unknown> | undefined;
   };
   loading?: {
     getData?: boolean;
@@ -34,9 +34,9 @@ export interface ISubFormStateContext extends IPersistedFormPayload, IFlatCompon
     postData?: boolean;
     putData?: boolean;
   };
-  value?: any;
-  context?: string;
-  fetchedEntityId?: string;
+  value?: TValue | undefined;
+  context?: string | undefined;
+  fetchedEntityId?: string | undefined;
 }
 
 export interface ISubFormActionsContext {
@@ -51,11 +51,11 @@ export const SUB_FORM_CONTEXT_INITIAL_STATE: ISubFormStateContext = {
   components: [],
   allComponents: {},
   componentRelations: {},
-  formSettings: null,
+  formSettings: undefined,
   loading: {},
   errors: {},
 };
 
-export const SubFormContext = createNamedContext<ISubFormStateContext>(SUB_FORM_CONTEXT_INITIAL_STATE, "SubFormContext");
+export const SubFormContext = createNamedContext<ISubFormStateContext | undefined>(undefined, "SubFormContext");
 
-export const SubFormActionsContext = createNamedContext<ISubFormActionsContext>(undefined, "SubFormActionsContext");
+export const SubFormActionsContext = createNamedContext<ISubFormActionsContext | undefined>(undefined, "SubFormActionsContext");

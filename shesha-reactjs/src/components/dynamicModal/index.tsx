@@ -44,7 +44,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       width={isSmall ? '90%' : width ?? '80vw'}
       centered
       classNames={{ body: styles.dynamicModalBody }}
-      maskClosable={false}
+      mask={{ closable: false }}
       closable={showCloseIcon ?? true} // Add this line - default to true for backward compatibility
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
     >
@@ -81,7 +81,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   // `showModalFooter` for now is for backward compatibility
-  const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
+  // If `footerButtons` is explicitly set, it takes precedence over the legacy `showModalFooter` flag
+  const showDefaultSubmitButtons = footerButtons ? footerButtons === 'default' : (showModalFooter ?? false);
 
   const closeModal = (): void => {
     removeModal(id);

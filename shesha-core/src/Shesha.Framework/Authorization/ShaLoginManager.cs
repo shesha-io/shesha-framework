@@ -336,7 +336,7 @@ namespace Shesha.Authorization
             if (string.IsNullOrWhiteSpace(imei))
                 return true; // skip if the IMEI is null
 
-            return await _mobileDeviceRepository.GetAll().Where(d => d.IMEI == imei.Trim() && !d.IsLocked).AnyAsync();
+            return await (await _mobileDeviceRepository.GetAllAsync()).Where(d => d.IMEI == imei.Trim() && !d.IsLocked).AnyAsync();
         }
 
         protected virtual async Task<ShaLoginResult<TUser>> CreateLoginResultAsync(TUser user, TTenant? tenant = null)
@@ -397,7 +397,7 @@ namespace Shesha.Authorization
         {
             return string.IsNullOrWhiteSpace(imei)
                 ? null
-                : (await _mobileDeviceRepository.GetAll().Where(d => d.IMEI == imei).FirstOrDefaultAsync())?.Name;
+                : (await _mobileDeviceRepository.FirstOrDefaultAsync(d => d.IMEI == imei))?.Name;
         }
 
         protected virtual void SaveLoginAttempt(ShaLoginResult<TUser> loginResult, string tenancyName, string userNameOrEmailAddress)

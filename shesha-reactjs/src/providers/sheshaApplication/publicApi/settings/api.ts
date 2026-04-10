@@ -1,6 +1,7 @@
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { SettingsManager } from "./manager";
 import { SettingsModuleAccessor } from "./moduleAccessor";
+import { createProxy } from "@/utils/proxy";
 
 /**
  * Settings API. Provides settings to the application settings groupped by modules.
@@ -17,8 +18,9 @@ export class SettingsApi {
    * @return {SettingsModuleAccessor} The settings for the specified module
    */
   getModuleSettings(name: string): SettingsModuleAccessor {
-    if (this._modules.has(name))
-      return this._modules.get(name);
+    const existing = this._modules.get(name);
+    if (existing)
+      return existing;
 
     const moduleApi = new SettingsModuleAccessor(this._settingManager, name);
     this._modules.set(name, moduleApi);
@@ -29,25 +31,8 @@ export class SettingsApi {
     this._settingManager = new SettingsManager(httpClient);
     this._modules = new Map<string, SettingsModuleAccessor>();
 
-    return new Proxy(this, {
-      get(target, name) {
-        if (name in target) {
-          const result = target[name];
-          return typeof result === 'function' ? result.bind(target) : result;
-        }
-
-        return typeof (name) === 'string'
-          ? target.getModuleSettings(name)
-          : undefined;
-      },
-
-      set(target, name, value) {
-        if (name in target) {
-          target[name] = value;
-          return true;
-        }
-        return false;
-      },
+    return createProxy<SettingsApi>(this, {
+      onGetProperty: (name: string) => this.getModuleSettings(name),
     });
   }
 }

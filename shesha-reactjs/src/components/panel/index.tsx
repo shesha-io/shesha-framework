@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
-import { IStyleType } from '@/index';
+import { IStyleType } from "@/providers/form/models";
 import { useStyles } from './styles/styles';
 
 export type headerType = 'parent' | 'child' | 'default';
@@ -90,7 +90,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
     <Collapse
       defaultActiveKey={collapsedByDefault ? [] : ['1']}
       onChange={onChange}
-      expandIconPosition={expandIconPosition}
+      expandIconPlacement={expandIconPosition}
       className={classNames(shaCollapsiblePanelStyle, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
       ghost={ghost}
       items={[

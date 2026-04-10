@@ -1,6 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import { CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import { DisplayFormItem, ShaSpin } from '@/components';
+import { ShaSpin } from '@/components/shaSpin';
+import { DisplayFormItem } from '@/components/displayFormItem';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 

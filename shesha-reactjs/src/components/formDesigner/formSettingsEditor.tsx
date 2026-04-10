@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Modal } from 'antd';
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { useFormDesigner, useFormDesignerSettings } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';

@@ -1,3 +1,4 @@
+import { IconType } from '@/components';
 import { IReferenceListIdentifier } from '@/interfaces';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
@@ -44,8 +45,16 @@ export interface IHasFilter {
 }
 
 export interface INumberFormatting {
-  showThousandsSeparator?: boolean;
+  thousandsSeparator?: string;
   customFormat?: string | null;
+}
+
+export interface IAdditionalInfoFormatting {
+  placeholder?: string;
+  prefix?: string;
+  suffix?: string;
+  suffixIcon?: IconType;
+  prefixIcon?: IconType;
 }
 
 export interface IDecimalFormatting extends INumberFormatting {
@@ -84,7 +93,7 @@ export interface IEntityPropertyListConfiguration{
 export interface ModelPropertyDto {
 
   initStatus?: EntityInitFlags;
-  initMessage?: string;
+  initMessage: string | null;
 
   columnName?: string | null;
   createdInDb?: boolean;
@@ -94,7 +103,7 @@ export interface ModelPropertyDto {
   /**
    * Property Name
    */
-  name?: string | null;
+  name: string;
   /**
    * Label (display name)
    */
@@ -210,7 +219,7 @@ export interface ModelPropertyDto {
    */
   cascadeDeleteUnreferencedHardcoded?: boolean;
 
-  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
+  formatting?: IHasDefaultEditor & IAdditionalInfoFormatting & (IHasFilter | IDecimalFormatting);
 
   listConfiguration?: IEntityPropertyListConfiguration;
 
@@ -224,11 +233,6 @@ export interface ModelPropertyDto {
   /** Used only for Model Configurator */
   allowEdit?: boolean;
 }
-
-/**
- * Status of the Shesha.Domain.ConfigurationItem
- */
-export type ConfigurationItemVersionStatus = 1 | 2 | 3 | 4 | 5;
 
 /**
  * Indicate the type of the entity metadata
@@ -250,19 +254,18 @@ export interface EntityViewConfigurationDto {
  * Model configuration DTO
  */
 export interface ModelConfigurationDto {
-  id?: string | null;
-  className?: string | null;
-  namespace?: string | null;
+  id: string;
+  className?: string | null | undefined;
+  namespace?: string | null | undefined;
   generateAppService?: boolean;
   allowConfigureAppService?: boolean;
-  properties?: ModelPropertyDto[] | null;
-  moduleId?: string | null;
-  module?: string | null;
+  properties: ModelPropertyDto[];
+  moduleId?: string | null | undefined;
+  module?: string | null | undefined;
   name?: string | null;
   label?: string | null;
   description?: string | null;
   versionNo?: number;
-  versionStatus?: ConfigurationItemVersionStatus;
   suppress?: boolean;
   notImplemented?: boolean;
   source?: MetadataSourceType;
@@ -274,7 +277,7 @@ export interface ModelConfigurationDto {
   permissionDelete?: PermissionedObjectDto;
   viewConfigurations?: EntityViewConfigurationDto[] | null;
 
-  initStatus?: EntityInitFlags;
+  initStatus: EntityInitFlags | null;
   initMessage?: string;
 }
 

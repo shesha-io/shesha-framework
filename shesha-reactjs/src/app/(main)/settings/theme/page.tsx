@@ -1,10 +1,9 @@
 "use client";
 
-import React from 'react';
+import React, { FC } from 'react';
 import { ConfigurableThemePage } from '@/generic-pages/settings/dynamic-theme';
-import { PageWithLayout } from '@/interfaces';
 
-const Page: PageWithLayout = () => {
+const Page: FC = () => {
   return <ConfigurableThemePage />;
 };
 

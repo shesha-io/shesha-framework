@@ -40,18 +40,18 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Get <see cref="ConfigurationItem"/> by <paramref name="module"/>, <paramref name="name"/>
         /// </summary>
-        public static Task<TItem> GetItemByFullNameAsync<TItem>(this IRepository<TItem, Guid> repository, string module, string name) where TItem : ConfigurationItem
+        public static async Task<TItem> GetItemByFullNameAsync<TItem>(this IRepository<TItem, Guid> repository, string module, string name) where TItem : ConfigurationItem
         {
-            return repository.GetAll().GetItemByFullNameAsync(module, name);
+            return await(await repository.GetAllAsync()).GetItemByFullNameAsync(module, name);
         }
 
         /// <summary>
         /// Get <see cref="ConfigurationItem"/> by <paramref name="id"/>
         /// </summary>
-        public static Task<TItem> GetItemByIdAsync<TItem>(this IRepository<TItem, Guid> repository, ConfigurationItemIdentifier id) where TItem : ConfigurationItem 
+        public static async Task<TItem> GetItemByIdAsync<TItem>(this IRepository<TItem, Guid> repository, ConfigurationItemIdentifier id) where TItem : ConfigurationItem 
         {
             // TODO: make result nullable and add an override with not nullable result
-            return repository.GetAll().GetItemByIdAsync(id);
+            return await (await repository.GetAllAsync()).GetItemByIdAsync(id);
         }
 
         /// <summary>

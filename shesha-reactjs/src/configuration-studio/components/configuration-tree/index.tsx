@@ -3,7 +3,7 @@ import React, { FC, useMemo, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
 import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, TreeNode } from '../../models';
 import { DownOutlined } from '@ant-design/icons';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { buildNodeContextMenu } from '../../menu-utils';
@@ -172,7 +172,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   return (
     <Spin
       spinning={treeLoadingState.status === 'loading'}
-      wrapperClassName={styles.csNavPanelSpinner}
+      classNames={{ root: styles.csNavPanelSpinner }}
     >
       {treeLoadingState.status === 'ready' && isDefined(treeNodes) && (
         <div className={styles.csNavPanelContent}>

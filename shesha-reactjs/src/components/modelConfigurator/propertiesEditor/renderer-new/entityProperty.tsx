@@ -3,7 +3,7 @@ import { Tag, Tooltip } from 'antd';
 import { QuestionCircleOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { getIconTypeByDataType } from '@/utils/metadata';
-import ShaIcon from '@/components/shaIcon';
+import { ShaIcon } from '@/components/shaIcon';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils';
 

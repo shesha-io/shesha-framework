@@ -12,7 +12,7 @@ import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import _ from 'lodash';
 import { isDefined } from '@/utils/nullables';
 
@@ -36,7 +36,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 
     exporterRef.current.exportExecuter().then(() => {
       hideModal();
-    }).catch((error) => {
+    }).catch((error: unknown) => {
       notification.error({
         message: "Failed to export package",
         icon: null,

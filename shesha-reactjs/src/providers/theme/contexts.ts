@@ -18,7 +18,7 @@ export interface IConfigurableTheme {
 }
 
 export interface IThemeStateContext {
-  readonly theme?: IConfigurableTheme;
+  readonly theme?: IConfigurableTheme | undefined;
   prefixCls: string;
   iconPrefixCls: string;
   labelSpan: number;
@@ -55,6 +55,6 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
   componentSpan: 18,
 };
 
-export const UiStateContext = createNamedContext<IThemeStateContext>(THEME_CONTEXT_INITIAL_STATE, "UiStateContext");
+export const UiStateContext = createNamedContext<IThemeStateContext | undefined>(THEME_CONTEXT_INITIAL_STATE, "UiStateContext");
 
-export const UiActionsContext = createNamedContext<IThemeActionsContext>(undefined, "UiActionsContext");
+export const UiActionsContext = createNamedContext<IThemeActionsContext | undefined>(undefined, "UiActionsContext");

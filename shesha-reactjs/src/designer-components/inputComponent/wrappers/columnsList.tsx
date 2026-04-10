@@ -1,8 +1,9 @@
 import { IColumnsListSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import ColumnsList from '../../columns/columnsList';
 
-export const ColumnsListWrapper: FC<IColumnsListSettingsInputProps> = (props) => {
+export const ColumnsListWrapper: FCUnwrapped<IColumnsListSettingsInputProps> = (props) => {
   const { value, onChange, readOnly } = props;
   return (
     <ColumnsList

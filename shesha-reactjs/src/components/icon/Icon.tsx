@@ -1,6 +1,6 @@
 import { Space, Tooltip } from 'antd';
 import React, { ReactNode } from 'react';
-import ShaIcon, { IconType } from '../shaIcon';
+import { ShaIcon, IconType } from '../shaIcon';
 import SectionSeparator from '../sectionSeparator';
 import { customIcons } from './icons';
 import { startCase } from 'lodash';

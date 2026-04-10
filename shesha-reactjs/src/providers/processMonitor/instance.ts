@@ -114,8 +114,6 @@ export class ProcessMonitorInstance implements IProcessMonitor {
   onLogEvent = (data: SignalLogEventDto): void => {
     this.log('LOG: 🚦 LogEvent', data);
 
-    if (!data)
-      return;
     const { level, message, timeStamp } = data;
 
     const event: ILogEvent = {
@@ -206,7 +204,7 @@ export class ProcessMonitorInstance implements IProcessMonitor {
     if (!this.processId)
       throw new Error('No process id');
     const url = buildUrl(URLS.DOWNLOAD_LOG, { processId: this.processId, processType: this.processType });
-    const response = await this.httpClient.get(url, { responseType: 'blob' });
+    const response = await this.httpClient.get<BlobPart>(url, { responseType: 'blob' });
     const fileName = getFileNameFromResponse(response) ?? 'execution.log';
     FileSaver.saveAs(new Blob([response.data]), fileName);
   };

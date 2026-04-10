@@ -10,7 +10,30 @@ import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
 import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
-import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+
+/*
+console.log("LOG: rules", hooksPlugin.configs.recommended);
+console.log("LOG: rules flat", hooksPlugin.configs.flat.recommended);
+*/
+const hooksPluginRules = {
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
+    'react-hooks/static-components': 'warn', /*TODO: review code and activate*/
+    'react-hooks/use-memo': 'error',
+    'react-hooks/component-hook-factories': 'error',
+    'react-hooks/preserve-manual-memoization': 'warn', /*TODO: review code and activate*/
+    'react-hooks/incompatible-library': 'warn',
+    'react-hooks/immutability': 'warn', /*TODO: review code and activate*/
+    'react-hooks/globals': 'error',
+    'react-hooks/refs': 'warn', /*TODO: review code and activate*/
+    'react-hooks/set-state-in-effect': 'warn', /*TODO: review code and activate*/
+    'react-hooks/error-boundaries': 'error',
+    'react-hooks/purity': 'error',
+    'react-hooks/set-state-in-render': 'error',
+    'react-hooks/unsupported-syntax': 'warn',
+    'react-hooks/config': 'error',
+    'react-hooks/gating': 'error'
+};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,27 +45,14 @@ const strictFolders = isLightBuild
     ? []
     : [
         "src/configuration-studio",
-        //"src/utils",
-
-        "src/providers/referenceListDispatcher",
-        "src/providers/metadataDispatcher",
-        "src/providers/metadata",
-        "src/providers/configurationItemsLoader",
-        "src/providers/formPersisterProvider",
-        "src/providers/formMarkupConverter",
-        "src/providers/formManager",
-        "src/providers/configurableActionsDispatcher",
-        "src/providers/auth",
-        "src/providers/appConfigurator",
-        "src/providers/dataContextManager",
-        "src/providers/dataContextProvider",
-        //"src/providers/sheshaApplication",
+        "src/providers",
+        "src/interfaces",
+        "src/utils",
         "src/hooks",
         "src/designer-components/_settings/utils/background",
-
-        "src/providers/form/utils",
-        "src/providers/formDesigner",
         "src/form-factory",
+        "src/publicJsApis",
+        "src/designer-components/_settings/utils/background",        
     ];
 
 const stylisticOverrides = {
@@ -276,7 +286,7 @@ const baseTsConfig = {
             }
         ],
         "memory-monitor/track-memory": "off",
-        ...hooksPlugin.configs.recommended.rules,
+        ...hooksPluginRules,
         ...reactPlugin.configs.recommended.rules,
         // ...importX.flatConfigs.recommended.rules,
         // ...importX.flatConfigs.typescript.rules,
@@ -284,7 +294,7 @@ const baseTsConfig = {
         "react/prop-types": ["off"],
         "require-await": "error",
         "no-restricted-imports": ["error", {
-            paths: ["@/utils/publicUtils",
+            paths: ["@/utils/publicUtils", "@/index", "@/components",
                 {
                     name: "nanoid/non-secure",
                     message: "Please import nanoid from `@/utils/uuid` instead.",

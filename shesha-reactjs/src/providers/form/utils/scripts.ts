@@ -9,28 +9,30 @@ type FunctionWithArgs<TArgs, TResult> = (args: TArgs) => TResult;
 export function executeScriptSync<TResult, TArgs = unknown>(expression: string, context: TArgs): TResult | undefined {
   if (!expression) throw new Error('Expression must be defined');
 
-  try {
-    const functionBody = `
+  const functionBody = `
     with(context) {
       ${expression}
     }
   `;
+
+  try {
     const dynamicFunction = new Function('context', functionBody) as FunctionWithArgs<TArgs, TResult>;
 
     return dynamicFunction(context);
   } catch (error) {
-    console.error(`executeScriptSync error`, error);
+    // console.error(`executeScriptSync error: ${functionBody}:`, error);
+    console.error('executeScriptSync error:', error);
     return undefined;
   }
 };
 
-export type IExpressionExecuterFailedHandler<TResult> = (error: unknown) => TResult;
+export type IExpressionExecuterFailedHandler<TResult> = (error: unknown) => TResult | null;
 export function executeExpression<TResult>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments,
   defaultValue: TResult,
   onFail: IExpressionExecuterFailedHandler<TResult>,
-): TResult {
+): TResult | null {
   if (expression) {
     try {
       let argsDefinition = '';

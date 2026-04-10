@@ -1,4 +1,4 @@
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { CellStyleFunc, IAnchoredColumnProps, ITableColumn } from '@/providers/dataTable/interfaces';
 import { FunctionExecutor, getFunctionExecutor } from '@/providers/form/utils';
 import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils/datatable';
@@ -45,7 +45,7 @@ export const getAnchoredCellStyleAccessor = (
     // use first row cell values to calculate the left shift
 
     if (anchored?.direction === 'right') {
-      const totalColumns = row?.length;
+      const totalColumns = row.length;
 
       rightColumn.shadowPosition = totalColumns - calculateTotalColumnsOnFixed(row, 'right');
       rightColumn.shift = calculatePositionShift(row, index, totalColumns - 1)?.reduce(

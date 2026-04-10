@@ -31,7 +31,7 @@ export interface ITimePickerProps {
   enableStyleOnReadonly?: boolean;
 }
 
-export interface ITimePickerComponentProps extends Omit<ITimePickerProps, 'defaultValue' | 'style'>, IConfigurableFormComponent {
+export interface ITimePickerComponentProps extends Omit<ITimePickerProps, 'defaultValue' | 'style' | "readOnly">, IConfigurableFormComponent {
 
 }
 

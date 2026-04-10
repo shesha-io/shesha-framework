@@ -2,8 +2,6 @@
 using Abp.Domain.Uow;
 using Castle.Core.Logging;
 using GraphQL;
-using GraphQL.MicrosoftDI;
-using GraphQL.SystemTextJson;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shesha.GraphQL.Middleware;
@@ -40,6 +38,9 @@ namespace Shesha.GraphQL
                         logger?.Error($"{ctx.OriginalException.Message} occurred", ctx.OriginalException);
                         return Task.CompletedTask;
                     };
+                })
+                .AddComplexityAnalyzer(options => {
+                    options.MaxDepth = 15;
                 })
                 // Add required services for GraphQL request/response de/serialization
                 .AddSystemTextJson() // For .NET Core 3+

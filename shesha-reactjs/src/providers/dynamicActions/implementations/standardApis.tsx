@@ -1,9 +1,8 @@
-import { useMetadata } from '@/providers';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
-import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dynamicActionsDispatcher/models';
-import React, { PropsWithChildren, useMemo, FC } from 'react';
+import { DynamicItemsEvaluationHook } from '@/providers/dynamicActionsDispatcher/models';
+import React, { PropsWithChildren, FC, ComponentType } from 'react';
 
-import { DynamicActionsProvider } from '../index';
+import { DynamicActionsProvider, IHasActions } from '../index';
 import { wrapDisplayName } from '@/utils/react';
 
 const StandardApisItems: ButtonGroupItemProps[] = [
@@ -12,28 +11,14 @@ const StandardApisItems: ButtonGroupItemProps[] = [
   { id: 'r3', name: 'moment', label: 'moment', itemType: 'item', itemSubType: 'button', sortOrder: 2 },
 ];
 
-const useStandardApis: DynamicItemsEvaluationHook = (args) => {
-  const { metadata } = useMetadata(false) ?? {};
-  const { item } = args;
-
-  const operations = useMemo<ButtonGroupItemProps[]>(() => {
-    // if (!isEntityMetadata(metadata))
-    //     return [];
-
-    return StandardApisItems;
-  }, [item, metadata]);
-
-  return operations;
+const useStandardApis: DynamicItemsEvaluationHook = () => {
+  return StandardApisItems;
 };
 
-const standardApisHoc: DynamicRenderingHoc = (WrappedComponent) => {
-  return wrapDisplayName((props) => {
-    const testItems = useMemo<ButtonGroupItemProps[]>(() => {
-      return StandardApisItems;
-    }, []);
-
-    return (<WrappedComponent {...props} items={testItems} />);
-  }, "standardApisHoc");
+const standardApisHoc = <TProps = unknown>(WrappedComponent: ComponentType<TProps & IHasActions>): FC<TProps> => {
+  return wrapDisplayName<TProps>((props) => {
+    return (<WrappedComponent {...props} items={StandardApisItems} />);
+  }, 'standardApisHoc');
 };
 
 export const StandardApis: FC<PropsWithChildren> = ({ children }) => {

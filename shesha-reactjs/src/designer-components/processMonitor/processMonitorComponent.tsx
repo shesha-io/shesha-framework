@@ -3,11 +3,11 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { ProcessMonitorProvider } from '@/providers/processMonitor/providers';
 import { IProcessMonitorProps } from './interfaces';
-import { ComponentsContainer } from '@/components';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

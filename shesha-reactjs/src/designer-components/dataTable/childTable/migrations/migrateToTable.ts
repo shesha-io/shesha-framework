@@ -1,10 +1,13 @@
 import { IConfigurableFormComponent, SettingsMigrationContext } from '@/interfaces/formDesigner';
-import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 import { nanoid } from '@/utils/uuid';
 import { IChildTableComponentProps } from '../index';
 import { migrateFunctionToProp } from '@/designer-components/_common-migrations/migrateSettings';
 import { IFlatComponentsStructure, isConfigurableFormComponent } from '@/interfaces';
+import { Collapse } from 'antd';
+import { ComponentProps } from 'react';
+
+type ExpandIconPlacement = ComponentProps<typeof Collapse>['expandIconPlacement'];
 
 export interface IPanelContent {
   id: string;
@@ -17,7 +20,7 @@ interface CustomConfigurableFormComponent extends IConfigurableFormComponent {
 
 export interface IPanelComponentProps extends IConfigurableFormComponent {
   collapsedByDefault?: boolean;
-  expandIconPosition?: ExpandIconPosition | 'hide';
+  expandIconPosition?: ExpandIconPlacement | 'hide';
   header?: IPanelContent;
   content?: IPanelContent;
   collapsible?: CollapsibleType;

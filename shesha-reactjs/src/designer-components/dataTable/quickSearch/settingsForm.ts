@@ -1,4 +1,4 @@
-import { SettingsFormMarkupFactory } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces/formDesigner';
 import { nanoid } from '@/utils/uuid';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {

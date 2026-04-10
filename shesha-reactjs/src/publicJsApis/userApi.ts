@@ -42,9 +42,9 @@ export interface UserApi {
   /**
    * Get User Setting
    */
-  getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any>;
+  getUserSettingValueAsync<TValue = unknown>(name: string, module: string, defaultValue?: TValue, dataType?: string): Promise<TValue>;
   /**
    * Update User Setting
    */
-  updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void>;
+  updateUserSettingValueAsync<TValue = unknown>(name: string, module: string, value: TValue, dataType?: string): Promise<void>;
 }

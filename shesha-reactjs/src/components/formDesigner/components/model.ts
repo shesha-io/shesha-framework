@@ -1,4 +1,5 @@
-import { IComponentModelProps } from "@/index";
+import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
+import { IComponentModelProps } from "@/providers/form/models";
 import { ColProps } from "antd";
 import { ReactNode } from "react";
 
@@ -18,4 +19,7 @@ export interface IConfigurableFormItemProps {
   wrapperCol?: ColProps;
   labelCol?: ColProps;
   hidden?: boolean;
+  autoAlignLabel?: boolean;
+  lazy?: boolean;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc;
 }

@@ -1,13 +1,19 @@
 import { IShaDataTableInlineEditableProps, TableSelectionMode } from '@/components/dataTable/interfaces';
-import { IConfigurableActionConfiguration } from '@/providers';
+import { IConfigurableActionConfiguration, IInputStyles } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ICommonContainerProps } from '../../container/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { ComponentDefinition } from '@/interfaces';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 export type RowDroppedMode = 'executeScript' | 'showDialog';
+
+export type TableDeviceStyles = IInputStyles & {
+  rowDimensions?: IDimensionsValue | undefined;
+  rowHeight?: string | undefined;
+};
 
 export interface ITableComponentBaseProps extends IShaDataTableInlineEditableProps, Omit<ICommonContainerProps, 'style'> {
   items: IConfigurableColumnsProps[];
@@ -61,9 +67,9 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
 
   // Row dimensions
   rowDimensions?: {
-    height?: string;
-    minHeight?: string;
-    maxHeight?: string;
+    height?: string | number | undefined;
+    minHeight?: string | number | undefined;
+    maxHeight?: string | number | undefined;
   };
 
   // Row padding (individual fields)
@@ -148,6 +154,6 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
 }
 
 /** Table component props */
-export interface ITableComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent {}
+export interface ITableComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent<TableDeviceStyles> {}
 
 export type TableComponentDefinition = ComponentDefinition<"datatable", ITableComponentProps>;

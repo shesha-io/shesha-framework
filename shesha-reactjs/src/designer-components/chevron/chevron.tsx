@@ -5,7 +5,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { ChevronControl } from '@/components/chevron';
 import { RefListItemGroupConfiguratorProvider } from '@/components/refListSelectorDisplay/provider';
 import { getSettings } from './settingsForm';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IChevronProps } from '@/components/chevron/models';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';

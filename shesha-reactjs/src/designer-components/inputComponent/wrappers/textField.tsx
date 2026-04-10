@@ -1,10 +1,11 @@
 import { ITextFieldSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Icon from '@/components/icon/Icon';
 import { useStyles } from '../styles';
 import { Input } from 'antd';
+import { FCUnwrapped } from '@/providers/form/models';
 
-export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
+export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (props) => {
   const { value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
   const { styles } = useStyles();
 
@@ -40,8 +41,8 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
       variant={variant}
       placeholder={placeholder}
       style={{ width: width ?? "100%" }}
-      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? label} className={styles.icon} /></span>}
-      value={value}
+      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? (typeof label === 'string' ? label : '')} className={styles.icon} /></span>}
+      value={value as string}
       type={textType}
     />
   );

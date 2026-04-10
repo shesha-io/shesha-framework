@@ -3,10 +3,9 @@ import { evaluateString } from "@/providers/form/utils";
 import { FormMetadataHelper } from "./formMetadataHelper";
 import { GenerationLogic } from "./interface";
 import { processBaseMarkup } from "./viewGenerationUtils";
-import { PropertyMetadataDto } from "@/apis/metadata";
-import { IEntityMetadata } from "@/interfaces";
+import { IEntityMetadata, IPropertyMetadata } from "@/interfaces";
 import { IEntityTypeIdentifier } from "../../entities/models";
-import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
+import { isEntityTypeId } from "@/providers/metadataDispatcher/entities/utils";
 import { FormBuilder, FormBuilderFactory } from "@/form-factory/interfaces";
 
 /**
@@ -29,17 +28,16 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
   /**
    * Process the template markup with replacements and specialized logic
    */
-  async processTemplate(markup: string, replacements: object, metadataHelper?: FormMetadataHelper): Promise<string> {
+  async processTemplate(markup: string, replacements: Record<string, unknown>, metadataHelper?: FormMetadataHelper): Promise<string> {
     try {
       let processedMarkup = processBaseMarkup(markup, replacements);
-      const markupObj = JSON.parse(processedMarkup);
+      const markupObj = JSON.parse(processedMarkup) as object;
 
       if (metadataHelper && this.shouldFetchMetadata(replacements)) {
         try {
           const { entity, nonFrameworkProperties } = await this.fetchEntityMetadata(replacements, metadataHelper);
-          if (entity && nonFrameworkProperties) {
-            await this.addComponentsToMarkup(markupObj, entity, nonFrameworkProperties, metadataHelper, replacements);
-          }
+
+          await this.addComponentsToMarkup(markupObj, entity, nonFrameworkProperties, metadataHelper, replacements);
         } catch (entityError) {
           console.error(`Error processing entity metadata in ${this.typeName}:`, entityError);
           // Continue processing without entity metadata
@@ -57,7 +55,7 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
    * Check if this generation logic implementation supports the given template
    */
   supportsTemplate(template: FormConfigurationDto): boolean {
-    return template?.generationLogicTypeName === this.typeName;
+    return template.generationLogicTypeName === this.typeName;
   }
 
   /**
@@ -75,9 +73,9 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
   /**
    * Fetch entity metadata and extract non-framework properties
    */
-  protected async fetchEntityMetadata(replacements: object, metadataHelper: FormMetadataHelper): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
+  protected async fetchEntityMetadata(replacements: object, metadataHelper: FormMetadataHelper): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: IPropertyMetadata[] }> {
     const modelType = this.getModelTypeFromReplacements(replacements);
-    if (isEntityTypeIdEmpty(modelType)) {
+    if (!isEntityTypeId(modelType)) {
       throw new Error('Model type is required for fetching metadata');
     }
 
@@ -88,9 +86,9 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
    * Add components to the markup based on entity metadata and properties
    */
   protected abstract addComponentsToMarkup(
-    markup: unknown,
+    markup: object,
     entity: IEntityMetadata,
-    nonFrameworkProperties: PropertyMetadataDto[],
+    nonFrameworkProperties: IPropertyMetadata[],
     metadataHelper: FormMetadataHelper,
     replacements?: object
   ): Promise<void>;

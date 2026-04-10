@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ConfigurationItemRevision, CreationMethod } from './hooks';
-import { DateDisplay } from '@/components';
+import { DateDisplay } from '@/components/dateDisplay';
 import { Button, Col, Row, Space, Typography } from 'antd';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { EditOutlined, ExportOutlined, FileZipOutlined, SettingOutlined, UndoOutlined } from '@ant-design/icons';

@@ -24,27 +24,32 @@ export const SETTINGS_URLS = {
 export class SettingsManager {
   readonly _httpClient: HttpClientApi;
 
-  static #configurationsPromise: Promise<SettingConfigurationDto[]> = undefined;
+  static #configurationsPromise: Promise<SettingConfigurationDto[]> | undefined = undefined;
 
-  #modulesMapPromise: Promise<Map<string, ModuleSettingsMap>> = undefined;
+  #modulesMapPromise: Promise<Map<string, ModuleSettingsMap>> | undefined = undefined;
 
   resolveSettingAsync = (id: ISettingFullAccessor): Promise<ISettingIdentifier> => {
     return this.#fetchModulesMapAsync().then((map) => {
       const moduleItem = map.get(id.module);
       if (moduleItem) {
         const category = moduleItem.categories.get(id.category);
-        if (category) {
-          return {
-            module: moduleItem.name,
-            name: category.settings.get(id.name),
-          };
-        }
+        if (!category)
+          throw new Error(`Category '${id.category}' not found in module '${id.module}'`);
+
+        const settingName = category.settings.get(id.name);
+        if (!settingName)
+          throw new Error(`Setting with name '${id.name}' not found in category '${id.category}' of module '${id.module}'`);
+
+        return {
+          module: moduleItem.name,
+          name: settingName,
+        };
       }
-      return undefined;
+      throw new Error(`Module '${id.module}' not found`);
     });
   };
 
-  getValueAsync = <Value = any>(id: ISettingFullAccessor): Promise<Value> => {
+  getValueAsync = <Value = unknown>(id: ISettingFullAccessor): Promise<Value | undefined> => {
     return this.resolveSettingAsync(id).then((resolvedId) => {
       const url = `${SETTINGS_URLS.GET_VALUE}?${qs.stringify(resolvedId)}`;
       return this._httpClient.get<IAjaxResponse<Value>>(url)
@@ -54,7 +59,7 @@ export class SettingsManager {
     });
   };
 
-  setValueAsync = <Value = any>(id: ISettingFullAccessor, value: Value): Promise<void> => {
+  setValueAsync = <Value = unknown>(id: ISettingFullAccessor, value: Value): Promise<void> => {
     return this.resolveSettingAsync(id).then((resolvedId) => {
       const payload = {
         module: resolvedId.module,

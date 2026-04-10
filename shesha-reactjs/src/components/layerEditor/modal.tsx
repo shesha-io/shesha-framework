@@ -1,4 +1,3 @@
-import { FormMarkup } from '@/index';
 import { Button, Modal } from 'antd';
 import React, { FC, useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
@@ -7,6 +6,7 @@ import { ILayerFormModel } from '@/providers/layersProvider/models';
 import { LayerGroupConfigurator } from './configurator';
 import { LayerItemsContainer } from './layersContainer';
 import { useStyles } from './styles/styles';
+import { FormMarkup } from '@/providers/form/models';
 
 interface IFiltersListProps {
   layers?: ILayerFormModel[];

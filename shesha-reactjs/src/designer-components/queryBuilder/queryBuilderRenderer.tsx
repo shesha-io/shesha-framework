@@ -1,11 +1,11 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import QueryBuilderField from './queryBuilderField';
 import React, { FC } from 'react';
 import { Alert, Typography } from 'antd';
-import { IQueryBuilderComponentProps } from './interfaces';
+import { IQueryBuilderComponentPropsUnwrapped } from './interfaces';
 import { useForm, useQueryBuilder } from '@/providers';
 
-export const QueryBuilderRenderer: FC<IQueryBuilderComponentProps> = (props) => {
+export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (props) => {
   const { formMode } = useForm();
   const { fieldsUnavailableHint } = props;
 
