@@ -3,7 +3,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import ConditionalWrap from '@/components/conditionalWrapper';
 import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, useMemo } from 'react';
-import ShaIcon from '@/components/shaIcon';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
 import { DataTypes, IObjectMetadata, ValidationErrors, getStyle, useShaFormInstance } from '@/index';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
@@ -70,7 +70,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     const steps = useMemo(() => {
         return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style }, index) => {
             const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
-            const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
+            const iconProps = icon ? { icon: <ShaIcon iconName={icon as IconType} /> } : {};
 
             const stepStyle = getStyle(style, visibleSteps[index]);
 
