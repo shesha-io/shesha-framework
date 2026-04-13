@@ -122,7 +122,7 @@ export const getGhostStyleOverrides = (fontStyles?: React.CSSProperties): React.
     backgroundColor: 'transparent',
     border: 'none',
     boxShadow: 'none',
-    ...(fontStyles?.color ? { color: fontStyles.color } : {}),
+    color: fontStyles?.color ?? '#000',
   };
 };
 
