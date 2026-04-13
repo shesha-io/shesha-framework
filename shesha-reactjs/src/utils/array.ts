@@ -1,3 +1,5 @@
+import { isDefined } from "./nullables";
+
 type RemoveUndefined<T> = {
   [K in keyof T as T[K] extends undefined ? never : K]: T[K];
 };
@@ -21,7 +23,7 @@ export type NonEmptyArray<T> = [T, ...T[]];
  * @returns true if the value is an array with at least one element, false otherwise.
  */
 export const isNonEmptyArray = <T>(value: Array<T> | null | undefined): value is NonEmptyArray<T> => {
-  return value !== null && value !== undefined && value.length > 0;
+  return isDefined(value) && value.length > 0 && isDefined(value[0]);
 };
 
 /**
