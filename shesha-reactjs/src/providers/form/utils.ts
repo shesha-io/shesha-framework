@@ -89,6 +89,8 @@ import {
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
+import { IModalApi } from '../dynamicModal/modalApi';
+import { useModalApiWithFallback } from '../dynamicModal';
 
 export {
   executeExpression, executeScript,
@@ -124,6 +126,8 @@ export interface IApplicationContext<Value extends object = object> {
   http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
+  /** Modal API - for displaying dialogs and forms in modals (limited functionality if DynamicModalProvider is not available) */
+  modal: IModalApi;
   /** File Saver API */
   fileSaver: (data: Blob | string, filename?: string) => void;
 
@@ -168,6 +172,7 @@ export type AvailableConstantsContext = {
   globalState: IAnyObject | undefined;
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
+  modal: IModalApi;
   httpClient: HttpClientApi;
 };
 
@@ -181,6 +186,7 @@ export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((re
 
 const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
+  const modal = useModalApiWithFallback();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
   const closestContextId = useDataContextOrUndefined()?.id;
@@ -198,6 +204,7 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
     setGlobalState,
     httpClient,
     message,
+    modal,
   };
   return result;
 };
@@ -273,6 +280,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     httpClient,
     message,
     metadataDispatcher,
+    modal,
   } = fullContext;
   const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
@@ -303,6 +311,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     moment: () => moment,
     http: () => httpClient,
     message: () => message,
+    modal: () => modal,
     fileSaver: () => FileSaver,
     data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
     form: () => shaFormInstance,
