@@ -160,7 +160,7 @@ export const Dropdown: FC<IDropdownProps> = ({
 
   if (readOnly) {
     const isMultiple = mode === 'multiple' || mode === 'tags';
-    const getReadOnlyValue = () => {
+    const getReadOnlyValue = (): ILabelValue | ILabelValue[] | { label: ReactNode }[] | undefined => {
       if (!isMultiple) {
         return options.find((o) => o.value === selectedValue);
       }
