@@ -115,14 +115,14 @@ export const addPx = (value: number | string | null | undefined, context?: objec
  * const ghostStyles = getGhostStyleOverrides();
  * // Returns: { background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }
  */
-export const getGhostStyleOverrides = (fontStyles: React.CSSProperties): React.CSSProperties => {
+export const getGhostStyleOverrides = (fontStyles?: React.CSSProperties): React.CSSProperties => {
   return {
     background: 'transparent',
     backgroundColor: 'transparent',
     border: 'none',
     boxShadow: 'none',
     ...fontStyles,
-    color: fontStyles.color ?? '#000'
+    color: fontStyles?.color ?? '#000',
   };
 };
 
