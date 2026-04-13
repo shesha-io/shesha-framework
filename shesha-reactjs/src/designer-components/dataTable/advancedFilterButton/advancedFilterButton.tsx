@@ -42,7 +42,7 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
       : {};
 
   // Ghost buttons: only foreground color, no background/border/shadow
-  const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+  const ghostOverrides = isGhostType ? getGhostStyleOverrides({ color: props.color }) : props.styles;
 
   const buttonStyle = {
     ...baseButtonStyle,
