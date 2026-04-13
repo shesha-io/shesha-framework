@@ -90,7 +90,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
             block={block}
-            style={{ ...newStyles, ...(isGhost ? getGhostStyleOverrides() : {}) }}
+            style={{ ...newStyles, ...(isGhost ? getGhostStyleOverrides(buttonStyles.fontStyles) : {}) }}
           >
             {label}
           </Button>

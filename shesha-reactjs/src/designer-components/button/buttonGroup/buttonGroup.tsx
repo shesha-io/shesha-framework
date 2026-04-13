@@ -131,7 +131,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
       .map((childItem) => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
     // Ghost buttons: only foreground color, no background/border/shadow
     const isGhostType = item.buttonType === 'ghost';
-    const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+    const ghostOverrides = isGhostType ? getGhostStyleOverrides(item.font) : item.styles;
 
     return (
       <Dropdown
