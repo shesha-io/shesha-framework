@@ -19,18 +19,11 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
 }
 
 
-/**
- * Helper to render content based on its type:
- * - 'string': Sanitized HTML (uses dangerouslySetInnerHTML)
- * - 'node': React node
- */
-const renderContent = (content: ReactNode | string | undefined): ReactNode => {
-  if (!content) return null;
-  if (typeof content == 'string') return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />;
-
-  return content as ReactNode;
+const renderContent = (content: ReactNode): ReactNode => {
+  return typeof content == 'string'
+    ? <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />
+    : content;
 };
-
 
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
   const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
