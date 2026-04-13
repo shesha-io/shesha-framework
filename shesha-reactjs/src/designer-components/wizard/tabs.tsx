@@ -21,7 +21,11 @@ import { addPx } from '@/utils/style';
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWizardApi', files: [{ content: wizardApiCode, fileName: 'apis/wizard.ts' }] }),
-    properties: [{ path: 'current', dataType: DataTypes.number }],
+    properties: [
+      { path: 'current', dataType: DataTypes.number },
+      { path: 'currentStep', dataType: DataTypes.object },
+      { path: 'visibleSteps', dataType: DataTypes.array },
+    ],
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
@@ -29,7 +33,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
   const { executeBooleanExpression } = useFormExpression();
   const onChangeContextData = useDataContextManager()?.onChangeContextData;
 
-  const { components, current, currentStep, visibleSteps, back, cancel, close, content, done, next, setStep } = useWizard(model);
+  const { components, current, currentStep, visibleSteps, back, cancel, close, content, done, next, reset, setStep } = useWizard(model);
   useEffect(() => onChangeContextData(), [current]);
 
   const contextData = useMemo(
@@ -49,10 +53,9 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
   const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
   const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
   const activeStepStyle = useFormComponentStyles(visibleSteps[current]);
-  const { fontSize, fontFamily, fontWeight, color, height, minHeight, maxHeight, ...rest } = activeStepStyle.fullStyle;
   const overflow = getOverflowStyle(true, false);
   const { styles } = useStyles({
-    styles: { ...model.allStyles.fullStyle, overflow: '', ...rest },
+    styles: { ...model.allStyles.fullStyle, overflow: '' },
     colors, activeStepStyle: activeStepStyle.fullStyle, stepWidth: addPx(stepWidth),
     overflow,
   });
@@ -101,7 +104,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
       type="control"
       metadata={contextMetadata}
       data={contextData}
-      api={{ back, cancel, close, content, done, next, setStep }}
+      api={{ back, cancel, close, content, done, next, reset, setStep }}
     >
       <ParentProvider model={model}>
         <div className={styles.shaWizard}>
