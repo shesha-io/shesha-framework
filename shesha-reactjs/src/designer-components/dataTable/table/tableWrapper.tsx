@@ -443,7 +443,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     };
   }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id, isEntitySource]);
 
-  const renderSidebarContent = (): JSX.Element => {
+  const renderSidebarContent = (): React.JSX.Element => {
     if (isAdvancedFilterVisible) {
       return <DatatableAdvancedFilter />;
     }

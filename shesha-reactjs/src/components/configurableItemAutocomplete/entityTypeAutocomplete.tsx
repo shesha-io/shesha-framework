@@ -235,8 +235,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
       notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
       style={{ width: '100%' }}
       options={fetchedOptions}
-      showSearch={true}
-      onSearch={onSearch}
+      showSearch={{ onSearch: onSearch }}
       onChange={onSelect}
       onFocus={onFocusHandler}
       onBlur={onBlur}

@@ -25,7 +25,7 @@ const getDefaultFactory = (
   readOnly: boolean,
 ): IConfigurableActionArgumentsFormFactory => {
   const component: {
-    ({ model, onSave, onCancel, onValuesChange, availableConstants }: ISettingsFormFactoryArgs): JSX.Element;
+    ({ model, onSave, onCancel, onValuesChange, availableConstants }: ISettingsFormFactoryArgs): React.JSX.Element;
     displayName: string;
   } = ({ model, onSave, onCancel, onValuesChange, availableConstants }) => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;

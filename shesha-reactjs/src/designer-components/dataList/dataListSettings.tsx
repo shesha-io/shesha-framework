@@ -16,7 +16,6 @@ import { ConfigurableActionConfigurator } from '@/designer-components/configurab
 import { IDataListComponentProps } from './model';
 import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
 import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
-import { nanoid } from '@/utils/uuid';
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
@@ -40,121 +39,6 @@ const inlineEditModes: ITypedOption<InlineEditMode>[] = [
 const inlineSaveModes: ITypedOption<InlineSaveMode>[] = [
   { label: 'Auto', value: 'auto' },
   { label: 'Manual', value: 'manual' },
-];
-/* const rowCapturePositions: ITypedOption<NewListItemCapturePosition>[] = [
-  { label: 'Top', value: 'top' },
-  { label: 'Bottom', value: 'bottom' }
-];*/
-
-const NEW_ROW_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'contexts',
-    description: 'Contexts data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global model of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
-];
-
-const ROW_SAVE_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'data',
-    description: 'Current list item data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'contexts',
-    description: 'Contexts data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global model of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
-];
-
-const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'data',
-    description: 'Current list item data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'contexts',
-    description: 'Contexts data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global model of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
 ];
 
 const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = (props) => {
@@ -227,20 +111,29 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       </SettingsFormItem>
 
       <SettingsFormItem name="selectionMode" label="Selection mode" jsSetting>
-        <Select disabled={readOnly} defaultValue="none">
-          <Select.Option key="1" value="none">None</Select.Option>
-          <Select.Option key="2" value="single">Single</Select.Option>
-          <Select.Option key="3" value="multiple">Multiple</Select.Option>
-        </Select>
+        <Select
+          disabled={readOnly}
+          defaultValue="none"
+          options={[
+            { label: 'None', value: 'none' },
+            { label: 'Single', value: 'single' },
+            { label: 'Multiple', value: 'multiple' },
+          ]}
+        />
       </SettingsFormItem>
 
       <SettingsCollapsiblePanel header="Render">
         <SettingsFormItem name="formSelectionMode" label="Form selection mode">
-          <Select disabled={readOnly} defaultValue="none">
-            <Select.Option key="name" value="name">Named form</Select.Option>
-            <Select.Option key="view" value="view">View type</Select.Option>
-            <Select.Option key="expression" value="expression">Expression</Select.Option>
-          </Select>
+          <Select
+            disabled={readOnly}
+            defaultValue="none"
+            options={[
+              { label: 'None', value: 'none' },
+              { label: 'Named form', value: 'name' },
+              { label: 'View type', value: 'view' },
+              { label: 'Expression', value: 'expression' },
+            ]}
+          />
         </SettingsFormItem>
 
         {model.formSelectionMode === 'name' && (
@@ -254,17 +147,19 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
-              onSearch={(t) =>
-                setFormTypesOptions(
-                  (t
-                    ? formTypes.filter((f) => {
-                      return f.toLowerCase().includes(t.toLowerCase());
-                    })
-                    : formTypes
-                  ).map((i) => {
-                    return { value: i };
-                  }),
-                )}
+              showSearch={{
+                onSearch: (t) =>
+                  setFormTypesOptions(
+                    (t
+                      ? formTypes.filter((f) => {
+                        return f.toLowerCase().includes(t.toLowerCase());
+                      })
+                      : formTypes
+                    ).map((i) => {
+                      return { value: i };
+                    }),
+                  ),
+              }}
             />
           </SettingsFormItem>
         )}
@@ -277,20 +172,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
               propertyName="formIdExpression"
               label="Form identifier expression"
               description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-              exposedVariables={[
-                { name: "item", description: "List item", type: "object" },
-                { name: "data", description: "Selected form values", type: "object" },
-                { name: "contexts", description: "Contexts data", type: "object" },
-                { name: "globalState", description: "The global model of the application", type: "object" },
-                { name: "setGlobalState", description: "Setting the global state of the application", type: "function" },
-                { name: "formMode", description: "Form mode", type: "object" },
-                { name: "form", description: "Form instance", type: "object" },
-                { name: "selectedListItem", description: "Selected list item of nearest table (null if not available)", type: "object" },
-                { name: "moment", description: "moment", type: "object" },
-                { name: "http", description: "axiosHttp", type: "object" },
-                { name: "message", description: "message framework", type: "object" },
-                { name: "modal", description: "API for displaying modal dialogs and forms", type: "object" },
-              ]}
               wrapInTemplate={true}
               templateSettings={{
                 functionName: 'formIdExpression',
@@ -301,22 +182,30 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         )}
 
         <SettingsFormItem name="orientation" label="Orientation" jsSetting>
-          <Select disabled={readOnly} defaultValue="vertical">
-            <Select.Option key={1} value="vertical">Vertical</Select.Option>
-            <Select.Option key={2} value="horizontal">Horizontal</Select.Option>
-            <Select.Option key={3} value="wrap">Wrap</Select.Option>
-          </Select>
+          <Select
+            disabled={readOnly}
+            defaultValue="vertical"
+            options={[
+              { label: 'Vertical', value: 'vertical' },
+              { label: 'Horizontal', value: 'horizontal' },
+              { label: 'Wrap', value: 'wrap' },
+            ]}
+          />
         </SettingsFormItem>
 
         <Show when={model?.orientation === 'horizontal'}>
           <SettingsFormItem name="listItemWidth" label="List Item Width">
-            <Select disabled={readOnly} defaultValue={1}>
-              <Select.Option key={1} value={1}>100%</Select.Option>
-              <Select.Option key={2} value={0.5}>50%</Select.Option>
-              <Select.Option key={3} value={0.33}>33%</Select.Option>
-              <Select.Option key={4} value={0.25}>25%</Select.Option>
-              <Select.Option key={5} value="custom">(Custom)</Select.Option>
-            </Select>
+            <Select
+              disabled={readOnly}
+              defaultValue={1}
+              options={[
+                { label: '100%', value: 1 },
+                { label: '50%', value: 0.5 },
+                { label: '33%', value: 0.33 },
+                { label: '25%', value: 0.25 },
+                { label: '(Custom)', value: 'custom' },
+              ]}
+            />
           </SettingsFormItem>
 
           <Show when={model?.listItemWidth === 'custom'}>
@@ -383,36 +272,46 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
-              onSearch={(t) =>
-                setFormTypesOptions(
-                  (t
-                    ? formTypes.filter((f) => {
-                      return f.toLowerCase().includes(t.toLowerCase());
-                    })
-                    : formTypes
-                  ).map((i) => {
-                    return { value: i };
-                  }),
-                )}
+              showSearch={{
+                onSearch: (t) =>
+                  setFormTypesOptions(
+                    (t
+                      ? formTypes.filter((f) => {
+                        return f.toLowerCase().includes(t.toLowerCase());
+                      })
+                      : formTypes
+                    ).map((i) => {
+                      return { value: i };
+                    }),
+                  ),
+              }}
             />
           </SettingsFormItem>
         )}
         {model.canAddInline !== 'no' && (
           <SettingsFormItem name="modalWidth" label="Dialog Width (%)">
-            <Select disabled={readOnly} allowClear>
-              <Select.Option key={1} value="40%">Small</Select.Option>
-              <Select.Option key={2} value="60%">Medium</Select.Option>
-              <Select.Option key={3} value="80%">Large</Select.Option>
-              <Select.Option key={4} value="custom">Custom</Select.Option>
-            </Select>
+            <Select
+              disabled={readOnly}
+              allowClear
+              options={[
+                { label: 'Small', value: '40%' },
+                { label: 'Medium', value: '60%' },
+                { label: 'Large', value: '80%' },
+                { label: 'Custom', value: 'custom' },
+              ]}
+            />
           </SettingsFormItem>
         )}
         {model.canAddInline !== 'no' && model.modalWidth === 'custom' && (
           <SettingsFormItem name="widthUnits" label="Units">
-            <Select disabled={readOnly} allowClear>
-              <Select.Option key={1} value="%">Percentage (%)</Select.Option>
-              <Select.Option key={2} value="px">Pixels (px)</Select.Option>
-            </Select>
+            <Select
+              disabled={readOnly}
+              allowClear
+              options={[
+                { label: 'Percentage (%)', value: '%' },
+                { label: 'Pixels (px)', value: 'px' },
+              ]}
+            />
           </SettingsFormItem>
         )}
         {model.canAddInline !== 'no' && model.modalWidth === 'custom' && !!model.widthUnits && (
@@ -435,7 +334,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             mode="dialog"
             label="New list item init"
             description="Specify logic to initialise the object bound to a new list item. This handler should return an object or a Promise<object>."
-            exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
             wrapInTemplate={true}
             templateSettings={{
               functionName: 'onNewListItemInit',
@@ -455,7 +353,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             mode="dialog"
             label="On list item save"
             description="Allows custom business logic to be executed on saving of new/updated list item (e.g. custom validation / calculations)."
-            exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
             wrapInTemplate={true}
             templateSettings={{
               functionName: 'onListItemSave',
@@ -475,7 +372,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             level={1}
             label="On list item save success"
             description="Custom business logic to be executed after successfull saving of new/updated list item."
-            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
         <SettingsFormItem name="canDeleteInline" label="Can delete inline" jsSetting>
@@ -502,9 +398,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
               mode="dialog"
               propertyName="groupStyle"
               label="Style of group headers"
-              exposedVariables={[
-                { name: "data", description: "Selected form values", type: "object" },
-              ]}
               wrapInTemplate={true}
               templateSettings={{
                 functionName: 'getGroupHeadersStyle',

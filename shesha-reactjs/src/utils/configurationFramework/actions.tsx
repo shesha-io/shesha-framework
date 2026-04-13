@@ -46,7 +46,7 @@ export const downloadAsJson = ({ httpClient, id }: IDownloadItemAsJsonPayload): 
     .get<BlobPart>(url, { responseType: 'blob' })
     .then((response) => {
       const fileName = getFileNameFromResponse(response) ?? 'form.json';
-      FileSaver.saveAs(new Blob([response.data]), fileName);
+      FileSaver(new Blob([response.data]), fileName, { autoBom: false });
       return { id: id };
     });
 };

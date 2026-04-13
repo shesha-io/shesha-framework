@@ -226,7 +226,7 @@ export function filterNonNull<T extends object>(obj: T): Partial<T> {
   ) as Partial<T>;
 }
 
-export const renderChart = (chartType: string, data: IChartData): JSX.Element => {
+export const renderChart = (chartType: string, data: IChartData): React.JSX.Element => {
   switch (chartType) {
     case 'line':
       return <LineChart data={data} />;

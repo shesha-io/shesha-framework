@@ -206,7 +206,7 @@ export class ProcessMonitorInstance implements IProcessMonitor {
     const url = buildUrl(URLS.DOWNLOAD_LOG, { processId: this.processId, processType: this.processType });
     const response = await this.httpClient.get<BlobPart>(url, { responseType: 'blob' });
     const fileName = getFileNameFromResponse(response) ?? 'execution.log';
-    FileSaver.saveAs(new Blob([response.data]), fileName);
+    FileSaver(new Blob([response.data]), fileName, { autoBom: false });
   };
 
   stopAsync = async (): Promise<void> => {

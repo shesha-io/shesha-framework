@@ -41,7 +41,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
         {uploads &&
           uploads.map((item, i) => (
             <li key={i}>
-              <strong>Version {i + 1}</strong> Uploaded {item.dateUploaded && <DateDisplay date={item.dateUploaded} />}{' '}
+              <strong>Version {i + 1}</strong> Uploaded {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>}{' '}
               by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>

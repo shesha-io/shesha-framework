@@ -129,7 +129,7 @@ export interface IApplicationContext<Value extends object = object> {
   /** Modal API - for displaying dialogs and forms in modals (limited functionality if DynamicModalProvider is not available) */
   modal: IModalApi;
   /** File Saver API */
-  fileSaver: typeof FileSaver;
+  fileSaver: (data: Blob | string, filename?: string) => void;
 
   /** Last updated date */
   lastUpdated?: Date;

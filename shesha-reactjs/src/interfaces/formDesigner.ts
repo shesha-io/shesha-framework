@@ -62,7 +62,7 @@ export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) =>
 
 export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> {
   model: UnwrapCodeEvaluators<TModel>;
-  children?: JSX.Element;
+  children?: React.JSX.Element;
   calculatedModel?: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
 
@@ -145,7 +145,6 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    */
   calculateModel?: (model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel;
   /**
-   * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form
    */
   initModel?: (model: TModel) => TModel;

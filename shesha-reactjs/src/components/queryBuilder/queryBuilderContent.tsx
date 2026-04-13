@@ -55,7 +55,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
     return checkedTree;
   }, [value]);
 
-  const renderBuilder = (props: BuilderProps): JSX.Element => {
+  const renderBuilder = (props: BuilderProps): React.JSX.Element => {
     return (
       <div className="query-builder-container">
         <div className={classNames('query-builder', { 'qb-lite': showActionBtnOnHover })}>

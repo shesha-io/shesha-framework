@@ -30,7 +30,7 @@ export interface IRadioOption {
 
 export interface IDropdownOption {
   label: string | React.ReactNode;
-  value: any;
+  value: string | number | null;
   icon?: string | React.ReactNode;
 }
 
@@ -385,7 +385,7 @@ export interface ICustomLabelValueEditorSettingsInputProps extends BaseLabelValu
   iconName?: string;
   colorTitle?: string;
   iconTitle?: string;
-  dropdownOptions?: IDropdownOption[] | string;
+  dropdownOptions?: IDropdownOption[];
 }
 export const isCustomLabelValueEditorProps = (value: ISettingsInputBase): value is ICustomLabelValueEditorSettingsInputProps => value.type === 'customLabelValueEditor';
 

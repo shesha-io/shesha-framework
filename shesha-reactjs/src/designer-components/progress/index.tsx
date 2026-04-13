@@ -6,7 +6,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { ProgressProps } from 'antd';
-import { ProgressType, SuccessProps } from 'antd/lib/progress/progress';
+import { GapPlacement, GapPosition, ProgressType, SuccessProps } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -24,6 +24,21 @@ interface IProgressProps
   stylingBox?: string;
   allStyles?: IFormComponentStyles;
 }
+
+const gapPositionToPlacement = (value: GapPosition | undefined): GapPlacement | undefined => {
+  switch (value) {
+    case 'top':
+      return 'top';
+    case 'bottom':
+      return 'bottom';
+    case 'left':
+      return 'start';
+    case 'right':
+      return 'end';
+    default:
+      return undefined;
+  }
+};
 
 const ProgressComponent: IToolboxComponent<IProgressProps> = {
   type: 'progress',
@@ -107,11 +122,11 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               strokeColor={getEvaluatedStrokeValue()}
               format={getEvaluatedFormat}
               percent={percent || value}
-              width={width}
+              size={width}
               strokeWidth={strokeWidth}
-              gapPosition={gapPosition}
+              gapPlacement={gapPositionToPlacement(gapPosition)}
               steps={steps}
-              trailColor={trailColor}
+              railColor={trailColor}
               status={status}
               showInfo={showInfo}
               strokeLinecap={strokeLinecap}

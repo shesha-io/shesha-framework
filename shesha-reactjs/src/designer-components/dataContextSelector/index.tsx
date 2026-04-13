@@ -26,11 +26,15 @@ const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   };
 
   return (
-    <Select allowClear={true} disabled={props.readOnly} showSearch value={props.value} size={props.size} onChange={onChange}>
-      {dataContexts.map((item) => {
-        return <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>;
-      })}
-    </Select>
+    <Select
+      allowClear={true}
+      disabled={props.readOnly}
+      showSearch
+      value={props.value}
+      size={props.size}
+      onChange={onChange}
+      options={dataContexts.map((item) => ({ value: item.id, label: item.name }))}
+    />
   );
 };
 

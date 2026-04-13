@@ -5,7 +5,7 @@ import { useStyles } from '../../styles/styles';
 
 export type IMultiEntityCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
 
-export const MultiEntityCell = <D extends object = object, V = any>(props: IMultiEntityCellProps<D, V>): JSX.Element => {
+export const MultiEntityCell = <D extends object = object, V = any>(props: IMultiEntityCellProps<D, V>): React.JSX.Element => {
   const { styles } = useStyles();
   const { value } = props;
   if (!props.value) return null;

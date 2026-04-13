@@ -187,7 +187,7 @@ const formatFileSize = (bytes?: number): string => {
 export const FileNameDisplay: FC<{
   file: UploadFile;
   className?: string;
-  icon?: JSX.Element;
+  icon?: React.JSX.Element;
   popoverContent?: React.ReactNode;
   popoverClassName?: string;
 }> = ({ file, icon, className, popoverContent, popoverClassName }) => {

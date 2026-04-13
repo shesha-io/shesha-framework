@@ -171,7 +171,7 @@ const getDisplayText = (item: IResponseItem): string | null => {
     : null;
 };
 
-export const GenericConfigurableItemAutocompleteInternal = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(props: ConfigurableItemAutocompleteRuntimeProps<TValue>): JSX.Element => {
+export const GenericConfigurableItemAutocompleteInternal = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(props: ConfigurableItemAutocompleteRuntimeProps<TValue>): React.JSX.Element => {
   const selectedValue = useRef<ConfigurableItemFullName>(null);
   const [autocompleteText, setAutocompleteText] = useState<string>(null);
   const {
@@ -336,9 +336,10 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
       notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
       style={{ width: '100%' }}
       options={options}
-      showSearch={true}
+      showSearch={{
+        onSearch: onSearch,
+      }}
       onFocus={onFocus}
-      onSearch={onSearch}
       onChange={onSelect}
       onClear={onClear}
       placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}

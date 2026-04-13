@@ -69,7 +69,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
               dynamicComponents={isDynamic ? customHeader?.components : []}
             />
           ) : evaluatedLabel}
-          expandIconPosition={isIconHidden ? undefined : expandIconPosition}
+          expandIconPlacement={isIconHidden ? undefined : expandIconPosition}
           showArrow={collapsible !== 'disabled' && !isIconHidden}
           collapsedByDefault={collapsedByDefault}
           extra={extra}

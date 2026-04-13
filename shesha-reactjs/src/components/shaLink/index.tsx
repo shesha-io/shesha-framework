@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import { FormIdentifier } from '@/interfaces';
 import { useShaRouting } from '@/providers/shaRouting';
 import { useStyles } from './styles/styles';
+import { isDefined } from '@/utils/nullables';
 
 export interface IShaLinkProps {
   linkTo?: string;
@@ -11,11 +12,6 @@ export interface IShaLinkProps {
   linkToForm?: FormIdentifier;
 
   params?: any;
-
-  /**
-   * @deprecated - pass children instead
-   */
-  displayName?: string;
 
   className?: string;
 
@@ -29,7 +25,6 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   linkToForm,
   params,
   icon,
-  displayName,
   children,
   className,
   style,
@@ -53,8 +48,6 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
     if (url) router?.push(url /* .toLowerCase() - it causes problems on prod because of case sensitivity of routings!*/);
   };
 
-  const childrenOrDisplayText = children || displayName;
-
   return (
     <Button
       type="link"
@@ -65,7 +58,7 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
       disabled={disabled}
     >
       {icon}
-      {!!childrenOrDisplayText && <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{childrenOrDisplayText}</span>}
+      {isDefined(children) && <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{children}</span>}
     </Button>
   );
 };

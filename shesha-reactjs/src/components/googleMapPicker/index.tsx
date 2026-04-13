@@ -340,9 +340,11 @@ const GoogleMapPicker: FC<IGoogleMapPickerProps> = ({
             style={{ flex: 1, minWidth: 0 }}
             value={searchText}
             options={suggestions}
-            onSearch={(text) => {
-              setSearchText(text);
-              fetchSuggestions(text);
+            showSearch={{
+              onSearch: (text) => {
+                setSearchText(text);
+                fetchSuggestions(text);
+              },
             }}
             onSelect={handleSelect}
             placeholder="Search address on map…"

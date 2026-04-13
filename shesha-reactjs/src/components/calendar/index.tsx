@@ -262,7 +262,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     [calendarStyles.calendarMenu, items, onChange, defaultVisibleLayers],
   );
 
-  const renderLegend = (): JSX.Element => (
+  const renderLegend = (): React.JSX.Element => (
     <div className={calendarStyles.calendarLegendContainer}>
       {items?.map((layer) =>
         layer.showLegend ? (
@@ -287,10 +287,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     </div>
   );
 
-  const renderHeader = (): JSX.Element => (
+  const renderHeader = (): React.JSX.Element => (
     <div className={calendarStyles.calendarHeader}>
       {renderLegend()}
-      <Dropdown menu={menuItems} dropdownRender={(): JSX.Element => dropdownContent}>
+      <Dropdown menu={menuItems} popupRender={(): React.JSX.Element => dropdownContent}>
         <a className="ant-dropdown-link" onClick={(e): void => e.preventDefault()}>
           Views <DownOutlined />
         </a>
@@ -312,7 +312,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     visibleLayers: defaultVisibleLayers,
   }), [updatedEvents, defaultView, startDate, endDate, defaultVisibleLayers]);
 
-  const calendarContent = (): JSX.Element => {
+  const calendarContent = (): React.JSX.Element => {
     if (!displayPeriod?.length) {
       return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Selected Calendar Views!" />;
     }

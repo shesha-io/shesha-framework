@@ -33,7 +33,7 @@ export const ItemListConfiguratorModalWrapper: FCUnwrapped<IItemListConfigurator
       buttonText={readOnly ? buttonTextReadOnly : buttonText}
       modalSettings={{
         title: readOnly ? modalReadonlySettings.title : modalSettings.title,
-        header: <Alert message={readOnly ? modalReadonlySettings.header : modalSettings.header} />,
+        header: <Alert title={readOnly ? modalReadonlySettings.header : modalSettings.header} />,
       }}
     />
   );

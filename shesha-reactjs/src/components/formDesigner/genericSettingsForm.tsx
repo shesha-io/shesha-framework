@@ -38,7 +38,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   propertyFilter,
   layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
   isInModal,
-}: IProps<TModel>): JSX.Element {
+}: IProps<TModel>): React.JSX.Element {
   const [form] = Form.useForm();
 
   const defaultModel = useDefaultModelProviderStateOrUndefined();

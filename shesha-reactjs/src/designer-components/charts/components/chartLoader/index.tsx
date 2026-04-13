@@ -3,7 +3,7 @@ import useStyles from '../../styles';
 import { TChartType } from '../../model';
 import { Button } from 'antd';
 
-const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; handleCancelClick?: () => void }): JSX.Element => {
+const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; handleCancelClick?: () => void }): React.JSX.Element => {
   const { styles, cx } = useStyles();
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1024,
@@ -70,7 +70,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
     }
   }, [windowSize.width]);
 
-  const renderLoader = (): JSX.Element => {
+  const renderLoader = (): React.JSX.Element => {
     switch (chartType) {
       case 'pie':
         return (

@@ -68,7 +68,7 @@ export const makeListContext = <TItem = any>({ value, onChange, initNewItem, sel
   return context;
 };
 
-export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRendererProps<TItem>): JSX.Element => {
+export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRendererProps<TItem>): React.JSX.Element => {
   const { styles } = useStyles();
   const { contextAccessor, children, header, level = 1, parentItem, maxItemsCount } = props;
   const {

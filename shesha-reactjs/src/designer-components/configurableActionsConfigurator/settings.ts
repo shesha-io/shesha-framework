@@ -43,10 +43,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
-      exposedVariables: [
-        { id: nanoid(), name: 'value', description: 'Component current value', type: 'string | any' },
-        { id: nanoid(), name: 'data', description: 'Selected form values', type: 'object' },
-      ],
     })
     .addPermissionAutocomplete({
       id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',

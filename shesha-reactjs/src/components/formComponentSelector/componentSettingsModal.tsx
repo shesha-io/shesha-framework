@@ -54,7 +54,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
       confirmLoading={saving}
       mask={{ closable: false }}
     >
-      <Spin spinning={saving} tip="Please wait...">
+      <Spin spinning={saving} description="Please wait...">
         {/* <ValidationErrors error={error?.data}></ValidationErrors> */}
         <ComponentPropertiesEditor
           isInModal={true}

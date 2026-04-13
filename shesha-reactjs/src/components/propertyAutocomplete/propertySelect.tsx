@@ -234,8 +234,9 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     <Select
       onSelect={onSelect}
       value={props.value}
-      showSearch
-      onSearch={onSearch}
+      showSearch={{
+        onSearch: onSearch,
+      }}
       size={props.size}
       disabled={readOnly}
       options={state.options}

@@ -12,7 +12,7 @@ export interface IProps {
 
 const ToolbarComponent: FC<IProps> = ({ component /* , index*/ }) => {
   const { styles } = useStyles();
-  const ComponentContent = (): JSX.Element => (
+  const ComponentContent = (): React.JSX.Element => (
     <div>
       {component.icon}
       <Space size="small">

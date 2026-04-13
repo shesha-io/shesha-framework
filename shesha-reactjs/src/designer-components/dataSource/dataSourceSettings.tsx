@@ -28,11 +28,13 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
         <Input />
       </SettingsFormItem>
       <SettingsFormItem name="sourceType" label="Source Type">
-        <Select>
-          <Select.Option key="Form" value="Form">Form</Select.Option>
-          <Select.Option key="Entity" value="Entity">Entity</Select.Option>
-          <Select.Option key="Url" value="Url">URL</Select.Option>
-        </Select>
+        <Select
+          options={[
+            { label: 'Form', value: 'Form' },
+            { label: 'Entity', value: 'Entity' },
+            { label: 'URL', value: 'Url' },
+          ]}
+        />
       </SettingsFormItem>
       {(state.sourceType === 'Entity') && (
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>

@@ -222,7 +222,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     return (
       <Alert
         className="sha-designer-warning"
-        message="Button group is empty. Press 'Customize Button Group' button to add items"
+        title="Button group is empty. Press 'Customize Button Group' button to add items"
         type="warning"
       />
     );

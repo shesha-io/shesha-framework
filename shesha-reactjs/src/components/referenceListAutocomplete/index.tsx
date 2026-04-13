@@ -275,13 +275,14 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
       notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
       style={{ width: '100%' }}
       options={options}
-      onSearch={onSearch}
+      showSearch={{
+        onSearch: onSearch,
+      }}
       onSelect={onSelect}
       onClear={onClear}
       placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
       disabled={valueFetcher.loading || props.readOnly}
       size={props?.size}
-
       value={autocompleteText}
       onChange={setAutocompleteText}
     >

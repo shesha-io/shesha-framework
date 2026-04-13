@@ -93,11 +93,13 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
                   </div>
                 )}
                 style={removeUndefinedProps({ ...allStyles.fullStyle })}
-                valueStyle={removeUndefinedProps({
-                  ...valueFontStyles,
-                  ...valueStyles,
-                  ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' }),
-                })}
+                styles={{
+                  content: removeUndefinedProps({
+                    ...valueFontStyles,
+                    ...valueStyles,
+                    ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' }),
+                  }),
+                }}
                 {...customEvents}
                 onClick={onClickInternal}
               />
@@ -135,11 +137,12 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
                 </div>
               )}
               style={removeUndefinedProps({ ...allStyles.fullStyle })}
-              valueStyle={removeUndefinedProps({
-                ...valueFontStyles,
-                ...valueStyles,
-                ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' }),
-              })}
+              styles={{
+                content: removeUndefinedProps({
+                  ...valueFontStyles,
+                  ...valueStyles,
+                  ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' }),
+                }) }}
               {...customEvents}
               onClick={onClickInternal}
             />

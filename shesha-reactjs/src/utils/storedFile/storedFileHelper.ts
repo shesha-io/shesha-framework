@@ -144,7 +144,7 @@ export class StoredFileHelper implements IStoredFileHelper {
 
   saveFile = (response: HttpResponse<BlobPart>, defaultFileName?: string): void => {
     const fileName = getFileNameFromResponse(response);
-    FileSaver.saveAs(new Blob([response.data]), !isNullOrWhiteSpace(fileName) ? fileName : defaultFileName ?? DEFAULT_FILENAME);
+    FileSaver(new Blob([response.data]), !isNullOrWhiteSpace(fileName) ? fileName : defaultFileName ?? DEFAULT_FILENAME, { autoBom: false });
   };
 
   downloadZipByIdsAsync = async (payload: DownloadZipByIdsArgs): Promise<void> => {

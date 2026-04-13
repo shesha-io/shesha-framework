@@ -46,7 +46,7 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
     }
   }, [selectedItemId]);
 
-  const getEditor = (): JSX.Element | null => {
+  const getEditor = (): React.JSX.Element | null => {
     if (!selectedItemId) return null;
 
     const item = getItem(selectedItemId);

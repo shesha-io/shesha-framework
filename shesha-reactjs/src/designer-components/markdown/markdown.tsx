@@ -35,7 +35,7 @@ const Markdown: FC<IMarkdownComponentProps> = (model) => {
   const content = evaluateString(model?.content, { data, globalState });
 
   if (!content && formMode === 'designer') {
-    return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
+    return <Alert type="warning" title="Please make sure you enter the content to be displayed here!" />;
   }
 
   const isSSR = typeof window === 'undefined';

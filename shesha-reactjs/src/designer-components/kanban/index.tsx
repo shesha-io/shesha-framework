@@ -93,7 +93,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
             ) : (
               <Alert
                 className="sha-designer-warning"
-                message="Kanban must be used within a Data Table Context"
+                title="Kanban must be used within a Data Table Context"
                 type="warning"
               />
             );

@@ -52,7 +52,7 @@ const FormCellRender: FC<FormCellRenderProps> = ({ formId, children }) => {
       : children(formLoading.form);
 };
 
-const ReadFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): JSX.Element => {
+const ReadFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): React.JSX.Element => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
@@ -97,7 +97,7 @@ export interface ICreateFormCellProps extends IConfigurableCellProps<ITableFormC
   parentFormName?: string;
 }
 
-export const CreateFormCell = (props: ICreateFormCellProps): JSX.Element => {
+export const CreateFormCell = (props: ICreateFormCellProps): React.JSX.Element => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
@@ -137,7 +137,7 @@ export const CreateFormCell = (props: ICreateFormCellProps): JSX.Element => {
     );
 };
 
-const EditFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): JSX.Element => {
+const EditFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): React.JSX.Element => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
@@ -175,7 +175,7 @@ const EditFormCell = <D extends object = object, V = number>(props: IFormCellPro
     );
 };
 
-export const FormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): JSX.Element => {
+export const FormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): React.JSX.Element => {
   const { mode } = useCrud();
 
   switch (mode) {

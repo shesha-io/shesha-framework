@@ -69,6 +69,7 @@ const RadioComponent: RadioComponentDefinition = {
       .add<IRadioComponentProps>(1, (prev) => {
         return {
           ...prev,
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
           referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
         };
       })
