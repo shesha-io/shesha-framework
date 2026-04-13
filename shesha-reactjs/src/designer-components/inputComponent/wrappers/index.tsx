@@ -44,13 +44,15 @@ import { SizableColumnsConfigWrapper } from "./sizableColumnsConfig";
 import { LayerSelectorSettingsModalWrapper } from "./layerSelectorSettingsModal";
 import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
 import { SectionSeparatorWrapper } from "./sectionSeparator";
+import { UnwrapCodeEvaluators } from "@/providers/form/models";
+
 
 type InputType = ISettingsInputProps['type'];
 
 export type EditorComponent = FC<ISettingsInputProps>;
 
 type EditorDictionary = {
-  [K in InputType]: FC<BaseInputProps & { type: K }>;
+  [K in InputType]: FC<UnwrapCodeEvaluators<BaseInputProps & { type: K }>> | FC<BaseInputProps & { type: K }>;
 };
 
 export const editorRegistry: EditorDictionary = {
