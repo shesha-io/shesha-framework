@@ -654,15 +654,30 @@ namespace Shesha.Reflection
         /// <param name="type">Root type</param>
         /// <param name="propertyName">Name of property, supports dot notation</param>
         /// <param name="useCamelCase">Set to true to compare property names in camel case</param>
-        /// <returns></returns>
+        /// <returns>Property info</returns>
         public static PropertyInfo GetProperty(this Type type, string propertyName, bool useCamelCase = false)
+        {
+            var propWithPath = GetPropertyWithPath(type, propertyName, useCamelCase);
+            return propWithPath?.PropertyInfo;
+        }
+
+#nullable enable
+        /// <summary>
+        /// Search property with specified name in the current type. Supports dot notation
+        /// </summary>
+        /// <param name="type">Root type</param>
+        /// <param name="propertyName">Name of property, supports dot notation</param>
+        /// <param name="useCamelCase">Set to true to compare property names in camel case</param>
+        /// <returns>Property info and relative path to property (without case conversion of name)</returns>
+        public static PropertyInfoWithPath? GetPropertyWithPath(this Type type, string propertyName, bool useCamelCase = false) 
         {
             var propTokens = propertyName.Split('.');
             var currentType = type;
+            var path = new List<string>();
 
             for (int i = 0; i < propTokens.Length; i++)
             {
-                PropertyInfo propInfo;
+                PropertyInfo? propInfo;
                 var containerType = currentType.StripCastleProxyType();
                 try
                 {
@@ -671,9 +686,10 @@ namespace Shesha.Reflection
                         var props = containerType.GetProperties().Where(p => p.Name.ToCamelCase() == propTokens[i].ToCamelCase()).ToList();
                         if (props.Count() > 1)
                             throw new AmbiguousMatchException();
-                        
+
                         propInfo = props.FirstOrDefault();
-                    } else
+                    }
+                    else
                         propInfo = containerType.GetProperty(propTokens[i]);
                 }
                 catch (AmbiguousMatchException)
@@ -685,10 +701,12 @@ namespace Shesha.Reflection
 
                 if (propInfo == null)
                     return null;
+                
+                path.Add(propInfo.Name);
 
                 if (i == propTokens.Length - 1)
                 {
-                    return propInfo;
+                    return new PropertyInfoWithPath(propInfo, path);
                 }
                 else
                 {
@@ -698,6 +716,7 @@ namespace Shesha.Reflection
 
             return null;
         }
+#nullable restore
 
         public static bool ImplementsGenericInterface(this Type type, Type interfaceType) 
         {

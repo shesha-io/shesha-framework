@@ -32,7 +32,7 @@ namespace Shesha.GraphQL.Provider.Queries
     /// <summary>
     /// Entity query
     /// </summary>
-    public class EntityQuery<TEntity, TId> : ObjectGraphType, ITransientDependency where TEntity : class, IEntity<TId>
+    public class EntityQuery<TEntity, TId> : ObjectGraphType, ITransientDependency where TEntity : class, IEntity<TId>, new()
     {
         private readonly IJsonLogic2LinqConverter _jsonLogicConverter;
         private readonly IEntityConfigurationStore _entityConfigStore;
@@ -72,6 +72,7 @@ namespace Shesha.GraphQL.Provider.Queries
                     var uow = unitOfWorkManager.Current;
 
                     var query = repository.GetAll();
+                    query.SetReadOnly();
 
                     // apply specifications
                     query = specificationManager.ApplySpecifications(query, input.Specifications);
