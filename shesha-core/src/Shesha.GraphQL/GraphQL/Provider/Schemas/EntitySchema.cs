@@ -13,7 +13,7 @@ namespace Shesha.GraphQL.Provider.Schemas
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TId"></typeparam>
-    public class EntitySchema<TEntity, TId>: Schema where TEntity: class, IEntity<TId>
+    public class EntitySchema<TEntity, TId>: Schema where TEntity: class, IEntity<TId>, new()
     {
         public EntitySchema(IServiceProvider serviceProvider) : base(serviceProvider)
         {
