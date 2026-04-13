@@ -18,7 +18,7 @@ export interface IRefListStatusProps {
   isDesigner?: boolean;
 }
 
-const Icon = ({ type, ...rest }): JSX.Element => {
+const Icon = ({ type, ...rest }): React.JSX.Element => {
   const icons = antdIcons;
   const Component = icons[type];
   return <Component {...rest} />;
@@ -45,7 +45,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     return (
       <Alert
         showIcon
-        message="Something went during Reflists fetch"
+        title="Something went during Reflists fetch"
         description={extractErrorMessage(listItem.error)}
         type="error"
       />

@@ -250,7 +250,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       props.onChange(selectedValue);
   };
 
-  const renderOption = (row: unknown, index: React.Key): JSX.Element => {
+  const renderOption = (row: unknown, index: React.Key): React.JSX.Element => {
     const value = outcomeValueFunc(row, allData);
     const key = keyValueFunc(value, allData);
     const label = displayValueFunc(row, allData);
@@ -261,7 +261,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   };
 
-  const renderGroupTitle = (value: unknown, propertyName: string): JSX.Element => {
+  const renderGroupTitle = (value: unknown, propertyName: string): React.JSX.Element => {
     if (value === null || value === undefined)
       return <Typography.Text type="secondary">(empty)</Typography.Text>;
     const column = source?.groupingColumns.find((c) => isDataColumn(c) && c.propertyName === propertyName);
@@ -486,7 +486,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
 /**
  * @deprecated The method should not be used
  */
-export const EntityDtoAutocomplete = (props: IAutocompleteProps): JSX.Element => {
+export const EntityDtoAutocomplete = (props: IAutocompleteProps): React.JSX.Element => {
   return (
     <Autocomplete {...props} />
   );
@@ -495,7 +495,7 @@ export const EntityDtoAutocomplete = (props: IAutocompleteProps): JSX.Element =>
 /**
  * @deprecated The method should not be used
  */
-export const RawAutocomplete = (props: IAutocompleteProps): JSX.Element => {
+export const RawAutocomplete = (props: IAutocompleteProps): React.JSX.Element => {
   return (
     <Autocomplete
       {...props}

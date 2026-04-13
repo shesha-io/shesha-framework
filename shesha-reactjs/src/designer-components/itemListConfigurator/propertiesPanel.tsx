@@ -13,7 +13,7 @@ export interface IPropertiesPanelProps<TItem extends ListItemWithId> extends Ite
   settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
 }
 
-export const PropertiesPanel = <TItem extends ListItemWithId>(props: IPropertiesPanelProps<TItem>): JSX.Element => {
+export const PropertiesPanel = <TItem extends ListItemWithId>(props: IPropertiesPanelProps<TItem>): React.JSX.Element => {
   const { item, onChange, readOnly, settingsMarkupFactory } = props;
 
   const [form] = Form.useForm();

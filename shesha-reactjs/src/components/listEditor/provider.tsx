@@ -23,7 +23,7 @@ const GenericListEditorProvider = <TItem extends object>({
   onSelectionChange,
   initNewItem,
   readOnly,
-}: PropsWithChildren<IGenericListEditorProviderProps<TItem>>): JSX.Element => {
+}: PropsWithChildren<IGenericListEditorProviderProps<TItem>>): React.JSX.Element => {
   const [selectedItem, insernalSetSelectedItem] = useState<TItem>();
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 

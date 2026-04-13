@@ -105,19 +105,6 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
               useAsyncDeclaration: true,
             }}
             availableConstants={constants}
-            exposedVariables={[
-              { name: "data", description: "Form values", type: "object" },
-              { name: "contexts", description: "Contexts data", type: "object" },
-              { name: "pageContext", description: "Data of page", type: "object" },
-              { name: "globalState", description: "Global state", type: "object" },
-              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-              { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-              { name: "form", description: "Form instance", type: "object" },
-              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-              { name: "moment", description: "moment", type: "object" },
-              { name: "http", description: "axiosHttp", type: "object" },
-              { name: "message", description: "message framework", type: "object" },
-            ]}
           />
         </SettingsFormItem>
 

@@ -644,11 +644,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           )}
 
           {fetchFilesError && (
-            <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
+            <Alert title="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
           )}
 
           {downloadZipFileError && (
-            <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
+            <Alert title="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
           )}
 
           {downloadZip && hasFiles && !!downloadZipFile && (

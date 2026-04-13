@@ -36,7 +36,6 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
             <Tag
               key={id}
               style={{ backgroundColor: '#fff', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
-              bordered={false}
               closable={id !== '1' && id !== '2'}
               onClose={() => {
                 onChange({ ...value, [id]: undefined });

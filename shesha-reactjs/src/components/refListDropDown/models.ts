@@ -22,7 +22,6 @@ export interface IGenericRefListDropDownProps<TValue = any> extends IRefListDrop
 
   incomeValueFunc: IncomeValueFunc;
   outcomeValueFunc: OutcomeValueFunc;
-
 }
 
 type LimitedSelectProps = Pick<SelectProps<any>, 'mode' | 'disabled' | 'allowClear' | 'filterOption' | 'placeholder' | 'variant' | 'defaultValue' | 'className'>;

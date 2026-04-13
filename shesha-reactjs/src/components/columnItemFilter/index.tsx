@@ -161,14 +161,10 @@ const RefListFilter: FC<IRefListFilterProps> = (props) => {
       onChange={props.onChange}
       value={props.value}
       loading={refListLoading}
-    >
-      {refListItems &&
-        refListItems.items.map(({ id: _id, itemValue, item }) => (
-          <Select.Option key={_id} value={itemValue}>
-            {item}
-          </Select.Option>
-        ))}
-    </Select>
+      options={refListItems
+        ? refListItems.items.map(({ id: _id, itemValue, item }) => ({ value: itemValue, label: item }))
+        : undefined}
+    />
   );
 };
 
@@ -214,10 +210,11 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
       size="small"
       style={{ width: '100%' }}
       onChange={props.onChange}
-      showSearch
+      showSearch={{
+        onSearch: search,
+        filterOption: false,
+      }}
       defaultActiveFirstOption={false}
-      filterOption={false}
-      onSearch={search}
       onSelect={() => search('')}
       allowClear={true}
       placeholder={selectPlaceholder}
@@ -225,14 +222,10 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
       disabled={isLoadingMetadata}
       value={selectValue}
       notFoundContent={isLoading ? <Spin size="small" /> : null}
-    >
-      {dataLoaded &&
-        data.map((d: EntityData) => (
-          <Select.Option value={d.id} key={d.id}>
-            {getStringPropertyOrUndefined(d, "_displayName")}
-          </Select.Option>
-        ))}
-    </Select>
+      options={dataLoaded
+        ? data.map((d: EntityData) => ({ value: d.id, label: getStringPropertyOrUndefined(d, "_displayName") }))
+        : []}
+    />
   );
 };
 
@@ -387,7 +380,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     onRemoveFilter(id);
   };
 
-  const renderBooleanInput = (): JSX.Element => {
+  const renderBooleanInput = (): React.JSX.Element => {
     const onChange = (e: CheckboxChangeEvent): void => {
       onChangeFilter(id, e.target.checked);
     };

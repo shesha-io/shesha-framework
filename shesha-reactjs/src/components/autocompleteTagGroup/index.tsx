@@ -69,7 +69,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
       onChange(currentValue?.trim() ? [...newTags, currentValue] : newTags);
     };
 
-    const forMap = (tag: string): JSX.Element => {
+    const forMap = (tag: string): React.JSX.Element => {
       const tagElem = (
         <>
           <Show when={!rest?.readOnly}>

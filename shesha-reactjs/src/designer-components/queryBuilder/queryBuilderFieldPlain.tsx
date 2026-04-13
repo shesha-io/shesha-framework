@@ -15,7 +15,7 @@ export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = (props) => {
     return (
       <Alert
         className="sha-designer-warning"
-        message="Fields are not available. Wrap Query Builder with a QueryBuilderProvider/MetadataProvider or specify `Entity`"
+        title="Fields are not available. Wrap Query Builder with a QueryBuilderProvider/MetadataProvider or specify `Entity`"
         type="warning"
       />
     );

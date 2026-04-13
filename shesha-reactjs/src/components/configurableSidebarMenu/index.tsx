@@ -28,7 +28,7 @@ export interface IConfigurableSidebarMenuProps {
 export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = (props) => {
   const { loadedMenu, changeMainMenu, saveMainMenu } = useMainMenu();
 
-  const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>): JSX.Element => {
+  const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>): React.JSX.Element => {
     return (
       <ComponentSettingsModal
         title="Sidebar Menu Configuration"

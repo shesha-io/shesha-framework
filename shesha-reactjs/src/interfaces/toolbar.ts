@@ -9,10 +9,5 @@ export interface IToolbarItem {
   hide?: boolean;
   disabled?: boolean;
   render?: () => ReactNode;
-  /**
-   * @deprecated - use tooltip instead
-   */
-  tooltipName?: string;
-
   tooltip?: string;
 }

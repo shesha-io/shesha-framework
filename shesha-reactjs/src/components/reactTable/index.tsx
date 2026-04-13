@@ -569,7 +569,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
-  const renderNewRowEditor = (): JSX.Element => (
+  const renderNewRowEditor = (): React.JSX.Element => (
     <NewTableRowEditor
       columns={tableColumns}
       creater={createAction}
@@ -597,7 +597,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     return result;
   }, [containerStyle, minHeight, maxHeight, freezeHeaders]);
 
-  const renderExpandedContentView = (cellRef): JSX.Element => {
+  const renderExpandedContentView = (cellRef): React.JSX.Element => {
     const cellRect = cellRef?.current?.getBoundingClientRect();
 
     const getSmartPosition = (): { top: number; left: number } => {
@@ -698,7 +698,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     );
   };
 
-  const renderRow = (row: Row<any>, rowIndex: number): JSX.Element => {
+  const renderRow = (row: Row<any>, rowIndex: number): React.JSX.Element => {
     const id = row.original?.id;
     return (
       <Row

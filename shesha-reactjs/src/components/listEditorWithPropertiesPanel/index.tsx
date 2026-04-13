@@ -57,7 +57,7 @@ const findAndUpdateItemRecursively = <TItem extends ListItemWithId>(
   return { updated: false, newItems };
 };
 
-export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ value, onChange, readOnly, header, groupHeader, initNewItem, children, itemProperties, noSelectionProperties, addItemText }: IListEditorWithPropertiesPanelProps<TItem>): JSX.Element => {
+export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ value, onChange, readOnly, header, groupHeader, initNewItem, children, itemProperties, noSelectionProperties, addItemText }: IListEditorWithPropertiesPanelProps<TItem>): React.JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<TItem>();
   const [isPending, startTransition] = useTransition();
 

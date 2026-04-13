@@ -4,7 +4,7 @@ import { useDataListCrud } from '@/providers/dataListCrudContext/index';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
 import { useStyles } from './styles/styles';
 
-export const CrudActionButtons = (): JSX.Element => {
+export const CrudActionButtons = (): React.JSX.Element => {
   const {
     mode,
     switchMode,

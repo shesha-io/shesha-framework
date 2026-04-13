@@ -24,7 +24,7 @@ import { useAvailableConstantsData } from '@/providers/form/utils';
 import ShaSpin from '../shaSpin';
 
 interface IDataNode {
-  title: JSX.Element;
+  title: React.JSX.Element;
   key: string;
   isLeaf?: boolean;
   children?: IDataNode[];

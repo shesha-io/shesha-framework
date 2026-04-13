@@ -26,7 +26,7 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
     const { data: formData } = useFormData();
 
     if (formMode === 'designer') {
-      return <Alert message={model.propertyName} />;
+      return <Alert title={model.propertyName} />;
     }
 
     const section = sections?.[model.propertyName];

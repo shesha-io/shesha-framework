@@ -20,17 +20,19 @@ export const FormTypeAutocompleteWrapper: FCUnwrapped<IFormTypeAutocompleteSetti
 
       options={formTypesOptions}
       size={size ?? 'small'}
-      onSearch={(t) =>
-        setFormTypesOptions(
-          (t
-            ? formTypes.filter((f) => {
-              return f.toLowerCase().includes(t.toLowerCase());
-            })
-            : formTypes
-          ).map((i) => {
-            return { value: i };
-          }),
-        )}
+      showSearch={{
+        onSearch: (t) =>
+          setFormTypesOptions(
+            (t
+              ? formTypes.filter((f) => {
+                return f.toLowerCase().includes(t.toLowerCase());
+              })
+              : formTypes
+            ).map((i) => {
+              return { value: i };
+            }),
+          ),
+      }}
     />
   );
 };

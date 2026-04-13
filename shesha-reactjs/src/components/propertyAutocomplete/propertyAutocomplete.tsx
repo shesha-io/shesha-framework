@@ -243,7 +243,9 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       style={props.style}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       onSelect={onSelect}
-      onSearch={onSearch}
+      showSearch={{
+        onSearch: onSearch,
+      }}
       notFoundContent="Not found"
       size={props.size}
       popupMatchSelectWidth={false}
@@ -256,16 +258,18 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   if (mode === 'tags')
     return (
-      <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /* showSearch*/ size={props.size} disabled={readOnly}>
-        {state.options.map((option, index) => (
-          <Select.Option key={index} value={camelCase(option.value)}>
-            {option.label}
-          </Select.Option>
-        ))}
-      </Select>
+      <Select
+        allowClear
+        onChange={props?.onChange}
+        value={props.value}
+        mode={mode}
+        size={props.size}
+        disabled={readOnly}
+        options={state.options.map((option) => ({ label: option.label, value: camelCase(option.value) }))}
+      />
     );
 
-  const forMap = (tag: string): JSX.Element => {
+  const forMap = (tag: string): React.JSX.Element => {
     const tagElem = (
       <>
         <Tag
@@ -305,7 +309,9 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           style={props.style}
           styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
           onSelect={onSelectMultiple}
-          onSearch={onSearchMultiple}
+          showSearch={{
+            onSearch: onSearchMultiple,
+          }}
           notFoundContent="Not found"
           size={props.size}
           popupMatchSelectWidth={false}

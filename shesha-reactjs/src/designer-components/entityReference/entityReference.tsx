@@ -143,6 +143,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       .add<IEntityReferenceControlProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
       .add<IEntityReferenceControlProps>(8, (prev) => ({
         ...prev,
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes),
       }))
       .add<IEntityReferenceControlProps>(9, (prev) => ({

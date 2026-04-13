@@ -166,7 +166,7 @@ export const updateJsSettingsForComponents = (
   });
 };
 
-export const StyledLabel = ({ label }: { label: string }): JSX.Element => {
+export const StyledLabel = ({ label }: { label: string }): React.JSX.Element => {
   const { styles } = useStyles();
 
   return <span className={styles.label}>{label}</span>;

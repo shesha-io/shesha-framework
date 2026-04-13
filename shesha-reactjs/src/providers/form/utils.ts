@@ -125,7 +125,7 @@ export interface IApplicationContext<Value extends object = object> {
   /** Message API */
   message: MessageInstance;
   /** File Saver API */
-  fileSaver: typeof FileSaver;
+  fileSaver: (data: Blob | string, filename?: string) => void;
 
   /** Last updated date */
   lastUpdated?: Date;

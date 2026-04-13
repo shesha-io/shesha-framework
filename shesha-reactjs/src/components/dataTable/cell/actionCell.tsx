@@ -16,7 +16,7 @@ import { ShaIcon, IconType } from '@/components/shaIcon';
 
 export type IActionCellProps<D extends object = object, V = any> = ICommonCellProps<ITableActionColumn, D, V>;
 
-export const ActionCell = <D extends object = object, V = any>(props: IActionCellProps<D, V>): JSX.Element => {
+export const ActionCell = <D extends object = object, V = any>(props: IActionCellProps<D, V>): React.JSX.Element => {
   const { columnConfig } = props;
   const { changeActionedRow } = useDataTableStore();
   const { executeAction, prepareArguments, useActionDynamicContext } = useConfigurableActionDispatcher();

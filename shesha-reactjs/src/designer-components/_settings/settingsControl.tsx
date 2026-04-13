@@ -99,7 +99,6 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     type: 'text',
     label: ' ',
     ghost: true,
-    exposedVariables: defaultExposedVariables,
     hidden: !setting._code && props.readOnly,
   };
 

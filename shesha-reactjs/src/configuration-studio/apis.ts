@@ -160,5 +160,5 @@ export const getRevisionJsonAsync = async (httpClient: HttpClientApi, payload: {
   const url = `${CS_URLS.REVISION_GET_JSON}?id=${payload.id}`;
   const response = await httpClient.get<BlobPart>(url, { responseType: 'blob' });
   const fileName = getFileNameFromResponse(response) ?? 'revision.json';
-  FileSaver.saveAs(new Blob([response.data]), fileName);
+  FileSaver(new Blob([response.data]), fileName, { autoBom: false });
 };

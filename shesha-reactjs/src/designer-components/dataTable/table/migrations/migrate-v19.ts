@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { ITableComponentProps } from "../models";
 import { SettingsMigrationContext } from "@/interfaces";
 

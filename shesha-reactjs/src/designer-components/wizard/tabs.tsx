@@ -122,8 +122,8 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
               current={current}
               items={steps.map((step) => ({ ...step, style: {} }))}
               size={model['size']}
-              direction={direction}
-              labelPlacement={labelPlacement}
+              orientation={direction}
+              titlePlacement={labelPlacement}
             />
             <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
           </div>

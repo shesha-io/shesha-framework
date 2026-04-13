@@ -59,7 +59,14 @@ export const DialogButton: FC<IPreviewButtonProps> = ({ refLink }) => {
   };
 
   return (
-    <Dropdown menu={menuProps} placement="bottom" trigger={['click']} overlayStyle={{ border: '1px dashed grey' }}>
+    <Dropdown
+      menu={menuProps}
+      placement="bottom"
+      trigger={['click']}
+      styles={{
+        root: { border: '1px dashed grey' },
+      }}
+    >
       <BlockOutlined ref={refLink} onClick={(e) => e.preventDefault()} />
     </Dropdown>
   );

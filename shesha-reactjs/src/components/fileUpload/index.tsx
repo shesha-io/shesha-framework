@@ -141,7 +141,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   };
 
-  const fileControls = (color: string): JSX.Element => (
+  const fileControls = (color: string): React.JSX.Element => (
     <Space>
       <a style={{ color: color }}>
         <FileVersionsPopup fileId={fileInfo?.id} />
@@ -174,7 +174,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </Space>
   );
 
-  const iconRender = (fileInfo): JSX.Element => {
+  const iconRender = (fileInfo): React.JSX.Element => {
     const { type, name } = fileInfo;
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
@@ -184,7 +184,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return getFileIcon(type);
   };
 
-  const styledfileControls = (): JSX.Element =>
+  const styledfileControls = (): React.JSX.Element =>
     fileInfo && (
       <div className={styles.styledFileControls}>
         {iconRender(fileInfo)}
@@ -194,7 +194,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       </div>
     );
 
-  const renderFileItem = (file: any): JSX.Element => {
+  const renderFileItem = (file: any): React.JSX.Element => {
     const showThumbnailControls = !isUploading && listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
@@ -259,7 +259,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     )
   );
 
-  const renderStub = (): JSX.Element => {
+  const renderStub = (): React.JSX.Element => {
     if (isDragger) {
       return (
         <Dragger disabled>
@@ -280,7 +280,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     );
   };
 
-  const renderUploader = (): JSX.Element => {
+  const renderUploader = (): React.JSX.Element => {
     const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';
 
     if (isDragger && allowUpload) {
@@ -308,7 +308,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
       <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : !isUploading ? renderUploader() : <SyncOutlined spin style={{ color: theme.application.primaryColor }} />}</span>
       {previewOpen && (
         <Image
-          wrapperStyle={{ display: 'none' }}
+          styles={{
+            root: { display: 'none' },
+          }}
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),

@@ -413,9 +413,11 @@ const MapModal: FC<IMapModalProps> = ({
             style={{ flex: 1, minWidth: 0 }}
             value={modalSearchText}
             options={modalSuggestions}
-            onSearch={(text) => {
-              setModalSearchText(text);
-              fetchModalSuggestions(text);
+            showSearch={{
+              onSearch: (text) => {
+                setModalSearchText(text);
+                fetchModalSuggestions(text);
+              },
             }}
             onSelect={handleModalSelect}
             placeholder="Search address on map…"
@@ -732,7 +734,9 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
           style={{ flex: 1, minWidth: 0 }}
           value={searchText}
           options={suggestions}
-          onSearch={handleSearch}
+          showSearch={{
+            onSearch: handleSearch,
+          }}
           onSelect={handleSelect}
           onBlur={() => {
             // Persist free-text entry when the user tabs/clicks away without

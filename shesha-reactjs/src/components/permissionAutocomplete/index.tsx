@@ -29,8 +29,10 @@ export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) 
       style={{ width: '100%' }}
       mode="multiple"
       allowClear
-      onSearch={setSearchText}
-      searchValue={searchText}
+      showSearch={{
+        onSearch: setSearchText,
+        searchValue: searchText,
+      }}
       disabled={readOnly}
       size={size}
       styles={dropdownStyles}
