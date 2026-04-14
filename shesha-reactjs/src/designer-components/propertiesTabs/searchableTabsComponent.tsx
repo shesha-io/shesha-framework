@@ -142,6 +142,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                   }
                 },
                 className: styles.searchField,
+                autoFocus: true,
               })}
               <ComponentsContainer
                 containerId={tab.id + tab.key}
