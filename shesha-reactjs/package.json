@@ -34,8 +34,6 @@
     "type-check": "tsc --build tsconfig.strictNulls.json"
   },
   "overrides": {
-    "rc-resize-observer": "1.4.0",
-    "stylus": "0.0.1-security",
     "eslint": "$eslint",
     "next-navigation-guard": {
       "next": "$next"

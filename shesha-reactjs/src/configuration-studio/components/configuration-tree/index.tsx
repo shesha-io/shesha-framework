@@ -188,6 +188,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
             <Dropdown
               menu={{ items: nodeContextMenuItems }}
               trigger={["contextMenu"]}
+              getPopupContainer={() => document.body}
             >
               <Tree<TreeNode>
                 showLine
