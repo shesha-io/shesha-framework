@@ -47,8 +47,9 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     `;
   const antLayoutHeader = cx(css`
     border-bottom: ${shaBorder};
-    position: fixed;
-    z-index: 3;
+    position: fixed !important;
+    z-index: 9999 !important;
+    isolation: isolate;
     width: 100%;
     padding: unset;
     overflow: visible;
@@ -158,7 +159,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     padding-top: 48px;
     left: 0;
 
-    z-index: 4;
+    z-index: 10000;
     flex: 0 0 ${shaSiderExpandedWidth} !important;
     max-width: ${shaSiderExpandedWidth}  !important;
     min-width: ${shaSiderExpandedWidth}  !important;
