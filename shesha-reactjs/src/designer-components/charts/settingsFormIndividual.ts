@@ -12,6 +12,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const dataTabId = nanoid();
   const dataSettingsId = nanoid();
   const dataSettingsForUrlId = nanoid();
+  const quickSettingsForUrlId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
   const dimensionsStylePnlId = nanoid();
@@ -149,7 +150,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ],
                         })
                         .addContainer({
-                          id: dataSettingsForUrlId,
+                          id: quickSettingsForUrlId,
                           propertyName: 'dataSettingsForUrl',
                           parentId: commonTabId,
                           label: 'Data Settings (URL)',
@@ -166,7 +167,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 propertyName: 'url',
                                 label: 'URL',
                                 labelAlign: 'right',
-                                parentId: dataTabId,
+                                parentId: quickSettingsForUrlId,
                                 inputType: 'endpointsAutocomplete',
                                 description: 'The endpoint to use to fetch data.',
                                 tooltip: 'The endpoint to use to fetch data.',
@@ -186,7 +187,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 id: nanoid(),
                                 propertyName: 'additionalProperties',
                                 label: 'Additional Properties',
-                                parentId: dataSettingsForUrlId,
+                                parentId: quickSettingsForUrlId,
                                 jsSetting: true,
                                 inputType: 'labelValueEditor',
                                 labelTitle: 'Key',
@@ -197,8 +198,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                                   'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
                                   'Id initial value is already initialised with {{entityReference.id}} but you can override it',
-                              },
-                              )
+                              })
                               .toJson(),
                           ],
                         })
