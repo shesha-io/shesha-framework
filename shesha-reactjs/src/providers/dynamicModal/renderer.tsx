@@ -2,6 +2,7 @@ import React, { FC, PropsWithChildren, ReactElement, useContext, useEffect, useR
 import { DynamicModal } from '@/components/dynamicModal';
 import { DynamicModalInstanceContext, DynamicModalRendererContext } from './contexts';
 import { useDynamicModals } from '.';
+import { ICommonModalProps } from './models';
 
 export interface IDynamicModalRendererProps {
   id: string;
@@ -49,7 +50,10 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
             value={{
               instance,
               close: () => {
+                const { props, onClose } = instance;
                 removeModal(instance.id);
+                if (onClose) onClose(false);
+                if ((props as ICommonModalProps)?.onCancel) (props as ICommonModalProps).onCancel();
               },
             }}
           >
