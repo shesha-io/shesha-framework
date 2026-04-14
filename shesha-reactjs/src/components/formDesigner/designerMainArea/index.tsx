@@ -1,9 +1,9 @@
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { DataContextProvider, MetadataProvider, useDataContextManager, useShaFormInstance } from '@/providers';
-import { useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerReadOnly, useFormDesignerSelectedComponent, useFormDesignerSettings } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
-import React, { FC, useMemo, useEffect } from 'react';
+import React, { FC, useMemo, useEffect, useCallback } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import { DebugPanel } from '../debugPanel';
@@ -27,7 +27,10 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const shaForm = useShaFormInstance();
   const { antdForm: form } = shaForm;
   const { styles } = useStyles();
+  const { deleteComponent, settingsPanelRef } = useFormDesigner();
+  const component = useFormDesignerSelectedComponent();
 
+  const selectedComponentId = component?.id;
   const noPageContext = !Boolean(useDataContextManager().getPageContext());
 
   useEffect(() => {
@@ -38,6 +41,41 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
       });
     }
   }, [formSettings, shaForm]);
+
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (readOnly || formMode !== 'designer' || event.repeat) return;
+
+    const isDelete = event.key === 'Delete';
+    const isBackspace = event.key === 'Backspace';
+
+    if (!isDelete && !isBackspace) return;
+
+    // Ignore if user is typing in an input, textarea, or contenteditable element
+    const target = event.target as HTMLElement;
+    const isEditing =
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.isContentEditable;
+
+    if (isEditing) return;
+
+    // Ignore if focus is inside the properties/settings panel
+    if (settingsPanelRef?.current && settingsPanelRef.current.contains(target)) {
+      return;
+    }
+
+    if (selectedComponentId) {
+      event.preventDefault();
+      deleteComponent({ componentId: selectedComponentId });
+    }
+  }, [readOnly, formMode, selectedComponentId, deleteComponent, settingsPanelRef]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   const leftSidebarProps = useMemo(() =>
     readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' },
