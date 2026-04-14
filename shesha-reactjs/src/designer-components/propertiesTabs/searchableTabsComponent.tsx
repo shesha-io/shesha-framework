@@ -71,6 +71,13 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
   const handleTabChange = (newActiveKey: string): void => {
     setActiveTabKey(newActiveKey);
+    // Only focus search when user manually changes tabs, not on programmatic tab switches
+    const activeSearchInput = searchRefs.current.get(newActiveKey);
+    if (activeSearchInput) {
+      setTimeout(() => {
+        activeSearchInput.focus();
+      }, 50);
+    }
   };
 
   // Focus search input when search query changes and we have matching results
@@ -79,11 +86,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       focusActiveTabSearch();
     }
   }, [searchQuery, focusActiveTabSearch]);
-
-  // Focus search input when tab changes
-  useEffect(() => {
-    focusActiveTabSearch();
-  }, [activeTabKey, focusActiveTabSearch]);
 
   const isComponentHidden = (component): boolean => {
     if (formState.name === "modalSettings") {
@@ -176,7 +178,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   return (
     <>
       {newFilteredTabs.length === 0 &&
-        renderSearchInput()}
+        renderSearchInput({ autoFocus: true })}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
         : (
