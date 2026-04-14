@@ -1,17 +1,24 @@
 ﻿using Abp.Auditing;
+using Abp.Dependency;
 using Abp.Domain.Entities;
+using Abp.Domain.Repositories;
 using Abp.Localization;
 using Abp.Timing;
+using FluentValidation;
 using JetBrains.Annotations;
 using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.EntityHistory;
+using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
@@ -132,5 +139,35 @@ namespace Shesha.Domain
 
         [ReferenceList("Shesha.Core", "PersonType")]
         public virtual long? Type { get; set; }
+    }
+
+    public class PersonValidator : AbstractValidator<Person>
+    {
+        private readonly IRepository<Person, Guid> _repository;
+
+        public PersonValidator(IRepository<Person, Guid> repository)
+        {
+            _repository = repository;
+
+            RuleFor(x => x.EmailAddress1).MustAsync(UniqueEmailAddress1Async).WithMessage(User.EmailAlreadyInUse);
+            RuleFor(x => x.MobileNumber1).MustAsync(UniqueMobileNumber1Async).WithMessage(User.MobileNoAlreadyInUse);
+        }
+
+        private async Task<bool> UniqueEmailAddress1Async(Person person, string? emailAddress1, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(emailAddress1))
+                return true;
+
+            var alreadyExist = await _repository.GetAll().Where(m => m.EmailAddress1 != null && m.EmailAddress1.ToLower() == emailAddress1.ToLower() && m.Id != person.Id).AnyAsync();
+            return !alreadyExist;
+        }
+        private async Task<bool> UniqueMobileNumber1Async(Person person, string? mobileNumber1, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(mobileNumber1))
+                return true;
+
+            var alreadyExist = await _repository.GetAll().Where(m => m.MobileNumber1 != null && m.MobileNumber1.ToLower() == mobileNumber1.ToLower() && m.Id != person.Id).AnyAsync();
+            return !alreadyExist;
+        }
     }
 }

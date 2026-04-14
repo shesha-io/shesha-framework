@@ -4,6 +4,7 @@ using Abp.Timing;
 using Abp.Zero;
 using Abp.Zero.Configuration;
 using Castle.MicroKernel.Registration;
+using FluentValidation;
 using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
@@ -27,6 +28,8 @@ namespace Shesha
             IocManager.IocContainer.Register(
                 Component.For<ICustomPermissionChecker>().Forward<ShaCustomPermissionChecker>().ImplementedBy<ShaCustomPermissionChecker>().LifestyleTransient()
             );
+
+            IocManager.Register<IValidator<Person>, PersonValidator>();
 
             Configuration.Auditing.IsEnabledForAnonymousUsers = true;
 
