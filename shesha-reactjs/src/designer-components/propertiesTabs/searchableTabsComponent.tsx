@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs, Input, Empty } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
@@ -17,7 +17,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const { tabs } = model;
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTabKey, setActiveTabKey] = useState('1');
-  const searchRefs = useRef(new Map());
   const { styles } = useStyles();
 
   const formState = useFormState(false);
@@ -59,33 +58,9 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     ) : input;
   };
 
-  const focusActiveTabSearch = useCallback(() => {
-    const activeSearchInput = searchRefs.current.get(activeTabKey);
-    if (activeSearchInput) {
-      // Small delay to ensure the tab is rendered
-      setTimeout(() => {
-        activeSearchInput.focus();
-      }, 50);
-    }
-  }, [activeTabKey]);
-
   const handleTabChange = (newActiveKey: string): void => {
     setActiveTabKey(newActiveKey);
-    // Only focus search when user manually changes tabs, not on programmatic tab switches
-    const activeSearchInput = searchRefs.current.get(newActiveKey);
-    if (activeSearchInput) {
-      setTimeout(() => {
-        activeSearchInput.focus();
-      }, 50);
-    }
   };
-
-  // Focus search input when search query changes and we have matching results
-  useEffect(() => {
-    if (searchQuery) {
-      focusActiveTabSearch();
-    }
-  }, [searchQuery, focusActiveTabSearch]);
 
   const isComponentHidden = (component): boolean => {
     if (formState.name === "modalSettings") {
@@ -133,17 +108,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
           ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
           : (
             <ParentProvider model={model}>
-              {renderSearchInput({
-                ref: (el) => {
-                  if (el) {
-                    searchRefs.current.set(tabKey, el);
-                  } else {
-                    searchRefs.current.delete(tabKey);
-                  }
-                },
-                className: styles.searchField,
-                autoFocus: true,
-              })}
               <ComponentsContainer
                 containerId={tab.id + tab.key}
                 dynamicComponents={visibleComponents}
@@ -178,8 +142,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
   return (
     <>
-      {newFilteredTabs.length === 0 &&
-        renderSearchInput({ autoFocus: true })}
+      {renderSearchInput({
+        autoFocus: newFilteredTabs.length === 0,
+        className: styles.searchField,
+      })}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
         : (
