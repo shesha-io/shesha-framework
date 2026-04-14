@@ -356,11 +356,11 @@ namespace Shesha.ConfigurationItems
             return newRevisionRequired;
         }
 
-        public async Task RestoreRevisionAsync(ConfigurationItemRevision revision)
+        public async Task RestoreRevisionAsync(ConfigurationItem item, ConfigurationItemRevision revision)
         {
-            revision.ConfigurationItem.Module?.EnsureEditable();
+            item.Module?.EnsureEditable();
 
-            if (revision == revision.ConfigurationItem.LatestRevision)
+            if (revision == item.LatestRevision)
                 return;
 
             var importer = IocResolver.GetItemImporter(ItemType);
@@ -369,7 +369,7 @@ namespace Shesha.ConfigurationItems
 
             var distributedItem = await importer.ReadFromJsonAsync(revision.ConfigurationJson);
 
-            await importer.ImportItemAsync(distributedItem, new PackageImportContext());
+            await importer.ImportItemAsync(distributedItem, new PackageImportContext() { RevisionCreationMethod = ConfigurationItemRevisionCreationMethod.ManualRestore }, item);
         }
 
         public virtual Task<string> GetBackwardCompatibleModuleNameAsync(string name)
