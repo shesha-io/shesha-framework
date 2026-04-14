@@ -176,9 +176,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   return (
     <>
       {newFilteredTabs.length === 0 &&
-        renderSearchInput({
-          autoFocus: true,
-        })}
+        renderSearchInput()}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
         : (
