@@ -18,6 +18,10 @@
     "eslint": "$eslint",
     "next-navigation-guard": {
       "next": "$next"
+    },
+    "@react-awesome-query-builder/antd": {
+      "antd": "$antd",
+      "@ant-design/icons": "$@ant-design/icons"
     }
   },
   "resolutions": {
@@ -60,7 +64,7 @@
     "url-loader": "^4.1.1"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^14.2.4",
+    "@next/eslint-plugin-next": "^16.2.3",
     "@testing-library/react": "^11.2.3",
     "@types/node": "20.11.5",
     "@types/react": "^18.2.6",
