@@ -31,6 +31,9 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
         formSettings,
         formFlatMarkup,
         formArguments: undefined,
+      }).catch((error) => {
+        console.error('Failed to init form', error);
+        throw error;
       });
     },
   });

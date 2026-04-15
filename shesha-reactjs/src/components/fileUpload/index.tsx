@@ -85,7 +85,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
       fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
         .then((response) => response.blob())
         .then((blob) => URL.createObjectURL(blob))
-        .then((url) => setImageUrl(url));
+        .then((url) => setImageUrl(url))
+        .catch((error) => {
+          console.error('Failed to fetch file', error);
+          throw error;
+        });
     }
   }, [fileInfo]);
 
@@ -93,6 +97,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
     if (file instanceof File) {
       uploadFile({ file }).then(() => {
         callback?.();
+      }).catch((error) => {
+        console.error('Failed to upload file', error);
+        throw error;
       });
     } else
       throw new Error('File is not an instance of File. Please check the file object.');
@@ -120,7 +127,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
       cancelText: 'Cancel',
       okType: 'danger',
       onOk: () => {
-        deleteFile();
+        deleteFile().catch((error) => {
+          console.error('Failed to delete file', error);
+          throw error;
+        });
       },
     });
   };
@@ -342,7 +352,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
               e.target.value = '';
               return;
             }
-            uploadFile({ file }).then(() => callback?.());
+            uploadFile({ file }).then(() => callback?.()).catch((error) => {
+              console.error('Failed to upload file', error);
+              throw error;
+            });
           }
           e.target.value = '';
         }}

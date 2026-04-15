@@ -79,7 +79,10 @@ const InternalCrudProvider = <TData extends object = object>(props: PropsWithChi
       Promise.resolve(dataResponse).then((response) => {
         setInitialValues(response);
         form?.setFieldsValue(response);
-      });
+      }).catch((error) => {
+        console.error('Failed to fetch initial values', error);
+        throw error;
+      }); ;
     } else {
       setInitialValues(data);
 
@@ -279,7 +282,9 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
 
     if (!form.isFieldsTouched()) return;
 
-    debouncedUpdate();
+    debouncedUpdate()?.catch((error) => {
+      console.error('Failed to auto-save', error);
+    });
   }, [state.autoSave, state.mode, form, debouncedUpdate]);
 
   // Cancel pending auto-save when mode changes or component unmounts
@@ -310,6 +315,9 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
       form.initByMarkup({
         formFlatMarkup: flatMarkup,
         formSettings: formSettings,
+      }).catch((error) => {
+        console.error('Failed to init form', error);
+        throw error;
       });
     },
   });

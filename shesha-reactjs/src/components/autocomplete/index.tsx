@@ -56,7 +56,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       : (value: unknown) => getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
 
   // register columns
-  useDeepCompareEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
+  useDeepCompareEffect(() => {
+    source?.registerConfigurableColumns(props.uid, getColumns(props.fields));
+  }, [props.fields]);
 
   // init state
   const [open, setOpen] = useState<boolean>(false);

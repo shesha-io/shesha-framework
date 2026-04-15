@@ -119,7 +119,10 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       folderId: newFolderId,
     };
     cs.moveTreeNodeAsync(movePayload).then(() => {
-      loadTreeAsync();
+      void loadTreeAsync();
+    }).catch((error) => {
+      console.error('Failed to move node', error);
+      throw error;
     });
   };
 

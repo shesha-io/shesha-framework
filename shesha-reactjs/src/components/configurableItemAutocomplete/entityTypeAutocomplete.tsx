@@ -132,7 +132,11 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
 
   const debouncedFetchItems = useDebouncedCallback<(term?: string) => void>(
     (term?: string) => {
-      listFetcher.refetch({ queryParams: getListFetcherQueryParams(type, term, selectedItem.value ?? value, baseModel) });
+      listFetcher.refetch({ queryParams: getListFetcherQueryParams(type, term, selectedItem.value ?? value, baseModel) })
+        .catch((error) => {
+          console.error('Failed to init form', error);
+          throw error;
+        });
     },
     // delay in ms
     100,

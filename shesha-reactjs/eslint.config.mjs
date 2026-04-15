@@ -279,6 +279,7 @@ const baseTsConfig = {
 
     rules: {
         "@typescript-eslint/no-deprecated": "warn",
+        "@typescript-eslint/no-floating-promises": "error",
         "no-restricted-globals": [
             "error",
             {

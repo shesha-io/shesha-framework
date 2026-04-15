@@ -148,7 +148,7 @@ export const LayoutMenu: FC<IProps> = ({
     _itemId: string,
     actionConfiguration: IConfigurableActionConfiguration,
   ): void => {
-    executeAction({
+    void executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: executionContext,
     });

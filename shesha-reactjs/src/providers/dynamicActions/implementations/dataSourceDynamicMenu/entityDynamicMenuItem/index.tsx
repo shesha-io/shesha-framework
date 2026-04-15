@@ -86,7 +86,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
 
   useEffect(() => {
     // TODO V1: debug and ensure that it doesn't fetch when it shouldn't
-    fetchTemplateData();
+    void fetchTemplateData();
   }, [item, settings, evaluatedFilters, pageContext, FormData, globalState, fetchTemplateData, filter]);
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {

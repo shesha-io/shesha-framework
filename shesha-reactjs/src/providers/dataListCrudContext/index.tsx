@@ -129,6 +129,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       Promise.resolve(dataResponse).then((response) => {
         setInitialValues(response);
         setFormData({ values: response, mergeValues: true });
+      }).catch((error) => {
+        console.error('Failed to fetch data', error);
       });
     }
   }, [data, setFormData, setInitialValues, setInitialValuesLoading]);
@@ -193,7 +195,9 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   const debouncedUpdate = useDebouncedCallback(
     () => {
-      performUpdate();
+      performUpdate().catch((error) => {
+        console.error('Failed to update', error);
+      });
     },
     // delay in ms
     300,
@@ -314,6 +318,8 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
       form.initByMarkup({
         formFlatMarkup: formFlatMarkup,
         formSettings: formSettings,
+      }).catch((error) => {
+        console.error('Failed to init form', error);
       });
     },
   });

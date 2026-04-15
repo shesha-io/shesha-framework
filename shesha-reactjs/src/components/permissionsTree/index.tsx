@@ -100,7 +100,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   useEffect(() => {
     if (rest.mode === 'Select' && allItems) return; // skip refetch for selectmode if fetched
 
-    fetcher.refetch();
+    void fetcher.refetch();
     setSearchText('');
   }, []);
 
@@ -195,7 +195,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
   const onChangeAction = (selectedRow: PermissionDto): void => {
     if (onSelectAction?.actionName) {
-      executeAction({
+      void executeAction({
         actionConfiguration: onSelectAction,
         argumentsEvaluationContext: { ...allData.current, selectedRow },
       });
@@ -357,20 +357,30 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     if (dropItem) {
       if (dragItem.parentName === dropItem.name || (!dragItem.parentName && info.dropToGap)) return;
       setDragInfo(info);
-      updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name, module: { ...dropItem.module } });
+      updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name, module: { ...dropItem.module } })
+        .catch((error) => {
+          console.error('Failed to update parent', error);
+          throw error;
+        });
       return;
     }
 
     // drop to module
     if (info.node.key === withoutModule) {
       setDragInfo(info);
-      updateParentRequest.mutate({ ...dragItem, parentName: null, module: null });
+      updateParentRequest.mutate({ ...dragItem, parentName: null, module: null }).catch((error) => {
+        console.error('Failed to update parent', error);
+        throw error;
+      });
       return;
     }
     const dropModule = allModules.find((x) => x._displayName === info.node.key);
     if (dropModule) {
       setDragInfo(info);
-      updateParentRequest.mutate({ ...dragItem, parentName: null, module: { ...dropModule } });
+      updateParentRequest.mutate({ ...dragItem, parentName: null, module: { ...dropModule } }).catch((error) => {
+        console.error('Failed to update parent', error);
+        throw error;
+      });
     }
   };
 
@@ -570,7 +580,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
           if (s.id === emptyId) {
             deletePermission();
           } else {
-            deleteRequest.mutate({ name: s.name });
+            deleteRequest.mutate({ name: s.name }).catch((error) => {
+              console.error('Failed to delete', error);
+              throw error;
+            });
           }
         }
         setSearchText('');

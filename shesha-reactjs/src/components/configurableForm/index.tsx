@@ -84,7 +84,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
 
   useEffect(() => {
     if (formId) {
-      shaForm.initByFormId({
+      void shaForm.initByFormId({
         formId: formId,
         formArguments: formArguments,
         initialValues: initialValues,
@@ -93,7 +93,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
   }, [shaForm, formId, formArguments]);
   useEffect(() => {
     if (markup) {
-      shaForm.initByRawMarkup({
+      void shaForm.initByRawMarkup({
         rawMarkup: markup,
         formArguments: formArguments,
         initialValues: initialValues,
@@ -174,7 +174,10 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
                           formSettings={shaForm.settings}
                           persistedFormProps={shaForm.form}
                           onMarkupUpdated={() => {
-                            shaForm.reloadMarkup();
+                            shaForm.reloadMarkup().catch((error) => {
+                              console.error('Failed to reload markup', error);
+                              throw error;
+                            });
                           }}
                           shaForm={shaForm}
                           actions={actions}

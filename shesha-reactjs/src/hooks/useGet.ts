@@ -105,7 +105,11 @@ export const useGetInternal = <TData = unknown, TError = unknown, TQueryParams =
   );
 
   useDeepCompareEffect(() => {
-    if (!props.lazy) refetch(props);
+    if (!props.lazy)
+      refetch(props).catch((error) => {
+        console.error('Failed to fetch', error);
+        throw error;
+      });
   }, [props.lazy, props.path, props.base, props.queryParams, props.pathParams, backendUrl, httpHeaders]);
 
   return {

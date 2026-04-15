@@ -41,7 +41,7 @@ class StatefulPromise<T> implements PromisedValue<T> {
     if (executorOrPromise instanceof Promise) {
       // Wrap an existing promise
       this._promise = executorOrPromise;
-      this._attachStateTracking();
+      void this._attachStateTracking();
     } else {
       // Create new promise with executor
       this._promise = new Promise<T>((resolve, reject) => {

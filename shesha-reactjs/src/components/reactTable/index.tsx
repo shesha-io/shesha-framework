@@ -215,7 +215,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       ? { ...allData, row: rowData, rowIndex, selectedRow: overrideSelectedRow }
       : { ...allData, row: rowData, rowIndex };
 
-    executeAction({
+    void executeAction({
       actionConfiguration: actionConfig,
       argumentsEvaluationContext: context,
     });
@@ -551,7 +551,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         selectedRow: selectedRow || rowData,
       };
 
-      executeAction({
+      void executeAction({
         actionConfiguration: onRowDoubleClick as IConfigurableActionConfiguration,
         argumentsEvaluationContext: evaluationContext,
       });

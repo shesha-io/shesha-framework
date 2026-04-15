@@ -112,7 +112,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     };
 
   const onRefreshClick = (): void => {
-    refreshTree();
+    void refreshTree();
   };
 
   const onCheck = (checkedIds: string[]): void => {

@@ -169,7 +169,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
           selectedRow: event,
         };
 
-        executeAction({
+        void executeAction({
           actionConfiguration: event.onSelect,
           argumentsEvaluationContext: evaluationContext,
         });
@@ -199,7 +199,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       event,
     };
 
-    executeAction({
+    void executeAction({
       actionConfiguration: event.onDblClick,
       argumentsEvaluationContext: evaluationContext,
     });
@@ -210,7 +210,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       ...allData,
       event: view,
     };
-    executeAction({
+    void executeAction({
       actionConfiguration: onViewChange,
       argumentsEvaluationContext: evaluationContext,
     });
@@ -243,7 +243,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       ...allData,
       event: adjustedSlotInfo,
     };
-    executeAction({
+    void executeAction({
       actionConfiguration: onSlotClick,
       argumentsEvaluationContext: evaluationContext,
     });
@@ -323,7 +323,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
         <Calendar
           views={displayPeriod as any}
           onView={(view) => {
-            updateDefaultCalendarView(view);
+            updateDefaultCalendarView(view).catch((error) => {
+              console.error('Failed to update default calendar view', error);
+              throw error;
+            });
             setDefaultView(view);
             handleViewChange(view);
           }}

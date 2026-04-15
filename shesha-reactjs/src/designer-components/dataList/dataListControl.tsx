@@ -146,42 +146,30 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const handleListItemClick = useCallback((index: number, item: any) => {
     if (onListItemClick) {
       const evaluationContext = { ...appContext, data: item, index, selectedItem: item, selectedIndex: index };
-      try {
-        executeAction({
-          actionConfiguration: onListItemClick,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing item click action:', error);
-      }
+      executeAction({
+        actionConfiguration: onListItemClick,
+        argumentsEvaluationContext: evaluationContext,
+      }).catch((error) => console.error('Error executing item click action:', error));
     }
   }, [onListItemClick, appContext.contexts.lastUpdate, executeAction]);
 
   const handleListItemHover = useCallback((index: number, item: any) => {
     if (onListItemHover) {
       const evaluationContext = { ...appContext, data: item, index, selectedItem: item, selectedIndex: index };
-      try {
-        executeAction({
-          actionConfiguration: onListItemHover,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing item hover action:', error);
-      }
+      executeAction({
+        actionConfiguration: onListItemHover,
+        argumentsEvaluationContext: evaluationContext,
+      }).catch((error) => console.error('Error executing item hover action:', error));
     }
   }, [onListItemHover, appContext.contexts.lastUpdate, executeAction]);
 
   const handleListItemSelect = useCallback((index: number, item: any) => {
     if (onListItemSelect && props.selectionMode !== 'none') {
       const evaluationContext = { ...appContext, data: item, index, selectedItem: item, selectedIndex: index };
-      try {
-        executeAction({
-          actionConfiguration: onListItemSelect,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing item select action:', error);
-      }
+      executeAction({
+        actionConfiguration: onListItemSelect,
+        argumentsEvaluationContext: evaluationContext,
+      }).catch((error) => console.error('Error executing item select action:', error));
     }
   }, [onListItemSelect, props.selectionMode, appContext.contexts.lastUpdate, executeAction]);
 
@@ -195,14 +183,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           .map((item) => item?.id)
           .filter((id) => id !== undefined && id !== null),
       };
-      try {
-        executeAction({
-          actionConfiguration: onSelectionChange,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing selection change action:', error);
-      }
+      executeAction({
+        actionConfiguration: onSelectionChange,
+        argumentsEvaluationContext: evaluationContext,
+      }).catch((error) => console.error('Error executing selection change action:', error));
     }
   }, [onSelectionChange, props.selectionMode, appContext.contexts.lastUpdate, executeAction]);
 
@@ -254,14 +238,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       };
     return (data) => {
       const evaluationContext = { ...appContext, data };
-      try {
-        executeAction({
-          actionConfiguration: onRowDeleteSuccessAction,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing item delete success action:', error);
-      }
+      executeAction({
+        actionConfiguration: onRowDeleteSuccessAction,
+        argumentsEvaluationContext: evaluationContext,
+      }).catch((error) => console.error('Error executing item delete success action:', error));
     };
   }, [onRowDeleteSuccessAction, appContext.contexts.lastUpdate, executeAction]);
 
@@ -274,14 +254,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return (data) => {
       const evaluationContext = { ...appContext, data };
       // execute the action
-      try {
-        executeAction({
-          actionConfiguration: onListItemSaveSuccessAction,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing item save success action:', error);
-      }
+      executeAction({
+        actionConfiguration: onListItemSaveSuccessAction,
+        argumentsEvaluationContext: evaluationContext,
+      }).catch((error) => console.error('Error executing item save success action:', error));
     };
   }, [onListItemSaveSuccessAction]);
 
@@ -324,7 +300,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       // use preparedData ?? rowData to handle the case when onRowSave returns undefined
       return repository.performCreate(0, preparedData ?? rowData, options).then(() => {
-        dataSource.refreshTable();
+        void dataSource.refreshTable();
         performOnRowSaveSuccess(preparedData ?? rowData);
       });
     });
@@ -343,7 +319,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       if (props.onRowDeleteSuccessAction) {
         performOnRowDeleteSuccessAction(rowData);
       }
-      dataSource.refreshTable();
+      void dataSource.refreshTable();
     });
   };
 

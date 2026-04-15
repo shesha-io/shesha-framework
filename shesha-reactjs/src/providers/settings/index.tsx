@@ -96,9 +96,13 @@ const useSettingValue = <TValue = unknown>(settingId: ISettingIdentifier): Setti
     if (settingIdentifiersEqual(state.settingId, settingId) && state.loadingState !== 'waiting')
       return;
 
-    settings.getSetting<TValue>(settingId).then((response) => {
-      setState((prev) => ({ ...prev, error: undefined, value: response, loadingState: 'ready' }));
-    });
+    settings.getSetting<TValue>(settingId)
+      .then((response) => {
+        setState((prev) => ({ ...prev, error: undefined, value: response, loadingState: 'ready' }));
+      })
+      .catch((error) => {
+        console.error('Failed to fetch setting value', error);
+      });
   }, [settingId, settings, state.loadingState, state.settingId]);
 
   return state;

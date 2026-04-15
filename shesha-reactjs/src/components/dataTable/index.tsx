@@ -267,7 +267,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
 
       try {
-        executeAction({
+        void executeAction({
           actionConfiguration: onRowSelect,
           argumentsEvaluationContext: evaluationContext,
         });
@@ -365,7 +365,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
 
       try {
-        executeAction({
+        void executeAction({
           actionConfiguration: onRowDoubleClick,
           argumentsEvaluationContext: evaluationContext,
         });
@@ -382,7 +382,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const evaluationContext = { ...appContext, selectedIds };
 
       try {
-        executeAction({
+        void executeAction({
           actionConfiguration: onSelectionChange,
           argumentsEvaluationContext: evaluationContext,
         });
@@ -566,7 +566,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return (data) => {
       const evaluationContext = { ...appContext, data };
       // execute the action
-      executeAction({
+      void executeAction({
         actionConfiguration: onRowSaveSuccess,
         argumentsEvaluationContext: evaluationContext,
       });
@@ -612,7 +612,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       // use preparedData ?? rowData to handle the case when onRowSave returns undefined
       return repository.performCreate(0, preparedData ?? rowData, options).then(() => {
-        store.refreshTable();
+        void store.refreshTable();
         performOnRowSaveSuccess(preparedData ?? rowData);
       });
     });
@@ -626,7 +626,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return (data) => {
       const evaluationContext = { ...appContext, data };
       try {
-        executeAction({
+        void executeAction({
           actionConfiguration: onRowDeleteSuccessAction,
           argumentsEvaluationContext: evaluationContext,
         });
@@ -648,7 +648,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
       performOnRowDeleteSuccessAction(rowData);
-      store.refreshTable();
+      return store.refreshTable();
     });
   };
 
@@ -853,7 +853,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
         const evaluationContext = { ...appContext, data: beforeArgs };
 
-        executeAction({
+        void executeAction({
           actionConfiguration: {
             ...onBeforeRowReorder,
           },

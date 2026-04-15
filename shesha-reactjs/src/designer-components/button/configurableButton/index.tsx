@@ -51,7 +51,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
           setModal(true);
         }
         setLoading(true);
-        executeAction({
+        void executeAction({
           actionConfiguration: { ...actionConfiguration },
           argumentsEvaluationContext: evaluationContext,
         })

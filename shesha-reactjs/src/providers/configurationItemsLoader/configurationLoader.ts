@@ -120,7 +120,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   clearFormCache = (payload: IClearFormCachePayload): void => {
-    this.clearCacheAsync(ConfigurationType.Form, payload.formId);
+    void this.clearCacheAsync(ConfigurationType.Form, payload.formId);
   };
 
   getEntityFormIdAsync = async (entityType: string | IEntityTypeIdentifier, formType: string): Promise<FormFullName> => {

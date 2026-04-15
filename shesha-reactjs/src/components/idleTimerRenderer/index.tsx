@@ -277,7 +277,10 @@ class IdleHandler implements IIdleHandler {
     }
 
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
-      this.refreshToken();
+      this.refreshToken().catch((error) => {
+        console.error('Failed to refresh token', error);
+        throw error;
+      });
     }
   };
 

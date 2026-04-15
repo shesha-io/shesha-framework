@@ -281,7 +281,7 @@ export class DatasetInstance implements IDatasetInstance {
     this.log("fetchData");
     this.updateState((state) => ({ ...state, isFetchingTableData: true, fetchTableDataError: undefined }));
     try {
-      this.saveUserConfigAsync();
+      await this.saveUserConfigAsync();
 
       const payload = this.getFetchListDataPayload();
       const data = await this.repository.fetch(payload);
@@ -403,7 +403,7 @@ export class DatasetInstance implements IDatasetInstance {
 
   toggleColumnVisibility = (columnId: string): void => {
     this.updateColumn(columnId, (column) => ({ ...column, isVisible: !column.isVisible }));
-    this.saveUserConfigAsync();
+    void this.saveUserConfigAsync();
   };
 
   setCurrentPage = async (pageNo: number): Promise<void> => {
@@ -483,7 +483,7 @@ export class DatasetInstance implements IDatasetInstance {
 
   clearFilters = (): void => {
     this.toggleColumnFilter([]);
-    this.applyFilters();
+    void this.applyFilters();
   };
 
   changeQuickSearch = (value: string): void => {
