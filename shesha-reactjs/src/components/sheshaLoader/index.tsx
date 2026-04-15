@@ -6,7 +6,7 @@ interface ISheshaLoader {
 }
 
 const SheshaLoader: FC<ISheshaLoader> = ({ message = 'Initializing...' }) => (
-  <Flex vertical justify="center" align="center" style={{ height: '100vh' }}>
+  <Flex vertical style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
     <img src={`/images/SheshaLoadingAnimation.gif`} alt="Shesha Loading Animation" />
     <div>{message}</div>
   </Flex>
