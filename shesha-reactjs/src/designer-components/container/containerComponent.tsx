@@ -84,8 +84,8 @@ const ContainerComponent: ContainerComponentDefinition = {
       ...wrapperStyles,
       alignSelf: model.alignSelf,
       justifySelf: model.justifySelf,
-      ...getLayoutStyle({ ...model, style: model.wrapperStyle }, { data: formData, globalState }),
-    }), [model, formData, globalState]);
+      ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
+    }), [wrapperStyles, model, formData, globalState]);
 
     const style = useMemo(() => ({
       ...getStyle(model?.style, formData),

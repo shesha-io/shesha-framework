@@ -44,8 +44,8 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       width={isSmall ? '90%' : width ?? '80vw'}
       centered
       classNames={{ body: styles.dynamicModalBody }}
-      mask={{ closable: false }}
-      closable={showCloseIcon ?? true} // Add this line - default to true for backward compatibility
+      maskClosable={false}
+      closable={showCloseIcon}
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
     >
       {content}

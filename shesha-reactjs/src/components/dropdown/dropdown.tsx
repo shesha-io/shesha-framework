@@ -42,7 +42,8 @@ export const Dropdown: FC<IDropdownProps> = ({
   const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
 
   const getOptions = (): ILabelValue[] => {
-    return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
+    const hasNumericValue = typeof value === 'number' || (Array.isArray(value) && value.some((v) => typeof v === 'number'));
+    return value !== null && value !== undefined && hasNumericValue ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
   };
 
   const incomeValueFunc: IncomeValueFunc = useCallback((value: any, args?: any) => {
@@ -158,6 +159,18 @@ export const Dropdown: FC<IDropdownProps> = ({
   };
 
   if (readOnly) {
+    const isMultiple = mode === 'multiple' || mode === 'tags';
+    const getReadOnlyValue = (): ILabelValue | ILabelValue[] | { label: ReactNode }[] | undefined => {
+      if (!isMultiple) {
+        return options.find((o) => o.value === selectedValue);
+      }
+      if (displayStyle === 'tags') {
+        const valuesArray = Array.isArray(selectedValue) ? selectedValue : [];
+        return valuesArray.map((x) => options.find((o) => o.value === x)).filter((o): o is ILabelValue => o !== undefined);
+      }
+      return getSelectValue();
+    };
+
     return (
       <ReadOnlyDisplayFormItem
         showIcon={showIcon}
@@ -166,12 +179,8 @@ export const Dropdown: FC<IDropdownProps> = ({
         tagStyle={tagStyle}
         style={style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
-        type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
-        value={mode === 'multiple'
-          ? displayStyle === 'tags'
-            ? selectedValue?.map((x) => options.find((o) => o.value === x))
-            : getSelectValue()
-          : options.find((o) => o.value === selectedValue)}
+        type={isMultiple ? 'dropdownMultiple' : 'dropdown'}
+        value={getReadOnlyValue()}
       />
     );
   }

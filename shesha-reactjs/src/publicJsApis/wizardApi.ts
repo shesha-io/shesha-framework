@@ -4,7 +4,8 @@ export interface IWizardActions {
   cancel: () => void;
   close: () => void;
   done: () => Promise<void>;
-  setStep: (stepIndex) => void;
+  reset: () => void;
+  setStep: (stepIndex: number) => void;
   content: (description: string, index: number) => string;
 }
 
@@ -26,5 +27,6 @@ export interface IWizardStepProps {
 export interface IWizardApi {
   api?: IWizardActions;
   current?: number;
+  currentStep?: IWizardStepProps;
   visibleSteps?: IWizardStepProps[];
 }

@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Select, Row } from 'antd';
-import { ListEditor } from '@/components/listEditor';
-import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
+import { Select } from 'antd';
+import { CodeEditor, ListEditor } from '@/components';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 import { ILabelValueEditorProps, ILabelValueItem } from '@/components/labelValueEditor/labelValueEditor';
 import { useStyles } from './styles';
@@ -75,7 +74,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
               itemOnChange({ ...item, [valueName]: value }, undefined);
             }}
           />
-          <Row>
+          <div style={{ display: 'inline-flex', alignItems: 'center' }}>
             <InputComponent
               type="colorPicker"
               placeholder={colorTitle}
@@ -110,7 +109,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                 </Select.Option>
               )) : dropdownOptions}
             </Select>
-          </Row>
+          </div>
           <InputComponent
             type="iconPicker"
             placeholder={iconTitle}

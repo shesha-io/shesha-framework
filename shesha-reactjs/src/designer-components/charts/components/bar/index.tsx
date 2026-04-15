@@ -6,6 +6,7 @@ import {
   ChartOptions,
   Legend,
   LinearScale,
+  Scale,
   Title,
   Tooltip,
 } from 'chart.js';
@@ -122,6 +123,9 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         stacked: stacked,
         offset: true,
         beginAtZero: false,
+        afterFit: (axis: Scale) => {
+          axis.height += isSmallScreen ? 16 : 24;
+        },
         ticks: {
           maxRotation: 45, // Allow rotation up to 45 degrees
           minRotation: 0,

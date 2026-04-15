@@ -21,6 +21,7 @@ interface IWizardComponent {
   done: () => void;
   content: (description: string, index: number) => string;
   next: () => void;
+  reset: () => void;
   setStep: (stepIndex) => void;
   visibleSteps: IWizardStepProps[];
 }
@@ -224,6 +225,10 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
+  const reset = (): void => {
+    successCallback('reset');
+  };
+
   const setStep = (stepIndex): void => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
       throw `Step with index ${stepIndex} is not available`;
@@ -337,5 +342,5 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 
-  return { components, current, currentStep, visibleSteps, back, cancel, close, done, content, next, setStep };
+  return { components, current, currentStep, visibleSteps, back, cancel, close, done, content, next, reset, setStep };
 };

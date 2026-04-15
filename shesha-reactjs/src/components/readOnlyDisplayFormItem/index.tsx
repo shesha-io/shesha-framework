@@ -133,9 +133,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
             );
         }
 
-        throw new Error(
-          `Invalid data type passed. Expected IGuidNullableEntityReferenceDto[] but found ${typeof value}`,
-        );
+        return '';
       }
       case 'time': {
         return <InputField style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat, isVisible: true }} />} />;

@@ -2,6 +2,7 @@ import React, { DependencyList, FC, PropsWithChildren, ReactElement, useContext,
 import { DynamicModal } from '@/components/dynamicModal';
 import { DynamicModalInstanceContext, DynamicModalRendererContext } from './contexts';
 import { useDynamicModals } from '.';
+import { ICommonModalProps } from './models';
 
 export interface IDynamicModalRendererProps {
   id: string;
@@ -42,21 +43,22 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
     for (const id in instances) {
       if (instances.hasOwnProperty(id)) {
         const instance = instances[id];
-        if (instance) {
-          rendered.push(
-            <DynamicModalInstanceContext.Provider
-              key={instance.id}
-              value={{
-                instance,
-                close: () => {
-                  removeModal(instance.id);
-                },
-              }}
-            >
-              <DynamicModal {...instance.props} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
-            </DynamicModalInstanceContext.Provider>,
-          );
-        }
+        rendered.push(
+          <DynamicModalInstanceContext.Provider
+            key={instance.id}
+            value={{
+              instance,
+              close: () => {
+                const { props, onClose } = instance;
+                removeModal(instance.id);
+                if (onClose) onClose(false);
+                if ((props as ICommonModalProps)?.onCancel) (props as ICommonModalProps).onCancel();
+              },
+            }}
+          >
+            <DynamicModal {...instance.props} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
+          </DynamicModalInstanceContext.Provider>,
+        );
       }
     }
     return rendered;
