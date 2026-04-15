@@ -63,7 +63,6 @@ export interface IStyleType {
   background?: IBackgroundValue;
   font?: IFontValue;
   shadow?: IShadowValue;
-  menuItemShadow?: IShadowValue;
   dimensions?: IDimensionsValue;
   size?: SizeType;
   style?: string;
