@@ -191,6 +191,9 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
       fetchContainer(containerPath).then((m) => {
         const propertyItems = modelMetadata2Properties(m);
         setProperties(propertyItems, containerPath);
+      }).catch((error) => {
+        console.error('Failed to fetch container', error);
+        throw error;
       });
     }
   }, [containerPath]);

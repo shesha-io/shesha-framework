@@ -23,6 +23,9 @@ const DebugPanelDataContent: FC = () => {
         .getMetadata({ modelType: pageInstance.formSettings.modelType, dataType: DataTypes.entityReference })
         .then((r) => {
           setFormMetadata(r);
+        }).catch((error) => {
+          console.error('Failed to get metadata', error);
+          throw error;
         });
   }, []);
 

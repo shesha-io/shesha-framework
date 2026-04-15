@@ -244,6 +244,9 @@ export const useFormComponentStyles = <TModel>(
           const url = URL.createObjectURL(blob);
           const style = getBackgroundStyle(background, jsStyle, url);
           setBackgroundStyles(style);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch image', error);
         });
     } else {
       setBackgroundStyles(getBackgroundStyle(background, jsStyle));

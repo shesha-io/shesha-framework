@@ -116,9 +116,9 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
 
   const onOk = (): void => {
     if (showDefaultSubmitButtons) {
-      form?.submit();
-      form?.validateFields().then(() => {
-        form?.submit();
+      form.submit();
+      void form.validateFields().then(() => {
+        form.submit();
         setIsSubmitted(true);
       });
     } else {

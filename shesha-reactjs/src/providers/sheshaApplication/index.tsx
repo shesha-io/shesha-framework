@@ -77,7 +77,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   const authRef = useRef<IAuthProviderRefProps>();
   const application = useSheshaApplicationInstance({ ...props, authorizer: authRef });
   useEffect(() => {
-    application.init();
+    void application.init();
   }, [application]);
 
   const {

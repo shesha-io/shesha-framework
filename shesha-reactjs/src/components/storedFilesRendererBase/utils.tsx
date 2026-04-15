@@ -128,7 +128,10 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
 
   const handleVisibleChange = (visible: boolean): void => {
     if (visible) {
-      fetchHistory();
+      fetchHistory().catch((error) => {
+        console.error('Failed to fetch file history', error);
+        throw error;
+      });
     }
   };
 

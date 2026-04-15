@@ -202,10 +202,14 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           } else {
             if (isNullOrWhiteSpace(formType))
               throw new Error("'formType' is required when 'formSelectionMode' = 'dynamic'");
-            getEntityFormIdAsync(internalEntityType, formType).then((formid) => {
-              setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
-              prevRenderedEntityTypeForm.current = internalEntityType;
-            });
+            getEntityFormIdAsync(internalEntityType, formType)
+              .then((formid) => {
+                setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
+                prevRenderedEntityTypeForm.current = internalEntityType;
+              })
+              .catch((error) => {
+                console.error('Failed to get form id', error);
+              });
           }
         }
       } else {
@@ -317,7 +321,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           onClearInternal();
           dispatch(fetchDataErrorAction({ error: e as GetDataError<unknown> })); // TODO: handle error type and extract if required
         });
-    });
+    })
+      .catch((e) => {
+        onClearInternal();
+        dispatch(fetchDataErrorAction({ error: e as GetDataError<unknown> })); // TODO: handle error type and extract if required
+      });
   };
 
   const debouncedFetchData = useDebouncedCallback((forceFetchData: boolean) => {
@@ -349,6 +357,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
             evaluateOnCreated();
           }
+        })
+        .catch((error) => {
+          console.error('Failed to create entity', error);
         });
     }
   }, 300);
@@ -373,6 +384,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
             evaluateOnUpdated();
           }
+        })
+        .catch((error) => {
+          console.error('Failed to update entity', error);
         });
     }
   }, 300);

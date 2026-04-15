@@ -97,7 +97,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
       return;
     }
 
-    executeAction({
+    void executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: allData,
     });

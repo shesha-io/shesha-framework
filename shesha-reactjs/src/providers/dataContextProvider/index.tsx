@@ -88,7 +88,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
 
   const onChangeAction = (changedData?: Partial<TData>): void => {
     if (props.onChangeAction?.actionName) {
-      executeAction({
+      void executeAction({
         actionConfiguration: props.onChangeAction,
         argumentsEvaluationContext: { ...allData.current, changedData },
       });
@@ -104,12 +104,15 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
         onChangeContextData();
       });
       if (props.onInitAction) {
-        executeAction({
+        void executeAction({
           actionConfiguration: props.onInitAction,
           argumentsEvaluationContext: { ...allData.current },
         });
       }
-    });
+    })
+      .catch((error) => {
+        console.error('Failed to fetch initial data', error);
+      });
   }
 
   return (

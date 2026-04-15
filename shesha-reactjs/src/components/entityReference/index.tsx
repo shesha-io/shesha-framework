@@ -161,7 +161,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       }
     };
 
-    fetchFormId();
+    fetchFormId().catch((error) => {
+      console.error('Failed to fetch form ID', error);
+      throw error;
+    });
   }, [entityType, formType, props.formSelectionMode, props.entityReferenceType, getEntityFormIdAsync]);
 
   useEffect(() => {
@@ -176,7 +179,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       }
     };
 
-    fetchMetadata();
+    fetchMetadata().catch((error) => {
+      console.error('Failed to fetch metadata', error);
+      throw error;
+    });
   }, [entityType, getMetadata]);
 
   useEffect(() => {
@@ -280,7 +286,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       globalState: globalState,
     };
 
-    executeAction({
+    void executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: evaluationContext,
     });

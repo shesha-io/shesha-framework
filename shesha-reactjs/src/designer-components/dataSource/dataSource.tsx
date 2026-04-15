@@ -57,6 +57,9 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
       propertyMetadataAccessor,
     ).then((evaluatedFilters) => {
       setPredefinedFilters(evaluatedFilters);
+    }).catch((error) => {
+      console.error('Failed to evaluate dynamic filters', error);
+      throw error;
     });
   };
 

@@ -279,7 +279,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
 
   const debouncedFetchItems = useDebouncedCallback<(value: string) => void>(
     (localValue) => {
-      listFetcher.refetch({ queryParams: getListFetcherQueryParams(entityType, localValue, maxResultCount, filter) });
+      void listFetcher.refetch({ queryParams: getListFetcherQueryParams(entityType, localValue, maxResultCount, filter) });
     },
     // delay in ms
     100,

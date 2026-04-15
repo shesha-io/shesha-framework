@@ -68,7 +68,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
     this.#fileListReference = fileListReference;
     if (isOwnerReferenceValid(this.#fileListReference))
-      this.fetchFilesList();
+      void this.fetchFilesList();
   };
 
   setOnFileListChanged = (onChange: OnFileListChanged | undefined): void => {

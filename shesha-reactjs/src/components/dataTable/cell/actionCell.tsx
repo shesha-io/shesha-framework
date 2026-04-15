@@ -32,7 +32,7 @@ export const ActionCell = <D extends object = object, V = any>(props: IActionCel
 
     if (actionConfiguration) {
       changeActionedRow(data.row.original);
-      executeAction({
+      void executeAction({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext: evaluationContext,
       });
