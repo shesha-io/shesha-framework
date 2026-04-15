@@ -34,7 +34,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol, labelCol, wrapperCol]);
 
-  const isVertical = model.layout === 'vertical' || shaForm.settings?.layout === 'vertical';
+  const isVertical = (model.layout ?? shaForm.settings?.layout) === 'vertical';
 
   const { hideLabel, hidden } = model;
   if (hidden) return null;
