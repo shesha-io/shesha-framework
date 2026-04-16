@@ -113,6 +113,8 @@ export const onAddNewItem = (items: IWizardStepProps[]): IWizardStepProps => {
     description: `Description ${count + 1}`,
     nextButtonText: 'Next',
     backButtonText: 'Back',
+    showBackButton: true,
+    showDoneButton: true,
     components: [],
     status: undefined,
   };
