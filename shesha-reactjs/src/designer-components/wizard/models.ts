@@ -75,7 +75,8 @@ export interface IWizardSequence {
 }
 
 export interface IStepProps extends StepProps {
-  content?: React.JSX.Element;
+  content?: string;
+  bodyContent?: React.JSX.Element;
 }
 
 export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Omit<IStyleType, 'size'> {

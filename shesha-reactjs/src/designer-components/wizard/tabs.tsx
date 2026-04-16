@@ -90,13 +90,13 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         id,
         title,
         subTitle,
-        description: content(description, index),
+        content: content(description, index),
         disabled: isDisabledByCondition,
         status: isDisabledByCondition ? 'wait' : status,
         ...iconProps,
         style: stepStyle,
         // render only current step
-        content: current === index
+        bodyContent: current === index
           ? (
             <ParentProvider
               name="WizardStep"
@@ -142,7 +142,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
               orientation={direction}
               titlePlacement={labelPlacement}
             />
-            <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
+            <div className={styles.shaStepsContent}>{steps[current]?.bodyContent}</div>
           </div>
           {currentStep?.hasCustomFooter && currentStepFooterId ? (
             <div className={styles.shaStepsButtonsContainer}>

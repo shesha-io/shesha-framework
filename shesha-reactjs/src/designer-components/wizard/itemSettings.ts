@@ -372,7 +372,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
-                hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: cancelButtonContentId,
