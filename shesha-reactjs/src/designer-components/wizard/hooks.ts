@@ -75,7 +75,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
           return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
         }),
-    [tabs],
+    [tabs, allData],
   );
 
   const currentStep = visibleSteps[current];
