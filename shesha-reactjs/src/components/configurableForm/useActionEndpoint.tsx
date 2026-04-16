@@ -107,9 +107,14 @@ export const useModelApiEndpoint = (args: UseEntityEndpointArguments): IApiEndpo
   const endpointsHelper = useModelApiHelper();
 
   useDeepCompareEffect(() => {
-    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings }).then((e) => {
-      setEndpoint(e);
-    });
+    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings })
+      .then((e) => {
+        setEndpoint(e);
+      })
+      .catch((error) => {
+        setEndpoint(null);
+        console.error('Failed to get endpoint', error);
+      });
   }, [args]);
 
   return endpoint;

@@ -26,7 +26,7 @@ export interface IItemListConfiguratorModalProps<TItem extends ListItemWithId> {
   itemRenderer: ListEditorChildrenFn<TItem> | DefaultItemRenderer<TItem>;
 }
 
-export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: IItemListConfiguratorModalProps<TItem>): JSX.Element => {
+export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: IItemListConfiguratorModalProps<TItem>): React.JSX.Element => {
   const {
     value,
     onChange,

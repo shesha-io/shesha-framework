@@ -123,12 +123,16 @@ const useReferenceListItem = (
     refListPromise.promise.then((list) => {
       const item = getRefListItemByValue(list, itemValue);
       setData(item);
+    }).catch((error) => {
+      console.error('Failed to fetch reference list', error);
     });
 
   useEffect(() => {
     refListPromise.promise.then((list) => {
       const item = getRefListItemByValue(list, itemValue);
       setData(item);
+    }).catch((error) => {
+      console.error('Failed to fetch reference list (from useEffect)', error);
     });
   }, [itemValue, refListPromise.promise]);
 

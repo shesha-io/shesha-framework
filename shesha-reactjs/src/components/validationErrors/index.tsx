@@ -7,6 +7,7 @@ import { useStyles } from './styles/styles';
 import { AxiosResponse } from 'axios';
 import { ErrorIconPopover } from '@/components/componentErrors/errorIconPopover';
 import { extractErrorInfo, IModelValidation } from '@/utils/errors';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IValidationErrorsProps extends AlertProps {
   error: string | IErrorInfo | IAjaxErrorResponse | AxiosResponse<IAjaxResponseBase> | Error | unknown;
@@ -34,7 +35,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   const parsedError = extractErrorInfo(error);
   if (!parsedError) return null;
 
-  const renderValidationErrors = (props: AlertProps): JSX.Element => {
+  const renderValidationErrors = (props: AlertProps): React.JSX.Element => {
     const widthStyle = props.style?.width && props.style?.marginLeft && props.style?.marginRight
       ? {
         width: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
@@ -58,8 +59,8 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
 
     return (
       <Fragment>
-        {props?.message}
-        {props?.description && (
+        {props.title}
+        {props.description && (
           <>
             <br />
             {props.description}
@@ -117,14 +118,14 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   // Legacy alert/raw modes
   if (parsedError.validationErrors?.length) {
     const violations = <ul>{parsedError.validationErrors.map((e, i) => <li key={i}>{e.message || 'Validation error'}</li>)}</ul>;
-    return renderValidationErrors({ message: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: violations, ...rest });
+    return renderValidationErrors({ title: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: violations, ...rest });
   }
 
-  if (parsedError.details) {
-    return renderValidationErrors({ message: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: parsedError.details, ...rest });
+  if (!isNullOrWhiteSpace(parsedError.details) && parsedError.details !== parsedError.message) {
+    return renderValidationErrors({ title: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: parsedError.details, ...rest });
   }
 
-  return renderValidationErrors({ message: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, ...rest });
+  return renderValidationErrors({ title: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, ...rest });
 };
 
 export default ValidationErrors;

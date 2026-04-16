@@ -7,7 +7,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 import ReflistTag from './reflistTag';
 
-export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>): JSX.Element => {
+export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>): React.JSX.Element => {
   const {
     referenceListId,
     value,
@@ -174,13 +174,8 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
             />
           );
         }}
-      >
-        {options?.map(({ value: localValue, label, data, disabled }) => (
-          <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
-            {label}
-          </Select.Option>
-        ))}
-      </Select>
+        options={options?.map(({ value: localValue, label, data, disabled }) => ({ value: localValue, label, data, disabled }))}
+      />
     );
   }
 
@@ -209,13 +204,8 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
           );
         },
       } : {})}
-    >
-      {options?.map(({ value: localValue, label, data, disabled }) => (
-        <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
-          {label}
-        </Select.Option>
-      ))}
-    </Select>
+      options={options?.map(({ value: localValue, label, data, disabled }) => ({ value: localValue, label, data, disabled }))}
+    />
   );
 };
 

@@ -5,7 +5,7 @@ import { useComponentContainer } from '@/providers/form/nesting/containerContext
 
 export interface IComponentsContainerProps extends IComponentsContainerBaseProps, Omit<ICommonContainerProps, 'wrapperStyle'> {
   className?: string;
-  render?: (components: JSX.Element[]) => ReactNode;
+  render?: (components: React.JSX.Element[]) => ReactNode;
   itemsLimit?: number;
   dynamicComponents?: IConfigurableFormComponent[];
   wrapperStyle?: CSSProperties;

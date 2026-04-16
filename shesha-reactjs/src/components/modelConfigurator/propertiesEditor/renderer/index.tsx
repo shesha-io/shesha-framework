@@ -29,6 +29,9 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
             block: 'start',
           });
       }
+    }).catch((error) => {
+      console.error('Failed to add item', error);
+      throw error;
     });
   };
 

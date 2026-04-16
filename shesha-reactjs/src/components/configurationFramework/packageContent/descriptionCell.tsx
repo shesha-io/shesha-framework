@@ -10,7 +10,7 @@ export interface IStatusCellProps {
   row: PackageItemDto;
 }
 
-const ItemCard = ({ row }: IStatusCellProps): JSX.Element => {
+const ItemCard = ({ row }: IStatusCellProps): React.JSX.Element => {
   return (
     <div>
       <div>

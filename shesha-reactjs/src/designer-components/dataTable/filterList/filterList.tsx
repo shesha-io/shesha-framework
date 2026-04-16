@@ -89,7 +89,6 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
           {filters?.map(({ columnId }) => {
             return (
               <Tag
-                bordered={false}
                 closable
                 key={columnId}
                 onClose={() => removeColumnFilter(columnId)}

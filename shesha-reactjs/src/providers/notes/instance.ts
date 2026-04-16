@@ -30,7 +30,10 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
 
     this.#notesReference = notesReference;
     if (isOwnerReferenceValid(this.#notesReference))
-      this.fetchNotesAsync();
+      this.fetchNotesAsync()
+        .catch((error) => {
+          console.error('Failed to fetch notes', error);
+        });
   };
 
   private fetchNotesAsync = async (): Promise<void> => {

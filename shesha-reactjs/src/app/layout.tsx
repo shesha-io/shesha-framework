@@ -9,7 +9,7 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}): React.JSX.Element {
   noStore();
   const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
 

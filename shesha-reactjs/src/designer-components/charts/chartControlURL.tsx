@@ -145,7 +145,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     return (
       <Alert
         showIcon
-        message="Chart control properties not set correctly!"
+        title="Chart control properties not set correctly!"
         description={missingPropertiesInfo.descriptionMessage}
         type="warning"
       />
@@ -161,7 +161,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     return (
       <Alert
         showIcon
-        message={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data from URL"}
+        title={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data from URL"}
         description={error}
         type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
         action={(
@@ -187,7 +187,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     return (
       <Alert
         showIcon
-        message="No data to display!"
+        title="No data to display!"
         description="Please check the URL and try again."
         type="warning"
       />

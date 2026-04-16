@@ -25,7 +25,7 @@ const EditableContext = createNamedContext(null, "EditableContext");
 
 const DragHandleContext = createNamedContext(null, "DragHandleContext");
 
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }): JSX.Element => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }): React.JSX.Element => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
   const form = useContext(EditableContext);
@@ -95,7 +95,7 @@ const getItemStyle = (draggableStyle: any, isDragging: boolean): CSSProperties =
   ...draggableStyle,
 });
 
-const DraggableBodyRowInner = ({ columns, className, style, ...restProps }): JSX.Element => {
+const DraggableBodyRowInner = ({ columns, className, style, ...restProps }): React.JSX.Element => {
   const [form] = Form.useForm();
 
   // function findIndex base on Table rowKey props and should always be a right array index
@@ -122,7 +122,7 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }): JSX
   );
 };
 
-const DragHandle = (): JSX.Element => {
+const DragHandle = (): React.JSX.Element => {
   const dragHandleProps = useContext(DragHandleContext);
 
   return <MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />;

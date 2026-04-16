@@ -70,6 +70,9 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     ).then((evaluatedFilters) => {
       dataFetchDep.ready();
       setPredefinedFilters(evaluatedFilters);
+    }).catch((error) => {
+      console.error('Failed to evaluate dynamic filters', error);
+      throw error;
     });
   };
 

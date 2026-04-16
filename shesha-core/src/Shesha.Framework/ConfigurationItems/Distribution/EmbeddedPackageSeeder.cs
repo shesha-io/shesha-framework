@@ -98,7 +98,7 @@ namespace Shesha.ConfigurationItems.Distribution
                                 CreateModules = false,
                                 Logger = context.Logger,
                                 ImportResult = importResult,
-                                IsMigrationImport = true,
+                                RevisionCreationMethod = Domain.Enums.ConfigurationItemRevisionCreationMethod.MigrationImport,
                             };
                             try
                             {

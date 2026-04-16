@@ -94,7 +94,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     }, { responseType: 'blob' })
       .then((response) => {
         const fileName = getFileNameFromResponse(response) ?? 'package.zip';
-        FileSaver.saveAs(new Blob([response.data]), fileName);
+        FileSaver(new Blob([response.data]), fileName, { autoBom: false });
         setExportInProgress(false);
         if (Boolean(props.onExported)) props.onExported();
       })
@@ -112,7 +112,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     };
 
   const onRefreshClick = (): void => {
-    refreshTree();
+    void refreshTree();
   };
 
   const onCheck = (checkedIds: string[]): void => {
@@ -120,7 +120,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
   };
 
   return (
-    <Spin spinning={exportInProgress} tip="Exporting...">
+    <Spin spinning={exportInProgress} description="Exporting...">
       <Form>
         <Form.Item label="Filter by">
           <ExportFilter value={filterState} onChange={setFilterState} />

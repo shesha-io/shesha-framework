@@ -320,7 +320,10 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.#setIsDataModified(true);
     if (this.onValuesChange)
       this.onValuesChange(changedValues, values);
-    this.events.onValuesUpdate?.({ data: removeGhostKeys({ ...values }) });
+    if (this.events.onValuesUpdate)
+      this.events.onValuesUpdate({ data: removeGhostKeys({ ...values }) }).catch((error) => {
+        console.error('Failed to call events.onValuesUpdate', error);
+      });
   };
 
   setFormData = (payload: ISetFormDataPayload<Values>): void => {

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { FC, useState } from 'react';
+import React, { FC, ReactNode, useState } from 'react';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { Form, Modal } from 'antd';
@@ -8,6 +8,7 @@ import { useDynamicModals } from '@/providers';
 import { useMedia } from 'react-use';
 import ConditionalWrap from '../conditionalWrapper';
 import { useStyles } from './styles';
+import DOMPurify from 'dompurify';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
@@ -16,6 +17,14 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   onOk?: () => void;
   showCloseIcon?: boolean;
 }
+
+
+const renderContent = (content: ReactNode): ReactNode => {
+  return typeof content == 'string'
+    ? <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />
+    : content;
+};
+
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
   const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
 
@@ -39,7 +48,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       open={isVisible}
       onOk={onOk}
       onCancel={hideForm}
-      footer={footer}
+      footer={renderContent(footer)}
       destroyOnHidden
       width={isSmall ? '90%' : width ?? '80vw'}
       centered
@@ -48,7 +57,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       closable={showCloseIcon ?? true} // Add this line - default to true for backward compatibility
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
     >
-      {content}
+      {renderContent(content)}
     </Modal>
   );
 };
@@ -107,9 +116,9 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
 
   const onOk = (): void => {
     if (showDefaultSubmitButtons) {
-      form?.submit();
-      form?.validateFields().then(() => {
-        form?.submit();
+      form.submit();
+      void form.validateFields().then(() => {
+        form.submit();
         setIsSubmitted(true);
       });
     } else {

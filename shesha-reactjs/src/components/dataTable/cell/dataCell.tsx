@@ -23,7 +23,7 @@ import MultiEntityCell from './default/multiEntityCell';
 import FormComponentMemo from '@/components/formDesigner/formComponent';
 import { useStyles } from '../styles/styles';
 
-export const DefaultDataDisplayCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): JSX.Element => {
+export const DefaultDataDisplayCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): React.JSX.Element => {
   const { columnConfig } = props;
   const { form } = useForm();
   const value = form.getFieldValue(columnConfig.propertyName?.split('.'));
@@ -126,7 +126,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
 
 ComponentWrapper.displayName = 'ComponentWrapper';
 
-export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>): JSX.Element => {
+export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>): React.JSX.Element => {
   const { columnConfig, propertyMeta } = props;
   const customComponent = columnConfig?.createComponent;
   const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
@@ -136,7 +136,7 @@ export const CreateDataCell = (props: IConfigurableCellProps<ITableDataColumn>):
   );
 };
 
-const ReadDataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): JSX.Element => {
+const ReadDataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): React.JSX.Element => {
   const { columnConfig, propertyMeta } = props;
   const customComponent = columnConfig?.displayComponent;
 
@@ -156,7 +156,7 @@ const ReadDataCell = <D extends object = object, V = number>(props: IDataCellPro
   );
 };
 
-const UpdateDataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): JSX.Element => {
+const UpdateDataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): React.JSX.Element => {
   const { columnConfig, propertyMeta, value } = props;
   const customComponent = columnConfig?.editComponent;
   const componentType = customComponent?.type ?? standardCellComponentTypes.notEditable;
@@ -173,7 +173,7 @@ const UpdateDataCell = <D extends object = object, V = number>(props: IDataCellP
   );
 };
 
-export const DataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): JSX.Element => {
+export const DataCell = <D extends object = object, V = number>(props: IDataCellProps<D, V>): React.JSX.Element => {
   const { mode } = useCrud();
 
   switch (mode) {

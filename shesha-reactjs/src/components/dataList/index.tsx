@@ -403,7 +403,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     }
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
-  const renderSubForm = (item: any, index: number): JSX.Element => {
+  const renderSubForm = (item: any, index: number): React.JSX.Element => {
     let formEntityType = null;
     let fType = null;
     if (formSelectionMode === 'name') {
@@ -493,7 +493,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           selectedRow: item,
           ...dynamicContext,
         };
-        executeAction({
+        void executeAction({
           actionConfiguration: props.dblClickActionConfiguration,
           argumentsEvaluationContext: evaluationContext,
         });

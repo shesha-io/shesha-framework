@@ -4,7 +4,7 @@ import { useDataListCrud } from '@/providers/dataListCrudContext/index';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
 import { useStyles } from './styles/styles';
 
-export const CrudActionButtons = (): JSX.Element => {
+export const CrudActionButtons = (): React.JSX.Element => {
   const {
     mode,
     switchMode,
@@ -53,7 +53,10 @@ export const CrudActionButtons = (): JSX.Element => {
   };
 
   const onDeleteClick = (): void => {
-    performDelete();
+    performDelete().catch((error) => {
+      console.error('Failed to delete row', error);
+      throw error;
+    });
   };
 
   const buttons = useMemo<IActionButtonProps[]>(() => {
@@ -75,7 +78,7 @@ export const CrudActionButtons = (): JSX.Element => {
       {
         title: 'Save',
         executer: () => {
-          onSaveUpdateClick();
+          void onSaveUpdateClick();
         },
         icon: <SaveOutlined />,
         isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
@@ -85,7 +88,7 @@ export const CrudActionButtons = (): JSX.Element => {
       {
         title: 'Cancel edit',
         executer: () => {
-          onCancelEditClick();
+          void onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
         isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
@@ -93,7 +96,7 @@ export const CrudActionButtons = (): JSX.Element => {
       {
         title: 'Reset',
         executer: () => {
-          onCancelEditClick();
+          void onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
         isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),

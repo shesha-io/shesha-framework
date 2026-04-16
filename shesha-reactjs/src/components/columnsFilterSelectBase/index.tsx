@@ -1,10 +1,7 @@
 import React, { FC } from 'react';
 import { Select } from 'antd';
 import { ITableColumn } from '@/providers/dataTable/interfaces';
-import { nanoid } from '@/utils/uuid';
 import { useStyles } from './styles/styles';
-
-const { Option } = Select;
 
 export interface IColumnsFilterSelectBaseProps {
   columns: ITableColumn[];
@@ -35,16 +32,11 @@ export const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
         onChange={handleToggleColumnFilter}
         value={appliedFiltersColumnIds}
         className="columns-filter-selector"
-        filterOption={filterOption}
-      >
-        {columns
+        showSearch={{ filterOption: filterOption }}
+        options={columns
           .filter(({ isFilterable }) => isFilterable)
-          .map(({ id, header }) => (
-            <Option value={id} key={nanoid()}>
-              {header}
-            </Option>
-          ))}
-      </Select>
+          .map(({ id, header }) => ({ value: id, label: header }))}
+      />
     </div>
   );
 };

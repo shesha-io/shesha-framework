@@ -83,7 +83,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
     setPackageContent(null);
   };
 
-  const fileRender = (_originNode, file, _currFileList): JSX.Element => {
+  const fileRender = (_originNode, file, _currFileList): React.JSX.Element => {
     return (
       <div className={styles.shaPackageUploadFile}>
         <span className={styles.shaPackageUploadFileThumbnail}>
@@ -133,7 +133,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
     };
 
   return (
-    <Spin spinning={isImporting} tip="Importing...">
+    <Spin spinning={isImporting} description="Importing...">
       <Form>
         <Dragger
           accept=".shaconfig"

@@ -307,7 +307,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
   const showTree = isDevMode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
   const finalReadOnly = readOnly || internalReadOnly;
 
-  const renderCodeEditor = (): JSX.Element => {
+  const renderCodeEditor = (): React.JSX.Element => {
     return codeEditorEnvironment
       ? (
         <>

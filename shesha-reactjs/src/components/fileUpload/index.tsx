@@ -85,7 +85,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
       fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
         .then((response) => response.blob())
         .then((blob) => URL.createObjectURL(blob))
-        .then((url) => setImageUrl(url));
+        .then((url) => setImageUrl(url))
+        .catch((error) => {
+          console.error('Failed to fetch file', error);
+          throw error;
+        });
     }
   }, [fileInfo]);
 
@@ -93,6 +97,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
     if (file instanceof File) {
       uploadFile({ file }).then(() => {
         callback?.();
+      }).catch((error) => {
+        console.error('Failed to upload file', error);
+        throw error;
       });
     } else
       throw new Error('File is not an instance of File. Please check the file object.');
@@ -120,7 +127,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
       cancelText: 'Cancel',
       okType: 'danger',
       onOk: () => {
-        deleteFile();
+        deleteFile().catch((error) => {
+          console.error('Failed to delete file', error);
+          throw error;
+        });
       },
     });
   };
@@ -141,7 +151,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   };
 
-  const fileControls = (color: string): JSX.Element => (
+  const fileControls = (color: string): React.JSX.Element => (
     <Space>
       <a style={{ color: color }}>
         <FileVersionsPopup fileId={fileInfo?.id} />
@@ -174,7 +184,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </Space>
   );
 
-  const iconRender = (fileInfo): JSX.Element => {
+  const iconRender = (fileInfo): React.JSX.Element => {
     const { type, name } = fileInfo;
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
@@ -184,7 +194,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return getFileIcon(type);
   };
 
-  const styledfileControls = (): JSX.Element =>
+  const styledfileControls = (): React.JSX.Element =>
     fileInfo && (
       <div className={styles.styledFileControls}>
         {iconRender(fileInfo)}
@@ -194,7 +204,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       </div>
     );
 
-  const renderFileItem = (file: any): JSX.Element => {
+  const renderFileItem = (file: any): React.JSX.Element => {
     const showThumbnailControls = !isUploading && listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
@@ -259,7 +269,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     )
   );
 
-  const renderStub = (): JSX.Element => {
+  const renderStub = (): React.JSX.Element => {
     if (isDragger) {
       return (
         <Dragger disabled>
@@ -280,7 +290,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     );
   };
 
-  const renderUploader = (): JSX.Element => {
+  const renderUploader = (): React.JSX.Element => {
     const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';
 
     if (isDragger && allowUpload) {
@@ -308,7 +318,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
       <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : !isUploading ? renderUploader() : <SyncOutlined spin style={{ color: theme.application.primaryColor }} />}</span>
       {previewOpen && (
         <Image
-          wrapperStyle={{ display: 'none' }}
+          styles={{
+            root: { display: 'none' },
+          }}
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
@@ -340,7 +352,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
               e.target.value = '';
               return;
             }
-            uploadFile({ file }).then(() => callback?.());
+            uploadFile({ file }).then(() => callback?.()).catch((error) => {
+              console.error('Failed to upload file', error);
+              throw error;
+            });
           }
           e.target.value = '';
         }}

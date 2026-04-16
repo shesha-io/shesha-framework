@@ -174,6 +174,8 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
         parentUid: parentContext?.uid,
         ...actionContext,
       });
+    }).catch((error) => {
+      console.error('Failed to fetch metadata', error);
     });
     metadataDispatcher.updateModel(id, metadata);
     // TODO: Alex, please review. List of dependencise shouls be full or there should be a function that updates metadata only

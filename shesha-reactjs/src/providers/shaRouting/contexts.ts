@@ -22,7 +22,7 @@ export interface IShaRoutingActionsContext {
   /**
    * Get url from navigation request
    */
-  getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string | undefined;
+  getUrlFromNavigationRequest: (request: INavigateActoinArguments | undefined) => string | undefined;
 
   /**
    * Check if navigation to the url is allowed according to the current application state.

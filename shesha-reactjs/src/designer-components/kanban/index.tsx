@@ -46,7 +46,9 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
         setBackgroundStyles((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
       };
-      fetchStyles();
+      fetchStyles().catch((error) => {
+        console.error('Failed to fetch styles', error);
+      });
     }, [background, backendUrl, httpHeaders]);
 
     useEffect(() => {
@@ -56,7 +58,9 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
         setColumnBackgroundStyle((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
       };
-      fetchStyles();
+      fetchStyles().catch((error) => {
+        console.error('Failed to fetch styles', error);
+      });
     }, [columnBackground, backendUrl, httpHeaders]);
 
     const additionalColumnStyles: CSSProperties = removeUndefinedProps({
@@ -93,7 +97,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
             ) : (
               <Alert
                 className="sha-designer-warning"
-                message="Kanban must be used within a Data Table Context"
+                title="Kanban must be used within a Data Table Context"
                 type="warning"
               />
             );

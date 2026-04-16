@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-deprecated */
 import Address from '@/designer-components/address';
+import AddressInput from '@/designer-components/addressInput';
 import Alert from '@/designer-components/alert';
 import AutocompleteTagGroup from '@/designer-components/autocompleteTagGroup';
 import Button from '@/designer-components/button/button';
@@ -114,7 +116,7 @@ import LineChartComponent from '@/designer-components/charts/line';
 import PieChartComponent from '@/designer-components/charts/pie';
 import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
-import DividerComponent from '@/designer-components/_legacyComponents/divider';
+import { DividerComponent } from '@/designer-components/_legacyComponents/divider';
 import EntityTypeAutocompleteComponent from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
 import CalendarComponent from '@/designer-components/calendar';
 import TableContextComponentLegacy from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
@@ -154,6 +156,7 @@ export const getToolboxComponents = (
       visible: true,
       components: [
         Address,
+        AddressInput,
         Autocomplete,
         ColorPickerComponent,
         IconPicker,

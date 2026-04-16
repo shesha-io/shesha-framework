@@ -48,6 +48,9 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
       refListId: { module: props.referenceList?.module, name: props.referenceList?.name },
     }).promise.then((t) => {
       dispatch(setItems(t?.items));
+    }).catch((error) => {
+      console.error('Failed to fetch reference list', error);
+      throw error;
     });
   }, [props?.referenceList]);
 

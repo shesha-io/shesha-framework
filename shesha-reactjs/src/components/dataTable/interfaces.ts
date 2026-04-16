@@ -110,8 +110,8 @@ export interface ITableCellRenderingArgs<TValue = any> {
 export interface ITableCustomTypesRender<D extends object, V = any> {
   key: string;
   dataFormat?: string;
-  // render: (cellProps: ITableCellRenderingArgs, router: any) => JSX.Element;
-  render: (cellProps: CellProps<D, V>, router: any) => JSX.Element;
+  // render: (cellProps: ITableCellRenderingArgs, router: any) => React.JSX.Element;
+  render: (cellProps: CellProps<D, V>, router: any) => React.JSX.Element;
 }
 
 export type OnSaveHandler = (data: object) => Promise<object>;

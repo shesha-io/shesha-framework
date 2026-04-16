@@ -98,7 +98,7 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
             cancelText={readOnly ? 'Close' : undefined}
           >
             <Show when={!!description}>
-              <Alert type="info" message={description} />
+              <Alert type="info" title={description} />
               <br />
             </Show>
             <Tabs

@@ -30,7 +30,7 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
           )}
           className={styles.themeParameters}
         >
-          <Alert type="info" message="You can modify the values by selecting the colour block" showIcon />
+          <Alert type="info" title="You can modify the values by selecting the colour block" showIcon />
           <ThemeParameters value={value} onChange={onChange} readonly={readonly} />
         </CollapsiblePanel>
       </Col>

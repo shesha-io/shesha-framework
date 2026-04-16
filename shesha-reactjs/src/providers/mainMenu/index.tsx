@@ -112,6 +112,9 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
           });
 
           dispatch(setItemsAction({ items: getActualItemsModel(items), originalItems: items }));
+        })
+        .catch((error) => {
+          console.error('Failed to check permissions', error);
         });
     }
   }, [httpClient, getActualItemsModel, getNewHiddenOrUndefined]);

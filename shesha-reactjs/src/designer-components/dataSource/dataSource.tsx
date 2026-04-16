@@ -57,6 +57,9 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
       propertyMetadataAccessor,
     ).then((evaluatedFilters) => {
       setPredefinedFilters(evaluatedFilters);
+    }).catch((error) => {
+      console.error('Failed to evaluate dynamic filters', error);
+      throw error;
     });
   };
 
@@ -111,7 +114,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
     return (
       <Alert
         className="sha-designer-warning"
-        message="DataSource is not configured"
+        title="DataSource is not configured"
         description={sourceType === 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
         type="warning"
         showIcon

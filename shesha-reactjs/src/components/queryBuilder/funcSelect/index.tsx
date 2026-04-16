@@ -43,7 +43,7 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
   if (tooltipText === selectedLabel)
     tooltipText = null;
 
-  const renderSelectItems = (fields, level = 0): JSX.Element[] => {
+  const renderSelectItems = (fields, level = 0): React.JSX.Element[] => {
     return fields.map((field) => {
       const { items, key, path, label, altLabel, tooltip, grouplabel, disabled } = field;
       const groupPrefix = level > 0 ? "\u00A0\u00A0".repeat(level) : "";

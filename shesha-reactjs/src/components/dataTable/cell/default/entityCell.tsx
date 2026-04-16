@@ -3,7 +3,7 @@ import { IDataCellProps } from '../interfaces';
 
 export type IEntityCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
 
-export const EntityCell = <D extends object = object, V = any>(props: IEntityCellProps<D, V>): JSX.Element => {
+export const EntityCell = <D extends object = object, V = any>(props: IEntityCellProps<D, V>): React.JSX.Element => {
   const { value } = props;
   if (!value) return null;
 

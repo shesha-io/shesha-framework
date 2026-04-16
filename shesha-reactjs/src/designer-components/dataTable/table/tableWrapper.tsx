@@ -180,7 +180,9 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
       }
     };
 
-    fetchStoredFileUrl();
+    fetchStoredFileUrl().catch((error) => {
+      console.error('Failed to fetch stored file background image', error);
+    });
 
     return () => {
       isCancelled = true;
@@ -436,14 +438,16 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
       }
     };
 
-    autoConfigureColumns();
+    autoConfigureColumns().catch((error) => {
+      console.error('Failed to auto-configure columns', error);
+    });
 
     return () => {
       cancelled = true;
     };
   }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id, isEntitySource]);
 
-  const renderSidebarContent = (): JSX.Element => {
+  const renderSidebarContent = (): React.JSX.Element => {
     if (isAdvancedFilterVisible) {
       return <DatatableAdvancedFilter />;
     }

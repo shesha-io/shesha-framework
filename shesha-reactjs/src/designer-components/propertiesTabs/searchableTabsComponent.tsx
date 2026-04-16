@@ -40,7 +40,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     style?: React.CSSProperties;
     autoFocus?: boolean;
     wrapperStyle?: React.CSSProperties;
-  }): JSX.Element => {
+  }): React.JSX.Element => {
     const input = (
       <Input
         type="search"

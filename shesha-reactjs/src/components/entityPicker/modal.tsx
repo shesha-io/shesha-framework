@@ -28,7 +28,7 @@ export interface IEntityPickerModalProps extends IEntityPickerProps {
   onCloseModal: () => void;
 };
 
-const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element => {
+const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.Element => {
   const {
     entityType,
     filters,
@@ -153,6 +153,9 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
         // Here we do not need dynamic filters
         setPredefinedFilters(parsedFilters);
       }
+    }).catch((error) => {
+      console.error('Failed to evaluate dynamic filters', error);
+      throw error;
     });
   };
 
@@ -232,7 +235,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
       footer={footer}
     >
       <>
-        <Alert message="Double click an item to select" type="info" />
+        <Alert title="Double click an item to select" type="info" />
         <GlobalTableFilter
           searchProps={{ size: 'middle', autoFocus: true, placeholder: 'Search by Title, Type or Keyword...' }}
         />
@@ -257,7 +260,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
   );
 };
 
-export const EntityPickerModal = (props: IEntityPickerModalProps): JSX.Element => {
+export const EntityPickerModal = (props: IEntityPickerModalProps): React.JSX.Element => {
   return (
     <DataTableProvider
       userConfigId={'table_' + props.name}

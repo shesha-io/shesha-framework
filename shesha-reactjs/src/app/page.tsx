@@ -3,7 +3,6 @@
 import { Alert, Card, Col, Row } from 'antd';
 import data from 'public/meta.json';
 import React, { FC } from 'react';
-import styled from 'styled-components';
 import { useLayoutSelection } from '@/hooks';
 import { LAYOUT_MODE } from '@/components/mainLayout/constant';
 import CollapsiblePanel from '@/components/panel';
@@ -17,17 +16,13 @@ import CollapsiblePanel from '@/components/panel';
  *
  */
 
-const StyledAlert: any = styled(Alert)`
-  margin-bottom: 15px;
-`;
-
 const Home: FC = () => {
   const { LayoutComponent } = useLayoutSelection(LAYOUT_MODE);
 
   return (
     <LayoutComponent>
       <CollapsiblePanel header="Plugins">
-        <StyledAlert message="This is a list of plugins the boilerplate uses" type="info" />
+        <Alert title="This is a list of plugins the boilerplate uses" type="info" style={{ marginBottom: "15px" }} />
 
         <Row style={{ flex: 1 }}>
           {(data?.plugins ?? []).map((plugin) => (

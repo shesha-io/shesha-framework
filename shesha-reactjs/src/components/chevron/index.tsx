@@ -26,7 +26,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
   const stylingBoxJSON = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
   const stylingBoxCSS = pickStyleFromModel(stylingBoxJSON);
 
-  const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>): JSX.Element => {
+  const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>): React.JSX.Element => {
     function getColor(source: string): string {
       switch (source) {
         case 'primary':

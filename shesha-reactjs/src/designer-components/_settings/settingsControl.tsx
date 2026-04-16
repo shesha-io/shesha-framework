@@ -41,6 +41,7 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "moment", description: "moment", type: "object" },
   { name: "http", description: "axiosHttp", type: "object" },
   { name: "message", description: "message framework", type: "object" },
+  { name: "modal", description: "API for displaying modal dialogs and forms", type: "object" },
 ];
 
 export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>): ReactElement => {
@@ -99,7 +100,6 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     type: 'text',
     label: ' ',
     ghost: true,
-    exposedVariables: defaultExposedVariables,
     hidden: !setting._code && props.readOnly,
   };
 

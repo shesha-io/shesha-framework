@@ -26,7 +26,10 @@ export const ComplexProperty: FC<IProps> = (props) => {
   const icon = getIconTypeByDataType(props.data.dataType);
 
   const onAddChildClick = (): void => {
-    addItem(props.data.id);
+    addItem(props.data.id).catch((error) => {
+      console.error('Failed to add child', error);
+      throw error;
+    });
   };
 
   const label = props.data.isItemsType
