@@ -145,8 +145,9 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
             <div className={styles.shaStepsContent}>{steps[current]?.bodyContent}</div>
           </div>
           {currentStep?.hasCustomFooter && currentStepFooterId ? (
-            <div className={styles.shaStepsButtonsContainer}>
+            <div className={styles.shaStepsContent}>
               <ComponentsContainer
+                wrapperStyle={{ height: '100%' }}
                 containerId={currentStepFooterId}
               />
             </div>
