@@ -334,7 +334,7 @@ export type IObjectWithStringId = {
 export const isObjectWithStringId = (obj: unknown): obj is IObjectWithStringId => isDefined(obj) && typeof (obj) === "object" && "id" in obj && typeof (obj.id) === "string";
 
 export const isComponentsContainer = (obj: unknown): obj is IComponentsContainer =>
-  isDefined(obj) && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
+  isDefined(obj) && typeof obj === "object" && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
 
 export type IRawComponentsContainer = IFormComponentContainer & {
   components: IConfigurableFormComponent[];

@@ -79,7 +79,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
             const footerComponentIds = componentRelations[footerId] || [];
             const footerComponents = footerComponentIds
               .map((id) => allComponents[id])
-              .filter(Boolean);
+              .filter(isConfigurableFormComponent);
 
             return {
               ...step,
