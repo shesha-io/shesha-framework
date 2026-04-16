@@ -89,6 +89,10 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
 
 
   const doFetchItems = (term: string, verb: string): void => {
+    // Additional safety check: only make the request if verb is valid
+    if (!isValidVerb(verb)) {
+      return;
+    }
     endpointsFetcher.refetch({ queryParams: { term, verb: verb } });
   };
   const debouncedFetchItems = useDebouncedCallback<(value: string, verb: string) => void>(
