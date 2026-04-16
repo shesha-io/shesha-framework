@@ -89,6 +89,7 @@ export type FormDesignerState = {
   isDebug: boolean;
   readOnly: boolean;
   formMode: FormMode;
+  activeSettingsTabKey: string | undefined;
 
   settingsPanelRef: MutableRefObject<HTMLDivElement | undefined>;
 };
@@ -118,6 +119,7 @@ export type FormDesignerActions = {
 
   setReadOnly: (value: boolean) => void;
   setFormMode: (value: FormMode) => void;
+  setActiveSettingsTabKey: (key: string) => void;
 
   getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
 
