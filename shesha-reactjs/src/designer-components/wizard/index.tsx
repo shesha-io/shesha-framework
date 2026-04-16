@@ -36,7 +36,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       hasCustomFooter: step?.hasCustomFooter ?? false,
       stepFooter: step?.stepFooter ?? {
         id: `${step.id}_footer`,
-        components: step?.stepFooter?.components ?? [],
+        components: [],
       },
     })) ?? [],
   }),
@@ -107,7 +107,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           hasCustomFooter: step.hasCustomFooter ?? false,
           stepFooter: step?.stepFooter ?? {
             id: `${step.id}_footer`,
-            components: step?.stepFooter?.components ?? [],
+            components: [],
           },
         })) ?? [],
       })),
