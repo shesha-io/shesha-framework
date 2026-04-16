@@ -165,7 +165,13 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
 };
 
 export const buildConfiguraitonItemMenu = (args: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
-  return buildConfiguraitonItemActionsMenu(args);
+  const menu = buildConfiguraitonItemActionsMenu(args);
+  if (!args.node)
+    return menu;
+  const definition = args.getDocumentDefinition?.(args.node.itemType);
+  return definition && definition.contextMenuBuilder
+    ? definition.contextMenuBuilder(menu, args.configurationStudio)
+    : menu;
 };
 
 const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
