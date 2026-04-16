@@ -100,7 +100,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           }
           return step;
         }),
-    [tabs, componentRelations, allComponents],
+    [tabs, allData, componentRelations, allComponents],
   );
 
   const currentStep = visibleSteps[current];
