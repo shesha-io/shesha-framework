@@ -63,7 +63,9 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   }, [httpClient, state.id]);
 
   useEffect(() => {
-    load();
+    load().catch((error) => {
+      console.error('Failed to fetch model', error);
+    });
   }, [load, state.id]);
 
   const submit = useCallback((): void => {

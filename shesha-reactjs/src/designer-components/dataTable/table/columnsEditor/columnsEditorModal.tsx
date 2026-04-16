@@ -45,7 +45,10 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
         }
       };
 
-      loadDefaultColumns();
+      loadDefaultColumns().catch((error) => {
+        console.error('Failed to fetch default columns', error);
+        throw error;
+      });
     }
   }, [metadata?.metadata, visible, onChange, isEntitySource]);
 

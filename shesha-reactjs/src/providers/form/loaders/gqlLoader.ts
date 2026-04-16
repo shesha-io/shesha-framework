@@ -250,10 +250,10 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
       }
     });
 
-    const finalPromise = new Promise<IFieldData[]>((resolve) => {
+    const finalPromise = new Promise<IFieldData[]>((resolve, reject) => {
       Promise.allSettled(promises).then(() => {
         resolve(fields);
-      });
+      }).catch(reject);
     });
     return await finalPromise;
   };

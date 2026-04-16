@@ -198,7 +198,10 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
     if (valueFetchParams) {
       const selectedFromList = selectedValue.current && selectedValue.current === props.value;
       if (!selectedFromList)
-        valueFetcher.refetch({ queryParams: valueFetchParams });
+        valueFetcher.refetch({ queryParams: valueFetchParams }).catch((error) => {
+          console.error('Failed to fetch value', error);
+          throw error;
+        });
     }
   }, [props.value]);
 
@@ -241,7 +244,11 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
 
   const debouncedFetchItems = useDebouncedCallback<(value: string) => void>(
     (localValue) => {
-      listFetcher.refetch({ queryParams: getListFetcherQueryParams(localValue, maxResultCount) });
+      listFetcher.refetch({ queryParams: getListFetcherQueryParams(localValue, maxResultCount) })
+        .catch((error) => {
+          console.error('Failed to fetch items', error);
+          throw error;
+        });
     },
     // delay in ms
     100,

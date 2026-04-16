@@ -47,7 +47,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   const [objectId, setObjectId] = useState("");
 
   useEffect(() => {
-    fetcher.refetch();
+    void fetcher.refetch();
   }, [props.objectsType]);
 
   useEffect(() => {
@@ -130,7 +130,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   const onChangeAction = (selectedRow: PermissionedObjectDto): void => {
     if (props.onSelectAction?.actionName) {
-      executeAction({
+      void executeAction({
         actionConfiguration: props.onSelectAction,
         argumentsEvaluationContext: { ...allData.current, selectedRow },
       });

@@ -493,7 +493,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           selectedRow: item,
           ...dynamicContext,
         };
-        executeAction({
+        void executeAction({
           actionConfiguration: props.dblClickActionConfiguration,
           argumentsEvaluationContext: evaluationContext,
         });

@@ -161,6 +161,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           replaceFile({
             file: file,
             fileId: fileToReplace.id,
+          }).catch((error) => {
+            console.error('Failed to replace file', error);
+            throw error;
           });
         }
       } catch (e) {
@@ -288,7 +291,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     };
 
-    fetchImages();
+    fetchImages().catch((error) => {
+      console.error('Failed to fetch images', error);
+      throw error;
+    });
 
     return () => {
       isCancelled = true;
@@ -370,7 +376,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               onConfirm={(e) => {
                 e?.preventDefault();
                 e?.stopPropagation();
-                deleteFile(file.uid);
+                deleteFile(file.uid).catch((error) => {
+                  console.error('Failed to delete file', error);
+                  throw error;
+                });
               }}
               description="Are you sure you want to delete this attachment?"
             >
@@ -386,7 +395,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             <FileVersionsButton
               fileId={fileId}
               onDownload={(versionNo, fileName) => {
-                downloadFile({ fileId, versionNo, fileName });
+                downloadFile({ fileId, versionNo, fileName }).catch((error) => {
+                  console.error('Failed to download file', error);
+                  throw error;
+                });
               }}
             />
           )}
@@ -396,7 +408,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             title="Download file"
             onClick={(e) => {
               e.stopPropagation();
-              downloadFile({ fileId: file.uid, fileName: file.name });
+              downloadFile({ fileId: file.uid, fileName: file.name }).catch((error) => {
+                console.error('Failed to download file', error);
+                throw error;
+              });
             }}
           />
           {/* Custom Actions Button Group */}
@@ -431,7 +446,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         e.stopPropagation();
         handlePreview(file);
       } else {
-        downloadFile({ fileId: file.uid, fileName: file.name });
+        downloadFile({ fileId: file.uid, fileName: file.name }).catch((error) => {
+          console.error('Failed to download file', error);
+          throw error;
+        });
       };
     };
 
@@ -516,7 +534,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
 
-      uploadFile({ file: options.file, ownerId, ownerType });
+      uploadFile({ file: options.file, ownerId, ownerType }).catch((error) => {
+        console.error('Failed to upload file', error);
+        throw error;
+      });
     },
     beforeUpload(file: RcFile) {
       const { type, size, name } = file;

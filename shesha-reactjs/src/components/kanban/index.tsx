@@ -51,6 +51,9 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
             postUrl: create?.url,
           });
         }
+      }).catch((error) => {
+        console.error('Failed to fetch metadata', error);
+        throw error;
       });
 
       const filteredTasks = tableData.filter((item: any) => item?.[groupingProperty]);
@@ -82,7 +85,10 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       }
     };
 
-    initializeSettings();
+    initializeSettings().catch((error) => {
+      console.error('Failed to initialize settings', error);
+      throw error;
+    });
   }, []);
 
   useEffect(() => {
@@ -127,7 +133,10 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const handleDelete = (id: string): void => {
     const updatedTasks = tasks.filter((task) => task.id !== id);
     setTasks(updatedTasks);
-    deleteKanban(id, urls.deleteUrl);
+    deleteKanban(id, urls.deleteUrl).catch((error) => {
+      console.error('Failed to delete item', error);
+      throw error;
+    });
   };
 
   const handleCreate = (): void => {

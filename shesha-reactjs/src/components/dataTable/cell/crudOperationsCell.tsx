@@ -50,7 +50,10 @@ export const CrudOperationsCell: FC = () => {
   };
 
   const onDeleteClick = (): void => {
-    performDelete();
+    performDelete().catch((error) => {
+      console.error('Failed to delete row', error);
+      throw error;
+    });
   };
 
   const buttons = useMemo<IActionButtonProps[]>(() => {
@@ -72,7 +75,7 @@ export const CrudOperationsCell: FC = () => {
       {
         title: 'Save',
         executer: () => {
-          onSaveUpdateClick();
+          void onSaveUpdateClick();
         },
         icon: <SaveOutlined />,
         isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
@@ -82,7 +85,7 @@ export const CrudOperationsCell: FC = () => {
       {
         title: 'Cancel edit',
         executer: () => {
-          onCancelEditClick();
+          void onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
         isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
@@ -90,7 +93,7 @@ export const CrudOperationsCell: FC = () => {
       {
         title: 'Reset',
         executer: () => {
-          onCancelEditClick();
+          void onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
         isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),

@@ -39,6 +39,8 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id = 
     if (!isEntityTypeIdEmpty(modelType)) {
       getMetadata({ modelType, dataType }).then((meta) => {
         dispatch(setMetadataAction({ metadata: meta, dataType, modelType }));
+      }).catch((error) => {
+        console.error('Failed to fetch metadata', error);
       });
     }
   }, [modelType, dataType, getMetadata, dispatch]);

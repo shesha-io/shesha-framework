@@ -96,6 +96,9 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
         })
         .finally(() => {
           setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch entities', error);
         });
     }
   }, [httpClient, getValuePayload, mustFetch]);

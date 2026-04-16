@@ -153,6 +153,9 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
         // Here we do not need dynamic filters
         setPredefinedFilters(parsedFilters);
       }
+    }).catch((error) => {
+      console.error('Failed to evaluate dynamic filters', error);
+      throw error;
     });
   };
 

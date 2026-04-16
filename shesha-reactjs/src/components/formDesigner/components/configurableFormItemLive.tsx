@@ -32,7 +32,9 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
-  }, [formItemlabelCol, formItemWrapperCol]);
+  }, [formItemlabelCol, formItemWrapperCol, labelCol, wrapperCol]);
+
+  const isVertical = (model.layout ?? shaForm.settings?.layout) === 'vertical';
 
   const { hideLabel, hidden } = model;
   if (hidden) return null;
@@ -67,7 +69,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
     labelCol: layout?.labelCol,
-    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
+    wrapperCol: hideLabel || isVertical ? { span: 24 } : layout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     style: {

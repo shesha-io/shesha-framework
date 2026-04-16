@@ -98,9 +98,13 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
 
     setSearchIsValid(false);
     previousQueryParams.current = queryParams;
-    listFetcher.refetch({ queryParams }).then(() => {
-      setSearchIsValid(true);
-    });
+    listFetcher.refetch({ queryParams })
+      .then(() => {
+        setSearchIsValid(true);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch autocomplete list', error);
+      });
   };
 
   const listItems = listFetcher.data?.result?.items;

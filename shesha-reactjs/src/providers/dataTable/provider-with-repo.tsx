@@ -387,7 +387,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const fetchTableDataInternal = useCallback((payload: IGetListDataPayload): Promise<void> => {
     if (tableIsReady.current === true && !props.disableRefresh) {
       dispatch(fetchTableDataAction(payload));
-      debouncedFetch(payload);
+      debouncedFetch(payload)?.catch((error) => {
+        console.error('Failed to fetch data', error);
+      });
     }
     return Promise.resolve();
   }, [debouncedFetch, dispatch, props.disableRefresh]);
@@ -451,7 +453,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     if (readyToFetch) {
       // fecth using entity type
       tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
-      refreshTable();
+      void refreshTable();
     }
   }, [state.tableFilter,
     state.currentPage,
@@ -572,7 +574,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   }, [dispatch]);
 
   const registerConfigurableColumns = useCallback((ownerId: string, configurableColumns: IConfigurableColumnsProps[]): void => {
-    dispatch(async (dispatchThunk, getState) => {
+    void dispatch(async (dispatchThunk, getState) => {
       let columnsToRegister = configurableColumns;
       const currentState = getState();
 
@@ -662,8 +664,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       ownerUid: actionOwnerId,
       hasArguments: false,
       executer: () => {
-        refreshTable(); // TODO: return correct promise
-        return Promise.resolve();
+        return refreshTable();
       },
     },
     [state, props.disableRefresh],

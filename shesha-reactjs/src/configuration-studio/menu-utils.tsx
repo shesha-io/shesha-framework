@@ -143,8 +143,8 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
       label: "Folder",
       key: "folder",
       icon: getIcon(configurationStudio.csEnvironment, TreeNodeType.Folder),
-      onClick: (): void => {
-        configurationStudio.createFolderAsync({
+      onClick: async (): Promise<void> => {
+        await configurationStudio.createFolderAsync({
           moduleId: node.moduleId,
           folderId: isFolderTreeNode(node)
             ? node.id

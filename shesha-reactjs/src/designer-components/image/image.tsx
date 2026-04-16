@@ -45,6 +45,9 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
       })
       .then((blob) => {
         setFileUrl(URL.createObjectURL(blob));
+      }).catch((error) => {
+        console.error('Failed to fetch stored file', error);
+        throw error;
       });
   };
 
@@ -73,7 +76,10 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
       if (onChange)
         onChange(null);
     } else if (imageSource === 'storedFile') {
-      deleteFile();
+      deleteFile().catch((error) => {
+        console.error('Failed to delete file', error);
+        throw error;
+      });
     }
   };
 
@@ -90,7 +96,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
         if (onChange)
           onChange(await toBase64(file));
       } else if (imageSource === 'storedFile') {
-        uploadFile({ file: file });
+        await uploadFile({ file: file });
       }
       return false;
     },

@@ -260,7 +260,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   setQuickSearch = (value: string): void => {
     this._quickSearch = value;
-    this.saveQuickSearchAsync();
+    void this.saveQuickSearchAsync();
     this.notifySubscribers(['tree']);
   };
 
@@ -318,7 +318,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   onTreeNodeExpand = (expandedKeys: React.Key[]): void => {
     this._treeExpandedKeys = expandedKeys;
-    this.saveTreeExpandedNodesAsync();
+    void this.saveTreeExpandedNodesAsync();
     this.notifySubscribers(['tree']);
   };
 
@@ -389,10 +389,10 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const newTab = await this.createNewCiTabAsync(node);
         this.notifySubscribers(['tabs']);
         // select new tab
-        this.selectTabAsync(newTab);
+        await this.selectTabAsync(newTab);
         this.notifySubscribers(['tabs']);
       } else {
-        this.selectTabAsync(tab);
+        await this.selectTabAsync(tab);
         this.notifySubscribers(['tabs']);
       }
     } else
@@ -402,9 +402,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
           // load item, add new tab and select
           const newTab = await this.createNewSpecialTabAsync(node);
           // select new tab
-          this.selectTabAsync(newTab);
+          await this.selectTabAsync(newTab);
         } else {
-          this.selectTabAsync(tab);
+          await this.selectTabAsync(tab);
         }
         this.notifySubscribers(['tabs']);
       }
@@ -554,7 +554,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     if (isDefined(selectedDocId) && this._selectedNodeId !== selectedDocId) {
       const treeNode = this.getTreeNodeById(selectedDocId);
       if (isConfigItemTreeNode(treeNode)) {
-        this.selectTreeNode(treeNode);
+        await this.selectTreeNode(treeNode);
       }
     }
   };
