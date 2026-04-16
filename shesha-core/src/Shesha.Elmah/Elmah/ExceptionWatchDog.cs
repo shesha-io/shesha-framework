@@ -23,10 +23,17 @@ namespace Shesha.Elmah
 
         private void OnException(object? sender, FirstChanceExceptionEventArgs e)
         {
-            if (_disposed)
-                return;
-            
-            _onError.Invoke(e.Exception);
+            try
+            {
+                if (_disposed)
+                    return;
+
+                _onError.Invoke(e.Exception);
+            }
+            catch
+            {
+                // noop
+            }            
         }
 
         public void Dispose()
