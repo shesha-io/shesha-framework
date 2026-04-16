@@ -84,8 +84,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
             return {
               ...step,
               stepFooter: {
-                id: footerId,
                 ...step.stepFooter,
+                id: footerId,
                 components: footerComponents,
               },
             };
