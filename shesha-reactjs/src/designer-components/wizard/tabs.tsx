@@ -8,7 +8,6 @@ import { Button, Space, Steps } from 'antd';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getWizardButtonStyle } from './utils';
 import { IStepProps, IWizardComponentProps } from './models';
-import { useFormExpression } from '@/hooks/index';
 import { useStyles } from './styles';
 import { useWizard } from './hooks';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
@@ -35,10 +34,9 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
   } as IObjectMetadata), []);
 
   const { formMode } = useShaFormInstance();
-  const { executeBooleanExpression } = useFormExpression();
   const onChangeContextData = useDataContextManager()?.onChangeContextData;
 
-  const { components, current, currentStep, visibleSteps, back, cancel, close, content, done, next, reset, setStep } = useWizard(model);
+  const { components, current, currentStep, visibleSteps, back, cancel, close, content, done, executeBooleanExpression, next, reset, setStep } = useWizard(model);
   useEffect(() => onChangeContextData(), [current]);
 
   const contextData = useMemo(

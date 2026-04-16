@@ -1,4 +1,4 @@
-import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
+import { componentsTreeToFlatStructure, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
 import { IActionExecutionContext, IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication, ShaForm } from '@/providers';
@@ -20,6 +20,7 @@ interface IWizardComponent {
   cancel: () => void;
   done: () => void;
   content: (description: string, index: number) => string;
+  executeBooleanExpression: (expression: string, returnBoolean?: boolean) => boolean;
   next: () => void;
   reset: () => void;
   setStep: (stepIndex) => void;
@@ -30,14 +31,20 @@ type IValidatable = IActionExecutionContext & { validate: () => Promise<void> };
 
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const allData = useAvailableConstantsData();
+  const allData = useAvailableConstantsData({ topContextId: 'ctx_' + (model as IWizardComponentProps)?.id });
   const toolbox = useFormDesignerComponents();
   const validator = useValidator(false);
   const closestModal = useClosestModal();
 
   const formMode = useForm().formMode;
 
-  const { executeBooleanExpression, executeActionViaPayload } = useFormExpression();
+  const { executeActionViaPayload } = useFormExpression();
+
+  const executeBooleanExpression = (expression: string, returnBoolean = true): boolean => {
+    if (!expression) return returnBoolean;
+    const evaluated = executeScriptSync(expression, allData);
+    return typeof evaluated === 'boolean' ? evaluated : true;
+  };
 
   const {
     componentName: actionOwnerName,
@@ -365,5 +372,5 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 
-  return { components, current, currentStep, visibleSteps, back, cancel, close, done, content, next, reset, setStep };
+  return { components, current, currentStep, visibleSteps, back, cancel, close, done, content, executeBooleanExpression, next, reset, setStep };
 };
