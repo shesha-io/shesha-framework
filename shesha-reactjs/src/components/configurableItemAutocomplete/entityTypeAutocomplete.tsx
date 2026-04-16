@@ -141,7 +141,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
         // set the selected item
         setSelectedItem({ value: value, key: getDisplayText(foundItem), item: foundItem });
       } else {
-        setSelectedItem({ value });
+        setSelectedItem({});
         // Fetch directly with the new value to avoid selectedItem.value being stale in debouncedFetchItems
         listFetcher.refetch({ queryParams: getListFetcherQueryParams(type, undefined, value, baseModel) });
       }
