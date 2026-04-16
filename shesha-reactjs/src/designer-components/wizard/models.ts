@@ -8,6 +8,11 @@ type StepsProps = ComponentProps<typeof Steps>;
 type StepProps = StepsProps['items'][number];
 type StepStatus = 'wait' | 'process' | 'finish' | 'error';
 
+export interface IStepFooterContainer {
+  id: string;
+  components?: IConfigurableFormComponent[];
+}
+
 export interface IWizardStepProps extends IStyleType {
   id: string;
   icon?: string;
@@ -34,6 +39,7 @@ export interface IWizardStepProps extends IStyleType {
 
   showBackButton?: boolean;
   showDoneButton?: boolean;
+  hasCustomFooter?: boolean;
 
   cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
   nextButtonActionConfiguration?: IConfigurableActionConfiguration;
@@ -45,6 +51,7 @@ export interface IWizardStepProps extends IStyleType {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
+  stepFooter?: IStepFooterContainer;
 
   onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
 
@@ -68,7 +75,8 @@ export interface IWizardSequence {
 }
 
 export interface IStepProps extends StepProps {
-  content?: React.JSX.Element;
+  content?: string;
+  bodyContent?: React.JSX.Element;
 }
 
 export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Omit<IStyleType, 'size'> {

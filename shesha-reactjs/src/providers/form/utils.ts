@@ -455,6 +455,29 @@ export const componentsTreeToFlatStructure = (
           });
         }
       });
+
+      // Handle nested custom containers inside array items (e.g., stepFooter inside steps)
+      // Generic approach: look for any property that is a container (has id and components)
+      if (componentRegistration?.customContainerNames) {
+        componentRegistration.customContainerNames.forEach((containerName) => {
+          const containerData = unsafeGetValueByPropertyName(component, containerName);
+          if (Array.isArray(containerData)) {
+            containerData.forEach((item: unknown) => {
+              if (item && typeof item === 'object') {
+                // Check all properties of the item for nested containers
+                Object.keys(item).forEach((key) => {
+                  const prop = (item as Record<string, unknown>)[key];
+                  if (isComponentsContainer(prop)) {
+                    prop.components.forEach((c) => {
+                      processComponent(c, prop.id);
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     }
   };
 
@@ -548,6 +571,8 @@ export const componentsFlatStructureToTree = (
     const ownerComponent = flat.allComponents[ownerId];
 
     const staticContainerIds: string[] = [];
+    // Track nested container ids that should be handled separately (e.g., stepFooter)
+    const nestedContainerMap: Map<string, { parent: unknown; property: string }> = new Map();
     if (ownerComponent) {
       const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
         ? toolboxComponents[ownerComponent.type]
@@ -562,9 +587,18 @@ export const componentsFlatStructureToTree = (
               staticContainerIds.push(subContainer.id);
             // container without id (array of components)
             if (Array.isArray(subContainer))
-              subContainer.forEach((c) => {
+              subContainer.forEach((c: unknown) => {
                 if (isObjectWithStringId(c))
                   staticContainerIds.push(c.id);
+                // Track nested containers inside array items (generic approach)
+                if (c && typeof c === 'object') {
+                  Object.keys(c).forEach((key) => {
+                    const prop = (c as Record<string, unknown>)[key];
+                    if (isComponentsContainer(prop)) {
+                      nestedContainerMap.set(prop.id, { parent: c, property: key });
+                    }
+                  });
+                }
               });
           }
         });
@@ -573,6 +607,10 @@ export const componentsFlatStructureToTree = (
 
     // iterate all component ids on the current level
     componentIds.forEach((id) => {
+      // Skip nested container ids (they'll be handled separately)
+      if (nestedContainerMap.has(id))
+        return;
+
       // extract current component and add to hierarchy
       const component: Record<string, unknown> = { ...flat.allComponents[id] };
       if (!isConfigurableFormComponent(component))
@@ -603,7 +641,21 @@ export const componentsFlatStructureToTree = (
           const childContainers = unsafeGetValueByPropertyName(component, containerName);
           if (childContainers) {
             if (Array.isArray(childContainers)) {
-              component[containerName] = childContainers.map(processContainer);
+              component[containerName] = childContainers.map((c: unknown) => {
+                if (!isComponentsContainer(c)) return c as IComponentsContainer;
+                const processed = processContainer(c);
+                // Handle nested containers inside array items (generic approach)
+                const containerWithNested = processed as unknown as Record<string, unknown>;
+                Object.keys(containerWithNested).forEach((key) => {
+                  const prop = containerWithNested[key];
+                  if (isComponentsContainer(prop)) {
+                    const nestedComponents: IConfigurableFormComponent[] = [];
+                    processComponent(nestedComponents, prop.id);
+                    containerWithNested[key] = { ...prop, components: nestedComponents };
+                  }
+                });
+                return processed;
+              });
             } else if (isComponentsContainer(childContainers))
               component[containerName] = processContainer(childContainers);
             else
