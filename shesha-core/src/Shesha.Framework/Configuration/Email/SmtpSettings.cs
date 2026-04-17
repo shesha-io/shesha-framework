@@ -55,5 +55,10 @@
         /// If true, indicate that SMTP relay service will be used where it's needed (e.g. if the application needs to notify one person about the action that was performed by another person then real person's email address will be used for the 'from' address, otherwise 'Site Email' will be used)
         /// </summary>
         public bool UseSmtpRelay { get; set; }
+
+        /// <summary>
+        /// If true, the from address on all outgoing emails will always be overridden with the address configured in settings, ignoring any caller-supplied from address.
+        /// </summary>
+        public bool ForceFromAddressFromSettings { get; set; }
     }
 }
