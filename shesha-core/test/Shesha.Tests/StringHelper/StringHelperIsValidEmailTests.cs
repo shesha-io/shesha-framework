@@ -19,9 +19,12 @@ namespace Shesha.Tests.StringHelper
         [InlineData("rob@.com", false)]
         [InlineData("rob@com", false)]
         [InlineData("@test.com", false)]
-        [InlineData("rob@test.com ", true)]
-        [InlineData(" rob@test.com", true)]
-        [InlineData("rob@test .com", true)]
+        [InlineData("rob@test.com ", false)]
+        [InlineData(" rob@test.com", false)]
+        [InlineData("rob@test .com", false)]
+        [InlineData("", false)]
+        [InlineData(" ", false)]
+        [InlineData(null, false)]
 
         public void Should_Validate_Email_Addresses(string email, bool expected)
         {

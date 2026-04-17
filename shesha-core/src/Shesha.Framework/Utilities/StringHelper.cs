@@ -864,14 +864,13 @@ namespace Shesha.Utilities
             return String.Join(" ", SplitUpperCase(source));
         }
 
+        private static readonly Regex ValidEmailExpression = new Regex(
+            @"^([a-zA-Z0-9_\-\.\+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,}|[0-9]{1,3})(\]?)$",
+            RegexOptions.Compiled);
+
         public static bool IsValidEmail(this string inputEmail)
         {
-            string strRegex = @"^([a-zA-Z0-9_\-\.\+]+)@((\[[0-9]{1,3}" +
-                              @"\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\" +
-                              @".)+))([a-zA-Z]{2,}|[0-9]{1,3})(\]?)$";
-            Regex re = new Regex(strRegex);
-            var normalised = Regex.Replace(inputEmail ?? "", @"\s+", "");
-            return re.IsMatch(normalised);
+            return !string.IsNullOrWhiteSpace(inputEmail) && ValidEmailExpression.IsMatch(inputEmail);
         }
 
         [DebuggerStepThrough]
