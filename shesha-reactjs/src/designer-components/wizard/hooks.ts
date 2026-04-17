@@ -77,7 +77,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           const granted = anyOfPermissionsGranted(permissions || []);
           const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-          return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
+          return !((!granted || !isVisibleByCondition) && formMode !== 'designer');
         })
         .map((step) => {
           // Get footer id - use existing or generate fallback
@@ -100,7 +100,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           }
           return step;
         }),
-    [tabs, allData, componentRelations, allComponents],
+    [tabs, formMode, componentRelations, allComponents],
   );
 
   const currentStep = visibleSteps[current];
