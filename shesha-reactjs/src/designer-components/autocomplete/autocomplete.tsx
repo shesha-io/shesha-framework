@@ -101,10 +101,10 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
       <ConfigurableFormItem {...{ model }}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]): void => {
-            customEvent.onChange(args[0], args[1]);
+          const onChangeInternal = (value: unknown, option?: unknown): void => {
+            customEvent.onChange(value as any, option);
             if (typeof onChange === 'function')
-              onChange(...args);
+              onChange(value);
           };
 
 
