@@ -48,6 +48,11 @@
         public bool SupportSmtpRelay { get; set; }
 
         /// <summary>
+        /// If true, the from address on all outgoing emails will always be overridden with the address configured in settings, ignoring any caller-supplied from address.
+        /// </summary>
+        public bool ForceFromAddressFromSettings { get; set; }
+
+        /// <summary>
         /// If not null or empty the all outgoing emails will be sent to this email address, is used for testing
         /// </summary>
         public string RedirectAllMessagesTo { get; set; }

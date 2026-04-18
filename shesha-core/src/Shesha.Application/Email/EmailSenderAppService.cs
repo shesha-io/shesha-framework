@@ -40,7 +40,7 @@ namespace Shesha.Email
                 RedirectAllMessagesTo = input.RedirectAllMessagesTo,
             });
 
-            await _emailSettings.SmtpSettings.SetValueAsync(new SmtpSettings { 
+            await _emailSettings.SmtpSettings.SetValueAsync(new SmtpSettings {
                 Host = input.Host,
                 Port = input.Port,
                 Domain = input.Domain,
@@ -49,6 +49,7 @@ namespace Shesha.Email
                 EnableSsl = input.EnableSsl,
                 DefaultFromAddress = input.DefaultFromAddress,
                 DefaultFromDisplayName = input.DefaultFromDisplayName,
+                ForceFromAddressFromSettings = input.ForceFromAddressFromSettings,
             });
 
             return true;
@@ -73,6 +74,7 @@ namespace Shesha.Email
                 DefaultFromAddress = smtpSettings.DefaultFromAddress,
                 DefaultFromDisplayName = smtpSettings.DefaultFromDisplayName,
                 SupportSmtpRelay = smtpSettings.UseSmtpRelay,
+                ForceFromAddressFromSettings = smtpSettings.ForceFromAddressFromSettings,
 
                 RedirectAllMessagesTo = emailSettings.RedirectAllMessagesTo,
                 EmailsEnabled = emailSettings.EmailsEnabled,
