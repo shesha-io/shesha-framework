@@ -115,7 +115,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       (props.dataSourceType === 'url' && props.dataSourceUrl)
     ) {
       if (keys.length) {
-        const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
+        const normalizedValue = Array.isArray(props.value) ? props.value[0] : props.value;
+        const displayNameValue = normalizedValue != null && typeof normalizedValue === 'object'
+          ? (normalizedValue as Record<string, unknown>)['_displayName']
+          : undefined;
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
         // Check if we have a valid data source for loading
