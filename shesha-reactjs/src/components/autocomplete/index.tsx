@@ -17,6 +17,7 @@ import { ValueRenderer } from '../valueRenderer';
 import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
 import { useStyles } from './style';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { createOutcomeValueFunc } from './utils';
 
 const getNormalizedValues = (value: unknown): unknown[] => {
   const values = Array.isArray(value) ? value : [value];
@@ -48,24 +49,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }, [filterKeysFunc]);
   const displayValueFunc: DisplayValueFunc = useMemo(() => props.displayValueFunc ??
     ((value: unknown) => (Boolean(value) ? String(getValueByPropertyName(value as Record<string, unknown>, displayPropName) ?? value?.toString()) : '')), [props.displayValueFunc, displayPropName]);
-  const outcomeValueFunc: OutcomeValueFunc = useMemo(() => {
-    const base = props.outcomeValueFunc ??
-      // --- For backward compatibility
-      (props.dataSourceType === 'entitiesList' && !props.keyPropName
-        ? (value: unknown) => ({ id: (value as Record<string, unknown>).id, _displayName: getValueByPropertyName(value as Record<string, unknown>, displayPropName), _className: (value as Record<string, unknown>)._className })
-        // ---
-        : (value: unknown) => getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value);
-    // Fallback when the configured keyPropName isn't present on the row (common for URL endpoints returning {id, ...})
-    return (item: unknown, args: object) => {
-      const result = base(item, args);
-      if (result !== undefined && result !== null) return result;
-      if (item !== null && typeof item === 'object') {
-        const r = item as Record<string, unknown>;
-        return r.id ?? r.value ?? item;
-      }
-      return item;
-    };
-  }, [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName, keyPropName]);
+  const outcomeValueFunc: OutcomeValueFunc = useMemo(() => createOutcomeValueFunc({
+    providedFunc: props.outcomeValueFunc,
+    dataSourceType: props.dataSourceType,
+    rawKeyPropName: props.keyPropName,
+    displayPropName,
+    keyPropName,
+  }), [props.outcomeValueFunc, props.dataSourceType, displayPropName, keyPropName]);
 
   // register columns
   useDeepCompareEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
