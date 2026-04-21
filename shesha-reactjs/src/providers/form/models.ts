@@ -296,6 +296,16 @@ export interface IComponentsContainer {
   components: IConfigurableFormComponent[];
 }
 
+export const isComponentsContainer = (obj: unknown): obj is IComponentsContainer =>
+  isDefined(obj) && typeof obj === "object" && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
+
+export type IObjectWithStringId = {
+  id: string;
+};
+
+export const isObjectWithStringId = (obj: unknown): obj is IObjectWithStringId =>
+  isDefined(obj) && typeof (obj) === "object" && "id" in obj && typeof (obj.id) === "string";
+
 export type IRawComponentsContainer = IFormComponentContainer & {
   components: IConfigurableFormComponent[];
 };

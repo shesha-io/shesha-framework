@@ -153,6 +153,17 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               validate: {},
               jsSetting: true,
             })
+            .addSettingsInput({
+              inputType: 'switch',
+              id: nanoid(),
+              propertyName: 'hasCustomFooter',
+              label: 'Custom Footer',
+              labelAlign: 'right',
+              parentId: commonTabId,
+              hidden: false,
+              validate: {},
+              jsSetting: true,
+            })
             .addCollapsiblePanel({
               id: nanoid(),
               propertyName: 'nextButtonCollapsiblePanel',
@@ -160,6 +171,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: nextButtonContentId,
@@ -222,6 +234,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: backButtonContentId,
@@ -289,6 +302,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: doneButtonContentId,
@@ -358,6 +372,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: cancelButtonContentId,

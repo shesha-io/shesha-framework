@@ -33,8 +33,14 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       ...step,
       showBackButton: step?.showBackButton ?? true,
       showDoneButton: step?.showDoneButton ?? true,
+      hasCustomFooter: step?.hasCustomFooter ?? false,
+      stepFooter: step?.stepFooter ?? {
+        id: `${step.id}_footer`,
+        components: [],
+      },
     })) ?? [],
   }),
+  customContainerNames: ['steps'],
   migrator: (m) =>
     m
       .add<IWizardComponentPropsV0>(0, (prev) => {
@@ -93,13 +99,36 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
       .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()), overflow: true }))
-      .add<IWizardComponentProps>(8, (prev) => ({ ...prev, stepWidth: '200px' })),
+      .add<IWizardComponentProps>(8, (prev) => ({ ...prev, stepWidth: '200px' }))
+      .add<IWizardComponentProps>(9, (prev) => ({
+        ...prev,
+        steps: prev.steps?.map((step) => ({
+          ...step,
+          hasCustomFooter: step.hasCustomFooter ?? false,
+          stepFooter: step?.stepFooter ?? {
+            id: `${step.id}_footer`,
+            components: [],
+          },
+        })) ?? [],
+      })),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 
-  customContainerNames: ['steps'],
   getContainers: (model) => {
-    return model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    const containers: IFormComponentContainer[] = [];
+    model.steps.forEach((step) => {
+      containers.push({ id: step.id, parentId: model.id });
+    });
+
+    // Add step footer containers
+    const footerContainers = model.steps
+      .filter((s) => s.hasCustomFooter)
+      .map((s) => ({
+        id: s.stepFooter?.id ?? `${s.id}_footer`,
+        parentId: model.id,
+      }));
+
+    return [...containers, ...footerContainers];
   },
 };
 

@@ -117,6 +117,11 @@ export const onAddNewItem = (items: IWizardStepProps[]): IWizardStepProps => {
     showDoneButton: true,
     components: [],
     status: undefined,
+    hasCustomFooter: false,
+    stepFooter: {
+      id: `${id}_footer`,
+      components: [],
+    },
   };
   return buttonProps;
 };
