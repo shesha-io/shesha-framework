@@ -101,7 +101,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
           : undefined,
       };
     });
-  }, [visibleSteps, current]);
+  }, [visibleSteps, current, formMode, executeBooleanExpression, content, model, isDynamic, components]);
 
   const splitButtons = buttonsLayout === 'spaceBetween';
 

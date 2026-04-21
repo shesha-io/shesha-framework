@@ -68,7 +68,9 @@ export interface IWizardSequence {
   pending?: string;
 }
 
-export interface IStepProps extends StepsProps {
+type StepItem = NonNullable<StepsProps['items']>[number];
+
+export interface IStepProps extends StepItem {
   bodyContent?: JSX.Element;
 }
 

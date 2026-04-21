@@ -34,9 +34,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       showBackButton: step?.showBackButton ?? true,
       showDoneButton: step?.showDoneButton ?? true,
       hasCustomFooter: step?.hasCustomFooter ?? false,
-      stepFooter: step?.stepFooter ?? {
-        id: `${step.id}_footer`,
-        components: [],
+      stepFooter: {
+        id: step?.stepFooter?.id ?? `${step.id}_footer`,
+        components: Array.isArray(step?.stepFooter?.components) ? step.stepFooter.components : [],
       },
     })) ?? [],
   }),
@@ -105,9 +105,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         steps: prev.steps?.map((step) => ({
           ...step,
           hasCustomFooter: step.hasCustomFooter ?? false,
-          stepFooter: step?.stepFooter ?? {
-            id: `${step.id}_footer`,
-            components: [],
+          stepFooter: {
+            id: step?.stepFooter?.id ?? `${step.id}_footer`,
+            components: Array.isArray(step?.stepFooter?.components) ? step.stepFooter.components : [],
           },
         })) ?? [],
       })),
