@@ -139,6 +139,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
               <ComponentsContainer
                 wrapperStyle={{ height: '100%' }}
                 containerId={currentStepFooterId}
+                dynamicComponents={isDynamic ? currentStep.stepFooter?.components ?? [] : []}
               />
             </div>
           ) : (
