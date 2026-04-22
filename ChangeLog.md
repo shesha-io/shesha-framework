@@ -97,4 +97,4 @@ Shesha 0.45 makes configuration management feel like it actually belongs in a mo
 - **Label and Component Span Not Live in Form Designer** 
 
   - Changes to `Label Span` and `Component Span` on the Appearance tab required a save and page refresh to take effect. 
-  - They now reflect immediately in the designer. 
+  - They now reflect immediately in the designer 
