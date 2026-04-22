@@ -518,7 +518,7 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   }
 
   /* Top-level drawer menu items - apply itemStyle */
-  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} > .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
     padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
     height: 40px !important;
     line-height: 40px !important;
@@ -533,7 +533,7 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
   /* Top-level drawer submenu titles - apply itemStyle */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}
-    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body
+    .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body
     > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline
     > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu
     > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
@@ -968,7 +968,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   }
 
   /* Top-level drawer menu items - apply itemStyle */
-  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} > .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item {
     padding: ${(p: GlobalMenuType) => p?.padding?.y ? `${p.padding.y}px` : '0'} ${(p: GlobalMenuType) => p?.padding?.x ? `${p.padding.x}px` : '3px'} !important;
     height: 40px !important;
     line-height: 40px !important;
@@ -983,7 +983,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
   /* Top-level drawer submenu titles - apply itemStyle */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}
-    > .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body
+    .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body
     > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline
     > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu
     > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title {
