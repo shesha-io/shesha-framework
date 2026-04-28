@@ -59,6 +59,8 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
     const files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
     this.#fileList = files.map((file) => storedFileDtoToModel(file));
+    this.#onChange?.(this.#fileList);
+    this.notifySubscribers(['fileList']);
   };
 
   init = (fileListReference: FileListReference): void => {
