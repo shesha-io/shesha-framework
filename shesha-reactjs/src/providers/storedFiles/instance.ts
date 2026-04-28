@@ -59,8 +59,13 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
     const files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
     this.#fileList = files.map((file) => storedFileDtoToModel(file));
-    this.#onChange?.(this.#fileList);
-    this.notifySubscribers(['fileList']);
+    try {
+      this.#onChange?.(this.#fileList);
+    } catch (error) {
+      console.error('AttachmentsEditorInstance.onChange callback failed', error);
+    } finally {
+      this.notifySubscribers(['fileList']);
+    }
   };
 
   init = (fileListReference: FileListReference): void => {
