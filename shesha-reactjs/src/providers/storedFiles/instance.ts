@@ -63,8 +63,11 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       this.#onChange?.(this.#fileList);
     } catch (error) {
       console.error('AttachmentsEditorInstance.onChange callback failed', error);
-    } finally {
+    }
+    try {
       this.notifySubscribers(['fileList']);
+    } catch (error) {
+      console.error('AttachmentsEditorInstance.notifySubscribers failed', error);
     }
   };
 
