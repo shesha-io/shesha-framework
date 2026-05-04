@@ -41,6 +41,8 @@ import { addDelayedUpdateProperty } from "@/providers/delayedUpdateProvider";
 import { RecursivePartial } from "@/interfaces/entity";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractErrorInfo, throwError } from "@/utils/errors";
+import { FormLoaderContextValue, useFormLoader } from "../formLoaderProvider";
+import { IFormLoaderInstanceApi } from "../formApi";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
   formDataGetter?: (() => Values | undefined) | undefined;
@@ -52,13 +54,17 @@ interface ShaFormInstanceArguments<Values extends object = object> {
   dataLoaders: IFormDataLoadersContext;
   dataSubmitters: IFormDataSubmittersContext;
   antdForm: FormInstance<Values>;
+  formLoaderContext?: FormLoaderContextValue;
 }
 
 class PublicFormApi<Values extends object = object> implements IFormApi<Values> {
   #form: IShaFormInstance<Values>;
 
-  constructor(form: IShaFormInstance<Values>) {
+  #formLoaderContext?: FormLoaderContextValue;
+
+  constructor(form: IShaFormInstance<Values>, formLoaderContext?: FormLoaderContextValue) {
     this.#form = form;
+    this.#formLoaderContext = formLoaderContext;
   }
 
   addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[] => {
@@ -90,6 +96,17 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
 
   getFormData = (): Values | undefined => {
     return this.#form.formData;
+  };
+
+  showLoader = (message?: string): IFormLoaderInstanceApi => {
+    return this.#formLoaderContext?.showLoader(message) || {
+      updateMessage: () => { /* no-op */ },
+      close: () => { /* no-op */ },
+    };
+  };
+
+  hideLoaders = (): void => {
+    this.#formLoaderContext?.hideLoaders();
   };
 
   setValidationErrors = (payload: IFormValidationErrors): void => {
@@ -147,6 +164,8 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   private dataLoaders: IFormDataLoadersContext;
 
   private dataSubmitters: IFormDataSubmittersContext;
+
+  private formLoaderContext?: FormLoaderContextValue;
 
   private expressionExecuter: ExpressionExecuter | undefined;
 
@@ -237,6 +256,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.metadataDispatcher = args.metadataDispatcher;
     this.dataLoaders = args.dataLoaders;
     this.dataSubmitters = args.dataSubmitters;
+    this.formLoaderContext = args.formLoaderContext;
     this.expressionExecuter = undefined;
 
     this.logEnabled = false;
@@ -361,7 +381,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   #publicFormApi: PublicFormApi<Values> | undefined;
 
   getPublicFormApi = (): IFormApi<Values> => {
-    return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this));
+    return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this, this.formLoaderContext));
   };
 
   //#region Antd methods
@@ -797,6 +817,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   const [antdFormInstance] = Form.useForm(antdForm);
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const metadataDispatcher = useMetadataDispatcher();
+  const formLoaderContext = useFormLoader();
 
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {
     if (form) {
@@ -817,6 +838,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
         dataSubmitters: dataSubmitters,
         antdForm: antdFormInstance,
         metadataDispatcher: metadataDispatcher,
+        formLoaderContext: formLoaderContext,
       });
       const accessors = wrapConstantsData<Values>({
         topContextId: DataContextTopLevels.Full,

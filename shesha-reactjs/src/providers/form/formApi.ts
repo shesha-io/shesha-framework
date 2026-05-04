@@ -12,6 +12,14 @@ import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/m
 import { addDelayedUpdateProperty } from "../delayedUpdateProvider";
 import { isDefined } from "@/utils/nullables";
 
+/**
+ * Form loader instance with progressive feedback methods
+ */
+export interface IFormLoaderInstanceApi {
+  updateMessage(message: string): void;
+  close(): void;
+}
+
 export interface IFormSettings {
   modelType?: string | IEntityTypeIdentifier | undefined;
 
@@ -68,6 +76,18 @@ export interface IFormApi<Values extends object = object> {
   /** Get form data. Need for getting actual form data (using in scripts) */
   getFormData: () => Values | undefined;
 
+  /**
+   * Show blocking loader overlay scoped to this form
+   * @param message Optional message to display
+   * @returns Loader instance with methods for progressive feedback
+   */
+  showLoader: (message?: string) => IFormLoaderInstanceApi;
+
+  /**
+   * Hide all active loaders
+   */
+  hideLoaders: () => void;
+
   /** Set validation errors. Need for display validation errors in the ValidationErrors component */
   setValidationErrors: (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error) => void;
 
@@ -90,6 +110,10 @@ export interface IFormApi<Values extends object = object> {
 
 export type ConfigurableFormPublicApi<TValues extends object = object> = Pick<ConfigurableFormInstance<TValues>, 'setFormData' | 'form' | 'formSettings' | 'formMode' | 'formData' | 'modelMetadata'> & {
   shaForm?: IShaFormInstance<TValues>;
+  loaderApi?: {
+    showLoader: (message?: string) => IFormLoaderInstanceApi;
+    hideLoaders: () => void;
+  };
 };
 
 class PublicFormApiWrapper<TValues extends object = object> implements IFormApi<TValues> {
@@ -132,6 +156,17 @@ class PublicFormApiWrapper<TValues extends object = object> implements IFormApi<
 
   getFormData = (): TValues | undefined => {
     return this.#form.formData;
+  };
+
+  showLoader = (message?: string): IFormLoaderInstanceApi => {
+    return this.#form.loaderApi?.showLoader(message) || {
+      updateMessage: () => { /* no-op */ },
+      close: () => { /* no-op */ },
+    };
+  };
+
+  hideLoaders = (): void => {
+    this.#form.loaderApi?.hideLoaders();
   };
 
   setValidationErrors = (payload: IFormValidationErrors): void => {

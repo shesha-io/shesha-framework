@@ -16,6 +16,7 @@ import ParentProvider from '@/providers/parentProvider';
 import { ShaSpin } from '..';
 import { DataLoadingError } from './dataLoadingError';
 import { IFormActionsContext, ISetFormDataPayload } from '@/providers/form/contexts';
+import { FormLoaderProvider } from '@/providers/form/formLoaderProvider';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
@@ -29,7 +30,7 @@ export type ConfigurableFormProps<Values extends object = object> = Omit<IConfig
   setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values;
 } & SheshaFormProps;
 
-export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
+const ConfigurableFormInternal = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
   const {
     formId,
     markup,
@@ -205,5 +206,13 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
         )}
       </ConfigurableComponent>
     </ShaSpin>
+  );
+};
+
+export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
+  return (
+    <FormLoaderProvider>
+      <ConfigurableFormInternal<Values> {...props} />
+    </FormLoaderProvider>
   );
 };

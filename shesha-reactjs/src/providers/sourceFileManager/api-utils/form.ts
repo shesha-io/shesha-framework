@@ -93,6 +93,22 @@ export interface FormApi<Values = any> {
   /** Get form data. Need for getting actual form data (using in scripts) */
   getFormData: () => Values;
 
+  /**
+   * Show loader overlay
+   * @param message Optional message to display
+   * @returns Loader instance with methods for progressive feedback
+   * @example
+   * const loader = form.showLoader("Saving...");
+   * try {
+   *   await http.post('/api/save', data);
+   *   loader.close();
+   * } catch (error) {
+   *   loader.updateMessage("Failed to save");
+   *   setTimeout(() => loader.close(), 2000);
+   * }
+   */
+  showLoader: (message?: string) => { updateMessage(message: string): void; close(): void; };
+
   /** Set validation errors. Need for display validation errors in the ValidationErrors component */
   setValidationErrors: (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error) => void;
 
