@@ -623,6 +623,7 @@ namespace Shesha.Users
 
         #endregion
 
+        [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated)]
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
             if (!_abpSession.UserId.HasValue)
