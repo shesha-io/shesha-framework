@@ -40,11 +40,14 @@ namespace Shesha.Authorization
         public override void Initialize()
         {
             base.Initialize();
+        }
 
+        [UnitOfWork]
+        public virtual void InitializeDbPermissions()
+        {
             AsyncHelper.RunSync(async () => await InitializeDbPermissionsAsync());
         }
 
-        
         private async Task InitializeDbPermissionsAsync()
         {
             var dbPermissions = await _permissionDefinitionRepository.GetAllListAsync();

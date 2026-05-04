@@ -18,6 +18,7 @@ import { ISettingsActionsContext } from "../settings/contexts";
 type RerenderTrigger = () => void;
 
 const RETURN_URL_KEY = 'returnUrl';
+const REQUIRED_PASSWORD_CHANGE_URL = '/no-auth/Shesha/change-password?mode=edit';
 
 const isAccessToken = (value: unknown): value is IAccessToken =>
     typeof value === 'object' &&
@@ -194,6 +195,9 @@ export class Authenticator implements IAuthenticator {
     };
 
     #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
+        if (userLogin?.requireChangePassword)
+            return REQUIRED_PASSWORD_CHANGE_URL;
+
         const currentUrlWithoutReturn = this.#stripReturnUrl(currentPath);
 
         if (isSameUrls(currentUrlWithoutReturn, this.#unauthorizedRedirectUrl)) {
@@ -334,6 +338,12 @@ export class Authenticator implements IAuthenticator {
                 // fetch user profile
                 const userProfile = await this.#fetchUserInfoHttp();
                 if (userProfile.user) {
+                    if (userProfile.user.requireChangePassword) {
+                        this.#updateState('waiting', 'Password change required', null);
+                        this.#router.push(REQUIRED_PASSWORD_CHANGE_URL);
+                        return;
+                    }
+
                     this.#loginInfo = userProfile;
                     this.#updateState('ready', null, null);
                     this.#startTokenExpirationTimer(token.expireOn);

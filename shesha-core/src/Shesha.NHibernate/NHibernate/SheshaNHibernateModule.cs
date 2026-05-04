@@ -14,6 +14,7 @@ using Castle.MicroKernel.Registration;
 using Microsoft.Extensions.Configuration;
 using NHibernate;
 using Shesha.Attributes;
+using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Startup;
 using Shesha.Domain;
@@ -217,6 +218,7 @@ namespace Shesha.NHibernate
                 AsyncHelper.RunSync(async () => {
                     await SeedDatabaseAsync();
                 });
+                IocManager.Resolve<ShaPermissionManager>().InitializeDbPermissions();
                 Configuration.EntityHistory.IsEnabledForAnonymousUsers = prev;
             }
         }
