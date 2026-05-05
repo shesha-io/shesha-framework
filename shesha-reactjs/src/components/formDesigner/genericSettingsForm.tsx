@@ -6,12 +6,12 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
 import { sheshaStyles } from '@/styles';
-import { useDataContextManager } from '@/providers';
 import { ICanvasStateContext } from '@/providers/canvas/contexts';
 import { deepCopyViaJson, deepMergeValues, unproxyValue } from '@/utils/object';
 import { DeviceTypes } from '@/publicJsApis/canvasContextApi';
 import { useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
+import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;

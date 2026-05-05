@@ -175,7 +175,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         }
       } catch (e) {
         // skip errors with logging to not break the build
-        console.warn(e.message);
+        console.warn((e as Error).message);
       }
     });
     sb.decIndent();
@@ -483,7 +483,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         this.#appendCommentBlock(sb, [prop.label, prop.description]);
 
         typesImporter.importAll(dataType.dependencies);
-        const typeDefinition = this.#getDataTypeDeclaration(dataType, prop.isNullable);
+        const typeDefinition = this.#getDataTypeDeclaration(dataType, prop.isNullable ?? false);
 
         sb.append(`export const ${prop.path}: ${typeDefinition};`);
       }

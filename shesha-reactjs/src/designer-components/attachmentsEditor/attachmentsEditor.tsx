@@ -5,7 +5,7 @@ import React from 'react';
 import { IconType } from '@/components/shaIcon';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, IToolboxComponent } from '@/interfaces';
-import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
+import { IStyleType, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValueAsString,
@@ -28,6 +28,7 @@ import { AdvancedFormats } from '@/interfaces/dataTypes';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
+import { useDataContextManagerActions } from '@/providers/dataContextManager/hooks';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';

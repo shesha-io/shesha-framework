@@ -28,7 +28,7 @@ export interface IParentProviderProps<TValue extends object = object> {
   name?: string | undefined;
   formMode?: FormMode | undefined;
   context?: string | undefined;
-  model: TValue | undefined;
+  model: TValue | null | undefined;
   formFlatMarkup?: IFlatComponentsStructure | undefined;
   formApi?: IFormApi<TValue> | undefined;
   isScope?: boolean | undefined;
@@ -104,7 +104,7 @@ const ParentProvider = <TValue extends object = object>(props: PropsWithChildren
   ]);
 
   const contextProps: IDataContextProviderProps<object> | undefined = addContext && !props.contextProps
-    ? { id, name: SheshaCommonContexts.FormContext, type: "form", webStorageType: "sessionStorage", description: `${props.name || id}` }
+    ? { id: SheshaCommonContexts.FormContext, name: SheshaCommonContexts.FormContext, type: "form", webStorageType: "sessionStorage", description: `${props.name || id}` }
     : props.contextProps;
 
   return (

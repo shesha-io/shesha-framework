@@ -19,7 +19,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import ValidationErrors from '@/components/validationErrors';
 import { getStyle } from '@/providers/form/utils';
-import { useDataContextManager } from '@/providers/dataContextManager';
+import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {

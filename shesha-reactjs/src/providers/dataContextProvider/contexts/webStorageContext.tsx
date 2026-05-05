@@ -5,7 +5,7 @@ import { DataTypes, IObjectMetadata, TypeDefinition } from "@/interfaces";
 import { WebStorageProxy } from "./webStorageProxy";
 import { webStorageCode } from '@/publicJsApis';
 import { splitDotNotation } from "@/utils/dotnotation";
-import { useDataContextManagerActions } from "@/providers/dataContextManager";
+import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 
 
 export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) => {

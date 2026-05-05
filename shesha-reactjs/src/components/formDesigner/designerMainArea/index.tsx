@@ -1,14 +1,12 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { DataContextProvider, MetadataProvider, useDataContextManager, useShaFormInstance } from '@/providers';
+import { MetadataProvider, useShaFormInstance } from '@/providers';
 import { useFormDesigner, useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerMarkup, useFormDesignerReadOnly, useFormDesignerSelectedComponent, useFormDesignerSettings } from '@/providers/formDesigner';
-import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo, useEffect, useCallback } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import { DebugPanel } from '../debugPanel';
 import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
-import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { IViewType } from '@/providers/canvas/contexts';
 import { SidebarContainer } from '@/components/sidebarContainer';
 import { ConfigurableFormRenderer } from '@/components/configurableForm/configurableFormRenderer';
@@ -34,7 +32,6 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const markup = useFormDesignerMarkup();
 
   const selectedComponentId = component?.id;
-  const noPageContext = !Boolean(useDataContextManager().getPageContext());
 
   useEffect(() => {
     if (shaForm) {
@@ -112,43 +109,13 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
           condition={Boolean(formSettings?.modelType)}
           wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
         >
-          {/* Use special format of parent properties to avoid adding form context */}
-          <ParentProvider model={null} formMode="designer" name="designer" isScope addContext={false}>
-            {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
-            {/* formContext has added only to customize the designed form. It is not used as a data context.*/}
-            <ConditionalWrap
-              condition={noPageContext}
-              wrap={(children) => (
-                <DataContextProvider
-                  id="pageContext"
-                  description="Designer Page context"
-                  name={SheshaCommonContexts.PageContext}
-                  type="page"
-                  webStorageType="sessionStorage"
-                >
-                  <DataContextProvider
-                    id="formContext"
-                    description="Designer Form context"
-                    name={SheshaCommonContexts.FormContext}
-                    type="form"
-                    webStorageType="sessionStorage"
-                  >
-                    {children}
-                  </DataContextProvider>
-                </DataContextProvider>
-              )}
-            >
-
-              {showMarkup && <textarea readOnly value={JSON.stringify(markup, null, 2)} /> /* ToDo: AS - remove after inheritance implementation */}
-              <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
-                {isDebug && (
-                  <DebugPanel />
-                )}
-              </ConfigurableFormRenderer>
-            </ConditionalWrap>
-          </ParentProvider>
+          {showMarkup && <textarea readOnly value={JSON.stringify(markup, null, 2)} /> /* ToDo: AS - remove after inheritance implementation */}
+          <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
+            {isDebug && (
+              <DebugPanel />
+            )}
+          </ConfigurableFormRenderer>
         </ConditionalWrap>
-
       </ConditionalWrap>
     </div>
   );
