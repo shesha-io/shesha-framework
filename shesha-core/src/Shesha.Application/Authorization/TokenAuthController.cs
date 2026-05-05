@@ -47,7 +47,7 @@ namespace Shesha.Authorization
         private readonly UserManager<User> _userManager;
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
         private readonly IConfiguration _appConfiguration;
-        private readonly IRepository<User, long> _userRepository;
+        private readonly IRepository<UserLogin, long> _userLoginRepository;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -64,7 +64,7 @@ namespace Shesha.Authorization
             UserManager<User> userManager,
             AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
             IConfiguration appConfiguration,
-            IRepository<User, long> userRepository)
+            IRepository<UserLogin, long> userLoginRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -80,7 +80,7 @@ namespace Shesha.Authorization
             _userManager = userManager;
             _claimsPrincipalFactory = claimsPrincipalFactory;
             _appConfiguration = appConfiguration;
-            _userRepository = userRepository;
+            _userLoginRepository = userLoginRepository;
         }
 
         [HttpPost]
@@ -337,9 +337,7 @@ namespace Shesha.Authorization
                     true
                 );
 
-                var persistedUser = await _userRepository.GetAsync(user.Id);
-
-                persistedUser.Logins.Add(new UserLogin
+                await _userLoginRepository.InsertAsync(new UserLogin
                 {
                     LoginProvider = externalUser.Provider,
                     ProviderKey = externalUser.ProviderKey,
