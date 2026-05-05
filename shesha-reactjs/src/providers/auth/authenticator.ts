@@ -18,7 +18,10 @@ import { ISettingsActionsContext } from "../settings/contexts";
 type RerenderTrigger = () => void;
 
 const RETURN_URL_KEY = 'returnUrl';
-const REQUIRED_PASSWORD_CHANGE_URL = '/no-auth/Shesha/change-password?mode=edit';
+const getRequiredPasswordChangeUrl = (returnUrl?: string) =>
+    returnUrl
+        ? `/no-auth/Shesha/change-password?mode=edit&${RETURN_URL_KEY}=${encodeURIComponent(returnUrl)}`
+        : '/no-auth/Shesha/change-password?mode=edit';
 
 const isAccessToken = (value: unknown): value is IAccessToken =>
     typeof value === 'object' &&
@@ -195,8 +198,11 @@ export class Authenticator implements IAuthenticator {
     };
 
     #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
-        if (userLogin?.requireChangePassword)
-            return REQUIRED_PASSWORD_CHANGE_URL;
+        if (userLogin?.requireChangePassword) {
+            const returnUrlParam = this.#router.query[RETURN_URL_KEY];
+            const returnUrl = returnUrlParam ? decodeURIComponent(returnUrlParam.toString()) : undefined;
+            return getRequiredPasswordChangeUrl(returnUrl);
+        }
 
         const currentUrlWithoutReturn = this.#stripReturnUrl(currentPath);
 
@@ -231,9 +237,11 @@ export class Authenticator implements IAuthenticator {
 
             if (userProfile.user?.requireChangePassword) {
                 this.#updateState('waiting', 'Password change required', null);
+                const returnUrlParam = this.#router.query[RETURN_URL_KEY];
+                const returnUrl = returnUrlParam ? decodeURIComponent(returnUrlParam.toString()) : undefined;
                 return {
                     userProfile: userProfile,
-                    url: REQUIRED_PASSWORD_CHANGE_URL
+                    url: getRequiredPasswordChangeUrl(returnUrl)
                 };
             }
 
@@ -275,8 +283,9 @@ export class Authenticator implements IAuthenticator {
                 URLS.LOGOFF,
                 {},
                 { headers: { 'Authorization': `Bearer ${currentToken.accessToken}` } }
-            ).catch((error) => {
-                console.warn('Logout API call failed, but local session is cleared:', error);
+            ).catch((error: unknown) => {
+                const message = error instanceof Error ? error.message : 'Unknown error';
+                console.warn(`Logout API call failed after local session clear: ${message}`);
             });
         }
     };
@@ -343,7 +352,9 @@ export class Authenticator implements IAuthenticator {
                     if (userProfile.user.requireChangePassword) {
                         this.#startTokenExpirationTimer(token.expireOn);
                         this.#updateState('waiting', 'Password change required', null);
-                        this.#router.push(REQUIRED_PASSWORD_CHANGE_URL);
+                        const currentFullPath = this.#router.fullPath;
+                        const returnUrl = currentFullPath.startsWith('/no-auth/') ? undefined : currentFullPath;
+                        this.#router.push(getRequiredPasswordChangeUrl(returnUrl));
                         return;
                     }
 

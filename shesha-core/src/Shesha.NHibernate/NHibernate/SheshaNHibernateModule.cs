@@ -220,7 +220,25 @@ namespace Shesha.NHibernate
                     AsyncHelper.RunSync(async () => {
                         await SeedDatabaseAsync();
                     });
-                    IocManager.Resolve<ShaPermissionManager>().InitializeDbPermissions();
+
+                    // InitializeDbPermissions uses a check-then-act pattern against the local in-memory
+                    // permissions cache, which is not shared across instances. Without a distributed lock,
+                    // concurrent startups race to write the same permission rows (InsertOrUpdateAsync) and
+                    // delete the same orphaned permissions, causing DB inconsistencies. Each instance must
+                    // still run this to populate its own cache, so we use a separate lock key rather than
+                    // the SeedDb key (which has an early-exit that would skip other instances entirely).
+                    var lockFactory = IocManager.Resolve<ILockFactory>();
+                    const string initPermissionsKey = "AppStart:InitDbPermissions";
+                    AsyncHelper.RunSync(() => lockFactory.DoExclusiveAsync(
+                        initPermissionsKey,
+                        TimeSpan.FromSeconds(30),
+                        TimeSpan.FromSeconds(10),
+                        TimeSpan.FromSeconds(1),
+                        () =>
+                        {
+                            IocManager.Resolve<ShaPermissionManager>().InitializeDbPermissions();
+                            return Task.CompletedTask;
+                        }));
                 }
                 finally
                 {
@@ -359,11 +377,19 @@ namespace Shesha.NHibernate
 
                     await appStartup.StartupSuccessAsync(startupDto.Id);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    if (startupDto != null) {
-                        await appStartup.StartupFailedAsync(startupDto.Id, e);
-                    }                        
+                    if (startupDto != null)
+                    {
+                        try
+                        {
+                            await appStartup.StartupFailedAsync(startupDto.Id, e);
+                        }
+                        catch (Exception logEx)
+                        {
+                            Logger.Error("Failed to write startup failure log", logEx);
+                        }
+                    }
                     throw;
                 }
 
