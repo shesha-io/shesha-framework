@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { isPropertiesArray } from "@/interfaces/metadata";
 import { SheshaCommonContexts } from "@/providers/dataContextManager/models";
-import { useDataContextManagerActions } from "@/providers/dataContextManager";
+import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 import { IObjectMetadataBuilder, MetadataBuilderAction } from "../metadataBuilder";
 
 export const useAppContextRegistration = (): MetadataBuilderAction => {

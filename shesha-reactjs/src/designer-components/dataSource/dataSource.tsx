@@ -6,7 +6,6 @@ import { evaluateDynamicFilters } from '@/utils/datatable';
 import { IDataSourceComponentProps } from './models';
 import {
   MetadataProvider,
-  useDataContextManagerActionsOrUndefined,
   useDataTableStore,
   useForm,
   useGlobalState,
@@ -16,6 +15,7 @@ import { useDataSource } from '@/providers/dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager/hooks';
 
 const getPageSize = (value?: number): number => {
   return Boolean(value) ? value : 1147489646;

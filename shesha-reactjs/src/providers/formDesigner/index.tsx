@@ -11,6 +11,11 @@ import { FormDesignerSubscriptionType } from './models';
 import { useFormPersister } from '../formPersisterProvider';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { isDefined } from '@/utils/nullables';
+import { useDataContextManagerActions } from '../dataContextManager/hooks';
+import ConditionalWrap from '@/components/conditionalWrapper';
+import { DataContextProvider } from '../dataContextProvider';
+import ParentProvider from '../parentProvider';
+import { SheshaCommonContexts } from '../dataContextManager/models';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -27,6 +32,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const formPersister = useFormPersister();
   const devMode = useIsDevMode();
+  const noPageContext = !Boolean(useDataContextManagerActions().getPageContext());
 
   const [formDesigner] = useState<IFormDesignerInstance>(() => {
     return new FormDesignerInstance({
@@ -48,10 +54,38 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     formDesigner.setMarkupAndSettings(flatMarkup, formSettings);
   }, [formDesigner, flatMarkup, formSettings]);
 
+  /* Use special format of parent properties to avoid adding form context */
+  /* pageContext has added only to customize the designed form. It is not used as a data context.*/
+  /* formContext has added only to customize the designed form. It is not used as a data context.*/
   return (
-    <FormDesignerContext.Provider value={formDesigner}>
-      {children}
-    </FormDesignerContext.Provider>
+    <ParentProvider model={null} formMode="designer" name="designer" isScope addContext={false}>
+      <ConditionalWrap
+        condition={noPageContext}
+        wrap={(children) => (
+          <DataContextProvider
+            id={SheshaCommonContexts.PageContext}
+            description="Designer Page context"
+            name={SheshaCommonContexts.PageContext}
+            type="page"
+            webStorageType="sessionStorage"
+          >
+            <DataContextProvider
+              id={SheshaCommonContexts.FormContext}
+              description="Designer Form context"
+              name={SheshaCommonContexts.FormContext}
+              type="form"
+              webStorageType="sessionStorage"
+            >
+              {children}
+            </DataContextProvider>
+          </DataContextProvider>
+        )}
+      >
+        <FormDesignerContext.Provider value={formDesigner}>
+          {children}
+        </FormDesignerContext.Provider>
+      </ConditionalWrap>
+    </ParentProvider>
   );
 };
 

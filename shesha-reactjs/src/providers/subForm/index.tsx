@@ -21,7 +21,7 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { ISubFormActionsContext, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useDataContextManagerActionsOrUndefined, useHttpClient } from '@/providers';
+import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -54,6 +54,7 @@ import { buildUrl } from '@/utils';
 import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
 import { IGlobalState } from '../globalState/contexts';
 import { MessageInstance } from 'antd/es/message/interface';
+import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
 
 interface IFormLoadingState {
   isLoading: boolean;

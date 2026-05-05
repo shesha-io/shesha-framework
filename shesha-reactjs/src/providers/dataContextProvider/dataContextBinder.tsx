@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
 import { IContextMetadata, IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
-import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager";
+import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager/hooks";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 import {
@@ -159,7 +159,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     type,
     parentUid: parentContext?.uid,
     ...actionContext,
-  }, []);
+  });
 
   useEffect(() => {
     setState({ ...state, metadata });
