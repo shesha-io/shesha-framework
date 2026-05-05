@@ -134,80 +134,78 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
 
   const actualApiModel = useDeepCompareMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
 
-  useEffectOnce(() => {
-    if (componentApi !== undefined) {
-      // common Api
-      componentApi.updateApi<CommonComponentApi>(
+  if (componentApi !== undefined) {
+    // common Api
+    componentApi.updateApi<CommonComponentApi>(
+      {
+        id: actualModel.id,
+        componentName: actualModel.componentName,
+        componentModel: actualModel,
+        rawComponentModel: sourceComponentModel,
+        api: {
+          componentName: actualModel.componentName,
+          context: actualModel.context,
+          propertyName: actualModel.propertyName,
+        },
+        typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+      },
+      [
+        // component properties
+        // use actualModel.hidden because it's already filtered by some other means (eg permissions)
+        { name: 'visible', getter: () => actualApiModel.visible, setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden || !value }) },
+        { name: 'editable', getter: () => actualApiModel.editMode, setter: (value) => setApiModel((prev) => {
+          const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
+          return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };
+        }) },
+        // component styles
+        {
+          name: 'style', getter: () => {
+            const style = {} as IComponentStyle;
+            componentApi.createApiProperty(style, { name: 'font', getter: () => actualApiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value }) });
+            componentApi.createApiProperty(style, { name: 'background', getter: () => actualApiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
+            componentApi.createApiProperty(style, { name: 'border', getter: () => actualApiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value }) });
+            return style;
+          },
+        },
+      ],
+    );
+
+    // input common Api
+    if (toolboxComponent?.isInput) {
+      componentApi.updateApi<InputComponentApi>(
         {
           id: actualModel.id,
           componentName: actualModel.componentName,
-          componentModel: actualModel,
-          rawComponentModel: sourceComponentModel,
           api: {
-            componentName: actualModel.componentName,
-            context: actualModel.context,
-            propertyName: actualModel.propertyName,
+            isValid: () => actualModel.propertyName
+              ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
+                .then(() => true).catch(() => false)
+              : Promise.resolve(true),
+            getErrors: () => actualModel.propertyName
+              ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
+                .then(() => []).catch((e) => e.errorFields?.length ? e.errorFields[0].errors : [])
+              : Promise.resolve([]),
+            reset: () => actualModel.propertyName
+              ? shaForm.antdForm.resetFields([actualModel.propertyName])
+              : undefined,
           },
-          typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+          typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         },
         [
-          // component properties
-          // use actualModel.hidden because it's already filtered by some other means (eg permissions)
-          { name: 'visible', getter: () => actualApiModel.visible, setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden || !value }) },
-          { name: 'editable', getter: () => actualApiModel.editMode, setter: (value) => setApiModel((prev) => {
-            const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
-            return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };
-          }) },
-          // component styles
-          {
-            name: 'style', getter: () => {
-              const style = {} as IComponentStyle;
-              componentApi.createApiProperty(style, { name: 'font', getter: () => actualApiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value }) });
-              componentApi.createApiProperty(style, { name: 'background', getter: () => actualApiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
-              componentApi.createApiProperty(style, { name: 'border', getter: () => actualApiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value }) });
-              return style;
-            },
-          },
+          { name: 'required', getter: () => actualApiModel.validate?.required, setter: (value) => updateApiModel(setApiModel, { validate: { required: value } }) },
+          { name: 'value', getter: () => {
+            return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
+          }, setter: (value) => {
+            if (actualModel.propertyName)
+              shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
+            else
+              console.warn(`Property name for component "${actualModel.type}: ${actualModel.componentName}" is not defined`);
+          } },
         ],
       );
-
-      // input common Api
-      if (toolboxComponent?.isInput) {
-        componentApi.updateApi<InputComponentApi>(
-          {
-            id: actualModel.id,
-            componentName: actualModel.componentName,
-            api: {
-              isValid: () => actualModel.propertyName
-                ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
-                  .then(() => true).catch(() => false)
-                : Promise.resolve(true),
-              getErrors: () => actualModel.propertyName
-                ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
-                  .then(() => []).catch((e) => e.errorFields?.length ? e.errorFields[0].errors : [])
-                : Promise.resolve([]),
-              reset: () => actualModel.propertyName
-                ? shaForm.antdForm.resetFields([actualModel.propertyName])
-                : undefined,
-            },
-            typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-          },
-          [
-            { name: 'required', getter: () => actualApiModel.validate?.required, setter: (value) => updateApiModel(setApiModel, { validate: { required: value } }) },
-            { name: 'value', getter: () => {
-              return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
-            }, setter: (value) => {
-              if (actualModel.propertyName)
-                shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
-              else
-                console.warn(`Property name for component "${actualModel.type}: ${actualModel.componentName}" is not defined`);
-            } },
-          ],
-        );
-      }
     }
-    return () => componentApi?.removeApi(actualModel.id);
-  });
+  };
+  useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
 
   const control = useMemo(() => {
     if (!toolboxComponent) return null;
@@ -265,7 +263,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel, validationErrors.size]);
+  }, [toolboxComponent, actualModel, validationErrors]);
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode

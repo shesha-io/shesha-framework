@@ -32,17 +32,16 @@ export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps>
     setFieldValue?.(propertyName as "", newValue as never);
   }, [valuePropName, setFieldValue, propertyName]);
 
-  useEffectOnce(() => {
-    componentApi?.updateApi<InputComponentApi>(
-      {
-        id: componentId,
-        componentName: componentName,
-        typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-      },
-      [{ name: 'value', getter: () => getFieldValue?.(propertyName), setter: onChange }],
-    );
-    return () => componentApi?.removeApi(componentId);
-  });
+  componentApi?.updateApi<InputComponentApi>(
+    {
+      id: componentId,
+      componentName: componentName,
+      typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+    },
+    [{ name: 'value', getter: () => value, setter: onChange }],
+  );
+  useEffectOnce(() => () => componentApi?.removeApi(componentId));
+
 
   return (
     <Form.Item {...formItemProps}>

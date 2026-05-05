@@ -52,12 +52,14 @@ const useDataContextManager = (): IDataContextManagerFullInstance => {
 
 const useDataManagerRegister = (payload: IDataContextManagerFullInstance): void => {
   const manager = useDataContextManagerActionsOrUndefined()?.getParent();
+  // it must be registered directly during rendering, since nested components can immediately check for context and tree of DataContextManagers.
   manager?.registerDataManagerOnce(payload);
   useEffectOnce(() => () => manager?.unregisterDataManager(payload));
 };
 
 const useDataContextRegister = (payload: IRegisterDataContextPayload): void => {
   const manager = useDataContextManagerActionsOrUndefined();
+  // it must be registered directly during rendering, since nested components can immediately check for context.
   manager?.registerDataContextOnce(payload);
   useEffectOnce(() => () => manager?.unregisterDataContext(payload));
 };

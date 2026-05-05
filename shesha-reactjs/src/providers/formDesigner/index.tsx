@@ -11,7 +11,7 @@ import { FormDesignerSubscriptionType } from './models';
 import { useFormPersister } from '../formPersisterProvider';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { isDefined } from '@/utils/nullables';
-import { useDataContextManagerActions } from '../dataContextManager/hooks';
+import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { DataContextProvider } from '../dataContextProvider';
 import ParentProvider from '../parentProvider';
@@ -32,7 +32,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const formPersister = useFormPersister();
   const devMode = useIsDevMode();
-  const noPageContext = !Boolean(useDataContextManagerActions().getPageContext());
+  const noPageContext = !Boolean(useDataContextManagerActionsOrUndefined()?.getPageContext());
 
   const [formDesigner] = useState<IFormDesignerInstance>(() => {
     return new FormDesignerInstance({

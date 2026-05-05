@@ -42,17 +42,15 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   Factory: ({ model, calculatedModel }) => {
     const componentApi = useComponentApi();
     const inputRef = React.useRef(null);
-    useEffectOnce(() => {
-      componentApi?.updateApi<TextFieldApi>(
-        {
-          id: model.id,
-          componentName: model.componentName,
-          typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-          api: { focus: () => inputRef.current?.focus() },
-        },
-      );
-      return () => componentApi?.removeApi(model.id);
-    });
+    componentApi?.updateApi<TextFieldApi>(
+      {
+        id: model.id,
+        componentName: model.componentName,
+        typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        api: { focus: () => inputRef.current?.focus() },
+      },
+    );
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles({ fontFamily: model.font?.type, fontWeight: model.font?.weight, textAlign: model.font?.align, color: model.font?.color, fontSize: model.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);

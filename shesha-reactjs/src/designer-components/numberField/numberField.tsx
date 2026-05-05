@@ -58,17 +58,15 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
 
     const componentApi = useComponentApi();
     const inputRef = useRef<InputNumberRef>();
-    useEffectOnce(() => {
-      componentApi?.updateApi<NumberFieldApi>(
-        {
-          id: model.id,
-          componentName: model.componentName,
-          typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-          api: { focus: () => inputRef.current?.focus() },
-        },
-      );
-      return () => componentApi?.removeApi(model.id);
-    });
+    componentApi?.updateApi<NumberFieldApi>(
+      {
+        id: model.id,
+        componentName: model.componentName,
+        typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        api: { focus: () => inputRef.current?.focus() },
+      },
+    );
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles({
       fontFamily: model.font?.type,
