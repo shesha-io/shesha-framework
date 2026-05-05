@@ -1,4 +1,5 @@
 import { MetadataProvider } from '@/providers';
+import ComponentApiProvider from '@/providers/componentApi/provider';
 import { FormProvider, ShaForm } from '@/providers/form';
 import { FormIdentifier } from '@/providers/form/models';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
@@ -49,7 +50,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
           form={form}
           shaForm={shaForm}
         >
-          <>
+          <ComponentApiProvider id="formDesigner">
             {formSettings.modelType ? (
               <MetadataProvider id="designer" modelType={formSettings.modelType}>
                 {children}
@@ -57,7 +58,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
             ) : (
               <>{children}</>
             )}
-          </>
+          </ComponentApiProvider>
         </FormProvider>
       </ShaForm.MarkupProvider>
     </ShaFormProvider>

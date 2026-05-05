@@ -1,12 +1,13 @@
-import React, { FC, useEffect, useCallback } from "react";
+import React, { FC, useCallback } from "react";
 import { Form, FormItemProps } from "antd";
 import { IConfigurableFormItemChildFunc } from "./model";
 import { DataBinder } from "@/hocs/dataBinder";
-import { useDataContextManager } from "@/providers/dataContextManager";
+import { useDataContextManager } from "@/providers/dataContextManager/hooks";
 import { InputComponentApi } from "@/componentsApi/componentApi";
 import { useComponentApi } from "@/providers/componentApi/provider";
 
 import apiCode from "../../../componentsApi/componentApi.ts?raw";
+import { useEffectOnce } from "@/hooks/useEffectOnce";
 
 interface IConfigurableFormItem_ContextProps {
   componentId: string;
@@ -31,9 +32,8 @@ export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps>
     setFieldValue?.(propertyName as "", newValue as never);
   }, [valuePropName, setFieldValue, propertyName]);
 
-  useEffect(() => {
-    if (componentApi === undefined) return undefined;
-    componentApi.updateApi<InputComponentApi>(
+  useEffectOnce(() => {
+    componentApi?.updateApi<InputComponentApi>(
       {
         id: componentId,
         componentName: componentName,
@@ -41,8 +41,8 @@ export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps>
       },
       [{ name: 'value', getter: () => getFieldValue?.(propertyName), setter: onChange }],
     );
-    return () => componentApi.removeApi(componentId);
-  }, [componentApi, componentId, componentName, getFieldValue, propertyName, onChange]);
+    return () => componentApi?.removeApi(componentId);
+  });
 
   return (
     <Form.Item {...formItemProps}>

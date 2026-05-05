@@ -1,7 +1,7 @@
 import { CodeOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
@@ -21,6 +21,7 @@ import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
@@ -41,9 +42,8 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   Factory: ({ model, calculatedModel }) => {
     const componentApi = useComponentApi();
     const inputRef = React.useRef(null);
-    useEffect(() => {
-      if (componentApi === undefined) return undefined;
-      componentApi.updateApi<TextFieldApi>(
+    useEffectOnce(() => {
+      componentApi?.updateApi<TextFieldApi>(
         {
           id: model.id,
           componentName: model.componentName,
@@ -51,8 +51,8 @@ const TextFieldComponent: TextFieldComponentDefinition = {
           api: { focus: () => inputRef.current?.focus() },
         },
       );
-      return () => componentApi.removeApi(model.id);
-    }, [componentApi, model.componentName, model.id]);
+      return () => componentApi?.removeApi(model.id);
+    });
 
     const { styles } = useStyles({ fontFamily: model.font?.type, fontWeight: model.font?.weight, textAlign: model.font?.align, color: model.font?.color, fontSize: model.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
