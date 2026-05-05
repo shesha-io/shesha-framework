@@ -337,7 +337,9 @@ namespace Shesha.Authorization
                     true
                 );
 
-                user.Logins.Add(new UserLogin
+                var persistedUser = await _userRepository.GetAsync(user.Id);
+
+                persistedUser.Logins.Add(new UserLogin
                 {
                     LoginProvider = externalUser.Provider,
                     ProviderKey = externalUser.ProviderKey,
@@ -345,7 +347,6 @@ namespace Shesha.Authorization
                     UserId = user.Id
                 });
 
-                await _userRepository.UpdateAsync(user);
                 await uow.CompleteAsync();
 
                 return user;
