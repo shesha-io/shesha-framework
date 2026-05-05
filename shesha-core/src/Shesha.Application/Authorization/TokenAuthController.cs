@@ -337,6 +337,8 @@ namespace Shesha.Authorization
                     true
                 );
 
+                user.Logins = new List<UserLogin>();
+
                 await _userLoginRepository.InsertAsync(new UserLogin
                 {
                     LoginProvider = externalUser.Provider,
