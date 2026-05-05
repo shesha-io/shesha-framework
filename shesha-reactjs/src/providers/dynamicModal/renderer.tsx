@@ -52,8 +52,9 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
                 close: () => {
                   const { props, onClose } = instance;
                   removeModal(instance.id);
-                  if (onClose) onClose(false);
-                  (props as ICommonModalProps).onCancel?.();
+                  const onCancel = (props as ICommonModalProps).onCancel;
+                  if (onCancel) onCancel();
+                  else if (onClose) onClose(false);
                 },
               }}
             >
