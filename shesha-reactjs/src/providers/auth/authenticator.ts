@@ -339,6 +339,7 @@ export class Authenticator implements IAuthenticator {
                 const userProfile = await this.#fetchUserInfoHttp();
                 if (userProfile.user) {
                     if (userProfile.user.requireChangePassword) {
+                        this.#startTokenExpirationTimer(token.expireOn);
                         this.#updateState('waiting', 'Password change required', null);
                         this.#router.push(REQUIRED_PASSWORD_CHANGE_URL);
                         return;
