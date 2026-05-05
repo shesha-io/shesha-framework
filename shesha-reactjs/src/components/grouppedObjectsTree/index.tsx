@@ -104,7 +104,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
     }
   }, [groups]);
 
-  const defaultExpandAll = props.searchText.length > 1 && groups.length > 0 && groups[0].visibleItems.length <= 6;
+  const defaultExpandAll = props.searchText?.length && groups.length > 0 && groups[0].visibleItems.length <= 6;
 
   return (
     <>

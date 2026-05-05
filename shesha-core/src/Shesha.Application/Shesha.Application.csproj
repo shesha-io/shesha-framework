@@ -169,7 +169,6 @@
         <EmbeddedResource Include="ConfigMigrations\package20260324_1606.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20260402_1531.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20260409_1436.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20260413_1715.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20260414_0821.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20260414_1015.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20260415_1614.shaconfig" />

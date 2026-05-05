@@ -34,7 +34,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
   onChangeContextData = (): void => {
     this.forceUpdate?.();
 
-    // ToDo: AS - check if we need to update parend DataContextManager
+    // ToDo: AS - check if we need to update parent DataContextManager
     // parent?.onChangeContextData();
     this.managers.forEach((x) => x.onChangeContextData());
   };
@@ -48,7 +48,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
     return this.formInstance;
   };
 
-  registerDataManager = (payload: IDataContextManagerFullInstance): void => {
+  registerDataManagerOnce = (payload: IDataContextManagerFullInstance): void => {
     if (!this.managers.find((x) => x.id === payload.id)) {
       this.managers.push(payload);
       // this.forceUpdate?.();
@@ -63,7 +63,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
     }
   };
 
-  registerDataContext = (payload: IRegisterDataContextPayload): void => {
+  registerDataContextOnce = (payload: IRegisterDataContextPayload): void => {
     if (!this.contexts[payload.id]) {
       const ctx = { ...payload };
       delete ctx.initialData;
@@ -81,8 +81,11 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
 
     this.forceUpdate?.();
 
-    if (payload.type === DataContextTopLevels.Root)
-      RootContexts.splice(RootContexts.indexOf(payload.id), 1);
+    if (payload.type === DataContextTopLevels.Root) {
+      const idx = RootContexts.indexOf(payload.id);
+      if (idx !== -1)
+        RootContexts.splice(idx, 1);
+    }
   };
 
   getLocalDataContexts = (topId?: string): IDataContextDescriptor[] => {
@@ -121,14 +124,14 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
   };
 
   isRoot = (): boolean => {
-    return this.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER || !isDefined(parent);
+    return this.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER || !isDefined(this.parent);
   };
 
   getRoot = (): IDataContextManagerFullInstance | undefined => {
     return this.isRoot()
       ? this
-      : isDefined(parent)
-        ? this.parent?.getRoot()
+      : isDefined(this.parent)
+        ? this.parent.getRoot()
         : undefined;
   };
 
@@ -140,7 +143,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
     const ctxs = this.getLocalDataContexts(topId);
     if (this.isRoot())
       return ctxs;
-    return ctxs.concat(this.parent?.getDataContexts('all') ?? []);
+    return ctxs.concat(this.parent?.getDataContexts(DataContextTopLevels.All) ?? []);
   };
 
   getNearestDataContext = (topId: string, type: DataContextType): IDataContextDescriptor | undefined => {
@@ -149,7 +152,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
   };
 
   getPageContext = (): IDataContextDescriptor | undefined => {
-    return this.getNearestDataContext('all', 'page');
+    return this.getNearestDataContext(DataContextTopLevels.All, 'page');
   };
 
   getDataContext = (contextId: string): IDataContextDescriptor | undefined => {

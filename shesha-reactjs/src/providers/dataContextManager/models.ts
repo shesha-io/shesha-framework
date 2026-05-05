@@ -53,9 +53,9 @@ export interface IDataContextsData {
 }
 
 export interface IDataContextManagerActions {
-  registerDataManager: (payload: IDataContextManagerFullInstance) => void;
+  registerDataManagerOnce: (payload: IDataContextManagerFullInstance) => void;
   unregisterDataManager: (payload: IDataContextManagerFullInstance) => void;
-  registerDataContext: (payload: IRegisterDataContextPayload) => void;
+  registerDataContextOnce: (payload: IRegisterDataContextPayload) => void;
   unregisterDataContext: (payload: IRegisterDataContextPayload) => void;
   getLocalDataContexts: (contextId: string) => IDataContextDescriptor[];
   getDataContexts: (topId?: string) => IDataContextDescriptor[];

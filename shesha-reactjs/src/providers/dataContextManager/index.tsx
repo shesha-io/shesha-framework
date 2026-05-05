@@ -35,15 +35,8 @@ const DataManagerAccessor: FC<PropsWithChildren<Omit<IDataContextManagerProps, '
 export const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ id, children }) => {
   const parent = useDataContextManagerOrUndefined();
   const [state, setState] = useState<IDataContextManagerState>({ ...DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, id, parent: parent });
-  const internalUpdate = (): void => setState({ ...state, lastUpdate: Date.now() });
+  const internalUpdate = (): void => setState((prev) => ({ ...prev, lastUpdate: Date.now() }));
   const [instance] = useState<IDataContextManagerFullInstance>(() => new DataContextManagerInstance(id, parent, internalUpdate));
-
-  // ToDo: AS - review and remove
-  /* if (isRoot()) {
-    dataContextsManagerActions.getRoot = () => {
-      return { ...state, ...dataContextsManagerActions };
-    };
-  }*/
 
   return (
     <DataContextManagerActionsContext.Provider value={instance}>

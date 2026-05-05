@@ -52,13 +52,13 @@ const useDataContextManager = (): IDataContextManagerFullInstance => {
 
 const useDataManagerRegister = (payload: IDataContextManagerFullInstance): void => {
   const manager = useDataContextManagerActionsOrUndefined()?.getParent();
-  manager?.registerDataManager(payload);
+  manager?.registerDataManagerOnce(payload);
   useEffectOnce(() => () => manager?.unregisterDataManager(payload));
 };
 
 const useDataContextRegister = (payload: IRegisterDataContextPayload): void => {
   const manager = useDataContextManagerActionsOrUndefined();
-  manager?.registerDataContext(payload);
+  manager?.registerDataContextOnce(payload);
   useEffectOnce(() => () => manager?.unregisterDataContext(payload));
 };
 
@@ -78,7 +78,7 @@ export {
   useDataContextManager,
   useDataContextManagerActions,
   useDataContextManagerActionsOrUndefined,
-  useDataContextManagerState as useDataContextManagerChange,
+  useDataContextManagerState,
   useDataManagerRegister,
   useDataContextRegister,
   useNearestDataContext,
