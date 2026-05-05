@@ -337,15 +337,14 @@ namespace Shesha.Authorization
                     true
                 );
 
-                user.Logins = new List<UserLogin>();
-
-                await _userLoginRepository.InsertAsync(new UserLogin
+                var userLogin = new UserLogin
                 {
                     LoginProvider = externalUser.Provider,
                     ProviderKey = externalUser.ProviderKey,
                     TenantId = user.TenantId,
                     UserId = user.Id
-                });
+                };
+                await _userLoginRepository.InsertAsync(userLogin);
 
                 await uow.CompleteAsync();
 
