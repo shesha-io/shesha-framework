@@ -215,11 +215,17 @@ namespace Shesha.NHibernate
             {
                 var prev = Configuration.EntityHistory.IsEnabledForAnonymousUsers;
                 Configuration.EntityHistory.IsEnabledForAnonymousUsers = false;
-                AsyncHelper.RunSync(async () => {
-                    await SeedDatabaseAsync();
-                });
-                IocManager.Resolve<ShaPermissionManager>().InitializeDbPermissions();
-                Configuration.EntityHistory.IsEnabledForAnonymousUsers = prev;
+                try
+                {
+                    AsyncHelper.RunSync(async () => {
+                        await SeedDatabaseAsync();
+                    });
+                    IocManager.Resolve<ShaPermissionManager>().InitializeDbPermissions();
+                }
+                finally
+                {
+                    Configuration.EntityHistory.IsEnabledForAnonymousUsers = prev;
+                }
             }
         }
 
