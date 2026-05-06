@@ -136,6 +136,13 @@ export interface CamelCaseOptions {
 
 const leadingSeparatorsRegex = /^[-_.\s]+/;
 
+
+export function toCamelCase(str: string, options?: CamelCaseOptions): string;
+// eslint-disable-next-line no-redeclare
+export function toCamelCase(str: null, options?: CamelCaseOptions): null;
+// eslint-disable-next-line no-redeclare
+export function toCamelCase(str: undefined, options?: CamelCaseOptions): undefined;
+// eslint-disable-next-line no-redeclare
 export function toCamelCase(str: string | null | undefined, options?: CamelCaseOptions): string | null | undefined {
   const text = str?.trim();
 

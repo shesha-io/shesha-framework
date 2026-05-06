@@ -4,7 +4,7 @@ import { StandardNodeTypes } from './formComponent';
 import { IObjectMetadata } from './metadata';
 import { ActionParametersDictionary, IApplicationApi } from '@/providers';
 import { IFormApi } from '@/providers/form/formApi';
-import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
+import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { isDefined } from '@/utils/nullables';
 import { IArgumentsEvaluationContext } from '@/providers/configurableActionsDispatcher/contexts';
@@ -73,12 +73,12 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
 export type DynamicContextHook = () => GenericDictionary;
 export const EMPTY_DYNAMIC_CONTEXT_HOOK: DynamicContextHook = () => ({});
 
-export type ConfigurableActionArgumentsMigrationContext = void;
+export type ConfigurableActionArgumentsMigrationContext = object;
 
 /**
  * Arguments migrator
  */
-export type ConfigurableActionArgumentsMigrator<TArguments> = (
+export type ConfigurableActionArgumentsMigrator<TArguments extends IHasVersion = IHasVersion> = (
   migrator: Migrator<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>,
 ) => MigratorFluent<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>;
 
@@ -131,7 +131,7 @@ export interface IConfigurableActionDescriptor<TArguments extends object = objec
 }
 
 export interface IMayHaveType {
-  _type: string;
+  _type: string | undefined;
 }
 
 /**

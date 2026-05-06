@@ -343,6 +343,7 @@ export class DatasetInstance implements IDatasetInstance {
     if (state.sortMode === 'strict' && state.strictSortBy) {
       if (!dataColumns.find((column) => column.propertyName === state.strictSortBy))
         dataColumns.push({
+          id: state.strictSortBy,
           propertyName: state.strictSortBy,
           propertiesToFetch: [state.strictSortBy],
           dataType: 'number',

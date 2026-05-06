@@ -39,12 +39,12 @@ export interface IConfigurableColumnsBase {
  * Configurable table column
  */
 export interface IConfigurableColumnsProps extends IConfigurableColumnsBase {
-  hidden?: boolean;
-  accessor?: string;
+  hidden?: boolean | undefined;
+  accessor?: string | undefined;
   columnType: DatatableColumnType;
-  anchored?: IAnchoredDirection;
-  customVisibility?: string;
-  customEnabled?: string;
+  anchored?: IAnchoredDirection | undefined;
+  customVisibility?: string | undefined;
+  customEnabled?: string | undefined;
 }
 
 export interface IRendererColumnProps extends IConfigurableColumnsProps {
@@ -87,10 +87,14 @@ export interface IConfigurableActionColumnsProps extends IConfigurableColumnsPro
  * Configurable columns group
  */
 export interface IConfigurableColumnGroup extends IConfigurableColumnsBase {
-  childItems?: ColumnsItemProps[];
+  childItems?: ColumnsItemProps[] | undefined;
 }
 
 export type ColumnsItemProps = IConfigurableColumnsProps | IConfigurableColumnGroup;
+
+export const isColumnGroupProps = (column: ColumnsItemProps | undefined): column is IConfigurableColumnGroup => {
+  return isDefined(column) && column.itemType === 'group';
+};
 
 export const standardCellComponentTypes = {
   defaultDisplay: '[default]',

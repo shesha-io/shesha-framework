@@ -142,32 +142,32 @@ export type AlignSelf =
 export type ShadowStyleType = 'none' | 'above' | 'below';
 
 export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
-  display?: 'block' | 'flex' | 'grid' | 'inline-grid';
-  direction?: ContainerDirection;
-  flexWrap?: FlexWrap;
-  flexDirection?: FlexDirection;
-  justifyContent?: JustifyContent;
-  alignItems?: AlignItems;
-  alignSelf?: AlignSelf;
-  justifyItems?: JustifyItems;
-  textJustify?: TextJustify;
-  justifySelf?: JustifySelf;
-  noDefaultStyling?: boolean;
-  gridColumnsCount?: number;
-  gap?: string | number;
-  width?: string | number;
-  minWidth?: string | number;
-  maxWidth?: string | number;
-  height?: string | number;
-  minHeight?: string | number;
-  maxHeight?: string | number;
-  borderWidth?: string | number;
-  maxRadius?: string;
-  borderColor?: string;
-  borderStyle?: string;
-  borderRadius?: string | number;
-  shadowStyle?: string;
-  style?: React.CSSProperties;
+  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
+  direction?: ContainerDirection | undefined;
+  flexWrap?: FlexWrap | undefined;
+  flexDirection?: FlexDirection | undefined;
+  justifyContent?: JustifyContent | undefined;
+  alignItems?: AlignItems | undefined;
+  alignSelf?: AlignSelf | undefined;
+  justifyItems?: JustifyItems | undefined;
+  textJustify?: TextJustify | undefined;
+  justifySelf?: JustifySelf | undefined;
+  noDefaultStyling?: boolean | undefined;
+  gridColumnsCount?: number | undefined;
+  gap?: string | number | undefined;
+  width?: string | number | undefined;
+  minWidth?: string | number | undefined;
+  maxWidth?: string | number | undefined;
+  height?: string | number | undefined;
+  minHeight?: string | number | undefined;
+  maxHeight?: string | number | undefined;
+  borderWidth?: string | number | undefined;
+  maxRadius?: string | undefined;
+  borderColor?: string | undefined;
+  borderStyle?: string | undefined;
+  borderRadius?: string | number | undefined;
+  shadowStyle?: string | undefined;
+  style?: React.CSSProperties | undefined;
 }
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'> {

@@ -6,6 +6,7 @@ import {
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { createNamedContext } from '@/utils/react';
 import { DEFAULT_FORM_SETTINGS, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, ROOT_COMPONENT_KEY } from "../form/models";
+import { IComponentUpdatePayload } from './contexts';
 
 /** Named Data Source */
 export interface IDataSource {
@@ -57,11 +58,6 @@ export interface IComponentDeletePayload {
 
 export interface IComponentDuplicatePayload {
   componentId: string;
-}
-
-export interface IComponentUpdatePayload {
-  componentId: string;
-  settings: IConfigurableFormComponent;
 }
 
 export interface IComponentUpdateSettingsValidationPayload {

@@ -49,7 +49,7 @@ export const makeListContext = <TItem = any>({ value, onChange, initNewItem, sel
       onChange(newValue);
     },
     insertItem: function (index: number): void {
-      const newItem = initNewItem(value);
+      const newItem = initNewItem(value ?? []);
       const newValue = value ? [...value] : [];
       newValue.splice(index, 0, newItem);
 
@@ -189,7 +189,7 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
                           refresh(gotItem);
                         },
                         initNewItem: (items) => {
-                          return initNewItem(items);
+                          return initNewItem(items ?? []);
                         },
                         selectedItem,
                         setSelectedItem,

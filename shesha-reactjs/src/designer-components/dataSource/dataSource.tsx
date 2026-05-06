@@ -1,6 +1,6 @@
 import DataTableProvider from '@/providers/dataTable';
 import FormItem from 'antd/lib/form/FormItem';
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Alert } from 'antd';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { IDataSourceComponentProps } from './models';
@@ -15,10 +15,12 @@ import {
 import { useDataSource } from '@/providers/dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
-import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { getEntityTypeName, isEntityTypeId, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { throwError } from '@/utils/errors';
 
 const getPageSize = (value?: number): number => {
-  return Boolean(value) ? value : 1147489646;
+  return isDefined(value) ? value : 1147489646;
 };
 
 const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: name, filters, maxResultCount }) => {
@@ -40,9 +42,9 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
 
   useEffect(() => {
     changePageSize(getPageSize(maxResultCount));
-  }, [maxResultCount]);
+  }, [changePageSize, maxResultCount]);
 
-  useDataSource({ id, name, dataSource });
+  useDataSource({ id, name: name ?? "", dataSource });
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
@@ -83,33 +85,6 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
 
-  const provider = useMemo(() => {
-    return (
-      <DataTableProvider
-        userConfigId={id}
-        entityType={entityType}
-        getDataPath={endpoint}
-        actionOwnerId={id}
-        actionOwnerName={name}
-        sourceType={sourceType}
-        initialPageSize={getPageSize(props.maxResultCount)}
-        dataFetchingMode="paging"
-      >
-        <DataSourceAccessor {...props} />
-      </DataTableProvider>
-    );
-  }, [props]);
-
-  const providerWrapper = useMemo(() => {
-    return sourceType === 'Form'
-      ? (
-        <FormItem name={props.propertyName}>
-          {provider}
-        </FormItem>
-      )
-      : provider;
-  }, [sourceType]);
-
   if (isDesignMode && ((sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)) || (sourceType === 'Url' && !endpoint)))
     return (
       <Alert
@@ -121,14 +96,37 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
       />
     );
 
-  return providerWrapper;
+  const provider = (
+    <DataTableProvider
+      userConfigId={id}
+      entityType={entityType}
+      getDataPath={endpoint}
+      actionOwnerId={id}
+      actionOwnerName={name}
+      sourceType={sourceType}
+      initialPageSize={getPageSize(props.maxResultCount)}
+      dataFetchingMode="paging"
+    >
+      <DataSourceAccessor {...props} />
+    </DataTableProvider>
+  );
+
+  return sourceType === 'Form'
+    ? !isNullOrWhiteSpace(props.propertyName)
+      ? (
+        <FormItem name={props.propertyName}>
+          {provider}
+        </FormItem>
+      )
+      : throwError("Name of the form item can't be empty")
+    : provider;
 };
 
 export const DataSource: FC<IDataSourceComponentProps> = (props) => {
   const uniqueKey = `${props.sourceType}_${props.propertyName}_${getEntityTypeName(props.entityType) ?? props.endpoint}`; // is used just for re-rendering
   const provider = <DataSourceInner key={uniqueKey} {...props} />;
 
-  return !isEntityTypeIdEmpty(props.entityType) ? (
+  return isEntityTypeId(props.entityType) ? (
     <MetadataProvider id={props.id} modelType={props.entityType}>
       {provider}
     </MetadataProvider>

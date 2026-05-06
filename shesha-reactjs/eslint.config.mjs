@@ -53,8 +53,20 @@ const strictFolders = isLightBuild
         "src/form-factory",
         "src/publicJsApis",
         "src/designer-components/_settings/utils/background",
+        "src/components/dataTable",
 
-        "src/components/dataTable"
+        "src/designer-components/dataTable",
+        "src/designer-components/dataSource",
+        "src/designer-components/_settings/utils",
+
+        "src/components/columnFilters",
+        "src/components/columnFiltersBase",
+        "src/components/columnFiltersButtons",
+        "src/components/columnFiltersButtonsBase",
+        "src/components/columnItemFilter",
+        "src/components/columnsFilterSelect",
+        "src/components/columnsFilterSelectBase",
+        "src/components/globalTableFilter",
     ];
 
 const stylisticOverrides = {

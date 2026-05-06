@@ -28,7 +28,7 @@ export interface IChartsProps {
   showTitle?: boolean;
   title?: string;
   name?: string;
-  description?: string;
+  description?: string | undefined;
   showLegend?: boolean;
   legendPosition?: TLegendPosition;
   entityType?: string | IEntityTypeIdentifier;
@@ -94,11 +94,11 @@ export interface IChartsProps {
  * Chart props, used in the Shesha tool box
  */
 export interface IChartProps extends IConfigurableFormComponent, IChartsProps {
-  hidden?: boolean;
+  hidden?: boolean | undefined;
 
-  border?: IBorderValue;
-  shadow?: IShadowValue;
-  background?: IBackgroundValue;
+  border?: IBorderValue | undefined;
+  shadow?: IShadowValue | undefined;
+  background?: IBackgroundValue | undefined;
 }
 
 export interface IChartDataProps extends IChartsProps {

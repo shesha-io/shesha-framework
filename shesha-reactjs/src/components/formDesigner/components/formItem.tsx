@@ -1,9 +1,10 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemSetting } from './configurableFormItemSetting';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
+import { FCUnwrapped } from '@/providers';
 
-const ConfigurableFormItemInner: FC<IConfigurableFormItemProps> = (props) => {
+const ConfigurableFormItemInner: FCUnwrapped<IConfigurableFormItemProps> = (props) => {
   return props.model.jsSetting
     ? <ConfigurableFormItemSetting {...props} lazy={props.model.jsSetting === 'lazy'} />
     : <ConfigurableFormItemLive {...props} />;

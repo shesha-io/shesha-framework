@@ -1,9 +1,9 @@
-import React, { FC, useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { DataList } from '@/components/dataList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher, useForm } from '@/providers';
+import { FCUnwrapped, useConfigurableAction, useConfigurableActionDispatcher, useForm } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
@@ -16,7 +16,7 @@ import { parseFetchError } from '@/designer-components/dataTable/utils';
 import { DataListPlaceholder } from './dataListPlaceholder';
 import { throwError } from '@/utils/errors';
 
-const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
+const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
   const {
     dataSourceInstance: dataSource,
     onListItemSave,

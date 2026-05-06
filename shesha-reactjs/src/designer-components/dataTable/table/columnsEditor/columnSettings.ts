@@ -1,9 +1,10 @@
 import { FormBuilderFactory } from "@/form-factory/interfaces";
 import { FormMarkupWithSettings } from "@/providers/form/models";
 import { isDefined } from "@/utils/nullables";
+import { getStringPropertyOrUndefined } from "@/utils/object";
 
 export const getColumnSettings = (fbf: FormBuilderFactory, data?: object): FormMarkupWithSettings => {
-  const dataType = isDefined(data) ? data['type'] : undefined;
+  const dataType = isDefined(data) ? getStringPropertyOrUndefined(data, "type") : undefined;
   return {
     components: fbf()
       .addSearchableTabs({
@@ -389,7 +390,7 @@ export const getColumnSettings = (fbf: FormBuilderFactory, data?: object): FormM
                 labelAlign: 'right',
                 ghost: true,
                 collapsible: 'header',
-                hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false },
                 content: {
                   id: 'backgroundStylePnl',
                   components: [
