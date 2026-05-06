@@ -94,6 +94,9 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
       mark: false,
       italic: false,
       underline: false,
+      dimensions: {
+        width: 'max-content'
+      },
       level: 1,
     } satisfies ITextComponentProps;
 

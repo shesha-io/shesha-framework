@@ -68,7 +68,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           ghost={ghost}
           bodyStyle={{ ...model.allStyles.fullStyle }}
-          headerStyle={{ ...headerStyles, width: '100%' }}
+          headerStyle={{ ...headerStyles, width: '100%', overflow: 'auto',  }}
           className={className}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
