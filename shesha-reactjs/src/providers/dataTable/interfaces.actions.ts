@@ -80,7 +80,7 @@ interface _SortingActions {
   onSort: (sorting: SortingRule<ITableRowData>[]) => void;
 };
 interface _GroupingActions {
-  onGroup?: (grouping: ISortingItem[]) => void;
+  onGroup: (grouping: ISortingItem[]) => void;
 };
 
 export interface IDataTableActionsContext extends IPublicDataTableActions, _PagerActions, _FilterActions, _ColumnsActions, _DataActions, _SelectionActions, _ReorderActions, _SortingActions, _GroupingActions {
