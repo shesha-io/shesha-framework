@@ -6,7 +6,7 @@ import { AbpWrappedResponse } from '@/interfaces/gql';
 import { useDebouncedCallback } from 'use-debounce';
 import HelpTextPopover from '../helpTextPopover';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
-import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils';
+import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
 
 interface IConfigurationItemProps {
   name: string;
@@ -143,8 +143,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   );
 
   useEffect(() => {
-    // If value exists and has changed
-    if (Boolean(value) && value !== selectedItem.value) {
+    if (Boolean(value) && !isEntityTypeIdEqual(value, selectedItem.value)) {
       // try to find in the fetched items
       const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
       if (foundItem) {
@@ -164,8 +163,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   }, [value, type, baseModel]);
 
   useEffect(() => {
-    // If value exists and has changed
-    if (Boolean(value) && value !== selectedItem.value) {
+    if (Boolean(value) && !isEntityTypeIdEqual(value, selectedItem.value)) {
       // try to find in the fetched items
       const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
       if (foundItem) {
@@ -182,6 +180,13 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   const onSelect = (_value, option: IOption): void => {
     if (!Boolean(onChange)) return;
     const selectedValue = Boolean(option) ? option.rawValue : undefined;
+    if (selectedValue && option?.optionData) {
+      setSelectedItem({
+        value: selectedValue,
+        key: getDisplayText(option.optionData),
+        item: option.optionData,
+      });
+    }
     onChange(selectedValue);
   };
 
@@ -245,7 +250,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
       notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
       style={{ width: '100%' }}
       options={fetchedOptions}
-      showSearch={{ onSearch: onSearch }}
+      showSearch={{ onSearch: onSearch, filterOption: false }}
       onChange={onSelect}
       onFocus={onFocusHandler}
       onBlur={onBlur}

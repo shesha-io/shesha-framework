@@ -79,10 +79,12 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, entityMetadata]);
 
     const displayValueFunc: DisplayValueFunc = useCallback((value: unknown, args: object) => {
-      if (!isDefined(value)) return value;
-      if (model.displayValueFunc)
-        return executeExpression(model.displayValueFunc, { ...args, item: value }, null, null);
-      return (typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, displayPropName) : value) || '';
+      if (!isDefined(value)) return '';
+      const raw = model.displayValueFunc
+        ? executeExpression(model.displayValueFunc, { ...args, item: value }, null, null)
+        : (typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, displayPropName) : value);
+      if (raw === null || raw === undefined) return '';
+      return typeof raw === 'object' ? '' : String(raw);
     }, [model.displayValueFunc, displayPropName]);
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: unknown) => {

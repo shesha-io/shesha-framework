@@ -173,11 +173,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
     >
-      <Space.Compact style={{ width: "100%" }}>
-        {props.prefix && <Space.Addon>{props.prefix}</Space.Addon>}
-        <Input size={props.size} />
-        {props.suffix && <Space.Addon>{props.suffix}</Space.Addon>}
-      </Space.Compact>
+      <Input addonBefore={props.prefix} addonAfter={props.suffix} size={props.size} />
     </AutoComplete>
   );
 
