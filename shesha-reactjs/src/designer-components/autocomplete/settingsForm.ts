@@ -433,11 +433,19 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 if (getSettingValue(data.dataSourceType) === 'entitiesList'){
                                   return getSettingValue(data?.entityType)
                                 } else{
-                                  if (!getSettingValue(data?.dataSourceUrl)){
+                                  const url = getSettingValue(data?.dataSourceUrl);
+                                  if (!url){
                                       // Defer setState to avoid updating during render
                                       setTimeout(() => form.setFieldValue('displayPropName', undefined), 0);
+                                      return undefined;
                                   }
-                                return getSettingValue(data?.dataSourceUrl)
+                                  // Parse Shesha dynamic CRUD URL: /api/dynamic/{module}/{entity}/Crud/...
+                                  const dynamicMatch = url.match(/^\\/api\\/dynamic\\/([^\\/]+)\\/([^\\/]+)\\//i);
+                                  if (dynamicMatch){
+                                    return { module: dynamicMatch[1], name: dynamicMatch[2] };
+                                  }
+                                  // Fallback: explicit entityType if user provided one
+                                  return getSettingValue(data?.entityType);
                                 }
                               `,
                           _mode: 'code',

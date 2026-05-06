@@ -260,7 +260,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const renderOption = (row: unknown, index: React.Key): React.JSX.Element => {
     const value = outcomeValueFunc(row, allData);
     const key = keyValueFunc(value, allData);
-    const label = displayValueFunc(row, allData);
+    const rawLabel = displayValueFunc(row, allData);
+    const label = rawLabel == null || typeof rawLabel === 'object' ? '' : String(rawLabel);
     return (
       <Select.Option value={key} key={index} data={row} title={label}>
         <span dangerouslySetInnerHTML={{ __html: label }} />
