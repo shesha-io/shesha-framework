@@ -2,10 +2,10 @@
 
 ## 🐞 Bug Fixes
 
-- **FileList incorrect owner on form load** - Fixed an issue where FileList component initialized with the wrong file owner during form load, causing failed API requests. The component now waits for the correct owner context before making calls.
-- **Enforce default "From" address for SendGrid** - Added a configuration option to enforce a default "From" email address for SendGrid. When enabled, any custom sender is overridden, preventing delivery failures from unverified addresses.
-- **Fixed fetching of nested entities via GQL**
+- **Email Validation:** - Corrected validation logic that incorrectly flagged valid email addresses as invalid, which prevented email sending and caused misleading error logs.
+- **Table View Actions:** - Resolved an error where using the `application` object in Action column scripts (e.g., `application.navigator.navigateToUrl`) would fail at runtime, despite being listed as an available variable in the script editor.
+- **External Authentication:** - Fixed an issue where external login accounts were not reliably linked during registration, improving sign-in continuity for third-party providers.
 
 ## 💪 Enhancements
 
-- **External authentification clean up**
+- **Tree optimisation**
