@@ -50,7 +50,7 @@ const isCalcExpression = (value: string | number | undefined): boolean => {
  * @returns A calc() string that subtracts margins from the main dimension
  */
 const computeDimension = (
-  main: string | number,
+  main: string | number | undefined,
   firstMargin: string | number | undefined,
   secondMargin: string | number | undefined,
   defaultMain: string,
@@ -76,7 +76,7 @@ const computeDimension = (
   return `calc(${addPx(mainValue, context) ?? fallbackForAddPx} - ${margin1} - ${margin2})`;
 };
 
-export const getCalculatedDimension = (main: string | number, firstMargin?: string | number, secondMargin?: string | number, context?: object): string => {
+export const getCalculatedDimension = (main: string | number | undefined, firstMargin?: string | number | undefined, secondMargin?: string | number | undefined, context?: object | undefined): string => {
   return computeDimension(main, firstMargin, secondMargin, 'auto', '0px', context);
 };
 
@@ -105,10 +105,10 @@ export const getCalculatedDimension = (main: string | number, firstMargin?: stri
  * ```
  */
 export const getDesignerCalculatedDimension = (
-  main: string | number,
-  firstMargin?: string | number,
-  secondMargin?: string | number,
-  context?: object,
+  main: string | number | undefined,
+  firstMargin?: string | number | undefined,
+  secondMargin?: string | number | undefined,
+  context?: object | undefined,
 ): string => {
   return computeDimension(main, firstMargin, secondMargin, '100%', '100%', context);
 };

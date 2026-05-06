@@ -19,23 +19,23 @@ import ConfigurableComponentRenderer from "@/components/configurableComponentRen
 import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
-  items?: ItemType[];
-  menuOverflow?: "dropdown" | "menu" | "scroll";
-  fontSize?: string;
-  gap?: string;
-  height?: string;
-  containerStyle?: string;
-  styleOnHover?: string;
-  styleOnSelected?: string;
-  styleOnSubMenu?: string;
-  width?: string;
+  items?: ItemType[] | undefined;
+  menuOverflow?: "dropdown" | "menu" | "scroll" | undefined;
+  fontSize?: string | undefined;
+  gap?: string | undefined;
+  height?: string | undefined;
+  containerStyle?: string | undefined;
+  styleOnHover?: string | undefined;
+  styleOnSelected?: string | undefined;
+  styleOnSubMenu?: string | undefined;
+  width?: string | undefined;
   menuItemShadow?: {
-    color: string;
-    offsetX?: number;
-    offsetY?: number;
-    blurRadius?: number;
-    spreadRadius?: number;
-  };
+    color?: string | undefined;
+    offsetX?: number | undefined;
+    offsetY?: number | undefined;
+    blurRadius?: number | undefined;
+    spreadRadius?: number | undefined;
+  } | undefined;
 }
 
 type MenuOverflowValue = "dropdown" | "menu" | "scroll";

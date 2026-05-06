@@ -439,14 +439,17 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }, `Duplicated component ${payload.componentId}`);
   };
 
-  updateComponent = (payload: IComponentUpdatePayload): void => {
-    this.log(`FD: updateComponent ${payload.componentId} (${payload.settings.type})`, payload);
+  updateComponent = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>): void => {
     // TODO: review validation from Alex
     // TODO: restore component validation
     this.updateState((state): FormDesignerFormState => {
       const { formFlatMarkup } = state;
-      const component = this.getComponent(payload.componentId);
-      const newComponent = { ...component, ...payload.settings } as IConfigurableFormComponent;
+      const component = this.getComponent(payload.componentId) as TModel;
+
+      this.log(`FD: updateComponent ${payload.componentId} (${component.type})`, payload);
+
+      const newModel = payload.updater(component);
+      const newComponent = { ...component, ...newModel } as IConfigurableFormComponent;
 
       const toolboxComponent = this.getToolboxComponent(component.type);
 
@@ -486,40 +489,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         },
       };
     }, `Component ${payload.componentId} updated`);
-    /*
-    // ToDo: AS - need to optimize
-    if (componentInitialization.current) {
-      // Do not trigger an update if first component initialization (reduce unnecessary re-renders)
-      componentInitialization.current = false;
-      return;
-    }
-
-    dispatch(componentUpdateAction(payload));
-    const component = flatMarkup.allComponents[payload.componentId];
-    if (!isDefined(component))
-      return; // TODO: debug validation, component must be defined
-    const toolboxComponent = getToolboxComponent(component.type);
-    if (!isDefined(toolboxComponent))
-      throw new Error('Toolbox component not found');
-
-    const { validateSettings } = toolboxComponent;
-    if (isDefined(validateSettings)) {
-      validateSettings(payload.settings)
-        .then(() => {
-          if (isDefined(component.settingsValidationErrors) && component.settingsValidationErrors.length > 0)
-            dispatch(componentUpdateSettingsValidationAction({ componentId: payload.componentId, validationErrors: [] }));
-        })
-        .catch(({ errors }) => {
-          const validationErrors = errors as IAsyncValidationError[];
-          dispatch(
-            componentUpdateSettingsValidationAction({
-              componentId: payload.componentId,
-              validationErrors,
-            }),
-          );
-        });
-    }
-    */
   };
 
   componentUpdateSettingsValidation = (payload: IComponentUpdateSettingsValidationPayload): void => {

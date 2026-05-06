@@ -63,7 +63,7 @@ const migrateNavigateArgs = (args: INavigateActionArguments): INavigateActionArg
     return { ...args, navigationType: "url" };
 };
 
-const updateActionRecursive = (prev: IConfigurableActionConfiguration, updater: (currentAction: IConfigurableActionConfiguration) => IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
+const updateActionRecursive = (prev: IConfigurableActionConfiguration | undefined, updater: (currentAction: IConfigurableActionConfiguration) => IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
   if (!prev)
     return prev;
 
@@ -84,7 +84,7 @@ const migrateNavigateProps = (prev: IConfigurableActionConfiguration<INavigateAc
   return { ...prev, actionArguments: newArgs, version: 2 };
 };
 
-export const migrateNavigateAction = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
+export const migrateNavigateAction = (prev: IConfigurableActionConfiguration | undefined): IConfigurableActionConfiguration => {
   return updateActionRecursive(prev, (action) => {
     return isNavigationActionConfiguration(action)
       ? migrateNavigateProps(action)

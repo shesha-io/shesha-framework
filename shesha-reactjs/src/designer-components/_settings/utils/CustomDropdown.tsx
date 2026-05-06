@@ -1,8 +1,9 @@
 import React, { FC, useState } from 'react';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Select, Space, Tooltip } from 'antd';
+import { Button, Divider, Input, Select, SelectProps, Space, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDropdownOption } from '@/designer-components/_settings/utils/background/interfaces';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface CustomDropdownProps {
   value: string;
@@ -18,7 +19,7 @@ interface CustomDropdownProps {
   optionFilterProp?: string;
   style?: React.CSSProperties;
   popupMatchSelectWidth?: boolean;
-  labelRender?: (props: any) => React.ReactNode;
+  labelRender?: SelectProps["labelRender"];// (props: LabelInValueType) => React.ReactNode;
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({
@@ -87,17 +88,25 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     </>
   );
 
+  const optionalProps: Partial<SelectProps> = {
+  };
+  if (labelRender)
+    optionalProps.labelRender = labelRender;
+  if (style)
+    optionalProps.style = style;
+
   return (
-    <Select
+    <Select<string>
       value={value}
-      disabled={readOnly}
+      disabled={readOnly ?? false}
       size={size}
-      onChange={onChange}
+      onChange={(value) => {
+        onChange?.(value);
+      }}
       defaultValue={defaultValue}
       placeholder={placeholder}
-      labelRender={labelRender}
-      style={style}
-      optionFilterProp={optionFilterProp}
+      {...optionalProps}
+      showSearch={!isNullOrWhiteSpace(optionFilterProp) ? { optionFilterProp } : false}
       popupMatchSelectWidth={popupMatchSelectWidth}
       popupRender={(menu) => (
         <>

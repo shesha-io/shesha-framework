@@ -9,21 +9,20 @@ import { Column } from './column';
 export interface IColumnsConfiguratorProps {
   readOnly: boolean;
   value: ColumnsItemProps[];
-  parentComponentType?: string;
+  parentComponentType?: string | undefined;
   onChange: (newValue: ColumnsItemProps[]) => void;
   startedEmpty: boolean;
 }
 
 export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onChange, readOnly, parentComponentType, startedEmpty }) => {
   const makeNewItem = (items: ColumnsItemProps[]): ColumnsItemProps => {
-    const safeItems = items ?? [];
-    const itemsCount = safeItems.filter((i) => i.itemType === 'item').length;
+    const itemsCount = items.filter((i) => i.itemType === 'item').length;
     const itemNo = itemsCount + 1;
 
     const columnProps: IDataColumnsProps = {
       id: nanoid(),
       itemType: 'item',
-      sortOrder: safeItems.length,
+      sortOrder: items.length,
       caption: `Column ${itemNo}`,
       minWidth: 100,
       columnType: 'data',

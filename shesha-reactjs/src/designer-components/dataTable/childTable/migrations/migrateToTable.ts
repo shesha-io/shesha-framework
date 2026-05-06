@@ -6,6 +6,8 @@ import { migrateFunctionToProp } from '@/designer-components/_common-migrations/
 import { IFlatComponentsStructure, isConfigurableFormComponent } from '@/interfaces';
 import { Collapse } from 'antd';
 import { ComponentProps } from 'react';
+import { isDefined } from '@/utils/nullables';
+import { ITableContextComponentProps } from '../../tableContext/models';
 
 type ExpandIconPlacement = ComponentProps<typeof Collapse>['expandIconPlacement'];
 
@@ -15,7 +17,7 @@ export interface IPanelContent {
 }
 
 interface CustomConfigurableFormComponent extends IConfigurableFormComponent {
-  [key: string]: any; // support other custom props
+  [key: string]: unknown; // support other custom props
 }
 
 export interface IPanelComponentProps extends IConfigurableFormComponent {
@@ -29,17 +31,17 @@ export interface IPanelComponentProps extends IConfigurableFormComponent {
   className?: string;
 }
 
-const getClosestComponent = (flatStructure: IFlatComponentsStructure, id: string, predicate: (component: IConfigurableFormComponent) => boolean): IConfigurableFormComponent => {
+const getClosestComponent = (flatStructure: IFlatComponentsStructure, id: string, predicate: (component: IConfigurableFormComponent) => boolean): IConfigurableFormComponent | undefined => {
   const current = flatStructure.allComponents[id];
   if (!current || !isConfigurableFormComponent(current))
-    return null;
+    return undefined;
 
   if (predicate(current))
     return current;
 
   return current.parentId
     ? getClosestComponent(flatStructure, current.parentId, predicate)
-    : null;
+    : undefined;
 };
 
 export const migrateToTable = (
@@ -80,7 +82,7 @@ export const migrateToTable = (
   });
 
   // update flat structure
-  const headerComponentIds = [];
+  const headerComponentIds: string[] = [];
   headerComponents.forEach((component) => {
     headerComponentIds.push(component.id);
     flatStructure.allComponents[component.id] = component;
@@ -94,8 +96,12 @@ export const migrateToTable = (
   delete context.flatStructure.componentRelations[context.componentId];
   context.flatStructure.componentRelations[panelContent.id] = [];
   panelContent.components = props.components?.map((x) => {
-    context.flatStructure.allComponents[x.id].parentId = panelContent.id;
-    context.flatStructure.componentRelations[panelContent.id].push(x.id);
+    const component = context.flatStructure.allComponents[x.id];
+    if (component)
+      component.parentId = panelContent.id;
+    const relations = context.flatStructure.componentRelations[panelContent.id];
+    if (relations)
+      relations.push(x.id);
     return { ...x, parentId: panelContent.id };
   }) ?? [];
 
@@ -121,11 +127,11 @@ export const migrateToTable = (
   const selectedFilter = props.defaultSelectedFilterId
     ? (props.filters ?? []).find((f) => f.id === props.defaultSelectedFilterId)
     : undefined;
-  if (selectedFilter && selectedFilter.expression && context.flatStructure) {
+  if (selectedFilter && selectedFilter.expression && isDefined(context.flatStructure)) {
     // search closest datatable context
-    const dataTableContext = getClosestComponent(context.flatStructure, props.id, (cmp) => cmp.type === 'datatableContext');
+    const dataTableContext = getClosestComponent(context.flatStructure, props.id, (cmp) => cmp.type === 'datatableContext') as ITableContextComponentProps | undefined;
     if (dataTableContext) {
-      dataTableContext['permanentFilter'] = selectedFilter.expression;
+      dataTableContext.permanentFilter = selectedFilter.expression;
     }
   }
 

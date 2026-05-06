@@ -13,28 +13,29 @@ export interface IColumnsEditorModal {
   readOnly: boolean;
   visible: boolean;
   hideModal: () => void;
-  parentComponentType?: string;
-  value?: ColumnsItemProps[];
-  onChange?: any;
+  parentComponentType?: string | undefined;
+  value?: ColumnsItemProps[] | undefined;
+  onChange?: (value: unknown) => void;
 }
 
 export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, visible, hideModal, readOnly, parentComponentType }) => {
   const isSmall = useMedia('(max-width: 480px)');
   const dataTableStore = useDataTableStoreOrUndefined(); // Don't require - modal may not be in a DataTable context
-  const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
-  const isEntitySource = dataTableStore?.getRepository?.()?.repositoryType === BackendRepositoryType;
+  const metadataContext = useMetadata(false); // Don't require - DataTable may not be in a DataSource
+  const metadata = metadataContext?.metadata;
+  const isEntitySource = dataTableStore?.getRepository().repositoryType === BackendRepositoryType;
 
   const [startedEmpty, setStartedEmpty] = useState(false);
-  const [prevValue, setPrevValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
-  const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
+  const [prevValue, setPrevValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value) ?? []);
+  const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value) ?? []);
 
   // Prepopulate with default columns when modal opens if items are empty and we're in a DataTable context
   useEffect(() => {
-    if (visible && dataTableStore && isEntitySource && metadata?.metadata && (!value || value.length === 0)) {
+    if (visible && dataTableStore && isEntitySource && metadata && (!value || value.length === 0)) {
       const loadDefaultColumns = async (): Promise<void> => {
         try {
-          const defaultColumns = await calculateDefaultColumns(metadata.metadata);
-          if (defaultColumns.length > 0 && (!localValue || localValue.length === 0)) {
+          const defaultColumns = await calculateDefaultColumns(metadata);
+          if (defaultColumns.length > 0 && (localValue.length === 0)) {
             setPrevValue(localValue);
             setLocalValue(defaultColumns);
             onChange?.(defaultColumns);
@@ -50,12 +51,12 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
         throw error;
       });
     }
-  }, [metadata?.metadata, visible, onChange, isEntitySource]);
+  }, [metadata, visible, onChange, isEntitySource, dataTableStore, value, localValue]);
 
   const onOk = (): void => {
     onChange?.(deepCopyViaJson(localValue)); // make copy of localValue to re-render table
     hideModal();
-    if (localValue?.length > 0) {
+    if (localValue.length > 0) {
       setStartedEmpty(false);
     }
   };
@@ -64,7 +65,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
     hideModal();
     setLocalValue(deepCopyViaJson(prevValue));
     onChange?.(deepCopyViaJson(prevValue));
-    if (prevValue?.length === 0) {
+    if (prevValue.length === 0) {
       setStartedEmpty(false);
     }
   };

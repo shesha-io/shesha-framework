@@ -8,7 +8,7 @@ import { IGenericGetAllPayload, IHasEntityTypeIdPayload } from '@/interfaces/gql
 import { isDefined } from '@/utils/nullables';
 import { SortingRule } from 'react-table';
 
-export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
+export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean | null | undefined;
 
 export type IndexColumnFilterOption =
   | 'contains' |
@@ -33,7 +33,7 @@ export type IAnchoredDirection = 'left' | 'right';
 export interface ITableColumn {
   columnType: DatatableColumnType;
 
-  id?: string | undefined;
+  id: string;
   columnId?: string | undefined;
   accessor: string;
   header: string;
@@ -208,7 +208,7 @@ export interface IStoredFilter {
 
   sortOrder?: number; // TODO V1: review and remove
 
-  permissions?: string[];
+  permissions?: string[] | undefined;
 
   //#region dynamic expressions
   hasDynamicExpression?: boolean;

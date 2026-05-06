@@ -16,9 +16,9 @@ import { nanoid } from '@/utils/uuid';
 import { createNamedContext } from '@/utils/react';
 
 export interface IProps {
-  readOnly: boolean;
-  value?: object;
-  onChange?: any;
+  readOnly: boolean | undefined;
+  value?: object | undefined;
+  onChange?: any | undefined;
 }
 
 const EditableContext = createNamedContext(null, "EditableContext");

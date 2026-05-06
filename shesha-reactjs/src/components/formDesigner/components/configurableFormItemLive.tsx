@@ -1,8 +1,8 @@
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules, useAvailableConstantsDataNoRefresh } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { useFormItem, useShaFormInstance } from '@/providers';
+import { FCUnwrapped, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
@@ -10,7 +10,7 @@ import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
 
-export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
+export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> = ({
   children,
   model,
   valuePropName,
@@ -30,7 +30,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
-    return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
+    return { labelCol: formItemlabelCol ?? labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, labelCol, formItemWrapperCol, wrapperCol]);
 
   const isVertical = (model.layout ?? shaForm.settings?.layout) === 'vertical';
@@ -57,18 +57,19 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  const formItemProps: FormItemProps = useMemo(() => ({
+  if (hidden) return null;
+
+  const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
-    label: hideLabel ? null : model.label,
+    // label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
-    labelCol: layout?.labelCol,
-    wrapperCol: hideLabel || isVertical ? { span: 24 } : layout?.wrapperCol,
-    // layout: model.layout, this property appears to have been removed from the Ant component
+    // labelCol: layout?.labelCol,
+    // wrapperCol: hideLabel || isVertical ? { span: 24 } : layout?.wrapperCol,
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     style: {
       marginTop: addPx(marginTop, allData),
@@ -76,9 +77,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       marginRight: addPx(marginRight, allData),
       marginLeft: addPx(marginLeft, allData),
     },
-  }), [allData, className, getFormData, hideLabel, initialValue, layout?.labelCol, layout?.wrapperCol, marginBottom, marginLeft, marginRight, marginTop, model, propName, styles.formItem, valuePropName, isVertical]);
-
-  if (hidden) return null;
+    ...(!hideLabel ? { label: model.label } : {}),
+    ...(layout?.labelCol ? { labelCol: layout.labelCol } : {}),
+    ...(hideLabel || isVertical ? { wrapperCol: { span: 24 } } : layout?.wrapperCol ? { wrapperCol: layout.wrapperCol } : {}),
+  };
 
   if (typeof children === 'function') {
     if (model.context) {

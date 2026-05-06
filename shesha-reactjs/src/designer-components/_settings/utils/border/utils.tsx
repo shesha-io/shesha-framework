@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IBorderValue } from "./interfaces";
+import { BorderStyle, IBorderValue } from "./interfaces";
 import {
   MinusOutlined,
   DashOutlined,
@@ -15,6 +15,9 @@ import { humanizeString } from "@/utils/string";
 import { FormRawMarkup, IConfigurableFormComponent, IConfigurableTheme } from "@/providers";
 import { readThemeColor } from "@/components/colorPicker";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
+import { IAnyObject } from "@/interfaces";
+import { isNonEmptyArray } from "@/utils/array";
+import { throwError } from "@/utils/errors";
 
 // Helper to check if a width value is effectively zero
 const isZeroWidth = (width: string | number | undefined): boolean => {
@@ -23,50 +26,52 @@ const isZeroWidth = (width: string | number | undefined): boolean => {
   return strWidth === '0' || strWidth === '0px' || strWidth === '0em' || strWidth === '0rem' || strWidth === '0%';
 };
 
-export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
+export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.CSSProperties = {}, theme?: IConfigurableTheme): React.CSSProperties => {
   if (!input) return {};
 
-  const style: React.CSSProperties = {};
+  const style: React.CSSProperties & IAnyObject = {};
   const border = input.border || {};
   const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
-  const handleBorderPart = (part, prefix: string, theme?: IConfigurableTheme): void => {
-    // Hide border if: no color, no width, width is "0px", or style is explicitly "none"
-    const hideBorder = !part?.color || !part?.width || isZeroWidth(part?.width) || input?.border?.[input.borderType]?.style === 'none';
-    if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width || all?.width);
-    if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style || all?.style;
-    if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = hideBorder ? 'transparent' : part?.color || all?.color;
+  const jsStyleDict = jsStyle as React.CSSProperties & IAnyObject;
 
-    if (theme && readThemeColor(theme)[`${input?.border?.all?.color}`]) {
-      style[`borderColor`] = readThemeColor(theme)[`${input?.border?.all?.color}`];
-      style[`borderWidth`] = input?.border?.all?.width;
-      style[`borderStyle`] = input?.border?.all?.style;
+  const handleBorderPart = (part: BorderStyle | undefined, prefix: string, theme?: IConfigurableTheme): void => {
+    // Hide border if: no color, no width, width is "0px", or style is explicitly "none"
+    const hideBorder = !part?.color || !part.width || isZeroWidth(part.width) || (input.borderType && input.borderType !== "custom" && input.border?.[input.borderType]?.style === 'none');
+    if (part?.width && !jsStyleDict[prefix] && !jsStyleDict[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part.width || all.width);
+    if (part?.style && !jsStyleDict[prefix] && !jsStyleDict[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part.style ?? all.style;
+    if (part?.color && !jsStyleDict[prefix] && !jsStyleDict[`${prefix}Color`]) style[`${prefix}Color`] = hideBorder ? 'transparent' : part.color || all.color;
+
+    if (theme && readThemeColor(theme)[`${input.border?.all?.color}`]) {
+      style[`borderColor`] = readThemeColor(theme)[`${input.border?.all?.color}`];
+      style[`borderWidth`] = input.border?.all?.width;
+      style[`borderStyle`] = input.border?.all?.style;
     } else {
-      if (theme && readThemeColor(theme)[`${input?.border?.bottom?.color}`]) {
-        style[`borderBottomColor`] = readThemeColor(theme)[`${input?.border?.bottom?.color}`];
-        style[`borderBottomWidth`] = input?.border?.bottom?.width;
-        style[`borderBottomStyle`] = input?.border?.bottom?.style;
+      if (theme && readThemeColor(theme)[`${input.border?.bottom?.color}`]) {
+        style[`borderBottomColor`] = readThemeColor(theme)[`${input.border?.bottom?.color}`];
+        style[`borderBottomWidth`] = input.border?.bottom?.width;
+        style[`borderBottomStyle`] = input.border?.bottom?.style;
       }
-      if (theme && readThemeColor(theme)[`${input?.border?.left?.color}`]) {
-        style[`borderLeftColor`] = readThemeColor(theme)[`${input?.border?.left?.color}`];
-        style[`borderLeftWidth`] = input?.border?.left?.width;
-        style[`borderLeftStyle`] = input?.border?.left?.style;
+      if (theme && readThemeColor(theme)[`${input.border?.left?.color}`]) {
+        style[`borderLeftColor`] = readThemeColor(theme)[`${input.border?.left?.color}`];
+        style[`borderLeftWidth`] = input.border?.left?.width;
+        style[`borderLeftStyle`] = input.border?.left?.style;
       }
-      if (theme && readThemeColor(theme)[`${input?.border?.right?.color}`]) {
-        style[`borderRightColor`] = readThemeColor(theme)[`${input?.border?.right?.color}`];
-        style[`borderRightWidth`] = input?.border?.right?.width;
-        style[`borderRightStyle`] = input?.border?.right?.style;
+      if (theme && readThemeColor(theme)[`${input.border?.right?.color}`]) {
+        style[`borderRightColor`] = readThemeColor(theme)[`${input.border?.right?.color}`];
+        style[`borderRightWidth`] = input.border?.right?.width;
+        style[`borderRightStyle`] = input.border?.right?.style;
       }
-      if (theme && readThemeColor(theme)[`${input?.border?.top?.color}`]) {
-        style[`borderTopColor`] = readThemeColor(theme)[`${input?.border?.top?.color}`];
-        style[`borderTopWidth`] = input?.border?.top?.width;
-        style[`borderTopStyle`] = input?.border?.top?.style;
+      if (theme && readThemeColor(theme)[`${input.border?.top?.color}`]) {
+        style[`borderTopColor`] = readThemeColor(theme)[`${input.border?.top?.color}`];
+        style[`borderTopWidth`] = input.border?.top?.width;
+        style[`borderTopStyle`] = input.border?.top?.style;
       }
     }
   };
 
 
-  if (!jsStyle?.border) {
+  if (!jsStyle.border) {
     if (input.borderType === 'all') {
       handleBorderPart(all, 'border', theme);
     } else {
@@ -77,9 +82,9 @@ export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.C
     }
   };
 
-  if (input?.radius) {
+  if (input.radius) {
     const { all = 0, topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0 } = input.radius;
-    if (input?.radiusType === 'all') {
+    if (input.radiusType === 'all') {
       style.borderTopRightRadius = addPx(all);
       style.borderBottomRightRadius = addPx(all);
       style.borderBottomLeftRadius = addPx(all);
@@ -155,7 +160,7 @@ export const getBorderInputs = (fbf: FormBuilderFactory, path = '', isResponsive
     .addSettingsInputRow({
       id: nanoid(),
       inline: true,
-      hidden: { _code: generateCode('borderType', false, isResponsive, path), _mode: 'code', _value: false } as any,
+      hidden: { _code: generateCode('borderType', false, isResponsive, path), _mode: 'code', _value: false },
       inputs: [
         {
           id: nanoid(),
@@ -196,11 +201,11 @@ export const getBorderInputs = (fbf: FormBuilderFactory, path = '', isResponsive
     })
     .addContainer({
       id: nanoid(),
-      hidden: { _code: generateCode('borderType', true, isResponsive, path), _mode: 'code', _value: false } as any,
-      components: borderSides.slice(0, hasMiddle ? 5 : 4).map((sideValue) => {
+      hidden: { _code: generateCode('borderType', true, isResponsive, path), _mode: 'code', _value: false },
+      components: borderSides.slice(0, hasMiddle ? 5 : 4).map<IConfigurableFormComponent>((sideValue) => {
         const side = sideValue.value;
 
-        return fbf()
+        const components = fbf()
           .addSettingsInputRow({
             id: nanoid(),
             inline: true,
@@ -243,17 +248,18 @@ export const getBorderInputs = (fbf: FormBuilderFactory, path = '', isResponsive
                 hideLabel: true,
               },
             ],
-          }).toJson()[0];
+          }).toJson();
+        return isNonEmptyArray(components) ? components[0] : throwError(`Unable to generate border inputs for ${side}`);
       }),
     }).toJson(),
   ];
 };
 
 interface IHideCornerConditions {
-  topLeft?: string;
-  topRight?: string;
-  bottomLeft?: string;
-  bottomRight?: string;
+  topLeft?: string | undefined;
+  topRight?: string | undefined;
+  bottomLeft?: string | undefined;
+  bottomRight?: string | undefined;
 }
 
 export const getCornerInputs = (fbf: FormBuilderFactory, path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}): FormRawMarkup => {
@@ -269,7 +275,7 @@ export const getCornerInputs = (fbf: FormBuilderFactory, path = '', isResponsive
     .addSettingsInputRow({
       id: nanoid(),
       inline: true,
-      hidden: { _code: generateCode('radiusType', false, isResponsive, path), _mode: 'code', _value: false } as any,
+      hidden: { _code: generateCode('radiusType', false, isResponsive, path), _mode: 'code', _value: false },
       inputs: [
         {
           id: `borderRadiusStyleRow-all`,
@@ -286,7 +292,7 @@ export const getCornerInputs = (fbf: FormBuilderFactory, path = '', isResponsive
       ],
     })
     .addSettingsInputRow({
-      hidden: { _code: generateCode('radiusType', true, isResponsive, path), _mode: 'code', _value: false } as any,
+      hidden: { _code: generateCode('radiusType', true, isResponsive, path), _mode: 'code', _value: false },
       id: nanoid(),
       inline: true,
       inputs: radiusCorners.map((cornerValue) => {
@@ -301,7 +307,7 @@ export const getCornerInputs = (fbf: FormBuilderFactory, path = '', isResponsive
           type: 'numberField',
           icon: cornerValue.icon,
           placeholder: '0',
-          hidden: { _code: hideCornerConditions[corner], _mode: 'code', _value: false } as any,
+          hidden: { _code: hideCornerConditions[corner as keyof IHideCornerConditions], _mode: 'code', _value: false },
           tooltip: `${humanizeString(corner)} corner`,
           propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
         };

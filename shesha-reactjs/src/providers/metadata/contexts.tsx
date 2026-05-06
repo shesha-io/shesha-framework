@@ -8,7 +8,7 @@ export interface IMetadataStateContext {
   id: string | null;
   modelType: IEntityTypeIdentifier | string | null;
   dataType?: MetadataType;
-  metadata: IModelMetadata | null;
+  metadata: IModelMetadata | null | undefined;
 }
 
 export interface IMetadataActionsContext {

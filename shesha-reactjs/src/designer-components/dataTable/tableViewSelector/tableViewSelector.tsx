@@ -61,7 +61,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     if (dataContextManager)
       match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id) });
 
-    const permissionedFilters = filters.filter((f) => !f.permissions || (f.permissions && application.anyOfPermissionsGranted(f.permissions)));
+    const permissionedFilters = filters.filter((f) => !f.permissions || application.anyOfPermissionsGranted(f.permissions));
 
     evaluateDynamicFilters(
       permissionedFilters,

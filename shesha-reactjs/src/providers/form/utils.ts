@@ -1375,7 +1375,7 @@ export const pickStyleFromModel = (model: StyleBoxValue, ...args: unknown[]): CS
 const emptyStyle = {};
 type StyleFunction = (data: object, globalState: object) => CSSProperties | undefined;
 export const getStyle = (
-  style: string,
+  style: string | undefined,
   formData: object = {},
   globalState: object = {},
   defaultStyle: object = emptyStyle,

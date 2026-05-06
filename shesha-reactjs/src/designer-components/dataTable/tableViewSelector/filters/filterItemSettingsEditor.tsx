@@ -5,18 +5,21 @@ import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/qu
 import { QueryBuilderProvider, useMetadata } from '@/providers';
 import { Tabs } from 'antd';
 import React, { FC, useMemo } from 'react';
-import { FilterItemProperties } from './filterItemProperties';
+import { BaseFilterProperties, FilterItemProperties } from './filterItemProperties';
 import { IStoredFilter } from '@/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { FilterExpression } from '@/publicJsApis/dataTableContextApi';
 
 export interface IFilterItemSettingsEditorProps {
-  value?: IStoredFilter;
+  value: IStoredFilter;
   onChange: (newValue: IStoredFilter) => void;
   readOnly: boolean;
 }
 
+
 export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ value, onChange, readOnly }) => {
-  const metadata = useMetadata(false);
+  const metadataContext = useMetadata(false);
+  const metadata = metadataContext?.metadata;
 
   const { expression, ...filterProps } = value;
   const expressionObject = useMemo<object | undefined>(() => {
@@ -28,10 +31,10 @@ export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ v
       : expression;
   }, [expression]);
 
-  const onChangeExpression = (newValue): void => {
+  const onChangeExpression = (newValue: FilterExpression): void => {
     onChange({ ...value, expression: newValue });
   };
-  const onChangeProps = (newValue): void => {
+  const onChangeProps = (newValue: BaseFilterProperties): void => {
     onChange({ ...value, ...newValue });
   };
 
@@ -42,46 +45,52 @@ export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ v
         content: <FilterItemProperties value={filterProps} onChange={onChangeProps} readOnly={readOnly} />,
       }}
     >
-      <QueryBuilderProvider metadata={metadata?.metadata}>
-        <Tabs
-          defaultActiveKey="queryBuilderConfigureTab"
-          destroyOnHidden
-          items={[
-            {
-              key: 'queryBuilderConfigureTab',
-              label: 'Query builder',
-              children: <QueryBuilderPlainRenderer onChange={onChangeExpression} value={expressionObject} readOnly={readOnly} />,
-            },
-            {
-              key: 'expressionViewerTab',
-              label: 'Query expression viewer',
-              children: <QueryBuilderExpressionViewer value={expressionObject} />,
-            },
-            {
-              key: 'exposedVariables',
-              label: 'Variables',
-              children: (
-                <CodeVariablesTables
-                  data={[
-                    {
-                      id: '61955479-c9fd-4613-b639-d2be14795245',
-                      name: 'data',
-                      description: 'The state of the form',
-                      type: 'object',
-                    },
-                    {
-                      id: 'e27dd783-c204-4b53-a6a0-babe4cb46e39',
-                      name: 'globalState',
-                      description: 'The global state',
-                      type: 'object',
-                    },
-                  ]}
-                />
-              ),
-            },
-          ]}
-        />
-      </QueryBuilderProvider>
+
+      <Tabs
+        defaultActiveKey="queryBuilderConfigureTab"
+        destroyOnHidden
+        items={[
+          {
+            key: 'queryBuilderConfigureTab',
+            label: 'Query builder',
+            children: metadata
+              ? (
+                <QueryBuilderProvider metadata={metadata}>
+                  <QueryBuilderPlainRenderer onChange={onChangeExpression} value={expressionObject} readOnly={readOnly} />
+                </QueryBuilderProvider>
+              )
+              : undefined,
+          },
+          {
+            key: 'expressionViewerTab',
+            label: 'Query expression viewer',
+            children: <QueryBuilderExpressionViewer value={expressionObject} />,
+          },
+          {
+            key: 'exposedVariables',
+            label: 'Variables',
+            children: (
+              <CodeVariablesTables
+                data={[
+                  {
+                    id: '61955479-c9fd-4613-b639-d2be14795245',
+                    name: 'data',
+                    description: 'The state of the form',
+                    type: 'object',
+                  },
+                  {
+                    id: 'e27dd783-c204-4b53-a6a0-babe4cb46e39',
+                    name: 'globalState',
+                    description: 'The global state',
+                    type: 'object',
+                  },
+                ]}
+              />
+            ),
+          },
+        ]}
+      />
+
     </ListEditorRenderer>
   );
 };

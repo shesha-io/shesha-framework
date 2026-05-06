@@ -5,6 +5,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ITableContextComponentProps, TableContextComponentLegacyDefinition } from './models';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 
 /**
  * Legacy DataTable Context component (datatableContext)
@@ -27,7 +28,7 @@ const TableContextComponentLegacy: TableContextComponentLegacyDefinition = {
   },
   migrator: (m) =>
     m
-      .add<ITableContextComponentProps>(0, (prev) => ({ ...prev, name: prev['uniqueStateId'] ?? prev['name'] }))
+      .add<ITableContextComponentProps & { name: string | undefined | null }>(0, (prev) => ({ ...prev, name: getFirstNonEmptyStringPropertyOrUndefined(prev, ["uniqueStateId", "name"]) }))
       .add<ITableContextComponentProps>(1, (prev) => ({ ...prev, sourceType: 'Entity' }))
       .add<ITableContextComponentProps>(2, (prev) => ({ ...prev, defaultPageSize: 10 }))
       .add<ITableContextComponentProps>(3, (prev) => ({ ...prev, dataFetchingMode: 'paging' }))
