@@ -6,7 +6,6 @@ import { evaluateDynamicFilters } from '@/utils/datatable';
 import { IDataSourceComponentProps } from './models';
 import {
   MetadataProvider,
-  useDataContextManagerActionsOrUndefined,
   useDataTableStore,
   useForm,
   useGlobalState,
@@ -18,6 +17,7 @@ import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider
 import { getEntityTypeName, isEntityTypeId, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { throwError } from '@/utils/errors';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager/hooks';
 
 const getPageSize = (value?: number): number => {
   return isDefined(value) ? value : 1147489646;

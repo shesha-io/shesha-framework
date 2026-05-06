@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { isPropertiesArray } from "@/interfaces/metadata";
-import { useDataContextManagerActions } from "@/providers/dataContextManager";
+import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 import { IObjectMetadataBuilder, MetadataBuilderAction } from "../metadataBuilder";
 import { isDefined } from "@/utils/nullables";
 

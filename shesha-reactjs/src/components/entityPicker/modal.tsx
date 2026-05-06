@@ -13,7 +13,7 @@ import { SheshaError } from '@/utils/errors';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useDataTableStore } from '@/providers/dataTable/hooks';
 import { useGlobalState } from '@/providers/globalState';
-import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager/hooks';
 import { useModal } from '@/providers/dynamicModal';
 import { useNestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher';
 import GlobalTableFilter from '../globalTableFilter';

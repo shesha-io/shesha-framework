@@ -5,7 +5,7 @@ import React, { FC } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { Select } from 'antd';
-import { useDataContextManager } from '@/providers/dataContextManager';
+import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IDataContextSelectorProps<TValue = any> {

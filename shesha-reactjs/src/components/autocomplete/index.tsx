@@ -17,6 +17,7 @@ import { ValueRenderer } from '../valueRenderer';
 import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
 import { useStyles } from './style';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { createOutcomeValueFunc } from './utils';
 
 const getNormalizedValues = (value: unknown): unknown[] => {
   const values = Array.isArray(value) ? value : [value];
@@ -48,12 +49,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }, [filterKeysFunc]);
   const displayValueFunc: DisplayValueFunc = useMemo(() => props.displayValueFunc ??
     ((value: unknown) => (Boolean(value) ? String(getValueByPropertyName(value as Record<string, unknown>, displayPropName) ?? value?.toString()) : '')), [props.displayValueFunc, displayPropName]);
-  const outcomeValueFunc: OutcomeValueFunc = useMemo(() => props.outcomeValueFunc ??
-    // --- For backward compatibility
-    (props.dataSourceType === 'entitiesList' && !props.keyPropName
-      ? (value: unknown) => ({ id: (value as Record<string, unknown>).id, _displayName: getValueByPropertyName(value as Record<string, unknown>, displayPropName), _className: (value as Record<string, unknown>)._className })
-      // ---
-      : (value: unknown) => getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
+  const outcomeValueFunc: OutcomeValueFunc = useMemo(() => createOutcomeValueFunc({
+    providedFunc: props.outcomeValueFunc,
+    dataSourceType: props.dataSourceType,
+    rawKeyPropName: props.keyPropName,
+    displayPropName,
+    keyPropName,
+  }), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName, keyPropName]);
 
   // register columns
   useDeepCompareEffect(() => {
@@ -118,7 +120,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       (props.dataSourceType === 'url' && props.dataSourceUrl)
     ) {
       if (keys.length) {
-        const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
+        const normalizedValue = Array.isArray(props.value) ? props.value[0] : props.value;
+        const displayNameValue = normalizedValue != null && typeof normalizedValue === 'object'
+          ? (normalizedValue as Record<string, unknown>)[displayPropName]
+          : undefined;
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
         // Check if we have a valid data source for loading
@@ -246,9 +251,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
     if (!Boolean(props.onChange))
       return;
-    if (props.mode === 'multiple') {
+    if (props.mode === 'multiple')
       props.onChange(Array.isArray(selectedValue) ? selectedValue : [selectedValue]);
-    } else
+    else
       props.onChange(selectedValue);
   };
 
