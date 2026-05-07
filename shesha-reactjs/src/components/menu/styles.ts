@@ -767,7 +767,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
     &.${(p) => p?.theme.prefixCls}-menu-item-selected {
       ${(p: GlobalMenuType) => p?.styleOnSelected || `
-        color: ${p?.colors.selectedItemColor || BLACK_CLR} !important;
+        color: ${p?.colors?.selectedItemColor || BLACK_CLR} !important;
         background: ${p?.colors?.selectedItemBackground || 'white'} !important;
       `}
     }
@@ -865,7 +865,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
         ${(p: GlobalMenuType) => p?.styleOnSelected || `
-          color: ${p?.colors.selectedItemColor || BLACK_CLR} !important;
+          color: ${p?.colors?.selectedItemColor || BLACK_CLR} !important;
           background: ${p?.colors?.selectedItemBackground || 'white'} !important;
         `}
       }
