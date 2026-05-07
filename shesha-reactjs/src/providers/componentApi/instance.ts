@@ -22,7 +22,7 @@ export class ComponentApiInstance implements IComponentApiActions {
     if (localApi.api === undefined) localApi.api = { } as T;
     localApi.componentName = componentName;
     if (api.typeDefinition)
-      localApi.typeDefinition = api.typeDefinition;
+      localApi.typeDefinition = { ...api.typeDefinition, isNullable: true };
     if (api.componentModel)
       localApi.componentModel = api.componentModel;
     if (api.rawComponentModel)

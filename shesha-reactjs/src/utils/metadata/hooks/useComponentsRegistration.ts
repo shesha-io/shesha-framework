@@ -26,9 +26,9 @@ export const useComponentsRegistration = (): MetadataBuilderAction => {
               return builder;
             });
           } else if (component.typeDefinition) {
-            builder.addCustom(componentName, component.componentModel?.description || `${component.componentModel?.type ?? component.componentName}Api`, () => {
+            builder.addCustom(componentName, component.componentModel?.description || `${component.componentModel?.type || component.componentName}Api`, () => {
               return Promise.resolve(component.typeDefinition as TypeDefinition);
-            });
+            }, true);
           } else {
             builder.addObject(componentName, component.componentModel?.description, (builder) => {
               return builder.addAny('[key: string]', 'fields');

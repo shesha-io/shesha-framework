@@ -171,7 +171,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             : dataType.typeName;
 
           this.#appendCommentBlock(sb, [prop.label, prop.description]);
-          sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${typeName};`);
+          sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${typeName}${prop.isNullable ? ' | undefined' : ''};`);
         }
       } catch (e) {
         // skip errors with logging to not break the build
@@ -400,7 +400,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         const dataType = await this.#getTypescriptType(prop);
         if (dataType) {
           typesImporter.import(dataType);
-          sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
+          sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName}${prop.isNullable ? ' | undefined' : ''};`);
         }
       });
       sb.decIndent();
@@ -539,7 +539,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
       if (dataType) {
         typesImporter.import(dataType);
         this.#appendCommentBlock(sb, [prop.label, prop.description]);
-        sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
+        sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName}${prop.isNullable ? ' | undefined' : ''};`);
       }
     });
     sb.decIndent();

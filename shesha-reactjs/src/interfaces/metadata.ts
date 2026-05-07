@@ -28,6 +28,7 @@ export interface SourceFile {
 
 export interface TypeDefinition {
   typeName: string;
+  isNullable?: boolean;
   files: SourceFile[];
 }
 
@@ -132,7 +133,7 @@ export const isIHasInheritedFromEntityType = (value: unknown): value is IHasInhe
   return isDefined(value) && "inheritedFromEntityType" in value && typeof value.inheritedFromEntityType === 'string';
 };
 
-export interface IObjectProperty extends IPropertyMetadata, IHasTypeDefinition {
+export interface IObjectProperty extends IPropertyMetadata, Partial<IHasTypeDefinition> {
 }
 
 export interface IFunctionProperty extends IPropertyMetadata, IHasTypeDefinition {

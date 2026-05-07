@@ -123,8 +123,8 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder, name =
 export const registerPageContextAction: MetadataBuilderAction = (builder, name = "pageContext") => {
   builder.addCustom(name, "Contexts data of current page", () => {
     const definition: TypeDefinition = {
-      typeName: 'IPageContext',
-      files: [{ content: 'export interface IPageContext { [key: string]: unknown }', fileName: 'apis/pageContext.ts' }],
+      typeName: 'PageContext',
+      files: [{ content: 'export interface PageContext { [key: string]: unknown }', fileName: 'apis/pageContext.ts' }],
     };
     return Promise.resolve(definition);
   });
