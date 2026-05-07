@@ -1,6 +1,6 @@
 ﻿using FluentMigrator;
 
-namespace Shesha.Migrations.Framework
+namespace Shesha.Framework
 {
     [Migration(20260507154900)]
     public class M20260507154900 : AutoReversingMigration
