@@ -1,4 +1,4 @@
-import { ComponentDefinition } from '@/interfaces';
+import { ComponentDefinition, IContainerComponentProps } from '@/interfaces';
 import { headerType } from './../../components/panel/index';
 import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 import { isDefined } from '@/utils/nullables';
@@ -10,7 +10,7 @@ type ExpandIconPlacement = ComponentProps<typeof Collapse>['expandIconPlacement'
 
 export interface ICollapsiblePanelContent {
   id: string;
-  components?: IConfigurableFormComponent[];
+  components?: IContainerComponentProps[];
 }
 
 export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent, IStyleType {

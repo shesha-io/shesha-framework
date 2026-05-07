@@ -58,6 +58,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
             <ComponentsContainer
               containerId={model.header?.id}
               dynamicComponents={isDynamic ? headerComponents : []}
+              className='sha-header-components-container'
             />
           ) : (
             evaluatedLabel
@@ -68,7 +69,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           ghost={ghost}
           bodyStyle={{ ...model.allStyles.fullStyle }}
-          headerStyle={{ ...headerStyles, width: '100%', overflow: 'auto',  }}
+          headerStyle={{ ...headerStyles, width: '100%'}}
           className={className}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}

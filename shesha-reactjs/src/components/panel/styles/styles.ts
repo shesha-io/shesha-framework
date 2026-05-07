@@ -122,7 +122,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       height: 100%;
     }
    
-    > .ant-collapse-item > .ant-collapse-content {
+    > .ant-collapse-item > .ant-collapse-content, .ant-collapse-body {
       flex: 1;
       background: ${backgroundImage || backgroundColor};
       background-size: ${backgroundSize};
@@ -181,6 +181,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       padding-bottom: ${headerPaddingBottom} !important;
       padding-left: ${headerPaddingLeft} !important;
       border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} !important;
+      align-items: center !important;
 
       .ant-collapse-header-text {
         color: ${headerColor};
@@ -193,6 +194,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
 
       .ant-collapse-title {
         flex: 1;
+        overflow: auto;
+        height: 100%;
+
+        > .sha-header-components-container {
+         > .sha-drop-hint {
+          height: 100% !important;
+         }
       }
 
       .ant-collapse-extra {
