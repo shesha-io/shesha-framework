@@ -460,8 +460,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
               inlineEditMode,
             },
           );
-          column.minWidth = minWidth;
-          column.maxWidth = maxWidth;
+          return { ...column, maxWidth, minWidth };
         }
         return column;
       })
