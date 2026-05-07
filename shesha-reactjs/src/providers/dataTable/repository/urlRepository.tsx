@@ -4,7 +4,8 @@ import React, { FC, PropsWithChildren, useMemo } from 'react';
 import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
-import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IConfigurableColumnsProps, IDataColumnsProps, isDataColumnProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IPropertyMetadata } from '@/interfaces/metadata';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 import { buildUrl } from '@/utils';
@@ -36,6 +37,20 @@ interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
   apiHelper: IEntityEndpointsEvaluator;
   mutator: IUseMutateResponse<unknown>;
 }
+
+// URL sources have no server-side metadata feed. Configured column props may carry optional
+// runtime fields (dataType, referenceListName, etc.) that aren't in IDataColumnsProps; we
+// read them through this extended view to forward whatever the designer captured.
+type IUrlExtendedDataColumn = IDataColumnsProps & {
+  dataType?: string;
+  dataFormat?: string;
+  referenceListName?: string;
+  referenceListModule?: string;
+  entityTypeName?: string;
+  entityTypeModule?: string;
+  allowInherited?: boolean;
+  metadata?: IPropertyMetadata;
+};
 
 const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
   const { httpClient, getListUrl } = args;
@@ -110,8 +125,34 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     return result;
   };
 
-  const prepareColumns = (_: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
-    return Promise.resolve([]);
+  const prepareColumns = (configurableColumns: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
+    if (!isNonEmptyArray(configurableColumns))
+      return Promise.resolve([]);
+
+    const dataTableColumns = configurableColumns
+      .filter(isDataColumnProps)
+      .map<DataTableColumnDto>((col) => {
+        const ext = col as IUrlExtendedDataColumn;
+        const name = col.propertyName || col.accessor || col.caption;
+        return {
+          propertyName: name,
+          name,
+          caption: col.caption,
+          description: col.description ?? null,
+          dataType: ext.dataType ?? 'string',
+          dataFormat: ext.dataFormat ?? null,
+          referenceListName: ext.referenceListName ?? null,
+          referenceListModule: ext.referenceListModule ?? null,
+          entityTypeName: ext.entityTypeName ?? null,
+          entityTypeModule: ext.entityTypeModule ?? null,
+          allowInherited: ext.allowInherited ?? false,
+          isFilterable: true,
+          isSortable: col.allowSorting !== false,
+          metadata: ext.metadata ?? null,
+        };
+      });
+
+    return Promise.resolve(dataTableColumns);
   };
 
   const performUpdate = <TData extends object = object>(_rowIndex: number, _: TData): Promise<TData> => {
