@@ -193,7 +193,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border: 1px ${borderStyle} ${borderColor} !important;
+        border: 1px ${borderStyle} transparent !important;
         ${style}
       }
 
