@@ -29,7 +29,7 @@ export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = (props)
 
   const onSave = useCallback((values) => {
     if (!readOnly)
-      updateComponent({ componentId: id, updater: { ...values, id } });
+      updateComponent({ componentId: id, updater: () => ({ ...values, id }) });
     return Promise.resolve();
   }, [id, readOnly, updateComponent]);
 
