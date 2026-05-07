@@ -142,25 +142,24 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
       return Promise.resolve([]);
 
     const dataTableColumns = configurableColumns
-      .filter(isDataColumnProps)
+      .filter((c): c is IUrlExtendedDataColumn => isDataColumnProps(c))
       .map<DataTableColumnDto>((col) => {
-        const ext = col as IUrlExtendedDataColumn;
         const name = col.propertyName || col.accessor || col.caption;
         return {
           propertyName: name,
           name,
           caption: col.caption,
           description: col.description ?? null,
-          dataType: ext.dataType ?? 'string',
-          dataFormat: ext.dataFormat ?? null,
-          referenceListName: ext.referenceListName ?? null,
-          referenceListModule: ext.referenceListModule ?? null,
-          entityTypeName: ext.entityTypeName ?? null,
-          entityTypeModule: ext.entityTypeModule ?? null,
-          allowInherited: ext.allowInherited ?? false,
+          dataType: col.dataType ?? 'string',
+          dataFormat: col.dataFormat ?? null,
+          referenceListName: col.referenceListName ?? null,
+          referenceListModule: col.referenceListModule ?? null,
+          entityTypeName: col.entityTypeName ?? null,
+          entityTypeModule: col.entityTypeModule ?? null,
+          allowInherited: col.allowInherited ?? false,
           isFilterable: true,
           isSortable: col.allowSorting !== false,
-          metadata: ext.metadata ?? null,
+          metadata: col.metadata ?? null,
         };
       });
 
