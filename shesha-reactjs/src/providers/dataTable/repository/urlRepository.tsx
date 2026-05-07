@@ -107,8 +107,8 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     const dataResponse: unknown = extractAjaxResponse(response.data);
 
     const { pageSize } = payload;
-    const { items, totalCount } = Array.isArray(dataResponse)
-      ? { items: dataResponse, totalCount: dataResponse.length }
+    const { items, totalCount }: { items: ITableRowData[]; totalCount: number } = Array.isArray(dataResponse)
+      ? { items: dataResponse as ITableRowData[], totalCount: dataResponse.length }
       : isPagedResponse(dataResponse)
         ? { items: dataResponse.items, totalCount: dataResponse.totalCount }
         : { items: [], totalCount: 0 };
