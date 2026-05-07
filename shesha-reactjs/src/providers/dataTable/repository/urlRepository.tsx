@@ -99,7 +99,9 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     const dataResponse = extractAjaxResponse(response.data);
 
     const { pageSize } = payload;
-    const { items, totalCount } = dataResponse;
+    const { items, totalCount } = Array.isArray(dataResponse)
+      ? { items: dataResponse, totalCount: dataResponse.length }
+      : dataResponse;
 
     const result: ITableDataInternalResponse = {
       totalRows: totalCount,
