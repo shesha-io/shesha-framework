@@ -17,13 +17,13 @@ interface SearchableTabsProps {
 
 const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const { tabs } = model;
+  const formDesigner = useFormDesignerOrUndefined();
   const [searchQuery, setSearchQuery] = useState('');
-  const [localActiveTabKey, setLocalActiveTabKey] = useState<string>('1');
+  const [localActiveTabKey, setLocalActiveTabKey] = useState<string>(formDesigner?.activeSettingsTabKey ?? '1');
   const { styles } = useStyles();
 
   const formState = useFormStateOrUndefined();
   const formActions = useFormActionsOrUndefined();
-  const formDesigner = useFormDesignerOrUndefined();
 
   useShaFormDataUpdate();
 
