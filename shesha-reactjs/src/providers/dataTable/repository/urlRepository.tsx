@@ -19,6 +19,7 @@ import {
   ITableDataFetchColumn,
   ITableDataInternalResponse,
   ITableDataResponse,
+  ITableRowData,
 } from '../interfaces';
 import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from '../provider';
 import { IRepository, RowsReorderPayload } from './interfaces';
@@ -50,6 +51,13 @@ type IUrlExtendedDataColumn = IDataColumnsProps & {
   entityTypeModule?: string;
   allowInherited?: boolean;
   metadata?: IPropertyMetadata;
+};
+
+const isPagedResponse = (value: unknown): value is { items: ITableRowData[]; totalCount: number } => {
+  if (value === null || typeof value !== 'object')
+    return false;
+  const v = value as { items?: unknown; totalCount?: unknown };
+  return Array.isArray(v.items) && typeof v.totalCount === 'number';
 };
 
 const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
@@ -111,10 +119,14 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     const getDataUrl = buildUrl(getListUrl, getDataPayload);
 
     const response = await httpClient.get<IAjaxResponse<ITableDataResponse>>(getDataUrl);
-    const dataResponse = extractAjaxResponse(response.data);
+    const dataResponse: unknown = extractAjaxResponse(response.data);
 
     const { pageSize } = payload;
-    const { items, totalCount } = dataResponse;
+    const { items, totalCount }: { items: ITableRowData[]; totalCount: number } = Array.isArray(dataResponse)
+      ? { items: dataResponse as ITableRowData[], totalCount: dataResponse.length }
+      : isPagedResponse(dataResponse)
+        ? { items: dataResponse.items, totalCount: dataResponse.totalCount }
+        : { items: [], totalCount: 0 };
 
     const result: ITableDataInternalResponse = {
       totalRows: totalCount,

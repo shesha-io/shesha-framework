@@ -170,7 +170,17 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         var metadataService = IocManager.Resolve<IMetadataProvider>();
 
         var entityModelProvider = IocManager.Resolve<IEntityModelProvider>();
-        var models = await entityModelProvider.GetModelsAsync();
+
+        if (!string.IsNullOrWhiteSpace(input.ClientSnapshotHash))
+        {
+            var serverSnapshotHash = await entityModelProvider.GetModelsSnapshotHashOrNullAsync();
+            if (serverSnapshotHash == input.ClientSnapshotHash)
+                return new SyncAllResponse { ServerSnapshotHash = serverSnapshotHash };
+        }
+
+        var modelsResponse = await entityModelProvider.GetModelsAsync();
+        var models = modelsResponse.Models;
+
         var groupped = models.GroupBy(e => e.Module, (module, entities) =>
         {
             return new
@@ -236,6 +246,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         var response = new SyncAllResponse()
         {
             Lookups = lookups,
+            ServerSnapshotHash = modelsResponse.SnapshotHash
         };
 
         foreach (var module in input.Modules)
