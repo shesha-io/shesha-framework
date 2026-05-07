@@ -1,5 +1,5 @@
 import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import {
@@ -15,12 +15,14 @@ import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCo
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
 import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
-import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { isEntityTypeId } from '@/providers/metadataDispatcher/entities/utils';
 
 const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
   const { readOnly } = props;
 
   const { model: state } = useSettingsForm<IDataSourceComponentProps>();
+  if (!state)
+    return undefined;
 
   const settings = (
     <>
@@ -70,11 +72,16 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
     </>
   );
 
-  const meta = useMemo(() => {
-    return <MetadataProvider id={state.id} modelType={state.entityType}>{settings}</MetadataProvider>;
-  }, [state.entityType, state.sourceType]);
-
-  return state.sourceType === 'Entity' && !isEntityTypeIdEmpty(state.entityType) ? meta : settings;
+  return state.sourceType === 'Entity' && isEntityTypeId(state.entityType)
+    ? (
+      <MetadataProvider
+        id={state.id}
+        modelType={state.entityType}
+      >
+        {settings}
+      </MetadataProvider>
+    )
+    : settings;
 };
 
 export const DataSourceSettingsForm: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {

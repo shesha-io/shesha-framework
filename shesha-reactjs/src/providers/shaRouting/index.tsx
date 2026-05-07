@@ -13,6 +13,7 @@ import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { ShaRouter } from './router';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isValidFormFullName } from '../form/utils';
+import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 
 export type NavigationType = 'url' | 'form';
 
@@ -31,7 +32,7 @@ interface IRouter {
   path: string;
 }
 
-export interface INavigateActoinArguments {
+export interface INavigateActoinArguments extends IHasVersion {
   navigationType: NavigationType;
   url?: string;
   formId?: FormIdentifier;

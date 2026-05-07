@@ -10,7 +10,6 @@ const designerClassNames = {
   mainArea: "sha-designer-main-area",
   previewBorderTop10: "preview-form-border-top-10",
   shaComponent: "sha-component",
-  shaComponentControls: "sha-component-controls",
   shaComponentGhost: "sha-component-ghost",
   shaComponentIndicator: "sha-component-indicator",
   shaComponentSearch: "sha-component-search",
@@ -85,7 +84,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaDropHint,
     designerWorkArea,
     componentPropertiesActions,
-    shaComponentControls,
     siteTreeSearchValue,
     shaDesignerWarning,
     hasConfigErrors,
@@ -423,7 +421,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaComponent} {
             position: relative;
-            min-height: 50px; /* Ensure enough space for delete button and error icon */
+            min-height: 50px; /* Ensure enough space for error icon */
 
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
@@ -442,17 +440,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               .${shaComponentIndicator} {
                 display: none;
               }
-            }
-
-            // Error icon positioning: snap to corner when not hovering
-            .sha-error-icon-top-right {
-              top: 4px !important;
-              transition: top 0.2s ease;
-            }
-
-            // When hovering the component, move error icon down to make room for delete button
-            &:hover .sha-error-icon-top-right {
-              top: 28px !important;
             }
 
             .${shaComponentValidationIcon} {
@@ -489,10 +476,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               padding: 5px 3px;
             }
             &:not(:hover) {
-                .${shaComponentControls} {
-                    display: none;
-                }
-            
                 .${componentDragHandle} {
                     border: 1px solid white;
                 }
@@ -512,21 +495,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               }
             }
         
-            .${shaComponentControls} {
-              text-align: right;
-              position: absolute;
-              right: 5px;
-              top: 5px;
-              display: block;
-              min-height: 20px;
-              z-index: 1000;
-            }
-        
             &:not(:hover) {
-              .${shaComponentControls} {
-                display: none;
-              }
-        
               .${componentDragHandle} {
                 background-color: transparent;
               }

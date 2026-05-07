@@ -11,7 +11,6 @@ import { Button } from 'antd';
 import { CodeOutlined, CodeFilled } from '@ant-design/icons';
 import { IPropertySetting, PropertySettingMode } from '@/providers/form/models';
 import { CodeEditor } from '../codeEditor/codeEditor';
-import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useDeepCompareMemo } from '@/hooks';
 
 export type SettingsControlChildrenFunc<T = unknown> = (value: T, onChange: (val: T) => void, propertyName: string) => ReactElement;
@@ -64,10 +63,6 @@ export const SettingsControl = <Value extends unknown = unknown>(props: ISetting
     if (onChange)
       onChange(newValue);
   }, [mode, onChange]);
-
-  useDeepCompareEffect(() => {
-    onInternalChange({ ...setting, _mode: mode }, mode);
-  }, [mode, onInternalChange, setting]);
 
   const codeOnChange = (val: string): void => {
     const newValue: IPropertySetting<Value> = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy } as IPropertySetting<Value>;

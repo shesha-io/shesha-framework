@@ -1,12 +1,12 @@
-import { IConfigurableColumnsProps, isDataColumn } from "@/providers/datatableColumnsConfigurator/models";
-import React, { useCallback, useMemo, FC, PropsWithChildren } from "react";
-import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, ITableRowData } from "../interfaces";
-import { IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
-import { IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";
 import { IModelMetadata, isJsonEntityMetadata, isObjectMetadata } from "@/interfaces/metadata";
+import { IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";
+import { IConfigurableColumnsProps, isDataColumn } from "@/providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { unsafeGetValueByPropertyName } from "@/utils/object";
-import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider-with-repo";
+import React, { FC, PropsWithChildren, useCallback, useMemo } from "react";
+import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, ITableRowData } from "../interfaces";
+import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider";
+import { IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
 
 export interface IWithInMemoryRepositoryArgs {
   valueAccessor: () => ITableRowData[];

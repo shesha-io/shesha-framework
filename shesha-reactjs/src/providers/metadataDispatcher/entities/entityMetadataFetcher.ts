@@ -72,6 +72,13 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
     return syncEntities(this.#syncContext);
   };
 
+  resetSynchronized = async (): Promise<void> => {
+    if (this.#syncPromise) {
+      await this.#syncPromise.catch(() => {}); // Wait for in-flight sync to complete (ignore errors)
+    }
+    this.#syncPromise = undefined;
+  };
+
   syncAll = (): Promise<void> => {
     this.#syncPromise = this.#syncEntities();
     return this.#syncPromise;

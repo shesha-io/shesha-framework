@@ -149,10 +149,11 @@ export const hasProperty = <T extends object = object>(obj: T, key: string | num
   return key in obj;
 };
 
-export const safeGetProperty = <T extends object>(obj: T, key: string | symbol): T[keyof T] | undefined => {
+type PropertyValueOrUndefined<T extends object, K extends keyof T | string> = K extends keyof T ? T[K] : undefined;
+export const safeGetProperty = <T extends object, K extends keyof T | string>(obj: T, key: K): PropertyValueOrUndefined<T, K> => {
   return hasProperty(obj, key)
-    ? obj[key]
-    : undefined;
+    ? obj[key] as PropertyValueOrUndefined<T, K>
+    : undefined as PropertyValueOrUndefined<T, K>;
 };
 
 export const setValueByPropertyName = <TData extends object = object>(data: TData, propertyName: string, value: unknown, makeCopy: boolean = false): TData => {
@@ -236,3 +237,7 @@ export const getFirstNonEmptyStringPropertyOrUndefined = (obj: object, keys: str
   }
   return undefined;
 };
+
+export const getDisplayNameOrUndefined = (obj: unknown): string | undefined => typeof (obj) === "object" && isDefined(obj)
+  ? getStringPropertyOrUndefined(obj, "_displayName")
+  : undefined;

@@ -8,8 +8,8 @@ import { ItemChangeDetails } from '@/components/listEditor';
 import { IStoredFilter } from '@/interfaces';
 
 export interface IFilterItemProps {
-  value?: IStoredFilter;
-  onChange?: (newValue: IStoredFilter, changeDetails: ItemChangeDetails) => void;
+  value: IStoredFilter;
+  onChange: (newValue: IStoredFilter, changeDetails?: ItemChangeDetails) => void;
   readOnly: boolean;
 }
 
@@ -25,7 +25,7 @@ export const FilterItem: FC<IFilterItemProps> = ({ value, onChange, readOnly }) 
   };
 
   const onSaveSettings = (newValue: IStoredFilter): void => {
-    onChange(newValue, undefined);
+    onChange(newValue);
     setSettingsVisible(false);
   };
 

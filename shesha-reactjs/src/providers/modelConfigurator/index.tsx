@@ -3,7 +3,7 @@ import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useMe
 import {
   ModelConfigurationDto,
 } from '@/apis/modelConfigurations';
-import { useHttpClient } from '@/providers';
+import { useEntityMetadataFetcher, useHttpClient, useMetadataDispatcher } from '@/providers';
 import {
   loadErrorAction,
   loadRequestAction,
@@ -41,6 +41,8 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   const { children, form } = props;
 
   const httpClient = useHttpClient();
+  const metadataFetcher = useEntityMetadataFetcher();
+  const metadataDispatcher = useMetadataDispatcher();
 
   const [state, dispatch] = useReducer(modelReducer, {
     ...MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
@@ -106,13 +108,20 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       const responseData = extractAjaxResponse(response.data);
       dispatch(saveSuccessAction(responseData));
 
+      try {
+        await metadataFetcher.resetSynchronized();
+        metadataDispatcher.clearModels();
+      } catch (metadataError) {
+        console.error('Failed to reset metadata cache after save', metadataError);
+      }
+
       return responseData;
     } catch (error: unknown) {
       console.error(error);
       dispatch(saveErrorAction(extractErrorInfo(error) ?? { message: 'Failed to save model' }));
       throw error;
     }
-  }, [httpClient, prepareValues, validateModel]);
+  }, [httpClient, prepareValues, validateModel, metadataFetcher, metadataDispatcher]);
 
   const getModelSettings = useCallback((): ModelConfigurationDto => {
     return prepareValues(form.getFieldsValue());

@@ -1,12 +1,12 @@
-import React from 'react';
-import { getNumberFormat } from '@/utils/string';
+import React, { ReactNode } from 'react';
+import { numberToFormattedString } from '@/utils/string';
 import { IDataCellProps } from '../interfaces';
 
-export type INumberCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
+export type INumberCellProps<D extends object = object> = IDataCellProps<D, unknown>;
 
-export const NumberCell = <D extends object = object, V = number>(props: INumberCellProps<D, V>): React.JSX.Element => {
+export const NumberCell = <D extends object = object>(props: INumberCellProps<D>): ReactNode => {
   const displayValue = props.value
-    ? getNumberFormat(props.value.toString(), props.propertyMeta?.dataFormat)
+    ? numberToFormattedString(props.value.toString(), props.propertyMeta?.dataFormat ?? undefined)
     : null;
 
   return <>{displayValue}</>;

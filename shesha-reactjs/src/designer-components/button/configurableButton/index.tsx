@@ -80,7 +80,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
 
   // Ghost buttons: only foreground color, no background/border/shadow
-  const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+  const ghostOverrides = isGhostType ? getGhostStyleOverrides(props.style) : props.style;
 
   return (
     <Button

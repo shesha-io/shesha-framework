@@ -25,3 +25,4 @@ const ComponentPropertiesPanelInner: FC = () => {
 };
 
 export const ComponentPropertiesPanel = React.memo(ComponentPropertiesPanelInner);
+

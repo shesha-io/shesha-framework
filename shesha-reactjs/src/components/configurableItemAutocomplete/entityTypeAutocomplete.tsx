@@ -6,7 +6,7 @@ import { AbpWrappedResponse } from '@/interfaces/gql';
 import { useDebouncedCallback } from 'use-debounce';
 import HelpTextPopover from '../helpTextPopover';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
-import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils';
+import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
 
 interface IConfigurationItemProps {
   name: string;
@@ -97,12 +97,12 @@ const getListFetcherQueryParams = (
     term: term ?? undefined,
     selectedValue: typeof value === 'string'
       ? value
-      : value?.module && value?.name
+      : value?.name
         ? getEntityIdentifier(value)
         : undefined,
     baseModel: typeof baseModel === 'string'
       ? baseModel
-      : baseModel?.module && baseModel?.name
+      : baseModel?.name
         ? getEntityIdentifier(baseModel)
         : undefined,
   };
@@ -143,23 +143,27 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   );
 
   useEffect(() => {
-    // If value exists and has changed
-    if (Boolean(value) && value !== selectedItem.value) {
+    if (Boolean(value) && !isEntityTypeIdEqual(value, selectedItem.value)) {
       // try to find in the fetched items
       const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
       if (foundItem) {
         // set the selected item
         setSelectedItem({ value: value, key: getDisplayText(foundItem), item: foundItem });
       } else {
-        // fetch the item
-        debouncedFetchItems();
+        setSelectedItem({});
+        // Fetch directly with the new value to avoid selectedItem.value being stale in debouncedFetchItems
+        listFetcher
+          .refetch({ queryParams: getListFetcherQueryParams(type, undefined, value, baseModel) })
+          .catch((error) => {
+            console.error('Failed to fetch entity type', error);
+            throw error;
+          });
       }
     }
-  }, [value]);
+  }, [value, type, baseModel]);
 
   useEffect(() => {
-    // If value exists and has changed
-    if (Boolean(value) && value !== selectedItem.value) {
+    if (Boolean(value) && !isEntityTypeIdEqual(value, selectedItem.value)) {
       // try to find in the fetched items
       const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
       if (foundItem) {
@@ -176,6 +180,13 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   const onSelect = (_value, option: IOption): void => {
     if (!Boolean(onChange)) return;
     const selectedValue = Boolean(option) ? option.rawValue : undefined;
+    if (selectedValue && option?.optionData) {
+      setSelectedItem({
+        value: selectedValue,
+        key: getDisplayText(option.optionData),
+        item: option.optionData,
+      });
+    }
     onChange(selectedValue);
   };
 
@@ -239,7 +250,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
       notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
       style={{ width: '100%' }}
       options={fetchedOptions}
-      showSearch={{ onSearch: onSearch }}
+      showSearch={{ onSearch: onSearch, filterOption: false }}
       onChange={onSelect}
       onFocus={onFocusHandler}
       onBlur={onBlur}

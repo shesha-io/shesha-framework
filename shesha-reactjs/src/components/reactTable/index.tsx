@@ -43,8 +43,7 @@ interface IReactTableState {
 export const ReactTable: FC<IReactTableProps> = ({
   columns = [],
   data = [],
-  useMultiSelect = false,
-  selectionMode,
+  selectionMode = "none",
   loading = false,
   defaultSorting = [],
   defaultCanSort = false,
@@ -137,7 +136,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     allRows: data,
     allColumns: columns,
   });
-  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const mode = selectionMode;
   const multiSelect = mode === 'multiple';
 
   const { notification } = App.useApp();
@@ -350,7 +349,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     columns: tableColumns,
     toggleRowSelected,
     toggleAllRowsSelected,
-  } = useTable(
+  } = useTable<ITableRowData>(
     {
       columns: preparedColumns,
       data: allRows,

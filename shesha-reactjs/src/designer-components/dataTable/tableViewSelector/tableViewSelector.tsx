@@ -4,7 +4,6 @@ import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { ITableViewSelectorComponentProps } from './models';
 import {
-  useDataContextManagerOrUndefined,
   useDataFetchDependency,
   useDataTableStore,
   useGlobalState,
@@ -15,6 +14,7 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import { useStyles } from '../tableContext/styles';
+import { useDataContextManagerOrUndefined } from '@/providers/dataContextManager/hooks';
 
 type ITableViewSelectorProps = ITableViewSelectorComponentProps;
 
@@ -61,7 +61,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     if (dataContextManager)
       match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id) });
 
-    const permissionedFilters = filters.filter((f) => !f.permissions || (f.permissions && application.anyOfPermissionsGranted(f.permissions)));
+    const permissionedFilters = filters.filter((f) => !f.permissions || application.anyOfPermissionsGranted(f.permissions));
 
     evaluateDynamicFilters(
       permissionedFilters,

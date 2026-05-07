@@ -45,9 +45,9 @@ export interface IComponentDuplicatePayload {
   componentId: string;
 }
 
-export interface IComponentUpdatePayload {
+export interface IComponentUpdatePayload<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> {
   componentId: string;
-  settings: IConfigurableFormComponent;
+  updater: (model: TModel) => TModel;
 }
 
 export interface IComponentUpdateSettingsValidationPayload {
@@ -88,6 +88,7 @@ export type FormDesignerState = {
   isDebug: boolean;
   readOnly: boolean;
   formMode: FormMode;
+  activeSettingsTabKey: string | undefined;
 
   settingsPanelElement: HTMLDivElement | null;
 };
@@ -96,7 +97,7 @@ export type FormDesignerActions = {
   setMarkupAndSettings: (flatMarkup: IFlatComponentsStructure, settings: IFormSettings) => void;
 
   addComponent: (payload: IComponentAddPayload) => void;
-  updateComponent: (payload: IComponentUpdatePayload) => void;
+  updateComponent: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>) => void;
   deleteComponent: (payload: IComponentDeletePayload) => void;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
@@ -117,6 +118,7 @@ export type FormDesignerActions = {
 
   setReadOnly: (value: boolean) => void;
   setFormMode: (value: FormMode) => void;
+  setActiveSettingsTabKey: (key: string) => void;
 
   getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
 

@@ -13,10 +13,9 @@ import { SheshaError } from '@/utils/errors';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useDataTableStore } from '@/providers/dataTable/hooks';
 import { useGlobalState } from '@/providers/globalState';
-import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager/hooks';
 import { useModal } from '@/providers/dynamicModal';
 import { useNestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher';
-import { IAnyObject } from '@/interfaces/anyObject';
 import GlobalTableFilter from '../globalTableFilter';
 import TablePager from '../tablePager';
 import { DataTable } from '../dataTable';
@@ -185,15 +184,15 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
     } else console.warn('Modal Form is not specified');
   };
 
-  const handleOnChange = (row: IAnyObject): void => {
-    if (onChange && !isEmpty(row)) {
-      onChange(row && (row.id || row.Id), row);
-    }
-  };
+  // const handleOnChange = (row: IAnyObject): void => {
+  //   if (onChange && !isEmpty(row)) {
+  //     onChange(row && (row.id || row.Id), row);
+  //   }
+  // };
 
-  const onSelectRow = (_index: number, row: IAnyObject): void => {
-    handleOnChange(row);
-  };
+  // const onSelectRow = (_index: number, row: IAnyObject): void => {
+  //   handleOnChange(row);
+  // };
 
   const onModalOk = (): void => {
     if (onSelect && state?.selectedRow) {
@@ -244,7 +243,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
         </div>
 
         <DataTable
-          onSelectRow={onSelectRow}
+          // onSelectRow={onSelectRow}
           onDblClick={onDblClick}
           options={{ omitClick: true }}
           striped

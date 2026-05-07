@@ -1,21 +1,34 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { asNumber } from '../utils';
 import { IDataCellProps } from '../interfaces';
 import { useReferenceListItem } from '@/providers/referenceListDispatcher';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type IReferenceListCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
+export type IReferenceListCellProps<D extends object = object, V = unknown> = IDataCellProps<D, V>;
 
-const ReferenceListCellInternal = <D extends object = object, V = any>(props: IReferenceListCellProps<D, V>): React.JSX.Element => {
-  const itemValue = asNumber(props.value);
-  const { referenceListName, referenceListModule } = props.columnConfig;
+type ReferenceListCellInternalProps = {
+  referenceListName: string;
+  referenceListModule: string;
+  value: number;
+};
+const ReferenceListCellInternal = (props: ReferenceListCellInternalProps): ReactNode => {
+  const { referenceListName, referenceListModule, value } = props;
 
-  const item = useReferenceListItem(referenceListModule, referenceListName, itemValue);
-  return <>{item?.data?.item}</>;
+  const item = useReferenceListItem(referenceListModule, referenceListName, value);
+  return <>{item.data?.item}</>;
 };
 
-export const ReferenceListCell = <D extends object = object, V = any>(props: IReferenceListCellProps<D, V>): React.JSX.Element => {
+export const ReferenceListCell = <D extends object = object, V = unknown>(props: IReferenceListCellProps<D, V>): ReactNode => {
   const itemValue = asNumber(props.value);
-  if (typeof itemValue === 'undefined' || itemValue === null || !props.columnConfig) return null;
+  const { referenceListModule, referenceListName } = props.columnConfig;
 
-  return (<ReferenceListCellInternal {...props} />);
+  return isDefined(itemValue) && !isNullOrWhiteSpace(referenceListModule) && !isNullOrWhiteSpace(referenceListName)
+    ? (
+      <ReferenceListCellInternal
+        value={itemValue}
+        referenceListModule={referenceListModule}
+        referenceListName={referenceListName}
+      />
+    )
+    : undefined;
 };

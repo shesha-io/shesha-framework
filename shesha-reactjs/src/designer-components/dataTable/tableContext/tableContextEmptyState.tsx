@@ -8,9 +8,9 @@ import { useStyles } from './styles';
 export interface ITableContextEmptyStateProps {
   containerId: string;
   componentId: string;
-  className?: string;
-  style?: React.CSSProperties;
-  readOnly?: boolean;
+  className?: string | undefined;
+  style?: React.CSSProperties | undefined;
+  readOnly?: boolean | undefined;
 }
 
 export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({

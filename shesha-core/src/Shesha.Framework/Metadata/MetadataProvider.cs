@@ -401,7 +401,7 @@ namespace Shesha.Metadata
             var modelProviders = _iocResolver.ResolveAll<IModelProvider>();
             foreach (var provider in modelProviders)
             {
-                models.AddRange(await provider.GetModelsAsync());
+                models.AddRange(await provider.GetModelsListAsync());
             }
             return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
         }

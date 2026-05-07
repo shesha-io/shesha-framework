@@ -1,4 +1,4 @@
-import { Cell } from 'react-table';
+import { Cell, ColumnInstance } from 'react-table';
 import { IAnchoredDirection, IStoredFilter } from '@/providers/dataTable/interfaces';
 import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
 import { IArgumentEvaluationResult, convertJsonLogicNode, convertJsonLogicNodeSync } from './jsonLogic';
@@ -9,11 +9,17 @@ import { isDefined } from './nullables';
 import { extractErrorMessage } from './errors';
 import { getNestedPropertyValue } from './dotnotation';
 import { DataTableColumn } from '@/components/dataTable/interfaces';
+import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 
 export interface IAnchoredColumn {
   isFixed: boolean;
   direction?: IAnchoredDirection;
 }
+
+// TODO V1: review after refactoring
+export const getConfigurableColumn = <D extends object = object>(column: ColumnInstance<D>): IConfigurableColumnsProps | undefined => {
+  return column as unknown as IConfigurableColumnsProps;
+};
 
 export const getColumnAnchored = (anchored: string | undefined): IAnchoredColumn => {
   if (anchored === 'left') {
@@ -33,11 +39,11 @@ export const getColumnAnchored = (anchored: string | undefined): IAnchoredColumn
   }
 };
 
-export const calculateTotalColumnsOnFixed = (row: Cell[], direction: IAnchoredDirection): number => {
+export const calculateTotalColumnsOnFixed = <D extends object = object>(row: Cell<D>[], direction: IAnchoredDirection): number => {
   return row.filter(({ column }) => getColumnAnchored((column as DataTableColumn).anchored).direction === direction).length;
 };
 
-export const calculatePositionShift = (row: Cell[], start: number, end: number): Array<number> => {
+export const calculatePositionShift = <D extends object = object>(row: Cell<D>[], start: number, end: number): Array<number> => {
   return row.slice(start, end).map((col) => {
     // TODO: check type of `col.column.width` and remove string or handle it here
     return isDefined(col.column.minWidth) && isDefined(col.column.width) && typeof (col.column.width) === 'number' && col.column.width < col.column.minWidth

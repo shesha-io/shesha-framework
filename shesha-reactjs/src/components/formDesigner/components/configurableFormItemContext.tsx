@@ -1,40 +1,52 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { Form, FormItemProps } from "antd";
 import { IConfigurableFormItemChildFunc } from "./model";
 import { DataBinder } from "@/hocs/dataBinder";
-import { useDataContextManager } from "@/providers/dataContextManager";
+import { useDataContextManager } from "@/providers/dataContextManager/hooks";
+import { InputComponentApi } from "@/componentsApi/componentApi";
+import { useComponentApi } from "@/providers/componentApi/provider";
+
+import apiCode from "../../../componentsApi/componentApi.ts?raw";
+import { useEffectOnce } from "@/hooks/useEffectOnce";
 
 interface IConfigurableFormItem_ContextProps {
   componentId: string;
   formItemProps: FormItemProps;
   valuePropName?: string;
+  componentName: string;
   propertyName: string;
   contextName: string;
   readonly children?: IConfigurableFormItemChildFunc;
 }
 
 export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps> = (props) => {
-  const {
-    formItemProps,
-    valuePropName,
-    propertyName,
-    contextName,
-    children,
-  } = props;
+  const { componentId, formItemProps, valuePropName, componentName, propertyName, contextName, children } = props;
+  const componentApi = useComponentApi();
   const { getDataContext } = useDataContextManager();
-  const context = getDataContext(contextName);
-  const { getFieldValue } = context ?? {};
+  const { getFieldValue, setFieldValue } = getDataContext(contextName) ?? {};
 
-  const value = getFieldValue ? getFieldValue(propertyName) : undefined;
+  const value = getFieldValue?.(propertyName);
+
+  const onChange = useCallback((val: any): void => {
+    const newValue = val?.target ? val?.target[valuePropName || 'value'] : val;
+    setFieldValue?.(propertyName as "", newValue as never);
+  }, [valuePropName, setFieldValue, propertyName]);
+
+  componentApi?.updateApi<InputComponentApi>(
+    {
+      id: componentId,
+      componentName: componentName,
+      typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+    },
+    [{ name: 'value', getter: () => value, setter: onChange }],
+  );
+  useEffectOnce(() => () => componentApi?.removeApi(componentId));
+
 
   return (
     <Form.Item {...formItemProps}>
       <DataBinder
-        onChange={(val) => {
-          const value = val?.target ? val?.target[valuePropName || 'value'] : val;
-          if (context?.setFieldValue)
-            context.setFieldValue(propertyName as "", value as never); // TODO: review and change types
-        }}
+        onChange={onChange}
         value={value}
       >
         {children}

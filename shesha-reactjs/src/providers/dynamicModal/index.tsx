@@ -147,7 +147,11 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
         const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy();
         return { configurableActionsDispatcherProxy };
       },
-      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
+      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0)
+        .add<IShowModalActionArguments>(1, (prev) => ({
+          ...prev,
+          showCloseIcon: prev.showCloseIcon !== undefined ? prev.showCloseIcon : true,
+        })),
     },
     actionDependencies,
   );

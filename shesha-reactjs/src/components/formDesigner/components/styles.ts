@@ -31,6 +31,7 @@ export const useStyles = createStyles(({ css, cx, token }, { autoAlignLabel = tr
        
         .ant-form-item-control-input {
             width: 100% !important;
+            min-height: 0px !important;
         }
        
         .ant-form-item-control-input-content {

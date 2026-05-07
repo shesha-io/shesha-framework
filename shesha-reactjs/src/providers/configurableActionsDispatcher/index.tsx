@@ -33,7 +33,7 @@ const getActualActionArguments = <TArguments extends ActionParametersDictionary 
   const versionedValue = { ...actionArguments } as IHasVersion;
   if (versionedValue.version === undefined)
     versionedValue.version = -1;
-  const model = fluent.migrator.upgrade(versionedValue);
+  const model = fluent.migrator.upgrade(versionedValue, {});
   return model;
 };
 
@@ -213,7 +213,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
     return action.useDynamicContextHook ?? EMPTY_DYNAMIC_CONTEXT_HOOK;
   };
 
-  const useActionDynamicContext = (actionConfiguration: IConfigurableActionConfiguration): GenericDictionary => {
+  const useActionDynamicContext = (actionConfiguration: IConfigurableActionConfiguration | undefined): GenericDictionary => {
     const useDynamicData = getDynamicContextHook(actionConfiguration);
 
     return useDynamicData();

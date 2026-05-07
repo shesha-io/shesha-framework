@@ -4,9 +4,10 @@ import React, { FC } from 'react';
 
 import { ColumnInstance, HeaderGroup } from 'react-table';
 import { NewRowCell } from './newRowCell';
+import { ITableRowData } from '@/providers/dataTable/interfaces';
 
-export interface INewRowEditorProps {
-  columns: ColumnInstance[];
+export interface INewRowEditorProps<D extends ITableRowData = ITableRowData> {
+  columns: ColumnInstance<D>[];
   headerGroups: HeaderGroup<any>[];
   creater: (data: any) => Promise<any>;
   onInitData?: () => Promise<object>;

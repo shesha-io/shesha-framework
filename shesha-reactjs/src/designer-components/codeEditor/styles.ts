@@ -1,9 +1,13 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
+  const codeEditorContainerClass = "sha-code-editor-container";
   const codeEditorModalBody = cx("sha-code-editor-modal-body", css`
         overflow: hidden;
         max-height: 70vh;
+        .${codeEditorContainerClass} {
+          height: 70vh;
+        }
         .ant-tabs {
           height: 70vh;
         .ant-tabs-content-holder {
@@ -28,7 +32,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         }
 
     `);
-  const codeEditorContainer = cx("sha-code-editor-container", css`
+  const codeEditorContainer = cx(codeEditorContainerClass, css`
         height: 100%;
         display: flex;
         flex-direction: column;

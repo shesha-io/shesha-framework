@@ -52,14 +52,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     label: 'Label',
                     jsSetting: true,
                   },
-                  {
-                    id: nanoid(),
-                    propertyName: 'hasCustomHeader',
-                    parentId: commonTabId,
-                    label: 'Custom Header',
-                    type: 'switch',
-                    jsSetting: true,
-                  },
                 ],
               })
               .addSettingsInputRow({

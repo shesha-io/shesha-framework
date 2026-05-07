@@ -213,7 +213,9 @@ export const useFormComponentStyles = <TModel>(
 
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
-  const [backgroundStyles, setBackgroundStyles] = useState(
+  const backgroundLocal = getBackgroundStyle(background, jsStyle);
+
+  const [backgroundStyles, setBackgroundStyles] = useState(() =>
     background && background.storedFile?.id && background.type === 'storedFile'
       ? {
         backgroundImage: `url(${app.backendUrl}/api/StoredFile/Download?id=${background.storedFile.id})`,
@@ -221,7 +223,7 @@ export const useFormComponentStyles = <TModel>(
         backgroundPosition: background.position,
         backgroundRepeat: background.repeat,
       }
-      : getBackgroundStyle(background, jsStyle),
+      : backgroundLocal,
   );
 
   const stylingBoxParsed = useMemo(() => jsonSafeParse<StyleBoxValue>(stylingBox || '{}') ?? {}, [stylingBox]);
@@ -249,21 +251,21 @@ export const useFormComponentStyles = <TModel>(
           console.error('Failed to fetch image', error);
         });
     } else {
-      setBackgroundStyles(getBackgroundStyle(background, jsStyle));
+      setBackgroundStyles(backgroundLocal);
     }
   }, [background, jsStyle, app.backendUrl, app.httpHeaders]);
 
-  const appearanceStyle = useMemo(() => removeUndefinedProps(
+  const appearanceStyle = useDeepCompareMemo(() => removeUndefinedProps(
     {
       ...stylingBoxAsCSS,
       ...dimensionsStyles,
       ...borderStyles,
       ...fontStyles,
-      ...backgroundStyles,
+      ...((background && background.storedFile?.id && background.type === 'storedFile') ? backgroundStyles : backgroundLocal),
       ...shadowStyles,
       ...overflowStyles,
       fontWeight: fontStyles.fontWeight || 400,
-    }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, overflowStyles]);
+    }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, background, backgroundStyles, backgroundLocal, shadowStyles, overflowStyles]);
 
   const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, ...jsStyle }), [appearanceStyle, jsStyle]);
 

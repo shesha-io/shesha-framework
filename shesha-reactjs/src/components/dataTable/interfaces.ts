@@ -1,24 +1,11 @@
-import { MutableRefObject, ReactNode } from 'react';
-import { CellProps, Column, Row } from 'react-table';
-import { IAnyObject } from '@/interfaces';
+import { Column, Row } from 'react-table';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
-import { DataTableFullInstance } from '@/providers/dataTable/contexts';
-import { CellStyleFunc, IAnchoredDirection, IDataTableInstance, ITableColumn, ITableRowData } from '@/providers/dataTable/interfaces';
+import { IPropertyMetadata } from '@/interfaces/metadata';
+import { CellStyleFunc, IAnchoredDirection, ITableColumn, ITableRowData } from '@/providers/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
+import { isDefined } from '@/utils/nullables';
 
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
-
-export interface ITableActionColumns {
-  icon?: ReactNode;
-  onClick?: (id: string, context: IDataTableInstance, row: IAnyObject) => string | void | Promise<any>;
-}
-
-export interface ITableCustomTypeEditor {
-  key: string;
-  property: string;
-  render: (data: IColumnEditFieldProps) => ReactNode;
-}
 
 export type DataTableColumn<D extends object = object> = Column<D> & {
   resizable?: boolean;
@@ -26,6 +13,8 @@ export type DataTableColumn<D extends object = object> = Column<D> & {
   metadata?: IPropertyMetadata;
   anchored?: IAnchoredDirection;
   cellStyleAccessor?: CellStyleFunc;
+  disableSortBy?: boolean | undefined; // TODO: replace and move to a correct type
+  disableResizing?: boolean | undefined; // TODO: review and merge with resizable
 };
 
 export type IStyledColumn<D extends object = object> = DataTableColumn<D> & {
@@ -33,88 +22,64 @@ export type IStyledColumn<D extends object = object> = DataTableColumn<D> & {
 };
 
 export const isStyledColumn = <D extends object = object>(column: DataTableColumn<D>): column is IStyledColumn<D> => {
-  const typed = column as IStyledColumn<D>;
-  return typed && typed.cellStyleAccessor && typeof typed.cellStyleAccessor === 'function';
+  return isDefined(column) && "cellStyleAccessor" in column && typeof column.cellStyleAccessor === 'function';
 };
-
-export interface IColumnEditFieldProps {
-  id: string;
-  name: string;
-  caption?: string;
-  referenceListName?: string;
-  referenceListModule?: string;
-  entityReferenceTypeShortAlias?: string;
-  dataType: ProperyDataType;
-  value?: any;
-  onChange: (key: string, value: any) => void;
-}
 
 export type YesNoInheritJs = 'yes' | 'no' | 'inherit' | 'js';
 
 export interface IShaDataTableInlineEditableProps {
-  canDeleteInline?: YesNoInheritJs;
-  canDeleteInlineExpression?: string; // TODO: replace with new dynamic JS properties
-  customDeleteUrl?: string;
-  canEditInline?: YesNoInheritJs;
-  canEditInlineExpression?: string; // TODO: replace with new dynamic JS properties
-  inlineEditMode?: InlineEditMode;
-  inlineSaveMode?: InlineSaveMode;
-  customUpdateUrl?: string;
-  canAddInline?: YesNoInheritJs;
-  canAddInlineExpression?: string; // TODO: replace with new dynamic JS properties
-  newRowCapturePosition?: NewRowCapturePosition;
-  newRowInsertPosition?: NewRowCapturePosition;
-  customCreateUrl?: string;
-  onNewRowInitialize?: string;
-  onRowSave?: string;
-  onRowSaveSuccessAction?: IConfigurableActionConfiguration;
-  onDblClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
-  onRowDeleteSuccessAction?: IConfigurableActionConfiguration;
+  canDeleteInline?: YesNoInheritJs | undefined;
+  canDeleteInlineExpression?: string | undefined; // TODO: replace with new dynamic JS properties
+  customDeleteUrl?: string | undefined;
+  canEditInline?: YesNoInheritJs | undefined;
+  canEditInlineExpression?: string | undefined; // TODO: replace with new dynamic JS properties
+  inlineEditMode?: InlineEditMode | undefined;
+  inlineSaveMode?: InlineSaveMode | undefined;
+  customUpdateUrl?: string | undefined;
+  canAddInline?: YesNoInheritJs | undefined;
+  canAddInlineExpression?: string | undefined; // TODO: replace with new dynamic JS properties
+  newRowCapturePosition?: NewRowCapturePosition | undefined;
+  newRowInsertPosition?: NewRowCapturePosition | undefined;
+  customCreateUrl?: string | undefined;
+  onNewRowInitialize?: string | undefined;
+  onRowSave?: string | undefined;
+  onRowSaveSuccessAction?: IConfigurableActionConfiguration | undefined;
+  onDblClick?: IConfigurableActionConfiguration | ((rowData: unknown, index?: number) => void) | undefined;
+  onRowDeleteSuccessAction?: IConfigurableActionConfiguration | undefined;
 
-  onRowClick?: IConfigurableActionConfiguration;
-  onRowDoubleClick?: IConfigurableActionConfiguration;
-  onRowHover?: IConfigurableActionConfiguration;
-  onRowSelect?: IConfigurableActionConfiguration;
-  onSelectionChange?: IConfigurableActionConfiguration;
+  onRowClick?: IConfigurableActionConfiguration | undefined;
+  onRowDoubleClick?: IConfigurableActionConfiguration | undefined;
+  onRowHover?: IConfigurableActionConfiguration | undefined;
+  onRowSelect?: IConfigurableActionConfiguration | undefined;
+  onSelectionChange?: IConfigurableActionConfiguration | undefined;
 }
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
-  useMultiselect?: boolean;
-  selectionMode?: TableSelectionMode;
-  freezeHeaders?: boolean;
-  disableCustomFilters?: boolean;
-  columnsMismatch?: boolean;
+  selectionMode?: TableSelectionMode | undefined;
+  freezeHeaders?: boolean | undefined;
+  disableCustomFilters?: boolean | undefined;
+  columnsMismatch?: boolean | undefined;
   /**
    * @deprecated pass this on an `IndexTableProvider` level
    */
 
-  header?: string;
-  selectedRowIndex?: number;
-  onSelectRow?: (index: number, row: any) => void;
-  onSelectedIdsChanged?: (selectedRowIds: string[]) => void;
-  onMultiRowSelect?: (rows: Array<Row<ITableRowData>> | Row<ITableRowData>) => void;
-  customTypeEditors?: ITableCustomTypeEditor[];
-  onRowsChanged?: (rows: object[]) => void;
-  tableRef?: MutableRefObject<Partial<DataTableFullInstance> | null>;
+  header?: string | undefined;
+  selectedRowIndex?: number | undefined;
+  onSelectRow?: ((index: number, row: ITableRowData) => void) | undefined;
+  onSelectedIdsChanged?: ((selectedRowIds: string[]) => void) | undefined;
+  onMultiRowSelect?: ((rows: Array<Row<ITableRowData>> | Row<ITableRowData>) => void) | undefined;
   /**
    * Called when fetch data or refresh is complete is complete
    */
-  onFetchDataSuccess?: () => void;
+  onFetchDataSuccess?: (() => void) | undefined;
 }
 
-export interface ITableCellRenderingArgs<TValue = any> {
+export interface ITableCellRenderingArgs<TValue = unknown> {
   value?: TValue;
   onChange?: (value?: TValue) => void;
 }
 
-export interface ITableCustomTypesRender<D extends object, V = any> {
-  key: string;
-  dataFormat?: string;
-  // render: (cellProps: ITableCellRenderingArgs, router: any) => React.JSX.Element;
-  render: (cellProps: CellProps<D, V>, router: any) => React.JSX.Element;
-}
-
-export type OnSaveHandler = (data: object) => Promise<object>;
+export type OnSaveHandler = (data: ITableRowData) => Promise<ITableRowData | undefined>;
 export type OnSaveSuccessHandler = (
-  data: object,
+  data: ITableRowData,
 ) => void;

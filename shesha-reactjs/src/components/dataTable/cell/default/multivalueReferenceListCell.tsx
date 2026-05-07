@@ -1,40 +1,50 @@
-import React, { useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { IDataCellProps } from '../interfaces';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { asNumber } from '../utils';
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type IMultivalueReferenceListCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
+export type IMultivalueReferenceListCellProps<D extends object = object, V = unknown> = IDataCellProps<D, V>;
 
-const MultivalueReferenceListCellInternal = <D extends object = object, V = any>(
-  props: IMultivalueReferenceListCellProps<D, V>,
-): React.JSX.Element => {
-  const { value } = props;
-  const { referenceListName, referenceListModule } = props.columnConfig;
+type MultivalueReferenceListCellInternalProps = {
+  value: Array<number>;
+  referenceListName: string;
+  referenceListModule: string;
+};
+
+const MultivalueReferenceListCellInternal = (props: MultivalueReferenceListCellInternalProps): ReactNode => {
+  const { value, referenceListName, referenceListModule } = props;
 
   const list = useReferenceList({ module: referenceListModule, name: referenceListName });
-  const refListItems = list?.data?.items;
+  const refListItems = list.data?.items;
 
   const mapped = useMemo(() => {
-    if (!refListItems || !Array.isArray(refListItems) || !value || !Array.isArray(value)) return null;
+    if (!isNonEmptyArray(refListItems))
+      return null;
 
     const mappedArray = value
       .map((item) => {
         const numericValue = asNumber(item);
-        const found = numericValue === null ? null : refListItems.find((i) => i.itemValue === numericValue);
+        const found = !isDefined(numericValue)
+          ? null
+          : refListItems.find((i) => i.itemValue === numericValue);
         return found?.item || null;
       })
-      .filter((item) => item !== null && item !== undefined);
+      .filter((item) => isDefined(item));
     return mappedArray.join(', ');
   }, [refListItems, value]);
 
   return <>{mapped}</>;
 };
 
-export const MultivalueReferenceListCell = <D extends object = object, V = any>(
+export const MultivalueReferenceListCell = <D extends object = object, V = unknown>(
   props: IMultivalueReferenceListCellProps<D, V>,
-): React.JSX.Element => {
+): ReactNode => {
   const { value } = props;
-  if (!value || !props.columnConfig) return null;
+  const { referenceListModule, referenceListName } = props.columnConfig;
 
-  return (<MultivalueReferenceListCellInternal {...props} />);
+  return Array.isArray(value) && isNonEmptyArray(value) && !isNullOrWhiteSpace(referenceListModule) && !isNullOrWhiteSpace(referenceListName)
+    ? <MultivalueReferenceListCellInternal value={value} referenceListModule={referenceListModule} referenceListName={referenceListName} />
+    : undefined;
 };

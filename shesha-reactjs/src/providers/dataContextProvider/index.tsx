@@ -1,7 +1,6 @@
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from "@/providers";
 import React, { PropsWithChildren, useRef } from "react";
-import { useDataContextManagerActions } from "../dataContextManager/index";
 import { DataContextType, ContextOnChangeData, ContextSetFieldValue, RefreshContext } from "./contexts";
 import DataContextBinder from "./dataContextBinder";
 import { setValueByPropertyName } from "@/utils/object";
@@ -10,6 +9,7 @@ import { IShaDataWrapper } from "./contexts/shaDataAccessProxy";
 import { Path } from "@/utils/dotnotation";
 import { GetShaDataContextAccessor, useShaDataContextAccessor } from "./contexts/contextDataAccessor";
 import { WebStorageType } from "./contexts/webStorageProxy";
+import { useDataContextManagerActions } from "../dataContextManager/hooks";
 
 export interface IDataContextProviderProps<TData extends object> {
   id: string;
@@ -45,7 +45,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
 
   const onChange: RefreshContext<TData> = (data?: Partial<TData>): void => {
     if (onChangeData.current)
-      onChangeData.current(data, data);
+      onChangeData.current(data as object, data as object);
     onChangeAction(data);
     onChangeContextData();
   };

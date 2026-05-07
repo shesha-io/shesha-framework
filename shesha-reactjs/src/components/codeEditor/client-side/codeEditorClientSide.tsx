@@ -331,7 +331,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
 
   return showTree
     ? (
-      <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
+      <div className={styles.codeEditor} style={{ minHeight: "300px", height: "80vh", width: "100%", ...style }}>
         <div className={styles.sider}>
           <Button
             block
@@ -361,7 +361,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
       </div>
     )
     : (
-      <div style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
+      <div style={{ minHeight: "300px", height: "80vh", width: "100%", ...style }}>
         {renderCodeEditor()}
       </div>
     );

@@ -1,6 +1,15 @@
 import { HttpClientApi, IUrlDataSourceConfig, useHttpClient, useMetadataDispatcher } from '@/providers';
-import React, { useMemo, FC, PropsWithChildren } from 'react';
+import React, { FC, PropsWithChildren, useMemo } from 'react';
 
+import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
+import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
+import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
+import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
+import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
+import { buildUrl } from '@/utils';
+import { isNonEmptyArray } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { camelcaseDotNotation } from '@/utils/string';
 import {
   DataTableColumnDto,
@@ -9,18 +18,10 @@ import {
   ITableDataFetchColumn,
   ITableDataInternalResponse,
   ITableDataResponse,
+  ITableRowData,
 } from '../interfaces';
+import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from '../provider';
 import { IRepository, RowsReorderPayload } from './interfaces';
-import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
-import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
-import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
-import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
-import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
-import { buildUrl } from '@/utils';
-import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
-import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from '../provider-with-repo';
-import { isNonEmptyArray } from '@/utils/array';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -36,6 +37,13 @@ interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
   apiHelper: IEntityEndpointsEvaluator;
   mutator: IUseMutateResponse<unknown>;
 }
+
+const isPagedResponse = (value: unknown): value is { items: ITableRowData[]; totalCount: number } => {
+  if (value === null || typeof value !== 'object')
+    return false;
+  const v = value as { items?: unknown; totalCount?: unknown };
+  return Array.isArray(v.items) && typeof v.totalCount === 'number';
+};
 
 const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
   const { httpClient, getListUrl } = args;
@@ -96,10 +104,14 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     const getDataUrl = buildUrl(getListUrl, getDataPayload);
 
     const response = await httpClient.get<IAjaxResponse<ITableDataResponse>>(getDataUrl);
-    const dataResponse = extractAjaxResponse(response.data);
+    const dataResponse: unknown = extractAjaxResponse(response.data);
 
     const { pageSize } = payload;
-    const { items, totalCount } = dataResponse;
+    const { items, totalCount }: { items: ITableRowData[]; totalCount: number } = Array.isArray(dataResponse)
+      ? { items: dataResponse as ITableRowData[], totalCount: dataResponse.length }
+      : isPagedResponse(dataResponse)
+        ? { items: dataResponse.items, totalCount: dataResponse.totalCount }
+        : { items: [], totalCount: 0 };
 
     const result: ITableDataInternalResponse = {
       totalRows: totalCount,

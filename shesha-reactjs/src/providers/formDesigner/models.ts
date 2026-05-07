@@ -6,6 +6,7 @@ import {
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { createNamedContext } from '@/utils/react';
 import { DEFAULT_FORM_SETTINGS, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, ROOT_COMPONENT_KEY } from "../form/models";
+import { IComponentUpdatePayload } from './contexts';
 
 /** Named Data Source */
 export interface IDataSource {
@@ -27,7 +28,7 @@ export type IComponentSettingsEditorsCache = Record<string, ISettingsFormFactory
 export type RerenderTrigger = () => void;
 
 export type FormDesignerSubscription = (designer: IFormDesignerInstance) => void;
-export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified';
+export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified' | 'settings-tab';
 
 export interface AddComponentPayloadBase {
   index: number;
@@ -57,11 +58,6 @@ export interface IComponentDeletePayload {
 
 export interface IComponentDuplicatePayload {
   componentId: string;
-}
-
-export interface IComponentUpdatePayload {
-  componentId: string;
-  settings: IConfigurableFormComponent;
 }
 
 export interface IComponentUpdateSettingsValidationPayload {

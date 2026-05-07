@@ -15,6 +15,7 @@ import {
   isConfigurableFormComponent,
   isObjectWithStringId,
   isRawComponentsContainer,
+  RootContexts,
   STYLE_BOX_CSS_POPERTIES,
   StyleBoxValue,
   useDataTableStateOrUndefined,
@@ -23,13 +24,9 @@ import {
   useMetadataDispatcher,
 } from '@/providers';
 import {
-  IDataContextManagerActionsContext,
-  IDataContextManagerFullInstance,
-  IDataContextsData,
-  RootContexts,
   useDataContextManagerActionsOrUndefined,
   useDataContextManagerOrUndefined,
-} from '@/providers/dataContextManager';
+} from '@/providers/dataContextManager/hooks';
 import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import { ISelectionProps } from '@/providers/dataTable/interfaces';
 import { executeFunction } from '@/utils';
@@ -50,7 +47,7 @@ import moment from 'moment';
 import Mustache from 'mustache';
 import { CSSProperties, useRef } from 'react';
 import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
-import { SheshaCommonContexts } from '../dataContextManager/models';
+import { IDataContextManagerActions, IDataContextManagerFullInstance, IDataContextsData, SheshaCommonContexts } from '../dataContextManager/models';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
@@ -91,6 +88,8 @@ import {
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
+import { IComponentApiActions } from '../componentApi/model';
+import { useComponentApi } from '../componentApi/provider';
 
 export {
   executeExpression, executeScript,
@@ -107,6 +106,8 @@ type MomentType = typeof moment;
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value extends object = object> {
+  components: Record<string, Record<string, unknown>>;
+
   application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   metadataDispatcher?: IMetadataDispatcher;
@@ -164,9 +165,10 @@ export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
 };
 
 export type AvailableConstantsContext = {
+  componentApi?: IComponentApiActions | undefined;
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
-  dcm: IDataContextManagerActionsContext | undefined;
+  dcm: IDataContextManagerActions | undefined;
   metadataDispatcher: IMetadataDispatcher | undefined;
   closestContextId: string | undefined;
   globalState: IAnyObject | undefined;
@@ -193,8 +195,10 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
+  const componentApi = useComponentApi();
 
   const result: AvailableConstantsContext = {
+    componentApi: componentApi,
     closestShaFormApi: undefined,
     selectedRow,
     dcm: undefined,
@@ -281,10 +285,27 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message,
     metadataDispatcher,
     modal,
+
+    componentApi,
   } = fullContext;
   const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
   const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
+    components: () => {
+      const api: Record<string, Record<string, unknown>> = {};
+      if (componentApi) {
+        const components = componentApi.getComponents();
+        components.forEach((component) => {
+          if (component.api === undefined || !component.componentName) return;
+          if (api[component.componentName]) {
+            console.warn(`Duplicate componentName "${component.componentName}" detected. The earlier component's API will be overwritten.`);
+          }
+          api[component.componentName] = component.api;
+        });
+      }
+      return api;
+    },
+
     application: () => {
       // get application context
       const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
@@ -1354,7 +1375,7 @@ export const pickStyleFromModel = (model: StyleBoxValue, ...args: unknown[]): CS
 const emptyStyle = {};
 type StyleFunction = (data: object, globalState: object) => CSSProperties | undefined;
 export const getStyle = (
-  style: string,
+  style: string | undefined,
   formData: object = {},
   globalState: object = {},
   defaultStyle: object = emptyStyle,

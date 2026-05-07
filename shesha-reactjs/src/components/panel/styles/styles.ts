@@ -191,6 +191,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         align-self: center;
       }
 
+      .ant-collapse-title {
+        flex: 1;
+      }
+
       .ant-collapse-extra {
         align-self: center;
       }

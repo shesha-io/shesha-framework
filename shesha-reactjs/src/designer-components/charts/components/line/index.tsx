@@ -6,6 +6,7 @@ import {
   LineController,
   LineElement,
   PointElement,
+  Scale,
   Title,
   Tooltip,
 } from 'chart.js';
@@ -148,6 +149,9 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         },
         display: !!showXAxisScale,
         offset: true,
+        afterFit: (axis: Scale) => {
+          axis.height += isSmallScreen ? 16 : 24;
+        },
         ticks: {
           maxRotation: 45, // Allow rotation up to 45 degrees
           minRotation: 0,

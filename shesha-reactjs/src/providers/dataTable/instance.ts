@@ -1,8 +1,8 @@
 import { DatatableInitArgs, IDatasetInstance } from "./models";
-import { Row } from "react-table";
+import { Row, SortingRule } from "react-table";
 import { IConfigurableColumnsProps, isActionColumnProps, isCrudOperationsColumnProps, isDataColumnProps, isFormColumnProps, isRendererColumnProps } from "../datatableColumnsConfigurator/models";
 import { DataFetchDependencies, DatasetEvents, DataTableColumnDto, DragState, FilterExpression, IColumnWidth, IGetListDataPayload, ISelectionProps, isTableRowData, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFormColumn, ITableRendererColumn } from "./interfaces";
-import { IndexColumnFilterOption, ColumnFilter, ITableRowData, IStoredFilter, IColumnSorting, ISortingItem, ITableFilter, DataFetchDependency } from "./interfaces";
+import { IndexColumnFilterOption, ColumnFilter, ITableRowData, IStoredFilter, ISortingItem, ITableFilter, DataFetchDependency } from "./interfaces";
 import { IRepository } from "./repository/interfaces";
 import { IDataTableStateContext } from "./interfaces.state";
 import { DATA_TABLE_CONTEXT_INITIAL_STATE, IDataTableUserConfig, ITableColumnUserSettings, MIN_COLUMN_WIDTH } from "./contexts";
@@ -343,6 +343,7 @@ export class DatasetInstance implements IDatasetInstance {
     if (state.sortMode === 'strict' && state.strictSortBy) {
       if (!dataColumns.find((column) => column.propertyName === state.strictSortBy))
         dataColumns.push({
+          id: state.strictSortBy,
           propertyName: state.strictSortBy,
           propertiesToFetch: [state.strictSortBy],
           dataType: 'number',
@@ -516,7 +517,7 @@ export class DatasetInstance implements IDatasetInstance {
     this.updateState((state) => ({ ...state, permanentFilter: filter }));
   };
 
-  onSort = async (sorting: IColumnSorting[]): Promise<void> => {
+  onSort = async (sorting: SortingRule<ITableRowData>[]): Promise<void> => {
     this.updateState((state) => ({ ...state, userSorting: [...sorting] }));
     // TODO: review old condition
     // if (tableIsReady.current === true && !props.disableRefresh) {
@@ -666,6 +667,15 @@ export class DatasetInstance implements IDatasetInstance {
       return {
         ...state,
         selectedRow: selectedRow,
+      };
+    });
+  };
+
+  clearSelectedRow = (): void => {
+    this.updateState((state) => {
+      return {
+        ...state,
+        selectedRow: undefined,
       };
     });
   };

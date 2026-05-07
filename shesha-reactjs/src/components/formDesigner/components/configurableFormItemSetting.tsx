@@ -1,4 +1,4 @@
-import React, { FC, cloneElement } from 'react';
+import React, { cloneElement } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression } from '@/providers/form/utils';
 import { getPropertySettingsFromData } from '@/designer-components/_settings/utils/utils';
@@ -8,8 +8,9 @@ import { useStyles } from './styles';
 import classNames from 'classnames';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import SettingsControl, { SettingsControlChildrenFunc } from '@/designer-components/_settings/settingsControl';
+import { FCUnwrapped } from '@/providers';
 
-export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
+export const ConfigurableFormItemSetting: FCUnwrapped<IConfigurableFormItemProps> = ({
   children,
   model,
   valuePropName,
@@ -26,7 +27,6 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   const formProps: FormItemProps = {
     name: getFieldNameFromExpression(model.propertyName),
     label: model.label,
-    // style: model.style,
     required: model.validate?.required,
     tooltip: model.description || undefined,
     hidden: model.hidden,

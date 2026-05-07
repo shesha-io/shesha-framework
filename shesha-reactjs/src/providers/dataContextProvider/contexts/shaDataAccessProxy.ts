@@ -40,9 +40,9 @@ export const CreateDataAccessor = <TData extends object = object>(
       const propertyName = name.toString();
 
       if (typeof name === 'symbol') {
-        const accessorData = target.getAccessorValue();
+        const accessorData = target.getAccessorValue() as TData;
         if (isDefined(accessorData)) {
-          const objSymbol = safeGetProperty(accessorData, name) as unknown;
+          const objSymbol = safeGetProperty(accessorData, name as keyof TData) as unknown;
           if (isDefined(objSymbol) && typeof objSymbol === 'function') {
             return objSymbol.bind(accessorData);
           }

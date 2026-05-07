@@ -101,8 +101,8 @@ export interface ModelTypeIdentifier {
 
 export interface IHasEntityType {
   fullClassName?: string;
-  entityType?: string;
-  entityModule?: string | null;
+  entityType?: string | undefined;
+  entityModule?: string | undefined;
 }
 
 export interface IHasFullyQualifiedEntityType {
@@ -159,7 +159,7 @@ export const isEntityReferencePropertyMetadata = (propMeta: IMemberMetadata): pr
 };
 
 export const isEntityReferenceArrayPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferenceArrayPropertyMetadata => {
-  return isDefined(propMeta) && propMeta.dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(propMeta.dataFormat);
+  return isDefined(propMeta) && propMeta.dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(propMeta.dataFormat ?? '');
 };
 
 export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {

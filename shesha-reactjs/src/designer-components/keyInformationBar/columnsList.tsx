@@ -18,10 +18,10 @@ import { strings } from '@/components/keyInformationBar/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IProps {
-  readOnly: boolean;
-  value?: object;
-  onChange?: any;
-  size?: SizeType;
+  readOnly: boolean | undefined;
+  value?: object | undefined;
+  onChange?: any | undefined;
+  size?: SizeType | undefined;
 }
 
 const EditableContext = React.createContext(null);

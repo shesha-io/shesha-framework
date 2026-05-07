@@ -6,6 +6,7 @@ using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Services;
 using Shesha.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -77,6 +78,23 @@ namespace Shesha.NHibernate
                     }
                     else
                     {
+                        if (propName.EndsWith("Id"))
+                        {
+                            var nestedEntityPropName = propName.RemovePostfix("Id");
+                            if (!string.IsNullOrWhiteSpace(nestedEntityPropName)) 
+                            {
+                                var nestedEntityPropertyWithPath = ReflectionHelper.GetPropertyWithPath(typeof(T), nestedEntityPropName, useCamelCase: true);
+                                if (nestedEntityPropertyWithPath != null && nestedEntityPropertyWithPath.PropertyInfo.PropertyType.IsEntityType()) 
+                                {
+                                    string[] nestedPath = [.. nestedEntityPropertyWithPath.Path, "Id"];
+                                    var nestedProp = nestedPath.Delimited(".");
+                                    propertiesToFetch.Add(nestedProp);
+                                } else
+                                    missingProperties.Add(propName);
+                            } else
+                                missingProperties.Add(propName);
+                        }                        
+                        
                         missingProperties.Add(propName);
                     }
                 }                

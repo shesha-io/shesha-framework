@@ -3,7 +3,6 @@ import { CollapsiblePanel } from '@/components/panel';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useFormData } from '@/providers';
-import { useForm } from '@/providers/form';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
@@ -16,6 +15,7 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultHeaderStyles, defaultStyles } from './utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { migrateV9toV10 } from './migrations/migrate-v10';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   type: 'collapsiblePanel',
@@ -23,7 +23,6 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
     const { data } = useFormData();
     const {
       label,
@@ -35,9 +34,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       bodyColor,
       hideCollapseContent,
       hideWhenEmpty,
-      hasCustomHeader,
       isDynamic,
-      customHeader,
       content,
       className,
       hidden,
@@ -48,31 +45,26 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
     ), [label, data]);
 
     const headerComponents = model.header?.components ?? [];
+    const hasHeaderComponents = headerComponents.length > 0;
 
     const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles?.border } }).fullStyle;
 
     const isIconHidden = expandIconPosition === 'hide';
-    const extra = ((headerComponents?.length > 0 || formMode === 'designer') && !hasCustomHeader) ? (
-      <ComponentsContainer
-        containerId={model.header?.id}
-        direction="horizontal"
-        dynamicComponents={isDynamic ? headerComponents : []}
-      />
-    ) : null;
 
     return hidden ? null : (
       <ParentProvider model={model} name={`CollapsiblePanel-${model.id}`}>
         <CollapsiblePanel
-          header={hasCustomHeader ? (
+          header={hasHeaderComponents ? (
             <ComponentsContainer
-              containerId={customHeader.id}
-              dynamicComponents={isDynamic ? customHeader?.components : []}
+              containerId={model.header?.id}
+              dynamicComponents={isDynamic ? headerComponents : []}
             />
-          ) : evaluatedLabel}
+          ) : (
+            evaluatedLabel
+          )}
           expandIconPlacement={isIconHidden ? undefined : expandIconPosition}
           showArrow={collapsible !== 'disabled' && !isIconHidden}
           collapsedByDefault={collapsedByDefault}
-          extra={extra}
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           ghost={ghost}
           bodyStyle={{ ...model.allStyles.fullStyle }}
@@ -160,8 +152,9 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           tablet: { ...newModel.tablet, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
           mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
         };
-      }),
-  customContainerNames: ['header', 'content', 'customHeader'],
+      })
+      .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10),
+  customContainerNames: ['header', 'content'],
 };
 
 export default CollapsiblePanelComponent;

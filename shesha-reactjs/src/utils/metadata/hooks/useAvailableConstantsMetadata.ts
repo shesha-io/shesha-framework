@@ -20,6 +20,7 @@ const ALL_STANDARD_CONSTANTS = [
   SheshaConstants.fileSaver,
   SheshaConstants.form,
   SheshaConstants.formData,
+  SheshaConstants.components,
 ];
 
 export interface AvailableConstantsArgs {

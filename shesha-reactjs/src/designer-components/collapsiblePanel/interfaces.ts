@@ -4,7 +4,7 @@ import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models'
 import { isDefined } from '@/utils/nullables';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 import { Collapse } from 'antd';
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 type ExpandIconPlacement = ComponentProps<typeof Collapse>['expandIconPlacement'];
 
@@ -14,6 +14,7 @@ export interface ICollapsiblePanelContent {
 }
 
 export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent, IStyleType {
+  label?: string | ReactNode;
   collapsedByDefault?: boolean;
   expandIconPosition?: ExpandIconPlacement | 'hide';
   header?: ICollapsiblePanelContent;

@@ -3,7 +3,7 @@ import modelSettingsMarkup from '../modelSettings.json';
 import React, { FC, useMemo, useRef } from 'react';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { FormMarkup } from '@/providers/form/models';
-import { Alert, App } from 'antd';
+import { Alert, App, Skeleton } from 'antd';
 import { PermissionEditorComponent } from '../permissionEditor';
 import { PropertiesEditorComponent } from '../propertiesEditor';
 import { useModelConfigurator } from '@/providers';
@@ -86,10 +86,13 @@ export const ModelConfiguratorRenderer: FC = () => {
     validateModel(values);
   };
 
+  if (initialModel.current === undefined)
+    return <Skeleton active />;
+
   return (
     <div className={styles.shaModelConfigurator}>
       <CustomErrorBoundary>
-        {showErrors && errors?.length > 0 && <Alert type="error" message={errorsText} showIcon />}
+        {showErrors && errors?.length > 0 && <Alert type="error" title={errorsText} showIcon />}
         <ConfigurableForm
           className={styles.shaModelConfiguratorForm}
           layout="horizontal"

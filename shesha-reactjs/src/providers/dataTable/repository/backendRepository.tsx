@@ -1,28 +1,27 @@
-import { HttpClientApi, IHasEntityDataSourceConfig, useHttpClient, useMetadataDispatcher } from "@/providers";
-import React, { useMemo, FC, PropsWithChildren } from "react";
-import { camelcaseDotNotation, getNumberOrUndefined } from "@/utils/string";
-import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
-import { IRepository, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs, SupportsGroupingArgs } from "./interfaces";
-import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
-import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
-import { IApiEndpoint, isEntityReferencePropertyMetadata, StandardEntityActions } from "@/interfaces/metadata";
 import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
-import FileSaver from "file-saver";
 import { DataTypes } from "@/interfaces/dataTypes";
-import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
-import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
-import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
 import { IGenericGetAllPayload } from "@/interfaces/gql";
-import { getIdOrUndefined } from "@/utils/entity";
+import { IApiEndpoint, isEntityReferencePropertyMetadata, StandardEntityActions } from "@/interfaces/metadata";
+import { HttpClientApi, IHasEntityDataSourceConfig, useHttpClient, useMetadataDispatcher } from "@/providers";
+import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
+import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
+import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
 import { buildUrl } from "@/utils";
-import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { isNonEmptyArray } from "@/utils/array";
+import { getIdOrUndefined } from "@/utils/entity";
 import { extractErrorInfo } from "@/utils/errors";
 import { callApiEndpoint } from "@/utils/fetchers";
-import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider-with-repo";
-import { DataTableProviderWithRepositoryNew } from "../provider";
-import { isNonEmptyArray } from "@/utils/array";
+import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { camelcaseDotNotation, getNumberOrUndefined } from "@/utils/string";
+import FileSaver from "file-saver";
+import React, { FC, PropsWithChildren, useMemo } from "react";
+import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
+import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider";
+import { EntityReorderItem, EntityReorderPayload, EntityReorderResponse, IRepository, RowsReorderPayload, SupportsGroupingArgs, SupportsReorderingArgs } from "./interfaces";
 
 export interface IWithBackendRepositoryArgs {
   entityType: string | IEntityTypeIdentifier;
@@ -351,18 +350,10 @@ export const useBackendRepository = (args: IWithBackendRepositoryArgs): IBackend
   return repository;
 };
 
-const useNew: boolean = true;
 export const BackendDataSourceTable: FC<IHasEntityDataSourceConfig & PropsWithChildren<Omit<IDataTableProviderWithRepositoryProps, 'repository'>>> = (props) => {
   const { entityType, getDataPath, ...restProps } = props;
 
   const repository = useBackendRepository({ entityType, getListUrl: getDataPath ?? "" });
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  return useNew
-    ? (
-      <DataTableProviderWithRepositoryNew {...restProps} repository={repository} />
-    )
-    : (
-      <DataTableProviderWithRepository {...restProps} repository={repository} />
-    );
+  return <DataTableProviderWithRepository {...restProps} repository={repository} />;
 };

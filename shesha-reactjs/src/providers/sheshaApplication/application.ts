@@ -203,7 +203,6 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
 
   setRequestHeaders = (headers: IRequestHeaders): void => {
     const newHeaders = {
-      ...this.#httpHeaders,
       ...this.#buildHttpRequestHeaders?.(),
       ...headers,
     };

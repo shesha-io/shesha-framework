@@ -1,23 +1,25 @@
-import React, { FC, useMemo } from 'react';
-import { Result } from 'antd';
+import AttributeDecorator from '@/components/attributeDecorator';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { ConfigurableItemIdentifier } from '@/interfaces/configurableItems';
+import { getFormForbiddenMessage, getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
 import { useCrud } from "@/providers/crudContext/index";
-import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
-import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import ParentProvider from '@/providers/parentProvider/index';
 import { ITableFormColumn } from '@/providers/dataTable/interfaces';
-import { LoadingOutlined } from '@ant-design/icons';
-import { useStyles } from '../../styles/styles';
-import { ComponentsContainerFormCell } from './componentsContainerFormCell';
+import { FormIdentifier, ROOT_COMPONENT_KEY } from '@/providers/form/models';
+import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
+import { isFormFullName } from '@/providers/form/utils';
+import { FormItemProvider } from '@/providers/formItem';
 import { useFormById } from '@/providers/formManager/hooks';
 import { UpToDateForm } from '@/providers/formManager/interfaces';
-import { getFormForbiddenMessage, getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
-import AttributeDecorator from '@/components/attributeDecorator';
+import ParentProvider from '@/providers/parentProvider/index';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Result } from 'antd';
 import axios from 'axios';
-import { FormIdentifier, ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { FormItemProvider } from '@/providers/formItem';
-import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { isFormFullName } from '@/providers/form/utils';
-import { ConfigurableItemFullName } from '@/interfaces/configurableItems';
+import React, { FC, ReactNode, useMemo } from 'react';
+import { useStyles } from '../../styles/styles';
+import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
+import { ComponentsContainerFormCell } from './componentsContainerFormCell';
+import { getFormFullNameDisplayText } from '@/utils/form';
 
 const MODE_READONLY_TRUE = { readOnly: true };
 const MODE_READONLY_FALSE = { readOnly: false };
@@ -49,34 +51,43 @@ const FormCellRender: FC<FormCellRenderProps> = ({ formId, children }) => {
     ? <LoadingOutlined />
     : formLoading.state === 'error'
       ? getFormLoadingErorr(formId, formLoading.error)
-      : children(formLoading.form);
+      : isDefined(formLoading.form)
+        ? children(formLoading.form)
+        : undefined;
 };
 
-const ReadFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): React.JSX.Element => {
+type KnownAttributeNames = 'data-sha-datatable-cell-type' | 'data-sha-parent-form-id' | 'data-sha-parent-form-name' | 'data-sha-form-id' | 'data-sha-form-name';
+type KnownAttributes = Partial<Record<KnownAttributeNames, string>>;
+
+const fillFormIdAttribute = (attributes: KnownAttributes, formId: ConfigurableItemIdentifier | undefined): void => {
+  if (isFormFullName(formId))
+    attributes['data-sha-form-name'] = getFormFullNameDisplayText(formId);
+  else if (!isNullOrWhiteSpace(formId))
+    attributes['data-sha-form-id'] = formId;
+};
+
+const ReadFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): ReactNode => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
-  const attributes = {
+  const attributes: KnownAttributes = {
     'data-sha-datatable-cell-type': 'subForm',
     'data-sha-parent-form-id': `${props.parentFormId}`,
     'data-sha-parent-form-name': `${props.parentFormName}`,
   };
 
-  if (isFormFullName(props.columnConfig.displayFormId))
-    attributes['data-sha-form-name'] = `${props.columnConfig.displayFormId.module}/${props.columnConfig.displayFormId.name}`;
-  else if (typeof props.columnConfig.displayFormId === 'string' && props.columnConfig.displayFormId)
-    attributes['data-sha-form-id'] = props.columnConfig.displayFormId;
+  fillFormIdAttribute(attributes, props.columnConfig.displayFormId);
 
   return !props.columnConfig.displayFormId
-    ? null
+    ? undefined
     : (
       <FormCellRender formId={props.columnConfig.displayFormId}>
         {(form) => (
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight}>
-              <FormItemProvider labelCol={form.settings?.labelCol}>
+              <FormItemProvider labelCol={form.settings.labelCol}>
                 <ParentProvider model={MODE_READONLY_TRUE} formMode="readonly" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
@@ -92,18 +103,18 @@ const ReadFormCell = <D extends object = object, V = number>(props: IFormCellPro
 
 export interface ICreateFormCellProps extends IConfigurableCellProps<ITableFormColumn> {
   /** FormId GUID */
-  parentFormId?: string;
+  parentFormId?: string | undefined;
   /** `Module`/`FormName` */
-  parentFormName?: string;
+  parentFormName?: string | undefined;
 }
 
-export const CreateFormCell = (props: ICreateFormCellProps): React.JSX.Element => {
+export const CreateFormCell = (props: ICreateFormCellProps): ReactNode => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
-  const attributes = {
+  const attributes: KnownAttributes = {
     'data-sha-datatable-cell-type': 'subForm',
     'data-sha-parent-form-name': `${props.parentFormName}`,
   };
@@ -111,19 +122,21 @@ export const CreateFormCell = (props: ICreateFormCellProps): React.JSX.Element =
   if (props.parentFormId)
     attributes['data-sha-parent-form-id'] = props.parentFormId;
 
-  if (isFormFullName(props.columnConfig.createFormId))
-    attributes['data-sha-form-name'] = `${props.columnConfig.createFormId.module}/${props.columnConfig.createFormId.name}`;
-  else if (typeof props.columnConfig.createFormId === 'string' && props.columnConfig.createFormId)
-    attributes['data-sha-form-id'] = props.columnConfig.createFormId;
+  const { createFormId } = props.columnConfig;
+  fillFormIdAttribute(attributes, createFormId);
 
   return !props.columnConfig.createFormId
-    ? null
+    ? undefined
     : (
       <FormCellRender formId={props.columnConfig.createFormId}>
         {(form) => (
           <AttributeDecorator attributes={attributes}>
-            <div className={styles.shaFormCell} style={styleMinHeight} data-sha-form-name={`${(props.columnConfig.createFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.createFormId as ConfigurableItemFullName)?.name}`}>
-              <FormItemProvider labelCol={form.settings?.labelCol}>
+            <div
+              className={styles.shaFormCell}
+              style={styleMinHeight}
+              {...(isFormFullName(createFormId) ? { "data-sha-form-name": getFormFullNameDisplayText(createFormId) } : {})}
+            >
+              <FormItemProvider labelCol={form.settings.labelCol}>
                 <ParentProvider model={MODE_READONLY_FALSE} formMode="edit" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
@@ -137,22 +150,19 @@ export const CreateFormCell = (props: ICreateFormCellProps): React.JSX.Element =
     );
 };
 
-const EditFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): React.JSX.Element => {
+const EditFormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): ReactNode => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
-  const attributes = {
+  const attributes: KnownAttributes = {
     'data-sha-datatable-cell-type': 'subForm',
     'data-sha-parent-form-id': `${props.parentFormId}`,
     'data-sha-parent-form-name': `${props.parentFormName}`,
   };
 
-  if (isFormFullName(props.columnConfig.editFormId))
-    attributes['data-sha-form-name'] = `${props.columnConfig.editFormId.module}/${props.columnConfig.editFormId.name}`;
-  else if (typeof props.columnConfig.editFormId === 'string')
-    attributes['data-sha-form-id'] = props.columnConfig.editFormId;
+  fillFormIdAttribute(attributes, props.columnConfig.editFormId);
 
   return !props.columnConfig.editFormId
     ? <ReadFormCell {...props} />
@@ -161,7 +171,7 @@ const EditFormCell = <D extends object = object, V = number>(props: IFormCellPro
         {(form) => (
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight}>
-              <FormItemProvider labelCol={form.settings?.labelCol}>
+              <FormItemProvider labelCol={form.settings.labelCol}>
                 <ParentProvider model={MODE_READONLY_FALSE} formMode="edit" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
@@ -175,7 +185,7 @@ const EditFormCell = <D extends object = object, V = number>(props: IFormCellPro
     );
 };
 
-export const FormCell = <D extends object = object, V = number>(props: IFormCellProps<D, V>): React.JSX.Element => {
+export const FormCell = <D extends object = object, V = unknown>(props: IFormCellProps<D, V>): ReactNode => {
   const { mode } = useCrud();
 
   switch (mode) {

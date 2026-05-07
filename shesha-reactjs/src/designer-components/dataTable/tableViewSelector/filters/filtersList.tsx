@@ -11,9 +11,11 @@ export interface IFiltersListProps {
   readOnly: boolean;
 }
 
+const EMPTY_FILTERS: IStoredFilter[] = [];
+
 export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }) => {
   const makeNewFilter = (items: IStoredFilter[]): IStoredFilter => {
-    const itemsCount = (items ?? []).length;
+    const itemsCount = items.length;
     const itemNo = itemsCount + 1;
     return {
       id: nanoid(),
@@ -25,22 +27,22 @@ export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }
   const localOnChange = (newValue: IStoredFilter[]): void => {
     // Prevent removing the last filter - always ensure at least one filter exists
     if (newValue.length === 0) {
-      const defaultFilter = {
+      const defaultFilter: IStoredFilter = {
         id: nanoid(),
         name: 'Default',
         tooltip: 'Shows all records without any filtering',
         sortOrder: 0,
-        expression: null,
+        expression: undefined,
       };
-      onChange([defaultFilter]);
+      onChange?.([defaultFilter]);
     } else {
-      onChange([...newValue]);
+      onChange?.([...newValue]);
     }
   };
 
   return (
     <ListEditor<IStoredFilter & ListItem>
-      value={value}
+      value={value ?? EMPTY_FILTERS}
       onChange={localOnChange}
       initNewItem={makeNewFilter}
       readOnly={readOnly}

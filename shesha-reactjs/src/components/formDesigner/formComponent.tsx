@@ -11,13 +11,24 @@ import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponen
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { useStyles } from './styles/styles';
-import { FormComponentValidationProvider, useValidationErrorsActionsOrDefault, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
+import { FormComponentValidationProvider, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 import { isValidGuid } from './components/utils';
 import { toCamelCase } from '@/utils/string';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { deepMergeValues, removeUndefinedProps } from '@/utils/object';
+import { CommonComponentApi, IComponentStyle, InputComponentApi } from '../../componentsApi/componentApi';
+import { IBackgroundValue } from '@/designer-components/_settings/utils';
+
+import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
 }
+
+const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
+  func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
+};
 
 const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceComponentModel }) => {
   const { styles } = useStyles();
@@ -27,9 +38,11 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
-  const { getValidation } = useValidationErrorsActionsOrDefault();
-  const { errors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
-  const errorCount = errors.size; // Track size to trigger useMemo
+  const { errors: validationErrors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
+
+  const componentApi = useComponentApi();
+  const [apiModel, setApiModel] = useState<Partial<IConfigurableFormComponent>>({});
+  const [apiStyles, setApiStyles] = useState<Partial<IStyleType>>({});
 
   const toolboxComponent = getToolboxComponent(sourceComponentModel.type);
 
@@ -67,7 +80,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   // In preview/live mode: use original device-specific stylingBox (with margins) and dimensions
   const isDesignerMode = shaForm.formMode === 'designer';
   const extendedModel = componentModel as IConfigurableFormComponent & IStyleType;
-  const deviceModel = {
+  const deviceModel = deepMergeValues({
     ...componentModel,
     ...componentModel?.[effectiveDevice],
     // In designer: preserve padding-only stylingBox and stripped style (no margins) from wrapper
@@ -80,7 +93,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
       }
       : { stylingBox: componentModel?.[effectiveDevice]?.stylingBox }
     ),
-  };
+  }, apiStyles);
 
   const actualModel = useActualContextData<IConfigurableFormComponent & IStyleType>(
     deviceModel,
@@ -119,19 +132,93 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
+  const actualApiModel = useDeepCompareMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
+
+  if (componentApi !== undefined) {
+    // common Api
+    componentApi.updateApi<CommonComponentApi>(
+      {
+        id: actualModel.id,
+        componentName: actualModel.componentName,
+        componentModel: actualModel,
+        rawComponentModel: sourceComponentModel,
+        api: {
+          componentName: actualModel.componentName,
+          context: actualModel.context,
+          propertyName: actualModel.propertyName,
+        },
+        typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+      },
+      [
+        // component properties
+        // use actualModel.hidden because it's already filtered by some other means (eg permissions)
+        { name: 'visible', getter: () => actualApiModel.visible, setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden || !value }) },
+        { name: 'editable', getter: () => actualApiModel.editMode, setter: (value) => setApiModel((prev) => {
+          const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
+          return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };
+        }) },
+        // component styles
+        {
+          name: 'style', getter: () => {
+            const style = {} as IComponentStyle;
+            componentApi.createApiProperty(style, { name: 'font', getter: () => actualApiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value }) });
+            componentApi.createApiProperty(style, { name: 'background', getter: () => actualApiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
+            componentApi.createApiProperty(style, { name: 'border', getter: () => actualApiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value }) });
+            return style;
+          },
+        },
+      ],
+    );
+
+    // input common Api
+    if (toolboxComponent?.isInput) {
+      componentApi.updateApi<InputComponentApi>(
+        {
+          id: actualModel.id,
+          componentName: actualModel.componentName,
+          api: {
+            isValid: () => actualModel.propertyName
+              ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
+                .then(() => true).catch(() => false)
+              : Promise.resolve(true),
+            getErrors: () => actualModel.propertyName
+              ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
+                .then(() => []).catch((e) => e.errorFields?.length ? e.errorFields[0].errors : [])
+              : Promise.resolve([]),
+            reset: () => actualModel.propertyName
+              ? shaForm.antdForm.resetFields([actualModel.propertyName])
+              : undefined,
+          },
+          typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        },
+        [
+          { name: 'required', getter: () => actualApiModel.validate?.required, setter: (value) => updateApiModel(setApiModel, { validate: { required: value } }) },
+          { name: 'value', getter: () => {
+            return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
+          }, setter: (value) => {
+            if (actualModel.propertyName)
+              shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
+            else
+              console.warn(`Property name for component "${actualModel.type}: ${actualModel.componentName}" is not defined`);
+          } },
+        ],
+      );
+    }
+  };
+  useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
+
   const control = useMemo(() => {
     if (!toolboxComponent) return null;
-
     return (
       <toolboxComponent.Factory
         form={shaForm.antdForm}
-        model={actualModel}
+        model={actualApiModel}
         calculatedModel={calculatedModel}
         shaApplication={shaApplication}
         key={actualModel.id}
       />
     );
-  }, [toolboxComponent, shaForm.antdForm, actualModel, calculatedModel, shaApplication]);
+  }, [toolboxComponent, shaForm.antdForm, actualApiModel, calculatedModel, shaApplication, actualModel.id]);
 
   // Run validation in both designer and runtime modes
   // Collect errors from:
@@ -151,7 +238,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     });
 
     // Collect errors from child components registered via hook
-    const childValidation = getValidation();
+    const childValidation = validationErrors.get(actualModel.id);
     if (childValidation?.hasErrors && childValidation.errors) {
       errors.push(...childValidation.errors);
       // Use the child's validationType if present (prioritize 'error' > 'warning' > 'info')
@@ -176,7 +263,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel, getValidation, errorCount]);
+  }, [toolboxComponent, actualModel, validationErrors]);
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode

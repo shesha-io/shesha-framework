@@ -20,7 +20,7 @@ const cellProps: CellPropGetter<object> = (props, { cell }) => [
 
 export interface IRowCellProps {
   cell: Cell<any, any>;
-  row?: Cell<any, any, any>[];
+  row: Cell<any, any, any>[];
   rowIndex?: number;
   preContent?: ReactNode;
   cellHeight?: number;

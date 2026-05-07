@@ -15,6 +15,7 @@ export const SheshaConstants = {
   setGlobalState: "shesha:setGlobalState",
   selectedRow: "shesha:selectedRow",
   contexts: "shesha:contexts",
+  components: "shesha:components",
   pageContext: "shesha:pageContext",
   form: "shesha:form",
   formData: "shesha:formData",

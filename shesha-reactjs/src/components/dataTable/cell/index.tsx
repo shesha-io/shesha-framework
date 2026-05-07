@@ -8,7 +8,7 @@ import {
   isDataColumn,
   isFormColumn,
   isRendererColumn,
-  ITableFormColumn,
+  ITableRowData,
 } from '@/providers/dataTable/interfaces';
 import ActionCell from './actionCell';
 import CrudOperationsCell from './crudOperationsCell';
@@ -16,8 +16,10 @@ import DataCell from './dataCell';
 import FormCell from './formCell/formCell';
 import { wrapDisplayName } from '@/utils/react';
 import { RendererCell } from './rendererCell';
+import { isFormFullName } from '../../..';
+import { IFormCellProps } from './interfaces';
 
-export const getCellRenderer = <D extends object = object, V = any>(
+export const getCellRenderer = <D extends ITableRowData = ITableRowData, V = unknown>(
   column: ITableColumn,
   propertyMeta?: IPropertyMetadata,
   shaForm?: IShaFormInstance,
@@ -25,11 +27,14 @@ export const getCellRenderer = <D extends object = object, V = any>(
   if (isDataColumn(column)) {
     // TODO: move to the column settings and use pre-=processor that adds a metadata to the column settings
     const baseProps = { columnConfig: column, propertyMeta };
-    return wrapDisplayName((cellProps: CellProps<D, V>) => <DataCell<D, V> {...cellProps} {...baseProps} />, "DataCell");
+    const renderer: Renderer<CellProps<D, V>> = (cellProps: CellProps<D, V>) => <DataCell<D, V> {...cellProps} {...baseProps} />;
+    return wrapDisplayName<CellProps<D, V>>(renderer, "DataCell");
   }
+
   if (isActionColumn(column)) {
     const baseProps = { columnConfig: column };
-    return wrapDisplayName((cellProps: CellProps<D, V>) => <ActionCell<D, V> {...cellProps} {...baseProps} />, "ActionCell");
+    const renderer: Renderer<CellProps<D, V>> = (cellProps: CellProps<D, V>) => <ActionCell<D, V> {...cellProps} {...baseProps} />;
+    return wrapDisplayName<CellProps<D, V>>(renderer, "ActionCell");
   }
 
   if (isCrudOperationsColumn(column)) {
@@ -37,14 +42,21 @@ export const getCellRenderer = <D extends object = object, V = any>(
   }
 
   if (isFormColumn(column)) {
-    const baseProps = { columnConfig: column as ITableFormColumn, parentFormId: shaForm?.form?.id, parentFormName: `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}` };
-    return wrapDisplayName((cellProps: CellProps<D, V>) => <FormCell<D, V> {...cellProps} {...baseProps} />, "formCell");
+    const formId = shaForm?.formId;
+    const baseProps: Pick<IFormCellProps<D, V>, 'columnConfig' | 'parentFormId' | 'parentFormName'> = {
+      columnConfig: column,
+      parentFormId: shaForm?.form?.id,
+      parentFormName: isFormFullName(formId) ? `${formId.module}/${formId.name}` : "",
+    };
+    const renderer: Renderer<CellProps<D, V>> = (cellProps: CellProps<D, V>) => <FormCell<D, V> {...cellProps} {...baseProps} />;
+    return wrapDisplayName<CellProps<D, V>>(renderer, "formCell");
   }
 
   if (isRendererColumn(column)) {
     const baseProps = { columnConfig: column };
-    return wrapDisplayName((cellProps: CellProps<D, V>) => <RendererCell<D, V> {...cellProps} {...baseProps} />, "RendererCell");
+    const renderer: Renderer<CellProps<D, V>> = (cellProps: CellProps<D, V>) => <RendererCell<D, V> {...cellProps} {...baseProps} />;
+    return wrapDisplayName<CellProps<D, V>>(renderer, "RendererCell");
   }
 
-  return null;
+  return undefined;
 };
