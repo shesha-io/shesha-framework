@@ -78,8 +78,17 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   const removeAllModals = useCallback((): void => {
+    // Settle any pending Show Dialog promises by invoking each instance's onClose(false)
+    // before clearing state, so awaiting callers reject instead of hanging forever.
+    Object.values(state.instances).forEach((instance) => {
+      try {
+        instance.onClose?.(false);
+      } catch (err) {
+        console.error('Failed to settle modal onClose during removeAllModals', err);
+      }
+    });
     dispatch(removeAllModalsAction());
-  }, []);
+  }, [state]);
 
   const createModal = useCallback((modalProps: IModalProps): void => {
     dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
