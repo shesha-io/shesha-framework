@@ -30,6 +30,39 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
 import { ConfigurationLoadingError } from '@/providers/configurationItemsLoader/errors';
 
+const isInteractiveTarget = (target: EventTarget | null): boolean => {
+  if (!(target instanceof HTMLElement)) return false;
+
+  const isInPortal =
+    target.closest('.ant-select-dropdown') ||
+    target.closest('.ant-picker-dropdown') ||
+    target.closest('.ant-dropdown') ||
+    target.closest('.ant-drawer') ||
+    target.closest('.ant-tooltip') ||
+    target.closest('.ant-modal');
+
+  if (isInPortal) return true;
+
+  const tag = target.tagName;
+  return (
+    tag === 'INPUT' ||
+    tag === 'TEXTAREA' ||
+    tag === 'SELECT' ||
+    tag === 'BUTTON' ||
+    !!target.closest('.ant-select') ||
+    !!target.closest('.ant-picker') ||
+    !!target.closest('.ant-input-number') ||
+    !!target.closest('.ant-checkbox') ||
+    !!target.closest('.ant-radio') ||
+    !!target.closest('.ant-switch') ||
+    !!target.closest('.ant-slider') ||
+    !!target.closest('.ant-rate') ||
+    !!target.closest('.ant-upload') ||
+    !!target.closest('.sha-form-cell') ||
+    !!target.closest('[contenteditable="true"]')
+  );
+};
+
 interface EntityForm {
   entityType: string | IEntityTypeIdentifier;
   isFetchingFormId?: boolean;
@@ -485,7 +518,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       );
     }
 
-    const dblClick = (): boolean => {
+    const dblClick = (e: React.MouseEvent<HTMLDivElement>): boolean => {
+      if (isInteractiveTarget(e.target)) return false;
       if (props.dblClickActionConfiguration) {
         // TODO: implement generic context collector
         const evaluationContext = {
@@ -661,14 +695,25 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem,
               { selected },
             )}
-            onClick={() => {
-              // For single and multiple selection modes, trigger selection when clicking on row
-              if (selectionMode === 'single' || selectionMode === 'multiple') {
+            onClick={(e) => {
+              // Skip selection/click events when interacting with form fields (dropdown, picker, etc.)
+              // or content rendered in portals — otherwise inline-editing clicks toggle row selection
+              // and, in multiple-select mode, double-toggle via the wrapping Checkbox label.
+              if (isInteractiveTarget(e.target)) {
+                e.stopPropagation();
+                return;
+              }
+              // In multiple mode the wrapping Checkbox handles selection via onChange
+              if (selectionMode === 'single') {
                 onSelectRowLocal(index, item);
               }
-              // Trigger onListItemClick event
               if (onListItemClick) {
                 onListItemClick(index, item);
+              }
+            }}
+            onDoubleClick={(e) => {
+              if (isInteractiveTarget(e.target)) {
+                e.stopPropagation();
               }
             }}
             onMouseEnter={() => {
