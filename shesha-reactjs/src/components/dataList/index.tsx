@@ -31,7 +31,7 @@ import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDisp
 import { ConfigurationLoadingError } from '@/providers/configurationItemsLoader/errors';
 
 const isInteractiveTarget = (target: EventTarget | null): boolean => {
-  if (!(target instanceof HTMLElement)) return false;
+  if (!(target instanceof Element)) return false;
 
   const isInPortal =
     target.closest('.ant-select-dropdown') ||
