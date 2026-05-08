@@ -17,6 +17,12 @@ export const useDatasetInstance = (repository: IRepository): IDatasetInstance =>
     });
   });
 
+  // URL-source consumers (e.g. autocomplete) recreate the repository whenever getListUrl
+  // changes; the useState initializer only captures the first one, so re-bind on change.
+  useEffect(() => {
+    instance.repository = repository;
+  }, [instance, repository]);
+
   return instance;
 };
 
