@@ -18,25 +18,28 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
 
   formInstance?: ConfigurableFormInstance | undefined;
 
-  private forceUpdate?: (() => void) | undefined;
+  private forceUpdate?: ((data?: unknown) => void) | undefined;
 
-  constructor(id: string, parent?: IDataContextManagerFullInstance, forceUpdate?: () => void) {
+  constructor(id: string, parent?: IDataContextManagerFullInstance) {
     this.id = id;
     this.lastUpdate = Date.now();
     this.parent = parent;
-    this.forceUpdate = forceUpdate;
 
     this.contexts = {};
     this.managers = [];
     this.formInstance = undefined;
   }
 
-  onChangeContextData = (): void => {
-    this.forceUpdate?.();
+  updateForceUpdate = (forceUpdate: ((data?: unknown) => void) | undefined): void => {
+    this.forceUpdate = forceUpdate;
+  };
+
+  onChangeContextData = (data?: unknown): void => {
+    this.forceUpdate?.(data);
 
     // ToDo: AS - check if we need to update parent DataContextManager
     // parent?.onChangeContextData();
-    this.managers.forEach((x) => x.onChangeContextData());
+    this.managers.forEach((x) => x.onChangeContextData(data));
   };
 
   updatePageFormInstance = (form: ConfigurableFormInstance): void => {
@@ -59,7 +62,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
     const manager = this.managers.find((x) => x.id === payload.id);
     if (manager) {
       this.managers.splice(this.managers.indexOf(manager), 1);
-      this.forceUpdate?.();
+      this.forceUpdate?.(`Unregister DataManager ${payload.id}`);
     }
   };
 
@@ -79,7 +82,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
     if (!!this.contexts[payload.id])
       delete this.contexts[payload.id];
 
-    this.forceUpdate?.();
+    this.forceUpdate?.(`Unregister DataContext ${payload.id}: ${payload.name}`);
 
     if (payload.type === DataContextTopLevels.Root) {
       const idx = RootContexts.indexOf(payload.id);

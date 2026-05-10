@@ -193,14 +193,17 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
         },
         [
           { name: 'required', getter: () => actualApiModel.validate?.required, setter: (value) => updateApiModel(setApiModel, { validate: { required: value } }) },
-          { name: 'value', getter: () => {
-            return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
-          }, setter: (value) => {
-            if (actualModel.propertyName)
-              shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
-            else
-              console.warn(`Property name for component "${actualModel.type}: ${actualModel.componentName}" is not defined`);
-          } },
+          { name: 'value', skipIfExists: true,
+            getter: () => {
+              return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
+            },
+            setter: (value) => {
+              if (actualModel.propertyName)
+                shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
+              else
+                console.warn(`Property name for component "${actualModel.type}: ${actualModel.componentName}" is not defined`);
+            },
+          },
         ],
       );
     }

@@ -394,7 +394,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   //#endregion
 
   reloadMarkup = (): Promise<void> => {
-    return this.loadFormByIdAsync({ skipCache: true });
+    return this.loadFormByLocalIdAsync({ skipCache: true });
   };
 
   setLogEnabled = (enabled: boolean): void => {
@@ -472,6 +472,25 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       : {};
   };
 
+  loadDataAndFireEvents = async (dataLoader?: () => Promise<void>): Promise<void> => {
+    if (this.markupLoadingState.status === "ready") {
+      if (this.events.onBeforeDataLoad) {
+        this.log('LOG: fireEvents - onBeforeDataLoad');
+        await this.events.onBeforeDataLoad();
+      }
+
+      if (dataLoader) {
+        this.log('LOG: fireEvents - dataLoader');
+        await dataLoader();
+      }
+
+      if (this.events.onAfterDataLoad) {
+        this.log('LOG: fireEvents - onAfterDataLoad');
+        await this.events.onAfterDataLoad();
+      }
+    }
+  };
+
   loadFormByRawMarkupAsync = async (forceRootUpdate: boolean = false): Promise<void> => {
     try {
       if (!isDefined(this.rawMarkup))
@@ -491,9 +510,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
 
-      if (this.events.onBeforeDataLoad)
-        await this.events.onBeforeDataLoad();
-
       this.markupLoadingState = { status: 'ready' };
       if (forceRootUpdate)
         this.forceRootUpdate();
@@ -504,7 +520,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     }
   };
 
-  loadFormByIdAsync = async (payload: LoadFormByIdPayload<Values> = {}): Promise<void> => {
+  loadFormByLocalIdAsync = async (payload: LoadFormByIdPayload<Values> = {}): Promise<void> => {
     const { skipCache = false, initialValues } = payload;
     if (!this.formId)
       throw new Error("FormId is not defined");
@@ -559,9 +575,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
 
-      if (this.events.onBeforeDataLoad)
-        await this.events.onBeforeDataLoad();
-
       this.markupLoadingState = { status: 'ready' };
       this.forceRootUpdate();
     } catch (error) {
@@ -571,7 +584,11 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     }
   };
 
-  initByRawMarkup = async (payload: InitByRawMarkupPayload<Values>): Promise<void> => {
+  triggerEvents = async (): Promise<void> => {
+    await this.loadDataAndFireEvents();
+  };
+
+  initFormByRawMarkup = async (payload: InitByRawMarkupPayload<Values>): Promise<void> => {
     const { formArguments, initialValues, rawMarkup, cacheKey, isSettingsForm } = payload;
 
     this.log('LOG: initByRawMarkup', payload);
@@ -585,21 +602,24 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.initialValues = initialValues;
     this.formData = initialValues;
 
-    await this.loadFormByRawMarkupAsync();
-
-    this.antdForm.resetFields();
-    if (initialValues)
-      this.antdForm.setFieldsValue(initialValues);
-
-    this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
-    this.#setIsDataModified(false);
-    this.forceRootUpdate();
-
-    if (this.events.onAfterDataLoad)
-      await this.events.onAfterDataLoad();
+    await this.loadFormByRawMarkupAsync(true);
   };
 
-  initByMarkup = async (payload: InitByMarkupPayload): Promise<void> => {
+  initInitialData = async (): Promise<void> => {
+    await this.loadDataAndFireEvents(async () => {
+      return await new Promise<void>((resolve) => {
+        this.antdForm.resetFields();
+        if (this.initialValues)
+          this.antdForm.setFieldsValue(this.initialValues);
+
+        this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
+        this.#setIsDataModified(false);
+        resolve();
+      });
+    });
+  };
+
+  initFormByMarkup = async (payload: InitByMarkupPayload): Promise<void> => {
     const { formArguments } = payload;
 
     this.log('LOG: initByMarkup', payload);
@@ -608,37 +628,31 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.formArguments = formArguments;
 
     await this.applyMarkupAsync(payload);
-
-    await this.loadData(formArguments);
-
-    if (this.events.onAfterDataLoad)
-      await this.events.onAfterDataLoad();
   };
 
-  initByFormId = async (payload: InitByFormIdPayload<Values>): Promise<void> => {
+  initFormByFormId = async (payload: InitByFormIdPayload<Values>): Promise<void> => {
     const { formId, formArguments } = payload;
 
     const formNotChanged = this.formId && isSameFormIds(this.formId, formId);
     if (!formNotChanged) {
-      this.log('LOG: initByFormId - load form', payload);
+      this.log('LOG: loadFormByFormId - load form', payload);
 
       this.formId = formId;
 
-      await this.loadFormByIdAsync({ initialValues: payload.initialValues });
+      await this.loadFormByLocalIdAsync({ initialValues: payload.initialValues });
     } else
-      this.log('LOG: initByFormId - load form skipped', payload);
+      this.log('LOG: loadFormByFormId - load form skipped', payload);
 
     if (this.markupLoadingState.status === "ready") {
-      this.log('LOG: initByFormId - load data', payload);
       this.formArguments = formArguments;
-      if (this.events.onBeforeDataLoad)
-        await this.events.onBeforeDataLoad();
-
-      await this.loadData(formArguments);
-
-      if (this.events.onAfterDataLoad)
-        await this.events.onAfterDataLoad();
     }
+  };
+
+  initLoadData = async (): Promise<void> => {
+    await this.loadDataAndFireEvents(async () => {
+      this.log('LOG: initData - load data', this.formArguments);
+      await this.loadData(this.formArguments);
+    });
   };
 
   private get dataLoader(): IFormDataLoader<Values> | undefined {
@@ -827,8 +841,11 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
       const allConstants = makeObservableProxy<IApplicationContext<Values>>(accessors);
 
       const expressionExecuter: ExpressionExecuter = (expression, data) => {
+        if (data && typeof (data) === 'object')
+          allConstants.setAdditionalData(data);
+
         // get formApi here and pass to caller
-        return executeScript(expression, { ...allConstants, ...(typeof (data) === "object" ? data : {}) });
+        return executeScript(expression, allConstants);
       };
       instance.setExpressionExecuter(expressionExecuter);
 
