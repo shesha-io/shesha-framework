@@ -1,14 +1,14 @@
 import { toCamelCase } from "@/utils/string";
-import { IComponentApiActions, IComponentApiDescription, ComponentApiProperty } from "./model";
+import { IComponentApi, IComponentApiDescription, ComponentApiProperty } from "./model";
 
-export class ComponentApiInstance implements IComponentApiActions {
-  private parent?: IComponentApiActions | undefined;
+export class ComponentApiInstance implements IComponentApi {
+  private parent?: IComponentApi | undefined;
 
   private componentApis: Map<string, IComponentApiDescription>;
 
   id: string;
 
-  constructor(id: string, parent?: IComponentApiActions) {
+  constructor(id: string, parent?: IComponentApi) {
     this.id = id;
     this.parent = parent;
     this.componentApis = new Map<string, IComponentApiDescription>();
@@ -22,7 +22,8 @@ export class ComponentApiInstance implements IComponentApiActions {
     if (localApi.api === undefined) localApi.api = { } as T;
     localApi.componentName = componentName;
     if (api.typeDefinition)
-      localApi.typeDefinition = api.typeDefinition;
+      // Component APIs are always nullable because they may not have been initialized yet at some point in the lifecycle.
+      localApi.typeDefinition = { ...api.typeDefinition, isNullable: true };
     if (api.componentModel)
       localApi.componentModel = api.componentModel;
     if (api.rawComponentModel)
@@ -32,11 +33,16 @@ export class ComponentApiInstance implements IComponentApiActions {
     for (const key in api.api) {
       if (Object.prototype.hasOwnProperty.call(api.api, key)) {
         // update api values and properties
+        // Remove any existing property descriptor before reassignment
+        // to ensure clean override of getters/setters
         delete localApi.api[key];
         localApi.api[key] = api.api[key];
       }
     }
-    properties?.forEach((property) => this.createApiProperty(localApi.api as T, { name: property.name, getter: property.getter, setter: property.setter }));
+    properties?.forEach((property) => {
+      if (localApi.api && (!(property.name in localApi.api) || !property.skipIfExists))
+        this.createApiProperty(localApi.api as T, { name: property.name, getter: property.getter, setter: property.setter });
+    });
     this.componentApis.set(api.id, localApi);
   };
 

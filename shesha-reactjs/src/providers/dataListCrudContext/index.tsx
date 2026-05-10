@@ -315,7 +315,7 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
     antdForm: form,
     form: undefined,
     init: (form) => {
-      form.initByMarkup({
+      form.initFormByMarkup({
         formFlatMarkup: formFlatMarkup,
         formSettings: formSettings,
       }).catch((error) => {
@@ -323,6 +323,12 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
       });
     },
   });
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
+      void shaForm.triggerEvents();
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status]);
 
   return (
     <ShaFormProvider shaForm={shaForm}>

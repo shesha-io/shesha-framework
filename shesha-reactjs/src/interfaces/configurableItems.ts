@@ -18,6 +18,6 @@ export const isConfigurableItemFullName = (value: unknown): value is Configurabl
     "module" in value && typeof (value.module) === "string";
 };
 
-export const ConfigurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
+export const configurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
   return isConfigurableItemFullName(value) ? `${value.module}:${value.name}` : value;
 };

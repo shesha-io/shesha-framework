@@ -88,7 +88,7 @@ import {
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
-import { IComponentApiActions } from '../componentApi/model';
+import { IComponentApi } from '../componentApi/model';
 import { useComponentApi } from '../componentApi/provider';
 
 export {
@@ -165,7 +165,7 @@ export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
 };
 
 export type AvailableConstantsContext = {
-  componentApi?: IComponentApiActions | undefined;
+  componentApi?: IComponentApi | undefined;
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
   dcm: IDataContextManagerActions | undefined;
