@@ -25,7 +25,6 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
     const { data } = useFormData();
-    const { styles } = useStyles();
     const {
       label,
       expandIconPosition,
@@ -50,6 +49,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
     const hasHeaderComponents = headerComponents.length > 0;
 
     const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles?.border } }).fullStyle;
+    const { styles } = useStyles();
 
     const isIconHidden = expandIconPosition === 'hide';
 

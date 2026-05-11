@@ -1,15 +1,17 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
-  headerStyle = {} as CSSProperties,
-  bodyStyle = {} as CSSProperties,
-  hideCollapseContent,
-  isSimpleDesign,
-  ghost,
-  accentStyle,
-  overflow,
-}) => {
+interface ICollapseStyleProps {
+  headerStyle?: CSSProperties;
+  bodyStyle?: CSSProperties;
+  hideCollapseContent?: boolean;
+  isSimpleDesign?: boolean;
+  ghost?: boolean;
+  accentStyle?: boolean;
+  overflow?: CSSProperties;
+}
+
+  export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyle = {}, bodyStyle = {}, hideCollapseContent, isSimpleDesign, ghost, accentStyle, overflow }: ICollapseStyleProps = {}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
   const shaHeaderComponentsContainer = "sha-header-components-container";
@@ -97,14 +99,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
-      &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
+      &.${hideWhenEmpty}:not(:has(.ant-collapse-body .sha-component)):not(:has(.${prefixCls}-collapse-content-box .sha-component)) {
         display: none;
       }
     --primary-color: ${token.colorPrimary};
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
-    ${width ? `width: ${width};` : ''}
+    ${width ? `width: ${width};` : ''} 
       ${minWidth ? `min-width: ${minWidth};` : ''}
       ${maxWidth ? `max-width: ${maxWidth};` : ''}
       ${height ? `height: ${height};` : ''}
@@ -123,7 +125,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       height: 100%;
     }
    
-    > .ant-collapse-item > .ant-collapse-content, .ant-collapse-body {
+    > .ant-collapse-item > .ant-collapse-content {
       flex: 1;
       background: ${backgroundImage || backgroundColor};
       background-size: ${backgroundSize};
