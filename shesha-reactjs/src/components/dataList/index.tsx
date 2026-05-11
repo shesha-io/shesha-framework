@@ -684,7 +684,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         </ConditionalWrap>
         {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
           <Divider
-            style={{ margin: '10px', width: itemStyles.width }}
+            style={{ width: itemStyles.width }}
             className={classNames(styles.shaDatalistComponentDivider, { selected })}
           />
         ))}
