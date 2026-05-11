@@ -229,7 +229,11 @@ export function addDetailsPanel(
   if (sortedMetadata.length > ROW_COUNT) {
     sortedMetadata.forEach((prop, index) => {
       const columnBuilder = formBuilderFactory();
-      metadataHelper.getConfigFields(prop, columnBuilder);
+      try {
+        metadataHelper.getConfigFields(prop, columnBuilder);
+      } catch (err) {
+        console.warn(`Skipping property '${prop.path}' due to error:`, err);
+      }
 
       if (index % 2 === 0) {
         column1.push(...columnBuilder.toJson());
@@ -267,7 +271,11 @@ export function addDetailsPanel(
     });
   } else {
     sortedMetadata.forEach((prop) => {
-      metadataHelper.getConfigFields(prop, builder);
+      try {
+        metadataHelper.getConfigFields(prop, builder);
+      } catch (err) {
+        console.warn(`Skipping property '${prop.path}' due to error:`, err);
+      }
     });
   }
 

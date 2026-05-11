@@ -156,6 +156,11 @@ export type FluentFormBuilder<
   // build actions
   build(): string;
   toJson(): IConfigurableFormComponent[];
+  /**
+   * Add a component by its toolbox type string. Use when the type is known dynamically (e.g. from `IPropertyMetadata.formatting.defaultEditor`).
+   * Falls back gracefully when the type isn't a registered toolbox component.
+   */
+  addByType(type: string, props: FluentSettings<IConfigurableFormComponent>, metadata?: IPropertyMetadata): FluentFormBuilder<TConfig>;
 } & {
   // standart components and component groups
   stdPrefixSuffixInputs(visibleJs?: string | undefined): FluentFormBuilder<TConfig>;

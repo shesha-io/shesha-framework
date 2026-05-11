@@ -529,6 +529,10 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   }
 
+  addByType = (type: string, props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => {
+    return this._addProperty(props, type as ComponentTypes, meta);
+  };
+
   toJson(): IConfigurableFormComponent[] {
     return this.form;
   }
