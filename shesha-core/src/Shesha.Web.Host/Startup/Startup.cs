@@ -74,7 +74,7 @@ namespace Shesha.Web.Host.Startup
 
             services.AddSheshaElmah(_appConfiguration);
 
-            services.AddSheshaRateLimiting();
+            services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
                 {

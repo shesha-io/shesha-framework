@@ -1,18 +1,16 @@
-using System;
-
 namespace Shesha.RateLimiting
 {
     public class SheshaRateLimitingOptions
     {
         public int GlobalPermitLimit { get; set; } = 100;
-        public TimeSpan GlobalWindow { get; set; } = TimeSpan.FromMinutes(1);
+        public int GlobalWindowSeconds { get; set; } = 60;
 
         public int AuthPermitLimit { get; set; } = 10;
-        public TimeSpan AuthWindow { get; set; } = TimeSpan.FromMinutes(1);
+        public int AuthWindowSeconds { get; set; } = 60;
 
         public int OtpPermitLimit { get; set; } = 5;
-        public TimeSpan OtpWindow { get; set; } = TimeSpan.FromMinutes(1);
+        public int OtpWindowSeconds { get; set; } = 60;
 
-        public TimeSpan RetryAfter { get; set; } = TimeSpan.FromMinutes(1);
+        public int RetryAfterSeconds { get; set; } = 60;
     }
 }
