@@ -169,7 +169,7 @@ export class FormMetadataHelper {
             ...commonProps,
             entityType: { name: property.entityType, module: property.entityModule } as IEntityTypeIdentifier,
             dataSourceType: 'entitiesList',
-          } as IConfigurableFormComponent, property);
+          }, property);
           break;
 
         case DataTypes.referenceListItem:
@@ -194,7 +194,7 @@ export class FormMetadataHelper {
               module: property.referenceListModule,
               name: property.referenceListName,
             },
-          } as IConfigurableFormComponent, property);
+          }, property);
           break;
 
         case DataTypes.boolean:
@@ -217,7 +217,7 @@ export class FormMetadataHelper {
             ownerId: '{data.id}',
             ownerType: this._modelType || '',
             useSync: false,
-          } as IConfigurableFormComponent, property);
+          }, property);
           break;
 
         default:

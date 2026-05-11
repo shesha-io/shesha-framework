@@ -89,7 +89,7 @@ const eventConfigs: EventConfig[] = [
 
 export class FormBuilderImplementation implements FormBuilder {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: `add${Capitalize<string>}`]: (props: any, metadata?: IPropertyMetadata) => FormBuilder;
+  [key: `add${Capitalize<string>}`]: (...args: any[]) => FormBuilder;
 
   addKeyInformationBar = (props: FluentSettings<IKeyInformationBarComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'KeyInformationBar', meta);
 
@@ -529,7 +529,7 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   }
 
-  addByType = (type: string, props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => {
+  addByType = <TProps extends FluentSettings<IConfigurableFormComponent>>(type: string, props: TProps, meta?: IPropertyMetadata): FormBuilder => {
     return this._addProperty(props, type as ComponentTypes, meta);
   };
 
