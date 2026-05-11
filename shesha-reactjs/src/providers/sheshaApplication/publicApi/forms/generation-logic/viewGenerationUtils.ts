@@ -47,6 +47,39 @@ export function findContainersWithPlaceholder(markup: object, placeholder: strin
   return containers;
 }
 
+function findComponentsWithPlaceholderRecursive(
+  token: unknown,
+  placeholder: string,
+  results: IConfigurableFormComponent[],
+  visited: WeakSet<object>,
+): void {
+  if (!isDefined(token)) return;
+
+  if (typeof token === 'object') {
+    if (visited.has(token)) return;
+    visited.add(token);
+    if (isConfigurableFormComponent(token) && (token.componentName === placeholder || token.propertyName === placeholder)) {
+      results.push(token);
+    }
+    if (Array.isArray(token)) {
+      token.forEach((item) =>
+        findComponentsWithPlaceholderRecursive(item, placeholder, results, visited),
+      );
+    } else {
+      Object.entries(token).forEach(([_key, value]) => {
+        findComponentsWithPlaceholderRecursive(value, placeholder, results, visited);
+      });
+    }
+  }
+}
+
+export function findComponentsWithPlaceholder(markup: object, placeholder: string): IConfigurableFormComponent[] {
+  const components: IConfigurableFormComponent[] = [];
+  const visited = new WeakSet();
+  findComponentsWithPlaceholderRecursive(markup, placeholder, components, visited);
+  return components;
+}
+
 /**
  * Casts the provided data to the specified extension type T.
  * Throws an error if the data is not an object.
