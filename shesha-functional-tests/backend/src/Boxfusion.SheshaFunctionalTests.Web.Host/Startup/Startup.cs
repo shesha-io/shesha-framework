@@ -30,6 +30,7 @@ using Shesha.GraphQL;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
 using Shesha.Specifications;
 using Shesha.Swagger;
@@ -62,6 +63,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			});
             
             services.AddSheshaElmah(_appConfiguration);
+
+            services.AddSheshaRateLimiting();
 
             services.AddMvcCore(options =>
 			{
@@ -174,6 +177,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			app.UseStaticFiles();
 			app.UseAbpRequestLocalization();
 			app.UseRouting();
+			app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();
 

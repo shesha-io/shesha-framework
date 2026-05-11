@@ -11,6 +11,7 @@ using Abp.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
@@ -21,6 +22,7 @@ using Shesha.Extensions;
 using Shesha.NHibernate.EntityHistory;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
+using Shesha.RateLimiting;
 using Shesha.SecurityQuestions.Dto;
 using Shesha.Users.Dto;
 using Shesha.Utilities;
@@ -330,6 +332,7 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         [AllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<bool> SendSmsOtpAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
@@ -373,6 +376,7 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         [AllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordVerifyOtpResponse> ValidateResetCodeAsync(ResetPasswordValidateCodeInput input)
         {
             var username = input.Username;
@@ -425,6 +429,7 @@ namespace Shesha.Users
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordVerifyOtpResponse> ValidateSecurityQuestionsAsync(SecurityQuestionVerificationDto input)
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == input.Username).FirstOrDefaultAsync();
