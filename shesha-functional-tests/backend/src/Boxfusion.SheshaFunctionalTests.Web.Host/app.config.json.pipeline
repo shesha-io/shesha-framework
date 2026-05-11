@@ -21,10 +21,19 @@
     }
   },
   "OpenApiInfo": {
-    "Title": "BoxfusionInventory Api",
+    "Title": "SheshaFunctionalTests Api",
     "Version": "1.0"
   },
   "SheshaApp": {
     "HomeUrl": "/"
+  },
+  "RateLimiting": {
+    "GlobalPermitLimit": 100,
+    "GlobalWindowSeconds": 60,
+    "AuthPermitLimit": 10,
+    "AuthWindowSeconds": 60,
+    "OtpPermitLimit": 5,
+    "OtpWindowSeconds": 60,
+    "RetryAfterSeconds": 60
   }
 }
