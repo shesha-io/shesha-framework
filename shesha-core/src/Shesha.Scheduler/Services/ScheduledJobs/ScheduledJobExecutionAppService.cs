@@ -6,6 +6,8 @@ using Abp.Linq.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
+using Shesha.Authorization;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -20,6 +22,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Scheduler.Services.ScheduledJobs
 {
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, ShaPermissionNames.Pages_Maintenance)]
     public class ScheduledJobExecutionAppService : SheshaAppServiceBase, ITransientDependency
     {
         private readonly IRepository<ScheduledJobExecution, Guid> _repository;
@@ -173,7 +176,11 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
                     throw new EntityNotFoundException("Log file is missing on disk");
 
 #pragma warning disable IDISP001 // Dispose created
-                var stream = new FileStream(jobExecution.LogFilePath, FileMode.Open);
+                var stream = new FileStream(
+                    jobExecution.LogFilePath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.ReadWrite);
 #pragma warning restore IDISP001 // Dispose created
 
                 var fileName = Path.GetFileName(jobExecution.LogFilePath);
