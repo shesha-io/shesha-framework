@@ -838,7 +838,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                   style: {
                     ...child.props.style,
                     overflow: 'visible',
-                    flex: '0 0 100%',
+                    ...(orientation !== 'horizontal' && { flex: '0 0 100%' }),
                   },
                 });
               })}
