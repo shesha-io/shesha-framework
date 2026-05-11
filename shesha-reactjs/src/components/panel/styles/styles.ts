@@ -11,7 +11,7 @@ interface ICollapseStyleProps {
   overflow?: CSSProperties;
 }
 
-  export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyle = {}, bodyStyle = {}, hideCollapseContent, isSimpleDesign, ghost, accentStyle, overflow }: ICollapseStyleProps = {}) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyle = {}, bodyStyle = {}, hideCollapseContent, isSimpleDesign, ghost, accentStyle, overflow }: ICollapseStyleProps = {}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
   const shaHeaderComponentsContainer = "sha-header-components-container";
