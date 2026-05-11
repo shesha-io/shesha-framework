@@ -6,7 +6,10 @@ using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.ObjectMapping;
 using Shesha.Extensions;
+using Shesha.Utilities;
+using System;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 
 namespace Shesha
 {
@@ -51,7 +54,34 @@ namespace Shesha
                 if (!sortInput.Sorting.IsNullOrWhiteSpace())
                 {
                     SortingValidator.EnsureSortingAllowed(typeof(TEntity), sortInput.Sorting);
-                    return query.OrderBy(sortInput.Sorting);
+
+                    var sorted = false;
+                    foreach (var sortColumn in sortInput.Sorting.Split(','))
+                    {
+                        var trimmed = sortColumn.Trim();
+                        if (string.IsNullOrEmpty(trimmed))
+                            continue;
+
+                        var column = trimmed.LeftPart(' ', ProcessDirection.LeftToRight);
+                        if (string.IsNullOrEmpty(column))
+                            continue;
+
+                        var descending = trimmed.RightPart(' ', ProcessDirection.LeftToRight)?.Trim()
+                            .Equals("desc", StringComparison.InvariantCultureIgnoreCase) == true;
+
+                        if (sorted)
+                        {
+                            var orderedQuery = (IOrderedQueryable<TEntity>)query;
+                            query = descending ? orderedQuery.ThenByDescending(column) : orderedQuery.ThenBy(column);
+                        }
+                        else
+                        {
+                            query = descending ? query.OrderByDescending(column) : query.OrderBy(column);
+                            sorted = true;
+                        }
+                    }
+
+                    return query;
                 }
             }
 

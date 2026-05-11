@@ -51,8 +51,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
             var properties = genericType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.PropertyType != typeof(Type))
-                .Where(p => !p.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>()
-                        && !p.HasAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>())
+                .Where(p => !p.IsJsonIgnored())
                 .ToList();
             foreach (var property in properties) 
             {

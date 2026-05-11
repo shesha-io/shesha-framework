@@ -45,8 +45,7 @@ namespace Shesha.Metadata
             var flags = BindingFlags.Public | BindingFlags.Instance;
 
             var allProps = containerType.GetPropertiesWithoutHidden(flags)
-                .Where(p => !p.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>()
-                        && !p.HasAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>())
+                .Where(p => !p.IsJsonIgnored())
                 .OrderBy(p => p.Name)
                 .ToList();
             if (containerType.IsEntityType())

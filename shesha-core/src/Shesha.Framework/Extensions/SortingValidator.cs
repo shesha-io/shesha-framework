@@ -55,8 +55,7 @@ namespace Shesha.Extensions
                 if (prop == null)
                     return;
 
-                if (prop.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>()
-                    || prop.HasAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>())
+                if (prop.IsJsonIgnored())
                 {
                     throw new ArgumentException(
                         $"Sorting by '{propertyPath}' is not allowed: property '{prop.Name}' is not sortable.",

@@ -39,8 +39,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             }
 
             targetType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => !p.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>()
-                        && !p.HasAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>())
+                .Where(p => !p.IsJsonIgnored())
                 .ToList()
                 .ForEach(pi =>
                 {
