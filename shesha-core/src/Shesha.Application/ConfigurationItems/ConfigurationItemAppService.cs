@@ -27,6 +27,7 @@ namespace Shesha.ConfigurationItems
             _ciHelper = ciHelper;
         }
 
+        [AbpAllowAnonymous]
         public async Task<GetCurrentResponse> GetCurrentAsync(GetCurrentRequest input)
         {
             var manager = _ciHelper.GetManagerByDiscriminator(input.ItemType);
