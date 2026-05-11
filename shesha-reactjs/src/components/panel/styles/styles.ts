@@ -12,6 +12,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
 }) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
+  const shaHeaderComponentsContainer = "sha-header-components-container";
 
   const {
     borderWidth,
@@ -197,7 +198,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         overflow: auto;
         height: 100%;
 
-        > .sha-header-components-container {
+        > .${shaHeaderComponentsContainer} {
          > .sha-drop-hint {
           height: 100% !important;
          }
@@ -290,5 +291,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     noContentPadding,
     hideWhenEmpty,
     shaSimpleDesign,
+    shaHeaderComponentsContainer,
   };
 });

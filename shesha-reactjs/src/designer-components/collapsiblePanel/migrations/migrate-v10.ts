@@ -36,7 +36,7 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
 
   if (alreadyMigrated) {
     const headerLayout = header?.components?.find(
-      (c: IContainerComponentProps) => c.type === "container" && c.componentName === "headerLayout"
+      (c: IContainerComponentProps) => c.type === "container" && c.componentName === "headerLayout",
     );
     if (headerLayout && !headerLayout.desktop?.display) {
       headerLayout.desktop = { ...defaultHeaderStyles, ...headerLayout.desktop };
@@ -135,9 +135,9 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
       hidden: false,
       isDynamic: false,
       components: clonedComponents,
-      desktop: defaultStyles,
-      tablet: defaultStyles,
-      mobile: defaultStyles,
+      desktop: { ...defaultStyles },
+      tablet: { ...defaultStyles },
+      mobile: { ...defaultStyles },
     } satisfies IContainerComponentProps;
 
     const headerLayout = {
@@ -151,9 +151,9 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
       hidden: false,
       isDynamic: false,
       components: [labelText, extraArea],
-      desktop: defaultHeaderStyles,
-      tablet: defaultHeaderStyles,
-      mobile: defaultHeaderStyles,
+      desktop: { ...defaultHeaderStyles },
+      tablet: { ...defaultHeaderStyles },
+      mobile: { ...defaultHeaderStyles },
       version: 8,
     } satisfies IContainerComponentProps;
 

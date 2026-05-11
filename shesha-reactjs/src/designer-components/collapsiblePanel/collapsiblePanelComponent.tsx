@@ -1,5 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { CollapsiblePanel } from '@/components/panel';
+import { useStyles } from '@/components/panel/styles/styles';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useFormData } from '@/providers';
@@ -24,6 +25,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
     const { data } = useFormData();
+    const { styles } = useStyles();
     const {
       label,
       expandIconPosition,
@@ -58,7 +60,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
             <ComponentsContainer
               containerId={model.header?.id}
               dynamicComponents={isDynamic ? headerComponents : []}
-              className='sha-header-components-container'
+              className={styles.shaHeaderComponentsContainer}
             />
           ) : (
             evaluatedLabel
@@ -69,7 +71,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           ghost={ghost}
           bodyStyle={{ ...model.allStyles.fullStyle }}
-          headerStyle={{ ...headerStyles, width: '100%'}}
+          headerStyle={{ ...headerStyles, width: '100%' }}
           className={className}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
