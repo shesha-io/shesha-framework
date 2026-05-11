@@ -167,7 +167,7 @@ namespace Shesha.Metadata
 
             int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)
             {
-                return obj.GetHashCode();
+                return obj?.ClassName?.GetHashCode(StringComparison.Ordinal) ?? 0;
             }
         }
     }
