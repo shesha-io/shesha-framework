@@ -99,9 +99,9 @@ const TextFieldComponent: TextFieldComponentDefinition = {
           const isPasswordComplexityActive = isPassword && !!passwordValidator && !model.validate?.validator;
           const passwordError = isPasswordComplexityActive && value
             ? (() => {
-                const errors = validatePasswordValue(value as string, passwordComplexity);
-                return errors.length > 0 ? `Password must contain ${errors.join(', ')}` : null;
-              })()
+              const errors = validatePasswordValue(value as string, passwordComplexity);
+              return errors.length > 0 ? `Password must contain ${errors.join(', ')}` : null;
+            })()
             : null;
 
           const customEvents = calculatedModel.eventHandlers;
