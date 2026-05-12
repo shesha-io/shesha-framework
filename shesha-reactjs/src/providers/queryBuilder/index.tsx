@@ -125,13 +125,16 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
 
         setFields(newFields);
       }
-    });
+    })
+      .catch((error) => {
+        console.error('Failed to fetch query builder fields', error);
+      });
   };
 
   const fetchContainer = (containerPath: string): Promise<IModelMetadata | null> => {
     const promise = getContainerMetadata({ metadata: metadata, containerPath: containerPath });
 
-    promise.then((response) => {
+    return promise.then((response) => {
       const properties = isDefined(response) ? getPropertiesFromMeta(response, containerPath) : [];
       const missingProperties = properties.filter((prop) => !fields.find((p) => p.propertyName === prop.propertyName));
       if (missingProperties.length > 0) {
@@ -139,9 +142,8 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
 
         setFields(newFields);
       }
+      return response;
     });
-
-    return promise;
   };
 
   return (

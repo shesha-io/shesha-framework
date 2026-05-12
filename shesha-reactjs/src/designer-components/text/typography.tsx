@@ -35,7 +35,7 @@ const TypographyComponent: FC<ITextComponentProps> = ({
   const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
 
   if (!content && contentDisplay === 'content' && formMode === 'designer') {
-    return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
+    return <Alert type="warning" title="Please make sure you enter the content to be displayed here!" />;
   }
 
   return (

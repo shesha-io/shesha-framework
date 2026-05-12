@@ -191,7 +191,7 @@ export class FileUploadInstance implements IFileUpload {
 
     // TODO: check current state and sync if required
     if (this.uploadMode === 'async')
-      this.fetchFileInfo();
+      void this.fetchFileInfo();
   };
 
   fetchFileInfo = async (): Promise<void> => {

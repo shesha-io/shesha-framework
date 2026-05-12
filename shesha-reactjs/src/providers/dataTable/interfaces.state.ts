@@ -17,6 +17,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IHasModelType } from './repository/interfaces';
 import { IModelValidation } from '@/utils/errors';
 import { DragState } from './interfaces';
+import { SortingRule } from 'react-table';
 
 interface _PagerState {
   /** Selected page size */
@@ -70,7 +71,7 @@ interface _SortingState {
   strictSortOrder?: ColumnSorting | undefined;
   /** Columns sorting */
   standardSorting: IColumnSorting[];
-  userSorting?: IColumnSorting[];
+  userSorting?: SortingRule<ITableRowData>[];
 };
 
 interface _SelectionState {
@@ -107,12 +108,6 @@ interface _DataState {
 
 export interface IDataTableStateContext extends IHasModelType, _PagerState, _FiltersState, _ColumnsState, _SortingState, _SelectionState, _GroupingState, _ReorderState, _DataState {
   actionedRow?: unknown;
-
-  /** Dblclick handler */
-  onDblClick?: (...params: unknown[]) => void;
-  /** Select row handler */
-  onSelectRow?: (index: number, row: unknown) => void;
-
 
   /** Validation result from parent DataContext component */
   contextValidation?: IModelValidation | undefined;

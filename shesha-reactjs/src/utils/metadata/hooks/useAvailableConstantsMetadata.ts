@@ -15,10 +15,12 @@ const ALL_STANDARD_CONSTANTS = [
   SheshaConstants.pageContext,
   SheshaConstants.http,
   SheshaConstants.message,
+  SheshaConstants.modal,
   SheshaConstants.moment,
   SheshaConstants.fileSaver,
   SheshaConstants.form,
   SheshaConstants.formData,
+  SheshaConstants.components,
 ];
 
 export interface AvailableConstantsArgs {

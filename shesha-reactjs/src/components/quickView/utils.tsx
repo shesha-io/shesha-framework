@@ -3,7 +3,7 @@ import { Spin } from 'antd';
 import { getDataProperty } from '@/utils/metadata';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { formatDateStringAndPrefix } from '@/utils/formatting';
-import { getNumberFormat } from '@/utils/string';
+import { numberToFormattedString } from '@/utils/string';
 
 const getFormatContent = (content: string, dataType: string | undefined, dataFormat: string | undefined): string => {
   switch (dataType) {
@@ -14,7 +14,7 @@ const getFormatContent = (content: string, dataType: string | undefined, dataFor
       return formatDateStringAndPrefix(content, dataFormat);
 
     case 'number':
-      return getNumberFormat(content, dataFormat || 'round');
+      return numberToFormattedString(content, dataFormat || 'round');
 
     default:
       return content;

@@ -17,7 +17,7 @@ interface IImageUploaderProps {
   allowedFileTypes?: string[];
 }
 
-export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes }: IImageUploaderProps): JSX.Element => {
+export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes }: IImageUploaderProps): React.JSX.Element => {
   const [fileList, setFileList] = useState<UploadFile[]>(typeof value == 'string' ? value : value ? [{ ...value }] : []);
   const { styles } = useStyles();
   const { message } = App.useApp();

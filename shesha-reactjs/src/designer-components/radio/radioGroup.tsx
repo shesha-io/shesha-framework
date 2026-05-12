@@ -21,7 +21,10 @@ const RadioGroup: FC<IRadioProps> = (model) => {
 
   useEffect(() => {
     if (model.dataSourceType === 'url' && model.dataSourceUrl) {
-      refetch();
+      refetch().catch((error) => {
+        console.error('Failed to fetch data', error);
+        throw error;
+      });
     }
   }, [model.dataSourceType, model.dataSourceUrl, refetch]);
 

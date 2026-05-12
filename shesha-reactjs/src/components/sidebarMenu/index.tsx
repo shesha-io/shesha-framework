@@ -33,7 +33,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration): void => {
     setSelectedKey(itemId);
-    executeAction({
+    void executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: executionContext,
     });

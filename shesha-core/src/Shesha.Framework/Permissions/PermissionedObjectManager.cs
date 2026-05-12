@@ -344,12 +344,13 @@ namespace Shesha.Permissions
                 var dto = dbObj != null
                     ? await GetDtoOrNullAsync(dbObj)
                     : null;
-                if (uow != null)
-                    await uow.CompleteAsync();
 
                 var def = await GetDtoOrNullAsync(InternalDtoCreate(objectName, objectType), true, true);
                 item = new CacheItemWrapper<PermissionedObjectDto>(def.NotNull(), dto);
                 await SetCacheAsync(def, item);
+                
+                if (uow != null)
+                    await uow.CompleteAsync();
             }
             return item;
         }

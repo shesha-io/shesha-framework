@@ -94,7 +94,10 @@ export class ShaRouter implements IShaRouter {
     return this.prepareUrl(fullUrl);
   };
 
-  getUrlFromNavigationRequest = (request: INavigateActoinArguments): string | undefined => {
+  getUrlFromNavigationRequest = (request: INavigateActoinArguments | undefined): string | undefined => {
+    if (!isDefined(request))
+      return undefined;
+
     switch (request.navigationType) {
       case 'url': return !isNullOrWhiteSpace(request.url)
         ? this._buildFinalUrl(request.url, request.queryParameters)

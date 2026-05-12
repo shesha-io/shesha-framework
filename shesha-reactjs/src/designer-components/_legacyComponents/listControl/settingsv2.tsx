@@ -10,10 +10,45 @@ import { ButtonGroupConfigurator } from '@/components/buttonGroupConfigurator';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { IListItemsProps } from './models';
 import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
-
-const Option = Select.Option;
+import { DefaultOptionType } from 'antd/lib/select';
 
 const FormItem = Form.Item;
+
+const ORIENTATIONS: DefaultOptionType[] = [
+  { value: 'vertical', label: 'Vertical' },
+  { value: 'horizontal', label: 'Horizontal' },
+];
+
+const LIST_ITEM_WIDTHS: DefaultOptionType[] = [
+  { value: 1, label: '100%' },
+  { value: 0.5, label: '50%' },
+  { value: 0.33, label: '33%' },
+  { value: 0.25, label: '25%' },
+  { value: 'custom', label: '(Custom)' },
+];
+
+const SUBMIT_VERBS: DefaultOptionType[] = [{ value: 'POST', label: 'POST' }, { value: 'PUT', label: 'PUT' }];
+
+const RENDER_STRATEGIES: DefaultOptionType[] = [
+  { value: 'dragAndDrop', label: 'Drag And Drop' },
+  { value: 'externalForm', label: 'External Form' },
+];
+
+const DATA_SOURCES: DefaultOptionType[] = [
+  { value: 'form', label: 'form' },
+  { value: 'api', label: 'api' },
+];
+
+const API_SOURCES: DefaultOptionType[] = [
+  { value: 'entity', label: 'entity' },
+  { value: 'custom', label: 'custom' },
+];
+
+const SELECTION_MODES: DefaultOptionType[] = [
+  { value: 'none', label: 'None' },
+  { value: 'single', label: 'Single' },
+  { value: 'multiple', label: 'Multiple' },
+];
 
 export interface IListControlSettingsProps {
   readOnly: boolean;
@@ -107,21 +142,12 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
       <SectionSeparator title="Render" />
 
       <FormItem name="orientation" label="Orientation">
-        <Select disabled={readOnly} defaultValue="vertical">
-          <Option value="vertical">Vertical</Option>
-          <Option value="horizontal">Horizontal</Option>
-        </Select>
+        <Select disabled={readOnly} defaultValue="vertical" options={ORIENTATIONS} />
       </FormItem>
 
       <Show when={state?.orientation === 'horizontal'}>
         <FormItem name="listItemWidth" label="List Item Width">
-          <Select disabled={readOnly} defaultValue={1}>
-            <Option value={1}>100%</Option>
-            <Option value={0.5}>50%</Option>
-            <Option value={0.33}>33%</Option>
-            <Option value={0.25}>25%</Option>
-            <Option value="custom">(Custom)</Option>
-          </Select>
+          <Select disabled={readOnly} defaultValue={1} options={LIST_ITEM_WIDTHS} />
         </FormItem>
 
         <Show when={state?.listItemWidth === 'custom'}>
@@ -136,10 +162,10 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
         label="Render Strategy"
         tooltip="Which form should be used to render the data? If current form, you can drag items, else specify form path"
       >
-        <Select disabled={readOnly}>
-          <Option value="dragAndDrop">Drag And Drop</Option>
-          <Option value="externalForm">External Form</Option>
-        </Select>
+        <Select
+          disabled={readOnly}
+          options={RENDER_STRATEGIES}
+        />
       </FormItem>
 
       <Show when={state?.renderStrategy === 'externalForm'}>
@@ -156,10 +182,10 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
         tooltip="The list data to be used can be the data that comes with the form of can be fetched from the API"
         initialValue={['form']}
       >
-        <Select disabled={readOnly}>
-          <Option value="form">form</Option>
-          <Option value="api">api</Option>
-        </Select>
+        <Select
+          disabled={readOnly}
+          options={DATA_SOURCES}
+        />
       </FormItem>
 
       <Show when={state?.dataSource === 'api'}>
@@ -169,10 +195,10 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           tooltip="An option to use entity option or custom api. Bare in mind that everything works the same as entity for custom api, the source is the only thing that differs."
           initialValue={['entity']}
         >
-          <Select disabled={readOnly}>
-            <Option value="entity">entity</Option>
-            <Option value="custom">custom</Option>
-          </Select>
+          <Select
+            disabled={readOnly}
+            options={API_SOURCES}
+          />
         </FormItem>
       </Show>
 
@@ -223,11 +249,11 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
         tooltip="How items should be selected"
         initialValue={['none']}
       >
-        <Select allowClear disabled={readOnly}>
-          <Option value="none">None</Option>
-          <Option value="single">Single</Option>
-          <Option value="multiple">Multiple</Option>
-        </Select>
+        <Select
+          allowClear
+          disabled={readOnly}
+          options={SELECTION_MODES}
+        />
       </FormItem>
 
       <SectionSeparator title="Delete/Remove Items" />
@@ -259,26 +285,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               propertyName="deleteUrl"
               label="Delete URL"
               description="The API url that will be used delete the list item. Write the code that returns the string"
-              exposedVariables={[
-                {
-                  id: '5c82e997-f50f-4591-8112-31b58ac381f0',
-                  name: 'data',
-                  description: 'Form data',
-                  type: 'object',
-                },
-                {
-                  id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                  name: 'item',
-                  description: 'Item to delete',
-                  type: 'object',
-                },
-                {
-                  id: '65b71112-d412-401f-af15-1d3080f85319',
-                  name: 'globalState',
-                  description: 'The global state',
-                  type: 'object',
-                },
-              ]}
             />
           </FormItem>
 
@@ -293,26 +299,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
               label="Delete Confirm Message"
               propertyName="deleteConfirmMessage"
               description="The confirm message that will be displayed before you delete an item. Write the code that returns the string"
-              exposedVariables={[
-                {
-                  id: '5c82e997-f50f-4591-8112-31b58ac381f0',
-                  name: 'data',
-                  description: 'Form data',
-                  type: 'object',
-                },
-                {
-                  id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                  name: 'item',
-                  description: 'Item to delete',
-                  type: 'object',
-                },
-                {
-                  id: '65b71112-d412-401f-af15-1d3080f85319',
-                  name: 'globalState',
-                  description: 'The global state',
-                  type: 'object',
-                },
-              ]}
             />
           </FormItem>
         </Show>
@@ -331,32 +317,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           mode="dialog"
           propertyName="onSubmit"
           description="Write a code that return tha payload to be sent to the server when submitting this items"
-          exposedVariables={[
-            {
-              id: 'e964ed28-3c2c-4d02-b0b7-71faf243eb53',
-              name: 'items',
-              description: 'List of items',
-              type: 'array',
-            },
-            {
-              id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-            {
-              id: '65b71112-d412-401f-af15-1d3080f85319',
-              name: 'globalState',
-              description: 'The global state',
-              type: 'object',
-            },
-            {
-              id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
-              name: 'queryParams',
-              description: 'Query parameters',
-              type: 'object',
-            },
-          ]}
         />
       </FormItem>
 
@@ -367,26 +327,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="Submit URL"
           propertyName="submitUrl"
           description="The URL to submit the list items to"
-          exposedVariables={[
-            {
-              id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-            {
-              id: '65b71112-d412-401f-af15-1d3080f85319',
-              name: 'globalState',
-              description: 'The global state',
-              type: 'object',
-            },
-            {
-              id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
-              name: 'queryParams',
-              description: 'Query parameters',
-              type: 'object',
-            },
-          ]}
         />
       </FormItem>
 
@@ -396,26 +336,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           label="Target URL"
           propertyName="targetUrl"
           description="The URL to forward to after event is triggered"
-          exposedVariables={[
-            {
-              id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-            {
-              id: '65b71112-d412-401f-af15-1d3080f85319',
-              name: 'globalState',
-              description: 'The global state',
-              type: 'object',
-            },
-            {
-              id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
-              name: 'queryParams',
-              description: 'Query parameters',
-              type: 'object',
-            },
-          ]}
         />
       </FormItem>
 
@@ -425,10 +345,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
         valuePropName="checked"
         tooltip="Write  a code that returns the string that represent the url to be used to save the items"
       >
-        <Select disabled={readOnly}>
-          <Option value="POST">POST</Option>
-          <Option value="PUT">PUT</Option>
-        </Select>
+        <Select disabled={readOnly} options={SUBMIT_VERBS} />
       </FormItem>
 
       <SectionSeparator title="Layout" />
@@ -484,26 +401,6 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           propertyName="customVisibility"
           description={'Enter custom visibility code.  You must return true to show the component. ' +
             'The global variable data is provided, and allows you to access the data of any form component, by using its API key.'}
-          exposedVariables={[
-            {
-              id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-            {
-              id: '65b71112-d412-401f-af15-1d3080f85319',
-              name: 'globalState',
-              description: 'The global state',
-              type: 'object',
-            },
-            {
-              id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
-              name: 'queryParams',
-              description: 'Query parameters',
-              type: 'object',
-            },
-          ]}
         />
       </FormItem>
     </Form>

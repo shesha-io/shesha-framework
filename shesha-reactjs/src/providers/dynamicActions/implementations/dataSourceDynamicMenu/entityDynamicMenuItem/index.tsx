@@ -3,7 +3,6 @@ import { ButtonGroupItemProps, IButtonGroupItem } from '@/providers/buttonGroupC
 import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
-  useDataContextManagerActionsOrUndefined,
   useFormData,
   useGlobalState,
   useHttpClient,
@@ -21,6 +20,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdentifier } from '@/providers/metadataDispatcher/entities/utils';
 import { buildUrl } from '@/utils/url';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager/hooks';
 
 type ArrayOrObjectWithItems<T> = T[] | {
   items: T[];
@@ -86,7 +86,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
 
   useEffect(() => {
     // TODO V1: debug and ensure that it doesn't fetch when it shouldn't
-    fetchTemplateData();
+    void fetchTemplateData();
   }, [item, settings, evaluatedFilters, pageContext, FormData, globalState, fetchTemplateData, filter]);
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {

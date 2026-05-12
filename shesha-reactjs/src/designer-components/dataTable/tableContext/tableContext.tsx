@@ -1,10 +1,10 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import DataTableProvider from '@/providers/dataTable';
-import React, { FC, ReactElement, useMemo } from 'react';
+import DataTableProvider, { IHasFormDataSourceConfig } from '@/providers/dataTable';
+import React, { ReactElement, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
-import { useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
+import { FCUnwrapped, useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
 import { IModelValidation } from '@/utils/errors';
@@ -44,7 +44,7 @@ const getInternalValidationStatus = (
   return undefined;
 };
 
-export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
+export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) => {
   const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components, onBeforeRowReorder, onAfterRowReorder } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
@@ -54,12 +54,12 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const isDesignerMode = formMode === 'designer';
 
   // Use real-time child component tracking in designer mode, fallback to static components prop in runtime
-  const childComponentIds = ShaForm.useChildComponentIds(id.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const childComponentIds = ShaForm.useChildComponentIds(id.replace(`${parent.subFormIdPrefix}.`, ''));
 
   const hasChildComponents = isDesignerMode
     ? childComponentIds.length > 0
     : (components && components.length > 0) || childComponentIds.length > 0;
-  const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, null, false);
+  const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, undefined, false);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
   const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
@@ -70,7 +70,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   // Error display is handled by FormComponent wrapper via validateModel
   const internalValidation = getInternalValidationStatus(sourceType, entityType, endpoint, propertyName);
 
-  const provider = (getFieldValue = undefined, onChange = undefined): ReactElement => {
+  const provider = (getFieldValue: IHasFormDataSourceConfig["getFieldValue"] | undefined = undefined, onChange: IHasFormDataSourceConfig["onChange"] | undefined = undefined): ReactElement => {
     // Determine the appropriate style class based on designer mode and child components
     const styleClass = isDesignerMode
       ? (hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty)
@@ -94,7 +94,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             userConfigId={props.id}
             entityType={entityType}
             getDataPath={getDataPath}
-            propertyName={propertyName}
+            propertyName={propertyName ?? ""}
             actionOwnerId={id}
             actionOwnerName={componentName}
             sourceType={props.sourceType}
@@ -107,7 +107,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             strictSortBy={props.strictSortBy}
             strictSortOrder={props.strictSortOrder}
             standardSorting={props.standardSorting}
-            allowReordering={evaluateYesNo(allowReordering, formMode)}
+            allowReordering={allowReordering ? evaluateYesNo(allowReordering, formMode) : false}
             permanentFilter={permanentFilter}
             disableRefresh={disableRefresh}
             customReorderEndpoint={customReorderEndpoint}
@@ -143,7 +143,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   return componentContent;
 };
 
-export const TableContext: FC<ITableContextComponentProps> = (props) => {
+export const TableContext: FCUnwrapped<ITableContextComponentProps> = (props) => {
   const uniqueKey = useMemo(() => {
     return `${props.sourceType}_${props.propertyName}_${getEntityTypeName(props.entityType) ?? 'empty'}`; // is used just for re-rendering
   }, [props.sourceType, props.propertyName, props.entityType]);

@@ -1,17 +1,21 @@
 import { TypeDefinition } from '@/interfaces/metadata';
+import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
+import { modalApiDefinition } from "@/providers/sourceFileManager/api-utils/modal";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
-import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, messageCode } from '@/publicJsApis';
+import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode } from '@/publicJsApis';
 
 export const SheshaConstants = {
   http: "shesha:http",
   message: "shesha:message",
+  modal: "shesha:modal",
   fileSaver: "shesha:fileSaver",
   moment: "shesha:moment",
   globalState: "shesha:globalState",
   setGlobalState: "shesha:setGlobalState",
   selectedRow: "shesha:selectedRow",
   contexts: "shesha:contexts",
+  components: "shesha:components",
   pageContext: "shesha:pageContext",
   form: "shesha:form",
   formData: "shesha:formData",
@@ -35,7 +39,17 @@ export const registerMessageAction: MetadataBuilderAction = (builder, name = "me
   builder.addCustom(name, "API for displaying toast messages", () => {
     const definition: TypeDefinition = {
       typeName: 'MessageApi',
-      files: [{ content: messageCode, fileName: 'apis/message.ts' }],
+      files: [{ content: messageApiDefinition, fileName: 'apis/message.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerModalAction: MetadataBuilderAction = (builder, name = "modal") => {
+  builder.addCustom(name, "API for displaying modal dialogs and forms", () => {
+    const definition: TypeDefinition = {
+      typeName: 'ModalApi',
+      files: [{ content: modalApiDefinition, fileName: 'apis/modal.ts' }],
     };
     return Promise.resolve(definition);
   });
@@ -99,7 +113,7 @@ export const registerSetGlobalStateAction: MetadataBuilderAction = (builder, nam
 export const registerSelectedRowAction: MetadataBuilderAction = (builder, name = "selectedRow") => {
   builder.addCustom(name, "Selected row of nearest table (null if not available)", () => {
     const definition: TypeDefinition = {
-      typeName: 'any',
+      typeName: 'unknown',
       files: [],
     };
     return Promise.resolve(definition);
@@ -109,8 +123,8 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder, name =
 export const registerPageContextAction: MetadataBuilderAction = (builder, name = "pageContext") => {
   builder.addCustom(name, "Contexts data of current page", () => {
     const definition: TypeDefinition = {
-      typeName: 'IPageContext',
-      files: [{ content: 'export interface IPageContext { [key: string]: any }', fileName: 'apis/pageContext.ts' }],
+      typeName: 'PageContext',
+      files: [{ content: 'export interface PageContext { [key: string]: unknown }', fileName: 'apis/pageContext.ts' }],
     };
     return Promise.resolve(definition);
   });

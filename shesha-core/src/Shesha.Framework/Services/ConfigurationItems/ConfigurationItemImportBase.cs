@@ -160,28 +160,33 @@ namespace Shesha.Services.ConfigurationItems
         /// </summary>
         /// <param name="item">Item to import</param>
         /// <param name="context">Import context</param>
+        /// <param name="explicitItem"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public async Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        public async Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context, ConfigurationItem? explicitItem = null)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
             if (!(item is TDistributedItem itemConfig))
-                throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {typeof(TDistributedItem).FullName}. Actual type is {item.GetType().FullName}");
+                throw new NotSupportedException($"{this.GetType().FullName} supports only distributed items of type {typeof(TDistributedItem).FullName}. Actual type is {item.GetType().FullName}");
 
-            return await ImportAsync(itemConfig, context);
+            var explicitItemTyped = explicitItem as TItem;
+            if (explicitItem != null && explicitItemTyped == null)
+                throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {typeof(TItem).FullName}. Actual type is {explicitItem.GetType().FullName}");
+
+            return await ImportAsync(itemConfig, context, explicitItemTyped);
         }
 
         protected virtual TItem CreateNew(TDistributedItem distributedItem) => new TItem();
 
-        protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context) 
+        protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context, TItem? explicitItem = null) 
         {
             using (CfRuntime.DisableConfigurationTracking()) 
             {
                 // check if form exists
-                var item = await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
+                var item = explicitItem ?? await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
 
                 if (await SkipImportAsync(item, distributedItem))
                     return item;
@@ -204,10 +209,7 @@ namespace Shesha.Services.ConfigurationItems
                 else
                     await Repository.UpdateAsync(item);
 
-                var revision = item.MakeNewRevision(context.IsMigrationImport
-                    ? ConfigurationItemRevisionCreationMethod.MigrationImport
-                    : ConfigurationItemRevisionCreationMethod.ManualImport
-                );
+                var revision = item.MakeNewRevision(context.RevisionCreationMethod);
                 revision.CreatedByImport = context.ImportResult;
 
                 await RevisionRepository.InsertAsync(revision);

@@ -123,7 +123,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
         <ConfigurableFormItem model={{ ...model as any, label: propertylabel, componentName: 'propertyName', propertyName: 'propertyName' }}>
           {(value, onChange) => {
             return (
-              <SettingsControl
+              <SettingsControl<string | string[]>
                 propertyName="propertyName"
                 mode="value"
                 onChange={(value) => {

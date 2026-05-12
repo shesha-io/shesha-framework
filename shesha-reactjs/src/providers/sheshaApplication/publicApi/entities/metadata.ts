@@ -13,6 +13,8 @@ import { isDefined } from "@/utils/nullables";
 
 type EntityItemType = 'module' | 'entityType';
 
+const UNKNOWN_TYPE = 'unknown';
+
 export interface IEntityPropertyMetadata extends IPropertyMetadata {
   entityItemType: EntityItemType;
 }
@@ -181,25 +183,32 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
     const sortedProps = sortByPath(property.properties);
     for (const prop of sortedProps) {
       if ((prop as IEntityPropertyMetadata).entityItemType === 'entityType' && isEntityReferencePropertyMetadata(prop) && isHasFullyQualifiedEntityType(prop)) {
-        typesImporter.import({ typeName: "EntityAccessor", filePath: BASE_ENTITY_MODULE });
+        try {
+          typesImporter.import({ typeName: "EntityAccessor", filePath: BASE_ENTITY_MODULE });
 
-        const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
-        if (typeDef) {
-          typesImporter.import(typeDef);
+          const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
 
-          if (!isDefined(typeDef.metadata))
-            throw new Error(`Metadata is not defined for entity '${prop.entityModule}:${prop.entityType}'`);
+          if (typeDef) {
+            typesImporter.import(typeDef);
 
-          const idType = getEntityIdJsType(typeDef.metadata);
-          if (!idType)
-            throw new Error(`Failed to find identifier type for entity '${prop.entityModule}:${prop.entityType}'`);
+            if (!isDefined(typeDef.metadata)) {
+              console.error(`Metadata is not defined for entity '${prop.entityModule}:${prop.entityType}'`);
+              continue;
+            }
 
-          if (prop.description)
-            sb.append(`/** ${prop.description} */`);
-          sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
-        } else {
-          console.error(`Failed to find entity type '${prop.entityModule}:${prop.entityType}' for (property '${prop.path}')`);
-          sb.append(`${prop.path}: any;`);
+            const idType = getEntityIdJsType(typeDef.metadata) ?? UNKNOWN_TYPE;
+            if (idType === UNKNOWN_TYPE)
+              console.warn(`Could not find id type for entity '${prop.entityModule}:${prop.entityType}'. Replaced with '${UNKNOWN_TYPE}'`);
+
+            if (prop.description)
+              sb.append(`/** ${prop.description} */`);
+            sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
+          } else {
+            console.error(`Failed to find entity type '${prop.entityModule}:${prop.entityType}' for (property '${prop.path}')`);
+            sb.append(`${prop.path}: any;`);
+          }
+        } catch (error) {
+          console.error(`Failed to build entity accessor for '${prop.path}'`, error);
         }
       }
     }

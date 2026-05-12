@@ -67,6 +67,9 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         message,
         moment,
         setGlobalState,
+      }).catch((error) => {
+        console.error('Failed to execute onCreateAction', error);
+        throw error;
       });
     };
     const handleDeleteAction: OnNoteDeletedFunc = (note) => {
@@ -81,6 +84,9 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         message,
         moment,
         setGlobalState,
+      }).catch((error) => {
+        console.error('Failed to execute onDeleteAction', error);
+        throw error;
       });
     };
     const handleUpdateAction: OnNoteUpdatedFunc = (note) => {
@@ -95,6 +101,9 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         message,
         moment,
         setGlobalState,
+      }).catch((error) => {
+        console.error('Failed to execute onUpdateAction', error);
+        throw error;
       });
     };
 

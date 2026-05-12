@@ -884,5 +884,21 @@ namespace Shesha.Reflection
                     :  -1;
             }
         }
+
+        public static bool IsCollectionType(this Type type, [NotNullWhen(true)] out Type? elementType)
+        {
+            if (type.IsGenericType && (
+                    type.ImplementsGenericInterface(typeof(IList<>)) ||
+                    type.ImplementsGenericInterface(typeof(IEnumerable<>)) ||
+                    type.ImplementsGenericInterface(typeof(ICollection<>))
+                ))
+            {
+                elementType = type.GetGenericArguments()[0];
+                return true;
+            }
+            
+            elementType = null;
+            return false;
+        }
     }
 }

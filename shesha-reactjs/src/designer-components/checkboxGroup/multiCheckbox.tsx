@@ -21,7 +21,9 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
 
   useEffect(() => {
     if (model.dataSourceType === 'url' && model.dataSourceUrl) {
-      refetch();
+      refetch().catch((error) => {
+        console.error('Failed to fetch options', error);
+      });
     }
   }, [model.dataSourceType, model.dataSourceUrl, refetch]);
 

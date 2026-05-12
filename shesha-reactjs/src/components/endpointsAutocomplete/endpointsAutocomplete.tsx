@@ -98,7 +98,10 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     if (!isValidVerb(verb)) {
       return;
     }
-    endpointsFetcher.refetch({ queryParams: { term, verb: verb } });
+    endpointsFetcher.refetch({ queryParams: { term, verb: verb } }).catch((error) => {
+      console.error('Failed to fetch endpoints', error);
+      throw error;
+    });
   };
   const debouncedFetchItems = useDebouncedCallback<(value: string, verb: string) => void>(
     (localValue, localVerb) => {
@@ -164,7 +167,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       options={options}
       onSelect={onChangeUrl}
       onChange={onChangeUrl}
-      onSearch={handleSearch}
+      showSearch={{ onSearch: handleSearch }}
       notFoundContent={null}
       // size={props.size}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}

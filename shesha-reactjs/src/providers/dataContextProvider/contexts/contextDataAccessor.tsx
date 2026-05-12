@@ -1,5 +1,5 @@
 import { setValueByPropertyName } from "@/utils/object";
-import { useRef } from "react";
+import { useState } from "react";
 import { CreateDataAccessor, IShaDataAccessor, IShaDataWrapper } from "./shaDataAccessProxy";
 import { ContextSetData, ContextSetFieldValue, RefreshContext } from "../contexts";
 import { useShaRouting } from "@/providers/shaRouting";
@@ -20,13 +20,9 @@ export const GetShaContextDataAccessor = <TData extends object = object>(
 ): IShaDataAccessor<TData> => {
   let data: TData = initialData ?? {} as TData;
 
-  const saveWebStorage = (data: TData): void => {
-    setStorageData?.(data);
-  };
-
   const setFieldValue: ContextSetFieldValue<TData> = (propertyName, value, refreshContext): void => {
     setValueByPropertyName(data, propertyName.toString(), value);
-    saveWebStorage(data);
+    setStorageData?.(data);
     if (refreshContext)
       refreshContext(data);
     else
@@ -41,7 +37,7 @@ export const GetShaContextDataAccessor = <TData extends object = object>(
       else
         onChangeCallback(data);
     }
-    saveWebStorage(data);
+    setStorageData?.(data);
   };
 
   return CreateDataAccessor(() => data, setData, setFieldValue);
@@ -55,8 +51,6 @@ export const useShaDataContextAccessor = <TData extends object = object>(
   webStorageType?: WebStorageType,
   getShaDataContextAccessor?: GetShaDataContextAccessor<TData>,
 ): IShaDataWrapper<TData> => {
-  const storage = useRef<IShaDataWrapper<TData>>();
-
   const shaRouter = useShaRouting();
   const path = shaRouter.router.path;
   const key = Boolean(webStorageType) ? `${id}:${path}` : 'no-key';
@@ -78,16 +72,12 @@ export const useShaDataContextAccessor = <TData extends object = object>(
         needStore ? setStorageData : undefined,
       ) as IShaDataWrapper<TData>;
 
-  storage.current = storage.current ?? getDataContextAccessor();
+  const [storage] = useState<IShaDataWrapper<TData>>(() => getDataContextAccessor());
 
-  useEffectOnce(() => {
-    // reset context data on unmount
-    return () => {
-      if (needStore) {
-        storage.current?.setData(emptyData as TData);
-      }
-    };
+  // reset context data on unmount
+  useEffectOnce(() => () => {
+    if (needStore) storage.setData(emptyData as TData);
   });
 
-  return storage.current;
+  return storage;
 };

@@ -1,10 +1,3 @@
-import { IConfigurableFormComponent } from "@/providers";
-
-export interface IDimensionsProps extends IConfigurableFormComponent {
-  value?: IDimensionsValue;
-  onChange?: Function;
-}
-
 export interface IDimensionsValue {
   width?: string | number | undefined;
   height?: string | number | undefined;

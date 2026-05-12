@@ -70,9 +70,9 @@ namespace Shesha.UserManagements
 
             // email and mobile number must be unique
             if (await MobileNoAlreadyInUseAsync(input.MobileNumber, null))
-                validationResults.Add(new ValidationResult("Specified mobile number already used by another person"));
+                validationResults.Add(new ValidationResult(User.MobileNoAlreadyInUse));
             if (await EmailAlreadyInUseAsync(input.EmailAddress, null))
-                validationResults.Add(new ValidationResult("Specified email already used by another person"));
+                validationResults.Add(new ValidationResult(User.EmailAlreadyInUse));
 
             validationResults.ThrowValidationExceptionIfAny(L);
 
@@ -106,6 +106,7 @@ namespace Shesha.UserManagements
                 input.LastName,
                 input.MobileNumber,
                 input.EmailAddress,
+                input.RequireChangePassword,
                 defaultMethods);
 
             // Creating Person entity

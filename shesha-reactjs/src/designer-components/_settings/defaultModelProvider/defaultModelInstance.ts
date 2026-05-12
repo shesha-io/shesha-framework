@@ -1,4 +1,6 @@
+import { Path } from "@/utils/dotnotation";
 import { deepCopyViaJson, deepMergeValues, getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
+import { isEqual } from "lodash";
 import { ReactElement } from "react";
 
 export type DefaultModelValueState = 'usedDefault' | 'usedModel' | 'onlyModel';
@@ -8,7 +10,11 @@ export interface IDefaultModelValueInfo {
   latestDefaultModelName: string;
 }
 
-export interface IDefaultModelInstance<T> {
+export interface IDefaultModelInstance<T extends object = object> {
+  subscribePropertyUpdate(propertyName: string, callback: (dfi: DefaultModelInstance<T>) => void): () => void;
+  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<T>) => void, data?: Record<string, any>): () => void;
+  notifySubscribers(type: DefaultModelSubscriptionType): void;
+
   setModel: (model: T) => void;
   setDefaultModel: (name: string, model: T) => void;
   getMergedModel: () => T;
@@ -19,6 +25,33 @@ export interface IDefaultModelInstance<T> {
   setCurrentValueAdditionalInfo: (propName: string, additionalInfo: () => string | ReactElement) => void;
   getCurrentValueAdditionalInfo: (propName: string) => (() => string | ReactElement) | undefined;
 }
+
+export type DefaultModelSubscription<Values extends object = object> = {
+  callback: (dfi: DefaultModelInstance<Values>) => void;
+  data?: Record<string, any>;
+};
+export type DefaultModelSubscriptionType = 'property-modified';
+
+interface IPropertyUpdateSubscriptionData {
+  propertyName: string;
+  value: unknown;
+  valueInfo: IDefaultModelValueInfo;
+}
+
+const getDataForPropertyUpdateSubscription: (dfi: DefaultModelInstance, propertyName: string) => IPropertyUpdateSubscriptionData = (dfi, propertyName) => {
+  const value = getValueByPropertyName(dfi.getMergedModel(), propertyName as Path<object>);
+  const valueInfo = dfi.getValueInfo(propertyName);
+  return deepCopyViaJson({ propertyName, value, valueInfo });
+};
+
+const defaultModelSubscriptionFuncs = new Map<DefaultModelSubscriptionType, (subscr: DefaultModelSubscription, dfi: DefaultModelInstance) => Record<string, any>>([
+  ['property-modified', (subscr, dfi) => {
+    const data = getDataForPropertyUpdateSubscription(dfi, subscr.data?.propertyName);
+    if (isEqual(subscr.data, data)) return subscr.data;
+    subscr.callback(dfi);
+    return data;
+  }],
+]);
 
 export class DefaultModelInstance<T extends object = object> implements IDefaultModelInstance<T> {
   private model: T = {} as T;
@@ -31,8 +64,40 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
 
   private valuesAdditionalInfo: Map<string, () => string | ReactElement> = new Map<string, () => string | ReactElement>();
 
+  private subscriptions: Map<DefaultModelSubscriptionType, Set<DefaultModelSubscription<T>>>;
+
   constructor() {
     this.defaultModels = new Map<string, T>();
+    this.subscriptions = new Map<DefaultModelSubscriptionType, Set<DefaultModelSubscription<T>>>();
+  }
+
+  subscribePropertyUpdate(propertyName: string, callback: (dfi: DefaultModelInstance<T>) => void): () => void {
+    return this.subscribe('property-modified', callback, getDataForPropertyUpdateSubscription(this, propertyName));
+  }
+
+  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<T>) => void, data?: Record<string, any>): () => void {
+    const current = this.subscriptions.get(type) ?? new Set<DefaultModelSubscription<T>>();
+    current.add({ callback, data });
+    this.subscriptions.set(type, current);
+    return () => this.unsubscribe(type, callback);
+  }
+
+  private unsubscribe(type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<T>) => void): void {
+    const current = this.subscriptions.get(type);
+    if (!current)
+      return;
+    const subscription = Array.from(current).find((e) => e.callback === callback);
+    if (subscription) {
+      current.delete(subscription);
+    }
+    this.subscriptions.set(type, current);
+  }
+
+  notifySubscribers(type: DefaultModelSubscriptionType): void {
+    const func = defaultModelSubscriptionFuncs.get(type);
+    const subscriptions = this.subscriptions.get(type);
+    if (func && subscriptions)
+      subscriptions.forEach((subscription) => subscription.data = func(subscription, this));
   }
 
   #updateMergedModel = (): void => {
@@ -43,6 +108,8 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
         // model value is not empty (null is also a value) and if model value is object, it has at least one property
         (t[key] !== undefined && typeof t[key] !== 'object');
     });
+
+    this.notifySubscribers('property-modified');
   };
 
   #updateDefaultModel = (): void => {

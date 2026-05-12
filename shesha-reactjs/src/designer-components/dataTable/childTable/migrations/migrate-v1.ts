@@ -248,7 +248,7 @@ interface IModalPropsV0 {
   /**
    * A callback to execute when the form has been submitted
    */
-  onSubmitted?: (values?: any) => void;
+  onSubmitted?: (values?: object) => void;
 
   /**
    * If passed, the user will be redirected to this url on success

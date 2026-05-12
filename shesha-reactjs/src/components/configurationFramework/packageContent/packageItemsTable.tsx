@@ -16,7 +16,7 @@ export const PackageItemsTable: FC<IPackageItemsTableProps> = ({ onChangeSelecti
 
   return (
     <DataTable
-      useMultiselect
+      selectionMode="multiple"
       onSelectedIdsChanged={onChangeSelection}
       containerStyle={{ margin: 0 }}
     />

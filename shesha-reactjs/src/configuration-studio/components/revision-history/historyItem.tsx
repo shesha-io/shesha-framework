@@ -61,6 +61,7 @@ export const HistoryItem: FC<IHistoryItemProps> = ({ revision, docId, onUpdated 
             <DateDisplay>{revision.creationTime}</DateDisplay>
           </Col>
           <Col span={12}>
+            {revision.creationMethod === CreationMethod.ManualRestore && (<><UndoOutlined /> {revision.creatorUserName}</>)}
             {revision.creationMethod === CreationMethod.Manual && (<>{revision.creatorUserName}</>)}
             {revision.creationMethod === CreationMethod.ManualImport && (<><FileZipOutlined /> {revision.creatorUserName}</>)}
             {revision.creationMethod === CreationMethod.MigrationImport && (<><SettingOutlined /> {revision.dllVersionNo}</>)}

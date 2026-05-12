@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { DebugDataTree } from "./dataTree";
-import { useDataContextManager } from "@/providers/dataContextManager";
 import { useGlobalState, useMetadataDispatcher } from "@/providers";
 import { useFormDesignerSettings } from "@/providers/formDesigner";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { getFieldNameFromExpression } from "@/providers/form/utils";
 import { DataTypes } from "@/interfaces";
+import { useDataContextManager } from "@/providers/dataContextManager/hooks";
 
 const DebugPanelDataContent: FC = () => {
   const globalState = useGlobalState();
@@ -23,6 +23,9 @@ const DebugPanelDataContent: FC = () => {
         .getMetadata({ modelType: pageInstance.formSettings.modelType, dataType: DataTypes.entityReference })
         .then((r) => {
           setFormMetadata(r);
+        }).catch((error) => {
+          console.error('Failed to get metadata', error);
+          throw error;
         });
   }, []);
 

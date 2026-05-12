@@ -51,7 +51,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
           setModal(true);
         }
         setLoading(true);
-        executeAction({
+        void executeAction({
           actionConfiguration: { ...actionConfiguration },
           argumentsEvaluationContext: evaluationContext,
         })
@@ -80,7 +80,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
 
   // Ghost buttons: only foreground color, no background/border/shadow
-  const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+  const ghostOverrides = isGhostType ? getGhostStyleOverrides(props.style) : props.style;
 
   return (
     <Button
@@ -96,7 +96,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       ghost={isGhostType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
-      iconPosition={props.iconPosition}
+      iconPlacement={props.iconPosition}
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
       size={props?.size}
       style={{

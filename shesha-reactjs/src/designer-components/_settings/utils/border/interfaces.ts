@@ -1,54 +1,29 @@
 import { IConfigurableFormComponent } from "@/providers";
 
 export type IBorderType = "dashed" | "dotted" | "none" | "solid";
+export type BorderStyle = {
+  width?: string | number | undefined;
+  unit?: string | undefined;
+  color?: string | undefined;
+  style?: IBorderType | undefined;
+};
+
+export type BorderType = "all" | "top" | "right" | "bottom" | "left" | "middle";
+
 export interface IBorderValue {
   radius?: {
-    all?: string | number;
-    topLeft?: string | number;
-    topRight?: string | number;
-    bottomLeft?: string | number;
-    bottomRight?: string | number;
+    all?: string | number | undefined;
+    topLeft?: string | number | undefined;
+    topRight?: string | number | undefined;
+    bottomLeft?: string | number | undefined;
+    bottomRight?: string | number | undefined;
   };
   border?: {
-    all?: {
-      width?: string | number;
-      color?: string;
-      style?: IBorderType;
-    };
-    top?: {
-      width?: string | number;
-      unit?: string;
-      color?: string;
-      style?: IBorderType;
-    };
-    right?: {
-      width?: string | number;
-      unit?: string;
-      color?: string;
-      style?: IBorderType;
-    };
-    bottom?: {
-      width?: string | number;
-      unit?: string;
-      color?: string;
-      style?: IBorderType;
-    };
-    left?: {
-      width?: string | number;
-      unit?: string;
-      color?: string;
-      style?: IBorderType;
-    };
-    middle?: {
-      width?: string | number;
-      unit?: string;
-      color?: string;
-      style?: IBorderType;
-    };
-  };
-  radiusType?: string;
-  borderType?: string;
-  hideBorder?: boolean;
+    [key in BorderType]?: BorderStyle | undefined;
+  } | undefined;
+  radiusType?: string | undefined;
+  borderType?: BorderType | 'custom' | undefined;
+  hideBorder?: boolean | undefined;
 }
 
 export interface IBorderProps extends IConfigurableFormComponent {

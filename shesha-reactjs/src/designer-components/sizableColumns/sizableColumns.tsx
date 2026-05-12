@@ -61,7 +61,9 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
         setBackgroundStyles(style);
       };
 
-      fetchStyles();
+      fetchStyles().catch((error) => {
+        console.error('Failed to fetch styles', error);
+      });
     }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
     if (model.hidden) return null;

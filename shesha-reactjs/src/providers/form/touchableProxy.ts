@@ -116,6 +116,8 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     this.refreshAccessors(accessors);
     this._changed = true;
 
+    const extraMethods = new Set(['refreshAccessors', 'addAccessor', 'setAdditionalData']);
+
     return new Proxy(this, {
       get(target, name) {
         const propertyName = name.toString();
@@ -138,6 +140,8 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
         return undefined;
       },
       has(target, prop) {
+        if (extraMethods.has(prop as string)) return true;
+
         return target._propAccessors.has(prop.toString());
       },
       ownKeys(target) {

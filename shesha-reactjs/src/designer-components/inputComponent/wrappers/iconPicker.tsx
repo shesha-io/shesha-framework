@@ -1,12 +1,12 @@
 import { IIconPickerSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import { useAvailableConstantsData } from '@/providers/form/utils';
+import { useAvailableConstantsDataNoRefresh } from '@/providers/form/utils';
 import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { IconPickerWrapper as IconPicker } from '../../iconPicker/iconPickerWrapper';
 
 export const IconPickerWrapper: FCUnwrapped<IIconPickerSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size, iconSize } = props;
-  const allData = useAvailableConstantsData();
+  const allData = useAvailableConstantsDataNoRefresh();
 
   return (
     <IconPicker

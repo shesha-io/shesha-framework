@@ -68,6 +68,9 @@ namespace Shesha.Elmah.SqlServer
         {
             try
             {
+                if (SheshaElmahSettings.IsLoggingDisabled)
+                    return;
+
                 var errorXml = ErrorXml.EncodeString(error);
 
                 using (var connection = new SqlConnection(ConnectionString)) 
@@ -142,6 +145,9 @@ namespace Shesha.Elmah.SqlServer
 
         public override int GetErrors(int errorIndex, int pageSize, ICollection<ErrorLogEntry> errorEntryList)
         {
+            if (SheshaElmahSettings.IsFetchingDisabled)
+                return 0;
+
             if (errorIndex < 0) throw new ArgumentOutOfRangeException(nameof(errorIndex), errorIndex, null);
             if (pageSize < 0) throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, null);
 
@@ -369,7 +375,7 @@ VALUES (@error_id, @application, @host, @type, @source, @message, @user, @status
                 var command = new SqlCommand
                 {
                     CommandText = $@"
-SELECT all_xml FROM [{DBConstants.Schema}].[{DBConstants.ErrorsTable}]
+SELECT all_xml FROM [{DBConstants.Schema}].[{DBConstants.ErrorsTable}] (nolock)
 WHERE 
     application = @application 
     AND error_id = @error_id
@@ -391,7 +397,7 @@ WHERE
                 var command = new SqlCommand
                 {
                     CommandText = $@"
-SELECT error_id, all_xml FROM [{DBConstants.Schema}].[{DBConstants.ErrorsTable}]
+SELECT error_id, all_xml FROM [{DBConstants.Schema}].[{DBConstants.ErrorsTable}] (nolock)
 WHERE
     application = @application
 ORDER BY [sequence] DESC
@@ -412,7 +418,7 @@ FETCH NEXT @limit ROWS ONLY;
             {
                 var command = new SqlCommand
                 {
-                    CommandText = $"SELECT COUNT(*) FROM [{DBConstants.Schema}].[{DBConstants.ErrorsTable}] WHERE application = @application"
+                    CommandText = $"SELECT COUNT(1) FROM [{DBConstants.Schema}].[{DBConstants.ErrorsTable}] (nolock) WHERE application = @application"
                 };
                 command.Parameters.Add("@application", SqlDbType.NVarChar, MaxAppNameLength).Value = appName;
                 return command;

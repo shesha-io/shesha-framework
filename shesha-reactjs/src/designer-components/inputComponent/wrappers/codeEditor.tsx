@@ -7,7 +7,6 @@ import { executeScript } from '@/providers/form/utils/scripts';
 import { FCUnwrapped, useShaFormInstance } from '@/providers';
 import { useMetadataBuilderFactory } from '@/utils';
 import { getEditor } from '../utils';
-import { defaultExposedVariables } from '@/designer-components/_settings/settingsControl';
 
 export const CodeEditorWrapper: FCUnwrapped<ICodeEditorSettingsInputProps> = (props) => {
   const { mode, language, availableConstantsExpression, resultTypeExpression, value, readOnly, description, label, propertyName, onChange, templateSettings, wrapInTemplate } = props;
@@ -24,7 +23,6 @@ export const CodeEditorWrapper: FCUnwrapped<ICodeEditorSettingsInputProps> = (pr
     value: value,
     onChange: onChange,
     templateSettings: templateSettings ?? { functionName: functionName },
-    exposedVariables: defaultExposedVariables,
   };
   const formInstance = useShaFormInstance();
   const formData = formInstance.formData;

@@ -4,9 +4,15 @@ export type ValueAccessor<TValue = unknown> = () => TValue;
 
 export interface ProxyWithRefresh<T> {
   refreshAccessors: (accessors: ProxyPropertiesAccessors<T>) => void;
-  addAccessor: (key: string, accessor: ValueAccessor<T>) => void;
+  addAccessor: <V = unknown>(key: string, accessor: ValueAccessor<V>) => void;
   setAdditionalData: (data: object) => void;
 };
+
+export const isProxyWithRefresh = <T = unknown>(obj: T): obj is T & ProxyWithRefresh<T> => isDefined(obj) &&
+  typeof (obj) === "object" &&
+  'refreshAccessors' in obj && typeof (obj.refreshAccessors) === 'function' &&
+  'addAccessor' in obj && typeof (obj.addAccessor) === 'function' &&
+  'setAdditionalData' in obj && typeof (obj.setAdditionalData) === 'function';
 
 export type ProxyPropertiesAccessors<Type> = {
   [Property in keyof Type]: ValueAccessor<Type[Property]>;
@@ -54,10 +60,13 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
         this.addAccessor(key, () => (data as Record<string, unknown>)[key]);
   };
 
+
   constructor(accessors: ProxyPropertiesAccessors<T>) {
     this._touchedProps = new Set<string>();
     this._propAccessors = new Map<string, ValueAccessor>();
     this.refreshAccessors(accessors);
+
+    const extraMethods = new Set(['refreshAccessors', 'addAccessor', 'setAdditionalData']);
 
     return new Proxy(this, {
       get(target, name) {
@@ -81,6 +90,7 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
         return undefined;
       },
       has(target, prop) {
+        if (extraMethods.has(prop as string)) return true;
         return target._propAccessors.has(prop.toString());
       },
       ownKeys(target) {

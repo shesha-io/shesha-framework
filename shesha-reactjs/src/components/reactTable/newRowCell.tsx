@@ -2,18 +2,18 @@ import CrudOperationsCell from '@/components/dataTable/cell/crudOperationsCell';
 import { CreateDataCell } from '@/components/dataTable/cell/dataCell';
 import { DataTableColumn } from '@/components/dataTable/interfaces';
 import { FormIdentifier, useMetadata } from '@/providers';
-import React, { FC } from 'react';
+import React, { ReactNode } from 'react';
 import { Cell, ColumnInstance, HeaderPropGetter } from 'react-table';
 import { toCamelCase } from '@/utils/string';
 import { asPropertiesArray } from '@/interfaces/metadata';
 import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils/datatable';
-import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
+import { IAnchoredColumnProps, ITableRowData } from '@/providers/dataTable/interfaces';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
 import { CreateFormCell, ICreateFormCellProps } from '../dataTable/cell/formCell/formCell';
 import { isFormFullName } from '@/providers/form/utils';
 
-const cellProps: HeaderPropGetter<object> = (props) => [
+const cellProps: HeaderPropGetter<ITableRowData> = (props) => [
   props,
   {
     style: {
@@ -23,20 +23,20 @@ const cellProps: HeaderPropGetter<object> = (props) => [
   },
 ];
 
-export interface INewRowCellProps {
-  column: ColumnInstance;
-  row?: ColumnInstance[];
+export interface INewRowCellProps<D extends ITableRowData = ITableRowData> {
+  column: ColumnInstance<D>;
+  row?: ColumnInstance<D>[];
   rowIndex?: number;
   parentFormId?: FormIdentifier;
 }
 
-export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) => {
-  const columnConfig = (column as DataTableColumn)?.originalConfig;
+export const NewRowCell = <D extends ITableRowData = ITableRowData>({ column, row, parentFormId }: INewRowCellProps<D>): ReactNode => {
+  const columnConfig = (column as DataTableColumn<D>)?.originalConfig;
 
   const metadata = useMetadata(false)?.metadata;
   const propertyMeta = asPropertiesArray(metadata?.properties, []).find(({ path }) => toCamelCase(path) === column.id);
   const { styles } = useStyles();
-  const { key, ...headerProps } = column.getHeaderProps(cellProps);
+  const { key, ...headerProps } = column.getHeaderProps(cellProps as HeaderPropGetter<D>);
   const anchored = getColumnAnchored((column as any)?.anchored);
   const index = row.indexOf(column);
   const isFixed = anchored?.isFixed;
@@ -79,7 +79,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
 
   const hasShadow = numOfFixed === index && anchored?.isFixed;
 
-  const parentFormProps: ICreateFormCellProps = {};
+  const parentFormProps: Partial<ICreateFormCellProps> = {};
   if (isFormFullName(parentFormId))
     parentFormProps.parentFormName = `${parentFormId.module}/${parentFormId.name}`;
   else if (typeof parentFormId === 'string' && parentFormId)

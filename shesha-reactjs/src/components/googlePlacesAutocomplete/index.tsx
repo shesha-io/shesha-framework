@@ -14,10 +14,10 @@ export interface IAddressAndCoords {
   lng?: number;
 }
 
-const KeyCodes = {
-  ArrowDown: 40,
-  ArrowUp: 38,
-  Enter: 13,
+const Keys = {
+  ArrowDown: "ArrowDown",
+  ArrowUp: "ArrowUp",
+  Enter: "Enter",
 };
 
 interface ISuggestion {
@@ -147,10 +147,10 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
 
     const lastIndex = suggestions?.length - 1;
 
-    if (event.keyCode === KeyCodes.ArrowUp || event.keyCode === KeyCodes.ArrowDown) {
+    if (event.key === Keys.ArrowUp || event.key === Keys.ArrowDown) {
       let suggestion: ISuggestion;
 
-      if (event.keyCode === KeyCodes.ArrowUp) {
+      if (event.key === Keys.ArrowUp) {
         if (!highlightedPlaceId) {
           suggestion = suggestions[lastIndex]; // Return the last one if the highlighted is empty
         } else {
@@ -160,7 +160,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             suggestion = suggestions[foundIndex - 1]; // Go to the previous one
           }
         }
-      } else if (event.keyCode === KeyCodes.ArrowDown) {
+      } else if (event.key === Keys.ArrowDown) {
         if (!highlightedPlaceId) {
           suggestion = suggestions[firstIndex]; // Return the first one if the highlighted is empty
         } else {
@@ -173,7 +173,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
       }
 
       setHighlightedPlaceId(suggestion.placeId);
-    } else if (event.keyCode === KeyCodes.Enter) {
+    } else if (event.key === Keys.Enter) {
       if (highlightedPlaceId) {
         const foundDescription = suggestions?.find(({ placeId }) => placeId === highlightedPlaceId)?.description;
 

@@ -64,7 +64,7 @@ const PasswordInputCombo: FC<IProps> = ({
         trigger="focus"
       >
         <FormItem {...formItemProps} {...passwordValidations(newPassword, errorMessage, passwordLength)}>
-          <Password {...inputProps} placeholder={placeholder} value={newPassword} onChange={onPasswordChange} style={style} />
+          <Password {...inputProps} placeholder={placeholder} autoComplete="new-password" value={newPassword} onChange={onPasswordChange} style={style} />
         </FormItem>
       </Popover>
 
@@ -80,6 +80,7 @@ const PasswordInputCombo: FC<IProps> = ({
         >
           <Password
             {...inputProps}
+            autoComplete="new-password"
             placeholder={confirmPlaceholder}
             value={repeatPassword}
             style={style}

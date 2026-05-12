@@ -18,6 +18,7 @@ import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/context
 import { RefreshTokenResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
 import { URLS } from '@/providers/auth/models';
+import { useDynamicModalsOrUndefined } from '@/providers/dynamicModal';
 
 export interface ISecuritySettings {
   autoLogoffTimeout: number;
@@ -88,6 +89,7 @@ const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
 interface IIdleHandler {
   setActivate: (activate: () => void) => void;
   setAutoLogoffActive: (active: boolean) => void;
+  setRemoveAllModals: (removeAllModals: (() => void) | null) => void;
   logout: () => void;
   refreshToken: () => Promise<boolean>;
   handlePrompt: () => void;
@@ -100,6 +102,8 @@ interface IIdleHandler {
 
 class IdleHandler implements IIdleHandler {
   private activateFn: (() => void) | null = null;
+
+  private removeAllModalsFn: (() => void) | null = null;
 
   private warningVisible: boolean = false;
 
@@ -124,6 +128,10 @@ class IdleHandler implements IIdleHandler {
 
   setActivate = (activate: () => void): void => {
     this.activateFn = activate;
+  };
+
+  setRemoveAllModals = (removeAllModals: (() => void) | null): void => {
+    this.removeAllModalsFn = removeAllModals;
   };
 
   setAutoLogoffActive = (active: boolean): void => {
@@ -185,6 +193,12 @@ class IdleHandler implements IIdleHandler {
     if (this.logoutInProgress) return;
 
     this.logoutInProgress = true;
+    // Close any open Show Dialog forms before logging out so they don't linger over the login page
+    try {
+      this.removeAllModalsFn?.();
+    } catch (err) {
+      console.error('Failed to close open dialogs during logout', err);
+    }
     this.broadcastLogout();
     this.logoutUser()
       .then(() => {
@@ -277,7 +291,10 @@ class IdleHandler implements IIdleHandler {
     }
 
     if (isTokenAboutToExpire(DEFAULT_ACCESS_TOKEN_NAME)) {
-      this.refreshToken();
+      this.refreshToken().catch((error) => {
+        console.error('Failed to refresh token', error);
+        throw error;
+      });
     }
   };
 
@@ -346,6 +363,8 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const httpClient = useHttpClient();
   const authenticator = useAuth();
   const { logoutUser, loginInfo } = authenticator;
+  const dynamicModals = useDynamicModalsOrUndefined();
+  const removeAllModals = dynamicModals?.removeAllModals;
 
   const [state, setState] = useState<IIdleTimerState>(INIT_STATE);
   const { isWarningVisible, remainingTime: rt, isCountingDown } = state;
@@ -393,6 +412,10 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   useEffect(() => {
     idleHandler.setAutoLogoffActive(isAutoLogoffActive);
   }, [idleHandler, isAutoLogoffActive]);
+
+  useEffect(() => {
+    idleHandler.setRemoveAllModals(removeAllModals ?? null);
+  }, [idleHandler, removeAllModals]);
 
   // Countdown logic - pure state updater without side effects
   const doCountdown = (): void => {

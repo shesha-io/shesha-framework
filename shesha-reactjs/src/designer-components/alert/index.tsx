@@ -98,7 +98,7 @@ const AlertComponent: AlertComponentDefinition = {
     return (
       <Alert
         className="sha-alert"
-        message={model.marquee ? (
+        title={model.marquee ? (
           <Marquee pauseOnHover gradient={false}>
             {messageContent}
           </Marquee>

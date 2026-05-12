@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import React, { MutableRefObject, ReactElement, useEffect } from 'react';
+import React, { MutableRefObject, ReactElement, useEffect, useLayoutEffect, useState } from 'react';
 import { IConfigurableFormProps, SheshaFormProps } from './models';
 import { Form, FormInstance } from 'antd';
 import { useAppConfigurator, useShaRoutingOrUndefined, useSheshaApplication } from '@/providers';
@@ -9,7 +9,7 @@ import { useFormDesignerUrl } from '@/providers/form/hooks';
 import { FormWithFlatMarkup } from './formWithFlatMarkup';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
 import { MarkupLoadingError } from './markupLoadingError';
-import { ConfigurableItemIdentifierToString } from '@/interfaces';
+import { configurableItemIdentifierToString } from '@/interfaces';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { IShaFormInstance } from '@/providers/form/store/interfaces';
 import ParentProvider from '@/providers/parentProvider';
@@ -29,14 +29,13 @@ export type ConfigurableFormProps<Values extends object = object> = Omit<IConfig
   setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values;
 } & SheshaFormProps;
 
-export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
+const ConfigurableFormInner = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
   const {
     formId,
     markup,
     cacheKey,
     isSettingsForm = false,
     onFinish,
-    initialValues,
     parentFormValues,
     onSubmitted,
     onValuesChange,
@@ -56,6 +55,10 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
     formDataSetter,
     setFormDataNewDataAction,
   } = props;
+
+  // memoize initial values once to avoid unnecessary form initialization
+  const [initialValues] = useState(props.initialValues);
+
   const { switchApplicationMode } = useAppConfigurator();
   const app = useSheshaApplication();
 
@@ -74,26 +77,27 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
   });
   shaForm.setOnMarkupLoaded(onMarkupLoaded);
 
-  if (shaFormRef)
-    shaFormRef.current = shaForm;
+  useLayoutEffect(() => {
+    if (shaFormRef)
+      shaFormRef.current = shaForm;
+  }, [shaForm, shaFormRef]);
 
   //#region shaForm sync
   useEffect(() => {
     shaForm.setLogEnabled(Boolean(props.logEnabled));
   }, [shaForm, props.logEnabled]);
 
+  // init form
   useEffect(() => {
     if (formId) {
-      shaForm.initByFormId({
+      void shaForm.initFormByFormId({
         formId: formId,
         formArguments: formArguments,
         initialValues: initialValues,
       });
     }
-  }, [shaForm, formId, formArguments]);
-  useEffect(() => {
     if (markup) {
-      shaForm.initByRawMarkup({
+      void shaForm.initFormByRawMarkup({
         rawMarkup: markup,
         formArguments: formArguments,
         initialValues: initialValues,
@@ -101,7 +105,14 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
         isSettingsForm: isSettingsForm,
       });
     }
-  }, [shaForm, markup, formArguments, initialValues, isSettingsForm, cacheKey]);
+  }, [shaForm, markup, formArguments, initialValues, isSettingsForm, cacheKey, formId]);
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting') {
+      void shaForm.initLoadData();
+    }
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status, formId, markup]);
 
   useEffect(() => {
     shaForm.setFormMode(mode);
@@ -154,8 +165,6 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
                 formMode={shaForm.formMode}
                 formFlatMarkup={shaForm.flatStructure}
                 formApi={shaForm.getPublicFormApi()}
-                name={ConfigurableItemIdentifierToString(formId)}
-                isScope
               >
                 {markupLoadingState.status === 'ready' && (
                   <>
@@ -174,7 +183,10 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
                           formSettings={shaForm.settings}
                           persistedFormProps={shaForm.form}
                           onMarkupUpdated={() => {
-                            shaForm.reloadMarkup();
+                            shaForm.reloadMarkup().catch((error) => {
+                              console.error('Failed to reload markup', error);
+                              throw error;
+                            });
                           }}
                           shaForm={shaForm}
                           actions={actions}
@@ -196,5 +208,17 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
         )}
       </ConfigurableComponent>
     </ShaSpin>
+  );
+};
+
+export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
+  return (
+    <ParentProvider
+      model={null}
+      name={props.formId ? configurableItemIdentifierToString(props.formId) : `form`}
+      isScope
+    >
+      <ConfigurableFormInner {...props} />
+    </ParentProvider>
   );
 };

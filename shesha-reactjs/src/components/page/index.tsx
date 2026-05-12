@@ -6,6 +6,7 @@ import Show from '@/components/show';
 import { useSheshaApplication, useTheme } from '@/providers';
 import StatusTag, { IStatusTagProps } from '@/components/statusTag';
 import { FormIdentifier } from '@/providers/form/models';
+import { ItemType } from 'antd/lib/breadcrumb/Breadcrumb';
 
 export interface IPageHeadProps {
   readonly title?: string;
@@ -81,11 +82,10 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
         </Show>
 
         <Show when={!!breadcrumbItems?.length}>
-          <Breadcrumb className="sha-page-breadcrumb">
-            {breadcrumbItems?.map(({ text, link }, index) => (
-              <Breadcrumb.Item key={index}>{link ? <a href={link}>{text}</a> : text}</Breadcrumb.Item>
-            ))}
-          </Breadcrumb>
+          <Breadcrumb
+            className="sha-page-breadcrumb"
+            items={breadcrumbItems?.map<ItemType>(({ text, link }) => ({ title: text, href: link }))}
+          />
         </Show>
 
         <div

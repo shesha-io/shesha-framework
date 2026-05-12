@@ -12,7 +12,7 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
   const { containerId, readOnly } = props;
 
   const parent = useParent();
-  const components = parent?.getChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, '')) ?? [];
+  const components = parent.getChildComponents(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
   const style = getAlignmentStyle(props);
 
@@ -26,7 +26,7 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
 
   return (
     <div style={containerStyle}>
-      {components?.map((model) => {
+      {components.map((model) => {
         return (
           <FormComponent
             componentModel={{
@@ -36,7 +36,7 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
               readOnly: readOnly === true ? true : model.readOnly,
               customEnabled: '',
             }}
-            key={model?.id}
+            key={model.id}
           />
         );
       })}

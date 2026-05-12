@@ -49,7 +49,7 @@ export const makeListContext = <TItem = any>({ value, onChange, initNewItem, sel
       onChange(newValue);
     },
     insertItem: function (index: number): void {
-      const newItem = initNewItem(value);
+      const newItem = initNewItem(value ?? []);
       const newValue = value ? [...value] : [];
       newValue.splice(index, 0, newItem);
 
@@ -68,7 +68,7 @@ export const makeListContext = <TItem = any>({ value, onChange, initNewItem, sel
   return context;
 };
 
-export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRendererProps<TItem>): JSX.Element => {
+export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRendererProps<TItem>): React.JSX.Element => {
   const { styles } = useStyles();
   const { contextAccessor, children, header, level = 1, parentItem, maxItemsCount } = props;
   const {
@@ -189,7 +189,7 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
                           refresh(gotItem);
                         },
                         initNewItem: (items) => {
-                          return initNewItem(items);
+                          return initNewItem(items ?? []);
                         },
                         selectedItem,
                         setSelectedItem,

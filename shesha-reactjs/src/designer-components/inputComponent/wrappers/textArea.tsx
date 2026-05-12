@@ -8,7 +8,9 @@ export const TextAreaWrapper: FCUnwrapped<ITextAreaSettingsInputProps> = (props)
   return (
     <Input.TextArea
       value={value as string}
-      onChange={onChange}
+      onChange={(e) => {
+        onChange?.(e.target.value?.toString());
+      }}
       readOnly={readOnly}
       rows={2}
       placeholder={placeholder}

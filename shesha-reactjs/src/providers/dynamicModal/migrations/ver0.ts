@@ -20,7 +20,7 @@ export interface IShowModalActionArgumentsV0 {
   /**
    * What http verb to use when submitting the form. Used in conjunction with `showModalFooter`
    */
-  submitHttpVerb?: 'POST' | 'PUT';
+  submitHttpVerb?: 'POST' | 'PUT' | undefined;
 }
 
 const makeEvaluatorFromItems = (items: IKeyValue[]): string => {

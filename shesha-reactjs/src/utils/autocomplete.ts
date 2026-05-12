@@ -20,11 +20,11 @@ interface AutocompleteReturn {
 export type AutocompleteValueType = string | string[] | object | object[];
 
 export interface IAutocompleteProps {
-  entityType: string | IEntityTypeIdentifier;
-  filter?: string;
-  maxResultCount?: number;
-  displayProperty?: string;
-  value?: AutocompleteValueType;
+  entityType: string | IEntityTypeIdentifier | undefined;
+  filter?: string | undefined;
+  maxResultCount?: number | undefined;
+  displayProperty?: string | undefined;
+  value?: AutocompleteValueType | undefined;
 }
 
 const buildFilterById = (value: AutocompleteValueType | undefined): string | undefined => {
@@ -98,9 +98,13 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
 
     setSearchIsValid(false);
     previousQueryParams.current = queryParams;
-    listFetcher.refetch({ queryParams }).then(() => {
-      setSearchIsValid(true);
-    });
+    listFetcher.refetch({ queryParams })
+      .then(() => {
+        setSearchIsValid(true);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch autocomplete list', error);
+      });
   };
 
   const listItems = listFetcher.data?.result?.items;

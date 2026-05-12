@@ -11,7 +11,7 @@ import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IDictionary, IEditorAdapter, PropertyInclusionPredicate } from '@/interfaces';
 import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
 
-export const updateModelExcludeFiltered = (model: object, updatedModel: object, filter: PropertyInclusionPredicate): any => {
+export const updateModelExcludeFiltered = <T extends object = object>(model: T, updatedModel: object, filter: PropertyInclusionPredicate): T => {
   Object.keys(updatedModel).forEach((key) => {
     if (!filter(key)) {
       model[key] = updatedModel[key];

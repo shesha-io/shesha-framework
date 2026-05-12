@@ -34,7 +34,7 @@ export const SidebarConfigurator: FC<ISidebarConfiguratorProps> = ({ value, onCh
       onChange={onChange as (newValue: SidebarConfigItem[]) => void}
       initNewItem={makeNewItem as (items: SidebarConfigItem[]) => SidebarConfigItem}
       readOnly={readOnly}
-      header={<Alert message={readOnly ? 'Here you can view sidebar configuration.' : 'Here you can configure the sidebar menu items by adjusting their settings and ordering.'} />}
+      header={<Alert title={readOnly ? 'Here you can view sidebar configuration.' : 'Here you can configure the sidebar menu items by adjusting their settings and ordering.'} />}
       itemProperties={(itemProps) => (<SidebarItemProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
       groupHeader={ItemGroupHeader}
     >

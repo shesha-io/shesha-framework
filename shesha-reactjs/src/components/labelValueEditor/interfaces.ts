@@ -15,5 +15,5 @@ export interface ILabelValueEditorPropsBase {
   iconName?: string;
   colorTitle?: string;
   iconTitle?: string;
-  dropdownOptions?: IDropdownOption[] | string;
+  dropdownOptions?: IDropdownOption[];
 }

@@ -12,7 +12,7 @@ export const ColumnFilters: FC = () => {
     toggleColumnFilter,
     applyFilters,
   } = useDataTableStore();
-  const currentFilter = tableFilterDirty || tableFilter || [];
+  const currentFilter = tableFilterDirty ?? tableFilter;
   return (
     <ColumnFiltersBase
       {...{

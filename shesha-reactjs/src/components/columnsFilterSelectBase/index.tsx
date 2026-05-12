@@ -1,16 +1,24 @@
 import React, { FC } from 'react';
 import { Select } from 'antd';
 import { ITableColumn } from '@/providers/dataTable/interfaces';
-import { nanoid } from '@/utils/uuid';
 import { useStyles } from './styles/styles';
-
-const { Option } = Select;
+import { DefaultOptionType } from 'antd/lib/select';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IColumnsFilterSelectBaseProps {
   columns: ITableColumn[];
   appliedFiltersColumnIds: string[];
   toggleColumnFilter: (ids: string[]) => void;
 }
+
+const columnsToOptions = (columns: ITableColumn[]): DefaultOptionType[] => {
+  const result: DefaultOptionType[] = [];
+  columns.forEach((column) => {
+    if (column.isFilterable && !isNullOrWhiteSpace(column.id))
+      result.push({ value: column.id, label: column.header });
+  });
+  return result;
+};
 
 export const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
   columns,
@@ -22,8 +30,7 @@ export const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
     toggleColumnFilter(values); // There will always be one new element
   };
 
-  const filterOption = (inputValue: string, option: any): boolean =>
-    (option.props.children as string).toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
+  const options = columnsToOptions(columns);
 
   return (
     <div className={styles.columnsFilterSelect}>
@@ -35,16 +42,11 @@ export const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
         onChange={handleToggleColumnFilter}
         value={appliedFiltersColumnIds}
         className="columns-filter-selector"
-        filterOption={filterOption}
-      >
-        {columns
-          .filter(({ isFilterable }) => isFilterable)
-          .map(({ id, header }) => (
-            <Option value={id} key={nanoid()}>
-              {header}
-            </Option>
-          ))}
-      </Select>
+        showSearch={{ filterOption: (inputValue, option) => {
+          return isDefined(option) && typeof (option.label) === "string" && option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
+        } }}
+        options={options}
+      />
     </div>
   );
 };

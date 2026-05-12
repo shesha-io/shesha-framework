@@ -15,6 +15,7 @@ import {
   isConfigurableFormComponent,
   isObjectWithStringId,
   isRawComponentsContainer,
+  RootContexts,
   STYLE_BOX_CSS_POPERTIES,
   StyleBoxValue,
   useDataTableStateOrUndefined,
@@ -23,13 +24,9 @@ import {
   useMetadataDispatcher,
 } from '@/providers';
 import {
-  IDataContextManagerActionsContext,
-  IDataContextManagerFullInstance,
-  IDataContextsData,
-  RootContexts,
   useDataContextManagerActionsOrUndefined,
   useDataContextManagerOrUndefined,
-} from '@/providers/dataContextManager';
+} from '@/providers/dataContextManager/hooks';
 import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import { ISelectionProps } from '@/providers/dataTable/interfaces';
 import { executeFunction } from '@/utils';
@@ -50,7 +47,7 @@ import moment from 'moment';
 import Mustache from 'mustache';
 import { CSSProperties, useRef } from 'react';
 import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
-import { SheshaCommonContexts } from '../dataContextManager/models';
+import { IDataContextManagerActions, IDataContextManagerFullInstance, IDataContextsData, SheshaCommonContexts } from '../dataContextManager/models';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
@@ -89,6 +86,10 @@ import {
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
+import { IModalApi } from '../dynamicModal/modalApi';
+import { useModalApiWithFallback } from '../dynamicModal';
+import { IComponentApi } from '../componentApi/model';
+import { useComponentApi } from '../componentApi/provider';
 
 export {
   executeExpression, executeScript,
@@ -105,6 +106,8 @@ type MomentType = typeof moment;
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value extends object = object> {
+  components: Record<string, Record<string, unknown>>;
+
   application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   metadataDispatcher?: IMetadataDispatcher;
@@ -124,8 +127,10 @@ export interface IApplicationContext<Value extends object = object> {
   http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
+  /** Modal API - for displaying dialogs and forms in modals (limited functionality if DynamicModalProvider is not available) */
+  modal: IModalApi;
   /** File Saver API */
-  fileSaver: typeof FileSaver;
+  fileSaver: (data: Blob | string, filename?: string) => void;
 
   /** Last updated date */
   lastUpdated?: Date;
@@ -160,14 +165,16 @@ export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
 };
 
 export type AvailableConstantsContext = {
+  componentApi?: IComponentApi | undefined;
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
-  dcm: IDataContextManagerActionsContext | undefined;
+  dcm: IDataContextManagerActions | undefined;
   metadataDispatcher: IMetadataDispatcher | undefined;
   closestContextId: string | undefined;
   globalState: IAnyObject | undefined;
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
+  modal: IModalApi;
   httpClient: HttpClientApi;
 };
 
@@ -181,14 +188,17 @@ export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((re
 
 const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
+  const modal = useModalApiWithFallback();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
   const closestContextId = useDataContextOrUndefined()?.id;
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
+  const componentApi = useComponentApi();
 
   const result: AvailableConstantsContext = {
+    componentApi: componentApi,
     closestShaFormApi: undefined,
     selectedRow,
     dcm: undefined,
@@ -198,6 +208,7 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
     setGlobalState,
     httpClient,
     message,
+    modal,
   };
   return result;
 };
@@ -273,10 +284,28 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     httpClient,
     message,
     metadataDispatcher,
+    modal,
+
+    componentApi,
   } = fullContext;
   const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
   const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
+    components: () => {
+      const api: Record<string, Record<string, unknown>> = {};
+      if (componentApi) {
+        const components = componentApi.getComponents();
+        components.forEach((component) => {
+          if (component.api === undefined || !component.componentName) return;
+          if (api[component.componentName]) {
+            console.warn(`Duplicate componentName "${component.componentName}" detected. The earlier component's API will be overwritten.`);
+          }
+          api[component.componentName] = component.api;
+        });
+      }
+      return api;
+    },
+
     application: () => {
       // get application context
       const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
@@ -303,6 +332,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     moment: () => moment,
     http: () => httpClient,
     message: () => message,
+    modal: () => modal,
     fileSaver: () => FileSaver,
     data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
     form: () => shaFormInstance,
@@ -446,6 +476,29 @@ export const componentsTreeToFlatStructure = (
           });
         }
       });
+
+      // Handle nested custom containers inside array items (e.g., stepFooter inside steps)
+      // Generic approach: look for any property that is a container (has id and components)
+      if (componentRegistration?.customContainerNames) {
+        componentRegistration.customContainerNames.forEach((containerName) => {
+          const containerData = unsafeGetValueByPropertyName(component, containerName);
+          if (Array.isArray(containerData)) {
+            containerData.forEach((item: unknown) => {
+              if (item && typeof item === 'object') {
+                // Check all properties of the item for nested containers
+                Object.keys(item).forEach((key) => {
+                  const prop = (item as Record<string, unknown>)[key];
+                  if (isComponentsContainer(prop)) {
+                    prop.components.forEach((c) => {
+                      processComponent(c, prop.id);
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     }
   };
 
@@ -539,6 +592,8 @@ export const componentsFlatStructureToTree = (
     const ownerComponent = flat.allComponents[ownerId];
 
     const staticContainerIds: string[] = [];
+    // Track nested container ids that should be handled separately (e.g., stepFooter)
+    const nestedContainerMap: Map<string, { parent: unknown; property: string }> = new Map();
     if (ownerComponent) {
       const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
         ? toolboxComponents[ownerComponent.type]
@@ -553,9 +608,18 @@ export const componentsFlatStructureToTree = (
               staticContainerIds.push(subContainer.id);
             // container without id (array of components)
             if (Array.isArray(subContainer))
-              subContainer.forEach((c) => {
+              subContainer.forEach((c: unknown) => {
                 if (isObjectWithStringId(c))
                   staticContainerIds.push(c.id);
+                // Track nested containers inside array items (generic approach)
+                if (c && typeof c === 'object') {
+                  Object.keys(c).forEach((key) => {
+                    const prop = (c as Record<string, unknown>)[key];
+                    if (isComponentsContainer(prop)) {
+                      nestedContainerMap.set(prop.id, { parent: c, property: key });
+                    }
+                  });
+                }
               });
           }
         });
@@ -564,6 +628,10 @@ export const componentsFlatStructureToTree = (
 
     // iterate all component ids on the current level
     componentIds.forEach((id) => {
+      // Skip nested container ids (they'll be handled separately)
+      if (nestedContainerMap.has(id))
+        return;
+
       // extract current component and add to hierarchy
       const component: Record<string, unknown> = { ...flat.allComponents[id] };
       if (!isConfigurableFormComponent(component))
@@ -594,7 +662,21 @@ export const componentsFlatStructureToTree = (
           const childContainers = unsafeGetValueByPropertyName(component, containerName);
           if (childContainers) {
             if (Array.isArray(childContainers)) {
-              component[containerName] = childContainers.map(processContainer);
+              component[containerName] = childContainers.map((c: unknown) => {
+                if (!isComponentsContainer(c)) return c as IComponentsContainer;
+                const processed = processContainer(c);
+                // Handle nested containers inside array items (generic approach)
+                const containerWithNested = processed as unknown as Record<string, unknown>;
+                Object.keys(containerWithNested).forEach((key) => {
+                  const prop = containerWithNested[key];
+                  if (isComponentsContainer(prop)) {
+                    const nestedComponents: IConfigurableFormComponent[] = [];
+                    processComponent(nestedComponents, prop.id);
+                    containerWithNested[key] = { ...prop, components: nestedComponents };
+                  }
+                });
+                return processed;
+              });
             } else if (isComponentsContainer(childContainers))
               component[containerName] = processContainer(childContainers);
             else
@@ -1293,7 +1375,7 @@ export const pickStyleFromModel = (model: StyleBoxValue, ...args: unknown[]): CS
 const emptyStyle = {};
 type StyleFunction = (data: object, globalState: object) => CSSProperties | undefined;
 export const getStyle = (
-  style: string,
+  style: string | undefined,
   formData: object = {},
   globalState: object = {},
   defaultStyle: object = emptyStyle,

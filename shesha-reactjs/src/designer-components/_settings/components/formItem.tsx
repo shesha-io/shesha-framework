@@ -1,9 +1,9 @@
 import React, { cloneElement, FC, ReactElement, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import SettingsControl from '../settingsControl';
+import SettingsControl, { SettingsControlChildrenFunc } from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 import { useStyles } from '../styles/styles';
-import { useDefaultModelProviderStateOrUndefined } from '../defaultModelProvider/defaultModelProvider';
+import { useDefaultModelPropertyUpdateSubscription, useDefaultModelProviderStateOrUndefined } from '../defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
 
@@ -11,6 +11,8 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { styles } = useStyles();
   const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression } = props;
   const [hasCode, setHasCode] = useState(false);
+
+  useDefaultModelPropertyUpdateSubscription(name);
 
   const { namePrefix } = useFormItem();
   const defaultModelPropName = namePrefix ? namePrefix + '.' + name : name;
@@ -20,28 +22,32 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultModelPropName);
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
 
-  const childElement = children as ReactElement;
-  const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
+  let childFunc: SettingsControlChildrenFunc | undefined = undefined;
+  let readOnly = props.readOnly;
+  if (typeof children === 'function') {
+    childFunc = children as SettingsControlChildrenFunc;
+  } else {
+    const childElement = children as ReactElement;
+    readOnly = readOnly || childElement.props.readOnly || childElement.props.disabled;
 
-  const handleChange = (onChange) => (...args: any[]) => {
-    const event = args[0];
-    const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
-      ? (event.target as HTMLInputElement)[valuePropName]
-      : event;
-    onChange(data);
-  };
-
-  const createClonedElement = (value, onChange): ReactElement => cloneElement(
-    childElement,
-    {
-      ...childElement?.props,
-      readOnly: readOnly,
-      size: 'small',
-      disabled: readOnly,
-      onChange: handleChange(onChange),
-      [valuePropName]: value,
-    },
-  );
+    childFunc = (value, onChange): ReactElement => cloneElement(
+      childElement,
+      {
+        ...childElement.props,
+        readOnly: readOnly,
+        size: 'small',
+        disabled: readOnly,
+        onChange: (...args: any[]) => {
+          const event = args[0];
+          const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
+            ? (event.target as HTMLInputElement)[valuePropName]
+            : event;
+          onChange(data);
+        },
+        [valuePropName]: value,
+      },
+    );
+  }
 
   return (
     <ConfigurableFormItem
@@ -60,9 +66,9 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       className={`sha-js-label ${className}`}
     >
       {(value, onChange) => {
-        const localValue = valueInfo?.state === 'usedDefault' ? defaultValue : value;
+        const localValue = defaultModel?.getValueInfo(defaultModelPropName)?.state === 'usedDefault' ? defaultValue : value;
         return !jsSetting ? (
-          createClonedElement(localValue, onChange)
+          childFunc(localValue, onChange, name)
         ) : (
           <SettingsControl
             propertyName={name}
@@ -75,7 +81,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             lazy={jsSetting === 'lazy'}
             availableConstantsExpression={availableConstantsExpression}
           >
-            {(val, onChange) => createClonedElement(val, onChange)}
+            {(val, onChange) => childFunc(val, onChange, name)}
           </SettingsControl>
         );
       }}

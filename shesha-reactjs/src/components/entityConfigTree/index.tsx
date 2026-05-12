@@ -75,7 +75,10 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   }, [objectId]);
 
   useEffect(() => {
-    fetcher.refetch();
+    fetcher.refetch().catch((error) => {
+      console.error('Failed to fetch tree', error);
+      throw error;
+    });
   }, []);
 
   useEffect(() => {
@@ -106,7 +109,10 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   // useEffect(() => {fetcher.refetch();}, [showSuppress])
 
   const refresh = (id: string): void => {
-    fetcher.refetch();
+    fetcher.refetch().catch((error) => {
+      console.error('Failed to fetch tree', error);
+      throw error;
+    });
     setRefreshId(id);
   };
 

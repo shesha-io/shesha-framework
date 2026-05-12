@@ -2,7 +2,7 @@ import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components
 import React from 'react';
 
 
-const ClassOutlinedSvg = (): JSX.Element => (
+const ClassOutlinedSvg = (): React.JSX.Element => (
   <svg
     width="1.2em"
     height="1.2em"
@@ -47,6 +47,6 @@ const ClassOutlinedSvg = (): JSX.Element => (
 );
 
 
-export const ClassOutlined = (props: Partial<CustomIconComponentProps>): JSX.Element => (
+export const ClassOutlined = (props: Partial<CustomIconComponentProps>): React.JSX.Element => (
   <Icon component={ClassOutlinedSvg} {...props} />
 );

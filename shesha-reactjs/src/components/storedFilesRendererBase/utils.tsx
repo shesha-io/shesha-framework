@@ -128,7 +128,10 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
 
   const handleVisibleChange = (visible: boolean): void => {
     if (visible) {
-      fetchHistory();
+      fetchHistory().catch((error) => {
+        console.error('Failed to fetch file history', error);
+        throw error;
+      });
     }
   };
 
@@ -187,7 +190,7 @@ const formatFileSize = (bytes?: number): string => {
 export const FileNameDisplay: FC<{
   file: UploadFile;
   className?: string;
-  icon?: JSX.Element;
+  icon?: React.JSX.Element;
   popoverContent?: React.ReactNode;
   popoverClassName?: string;
 }> = ({ file, icon, className, popoverContent, popoverClassName }) => {

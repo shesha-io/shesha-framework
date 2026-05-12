@@ -6,7 +6,7 @@ interface DraggerStubProps {
   type?: string;
 }
 
-export const DraggerStub = ({ styles, type }: DraggerStubProps): JSX.Element => {
+export const DraggerStub = ({ styles, type }: DraggerStubProps): React.JSX.Element => {
   return (
     <div>
       <p className={styles.antUploadDragIcon}>

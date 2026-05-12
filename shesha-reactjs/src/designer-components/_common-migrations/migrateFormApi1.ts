@@ -14,7 +14,7 @@ const formData = (expr: string): string => migrateExpression(expr, /\b(formData)
 const formMode = (expr: string | undefined): string | undefined => migrateExpression(expr, /\b(formMode)\b/mg, 'form.formMode');
 
 const withoutFormData = (expr: string | undefined): string | undefined => setFormData(formMode(expr));
-const full = (expr: string): string => setFormData(formData(formMode(expr)));
+const full = (expr: string | undefined): string => setFormData(formData(formMode(expr)));
 
 const events = <T extends IConfigurableFormComponent>(model: T): T => ({
   ...model,

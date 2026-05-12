@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, PropsWithChildren } from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
@@ -58,8 +58,8 @@ const defaultBodyStyle: React.CSSProperties = {
  *
  */
 
-export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'radiusRight'>> = ({
-  expandIconPosition = 'end',
+export const CollapsiblePanel: FC<PropsWithChildren<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'radiusRight' | 'expandIconPosition' | 'children'>>> = ({
+  expandIconPlacement = 'end',
   onChange,
   header,
   extra,
@@ -74,7 +74,6 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   bodyStyle = defaultBodyStyle,
   headerStyle = defaultHeaderStyle,
   isSimpleDesign,
-  noContentPadding,
   hideWhenEmpty,
   hideCollapseContent,
   accentStyle,
@@ -83,14 +82,14 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
-  const { styles } = useStyles({ bodyStyle, headerStyle, ghost, isSimpleDesign, noContentPadding, hideWhenEmpty, hideCollapseContent, accentStyle, overflow: overflowStyle });
+  const { styles } = useStyles({ bodyStyle, headerStyle, ghost, isSimpleDesign, hideCollapseContent, accentStyle, overflow: overflowStyle });
   const shaCollapsiblePanelStyle = isSimpleDesign ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;
 
   return (
     <Collapse
       defaultActiveKey={collapsedByDefault ? [] : ['1']}
       onChange={onChange}
-      expandIconPlacement={expandIconPosition}
+      expandIconPlacement={expandIconPlacement}
       className={classNames(shaCollapsiblePanelStyle, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
       ghost={ghost}
       items={[

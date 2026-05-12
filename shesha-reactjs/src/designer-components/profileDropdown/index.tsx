@@ -139,7 +139,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     // Custom execute function that includes dynamicItem in the context
     const executeActionWithDynamicContext = (actionConfiguration: IConfigurableActionConfiguration, dynamicItem?: IFullAuditedEntity): void => {
       if (actionConfiguration) {
-        executeAction({
+        void executeAction({
           actionConfiguration,
           argumentsEvaluationContext: { ...allData, dynamicItem },
         });

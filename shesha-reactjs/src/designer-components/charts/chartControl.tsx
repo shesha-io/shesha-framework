@@ -355,7 +355,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     return (
       <Alert
         showIcon
-        message="Some chart properties don't match the current entity type"
+        title="Some chart properties don't match the current entity type"
         description={`The following properties may not work as expected: ${faultyProperties.join(', ')}. The chart will attempt to use available data properties instead.`}
         type="warning"
         closable
@@ -369,7 +369,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     return (
       <Alert
         showIcon
-        message="Chart control properties not set correctly!"
+        title="Chart control properties not set correctly!"
         description={missingPropertiesInfo.descriptionMessage}
         type="warning"
       />
@@ -407,7 +407,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     return (
       <Alert
         showIcon
-        message={message}
+        title={message}
         description={error}
         type="error"
         action={(

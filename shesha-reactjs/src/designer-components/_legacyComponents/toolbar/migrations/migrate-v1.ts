@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { ButtonType } from 'antd/lib/button';
 import { FormIdentifier } from '@/providers/form/models';
 import { getClosestTableId } from '@/providers/form/utils';

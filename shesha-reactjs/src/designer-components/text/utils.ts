@@ -1,4 +1,4 @@
-import { getNumberFormat } from '@/utils/string';
+import { numberToFormattedString } from '@/utils/string';
 import {
   ContentDisplay,
   FONT_SIZES,
@@ -33,7 +33,7 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
     case 'date-time':
       return formatDateStringAndPrefix(content, dateFormat);
     case 'number':
-      return getNumberFormat(content, numberFormat || 'round');
+      return numberToFormattedString(content, numberFormat || 'round');
     default:
       return content;
   }

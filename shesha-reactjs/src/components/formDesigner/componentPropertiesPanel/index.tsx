@@ -1,11 +1,15 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import { Empty } from 'antd';
 import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 
 const ComponentPropertiesPanelInner: FC = () => {
-  const { settingsPanelRef } = useFormDesigner();
+  const formDesigner = useFormDesigner();
   const readOnly = useFormDesignerReadOnly();
   const selectedComponentId = useFormDesignerSelectedComponentId();
+
+  const panelRef = useCallback((node: HTMLDivElement | null) => {
+    formDesigner.setSettingsPanelElement(node);
+  }, [formDesigner]);
 
   return (
     <>
@@ -15,9 +19,10 @@ const ComponentPropertiesPanelInner: FC = () => {
           description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
         />
       )}
-      <div ref={settingsPanelRef}></div>
+      <div ref={panelRef}></div>
     </>
   );
 };
 
 export const ComponentPropertiesPanel = React.memo(ComponentPropertiesPanelInner);
+

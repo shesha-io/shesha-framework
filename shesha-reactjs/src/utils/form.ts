@@ -1,6 +1,6 @@
 import { FormInstance } from 'antd';
 import { YesNoInherit } from '@/interfaces/formDesigner';
-import { FormIdentifier, FormMode } from '@/providers/form/models';
+import { FormFullName, FormIdentifier, FormMode } from '@/providers/form/models';
 import { isFormFullName, isFormRawId } from '@/providers/form/utils';
 import { isNumeric } from './string';
 import { isDefined } from './nullables';
@@ -129,6 +129,10 @@ export const getFormCacheKey = (formId: FormIdentifier): string | undefined => {
       : undefined;
 
   return formKey;
+};
+
+export const getFormFullNameDisplayText = (formId: FormFullName): string => {
+  return `${formId.module}/${formId.name}`;
 };
 
 /**

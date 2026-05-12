@@ -8,7 +8,7 @@ export interface IValidationIconProps {
 }
 
 export const ValidationIcon: FC<IValidationIconProps> = ({ validationErrors }) => {
-  const getPopupContent = (): JSX.Element => {
+  const getPopupContent = (): React.JSX.Element => {
     return (
       <ul className="sha-component-validation-errors">
         {validationErrors.map((error, idx) => (

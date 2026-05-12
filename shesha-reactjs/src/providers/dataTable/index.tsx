@@ -25,12 +25,12 @@ import {
 export type DataTableProviderWithUrlData = IDataTableProviderBaseProps & IHasEntityDataSourceConfig;
 
 interface IHasDataSourceType {
-  sourceType: 'Form' | 'Entity' | 'Url';
+  sourceType: 'Form' | 'Entity' | 'Url' | undefined;
 }
 export interface IHasFormDataSourceConfig {
   propertyName: string;
   getFieldValue: (propertyName: string) => ITableRowData[];
-  metadata?: IModelMetadata;
+  metadata?: IModelMetadata | undefined;
   onChange: (...args: unknown[]) => void;
 }
 export interface IUrlDataSourceConfig {

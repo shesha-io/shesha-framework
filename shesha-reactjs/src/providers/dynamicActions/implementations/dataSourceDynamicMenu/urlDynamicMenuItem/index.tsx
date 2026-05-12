@@ -33,7 +33,10 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
           : responseData.items;
 
         setData(result);
-      });
+      })
+        .catch((error) => {
+          console.error('Failed to fetch url', error);
+        });
     }
   }, [getUrlTemplateState, httpClient]);
 

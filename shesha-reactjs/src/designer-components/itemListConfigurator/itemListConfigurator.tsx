@@ -17,7 +17,7 @@ export interface IItemListConfiguratorProps<TItem extends ListItemWithId> {
   header?: React.ReactNode;
 }
 
-export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemListConfiguratorProps<TItem>): JSX.Element => {
+export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemListConfiguratorProps<TItem>): React.JSX.Element => {
   const {
     value,
     onChange,

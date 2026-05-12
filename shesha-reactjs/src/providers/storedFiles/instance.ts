@@ -59,6 +59,16 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
     const files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
     this.#fileList = files.map((file) => storedFileDtoToModel(file));
+    try {
+      this.#onChange?.(this.#fileList);
+    } catch (error) {
+      console.error('AttachmentsEditorInstance.onChange callback failed', error);
+    }
+    try {
+      this.notifySubscribers(['fileList']);
+    } catch (error) {
+      console.error('AttachmentsEditorInstance.notifySubscribers failed', error);
+    }
   };
 
   init = (fileListReference: FileListReference): void => {
@@ -68,7 +78,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
     this.#fileListReference = fileListReference;
     if (isOwnerReferenceValid(this.#fileListReference))
-      this.fetchFilesList();
+      void this.fetchFilesList();
   };
 
   setOnFileListChanged = (onChange: OnFileListChanged | undefined): void => {

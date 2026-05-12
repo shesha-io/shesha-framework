@@ -19,7 +19,6 @@ import {
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { camelcaseDotNotation } from '@/utils/string';
 import { nanoid } from "@/utils/uuid";
-import { MutableRefObject } from "react";
 import { toolbarGroupsToComponents } from "../form/hooks";
 import { componentsFlatStructureToTree, createComponentModelForDataProperty, processRecursive, upgradeComponent } from "../form/utils";
 import {
@@ -42,7 +41,6 @@ export type FormDesignerArgs = {
   toolboxComponentGroups: IToolboxComponentGroup[];
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
-  settingsPanelRef: MutableRefObject<HTMLDivElement | undefined>;
   logEnabled?: boolean;
   formPersister: IFormPersisterContext;
 };
@@ -83,6 +81,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   formMode: FormMode;
 
+  activeSettingsTabKey: string | undefined;
+
   get state(): FormDesignerFormState {
     return this.undoableState.getState();
   }
@@ -91,13 +91,13 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.toolboxComponentGroups = args.toolboxComponentGroups;
     this.toolboxComponents = toolbarGroupsToComponents(args.toolboxComponentGroups);
     this.formPersister = args.formPersister;
-    this.settingsPanelRef = args.settingsPanelRef;
     this.readOnly = args.readOnly;
     this.isDebug = false;
     this.formMode = 'designer';
     this.isDragging = false;
     this.hasDragged = false;
     this.isDataModified = false;
+    this.activeSettingsTabKey = undefined;
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
 
     // eslint-disable-next-line no-console
@@ -141,6 +141,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       formSettings: settings,
     });
     this.selectedComponentId = undefined;
+    this.activeSettingsTabKey = undefined;
     this.isDataModified = false;
     this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
   };
@@ -149,7 +150,12 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   selectedComponentId: string | undefined;
 
-  settingsPanelRef: MutableRefObject<HTMLDivElement | undefined>;
+  settingsPanelElement: HTMLDivElement | null = null;
+
+  setSettingsPanelElement = (element: HTMLDivElement | null): void => {
+    this.settingsPanelElement = element;
+    this.notifySubscribers(['selection']);
+  };
 
   private getToolboxComponentOrUndefined = (type: string): IToolboxComponent | undefined => {
     return this.toolboxComponents[type];
@@ -359,8 +365,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         componentRelations[component.parentId] = parentRelations;
       } else console.warn(`component ${payload.componentId} has no parent`);
 
-      if (this.selectedComponentId === payload.componentId)
+      if (this.selectedComponentId === payload.componentId) {
         this.selectedComponentId = undefined; // clear selection if we delete current component
+        this.activeSettingsTabKey = undefined;
+      }
       return {
         ...state,
         formFlatMarkup: {
@@ -419,6 +427,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       };
 
       this.selectedComponentId = clone.id;
+      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -430,14 +439,17 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }, `Duplicated component ${payload.componentId}`);
   };
 
-  updateComponent = (payload: IComponentUpdatePayload): void => {
-    this.log(`FD: updateComponent ${payload.componentId} (${payload.settings.type})`, payload);
+  updateComponent = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>): void => {
     // TODO: review validation from Alex
     // TODO: restore component validation
     this.updateState((state): FormDesignerFormState => {
       const { formFlatMarkup } = state;
-      const component = this.getComponent(payload.componentId);
-      const newComponent = { ...component, ...payload.settings } as IConfigurableFormComponent;
+      const component = this.getComponent(payload.componentId) as TModel;
+
+      this.log(`FD: updateComponent ${payload.componentId} (${component.type})`, payload);
+
+      const newModel = payload.updater(component);
+      const newComponent = { ...component, ...newModel } as IConfigurableFormComponent;
 
       const toolboxComponent = this.getToolboxComponent(component.type);
 
@@ -477,40 +489,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         },
       };
     }, `Component ${payload.componentId} updated`);
-    /*
-    // ToDo: AS - need to optimize
-    if (componentInitialization.current) {
-      // Do not trigger an update if first component initialization (reduce unnecessary re-renders)
-      componentInitialization.current = false;
-      return;
-    }
-
-    dispatch(componentUpdateAction(payload));
-    const component = flatMarkup.allComponents[payload.componentId];
-    if (!isDefined(component))
-      return; // TODO: debug validation, component must be defined
-    const toolboxComponent = getToolboxComponent(component.type);
-    if (!isDefined(toolboxComponent))
-      throw new Error('Toolbox component not found');
-
-    const { validateSettings } = toolboxComponent;
-    if (isDefined(validateSettings)) {
-      validateSettings(payload.settings)
-        .then(() => {
-          if (isDefined(component.settingsValidationErrors) && component.settingsValidationErrors.length > 0)
-            dispatch(componentUpdateSettingsValidationAction({ componentId: payload.componentId, validationErrors: [] }));
-        })
-        .catch(({ errors }) => {
-          const validationErrors = errors as IAsyncValidationError[];
-          dispatch(
-            componentUpdateSettingsValidationAction({
-              componentId: payload.componentId,
-              validationErrors,
-            }),
-          );
-        });
-    }
-    */
   };
 
   componentUpdateSettingsValidation = (payload: IComponentUpdateSettingsValidationPayload): void => {
@@ -584,6 +562,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const newStructure = this.addComponentToFlatStructure(newFlatMarkup, newComponents, containerId, index);
 
       this.selectedComponentId = newComponents[0]?.id;
+      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -651,7 +630,9 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   setSelectedComponent = (id: string): void => {
+    if (this.selectedComponentId === id) return;
     this.selectedComponentId = id;
+    this.activeSettingsTabKey = undefined;
     this.notifySubscribers(['selection']);
   };
 
@@ -698,6 +679,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const newStructure = this.addComponentToFlatStructure(newFlatMarkup, [formComponent], containerId, index);
 
       this.selectedComponentId = formComponent.id;
+      this.activeSettingsTabKey = undefined;
 
       return {
         ...state,
@@ -716,6 +698,12 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     if (this.formMode === value) return;
     this.formMode = value;
     this.notifySubscribers(['mode']);
+  };
+
+  setActiveSettingsTabKey = (key: string): void => {
+    if (this.activeSettingsTabKey === key) return;
+    this.activeSettingsTabKey = key;
+    this.notifySubscribers(['settings-tab']);
   };
 
   componentEditors: IComponentSettingsEditorsCache = {};

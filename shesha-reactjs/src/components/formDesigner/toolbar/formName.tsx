@@ -13,8 +13,8 @@ export const FormName: FC = () => {
 
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
 
-  const copyFormName = (): void => {
-    navigator.clipboard.writeText(fullName);
+  const copyFormName = async (): Promise<void> => {
+    await navigator.clipboard.writeText(fullName);
     message.success("Form name copied");
   };
 

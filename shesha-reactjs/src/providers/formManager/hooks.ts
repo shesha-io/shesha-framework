@@ -21,6 +21,9 @@ export const useFormByMarkup = (props: GetFormByMarkupPayload): GetFormByMarkupR
     if (initialLoaderState.current !== 'ready')
       loader.promise.then(() => {
         setLoader({ ...loader });
+      }).catch((error) => {
+        console.error('Failed to fetch form by markup', error);
+        throw error;
       });
   });
 
@@ -44,7 +47,10 @@ export const useFormById = (props: GetFormByIdPayload): GetFormByIdResponse => {
     if (initialLoaderState.current !== 'ready')
       loader.promise.then(() => {
         setLoader({ ...loader });
-      });
+      }).catch((error) => {
+        console.error('Failed to fetch form by id', error);
+        throw error;
+      }); ;
   });
 
   return loader;
