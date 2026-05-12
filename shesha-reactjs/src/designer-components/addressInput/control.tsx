@@ -344,7 +344,8 @@ const MapModal: FC<IMapModalProps> = ({
 
   const handleModalKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>): Promise<void> => {
     if (e.key !== 'Enter') return;
-    const currentText = (e.target as HTMLInputElement).value;
+    if (!(e.target instanceof HTMLInputElement)) return;
+    const currentText = e.target.value;
     const match = currentText.match(LAT_LNG_RE);
     if (!match || !isGeocoder(geocoder)) return;
 
@@ -640,7 +641,8 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>): Promise<void> => {
     if (e.key !== 'Enter') return;
-    const currentText = (e.target as HTMLInputElement).value;
+    if (!(e.target instanceof HTMLInputElement)) return;
+    const currentText = e.target.value;
     const match = currentText.match(LAT_LNG_RE);
     if (!match || !geocoderRef.current) return;
 
