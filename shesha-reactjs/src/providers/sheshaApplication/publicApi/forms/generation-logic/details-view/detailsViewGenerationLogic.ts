@@ -100,7 +100,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     const titleComponents = findComponentsWithPlaceholder(markup, "//*TITLE*//");
 
     if (titleComponents.length === 0) {
-      throw new Error("No title container found in the markup.");
+      throw new Error("No title component found in the markup.");
     }
 
     const titleComponent = titleComponents[0];
