@@ -18,6 +18,7 @@ export interface IAddressInputControlProps {
   longitudePropertyName?: string;
   defaultZoom?: number;
   mapHeight?: number;
+  mapWidth?: number;
 }
 
 // ─── Google Maps type contracts ───────────────────────────────────────────────
@@ -224,6 +225,7 @@ interface IMapModalProps {
   initialAddress: string;
   defaultZoom: number;
   mapHeight: number;
+  mapWidth?: number;
   geocoder: unknown;
   onOk: (address: string, lat: number, lng: number) => void;
   onCancel: () => void;
@@ -231,7 +233,7 @@ interface IMapModalProps {
 
 const MapModal: FC<IMapModalProps> = ({
   visible, readOnly, initialLat, initialLng, initialAddress,
-  defaultZoom, mapHeight, geocoder, onOk, onCancel,
+  defaultZoom, mapHeight, mapWidth, geocoder, onOk, onCancel,
 }) => {
   const { message } = App.useApp();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -338,6 +340,32 @@ const MapModal: FC<IMapModalProps> = ({
     );
   };
 
+  // ── Coordinate input in modal search on Enter ────────────────────────────
+
+  const handleModalKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>): Promise<void> => {
+    if (e.key !== 'Enter') return;
+    const currentText = (e.target as HTMLInputElement).value;
+    const match = currentText.match(LAT_LNG_RE);
+    if (!match || !isGeocoder(geocoder)) return;
+
+    e.preventDefault();
+    const lat = parseFloat(match[1]);
+    const lng = parseFloat(match[2]);
+
+    try {
+      const addr = await geocodeLatLng(geocoder, lat, lng);
+      setCurrentLat(lat);
+      setCurrentLng(lng);
+      setCurrentAddress(addr);
+      setModalSearchText(addr);
+    } catch {
+      setCurrentLat(lat);
+      setCurrentLng(lng);
+    }
+    mapRef.current?.setCenter({ lat, lng });
+    markerRef.current?.setPosition({ lat, lng });
+  };
+
   // ── Suggestions for modal search (debounced 300 ms) ─────────────────────
 
   const fetchModalSuggestions = (text: string): void => {
@@ -405,29 +433,31 @@ const MapModal: FC<IMapModalProps> = ({
       onCancel={handleCancel}
       footer={readOnly ? null : undefined}
       destroyOnHidden
-      width={600}
+      width={mapWidth ? mapWidth + 48 : 600}
     >
       {!readOnly && (
         <Space.Compact style={{ width: '100%', marginBottom: 8 }}>
-          <AutoComplete
-            style={{ flex: 1, minWidth: 0 }}
-            value={modalSearchText}
-            options={modalSuggestions}
-            showSearch={{
-              onSearch: (text) => {
-                setModalSearchText(text);
-                fetchModalSuggestions(text);
-              },
-            }}
-            onSelect={handleModalSelect}
-            placeholder="Search address on map…"
-            allowClear
-            onClear={() => {
-              setModalSearchText('');
-              setModalSuggestions([]);
-            }}
-            getPopupContainer={() => document.body}
-          />
+          <div style={{ flex: 1, minWidth: 0 }} onKeyDown={handleModalKeyDown}>
+            <AutoComplete
+              style={{ width: '100%' }}
+              value={modalSearchText}
+              options={modalSuggestions}
+              showSearch={{
+                onSearch: (text) => {
+                  setModalSearchText(text);
+                  fetchModalSuggestions(text);
+                },
+              }}
+              onSelect={handleModalSelect}
+              placeholder="Search address on map…"
+              allowClear
+              onClear={() => {
+                setModalSearchText('');
+                setModalSuggestions([]);
+              }}
+              getPopupContainer={() => document.body}
+            />
+          </div>
           {geolocationAvailable && (
             <Tooltip title="Use my current location">
               <Button icon={<AimOutlined />} loading={locating} onClick={handleCurrentLocation} />
@@ -435,7 +465,7 @@ const MapModal: FC<IMapModalProps> = ({
           )}
         </Space.Compact>
       )}
-      <div ref={mapContainerRef} style={{ width: '100%', height: mapHeight }} />
+      <div ref={mapContainerRef} style={{ width: mapWidth ? `${mapWidth}px` : '100%', height: mapHeight }} />
       <div style={{ marginTop: 8, color: '#666', fontSize: 12 }}>
         {currentAddress && <div style={{ marginBottom: 2 }}>{currentAddress}</div>}
         <span>{currentLat.toFixed(6)}, {currentLng.toFixed(6)}</span>
@@ -463,6 +493,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   longitudePropertyName,
   defaultZoom = 15,
   mapHeight = 400,
+  mapWidth,
 }) => {
   const { message } = App.useApp();
   const [googlePlaceReady, setGooglePlaceReady] = useState(
@@ -699,6 +730,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
             initialAddress={mapAddress}
             defaultZoom={defaultZoom}
             mapHeight={mapHeight}
+            mapWidth={mapWidth}
             geocoder={geocoderRef.current}
             onOk={handleMapOk}
             onCancel={handleMapCancel}
@@ -769,6 +801,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
           initialAddress={mapAddress}
           defaultZoom={defaultZoom}
           mapHeight={mapHeight}
+          mapWidth={mapWidth}
           geocoder={geocoderRef.current}
           onOk={handleMapOk}
           onCancel={handleMapCancel}
