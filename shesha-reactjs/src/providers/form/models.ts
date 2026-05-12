@@ -136,6 +136,7 @@ export interface IInputStyles extends IStyleType {
   style?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleType | undefined;
+  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
 };
 
 export type ConfigurableFormComponentTypes =

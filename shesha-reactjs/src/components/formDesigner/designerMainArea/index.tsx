@@ -22,8 +22,7 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const readOnly = useFormDesignerReadOnly();
   const formSettings = useFormDesignerSettings();
   const formMode = useFormDesignerFormMode();
-  const shaForm = useShaFormInstance();
-  const { antdForm: form } = shaForm;
+  const { antdForm } = useShaFormInstance();
   const { styles } = useStyles();
   const { deleteComponent, settingsPanelElement } = useFormDesigner();
   const component = useFormDesignerSelectedComponent();
@@ -33,36 +32,21 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
 
   const selectedComponentId = component?.id;
 
-  useEffect(() => {
-    if (shaForm) {
-      shaForm.applyMarkupAsync({
-        formFlatMarkup: shaForm.flatStructure,
-        formSettings: formSettings,
-      });
-    }
-  }, [formSettings, shaForm]);
-
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (readOnly || formMode !== 'designer' || event.repeat) return;
 
     const isDelete = event.key === 'Delete';
     const isBackspace = event.key === 'Backspace';
-
     if (!isDelete && !isBackspace) return;
 
     // Ignore if user is typing in an input, textarea, or contenteditable element
     const target = event.target as HTMLElement;
-    const isEditing =
-      target.tagName === 'INPUT' ||
-      target.tagName === 'TEXTAREA' ||
-      target.isContentEditable;
-
+    const isEditing = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
     if (isEditing) return;
 
     // Ignore if focus is inside the properties/settings panel
-    if (settingsPanelElement && settingsPanelElement.contains(target)) {
+    if (settingsPanelElement && settingsPanelElement.contains(target))
       return;
-    }
 
     if (selectedComponentId) {
       event.preventDefault();
@@ -110,7 +94,7 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
           wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
         >
           {showMarkup && <textarea readOnly value={JSON.stringify(markup, null, 2)} /> /* ToDo: AS - remove after inheritance implementation */}
-          <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
+          <ConfigurableFormRenderer form={antdForm} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
             {isDebug && (
               <DebugPanel />
             )}

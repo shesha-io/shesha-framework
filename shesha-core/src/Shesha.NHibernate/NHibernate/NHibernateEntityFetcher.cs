@@ -4,13 +4,15 @@ using NHibernate.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
+using static Shesha.Reflection.ReflectionHelper;
 
 namespace Shesha.NHibernate
 {
@@ -39,7 +41,7 @@ namespace Shesha.NHibernate
 
                     if (!string.IsNullOrWhiteSpace(ownerProperty))
                     {
-                        var ownerProp = ReflectionHelper.GetPropertyWithPath(typeof(T), ownerProperty, useCamelCase: true);
+                        var ownerProp = GetPropertyWithPath(typeof(T), ownerProperty);
                         if (ownerProp != null && ownerProp.PropertyInfo.PropertyType.IsEntityType()) 
                         {
                             var displayNamePropInfo = ownerProp.PropertyInfo.PropertyType.GetEntityConfiguration()?.DisplayNamePropertyInfo;
@@ -66,7 +68,7 @@ namespace Shesha.NHibernate
                 }
                 else
                 {
-                    var propertyWithPath = ReflectionHelper.GetPropertyWithPath(typeof(T), propName, useCamelCase: true);
+                    var propertyWithPath = GetPropertyWithPath(typeof(T), propName);
                     if (propertyWithPath != null)
                     {
                         if (propertyWithPath.PropertyInfo.CanWrite) 
@@ -83,7 +85,7 @@ namespace Shesha.NHibernate
                             var nestedEntityPropName = propName.RemovePostfix("Id");
                             if (!string.IsNullOrWhiteSpace(nestedEntityPropName)) 
                             {
-                                var nestedEntityPropertyWithPath = ReflectionHelper.GetPropertyWithPath(typeof(T), nestedEntityPropName, useCamelCase: true);
+                                var nestedEntityPropertyWithPath = GetPropertyWithPath(typeof(T), nestedEntityPropName);
                                 if (nestedEntityPropertyWithPath != null && nestedEntityPropertyWithPath.PropertyInfo.PropertyType.IsEntityType()) 
                                 {
                                     string[] nestedPath = [.. nestedEntityPropertyWithPath.Path, "Id"];
@@ -102,6 +104,52 @@ namespace Shesha.NHibernate
 
             var partialQuery = queryable.SelectProperties(propertiesToFetch);
             return _asyncExecuter.ToListAsync(partialQuery);
+        }
+
+        public PropertyInfoWithPath? GetPropertyWithPath(Type type, string propertyName)
+        {
+            var propTokens = propertyName.Split('.');
+            var currentType = type;
+            var path = new List<string>();
+
+            for (int i = 0; i < propTokens.Length; i++)
+            {
+                PropertyInfo? propInfo;
+                var containerType = currentType.StripCastleProxyType();
+                try
+                {
+                    var props = containerType.GetProperties().Where(p => p.Name.ToCamelCase() == propTokens[i].ToCamelCase()).ToList();
+                    if (props.Count() > 1)
+                        throw new AmbiguousMatchException();
+
+                    propInfo = props.FirstOrDefault();
+                }
+                catch (AmbiguousMatchException)
+                {
+                    // Property may have been overriden using the 'new' keyword hence there are multiple properties with the same name.
+                    // Will look for the one declared at the highest level.
+                    propInfo = FindHighestLevelProperty(propTokens[i], containerType);
+                }
+
+                if (propInfo == null)
+                    return null;
+
+                path.Add(propInfo.Name);
+
+                if (i == propTokens.Length - 1)
+                {
+                    return new PropertyInfoWithPath(propInfo, path);
+                }
+                else
+                {
+                    if (propInfo.PropertyType.IsCollectionType(out var elementType))
+                        currentType = elementType;
+                    else
+                        currentType = propInfo.PropertyType;
+                }
+            }
+
+            return null;
         }
 
         private class PropWithPath 

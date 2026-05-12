@@ -1,5 +1,5 @@
 import { nanoid } from '@/utils/uuid';
-import { createModalAction, openAction, removeModalAction } from './actions';
+import { createModalAction, openAction, removeAllModalsAction, removeModalAction } from './actions';
 import { DYNAMIC_MODAL_CONTEXT_INITIAL_STATE } from './contexts';
 import { IModalInstance } from './models';
 import { getLatestInstance } from './utils';
@@ -48,6 +48,12 @@ export const reducer = createReducer(DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, (build
       return {
         ...state,
         instances: { ...newInstances },
+      };
+    })
+    .addCase(removeAllModalsAction, (state) => {
+      return {
+        ...state,
+        instances: {},
       };
     })
   ;

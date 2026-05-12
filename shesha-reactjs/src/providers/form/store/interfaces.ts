@@ -70,10 +70,17 @@ export interface IShaFormInstance<Values extends object = object> {
   setOnValuesChange: (handler: OnValuesChangeHandler<Values>) => void;
   setOnMarkupLoaded: (handler: OnMarkupLoadedHandler<Values>) => void;
 
-  initByRawMarkup: (payload: InitByRawMarkupPayload<Values>) => Promise<void>;
-  initByMarkup: (payload: InitByMarkupPayload) => Promise<void>;
-  initByFormId: (payload: InitByFormIdPayload<Values>) => Promise<void>;
+  initFormByRawMarkup: (payload: InitByRawMarkupPayload<Values>) => Promise<void>;
+  initFormByMarkup: (payload: InitByMarkupPayload) => Promise<void>;
+  initFormByFormId: (payload: InitByFormIdPayload<Values>) => Promise<void>;
   reloadMarkup: () => Promise<void>;
+
+  /** Loads form data based on the current form configuration and arguments. */
+  initLoadData: () => Promise<void>;
+  /** Initializes the form with initial data values. */
+  initInitialData: () => Promise<void>;
+  /** Triggers configured form events after initialization. */
+  triggerEvents: () => Promise<void>;
 
   loadData: (formArguments: object) => Promise<Values>;
   submitData: (payload?: SubmitDataPayload) => Promise<Values>;
