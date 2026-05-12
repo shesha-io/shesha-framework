@@ -847,6 +847,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${td} {
           ${effectivePadding ? `padding: ${effectivePadding};` : ''}
         }
+
+        /* Top-align siblings of a tall form cell so CRUD/data cells don't drift to the middle (issue #4054) */
+        .${tr}:has(.sha-form-cell) {
+          .${th}, .${td} {
+            align-items: flex-start !important;
+          }
+        }
       }
     `,
 
