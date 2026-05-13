@@ -39,27 +39,30 @@ export type LabelAlign = 'left' | 'right';
 export type PropertySettingMode = 'value' | 'code';
 
 export interface IPropertySetting<Value = unknown> {
-  _mode?: PropertySettingMode;
-  _value?: Value;
-  _code?: string;
-  _lazy?: boolean;
+  _mode?: PropertySettingMode | undefined;
+  _value?: Value | undefined;
+  _code?: string | undefined;
+  _lazy?: boolean | undefined;
 }
 
 export type ValueOrCodeEvaluator<Value = unknown> = Value | IPropertySetting<Value>;
 
-export type SafeFunctionType = (...args: unknown[]) => unknown;
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export type SafeFunctionType = Function;
 
 export type UnwrapCodeEvaluators<T> = T extends SafeFunctionType
   ? T
-  : {
-    [Key in keyof T]: T[Key] extends React.ReactNode | SafeFunctionType
-      ? T[Key]
-      : T[Key] extends ValueOrCodeEvaluator<infer Value>
-        ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
-        : T[Key] extends Record<string, unknown> // Check if it's a plain object
-          ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
-          : T[Key]; // Leave everything else
-  };
+  : T extends React.HTMLAttributes<infer _>
+    ? T
+    : {
+      [Key in keyof T]: T[Key] extends React.ReactNode | SafeFunctionType
+        ? T[Key]
+        : T[Key] extends ValueOrCodeEvaluator<infer Value>
+          ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
+          : T[Key] extends Record<string, unknown> // Check if it's a plain object
+            ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
+            : T[Key]; // Leave everything else
+    };
 
 export type FCUnwrapped<T> = React.FC<UnwrapCodeEvaluators<T>>;
 
@@ -74,7 +77,7 @@ export interface IFormComponentContainer {
 }
 
 export interface IComponentValidationRules {
-  required?: boolean;
+  required?: boolean | IPropertySetting<boolean> | undefined;
   minValue?: number;
   maxValue?: number;
   minLength?: number;
@@ -106,34 +109,35 @@ export interface IStyleType {
 }
 
 export interface IInputStyles extends IStyleType {
-  borderSize?: string | number;
-  borderRadius?: string | number;
-  borderType?: string;
-  borderStyle?: string;
-  borderWidth?: string | number;
-  borderColor?: string;
-  fontColor?: string;
-  color?: string;
-  fontWeight?: string | number;
-  fontSize?: string | number;
-  stylingBox?: string;
-  height?: string | number;
-  width?: string | number;
-  hideBorder?: boolean;
-  backgroundColor?: string;
-  backgroundPosition?: string;
-  backgroundCover?: 'contain' | 'cover';
-  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
-  className?: string;
-  wrapperStyle?: string;
-  backgroundType?: 'image' | 'color';
-  backgroundDataSource?: 'storedFileId' | 'base64' | 'url';
-  backgroundUrl?: string;
-  backgroundBase64?: string;
-  backgroundStoredFileId?: string;
-  style?: string;
+  borderSize?: string | number | undefined;
+  borderRadius?: string | number | undefined;
+  borderType?: string | undefined;
+  borderStyle?: string | undefined;
+  borderWidth?: string | number | undefined;
+  borderColor?: string | undefined;
+  fontColor?: string | undefined;
+  color?: string | undefined;
+  fontWeight?: string | number | undefined;
+  fontSize?: string | number | undefined;
+  stylingBox?: string | undefined;
+  height?: string | number | undefined;
+  width?: string | number | undefined;
+  hideBorder?: boolean | undefined;
+  backgroundColor?: string | undefined;
+  backgroundPosition?: string | undefined;
+  backgroundCover?: 'contain' | 'cover' | undefined;
+  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round' | undefined;
+  className?: string | undefined;
+  wrapperStyle?: string | undefined;
+  backgroundType?: 'image' | 'color' | undefined;
+  backgroundDataSource?: 'storedFileId' | 'base64' | 'url' | undefined;
+  backgroundUrl?: string | undefined;
+  backgroundBase64?: string | undefined;
+  backgroundStoredFileId?: string | undefined;
+  style?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleType | undefined;
+  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
 };
 
 export type ConfigurableFormComponentTypes =
@@ -187,7 +191,7 @@ export interface IComponentRuntimeProps {
 
 export interface IComponentBindingProps {
   /** component name */
-  componentName?: string;
+  componentName?: string | undefined;
 
   /** property name */
   propertyName?: string | undefined;
@@ -247,37 +251,37 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   type: string;
 
   /** Description of the field, is used for tooltips */
-  description?: string;
+  description?: string | undefined;
 
   /** Validation rules */
-  validate?: IComponentValidationRules;
+  validate?: IComponentValidationRules | undefined;
 
   /** Whether the component is read-only */
   readOnly?: boolean | IPropertySetting<boolean> | undefined;
 
   /** Component edit/action mode */
-  editMode?: EditMode;
+  editMode?: EditMode | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */
   customEnabled?: string | undefined;
 
   /** Control size */
-  size?: SizeType;
+  size?: SizeType | undefined;
 
   /** If true, indicates that component is rendered dynamically and some of rules (e.g. visibility) shouldn't be applied to this component */
-  isDynamic?: boolean;
+  isDynamic?: boolean | undefined;
 
   /** If true, indicates that component should be wrapped by SettingComponent and use JS customization.
    *
    * If 'lazy', indicates that component should be wrapped by SettingComponent, but will be calculated inside component rendering
    */
-  jsSetting?: boolean | 'lazy';
+  jsSetting?: boolean | 'lazy' | undefined;
 
   /** Used for calculating available constants for the JS setting Code Editor */
-  availableConstantsExpression?: string | GetAvailableConstantsFunc;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
 
-  subscribedEventNames?: string[];
+  subscribedEventNames?: string[] | undefined;
 
   /** Default style CSS applied as expression */
   style?: string | undefined;
@@ -285,21 +289,21 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   /** Default css style applied as string */
   stylingBox?: string | undefined;
 
-  wrapperStyle?: string;
+  wrapperStyle?: string | undefined;
 
-  noDataText?: string;
+  noDataText?: string | undefined;
 
-  noDataIcon?: string;
+  noDataIcon?: string | undefined;
 
-  noDataSecondaryText?: string;
+  noDataSecondaryText?: string | undefined;
 
-  permissions?: string[];
+  permissions?: string[] | undefined;
 
-  _formFields?: string[];
+  _formFields?: string[] | undefined;
 
-  layout?: FormLayout;
+  layout?: FormLayout | undefined;
 
-  inputStyles?: IStyleType;
+  inputStyles?: IStyleType | undefined;
 
   desktop?: TDeviceStyles | undefined;
 
@@ -307,12 +311,11 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   mobile?: TDeviceStyles | undefined;
 
-  allStyles?: IFormComponentStyles;
+  allStyles?: IFormComponentStyles | undefined;
 
   enableStyleOnReadonly?: boolean | undefined;
 
-  listType?: 'text' | 'thumbnail';
-
+  listType?: 'text' | 'thumbnail' | undefined;
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
@@ -408,7 +411,7 @@ export interface IFormLifecycleSettings {
   //#endregion lifecycle
 }
 
-export type IFormSettings = ILegacyFormSettings & IFormLifecycleSettings;
+export type IFormSettings = ILegacyFormSettings & IFormLifecycleSettings & IHasVersion;
 
 export interface IFormProps extends IFlatComponentsStructure {
   id?: string;
@@ -459,7 +462,8 @@ export type HasFormRawMarkup = {
 
 export type HasFormIdOrMarkup = ExclusifyUnion<HasFormId | HasFormFlatMarkup | HasFormRawMarkup>;
 
-export type FormAction = (values?: object, parameters?: object) => void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FormAction = (...args: any[]) => any;
 
 export type FormSection = (data?: object) => ReactNode;
 

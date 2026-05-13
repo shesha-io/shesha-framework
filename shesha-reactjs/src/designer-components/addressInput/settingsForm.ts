@@ -147,12 +147,26 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     tooltip: 'Initial zoom level of the map (1–20). Defaults to 15.',
                     jsSetting: true,
                   },
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: dataTabId,
+                inputs: [
                   {
                     type: 'numberField',
                     id: nanoid(),
                     propertyName: 'mapHeight',
                     label: 'Map Height (px)',
                     tooltip: 'Height in pixels of the map inside the dialog. Defaults to 400.',
+                    jsSetting: true,
+                  },
+                  {
+                    type: 'numberField',
+                    id: nanoid(),
+                    propertyName: 'mapWidth',
+                    label: 'Map Width (px)',
+                    tooltip: 'Width in pixels of the map inside the dialog. Defaults to full width.',
                     jsSetting: true,
                   },
                 ],

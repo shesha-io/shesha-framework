@@ -2,12 +2,13 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { FormIdentifier, FormMarkup } from '../../form/models';
 import { ModalFooterButtons } from '../models';
 import closeDialogArgumentsJson from './close-dialog-arguments.json';
+import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 
 export interface ICloseModalActionArguments {
   showDialogResult?: string;
 }
 
-export interface IShowModalActionArguments {
+export interface IShowModalActionArguments extends IHasVersion {
   modalTitle: string;
   formId: FormIdentifier;
   formMode?: 'edit' | 'readonly';

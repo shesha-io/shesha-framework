@@ -11,16 +11,16 @@ import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponen
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { useStyles } from './styles/styles';
-import { FormComponentValidationProvider, useValidationErrorsActionsOrDefault, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
+import { FormComponentValidationProvider, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 import { isValidGuid } from './components/utils';
 import { toCamelCase } from '@/utils/string';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { deepMergeValues, removeUndefinedProps } from '@/utils/object';
 import { CommonComponentApi, IComponentStyle, InputComponentApi } from '../../componentsApi/componentApi';
 import { IBackgroundValue } from '@/designer-components/_settings/utils';
-import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -38,9 +38,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
-  const { getValidation } = useValidationErrorsActionsOrDefault();
-  const { errors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
-  const errorCount = errors.size; // Track size to trigger useMemo
+  const { errors: validationErrors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
 
   const componentApi = useComponentApi();
   const [apiModel, setApiModel] = useState<Partial<IConfigurableFormComponent>>({});
@@ -136,9 +134,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
 
   const actualApiModel = useDeepCompareMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
 
-  useDeepCompareEffect(() => {
-    if (componentApi === undefined) return undefined;
-
+  if (componentApi !== undefined) {
     // common Api
     componentApi.updateApi<CommonComponentApi>(
       {
@@ -197,19 +193,22 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
         },
         [
           { name: 'required', getter: () => actualApiModel.validate?.required, setter: (value) => updateApiModel(setApiModel, { validate: { required: value } }) },
-          { name: 'value', getter: () => {
-            return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
-          }, setter: (value) => {
-            if (actualModel.propertyName)
-              shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
-            else
-              console.warn(`Property name for component "${actualModel.type}: ${actualModel.componentName}" is not defined`);
-          } },
+          { name: 'value', skipIfExists: true,
+            getter: () => {
+              return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
+            },
+            setter: (value) => {
+              if (actualModel.propertyName)
+                shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
+              else
+                console.warn(`Property name for component "${actualModel.type}: ${actualModel.componentName}" is not defined`);
+            },
+          },
         ],
       );
     }
-    return () => componentApi.removeApi(actualModel.id);
-  }, [toolboxComponent, actualApiModel, componentApi, shaForm.antdForm, setApiModel, setApiStyles, sourceComponentModel, updateApiModel]);
+  };
+  useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
 
   const control = useMemo(() => {
     if (!toolboxComponent) return null;
@@ -242,7 +241,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     });
 
     // Collect errors from child components registered via hook
-    const childValidation = getValidation();
+    const childValidation = validationErrors.get(actualModel.id);
     if (childValidation?.hasErrors && childValidation.errors) {
       errors.push(...childValidation.errors);
       // Use the child's validationType if present (prioritize 'error' > 'warning' > 'info')
@@ -267,7 +266,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel, getValidation, errorCount]);
+  }, [toolboxComponent, actualModel, validationErrors]);
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode

@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { getFiltersSettingsForm } from './filterItemSettings';
@@ -15,7 +15,7 @@ export interface IFilterItemPropertiesProps {
 
 export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, onChange, readOnly }) => {
   const debouncedSave = useDebouncedCallback(
-    (values) => {
+    (values: BaseFilterProperties) => {
       onChange({ ...value, ...values });
     },
     // delay in ms
@@ -24,20 +24,14 @@ export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, on
 
   const formMarkup = useFormViaFactory(getFiltersSettingsForm);
 
-  const editor = useMemo(() => {
-    return (
-      <ConfigurableForm
-        labelCol={{ span: 24 }}
-        wrapperCol={{ span: 24 }}
-        mode={readOnly ? 'readonly' : 'edit'}
-        markup={formMarkup}
-        initialValues={value}
-        onValuesChange={debouncedSave}
-      />
-    );
-  }, []);
-
   return (
-    <>{editor}</>
+    <ConfigurableForm
+      labelCol={{ span: 24 }}
+      wrapperCol={{ span: 24 }}
+      mode={readOnly ? 'readonly' : 'edit'}
+      markup={formMarkup}
+      initialValues={value}
+      onValuesChange={debouncedSave}
+    />
   );
 };

@@ -3,7 +3,7 @@ import { evaluateDynamicFiltersSync } from '@/utils/datatable';
 import { IChartProps } from '../model';
 import { FilterExpression, IStoredFilter } from '@/providers/dataTable/interfaces';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { useDataContextManager } from '@/providers/dataContextManager';
+import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { IModelMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';

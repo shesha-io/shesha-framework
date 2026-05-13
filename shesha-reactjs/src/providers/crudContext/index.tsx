@@ -312,7 +312,7 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
     antdForm: form,
     form: undefined,
     init: (form) => {
-      form.initByMarkup({
+      form.initFormByMarkup({
         formFlatMarkup: flatMarkup,
         formSettings: formSettings,
       }).catch((error) => {
@@ -321,6 +321,13 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
       });
     },
   });
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
+      void shaForm.triggerEvents();
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status]);
+
   return (
     <ShaFormProvider shaForm={shaForm}>
       <ShaForm.MarkupProvider markup={flatMarkup}>

@@ -45,9 +45,9 @@ export interface IComponentDuplicatePayload {
   componentId: string;
 }
 
-export interface IComponentUpdatePayload {
+export interface IComponentUpdatePayload<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> {
   componentId: string;
-  settings: IConfigurableFormComponent;
+  updater: (model: TModel) => TModel;
 }
 
 export interface IComponentUpdateSettingsValidationPayload {
@@ -97,7 +97,7 @@ export type FormDesignerActions = {
   setMarkupAndSettings: (flatMarkup: IFlatComponentsStructure, settings: IFormSettings) => void;
 
   addComponent: (payload: IComponentAddPayload) => void;
-  updateComponent: (payload: IComponentUpdatePayload) => void;
+  updateComponent: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>) => void;
   deleteComponent: (payload: IComponentDeletePayload) => void;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;

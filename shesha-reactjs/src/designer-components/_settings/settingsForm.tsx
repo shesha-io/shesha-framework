@@ -50,7 +50,7 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
     };
 
   const valuesChange = (changedValues): void => {
-    const model = shaForm.formData;
+    const model = shaForm.formData as TModel;
     const incomingState = updateSettingsFromValues(model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
     onValuesChange(changedValues, incomingState);
@@ -113,16 +113,14 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
   );
 };
 
-export function useSettingsForm<TModel>(require: boolean = true): SettingsFormState<TModel> & ISettingsFormActions {
+export function useSettingsForm<TModel>(): SettingsFormState<TModel> & ISettingsFormActions {
   const actionsContext = useContext(SettingsFormActionsContext);
   const stateContext = useContext<SettingsFormState<TModel>>(SettingsFormStateContext);
 
-  if ((actionsContext === undefined || stateContext === undefined) && require) {
+  if (actionsContext === undefined || stateContext === undefined)
     throw new Error('useSettingsForm must be used within a SettingsForm');
-  }
-  return actionsContext !== undefined && stateContext !== undefined
-    ? { ...actionsContext, ...stateContext }
-    : undefined;
+
+  return { ...actionsContext, ...stateContext };
 }
 
 export default SettingsForm;

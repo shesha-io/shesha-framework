@@ -2,7 +2,8 @@ import React, { FC } from 'react';
 import { Col, Divider } from 'antd';
 import { CollapsiblePanel } from '@/components/panel';
 import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
-import { useDataContextManagerOrUndefined } from '@/providers';
+import { useDataContextManagerOrUndefined } from '@/providers/dataContextManager/hooks';
+
 
 export interface DebugPanelProps {
   formData?: any;

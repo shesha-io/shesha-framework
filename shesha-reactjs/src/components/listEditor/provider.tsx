@@ -57,7 +57,7 @@ const GenericListEditorProvider = <TItem extends object>({
   };
 
   const insertItem = (index: number): void => {
-    const newItem = initNewItem(state.value);
+    const newItem = initNewItem(state.value ?? []);
     const newValue = state.value ? [...state.value] : [];
     newValue.splice(index, 0, newItem);
 

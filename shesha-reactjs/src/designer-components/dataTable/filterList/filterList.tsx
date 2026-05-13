@@ -6,16 +6,16 @@ import React, { FC, useEffect, useRef } from 'react';
 import { useStyles } from '../advancedFilterButton/style';
 
 export interface IFilterListProps {
-  filters?: ITableFilter[];
+  filters: ITableFilter[];
   clearFilters?: () => void;
   removeColumnFilter?: (columnId: string) => void;
   rows: number;
 }
 
 export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, removeColumnFilter, rows }) => {
-  const filtersRef = useRef(null);
-  const scrollbarLeftArrow = useRef(null);
-  const scrollbarRightArrow = useRef(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const scrollbarLeftArrow = useRef<HTMLSpanElement>(null);
+  const scrollbarRightArrow = useRef<HTMLSpanElement>(null);
   const { styles } = useStyles();
 
   const manageArrows = (): void => {
@@ -24,18 +24,18 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
     const maxScrollDistance = filtersRef.current.scrollWidth - filtersRef.current.clientWidth - 30;
 
     if (filtersRef.current.scrollLeft <= 0) {
-      scrollbarLeftArrow.current.classList.add("hidden");
+      scrollbarLeftArrow.current?.classList.add("hidden");
       filtersRef.current.style.marginLeft = '0px';
     } else {
-      scrollbarLeftArrow.current.classList.remove("hidden");
+      scrollbarLeftArrow.current?.classList.remove("hidden");
       filtersRef.current.style.marginLeft = '24px';
     }
 
     if (filtersRef.current.scrollLeft > maxScrollDistance + 24) {
-      scrollbarRightArrow.current.classList.add("hidden");
+      scrollbarRightArrow.current?.classList.add("hidden");
       filtersRef.current.style.marginRight = '0px';
     } else {
-      scrollbarRightArrow.current.classList.remove("hidden");
+      scrollbarRightArrow.current?.classList.remove("hidden");
       filtersRef.current.style.marginRight = '24px';
     }
   };
@@ -61,17 +61,18 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
       manageArrows();
     };
 
-    if (filtersRef.current) {
+    const filtersRefCurrent = filtersRef.current;
+    if (filtersRefCurrent) {
       manageArrows();
-      filtersRef.current.addEventListener('scroll', handleScroll);
+      filtersRefCurrent.addEventListener('scroll', handleScroll);
     }
 
     return () => {
-      if (filtersRef.current) {
-        filtersRef.current.removeEventListener('scroll', handleScroll);
+      if (filtersRefCurrent) {
+        filtersRefCurrent.removeEventListener('scroll', handleScroll);
       }
     };
-  }, [filtersRef.current]);
+  });
 
   return (
     <div className={styles.wrapper}>
@@ -86,12 +87,12 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
           onClick={scrollLeft}
         />
         <div className={styles.filters} ref={filtersRef}>
-          {filters?.map(({ columnId }) => {
+          {filters.map(({ columnId }) => {
             return (
               <Tag
                 closable
                 key={columnId}
-                onClose={() => removeColumnFilter(columnId)}
+                onClose={() => removeColumnFilter?.(columnId)}
                 className={styles.tag}
               >
                 {columnId}

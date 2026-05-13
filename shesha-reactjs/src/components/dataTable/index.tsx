@@ -59,84 +59,84 @@ export interface IIndexTableOptions {
 }
 
 export interface IIndexTableProps extends IShaDataTableProps, TableProps {
-  options?: IIndexTableOptions;
-  containerStyle?: CSSProperties;
-  tableStyle?: CSSProperties;
-  minHeight?: number;
-  maxHeight?: number;
-  noDataText?: string;
-  noDataSecondaryText?: string;
-  noDataIcon?: string;
-  showExpandedView?: boolean;
+  options?: IIndexTableOptions | undefined;
+  containerStyle?: CSSProperties | undefined;
+  tableStyle?: CSSProperties | undefined;
+  minHeight?: number | undefined;
+  maxHeight?: number | undefined;
+  noDataText?: string | undefined;
+  noDataSecondaryText?: string | undefined;
+  noDataIcon?: string | undefined;
+  showExpandedView?: boolean | undefined;
 
-  rowBackgroundColor?: string;
-  rowAlternateBackgroundColor?: string;
-  rowHoverBackgroundColor?: string;
-  rowSelectedBackgroundColor?: string;
-  borderRadius?: string;
-  border?: IBorderValue;
-  hoverHighlight?: boolean;
-  striped?: boolean;
-  backgroundColor?: string;
+  rowBackgroundColor?: string | undefined;
+  rowAlternateBackgroundColor?: string | undefined;
+  rowHoverBackgroundColor?: string | undefined;
+  rowSelectedBackgroundColor?: string | undefined;
+  borderRadius?: string | undefined;
+  border?: IBorderValue | undefined;
+  hoverHighlight?: boolean | undefined;
+  striped?: boolean | undefined;
+  backgroundColor?: string | undefined;
 
   // Header styling
   headerFont?: {
-    type?: string;
-    size?: number;
-    weight?: string;
-    color?: string;
-    align?: string;
-  };
-  headerBackgroundColor?: string;
-  headerTextAlign?: string; // Alignment for header cells
-  bodyTextAlign?: string; // Alignment for body cells
+    type?: string | undefined;
+    size?: number | undefined;
+    weight?: string | undefined;
+    color?: string | undefined;
+    align?: string | undefined;
+  } | undefined;
+  headerBackgroundColor?: string | undefined;
+  headerTextAlign?: string | undefined; // Alignment for header cells
+  bodyTextAlign?: string | undefined; // Alignment for body cells
 
   // Deprecated - kept for backward compatibility
   /** @deprecated Use headerFont.type instead */
-  headerFontFamily?: string;
+  headerFontFamily?: string | undefined;
   /** @deprecated Use headerFont.size instead */
-  headerFontSize?: string;
+  headerFontSize?: string | undefined;
   /** @deprecated Use headerFont.weight instead */
-  headerFontWeight?: string;
+  headerFontWeight?: string | undefined;
   /** @deprecated Use headerFont.color instead */
-  headerTextColor?: string;
+  headerTextColor?: string | undefined;
   /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
-  textAlign?: string;
+  textAlign?: string | undefined;
 
   // Table body styling
-  rowHeight?: string;
-  rowPadding?: string;
-  rowBorder?: string;
-  rowBorderStyle?: IBorderValue;
+  rowHeight?: string | undefined;
+  rowPadding?: string | undefined;
+  rowBorder?: string | undefined;
+  rowBorderStyle?: IBorderValue | undefined;
 
   // Body font styling
-  bodyFontFamily?: string;
-  bodyFontSize?: string;
-  bodyFontWeight?: number & {} | string;
-  bodyFontColor?: string;
+  bodyFontFamily?: string | undefined;
+  bodyFontSize?: string | undefined;
+  bodyFontWeight?: number & {} | string | undefined;
+  bodyFontColor?: string | undefined;
 
   // Action column icon styling
-  actionIconSize?: string | number;
-  actionIconColor?: string;
+  actionIconSize?: string | number | undefined;
+  actionIconColor?: string | undefined;
 
   // Cell styling
-  cellTextColor?: string | undefined;
-  cellBackgroundColor?: string;
-  cellBorderColor?: string;
-  cellBorders?: boolean;
-  cellPadding?: string;
-  cellBorder?: IBorderValue;
+  cellTextColor?: string | undefined | undefined;
+  cellBackgroundColor?: string | undefined;
+  cellBorderColor?: string | undefined;
+  cellBorders?: boolean | undefined;
+  cellPadding?: string | undefined;
+  cellBorder?: IBorderValue | undefined;
 
   // Border and shadow styling
-  headerBorder?: IBorderValue;
-  headerShadow?: IShadowValue;
-  rowShadow?: IShadowValue;
-  rowDividers?: boolean;
+  headerBorder?: IBorderValue | undefined;
+  headerShadow?: IShadowValue | undefined;
+  rowShadow?: IShadowValue | undefined;
+  rowDividers?: boolean | undefined;
 
   // Overall table styling
-  boxShadow?: string;
-  dimensions?: IDimensionsValue;
-  sortableIndicatorColor?: string;
+  boxShadow?: string | undefined;
+  dimensions?: IDimensionsValue | undefined;
+  sortableIndicatorColor?: string | undefined;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -460,8 +460,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
               inlineEditMode,
             },
           );
-          column.minWidth = minWidth;
-          column.maxWidth = maxWidth;
+          return { ...column, maxWidth, minWidth };
         }
         return column;
       })

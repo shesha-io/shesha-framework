@@ -52,6 +52,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
               solidBackground={solidBackground}
               style={model.allStyles?.fullStyle ?? {}}
               isDesigner={formMode === 'designer'}
+              readOnly={formMode === 'readonly'}
             />
           );
         }}

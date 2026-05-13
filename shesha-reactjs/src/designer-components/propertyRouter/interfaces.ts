@@ -1,5 +1,5 @@
 import { ComponentDefinition } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IPropertySetting } from '@/providers/form/models';
 
 interface IPropertyRouterContent {
   components: IConfigurableFormComponent[];
@@ -15,7 +15,7 @@ export interface IPropertyRouterProps extends IConfigurableFormComponent {
 }
 
 export interface IPropertyRouterComponentProps extends IConfigurableFormComponent {
-  propertyRouteName?: string;
+  propertyRouteName?: string | IPropertySetting<string> | undefined;
   components?: IConfigurableFormComponent[];
 }
 

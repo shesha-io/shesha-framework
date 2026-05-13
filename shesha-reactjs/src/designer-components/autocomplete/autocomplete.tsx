@@ -79,10 +79,12 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, entityMetadata]);
 
     const displayValueFunc: DisplayValueFunc = useCallback((value: unknown, args: object) => {
-      if (!isDefined(value)) return value;
-      if (model.displayValueFunc)
-        return executeExpression(model.displayValueFunc, { ...args, item: value }, null, null);
-      return (typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, displayPropName) : value) || '';
+      if (!isDefined(value)) return '';
+      const raw = model.displayValueFunc
+        ? executeExpression(model.displayValueFunc, { ...args, item: value }, null, null)
+        : (typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, displayPropName) : value);
+      if (raw === null || raw === undefined) return '';
+      return typeof raw === 'object' ? '' : String(raw);
     }, [model.displayValueFunc, displayPropName]);
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: unknown) => {
@@ -101,10 +103,17 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
       <ConfigurableFormItem {...{ model }}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]): void => {
-            customEvent.onChange(args[0], args[1]);
+          type StructuredValue = { id?: unknown; _displayName?: unknown; _className?: unknown };
+          const isStructuredValue = (v: unknown): v is StructuredValue =>
+            typeof v === 'object' && v !== null && !Array.isArray(v) &&
+            ('id' in v || '_displayName' in v || '_className' in v);
+          const isStructuredValueOrArray = (v: unknown): v is StructuredValue | StructuredValue[] =>
+            isStructuredValue(v) || (Array.isArray(v) && v.every(isStructuredValue));
+          const onChangeInternal = (value: unknown, option?: unknown): void => {
+            if (isStructuredValueOrArray(value))
+              customEvent.onChange(value, option);
             if (typeof onChange === 'function')
-              onChange(...args);
+              onChange(value);
           };
 
 

@@ -33,6 +33,8 @@ import { StandaloneTable } from './standaloneTable';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
+import { isDefined } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 type TableWrapperProps = ITableComponentProps & { columnsMismatch?: boolean };
 
@@ -44,7 +46,8 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const { globalState } = useGlobalState();
   const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const isDesignMode = formMode === 'designer';
-  const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
+  const metadataContext = useMetadata(false); // Don't require - DataTable may not be in a DataSource
+  const metadata = metadataContext?.metadata;
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
 
@@ -58,8 +61,8 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     [configuredColumns],
   );
   const metadataProperties = useMemo(
-    () => (metadata && isPropertiesArray(metadata.metadata?.properties) ? metadata.metadata.properties : []),
-    [metadata?.metadata],
+    () => (isDefined(metadata) && isPropertiesArray(metadata.properties) ? metadata.properties : []),
+    [metadata],
   );
   const metadataPropertyNameSet = useMemo(
     () => new Set(collectMetadataPropertyPaths(metadataProperties)),
@@ -78,7 +81,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     [normalizedConfiguredColumns, isDesignMode, anyOfPermissionsGranted, visibilityFilter],
   );
   const hasNonDataColumns = useMemo(
-    () => permissibleColumns.some((col) => col.columnType && col.columnType !== 'data'),
+    () => permissibleColumns.some((col) => isDefined(col.columnType) && col.columnType !== 'data'),
     [permissibleColumns],
   );
   const qualifyingColumns = useMemo(
@@ -97,16 +100,16 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     }
   }, [id]);
 
-  const shadowStyles = useMemo(() => getShadowStyle(props?.shadow), [props?.shadow]);
+  const shadowStyles = useMemo(() => getShadowStyle(props.shadow), [props.shadow]);
 
   const finalBoxShadow = useMemo(() => {
-    return props.shadow ? shadowStyles?.boxShadow : props.boxShadow;
-  }, [props?.shadow, shadowStyles?.boxShadow, props.boxShadow]);
+    return props.shadow ? shadowStyles.boxShadow : props.boxShadow;
+  }, [props.shadow, shadowStyles.boxShadow, props.boxShadow]);
 
   const effectiveRowHeight = useMemo(() => {
     const converted = convertRowDimensionsToHeight(props.rowDimensions?.height);
     return converted || props.rowHeight;
-  }, [props?.rowDimensions, props.rowHeight]);
+  }, [props.rowDimensions, props.rowHeight]);
 
   const effectiveRowPadding = useMemo(() => {
     // Try new individual padding fields first
@@ -118,40 +121,40 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     );
 
     // Fall back to deprecated rowStylingBox for backward compatibility
-    const convertedFromBox = convertRowStylingBoxToPadding(props?.rowStylingBox);
+    const convertedFromBox = convertRowStylingBoxToPadding(props.rowStylingBox);
 
     return convertedFromFields || convertedFromBox || props.rowPadding;
-  }, [props?.rowPaddingTop, props.rowPaddingRight, props.rowPaddingBottom, props.rowPaddingLeft, props.rowStylingBox, props.rowPadding]);
+  }, [props.rowPaddingTop, props.rowPaddingRight, props.rowPaddingBottom, props.rowPaddingLeft, props.rowStylingBox, props.rowPadding]);
 
   const effectiveRowBorder = useMemo(() => {
-    const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
+    const converted = convertRowBorderStyleToBorder(props.rowBorderStyle);
     return converted || props.rowBorder;
-  }, [props?.rowBorderStyle, props.rowBorder]);
+  }, [props.rowBorderStyle, props.rowBorder]);
 
   // Compute effective header font values with backward compatibility
   const effectiveHeaderFontFamily = useMemo(() => {
     return props.headerFont?.type ?? props.headerFontFamily;
-  }, [props?.headerFont?.type, props.headerFontFamily]);
+  }, [props.headerFont?.type, props.headerFontFamily]);
 
   const effectiveHeaderFontSize = useMemo(() => {
     return props.headerFont?.size ? `${props.headerFont.size}px` : props.headerFontSize;
-  }, [props?.headerFont?.size, props.headerFontSize]);
+  }, [props.headerFont?.size, props.headerFontSize]);
 
   const effectiveHeaderFontWeight = useMemo(() => {
     return props.headerFont?.weight ?? props.headerFontWeight;
-  }, [props?.headerFont?.weight, props.headerFontWeight]);
+  }, [props.headerFont?.weight, props.headerFontWeight]);
 
   const effectiveHeaderTextColor = useMemo(() => {
     return props.headerFont?.color ?? props.headerTextColor;
-  }, [props?.headerFont?.color, props.headerTextColor]);
+  }, [props.headerFont?.color, props.headerTextColor]);
 
   const effectiveHeaderTextAlign = useMemo(() => {
     return props.headerFont?.align;
-  }, [props?.headerFont?.align]);
+  }, [props.headerFont?.align]);
 
   const effectiveBodyTextAlign = useMemo(() => {
-    return allStyles?.fontStyles?.textAlign ?? props.font?.align;
-  }, [allStyles?.fontStyles?.textAlign, props.font?.align]);
+    return allStyles.fontStyles.textAlign ?? props.font?.align;
+  }, [allStyles.fontStyles.textAlign, props.font?.align]);
 
   // State for stored file background URL
   const [storedFileBackgroundUrl, setStoredFileBackgroundUrl] = useState<string>('');
@@ -161,7 +164,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     let isCancelled = false;
 
     const fetchStoredFileUrl = async (): Promise<void> => {
-      if (props?.background?.type === 'storedFile' && props.background?.storedFile?.id) {
+      if (isDefined(props.background) && props.background.type === 'storedFile' && props.background.storedFile?.id) {
         try {
           const url = await getBackgroundImageUrl(props.background, backendUrl, httpHeaders);
           if (!isCancelled) {
@@ -187,11 +190,11 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     return () => {
       isCancelled = true;
     };
-  }, [props?.background, backendUrl, httpHeaders]);
+  }, [props.background, backendUrl, httpHeaders]);
 
   // Convert background object to CSS string
   const effectiveBackground = useMemo(() => {
-    const bgStyles = getBackgroundStyle(props?.background, undefined, storedFileBackgroundUrl);
+    const bgStyles = getBackgroundStyle(props.background, undefined, storedFileBackgroundUrl);
 
     // Build complete background CSS string with all properties
     const parts: string[] = [];
@@ -224,131 +227,111 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     }
 
     return parts.length > 0 ? parts.join(' ') : undefined;
-  }, [props?.background, storedFileBackgroundUrl]);
+  }, [props.background, storedFileBackgroundUrl]);
 
   const { styles } = useStyles({
     // Use resolved font styles from allStyles to properly handle device-specific styling
-    fontFamily: allStyles?.fontStyles?.fontFamily ?? props.font?.type,
-    fontWeight: allStyles?.fontStyles?.fontWeight ?? props.font?.weight,
-    textAlign: allStyles?.fontStyles?.textAlign ?? props.font?.align,
-    color: allStyles?.fontStyles?.color ?? props.font?.color,
-    fontSize: allStyles?.fontStyles?.fontSize
+    fontFamily: allStyles.fontStyles.fontFamily ?? props.font?.type,
+    fontWeight: allStyles.fontStyles.fontWeight ?? props.font?.weight,
+    textAlign: allStyles.fontStyles.textAlign ?? props.font?.align,
+    color: allStyles.fontStyles.color ?? props.font?.color,
+    fontSize: allStyles.fontStyles.fontSize
       ? parseInt(allStyles.fontStyles.fontSize as string, 10)
       : props.font?.size,
-    striped: props.striped,
-    hoverHighlight: props.hoverHighlight,
-    enableStyleOnReadonly: props.enableStyleOnReadonly,
-    readOnly: props.readOnly,
+    striped: props.striped ?? false,
+    hoverHighlight: props.hoverHighlight ?? false,
     rowBackgroundColor: props.rowBackgroundColor,
     rowAlternateBackgroundColor: props.rowAlternateBackgroundColor,
     rowHoverBackgroundColor: props.rowHoverBackgroundColor,
     rowSelectedBackgroundColor: props.rowSelectedBackgroundColor,
-    border: props.border,
-    backgroundColor: effectiveBackground,
-    headerFontFamily: effectiveHeaderFontFamily,
-    headerFontSize: effectiveHeaderFontSize,
-    headerFontWeight: effectiveHeaderFontWeight,
-    headerBackgroundColor: props.headerBackgroundColor,
-    headerTextColor: effectiveHeaderTextColor,
-    rowHeight: effectiveRowHeight,
-    rowPadding: effectiveRowPadding,
-    rowBorder: effectiveRowBorder,
-    boxShadow: finalBoxShadow,
-    sortableIndicatorColor: props.sortableIndicatorColor,
   });
 
   const finalStyle = useMemo(() => {
-    if (allStyles) {
-      let baseStyle;
-      if (!props.enableStyleOnReadonly && props.readOnly) {
-        baseStyle = {
-          ...allStyles.fontStyles,
-          ...allStyles.dimensionsStyles,
-          ...allStyles.stylingBoxAsCSS,
-        };
-      } else {
-        baseStyle = allStyles.fullStyle;
-      }
-
-      if (baseStyle) {
-        const {
-          // Remove border properties if border prop is set
-          border: borderProp,
-          borderTop,
-          borderRight,
-          borderBottom,
-          borderLeft,
-          borderWidth,
-          borderStyle: borderStyleProp,
-          borderColor,
-          borderRadius: borderRadiusProp,
-          borderTopWidth,
-          borderRightWidth,
-          borderBottomWidth,
-          borderLeftWidth,
-          borderTopStyle,
-          borderRightStyle,
-          borderBottomStyle,
-          borderLeftStyle,
-          borderTopColor,
-          borderRightColor,
-          borderBottomColor,
-          borderLeftColor,
-          borderTopLeftRadius,
-          borderTopRightRadius,
-          borderBottomLeftRadius,
-          borderBottomRightRadius,
-          // Remove background properties to prevent duplicate application
-          background,
-          backgroundColor,
-          backgroundImage,
-          backgroundSize,
-          backgroundPosition,
-          backgroundRepeat,
-          backgroundAttachment,
-          backgroundOrigin,
-          backgroundClip,
-          ...styleWithoutBorderAndBackground
-        } = baseStyle;
-
-        // Only remove border properties if props.border is set
-        if (props.border) {
-          return styleWithoutBorderAndBackground;
-        }
-
-        // Remove background properties but keep border properties
-        return {
-          borderProp,
-          borderTop,
-          borderRight,
-          borderBottom,
-          borderLeft,
-          borderWidth,
-          borderStyle: borderStyleProp,
-          borderColor,
-          borderRadius: borderRadiusProp,
-          borderTopWidth,
-          borderRightWidth,
-          borderBottomWidth,
-          borderLeftWidth,
-          borderTopStyle,
-          borderRightStyle,
-          borderBottomStyle,
-          borderLeftStyle,
-          borderTopColor,
-          borderRightColor,
-          borderBottomColor,
-          borderLeftColor,
-          borderTopLeftRadius,
-          borderTopRightRadius,
-          borderBottomLeftRadius,
-          borderBottomRightRadius,
-          ...styleWithoutBorderAndBackground,
-        };
-      }
-      return baseStyle;
+    let baseStyle;
+    if (!props.enableStyleOnReadonly && props.readOnly) {
+      baseStyle = {
+        ...allStyles.fontStyles,
+        ...allStyles.dimensionsStyles,
+        ...allStyles.stylingBoxAsCSS,
+      };
+    } else {
+      baseStyle = allStyles.fullStyle;
     }
-    return {};
+
+    const {
+      // Remove border properties if border prop is set
+      border: borderProp,
+      borderTop,
+      borderRight,
+      borderBottom,
+      borderLeft,
+      borderWidth,
+      borderStyle: borderStyleProp,
+      borderColor,
+      borderRadius: borderRadiusProp,
+      borderTopWidth,
+      borderRightWidth,
+      borderBottomWidth,
+      borderLeftWidth,
+      borderTopStyle,
+      borderRightStyle,
+      borderBottomStyle,
+      borderLeftStyle,
+      borderTopColor,
+      borderRightColor,
+      borderBottomColor,
+      borderLeftColor,
+      borderTopLeftRadius,
+      borderTopRightRadius,
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      // Remove background properties to prevent duplicate application
+      background,
+      backgroundColor,
+      backgroundImage,
+      backgroundSize,
+      backgroundPosition,
+      backgroundRepeat,
+      backgroundAttachment,
+      backgroundOrigin,
+      backgroundClip,
+      ...styleWithoutBorderAndBackground
+    } = baseStyle;
+
+    // Only remove border properties if props.border is set
+    if (props.border) {
+      return styleWithoutBorderAndBackground;
+    }
+
+    // Remove background properties but keep border properties
+    return {
+      borderProp,
+      borderTop,
+      borderRight,
+      borderBottom,
+      borderLeft,
+      borderWidth,
+      borderStyle: borderStyleProp,
+      borderColor,
+      borderRadius: borderRadiusProp,
+      borderTopWidth,
+      borderRightWidth,
+      borderBottomWidth,
+      borderLeftWidth,
+      borderTopStyle,
+      borderRightStyle,
+      borderBottomStyle,
+      borderLeftStyle,
+      borderTopColor,
+      borderRightColor,
+      borderBottomColor,
+      borderLeftColor,
+      borderTopLeftRadius,
+      borderTopRightRadius,
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      ...styleWithoutBorderAndBackground,
+    };
   }, [props.enableStyleOnReadonly, props.readOnly, allStyles, props.border]);
 
   const {
@@ -369,7 +352,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     totalRows,
   } = useDataTableStore();
 
-  const repositoryType = getRepository?.()?.repositoryType;
+  const repositoryType = getRepository().repositoryType;
   const isEntitySource = repositoryType === BackendRepositoryType;
 
   requireColumns(); // our component requires columns loading. it's safe to call on each render
@@ -402,11 +385,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
       };
     }
 
-    // Check if we should auto-configure
-    const hasNoColumns = !configuredColumns || configuredColumns.length === 0;
-    const hasMetadata = metadata?.metadata != null;
-
-    if (!hasNoColumns || !hasMetadata) {
+    if (!isNonEmptyArray(configuredColumns) || !isDefined(metadata)) {
       return () => {
         cancelled = true;
       };
@@ -417,17 +396,14 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
     const autoConfigureColumns = async (): Promise<void> => {
       try {
-        // Guard against metadata becoming undefined after initial check
-        if (!metadata?.metadata) return;
-
-        const defaultColumns = await calculateDefaultColumns(metadata.metadata);
+        const defaultColumns = await calculateDefaultColumns(metadata);
         if (!cancelled && defaultColumns.length > 0) {
           formDesigner.updateComponent({
             componentId: id,
-            settings: {
-              ...props,
+            updater: (model) => ({
+              ...model,
               items: defaultColumns,
-            } as ITableComponentProps,
+            } as ITableComponentProps),
           });
         }
       } catch {
@@ -445,7 +421,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     return () => {
       cancelled = true;
     };
-  }, [isDesignMode, formDesigner, metadata?.metadata, configuredColumns, id, isEntitySource]);
+  }, [isDesignMode, formDesigner, metadata, configuredColumns, id, isEntitySource]);
 
   const renderSidebarContent = (): React.JSX.Element => {
     if (isAdvancedFilterVisible) {
@@ -459,10 +435,11 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
     return <Fragment />;
   };
 
-  const hasNoColumns = !configuredColumns || configuredColumns.length === 0;
+  const hasNoColumns = !isNonEmptyArray(configuredColumns);
 
   // Check if DataContext has configuration errors (not just info messages)
-  const hasContextConfigErrorsOrWarnings = contextValidation?.hasErrors && (contextValidation?.validationType === 'warning' || contextValidation?.validationType === 'error');
+  const hasContextConfigErrorsOrWarnings = isDefined(contextValidation) &&
+    contextValidation.hasErrors && (contextValidation.validationType === 'warning' || contextValidation.validationType === 'error');
 
   const toggleFieldPropertiesSidebar = (): void => {
     if (!isColumnsSelectorVisible && !isAdvancedFilterVisible)
@@ -496,7 +473,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
       allowFullCollapse
     >
       <GlobalTableStyles />
-      {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
+      {tableFilter.length > 0 && <FilterList filters={tableFilter} rows={totalRows ?? 0} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
 
       <div className="sha-datatable-wrapper">
         <div className={styles.dataTable} style={finalStyle}>
@@ -570,12 +547,12 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
-            bodyFontFamily={allStyles?.fontStyles?.fontFamily ?? props.font?.type as string}
-            bodyFontSize={allStyles?.fontStyles?.fontSize
+            bodyFontFamily={allStyles.fontStyles.fontFamily ?? props.font?.type as string}
+            bodyFontSize={allStyles.fontStyles.fontSize
               ? (allStyles.fontStyles.fontSize as string)
-              : (props?.font?.size ? `${props.font.size}px` : undefined)}
-            bodyFontWeight={allStyles?.fontStyles?.fontWeight ?? props.font?.weight as string}
-            bodyFontColor={allStyles?.fontStyles?.color ?? props.font?.color as string}
+              : (props.font?.size ? `${props.font.size}px` : undefined)}
+            bodyFontWeight={allStyles.fontStyles.fontWeight ?? props.font?.weight as string}
+            bodyFontColor={allStyles.fontStyles.color ?? props.font?.color as string}
             actionIconSize={props.actionIconSize}
             actionIconColor={props.actionIconColor}
           />

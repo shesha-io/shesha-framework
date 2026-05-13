@@ -21,7 +21,7 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { ISubFormActionsContext, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useDataContextManagerActionsOrUndefined, useHttpClient } from '@/providers';
+import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -43,7 +43,7 @@ import { IFormApi } from '../form/formApi';
 import { ISetFormDataPayload } from '../form/contexts';
 import { deepMergeValues, setValueByPropertyName } from '@/utils/object';
 import { AxiosResponse } from 'axios';
-import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
+import { configurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { extractAjaxResponse, IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from '../metadataDispatcher/entities/utils';
@@ -54,6 +54,7 @@ import { buildUrl } from '@/utils';
 import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
 import { IGlobalState } from '../globalState/contexts';
 import { MessageInstance } from 'antd/es/message/interface';
+import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -577,7 +578,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             model={props}
             context={contextId}
             isScope
-            name={`SubForm ${componentName || (formId ? ConfigurableItemIdentifierToString(formId) : "")}`}
+            name={`SubForm ${componentName || (formId ? configurableItemIdentifierToString(formId) : "")}`}
             formApi={subFormApi}
             formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
           >

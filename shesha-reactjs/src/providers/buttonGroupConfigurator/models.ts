@@ -37,7 +37,7 @@ export interface IButtonGroupItemBase extends IStyleType {
   hidden?: boolean | undefined;
   isDynamic?: boolean | undefined;
   itemType?: ButtonGroupItemType | undefined;
-  icon?: string | React.ReactNode | undefined;
+  icon?: string | undefined;
   iconPosition?: 'start' | 'end' | undefined;
   downIcon?: string | undefined;
   buttonType?: ButtonType | 'ghost' | undefined;

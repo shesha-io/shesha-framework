@@ -149,7 +149,7 @@ export interface IStoredFilter {
 
   sortOrder?: number;
 
-  permissions?: string[];
+  permissions?: string[] | undefined;
 
   //#region dynamic expressions
   hasDynamicExpression?: boolean;

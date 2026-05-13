@@ -9,6 +9,7 @@ export type ComponentApiProperty<T extends object = object> = {
     name: K;
     getter: () => T[K];
     setter?: ((value: T[K]) => void) | undefined;
+    skipIfExists?: boolean;
   };
 }[keyof T];
 
@@ -24,7 +25,8 @@ export interface IComponentApiDescription<T extends object = Record<string, unkn
   api?: Partial<T> | undefined;
 }
 
-export interface IComponentApiActions {
+export interface IComponentApi {
+  id: string;
   updateApi: <T extends object = Record<string, unknown>>(api: IComponentApiDescription<T>, properties?: ComponentApiProperty<T>[]) => void;
   removeApi: (id: string) => void;
   getApi: <PT extends Record<string, unknown>>(componentName: string) => IComponentApiDescription<PT> | undefined;
@@ -32,4 +34,9 @@ export interface IComponentApiActions {
   createApiProperty: CreateApiPropertyFunc;
 }
 
-export type useComponentApiFunc = () => IComponentApiActions | undefined;
+export type useComponentApiFunc = () => IComponentApi | undefined;
+
+export interface IComponentApiInputRef<T> {
+  value: T;
+  onChange: (...args: unknown[]) => void;
+}

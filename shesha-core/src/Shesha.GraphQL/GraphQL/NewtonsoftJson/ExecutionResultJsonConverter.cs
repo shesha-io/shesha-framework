@@ -83,20 +83,15 @@ namespace Shesha.GraphQL.NewtonsoftJson
             }
             else if (node is ArrayExecutionNode arrayExecutionNode)
             {
-                var items = arrayExecutionNode.Items;
-                if (items == null)
-                {
+                // GraphQL.NET 8+: ArrayExecutionNode.Items is null after execution; the resolved
+                // values must be obtained via ToValue(). Reading Items directly (as the previous
+                // implementation did, written against GraphQL.NET 5.x) silently writes JSON null
+                // for any list field — including [MultiValueReferenceList] properties.
+                var value = arrayExecutionNode.ToValue();
+                if (value == null)
                     writer.WriteNull();
-                }
                 else
-                {
-                    writer.WriteStartArray();
-                    foreach (var childNode in items)
-                    {
-                        WriteExecutionNode(writer, childNode, serializer, false);
-                    }
-                    writer.WriteEndArray();
-                }
+                    serializer.Serialize(writer, value);
             }
             else if (node == null || node is NullExecutionNode)
             {

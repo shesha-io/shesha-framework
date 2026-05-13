@@ -52,6 +52,13 @@
     "propertyName": "height",
     "parentId": "root",
     "label": "Height"
+  },
+  {
+    "id": "32107439-4c18-468c-89e1-60c002ce96c5",
+    "type": "textField",
+    "propertyName": "searchText",
+    "parentId": "root",
+    "label": "Search text"
   }
   ],
   "formSettings": {

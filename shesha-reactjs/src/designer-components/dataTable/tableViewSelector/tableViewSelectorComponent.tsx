@@ -11,6 +11,9 @@ import { validationError } from '../utils';
 import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { isNonEmptyArray } from '@/utils/array';
+import { IStoredFilter } from '@/interfaces';
+import { isDefined } from '@/utils/nullables';
 
 const outsideContextValidationError = validationError('Table View Selector');
 
@@ -46,15 +49,15 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   },
   initModel: (model: ITableViewSelectorComponentProps) => {
     // Ensure component always has at least 1 filter for WYSIWYG display
-    const defaultFilters = model.filters && model.filters.length > 0
+    const defaultFilters = isNonEmptyArray(model.filters)
       ? model.filters
       : [{
         id: 'default-all-records',
         name: 'Default',
         tooltip: 'Shows all records without any filtering',
         sortOrder: 0,
-        expression: null, // No filter expression = show all
-      }];
+        expression: undefined, // No filter expression = show all
+      } satisfies IStoredFilter];
 
     return {
       ...model,
@@ -63,16 +66,18 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
     };
   },
   migrator: (m) => m.add<ITableViewSelectorComponentProps>(0, (prev) => {
+    const prevTyped = prev as ITableViewSelectorComponentProps;
     return {
       ...prev,
-      title: prev['title'] ?? 'Title',
-      filters: prev['filters'] ?? [{
-        id: 'default-all-records',
-        name: 'Default',
-        tooltip: 'Shows all records without any filtering',
-        sortOrder: 0,
-        expression: null,
-      }],
+      filters: isDefined(prevTyped.filters)
+        ? prevTyped.filters
+        : [{
+          id: 'default-all-records',
+          name: 'Default',
+          tooltip: 'Shows all records without any filtering',
+          sortOrder: 0,
+          expression: undefined,
+        } satisfies IStoredFilter],
     };
   })
     .add(1, (prev) => (

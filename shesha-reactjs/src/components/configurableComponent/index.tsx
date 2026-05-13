@@ -28,7 +28,7 @@ export interface ISettingsEditor<TSettings = any> {
   save?: () => Promise<TSettings>;
 }
 
-export type ComponentSettingsMigrationContext = unknown;
+export type ComponentSettingsMigrationContext = object;
 
 /**
  * Settings migrator

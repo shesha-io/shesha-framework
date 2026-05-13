@@ -7,6 +7,7 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class SyncAllResponse
     {
+        public string ServerSnapshotHash { get; set; }
         public List<ModuleSyncResponse> Modules { get; set; } = new List<ModuleSyncResponse>();
         public List<LookupSyncResponse> Lookups { get; set; } = new List<LookupSyncResponse>();
     }
