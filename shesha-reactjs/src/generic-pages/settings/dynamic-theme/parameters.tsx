@@ -3,7 +3,7 @@ import { Alert, Button, Card, Col, Form, Input, Radio, Row, Slider, Space, Toolt
 import React, { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
-import { ComponentDefaultsPanel } from './componentDefaultsPanel';
+import { ComponentDefaultsPanel } from './componentSettingsPanel';
 import { useStyles } from './styles/styles';
 
 export interface ThemeParametersProps {

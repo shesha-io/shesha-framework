@@ -2,7 +2,7 @@ import { Card, Col, Menu, Row } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from './styles/styles';
-import { findComponentNode, MENU_ITEMS } from './componentTree';
+import { findComponentNode, MENU_ITEMS } from './toolboxComponents';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import { IFormSettings } from '@/providers/form/models';
@@ -83,7 +83,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
   // Handle form data change
   const handleFormDataChange = (changedValues: any, allValues: any): void => {
-    console.log("THENE LOG >> ", changedValues, "ALL Values >> ", allValues )
+    console.log("THEmE LOG >> ", changedValues, "ALL Values >> ", allValues )
     return {
       ...theme,
       ...changedValues
@@ -158,7 +158,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
                   components: [
                     {
                       type: selectedNode?.type,
-                      id: nanoid(),
+                      id: selectedNode.key,
                       propertyName: `${selectedNode?.type}Appearance`,
                       label: `${selectedNode?.title}`,
                       parentId: 'root',

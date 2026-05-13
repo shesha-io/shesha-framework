@@ -19,8 +19,8 @@ export interface IMenuItem {
 // Lazy initialization to avoid circular dependency
 let cachedMenuItems: IMenuItem[] | null = null;
 
-const buildComponentitems = (): IMenuItem[] => {
-  return getToolboxComponents(false, { formId: null, formProps: null }).map(
+const buildComponentItems = (): IMenuItem[] => {
+  return getToolboxComponents(false, { formId: null, formProps: null }).filter(group => group.visible).map(
     (componentGroup) => ({
       key: componentGroup.name,
       title: componentGroup.name,
@@ -36,7 +36,7 @@ const buildComponentitems = (): IMenuItem[] => {
 
 export const getMenuItems = (): IMenuItem[] => {
   if (!cachedMenuItems) {
-    cachedMenuItems = buildComponentitems();
+    cachedMenuItems = buildComponentItems();
   }
   return cachedMenuItems;
 };
@@ -92,14 +92,3 @@ export const getAllComponentTypes = (items?: IMenuItem[]): IMenuItem[] => {
   }
   return result;
 };
-
-/**
- * Button-specific appearance options
- */
-export const BUTTON_APPEARANCES = [
-  { label: 'Default', value: 'default' },
-  { label: 'Primary', value: 'primary' },
-  { label: 'Dashed', value: 'dashed' },
-  { label: 'Link', value: 'link' },
-  { label: 'Text', value: 'text' },
-];
