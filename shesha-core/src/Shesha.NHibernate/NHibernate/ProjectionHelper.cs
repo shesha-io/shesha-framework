@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shesha.EntityReferences;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -43,7 +44,8 @@ namespace Shesha.NHibernate
                 if (topPropInfo == null)
                     throw new ArgumentException($"Property '{topProp}' not found on type '{rootType.Name}'");
 
-                bool isSimple = group.All(g => g.Parts.Length == 1);
+                //if (topPropInfo.PropertyType == typeof(GenericEntityReference))
+                var isSimple = group.All(g => g.Parts.Length == 1) || topPropInfo.PropertyType == typeof(GenericEntityReference);
                 if (isSimple)
                 {
                     // Direct property access (e.g., "Id", "Name")
