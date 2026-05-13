@@ -50,19 +50,19 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
   const { styles } = useStyles();
 
-  const labelSpan =  theme?.labelSpan ?? 6;
+  const labelSpan = theme?.labelSpan ?? 6;
   const layout = theme?.labelAlign === 'top' ? 'vertical' : 'horizontal';
 
   const handleLayoutChange = (val: 'vertical' | 'horizontal'): void => {
     if (val === 'vertical') {
       onChange?.({
         ...theme,
-          labelAlign: 'top',
+        labelAlign: 'top',
       });
     } else {
       onChange?.({
         ...theme,
-          labelAlign: 'left',
+        labelAlign: 'left',
       });
     }
   };
@@ -70,9 +70,9 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
   const handleSpanChange = (val: number): void => {
     onChange?.({
       ...theme,
-        labelSpan: val,
-        componentSpan: 24 - val,
-      });
+      labelSpan: val,
+      componentSpan: 24 - val,
+    });
   };
 
   const primaryColor = theme?.application?.primaryColor;
@@ -130,12 +130,12 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             </Col>
 
             <Col xs={24} md={8}>
-              <Typography.Title level={5} style={{ marginBottom: 4 }}>Component And Page</Typography.Title>
+              <Typography.Title level={5} style={{ marginBottom: 4 }}>Component and Page</Typography.Title>
               <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
                 Select a circle below to choose your desired colour.
               </Typography.Text>
               <Space size={16} wrap>
-                <ColorCircle color={ theme?.layoutBackground} onChange={(c) => updateTheme({ layoutBackground: c })} label="Page" readonly={readonly} />
+                <ColorCircle color={theme?.layoutBackground} onChange={(c) => updateTheme({ layoutBackground: c })} label="Page" readonly={readonly} />
               </Space>
             </Col>
           </Row>
@@ -149,7 +149,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
               </Tooltip>
             </Space>
             <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 12 }}>
-              The layout uses a 24-column grid system by default. Choose between vertical or horizontal layout. You can customize how much space each element takes by setting the label span and wrapper span.
+              Configure how form labels and controls are positioned using a 24-column grid system.
             </Typography.Text>
 
             <Radio.Group
@@ -167,9 +167,9 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             {layout === 'horizontal' && (
               <div style={{ maxWidth: 300 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <Typography.Text>0</Typography.Text>
-                  <Typography.Text style={{ transform: `translateX(${(labelSpan / 24) * 100}%)` }}>{labelSpan}</Typography.Text>
-                  <Typography.Text>24</Typography.Text>
+                  <Typography.Text>Label: 0</Typography.Text>
+                  <Typography.Text>Span: {labelSpan}</Typography.Text>
+                  <Typography.Text>Control: 24</Typography.Text>
                 </div>
                 <Slider
                   min={0}
@@ -192,10 +192,10 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 <Col xs={24} md={8}>
                   <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
                   <Space orientation="vertical" style={{ width: '100%' }}>
-                    <Alert title="Success Alert" type="success" showIcon style={{ height: 32, padding: '4px 8px', alignItems: 'center', display: 'flex' }} />
-                    <Alert title="Info Alert" type="info" showIcon style={{ height: 32, padding: '4px 8px', alignItems: 'center', display: 'flex' }} />
-                    <Alert title="Warning Alert" type="warning" showIcon style={{ height: 32, padding: '4px 8px', alignItems: 'center', display: 'flex' }} />
-                    <Alert title="Error Alert" type="error" showIcon style={{ height: 32, padding: '4px 8px', alignItems: 'center', display: 'flex' }} />
+                    <Alert title="Success Alert" type="success" showIcon />
+                    <Alert title="Info Alert" type="info" showIcon />
+                    <Alert title="Warning Alert" type="warning" showIcon />
+                    <Alert title="Error Alert" type="error" showIcon />
                   </Space>
                 </Col>
 
@@ -218,10 +218,10 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 <Col xs={24} md={8}>
                   <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
                   <Space orientation="vertical" style={{ width: '100%' }} size="small">
-                    <Button type="primary" style={{ background: primaryColor, borderColor: primaryColor, width: '100%' }}>Primary</Button>
-                    <Button danger style={{ width: '100%' }}>Error</Button>
-                    <Button style={{ width: '100%', color: successColor ?? '#52c41a', borderColor: successColor ?? '#52c41a' }}>Secondary</Button>
-                    <Button style={{ width: '100%' }}>Default</Button>
+                    <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
+                    <Button danger block>Error</Button>
+                    <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
+                    <Button block>Default</Button>
                   </Space>
                 </Col>
               </Row>

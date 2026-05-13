@@ -13,7 +13,7 @@ export interface IConfigurableThemePageProps {
 
 export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ value, onChange, readonly }) => {
   const { styles } = useStyles();
-  const [themeLevel, setThemeLevel] = useState<number>(1);
+  const [themeLevel, setThemeLevel] = useState<1 | 2>(1);
 
   return (
     <Col span={24} className={styles.contentColumn}>
@@ -22,13 +22,13 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
         header={(
           <Radio.Group
             value={themeLevel}
-            onChange={(e) => setThemeLevel(Number(e.target.value))}
+            onChange={(e) => setThemeLevel(e.target.value as 1 | 2)}
             disabled={readonly}
             optionType="button"
             buttonStyle="solid"
           >
-            <Radio.Button value="1">Theme</Radio.Button>
-            <Radio.Button value="2">Components</Radio.Button>
+            <Radio.Button value={1}>Theme</Radio.Button>
+            <Radio.Button value={2}>Components</Radio.Button>
           </Radio.Group>
         )}
         className={styles.themeParameters}

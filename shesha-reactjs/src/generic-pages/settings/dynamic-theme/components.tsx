@@ -50,7 +50,7 @@ export const RenderInput: FC<IRenderInputProps> = ({
   type = 'number',
   disabled = false,
 }) => (
-  <Space direction="horizontal">
+  <Space>
     <Show when={Boolean(label)}>
       <span>{humanizeString(label)} </span>
     </Show>
@@ -111,7 +111,7 @@ export const RenderColor: FC<IRenderColorProps> = ({
   colorPickerClassName,
 }) => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-    <Space direction="horizontal" className={className}>
+    <Space className={className}>
       <Show when={Boolean(colorName)}>
         <span>{label ? label : humanizeString(colorName)} </span>
       </Show>

@@ -2,12 +2,11 @@ import { Card, Col, Menu, Row } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from './styles/styles';
-import { findComponentNode, MENU_ITEMS } from './toolboxComponents';
+import { findComponentNode, IMenuItem, MENU_ITEMS } from './toolboxComponents';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import { IFormSettings } from '@/providers/form/models';
 import { makeFormBuliderFactory } from '@/form-factory/implementation';
-import { nanoid } from 'nanoid';
 import { ItemType } from 'antd/es/menu/interface';
 
 export interface IComponentDefaultsPanelProps {
@@ -19,7 +18,7 @@ export interface IComponentDefaultsPanelProps {
 /**
  * Component Defaults Panel - Shows menu of components on left, appearance settings on right
  */
-export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readonly }) => {
+export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange }) => {
   const { styles } = useStyles();
   const [selectedKey, setSelectedKey] = useState<string>('button');
 
@@ -28,7 +27,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
   // Convert tree data to Ant Design Menu format with groups
   const menuData = useMemo(() => {
-    const convertComponent = (component): ItemType => ({
+    const convertComponent = (component: IMenuItem): ItemType => ({
       key: component.key,
       label: component.title,
       icon: component.icon,
@@ -70,7 +69,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     // Find the Appearance tab
     const appearanceTab = searchableTabs.tabs.find((tab: any) =>
-      tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance'
+      tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance',
     );
 
     if (!appearanceTab?.components) return null;
@@ -82,12 +81,11 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   }, [componentType]);
 
   // Handle form data change
-  const handleFormDataChange = (changedValues: any, allValues: any): void => {
-    console.log("THEmE LOG >> ", changedValues, "ALL Values >> ", allValues )
-    return {
+  const handleFormDataChange = (changedValues: any): void => {
+    onChange?.({
       ...theme,
-      ...changedValues
-    }
+      ...changedValues,
+    });
   };
 
   return (
@@ -105,7 +103,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             mode="inline"
             selectedKeys={[selectedKey]}
             onClick={(item) => {
-              const node = findComponentNode(item.key, MENU_ITEMS);
+              const node = findComponentNode(item.key);
               if (node?.type) {
                 setSelectedKey(item.key);
               }
@@ -117,14 +115,14 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       {/* Right: Component Appearance Settings */}
       <Col xs={24} sm={24} md={18} lg={18} xl={18} xxl={18}>
         <Card
-          title={
+          title={(
             <div>
               <h4 style={{ marginBottom: 4 }}>{selectedNode?.title || 'Select a Component'}</h4>
               <span style={{ color: '#999', fontSize: '12px' }}>
                 Configure default appearance for {selectedNode?.title?.toLowerCase() || 'components'}
               </span>
             </div>
-          }
+          )}
           size="small"
           style={{ height: '450px', overflowY: 'auto' }}
           className={styles.themeCardSettings}
@@ -142,39 +140,6 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
               {componentType
                 ? 'This component does not have appearance settings or they cannot be loaded'
                 : 'Select a component from the tree to configure its default appearance'}
-            </div>
-          )}
-        </Card>
-        <Card>
-          {componentType && (
-            <div>
-              <h4 style={{ marginBottom: 4 }}>{selectedNode?.title || 'Select a Component'}</h4>
-              <span style={{ color: '#999', fontSize: '12px' }}>
-                Configure default appearance for {selectedNode?.title?.toLowerCase() || 'components'}
-              </span>
-              <ConfigurableForm
-                mode="edit"
-                markup={{
-                  components: [
-                    {
-                      type: selectedNode?.type,
-                      id: selectedNode.key,
-                      propertyName: `${selectedNode?.type}Appearance`,
-                      label: `${selectedNode?.title}`,
-                      parentId: 'root',
-                      hidden: false,
-                    }
-                  ],
-                  formSettings: {
-                    colon: false,
-                    layout: 'vertical' as const,
-                    labelCol: { span: 24 },
-                    wrapperCol: { span: 24 },
-                  },
-                }}
-                onValuesChange={handleFormDataChange}
-                className={styles.appearanceForm}
-              />
             </div>
           )}
         </Card>

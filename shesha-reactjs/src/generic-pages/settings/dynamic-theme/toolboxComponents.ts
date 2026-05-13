@@ -13,14 +13,13 @@ export interface IMenuItem {
   icon?: React.ReactNode;
   type?: string; // The actual component type identifier (e.g., 'button', 'textField')
   children?: IMenuItem[];
-  category?: 'inputComponents' | 'layoutComponents' | 'standardComponents' | 'inlineComponents';
 }
 
 // Lazy initialization to avoid circular dependency
 let cachedMenuItems: IMenuItem[] | null = null;
 
 const buildComponentItems = (): IMenuItem[] => {
-  return getToolboxComponents(false, { formId: null, formProps: null }).filter(group => group.visible).map(
+  return getToolboxComponents(false, { formId: null, formProps: null }).filter((group) => group.visible).map(
     (componentGroup) => ({
       key: componentGroup.name,
       title: componentGroup.name,
@@ -30,7 +29,7 @@ const buildComponentItems = (): IMenuItem[] => {
         type: component.type,
         icon: component.icon,
       })),
-    })
+    }),
   );
 };
 
