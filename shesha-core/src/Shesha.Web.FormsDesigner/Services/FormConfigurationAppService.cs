@@ -5,11 +5,12 @@ using Abp.Extensions;
 using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.AutoMapper.Dto;
 using Shesha.Authorization;
+using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
@@ -25,6 +26,7 @@ using Shesha.Permissions;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Exceptions;
+using Shesha.Web.FormsDesigner.Services.Cache;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -48,6 +50,7 @@ namespace Shesha.Web.FormsDesigner.Services
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly IEntityConfigManager _entityConfigManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
+        private readonly IFormCacheHolder _cacheHolder;
 
         public FormConfigurationAppService(
             IRepository<FormConfiguration, Guid> repository,
@@ -56,7 +59,8 @@ namespace Shesha.Web.FormsDesigner.Services
             IConfigurationFrameworkRuntime cfRuntime,
             IConfigurationItemClientSideCache clientSideCache,
             IEntityConfigManager entityConfigManager,
-            IPermissionedObjectManager permissionedObjectManager
+            IPermissionedObjectManager permissionedObjectManager,
+            IFormCacheHolder cacheHolder
         ) : base(repository)
         {
             _moduleRepository = moduleRepository;
@@ -65,6 +69,7 @@ namespace Shesha.Web.FormsDesigner.Services
             _clientSideCache = clientSideCache;
             _entityConfigManager = entityConfigManager;
             _permissionedObjectManager = permissionedObjectManager;
+            _cacheHolder = cacheHolder;
         }
 
         private async Task<string[]> GetFormPermissionsAsync(string module, string name)
@@ -176,21 +181,90 @@ namespace Shesha.Web.FormsDesigner.Services
                     throw new ContentNotModifiedException("Form not changed");
             }
 
-            var moduleEntity = await GetModuleAsync(input.Module);
+            var dto = await GetFormAsync(input.Module, input.Name, input.Version, mode);
 
-            // todo: move to a generic method
-            var query = Repository.GetAll().Where(f => f.Module == moduleEntity &&
-                f.Name == input.Name);
+            if (dto == null)
+                throw new FormNotFoundException(input.Module, input.Name);
 
-            if (input.Version.HasValue)
-                query = query.Where(f => f.VersionNo == input.Version.Value);
-            else {
+            dto.CacheMd5 = GetMd5(dto);
+            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
+
+            if (!await CheckFormPermissionsAsync(dto.Module, dto.Name))
+            {
+                dto.Markup = null;
+                dto.CacheMd5 = "";
+            }
+
+            return dto;
+        }
+
+        [HttpPost]
+        public async Task DisableFormsCacheAsync()
+        {
+            await _cacheHolder.DisableAsync();
+        }
+
+        [HttpPost]
+        public async Task EnableFormsCacheAsync()
+        {
+            await _cacheHolder.EnableAsync();
+        }
+
+        [HttpGet]
+        public Task<string> GetFormsCacheStatusAsync()
+        {
+            return Task.FromResult(_cacheHolder.IsEnabled ? "enabled" : "disabled");
+        }
+
+        [HttpPost]
+        public async Task ClearClientSideCacheAsync() 
+        { 
+            await _clientSideCache.ClearAsync();
+        }
+
+        [HttpPost]
+        public async Task ClearFormsCacheAsync()
+        {
+            await _cacheHolder.Cache.ClearAsync();
+        }
+
+        [HttpPost]
+        public async Task ClearCacheAsync()
+        {
+            await _clientSideCache.ClearAsync();
+            await _cacheHolder.Cache.ClearAsync();
+        }
+
+        private async Task<FormConfigurationDto> GetFormAsync(string module, string name, int? version, ConfigurationItemViewMode mode) 
+        {
+            // Skip cache when version is specified (it shouldn't be used at all)
+            if (!_cacheHolder.IsEnabled || version.HasValue)
+                return await FetchFormAsync(module, name, version, mode);
+
+            var cacheKey = _cacheHolder.GetCacheKey(module, name, mode);
+
+            var result = await _cacheHolder.Cache.GetAsync(cacheKey, async (key) => {
+                var value = await FetchFormAsync(module, name, version, mode);
+                return value;
+            });
+
+            return result;
+        }
+
+        private async Task<FormConfigurationDto> FetchFormAsync(string module, string name, int? version, ConfigurationItemViewMode mode) 
+        {
+            var query = Repository.GetAll().FilterByFullName(module, name);
+
+            if (version.HasValue)
+                query = query.Where(f => f.VersionNo == version.Value);
+            else
+            {
                 switch (mode)
                 {
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
+                    case ConfigurationItemViewMode.Live:
                         query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                         break;
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
+                    case ConfigurationItemViewMode.Ready:
                         {
                             var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
@@ -200,7 +274,7 @@ namespace Shesha.Web.FormsDesigner.Services
                             query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                             break;
                         }
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
+                    case ConfigurationItemViewMode.Latest:
                         {
                             var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
@@ -216,19 +290,9 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
 
             if (form == null)
-                throw new FormNotFoundException(input.Module, input.Name);
+                return null;
 
             var dto = await MapToEntityDtoAsync(form);
-
-            dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
-
-            if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
-            {
-                dto.Markup = null;
-                dto.CacheMd5 = "";
-            }
-
             return dto;
         }
 

@@ -147,6 +147,34 @@ namespace Shesha.DynamicEntities
             }
         }
 
+        [HttpGet]
+        public virtual async Task<IDynamicDataResult> GetTreeAsync(string entityType, PropsFilteredPagedAndSortedResultRequestDto input)
+        {
+            try
+            {
+                var entityConfig = _entityConfigStore.Get(entityType);
+                if (entityConfig == null)
+                    throw new EntityTypeNotFoundException(entityType);
+
+                var appServiceType = entityConfig.ApplicationServiceType;
+
+                if (entityConfig.ApplicationServiceType == null)
+                    throw new NotSupportedException($"{nameof(GetAllAsync)} is not implemented for entity of type {entityConfig.EntityType.FullName}");
+
+                var appService = IocManager.Resolve(appServiceType) as IEntityAppService;
+                if (appService == null)
+                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.ApplicationServiceType.FullName}");
+
+                await CheckPermissionAsync(entityConfig, "Get");
+
+                return await appService.QueryAllAsync(input);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         [HttpPost]
         public async Task<FileStreamResult> ExportToExcelAsync(ExportToExcelInput input, CancellationToken cancellationToken)
         {

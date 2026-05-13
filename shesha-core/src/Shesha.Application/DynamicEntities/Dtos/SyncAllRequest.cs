@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Shesha.DynamicEntities.Dtos
 {
@@ -8,6 +7,7 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class SyncAllRequest
     {
+        public string ClientSnapshotHash { get; set; }
         public List<ModuleSyncRequest> Modules { get; set; } = new List<ModuleSyncRequest>();
     }
 }

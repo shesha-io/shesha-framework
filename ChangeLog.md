@@ -1,14 +1,11 @@
 # Release Notes
 
-## 💪 Enhancements
-
-- **Horizontal Scaling** – Added support for horizontal scaling to accommodate high-scale deployments and meet high availability requirements.
-- **Form Blocking Loader** – Introduced an easy way to display a blocking loader on forms, improving user experience during form submissions and async operations.
-- **Security Improvements** – Implemented various security enhancements to strengthen overall system protection.
-
 ## 🐞 Bug Fixes
 
-- **Quick Search** – Fixed an issue with quick search not properly handling nested or related entity properties in DataTable.
-- **DataTable Filtering** – Resolved a filtering issue occurring when the DataTable was configured with a URL-based source type.
-- **Auto Logout** – Corrected auto logout behavior to ensure sessions expire as expected.
+- **Email Validation:** - Corrected validation logic that incorrectly flagged valid email addresses as invalid, which prevented email sending and caused misleading error logs.
+- **Table View Actions:** - Resolved an error where using the `application` object in Action column scripts (e.g., `application.navigator.navigateToUrl`) would fail at runtime, despite being listed as an available variable in the script editor.
+- **External Authentication:** - Fixed an issue where external login accounts were not reliably linked during registration, improving sign-in continuity for third-party providers.
 
+## 💪 Enhancements
+
+- **Tree optimisation**

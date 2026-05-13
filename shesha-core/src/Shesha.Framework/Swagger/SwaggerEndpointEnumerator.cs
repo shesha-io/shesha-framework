@@ -42,6 +42,7 @@ namespace Shesha.Swagger
                         var model = AsyncHelper.RunSync(() => entityConfigs.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
                         var entityAttribute = entityType.GetAttribute<EntityAttribute>();
                         if (entityAttribute?.GenerateApplicationService == GenerateApplicationServiceState.DisableGenerateApplicationService
+                            || model == null
                             || !model.GenerateAppService)
                             continue;
                     }

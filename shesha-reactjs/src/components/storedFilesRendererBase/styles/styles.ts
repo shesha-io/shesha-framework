@@ -173,6 +173,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     >.ant-upload-list-item-container {
      > div {
       display: flex;
+      flex-direction: column;
       justify-content: ${textAlign === 'right' ? 'flex-end' : textAlign === 'center' ? 'center' : 'flex-start'} !important;
 
         >.file-name-wrapper {

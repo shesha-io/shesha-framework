@@ -40,7 +40,7 @@ namespace Shesha.Metadata
             var models = new List<ModelDto>();
             foreach (var provider in _modelProviders)
             {
-                models.AddRange(await provider.GetModelsAsync());
+                models.AddRange(await provider.GetModelsListAsync());
             }
             return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
         }

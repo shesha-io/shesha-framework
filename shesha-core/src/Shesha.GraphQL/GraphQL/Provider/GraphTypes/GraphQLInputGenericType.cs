@@ -104,6 +104,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             return Convert.ToInt32(propertyInfo.GetValue(context.Source));
                         }); break;
                     case nameof(DateTime): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: true), propertyInfo.Name, resolve: context => propertyInfo.GetValue(context.Source)); break;
+                    case nameof(Guid): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: true), propertyInfo.Name); break;
                     case "Nullable`1":
                         {
                             var underlyingType = Nullable.GetUnderlyingType(propertyInfo.PropertyType);
@@ -183,6 +184,13 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                                             if (nullableDateTime.HasValue) return nullableDateTime.Value;
                                             else return null;
                                         }); break;
+                                    case nameof(Guid):
+                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: true), propertyInfo.Name, resolve: context =>
+                                        {
+                                            var nullableGuid = propertyInfo.GetValue(context.Source) as Guid?;
+                                            if (nullableGuid.HasValue) return nullableGuid.Value;
+                                            else return null;
+                                        }); break;
                                 }
                             }
                         }
@@ -192,35 +200,6 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 }
             }
         }
-
-        /*
-        public override GraphQLValue ToAST(object value)
-        {
-            if (value == null)
-            {
-                return new GraphQLNullValue();
-            }
-
-            var fields = new List<GraphQLObjectField>();
-
-            foreach (var propertyInfo in value.GetType().GetProperties())
-            {
-                var propertyValue = propertyInfo.GetValue(value);
-
-                if (propertyValue is not null)
-                {
-                    fields.Add(new GraphQLObjectField(propertyInfo.Name,
-                        (GraphQLValue)Activator.CreateInstance(PropertiesAstNodeType[propertyInfo.Name], propertyValue)));
-                }
-                else
-                {
-                    fields.Add(new GraphQLObjectField() { Name = new GraphQLName(propertyInfo.Name), Value = new GraphQLNullValue() });
-                }
-            }
-
-            return new GraphQLObjectField(fields);
-        }
-        */
 
         private Type MakeDictionaryType(PropertyInfo propertyInfo)
         {

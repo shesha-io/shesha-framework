@@ -7,6 +7,7 @@ using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Shesha.Authorization;
+using Shesha.Authorization.Users;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
 using Shesha.Configuration.Security;
@@ -85,6 +86,7 @@ namespace Shesha
 
             IocManager.Register<StoredFileService, StoredFileService>(DependencyLifeStyle.Transient);
             IocManager.Register<AzureStoredFileService, AzureStoredFileService>(DependencyLifeStyle.Transient);
+            IocManager.Register<IUserRegistrationManager, UserRegistrationManager>(DependencyLifeStyle.Transient);
             IocManager.IocContainer.Register(
                 Component.For<IStoredFileService>().UsingFactoryMethod(f =>
                 {

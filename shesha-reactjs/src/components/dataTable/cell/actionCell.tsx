@@ -1,59 +1,50 @@
-import { Tooltip, App } from 'antd';
-import moment from 'moment';
-import React from 'react';
-import { IconType, ShaIcon } from '@/components';
+import { Tooltip } from 'antd';
+import React, { useMemo } from 'react';
+import { ShaIcon } from '@/components';
 import {
   isNavigationActionConfiguration,
   useConfigurableActionDispatcher,
   useDataTable,
-  useForm,
-  useGlobalState,
-  useHttpClient,
   useShaRouting,
 } from '@/providers';
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
 import { ICommonCellProps } from './interfaces';
 import Link from 'next/link';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
+export interface IActionCellProps<D extends object = {}, V = unknown> extends ICommonCellProps<ITableActionColumn, D, V> { }
 
-export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> { }
-
-export const ActionCell = <D extends object = {}, V = any>(props: IActionCellProps<D, V>) => {
+export const ActionCell = <D extends object = {}, V = unknown>(props: IActionCellProps<D, V>) => {
   const { columnConfig } = props;
   const { changeActionedRow } = useDataTable();
-  const httpClient = useHttpClient();
-  const { formData, formMode } = useForm();
-  const { globalState } = useGlobalState();
   const { executeAction, prepareArguments, useActionDynamicContext } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
-  const { message } = App.useApp();
 
   const { actionConfiguration, icon, description } = columnConfig ?? {};
   const dynamicContext = useActionDynamicContext(actionConfiguration);
 
-  const getRowData = (data) => {
+  const allData = useAvailableConstantsData();
+
+  const getRowData = (data: IActionCellProps<D, V>): D | undefined => {
     return data?.cell?.row?.original;
   };
 
-  const evaluationContext = {
-    selectedRow: getRowData(props),
-    data: formData,
-    moment: moment,
-    formMode: formMode,
-    http: httpClient,
-    message: message,
-    globalState: globalState,
-    ...dynamicContext
-  };
+  const selectedRow = getRowData(props);
+  const evaluationContext = useMemo(() => ({
+    ...allData,
+    selectedRow,
+    ...dynamicContext,
+  }), [allData, selectedRow, dynamicContext]);
+  
 
 
-  const clickHandler = (event, data) => {
-
+  const clickHandler = (event: React.MouseEvent<HTMLAnchorElement>, data: IActionCellProps<D, V>) => {
     event.preventDefault();
 
     if (actionConfiguration) {
-      changeActionedRow(data.row.original);
+      const rowData = getRowData(data);
+      changeActionedRow(rowData);
       executeAction({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext: evaluationContext,
@@ -68,7 +59,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
 
     const preparedArguments = await prepareArguments({ actionConfiguration, argumentsEvaluationContext: evaluationContext });
     return getUrlFromNavigationRequest(preparedArguments);
-  }, [actionConfiguration], "");
+  }, [actionConfiguration, evaluationContext], "");
 
   return (
     <>
@@ -76,7 +67,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
         <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
           {icon && (
             <Tooltip title={description}>
-              <ShaIcon iconName={icon as IconType} />
+              <ShaIcon iconName={icon} />
             </Tooltip>
           )}
         </a>
@@ -84,7 +75,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
         <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
           {icon && (
             <Tooltip title={description}>
-              <ShaIcon iconName={icon as IconType} />
+              <ShaIcon iconName={icon} />
             </Tooltip>
           )}
         </Link>}

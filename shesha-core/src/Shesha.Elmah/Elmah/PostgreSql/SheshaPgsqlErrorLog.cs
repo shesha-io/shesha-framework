@@ -66,6 +66,9 @@ namespace Shesha.Elmah.PostgreSql
 
         public override void Log(Guid id, Error error)
         {
+            if (SheshaElmahSettings.IsLoggingDisabled)
+                return;
+
             if (error == null)
                 throw new ArgumentNullException("error");
 
@@ -138,6 +141,9 @@ namespace Shesha.Elmah.PostgreSql
 
         public override int GetErrors(int errorIndex, int pageSize, ICollection<ErrorLogEntry> errorEntryList)
         {
+            if (SheshaElmahSettings.IsFetchingDisabled)
+                return 0;
+
             if (errorIndex < 0) throw new ArgumentOutOfRangeException("errorIndex", errorIndex, null);
             if (pageSize < 0) throw new ArgumentOutOfRangeException("pageSize", pageSize, null);
 

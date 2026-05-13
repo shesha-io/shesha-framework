@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Elmah;
 using Shesha.Extensions;
@@ -29,20 +30,22 @@ namespace Shesha.DynamicEntities
         private readonly IModelConfigurationManager _modelConfigurationManager;
         private readonly ISwaggerProvider _swaggerProvider;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
-
+        private readonly IModelConfigsCacheHolder _modelConfigsCacheHolder;
 
         public ModelConfigurationsAppService(
             IRepository<EntityConfig, Guid> entityConfigRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IModelConfigurationManager modelConfigurationProvider,
             ISwaggerProvider swaggerProvider,
-            IEntityConfigurationStore entityConfigurationStore)
+            IEntityConfigurationStore entityConfigurationStore,
+            IModelConfigsCacheHolder modelConfigsCacheHolder)
         {
             _entityConfigRepository = entityConfigRepository;
             _entityPropertyRepository = entityPropertyRepository;
             _modelConfigurationManager = modelConfigurationProvider;
             _swaggerProvider = swaggerProvider;
             _entityConfigurationStore = entityConfigurationStore;
+            _modelConfigsCacheHolder = modelConfigsCacheHolder;
         }
 
         [HttpGet, Route("")]
@@ -122,6 +125,12 @@ namespace Shesha.DynamicEntities
             }
 
             return await _modelConfigurationManager.GetModelConfigurationAsync(destination);
+        }
+
+        [HttpPost, Route("clearCache")]
+        public async Task ClearCacheAsync()
+        {
+            await _modelConfigsCacheHolder.Cache.ClearAsync();
         }
     }
 }

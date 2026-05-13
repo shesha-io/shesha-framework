@@ -1,4 +1,5 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IconType } from '@/components';
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
@@ -262,7 +263,7 @@ export interface IActionColumnProps {
   /**
    * Icon, is used for action columns
    */
-  icon?: string;
+  icon?: IconType;
 
   /**
    * Configurable action configuration
