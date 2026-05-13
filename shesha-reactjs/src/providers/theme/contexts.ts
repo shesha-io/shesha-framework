@@ -15,6 +15,7 @@ export interface IConfigurableTheme {
   text?: ITextTheme;
   labelSpan?: number;
   componentSpan?: number;
+  labelAlign?: 'top' | 'left';
 }
 
 export interface IThemeStateContext {
