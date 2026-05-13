@@ -141,7 +141,7 @@ namespace Shesha.Notifications
 
             if (string.IsNullOrWhiteSpace(fromAddress) || !smtpSettings.UseSmtpRelay)
             {
-                if (!string.IsNullOrWhiteSpace(smtpSettings.DefaultFromAddress))
+                if (StringHelper.IsValidEmail(smtpSettings.DefaultFromAddress))
                 {
                     message.From = new MailAddress(
                         smtpSettings.DefaultFromAddress,
@@ -151,8 +151,8 @@ namespace Shesha.Notifications
                 }
                 else
                 {
-                    if (smtpSettings.UserName == null)
-                        throw new ArgumentException("Default from address is not configured and neither is there a smtp username to fall back to");
+                    if (!StringHelper.IsValidEmail(smtpSettings.UserName))
+                        throw new ArgumentException("Default from address is not valid email and neither is there a smtp username a valid email address");
 
                     message.From = new MailAddress(
                         smtpSettings.UserName == null ? "" : smtpSettings.UserName,
