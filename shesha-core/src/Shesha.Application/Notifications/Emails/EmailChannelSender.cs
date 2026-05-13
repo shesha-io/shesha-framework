@@ -151,8 +151,11 @@ namespace Shesha.Notifications
                 }
                 else
                 {
+                    if (smtpSettings.UserName == null)
+                        throw new ArgumentException("Default from address is not configured and neither is there a smtp username to fall back to");
+
                     message.From = new MailAddress(
-                        smtpSettings.UserName,
+                        smtpSettings.UserName == null ? "" : smtpSettings.UserName,
                         null,
                         Encoding.UTF8
                     );
