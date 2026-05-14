@@ -9,7 +9,6 @@ using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Web.Models.AbpUserConfiguration;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -450,41 +449,71 @@ namespace Shesha.Users
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SecurityQuestions);
 
+            if (user.SecurityQuestionLockoutEnd.HasValue && user.SecurityQuestionLockoutEnd.Value > DateTime.UtcNow)
+                throw new UserFriendlyException("Account is temporarily locked due to too many failed attempts.");
+
+            var configuredQuestions = await (await _questionRepository.GetAllAsync())
+                .Where(q => q.User == user)
+                .ToListAsync();
+
+            var submittedQuestions = input.SubmittedQuestions ?? new List<SecurityQuestionPair>();
+
             var validationErrors = 0;
-            var validationResult = new VerifyPinResponse();
-            var response = new ResetPasswordVerifyOtpResponse();
 
-            foreach(var submittedQuestionPair in input.SubmittedQuestions)
+            // Require an answer for every question the user has configured — otherwise
+            // a caller could trivially pass verification by submitting a subset (or none).
+            if (submittedQuestions.Count != configuredQuestions.Count)
             {
-                var answeredQuestion = await _questionRepository.FirstOrDefaultAsync(q => q.User == user && q.SelectedQuestion.Id == submittedQuestionPair.QuestionId);
-
-                if (submittedQuestionPair.SubmittedAnswer.ToLower() != answeredQuestion.Answer.ToLower())
+                validationErrors++;
+            }
+            else
+            {
+                foreach (var submittedQuestionPair in submittedQuestions)
                 {
-                    validationErrors ++;
+                    var answeredQuestion = configuredQuestions
+                        .FirstOrDefault(q => q.SelectedQuestion.Id == submittedQuestionPair.QuestionId);
+
+                    if (answeredQuestion == null
+                        || string.IsNullOrEmpty(submittedQuestionPair.SubmittedAnswer)
+                        || !string.Equals(submittedQuestionPair.SubmittedAnswer, answeredQuestion.Answer, StringComparison.OrdinalIgnoreCase))
+                    {
+                        validationErrors++;
+                    }
                 }
             }
 
             if (validationErrors > 0)
             {
-                validationResult = VerifyPinResponse.Failed($"There are some questions you have answered incorrectly");
-            }
-            else
-            {
-                validationResult = VerifyPinResponse.Success();
-            }
+                user.SecurityQuestionFailedAttempts = (user.SecurityQuestionFailedAttempts ?? 0) + 1;
 
-            ObjectMapper.Map(validationResult, response);
+                var maxAttempts = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
 
-            if (validationResult.IsSuccess)
-            {
-                user.SetNewPasswordResetCode();
+                if (user.SecurityQuestionFailedAttempts >= maxAttempts)
+                {
+                    var lockoutSeconds = await _securitySettings.DefaultAccountLockoutSeconds.GetValueAsync();
+                    user.SecurityQuestionLockoutEnd = DateTime.UtcNow.AddSeconds(lockoutSeconds);
+                    user.SecurityQuestionFailedAttempts = 0;
+                    await _userManager.UpdateAsync(user);
+                    throw new UserFriendlyException("Account is temporarily locked due to too many failed attempts.");
+                }
+
                 await _userManager.UpdateAsync(user);
 
-                // real password reset will be done using token
-                response.Token = user.PasswordResetCode;
+                var validationResult = VerifyPinResponse.Failed("There are some questions you have answered incorrectly");
+                var failedResponse = new ResetPasswordVerifyOtpResponse();
+                ObjectMapper.Map(validationResult, failedResponse);
+                return failedResponse;
             }
 
-            return response;
+            user.SecurityQuestionFailedAttempts = 0;
+            user.SecurityQuestionLockoutEnd = null;
+            user.SetNewPasswordResetCode();
+            await _userManager.UpdateAsync(user);
+
+            var successResponse = new ResetPasswordVerifyOtpResponse();
+            ObjectMapper.Map(VerifyPinResponse.Success(), successResponse);
+            successResponse.Token = user.PasswordResetCode;
+            return successResponse;
         }
 
 
