@@ -5,9 +5,28 @@ import { useStyles } from './styles/styles';
 import { findComponentNode, IMenuItem, MENU_ITEMS } from './toolboxComponents';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
-import { IFormSettings } from '@/providers/form/models';
+import {
+  IConfigurableFormComponent,
+  IFormSettings,
+  isConfigurableFormComponent,
+  isRawComponentsContainer,
+} from '@/providers/form/models';
+import { ITabPaneProps } from '@/designer-components/propertiesTabs/models';
 import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { ItemType } from 'antd/es/menu/interface';
+import { deepCopyViaJson, deepMergeValues } from '@/utils/object';
+
+/** Markup node that wraps designer settings tabs (e.g. Appearance). */
+export interface SearchableTabsMarkup extends IConfigurableFormComponent {
+  type: 'propertiesTabs' | 'searchableTabs';
+  tabs: ITabPaneProps[];
+}
+
+function isSearchableTabsMarkup(c: unknown): c is SearchableTabsMarkup {
+  if (!isConfigurableFormComponent(c)) return false;
+  if (c.type !== 'propertiesTabs' && c.type !== 'searchableTabs') return false;
+  return Array.isArray((c as { tabs?: unknown }).tabs);
+}
 
 export interface IComponentDefaultsPanelProps {
   value?: IConfigurableTheme;
@@ -55,37 +74,41 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     }
 
     // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)
-    const components = Array.isArray(settingsFormMarkup) ? settingsFormMarkup : settingsFormMarkup?.components;
+    const components: IConfigurableFormComponent[] | undefined = Array.isArray(settingsFormMarkup)
+      ? settingsFormMarkup
+      : settingsFormMarkup?.components;
     const formSettings = Array.isArray(settingsFormMarkup) ? {} : settingsFormMarkup?.formSettings;
 
     if (!components) return null;
 
-    // Find the SearchableTabs component (cast to any to access tabs property)
-    const searchableTabs = components.find((c: any) =>
-      c.type === 'propertiesTabs' || c.type === 'searchableTabs'
-    ) as any;
+    const searchableTabs = components.find(isSearchableTabsMarkup);
+    if (!searchableTabs) return null;
 
-    if (!searchableTabs?.tabs) return null;
-
-    // Find the Appearance tab
-    const appearanceTab = searchableTabs.tabs.find((tab: any) =>
-      tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance',
+    const appearanceTab = searchableTabs.tabs.find(
+      (tab) => tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance',
     );
 
-    if (!appearanceTab?.components) return null;
+    const tabComponents: unknown = appearanceTab?.components;
+    const appearanceMarkupComponents: IConfigurableFormComponent[] | undefined = Array.isArray(tabComponents)
+      ? tabComponents
+      : isRawComponentsContainer(tabComponents)
+        ? tabComponents.components
+        : undefined;
+
+    if (!appearanceMarkupComponents) return null;
 
     return {
-      components: appearanceTab.components?.components || appearanceTab.components,
+      components: appearanceMarkupComponents,
       formSettings: formSettings as IFormSettings,
     };
   }, [componentType]);
 
-  // Handle form data change
-  const handleFormDataChange = (changedValues: any): void => {
-    onChange?.({
-      ...theme,
-      ...changedValues,
-    });
+  // Handle form data change — deep-merge so nested keys (e.g. application) are not replaced wholesale
+  const handleFormDataChange = (changedValues: Partial<IConfigurableTheme>): void => {
+    if (!onChange) return;
+    const base = deepCopyViaJson(theme ?? {}) as IConfigurableTheme;
+    const merged = deepMergeValues(base, (changedValues ?? {}) as object) as IConfigurableTheme;
+    onChange(merged);
   };
 
   return (
@@ -140,6 +163,39 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
               {componentType
                 ? 'This component does not have appearance settings or they cannot be loaded'
                 : 'Select a component from the tree to configure its default appearance'}
+            </div>
+          )}
+        </Card>
+        <Card>
+          {componentType && (
+            <div>
+              <h4 style={{ marginBottom: 4 }}>{selectedNode?.title || 'Select a Component'}</h4>
+              <span style={{ color: '#999', fontSize: '12px' }}>
+                Configure default appearance for {selectedNode?.title?.toLowerCase() || 'components'}
+              </span>
+              <ConfigurableForm
+                mode="edit"
+                markup={{
+                  components: [
+                    {
+                      type: selectedNode?.type,
+                      id: selectedNode.key,
+                      propertyName: `${selectedNode?.type}Appearance`,
+                      label: `${selectedNode?.title}`,
+                      parentId: 'root',
+                      hidden: false,
+                    }
+                  ],
+                  formSettings: {
+                    colon: true, //TODO: use theme value
+                    layout: 'horizontal' as const,
+                    labelCol: { span: 6 },
+                    wrapperCol: { span: 18 },
+                  },
+                }}
+                onValuesChange={handleFormDataChange}
+                className={styles.appearanceForm}
+              />
             </div>
           )}
         </Card>

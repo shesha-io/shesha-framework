@@ -154,7 +154,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     'theme-card',
     css`
       margin-bottom: 16px;
-      height: 200px
+      height: 200px;
       .ant-card-head {
         background: #fafafa;
       }
