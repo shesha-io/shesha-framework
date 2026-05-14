@@ -353,6 +353,8 @@ namespace Shesha.Users
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
 
+            await EnforceOtpCooldownAsync(user.PasswordResetCode, securitySettings.OtpCooldownSeconds);
+
             var lifetime = securitySettings.ResetPasswordSmsOtpLifetime;
 
             var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime });
@@ -362,6 +364,32 @@ namespace Shesha.Users
             await _userManager.UpdateAsync(user);
 
             return true;
+        }
+
+        /// <summary>
+        /// Throws when a previous OTP for the same user was sent inside the cooldown window.
+        /// Returning the remaining wait time prevents the SMS gateway from being hit on every retry.
+        /// </summary>
+        private async Task EnforceOtpCooldownAsync(string? lastOperationCode, int cooldownSeconds)
+        {
+            if (cooldownSeconds <= 0 || string.IsNullOrWhiteSpace(lastOperationCode))
+                return;
+
+            var existingOtpId = lastOperationCode.ToGuidOrNull();
+            if (!existingOtpId.HasValue)
+                return;
+
+            var existingOtp = await _otpManager.GetOrNullAsync(existingOtpId.Value);
+            if (existingOtp == null)
+                return;
+
+            var nextAllowed = existingOtp.CreationTime.AddSeconds(cooldownSeconds);
+            if (nextAllowed <= DateTime.UtcNow)
+                return;
+
+            var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.UtcNow).TotalSeconds);
+            throw new UserFriendlyException(
+                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
         }
 
         /// <summary>
