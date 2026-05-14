@@ -19,8 +19,11 @@ export interface IMenuItem {
 let cachedMenuItems: IMenuItem[] | null = null;
 
 const buildComponentItems = (): IMenuItem[] => {
-  return getToolboxComponents(false, { formId: null, formProps: null }).filter((group) => group.visible).map(
-    (componentGroup) => ({
+  const toolboxComponents = getToolboxComponents(false, { formId: null, formProps: null });
+
+  return toolboxComponents
+    .filter((group) => group.visible)
+    .map((componentGroup) => ({
       key: componentGroup.name,
       title: componentGroup.name,
       children: componentGroup.components.map((component) => ({
@@ -29,8 +32,7 @@ const buildComponentItems = (): IMenuItem[] => {
         type: component.type,
         icon: component.icon,
       })),
-    }),
-  );
+    }));
 };
 
 export const getMenuItems = (): IMenuItem[] => {
@@ -40,32 +42,12 @@ export const getMenuItems = (): IMenuItem[] => {
   return cachedMenuItems;
 };
 
-// Hierarchical component structure used for building the navigation menu
-export const MENU_ITEMS: IMenuItem[] = new Proxy([] as IMenuItem[], {
-  get(_target, prop) {
-    const items = getMenuItems();
-    return Reflect.get(items, prop, items);
-  },
-  has(_target, prop) {
-    const items = getMenuItems();
-    return Reflect.has(items, prop);
-  },
-  ownKeys() {
-    const items = getMenuItems();
-    return Reflect.ownKeys(items);
-  },
-  getOwnPropertyDescriptor(_target, prop) {
-    const items = getMenuItems();
-    return Reflect.getOwnPropertyDescriptor(items, prop);
-  },
-});
-
 /**
  * Find a component node by its key in the component hierarchy
  */
 export const findComponentNode = (key: string, items?: IMenuItem[]): IMenuItem | null => {
-  const searchitems = items ?? getMenuItems();
-  for (const node of searchitems) {
+  const searchItems = items ?? getMenuItems();
+  for (const node of searchItems) {
     if (node.key === key) return node;
     if (node.children) {
       const found = findComponentNode(key, node.children);
@@ -79,9 +61,9 @@ export const findComponentNode = (key: string, items?: IMenuItem[]): IMenuItem |
  * Get all component types (individual components, not categories)
  */
 export const getAllComponentTypes = (items?: IMenuItem[]): IMenuItem[] => {
-  const searchitems = items ?? getMenuItems();
+  const searchItems = items ?? getMenuItems();
   const result: IMenuItem[] = [];
-  for (const node of searchitems) {
+  for (const node of searchItems) {
     if (node.type) {
       result.push(node);
     }

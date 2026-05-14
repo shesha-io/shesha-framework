@@ -2,7 +2,7 @@ import { Card, Col, Menu, Row } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from './styles/styles';
-import { findComponentNode, IMenuItem, MENU_ITEMS } from './toolboxComponents';
+import { findComponentNode, getMenuItems, IMenuItem } from './toolboxComponents';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import {
@@ -52,7 +52,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       icon: component.icon,
       children: component.children?.map(convertComponent),
     });
-    return MENU_ITEMS.map(convertComponent);
+    return getMenuItems().map(convertComponent);
   }, []);
 
   // Get component definition and extract appearance tab components
