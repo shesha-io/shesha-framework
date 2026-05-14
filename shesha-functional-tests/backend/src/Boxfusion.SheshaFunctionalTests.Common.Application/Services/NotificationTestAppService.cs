@@ -97,9 +97,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             var sender = new PersonMessageParticipant(senderPerson);
             IMessageReceiver recipient = recipientPerson != null
                 ? new PersonMessageParticipant(recipientPerson)
-                : !string.IsNullOrWhiteSpace(notification.RecipientText)
-                    ? new RawAddressMessageParticipant(notification.RecipientText)
-                    : throw new ArgumentException($"{nameof(notification.RecipientText)} must not be null");
+                : new RawAddressMessageParticipant(notification.RecipientText ?? string.Empty);
 
             await _notificationService.SendNotificationAsync(
                 type,
