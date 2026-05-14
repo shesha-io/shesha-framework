@@ -68,6 +68,7 @@ namespace Shesha.ConfigurationItems
             };
         }
 
+        [AbpAllowAnonymous]
         public async Task<GetCurrentResponse> GetAsync(GetConfigurationRequest input) 
         {
             if (!string.IsNullOrWhiteSpace(input.Md5))
