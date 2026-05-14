@@ -1,7 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useRef } from 'react';
 import {
   DelayedUpdateProviderActionsContext,
-  DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE,
   IDelayedUpdateStateContext,
   IDelayedUpdateActionContext,
 } from './context';
@@ -16,11 +15,11 @@ const getOrCreateGroup = (groups: IDelayedUpdateGroup[], groupName: string): IDe
 
   const newGroup = { name: groupName, items: [] };
   groups.push(newGroup);
-  return { name: groupName, items: [] };
+  return newGroup;
 };
 
 const DelayedUpdateProvider: FC<PropsWithChildren> = ({ children }) => {
-  const state = useRef<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
+  const state = useRef<IDelayedUpdateStateContext>({ groups: [] });
   const allGroups = state.current.groups;
 
   const addItem = (groupName: string, id: string, data: IAnyObject): void => {
