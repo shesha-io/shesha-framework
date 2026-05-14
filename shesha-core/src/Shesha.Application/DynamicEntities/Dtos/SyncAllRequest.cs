@@ -7,6 +7,7 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class SyncAllRequest
     {
+        public string? ClientSnapshotHash { get; set; }
         public List<ModuleSyncRequest> Modules { get; set; } = new List<ModuleSyncRequest>();
     }
 }

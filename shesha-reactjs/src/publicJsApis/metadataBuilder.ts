@@ -38,7 +38,7 @@ export interface IMetadataBuilder<TObjectBuilder extends IObjectMetadataBuilder 
 
   object(name: string, description?: string): TObjectBuilder;
   array(name: string, itemType: (builder: this) => Promise<IMetadata>, description?: string): Promise<IMetadata>;
-  entity(entityType: string): Promise<IObjectMetadata>;
+  entity(entityType: string): Promise<IObjectMetadata | null>;
   metadata(): IObjectMetadata;
 
   anyObject(): IMetadata;

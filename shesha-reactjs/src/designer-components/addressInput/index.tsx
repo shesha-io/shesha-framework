@@ -50,6 +50,7 @@ const AddressInputComponent: IToolboxComponent<IAddressInputComponentProps> = {
               longitudePropertyName={model.longitudePropertyName}
               defaultZoom={model.defaultZoom ?? 15}
               mapHeight={model.mapHeight ?? 400}
+              mapWidth={model.mapWidth}
             />
           )}
       </ConfigurableFormItem>

@@ -3,6 +3,7 @@ import { IDataContextManagerActions, IDataContextManagerFullInstance, IDataConte
 import { createNamedContext } from "@/utils/react";
 import { DataContextManagerInstance } from "./instance";
 import { useDataContextManager, useDataContextManagerOrUndefined, useDataManagerRegister } from "./hooks";
+import { useEffectOnce } from "@/hooks/useEffectOnce";
 
 export const DataContextTopLevels = {
   /** Only aplication root contexts */
@@ -35,8 +36,14 @@ const DataManagerAccessor: FC<PropsWithChildren<Omit<IDataContextManagerProps, '
 export const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ id, children }) => {
   const parent = useDataContextManagerOrUndefined();
   const [state, setState] = useState<IDataContextManagerState>({ ...DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, id, parent: parent });
-  const internalUpdate = (): void => setState((prev) => ({ ...prev, lastUpdate: Date.now() }));
-  const [instance] = useState<IDataContextManagerFullInstance>(() => new DataContextManagerInstance(id, parent, internalUpdate));
+  const [instance] = useState<IDataContextManagerFullInstance>(() => new DataContextManagerInstance(id, parent));
+  const internalUpdate = (_data?: unknown): void => setState((prev) => ({ ...prev, lastUpdate: Date.now() }));
+
+  useEffectOnce(() => {
+    instance.updateForceUpdate(internalUpdate);
+    internalUpdate('DataContextManager mounted');
+    return () => instance.updateForceUpdate(undefined);
+  });
 
   return (
     <DataContextManagerActionsContext.Provider value={instance}>

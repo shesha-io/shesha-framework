@@ -14,7 +14,7 @@ import { isDefined } from "../nullables";
 
 export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
   // internal methods
-  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader): this;
+  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader, isNullable?: boolean): this;
   addFunction(path: string, label: string): this;
   addRefList(path: string, refListId: IReferenceListIdentifier, label: string): this;
   setPropertiesLoader(loader: PropertiesLoader): this;
@@ -104,9 +104,8 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     return this.add(DataTypes.any, path, label);
   }
 
-  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader): this {
-    const nestedObject = this._createProperty<IObjectProperty>(DataTypes.object, path, label);
-    nestedObject.typeDefinitionLoader = typeDefinitionLoader;
+  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader, isNullable: boolean = false): this {
+    this._createProperty<IObjectProperty>(DataTypes.object, path, label, (p) => ({ ...p, isNullable, typeDefinitionLoader }));
     return this;
   }
 
@@ -119,14 +118,16 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
   }
 
   addObject(path: string, label: string | undefined, propertiesBuilder: PropertiesBuilder<this> | undefined): this {
-    const nestedObject = this._createProperty<IObjectProperty>(DataTypes.object, path, label);
-
-    if (propertiesBuilder) {
-      const builder = new ObjectMetadataBuilder(this.#metadataBuilder, path) as this;
-      propertiesBuilder(builder);
-      nestedObject.properties = builder.metadata.properties;
-      nestedObject.typeDefinitionLoader = builder.metadata.typeDefinitionLoader;
-    }
+    this._createProperty<IObjectProperty>(DataTypes.object, path, label, (p) => {
+      const property = p as IObjectProperty;
+      if (propertiesBuilder) {
+        const builder = new ObjectMetadataBuilder(this.#metadataBuilder, path) as this;
+        propertiesBuilder(builder);
+        property.properties = builder.metadata.properties;
+        property.typeDefinitionLoader = builder.metadata.typeDefinitionLoader as TypeDefinitionLoader;
+      }
+      return property;
+    });
 
     return this;
   }
@@ -142,7 +143,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
           ...p,
           fullClassName: response.fullClassName,
           entityType: response.entityType,
-          entityModule: response.entityModule ?? null,
+          entityModule: response.entityModule ?? undefined,
 
           // ToDo: AS - remove after implementation of module + name
           typeAccessor: response.typeAccessor,
@@ -181,7 +182,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
 
   addRefList(path: string, refListId: IReferenceListIdentifier, label: string): this {
     const property = this._createProperty(DataTypes.referenceListItem, path, label);
-    property.referenceListModule = refListId.module;
+    property.referenceListModule = refListId.module ?? undefined;
     property.referenceListName = refListId.name;
     return this;
   }
@@ -251,7 +252,7 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
     throw new Error("Method not implemented.");
   }
 
-  entity(entityType: string): Promise<IObjectMetadata> {
+  entity(entityType: string): Promise<IObjectMetadata | null> {
     return this.metadataFetcher({ name: entityType, module: null });
   }
 
@@ -292,7 +293,7 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
 
   isEntityAsync(entityType: string): Promise<boolean> {
     return this.metadataFetcher({ name: entityType, module: null }).then((response) => {
-      return isEntityMetadata(response);
+      return isDefined(response) && isEntityMetadata(response);
     });
   }
 }

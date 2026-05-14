@@ -1,5 +1,5 @@
 import { NumberOutlined } from '@ant-design/icons';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
@@ -25,6 +25,7 @@ import { NumberFieldApi } from '../../componentsApi/componentApi';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { IComponentApiInputRef } from '@/providers/componentApi/model';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -58,14 +59,18 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
 
     const componentApi = useComponentApi();
     const inputRef = useRef<InputNumberRef>();
-    componentApi?.updateApi<NumberFieldApi>(
-      {
-        id: model.id,
-        componentName: model.componentName,
-        typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        api: { focus: () => inputRef.current?.focus() },
-      },
-    );
+    const apiRef = useRef<IComponentApiInputRef<number>>();
+    useEffect(() => {
+      componentApi?.updateApi<NumberFieldApi>(
+        {
+          id: model.id,
+          componentName: model.componentName,
+          typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+          api: { focus: () => inputRef.current?.focus() },
+        },
+        [{ name: 'value', getter: () => apiRef.current.value, setter: apiRef.current.onChange }],
+      );
+    }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles({
@@ -180,6 +185,8 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
             // force refresh because Antd InputNumber does not trigger render
             forceRefresh({});
           };
+
+          apiRef.current = { value, onChange: onChangeInternal };
 
           return model.readOnly
             ? <ReadOnlyDisplayFormItem type="number" value={numberToFormattedString(value, getDataProperty(properties, model.propertyName, 'dataFormat'))} style={finalStyle} />
