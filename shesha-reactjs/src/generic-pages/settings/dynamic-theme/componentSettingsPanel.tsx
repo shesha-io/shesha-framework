@@ -184,10 +184,10 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
                       label: `${selectedNode?.title}`,
                       parentId: 'root',
                       hidden: false,
-                    }
+                    },
                   ],
                   formSettings: {
-                    colon: true, //TODO: use theme value
+                    colon: true, // TODO: use theme value
                     layout: 'horizontal' as const,
                     labelCol: { span: 6 },
                     wrapperCol: { span: 18 },
