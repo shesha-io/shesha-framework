@@ -226,10 +226,10 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 <Col xs={24} md={8}>
                   <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
                   <Space orientation="vertical" style={{ width: '100%' }} size="small">
-                    <Button size="small" type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
-                    <Button size="small" danger block>Error</Button>
-                    <Button size="small" block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
-                    <Button size="small" block>Default</Button>
+                    <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
+                    <Button danger block>Error</Button>
+                    <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
+                    <Button block>Default</Button>
                     <TextsPreview />
                   </Space>
                 </Col>

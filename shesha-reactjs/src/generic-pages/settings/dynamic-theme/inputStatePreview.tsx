@@ -14,16 +14,16 @@ const InputStatesPreview: FC = () => {
   return (
     <Space>
       <Form.Item {...commonProps} label="Failed" validateStatus="error" help="Please complete before submission">
-        <Input size="small" placeholder="Placeholder Text" />
+        <Input placeholder="Placeholder Text" />
       </Form.Item>
       <Form.Item {...commonProps} validateStatus="warning" label="Warning">
-        <Input size="small" placeholder="Warning Message" prefix={<span style={{ color: '#faad14' }}>⚠</span>} />
+        <Input placeholder="Warning Message" prefix={<span style={{ color: '#faad14' }}>⚠</span>} />
       </Form.Item>
       <Form.Item {...commonProps} label="Validating" validateStatus="validating" help="Please wait while we validate your input">
-        <Input size="small" placeholder="Placeholder Text" />
+        <Input placeholder="Placeholder Text" />
       </Form.Item>
       <Form.Item {...commonProps} label="Success" validateStatus="success">
-        <Input size="small" placeholder="Successful Input" />
+        <Input placeholder="Successful Input" />
       </Form.Item>
     </Space>
   );
