@@ -1,4 +1,6 @@
 import { createNamedContext } from '@/utils/react';
+import { FormItemLayout } from 'antd/es/form/Form';
+import { FormLabelAlign } from 'antd/es/form/interface';
 import { Theme } from 'antd/lib/config-provider/context';
 
 interface ITextTheme {
@@ -15,7 +17,8 @@ export interface IConfigurableTheme {
   text?: ITextTheme;
   labelSpan?: number;
   componentSpan?: number;
-  labelAlign?: 'top' | 'left';
+  labelAlign?: FormLabelAlign;
+  layout?: FormItemLayout;
 }
 
 export interface IThemeStateContext {

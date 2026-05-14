@@ -5,6 +5,11 @@ import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettingsPanel';
 import { useStyles } from './styles/styles';
+import { ConfigurableForm } from '@/components';
+import { nanoid } from '@/utils/uuid';
+import AlertsExample from './alertsPreview';
+import InputStatesPreview from './inputStatePreview';
+import TextsPreview from './textsPreview';
 
 export interface ThemeParametersProps {
   value?: IConfigurableTheme;
@@ -44,7 +49,7 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readonly })
 };
 
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly, themeLevel }) => {
-  
+
   const changeThemeInternal = (theme: IConfigurableTheme): void => {
     if (onChange) onChange(theme);
   };
@@ -69,24 +74,10 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
   const { styles } = useStyles();
 
   const labelSpan = theme?.labelSpan ?? 6;
-  const layout = theme?.labelAlign === 'top' ? 'vertical' : 'horizontal';
-
-  const handleLayoutChange = (val: 'vertical' | 'horizontal'): void => {
-    if (val === 'vertical') {
-      onChange?.({
-        ...theme,
-        labelAlign: 'top',
-      });
-    } else {
-      onChange?.({
-        ...theme,
-        labelAlign: 'left',
-      });
-    }
-  };
+  const layout = theme?.layout;
 
   const handleSpanChange = (val: number): void => {
-    onChange?.({
+    changeThemeInternal?.({
       ...theme,
       labelSpan: val,
       componentSpan: 24 - val,
@@ -136,8 +127,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 <ColorCircle color={primaryColor} onChange={(c) => updateTheme('application', { ...theme?.application, primaryColor: c })} label="Primary" readonly={readonly} />
                 <ColorCircle color={errorColor} onChange={(c) => updateTheme('application', { ...theme?.application, errorColor: c })} label="Error" readonly={readonly} />
                 <ColorCircle color={warningColor} onChange={(c) => updateTheme('application', { ...theme?.application, warningColor: c })} label="Warning" readonly={readonly} />
-                <ColorCircle color={successColor} onChange={(c) => updateTheme( 'application', { ...theme?.application, successColor: c })} label="Success" readonly={readonly} />
-                <ColorCircle color={infoColor} onChange={(c) => updateTheme( 'application', { ...theme?.application, infoColor: c })} label="Info" readonly={readonly} />
+                <ColorCircle color={successColor} onChange={(c) => updateTheme('application', { ...theme?.application, successColor: c })} label="Success" readonly={readonly} />
+                <ColorCircle color={infoColor} onChange={(c) => updateTheme('application', { ...theme?.application, infoColor: c })} label="Info" readonly={readonly} />
               </Space>
             </Col>
 
@@ -148,7 +139,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
               </Typography.Text>
               <Space size={16} wrap>
                 <ColorCircle color={theme?.text?.default} onChange={(c) => updateTheme('text', { ...theme?.text, default: c })} label="Default" readonly={readonly} />
-                <ColorCircle color={theme?.text?.secondary} onChange={(c) => updateTheme( 'text', { ...theme?.text, secondary: c })} label="Secondary" readonly={readonly} />
+                <ColorCircle color={theme?.text?.secondary} onChange={(c) => updateTheme('text', { ...theme?.text, secondary: c })} label="Secondary" readonly={readonly} />
               </Space>
             </Col>
 
@@ -158,7 +149,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 Select a circle below to choose your desired colour.
               </Typography.Text>
               <Space size={16} wrap>
-                <ColorCircle color={theme?.layoutBackground} onChange={(c) => changeThemeInternal({ layoutBackground: c })} label="Page" readonly={readonly} />
+                <ColorCircle color={theme?.layoutBackground} onChange={(c) => changeThemeInternal({ ...theme, layoutBackground: c })} label="Page" readonly={readonly} />
               </Space>
             </Col>
           </Row>
@@ -177,7 +168,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
             <Radio.Group
               value={layout}
-              onChange={(e) => handleLayoutChange(e.target.value)}
+              onChange={(e) => changeThemeInternal({ ...theme, layout: e.target.value })}
               disabled={readonly}
               optionType="button"
               buttonStyle="solid"
@@ -190,9 +181,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             {layout === 'horizontal' && (
               <div style={{ maxWidth: 300 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <Typography.Text>Label: 0</Typography.Text>
-                  <Typography.Text>Span: {labelSpan}</Typography.Text>
-                  <Typography.Text>Control: 24</Typography.Text>
+                  <Typography.Text>Label: {labelSpan}</Typography.Text>
+                  <Typography.Text>Component: {24 - labelSpan}</Typography.Text>
                 </div>
                 <Slider
                   min={0}
@@ -203,6 +193,20 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                   tooltip={{ formatter: (v) => `Label: ${v}, Control: ${24 - (v ?? 0)}` }}
                   className={styles.slider}
                 />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <Typography.Text>Label Align</Typography.Text>
+                </div>
+                <Radio.Group
+                  value={theme.labelAlign}
+                  onChange={(e) => changeThemeInternal({ ...theme, labelAlign: e.target.value })}
+                  disabled={readonly}
+                  optionType="button"
+                  buttonStyle="solid"
+                  style={{ marginBottom: 16 }}
+                >
+                  <Radio.Button value="left">Left</Radio.Button>
+                  <Radio.Button value="right">Right</Radio.Button>
+                </Radio.Group>
               </div>
             )}
           </div>
@@ -214,37 +218,22 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
               <Row gutter={24}>
                 <Col xs={24} md={8}>
                   <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>
-                  <Space orientation="vertical" style={{ width: '100%' }}>
-                    <Alert title="Success Alert" type="success" showIcon />
-                    <Alert title="Info Alert" type="info" showIcon />
-                    <Alert title="Warning Alert" type="warning" showIcon />
-                    <Alert title="Error Alert" type="error" showIcon />
-                  </Space>
+                  <AlertsExample />
                 </Col>
 
                 <Col xs={24} md={8}>
                   <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Forms</Typography.Text>
-                  <Form.Item label="Failed" validateStatus="error" help="Please complete before submission">
-                    <Input placeholder="Placeholder Text" />
-                  </Form.Item>
-                  <Form.Item label="Warning">
-                    <Input placeholder="Warning Message" prefix={<span style={{ color: '#faad14' }}>⚠</span>} />
-                  </Form.Item>
-                  <Form.Item label="Validating" help="Please wait while we validate your input">
-                    <Input placeholder="Placeholder Text" />
-                  </Form.Item>
-                  <Form.Item label="Success">
-                    <Input placeholder="Successful Input" />
-                  </Form.Item>
+                  <InputStatesPreview />
                 </Col>
 
                 <Col xs={24} md={8}>
                   <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
                   <Space orientation="vertical" style={{ width: '100%' }} size="small">
-                    <Button type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
-                    <Button danger block>Error</Button>
-                    <Button block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
-                    <Button block>Default</Button>
+                    <Button size='small' type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
+                    <Button size='small' danger block>Error</Button>
+                    <Button size='small' block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
+                    <Button size='small' block>Default</Button>
+                    <TextsPreview/>
                   </Space>
                 </Col>
               </Row>
