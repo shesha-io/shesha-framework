@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Input, InputNumber, Space, Tooltip } from 'antd';
 import React, { FC } from 'react';
-import { ColorPicker, SectionSeparator, Show } from '@/components';
+import { ColorPicker, SectionSeparator, Show } from '../../../components';
 import { humanizeString } from '@/utils/string';
 import { useTheme } from '@/providers';
 import Icon from '@/components/icon/Icon';
