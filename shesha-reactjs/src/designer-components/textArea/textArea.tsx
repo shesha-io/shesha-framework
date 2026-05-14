@@ -93,7 +93,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
           ? { marginBottom: model.showCount ? '4px' : '0px' }
           : {}),
       },
-      spellCheck: model.spellCheck,
+      spellCheck: model.spellCheck ?? false,
     };
 
     return (
