@@ -5,6 +5,7 @@ import React, { ChangeEvent, FC, useState } from 'react';
 import { useDataTableStore } from '@/providers';
 import { getSafelyTrimmedString } from '@/utils';
 import { useStyles } from './styles/styles';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const DatatableColumnsSelector: FC = () => {
   const { styles } = useStyles();
@@ -15,7 +16,7 @@ export const DatatableColumnsSelector: FC = () => {
   const [columnFilter, setColumnFilter] = useState('');
 
   const onColumnSearch = ({ target: { value } }: ChangeEvent<HTMLInputElement>): void => {
-    setColumnFilter(value ? value?.toLowerCase() : '');
+    setColumnFilter(!isNullOrWhiteSpace(value) ? value.toLowerCase() : '');
   };
 
   return (
@@ -27,14 +28,14 @@ export const DatatableColumnsSelector: FC = () => {
           ? visibleColumns.filter(
             ({ header }) =>
               getSafelyTrimmedString(header)
-                ?.toLowerCase()
-                ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase()),
+                .toLowerCase()
+                .includes(getSafelyTrimmedString(columnFilter).toLowerCase()),
           )
           : visibleColumns
         ).map(({ header, show, id }) => {
           return (
             <div key={nanoid()} className={styles.columnName} onClick={() => toggleColumnVisibility(id)}>
-              <Checkbox checked={show}>{header}</Checkbox>
+              <Checkbox checked={show === true}>{header}</Checkbox>
             </div>
           );
         })}

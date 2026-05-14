@@ -9,8 +9,6 @@ import { IButtonGroupComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-const { Option } = Select;
-
 const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
   const { readOnly } = props;
 
@@ -26,19 +24,25 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
         </SettingsFormItem>
 
         <SettingsFormItem name="size" label="Size" tooltip="This will set the size for all buttons" jsSetting>
-          <Select disabled={readOnly}>
-            <Option value="small">Small</Option>
-            <Option value="middle">Middle</Option>
-            <Option value="large">Large</Option>
-          </Select>
+          <Select
+            disabled={readOnly}
+            options={[
+              { value: 'small', label: 'Small' },
+              { value: 'middle', label: 'Middle' },
+              { value: 'large', label: 'Large' },
+            ]}
+          />
         </SettingsFormItem>
 
         <SettingsFormItem name="spaceSize" label="Space size" tooltip="This will be the gap size between the buttons" jsSetting>
-          <Select disabled={readOnly}>
-            <Option value="small">Small</Option>
-            <Option value="middle">Middle</Option>
-            <Option value="large">Large</Option>
-          </Select>
+          <Select
+            disabled={readOnly}
+            options={[
+              { value: 'small', label: 'Small' },
+              { value: 'middle', label: 'Middle' },
+              { value: 'large', label: 'Large' },
+            ]}
+          />
         </SettingsFormItem>
 
         <SettingsFormItem name="editMode" label="Edit mode" jsSetting>

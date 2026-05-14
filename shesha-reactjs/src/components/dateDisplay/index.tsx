@@ -5,10 +5,6 @@ import { tolocalIsoDate } from '@/utils/date';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 
 export interface IDateDisplayProps {
-  /**
-   * @deprecated - use children instead
-   */
-  date?: string;
   format?: string;
   children?: string;
   showTooltip?: boolean;
@@ -18,15 +14,14 @@ export interface IDateDisplayProps {
 
 export const DateDisplay: FC<IDateDisplayProps> = ({
   dateAgo,
-  date,
   children,
   showTooltip,
   format = 'lll',
   tooltipPlacement = 'top',
 }) => {
-  const dateString = tolocalIsoDate(children || date);
+  const dateString = tolocalIsoDate(children);
 
-  const getDate = (): JSX.Element =>
+  const getDate = (): React.JSX.Element =>
     dateAgo ? <span>{moment(dateString).fromNow()}</span> : <span>{moment(dateString).format(format)}</span>;
 
   if (showTooltip) {

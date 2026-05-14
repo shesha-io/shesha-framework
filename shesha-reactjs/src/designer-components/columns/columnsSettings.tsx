@@ -6,7 +6,6 @@ import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import StyleBox from '../styleBox/components/box';
 import { Checkbox, Input, InputNumber } from 'antd';
-import { EXPOSED_VARIABLES } from './exposedVariables';
 import { IColumnsComponentProps } from './interfaces';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
@@ -46,7 +45,6 @@ const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (p
           mode="dialog"
           label="Style"
           description="A script that returns the style of the element as an object. This should conform to CSSProperties"
-          exposedVariables={EXPOSED_VARIABLES}
         />
       </SettingsFormItem>
 

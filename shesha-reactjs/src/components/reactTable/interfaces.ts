@@ -31,7 +31,7 @@ export interface OnRowsReorderedArgs {
 }
 
 export interface ITableRowDragProps {
-  allowReordering?: boolean;
+  allowReordering?: boolean | undefined;
 }
 
 export type RowDataInitializer<TValue extends object = object> = () => Promise<TValue>;
@@ -39,7 +39,7 @@ export type RowDataInitializer<TValue extends object = object> = () => Promise<T
 export type InlineEditMode = 'one-by-one' | 'all-at-once';
 export type InlineSaveMode = 'auto' | 'manual';
 
-export interface IReactTableProps extends ITableRowDragProps {
+export interface IReactTableProps<T extends ITableRowData = ITableRowData> extends ITableRowDragProps {
   /**
    * @deprecated - use scrollBodyHorizontally
    * Whether the table should be scrollable or not
@@ -77,19 +77,14 @@ export interface IReactTableProps extends ITableRowDragProps {
   loadingText?: ReactNode | (() => ReactNode);
 
   /**
-   * Whether the table should allow multi-select
-   */
-  useMultiSelect?: boolean;
-
-  /**
    * Selection mode for the table
    */
-  selectionMode?: TableSelectionMode;
+  selectionMode?: TableSelectionMode | undefined;
 
   /**
    * Whether the table's headers should be frozen and you scroll under them
    */
-  freezeHeaders?: boolean;
+  freezeHeaders?: boolean | undefined;
 
   /**
    * Whether the table's columns should be frozen and you scroll under them on the left or right
@@ -115,7 +110,7 @@ export interface IReactTableProps extends ITableRowDragProps {
    * otherwise, it will be assumed to be ascending. This information is stored in state since the table is allowed
    * to manipulate the filter through user interaction.
    */
-  defaultSorting?: SortingRule<string | number>[];
+  defaultSorting?: SortingRule<string | number>[] | undefined;
 
   /**
    * If set to true, all columns will be sortable, regardless if they have a valid accessor
@@ -159,12 +154,12 @@ export interface IReactTableProps extends ITableRowDragProps {
   /**
    * A callback for selecting the row
    */
-  onSelectRow?: (index: number, row: any) => void;
+  onSelectRow?: ((index: number, row: any) => void) | undefined;
 
   /**
    * A callback for double-clicking the rows
    */
-  onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
+  onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: ITableRowData, index?: number) => void);
 
   /**
    * A callback for clicking the rows
@@ -177,77 +172,77 @@ export interface IReactTableProps extends ITableRowDragProps {
   onRowHover?: (rowIndex: number, row: any) => void;
 
   /**
-   * A callback for when ids are selected. Required if useMultiSelect is true
+   * A callback for when ids are selected. Required if selectionMode = "multiple"
    */
-  onSelectedIdsChanged?: (ids: string[]) => void;
+  onSelectedIdsChanged?: ((ids: string[]) => void) | undefined;
 
   /**
-   * A callback for when multiple rows are selected with checkbox. Applicable if useMultiSelect is true
+   * A callback for when multiple rows are selected with checkbox. Applicable if selectionMode = "multiple"
    */
-  onMultiRowSelect?: (rows: Array<Row<ITableRowData>> | Row<ITableRowData>) => void;
+  onMultiRowSelect?: ((rows: Array<Row<ITableRowData>> | Row<ITableRowData>) => void) | undefined;
 
   /**
    * Configurable action for row click event
    */
-  onRowClickAction?: IConfigurableActionConfiguration;
+  onRowClickAction?: IConfigurableActionConfiguration | undefined;
 
   /**
    * Configurable action for row hover event
    */
-  onRowHoverAction?: IConfigurableActionConfiguration;
+  onRowHoverAction?: IConfigurableActionConfiguration | undefined;
 
   /**
    * Configurable action for row select event (fires only when row is selected, not deselected)
    */
-  onRowSelectAction?: IConfigurableActionConfiguration;
+  onRowSelectAction?: IConfigurableActionConfiguration | undefined;
 
   /**
    * Configurable action for selection change event (fires on both select and deselect)
    */
-  onSelectionChangeAction?: IConfigurableActionConfiguration;
+  onSelectionChangeAction?: IConfigurableActionConfiguration | undefined;
 
   // Cell-specific styling
   /** @deprecated Use bodyFontColor instead. Cell text color duplicates body font color. */
-  cellTextColor?: string;
+  cellTextColor?: string | undefined;
   /** @deprecated Use rowBackgroundColor instead. Cell background color duplicates row background color. */
-  cellBackgroundColor?: string;
-  cellBorderColor?: string;
+  cellBackgroundColor?: string | undefined;
+  cellBorderColor?: string | undefined;
   /** @deprecated Use rowStylingBox instead. This property is migrated to rowStylingBox in migration v19 */
-  cellPadding?: string;
-  cellBorder?: IBorderValue;
+  cellPadding?: string | undefined;
+  cellBorder?: IBorderValue | undefined;
 
   // Footer styling
-  footerBackgroundColor?: string;
-  footerTextColor?: string;
-  footerBorder?: IBorderValue;
+  footerBackgroundColor?: string | undefined;
+  footerTextColor?: string | undefined;
+  footerBorder?: IBorderValue | undefined;
 
   // Additional borders and shadows
-  headerBorder?: IBorderValue;
-  headerShadow?: IShadowValue;
-  rowShadow?: IShadowValue;
+  headerBorder?: IBorderValue | undefined;
+  headerShadow?: IShadowValue | undefined;
+  rowShadow?: IShadowValue | undefined;
 
   // Layout features
-  cellBorders?: boolean;
-  rowDividers?: boolean;
-  responsiveMode?: 'scroll' | 'stack' | 'collapse';
+  cellBorders?: boolean | undefined;
+  rowDividers?: boolean | undefined;
+  responsiveMode?: 'scroll' | 'stack' | 'collapse' | undefined;
 
   /**
    * Selected row index
    */
-  selectedRowIndex?: number;
+  selectedRowIndex?: number | undefined;
 
   /**
    * Disables sorting for every column in the entire table.
    */
-  disableSortBy?: boolean;
+  disableSortBy?: boolean | undefined;
 
-  ref?: React.MutableRefObject<TableState<any>>;
+  ref?: React.MutableRefObject<TableState<any>> | undefined;
 
   /** Called when an expander is clicked. Use this to manage `expanded` */
   // onExpandedChange: ExpandedChangeFunction;
 
   /** Called when a user clicks on a resizing component (the right edge of a column header) */
-  onResizedChange?: (columns: ColumnInstance[], columnSizes: IColumnResizing) => void;
+  onResizedChange?: (columns: ColumnInstance<T>[], columnSizes: IColumnResizing) => void;
 
   scrollBodyHorizontally?: boolean; // If true, specify the height, else it will default to 250px
 
@@ -256,21 +251,21 @@ export interface IReactTableProps extends ITableRowDragProps {
    */
   height?: number;
 
-  onSort?: (sorting: SortingRule<any>[]) => void;
+  onSort?: (sorting: SortingRule<ITableRowData>[]) => void;
   /**
    * Allows the click event to be skipped. Required if conflicting with double click event
    */
-  omitClick?: boolean;
+  omitClick?: boolean | undefined;
 
-  containerStyle?: CSSProperties;
-  minHeight?: number;
-  maxHeight?: number;
+  containerStyle?: CSSProperties | undefined;
+  minHeight?: number | undefined;
+  maxHeight?: number | undefined;
 
-  tableStyle?: CSSProperties;
-  noDataText?: string;
-  noDataSecondaryText?: string;
-  noDataIcon?: string;
-  showExpandedView?: boolean;
+  tableStyle?: CSSProperties | undefined;
+  noDataText?: string | undefined;
+  noDataSecondaryText?: string | undefined;
+  noDataIcon?: string | undefined;
+  showExpandedView?: boolean | undefined;
 
   // Header styling
   headerFont?: {
@@ -279,78 +274,78 @@ export interface IReactTableProps extends ITableRowDragProps {
     weight?: string;
     color?: string;
     align?: string;
-  };
-  headerBackgroundColor?: string;
+  } | undefined;
+  headerBackgroundColor?: string | undefined;
 
   // Text alignment
-  headerTextAlign?: string; // Alignment for header cells
-  bodyTextAlign?: string; // Alignment for body cells
+  headerTextAlign?: string | undefined; // Alignment for header cells
+  bodyTextAlign?: string | undefined; // Alignment for body cells
 
   // Deprecated - kept for backward compatibility
   /** @deprecated Use headerFont.type instead */
-  headerFontFamily?: string;
+  headerFontFamily?: string | undefined;
   /** @deprecated Use headerFont.size instead */
-  headerFontSize?: string;
+  headerFontSize?: string | undefined;
   /** @deprecated Use headerFont.weight instead */
-  headerFontWeight?: string;
+  headerFontWeight?: string | undefined;
   /** @deprecated Use headerFont.color instead */
-  headerTextColor?: string;
+  headerTextColor?: string | undefined;
   /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
-  textAlign?: string;
+  textAlign?: string | undefined;
 
   // Table body styling
-  rowBackgroundColor?: string;
-  rowAlternateBackgroundColor?: string;
-  rowHoverBackgroundColor?: string;
-  rowSelectedBackgroundColor?: string;
-  rowHeight?: string;
-  rowPadding?: string;
-  rowBorder?: string; // Deprecated: use rowBorderStyle for full border control
-  rowBorderStyle?: IBorderValue; // Full border configuration with per-side control
+  rowBackgroundColor?: string | undefined;
+  rowAlternateBackgroundColor?: string | undefined;
+  rowHoverBackgroundColor?: string | undefined;
+  rowSelectedBackgroundColor?: string | undefined;
+  rowHeight?: string | undefined;
+  rowPadding?: string | undefined;
+  rowBorder?: string | undefined; // Deprecated: use rowBorderStyle for full border control
+  rowBorderStyle?: IBorderValue | undefined; // Full border configuration with per-side control
 
   // Body font styling
-  bodyFontFamily?: string;
-  bodyFontSize?: string;
-  bodyFontWeight?: number & {} | string;
-  bodyFontColor?: string;
+  bodyFontFamily?: string | undefined;
+  bodyFontSize?: string | undefined;
+  bodyFontWeight?: number & {} | string | undefined;
+  bodyFontColor?: string | undefined;
 
   // Action column icon styling
-  actionIconSize?: string | number;
-  actionIconColor?: string;
+  actionIconSize?: string | number | undefined;
+  actionIconColor?: string | undefined;
 
   // Overall table styling
-  borderRadius?: string;
-  border?: IBorderValue;
-  backgroundColor?: string;
-  boxShadow?: string;
-  dimensions?: IDimensionsValue;
-  sortableIndicatorColor?: string;
-  striped?: boolean;
+  borderRadius?: string | undefined;
+  border?: IBorderValue | undefined;
+  backgroundColor?: string | undefined;
+  boxShadow?: string | undefined;
+  dimensions?: IDimensionsValue | undefined;
+  sortableIndicatorColor?: string | undefined;
+  striped?: boolean | undefined;
 
-  canDeleteInline?: boolean;
-  deleteAction?: (rowIndex: number, data: any) => Promise<any>;
+  canDeleteInline?: boolean | undefined;
+  deleteAction?: ((rowIndex: number, data: any) => Promise<any>) | undefined;
 
-  canEditInline?: boolean;
-  updateAction?: (rowIndex: number, data: any) => Promise<any>;
+  canEditInline?: boolean | undefined;
+  updateAction?: ((rowIndex: number, data: any) => Promise<any>) | undefined;
 
-  canAddInline?: boolean;
-  newRowCapturePosition?: NewRowCapturePosition;
-  newRowInsertPosition?: NewRowCapturePosition;
-  createAction?: (data: any) => Promise<any>;
-  newRowInitData?: RowDataInitializer;
-  inlineEditMode?: InlineEditMode;
-  inlineSaveMode?: InlineSaveMode;
-  inlineEditorComponents?: IFlatComponentsStructure;
-  inlineCreatorComponents?: IFlatComponentsStructure;
-  inlineDisplayComponents?: IFlatComponentsStructure;
-  onRowsRendering?: OnRowsRendering;
-  onRowsReordered?: (payload: OnRowsReorderedArgs) => Promise<void>;
+  canAddInline?: boolean | undefined;
+  newRowCapturePosition?: NewRowCapturePosition | undefined;
+  newRowInsertPosition?: NewRowCapturePosition | undefined;
+  createAction?: ((data: any) => Promise<any>) | undefined;
+  newRowInitData?: RowDataInitializer | undefined;
+  inlineEditMode?: InlineEditMode | undefined;
+  inlineSaveMode?: InlineSaveMode | undefined;
+  inlineEditorComponents?: IFlatComponentsStructure | undefined;
+  inlineCreatorComponents?: IFlatComponentsStructure | undefined;
+  inlineDisplayComponents?: IFlatComponentsStructure | undefined;
+  onRowsRendering?: OnRowsRendering<T> | undefined;
+  onRowsReordered?: ((payload: OnRowsReorderedArgs) => Promise<void>) | undefined;
 }
 
 
-export type RowRenderer<T = any> = (row: T, index: number) => React.ReactElement;
-export interface OnRowRenderingArgs<T = any> {
-  rows: T[];
+export type RowRenderer<T extends ITableRowData = ITableRowData> = (row: Row<T>, index: number) => React.ReactElement;
+export interface OnRowRenderingArgs<T extends ITableRowData = ITableRowData> {
+  rows: Row<T>[];
   defaultRender: RowRenderer<T>;
 }
-export type OnRowsRendering<T = any> = (args: OnRowRenderingArgs<T>) => React.ReactElement;
+export type OnRowsRendering<T extends ITableRowData = ITableRowData> = (args: OnRowRenderingArgs<T>) => React.ReactElement;

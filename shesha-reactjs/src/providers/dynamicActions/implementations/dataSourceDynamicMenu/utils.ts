@@ -3,7 +3,7 @@ import { IDataSourceArguments } from './model';
 import { buildUrl } from '@/utils/url';
 import { useFormData } from '@/providers/formContext';
 import { useGlobalState } from '@/providers/globalState';
-import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager/hooks';
 import { evaluateString } from '@/providers/form/utils';
 import { FetcherOptions, IQueryParams } from '@/utils/fetchers';
 import { isNullOrWhiteSpace } from '@/utils/nullables';

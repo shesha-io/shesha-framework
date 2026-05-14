@@ -2,7 +2,6 @@ import React, {
   ChangeEvent,
   FC,
   Fragment,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -36,8 +35,11 @@ import {
 import { useMetadataDispatcher } from '@/providers';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { getStringPropertyOrUndefined } from '@/utils/object';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { isNonEmptyArray } from '@/utils/array';
 
-type MenuItem = MenuProps['items'][number];
+type MenuItem = Required<MenuProps>["items"][number];
 
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
   "date": ['equals', 'between', 'before', 'after'],
@@ -93,23 +95,23 @@ const NumberFilter: FC<INumberFilterProps> = (props) => {
 };
 
 interface INumberRangeFilterProps extends IFilterBaseProps {
-  value: number[];
+  value: [number | null, number | null];
   onChange: (changeValue: number | number[] | undefined) => void;
 }
 const NumberRangeFilter: FC<INumberRangeFilterProps> = (props) => {
-  const [min, max] = props.value instanceof Array && props.value.length === 2 ? props.value : [null, null];
+  const [min, max] = props.value instanceof Array ? props.value : [null, null];
 
   const [minNumber, setMinNumber] = useState<number>(0);
   const [maxNumber, setMaxNumber] = useState<number>(0);
 
-  const handleMinNumberChange = (value: number | string | undefined): void => {
+  const handleMinNumberChange = (value: number | null): void => {
     if (typeof value === 'number') {
       setMinNumber(value);
       props.onChange([value, maxNumber]);
     }
   };
 
-  const handleMaxNumberChange = (value: number | string | undefined): void => {
+  const handleMaxNumberChange = (value: number | null): void => {
     if (typeof value === 'number') {
       setMaxNumber(value);
       props.onChange([minNumber, value]);
@@ -159,23 +161,19 @@ const RefListFilter: FC<IRefListFilterProps> = (props) => {
       mode="multiple"
       style={{ width: '100%' }}
       onChange={props.onChange}
-      value={props.value}
+      value={props.value ?? null}
       loading={refListLoading}
-    >
-      {refListItems &&
-        refListItems.items.map(({ id: _id, itemValue, item }) => (
-          <Select.Option key={_id} value={itemValue}>
-            {item}
-          </Select.Option>
-        ))}
-    </Select>
+      options={refListItems
+        ? refListItems.items.map(({ id: _id, itemValue, item }) => ({ value: itemValue, label: item }))
+        : []}
+    />
   );
 };
 
 interface IEntityFilterProps extends IFilterBaseProps {
   value: string;
   onChange: (changeValue: string | undefined) => void;
-  autocompleteUrl?: string;
+  autocompleteUrl?: string | undefined;
   entityTypeName: string;
   entityTypeModule: string | null;
 }
@@ -203,7 +201,7 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
   });
   const isLoadingMetadata = !entityType;
   const isLoading = loading || isLoadingMetadata;
-  const dataLoaded = data && data.length > 0;
+  const dataLoaded = isDefined(data) && data.length > 0;
   const selectValue = props.value && dataLoaded ? props.value : undefined;
   const selectPlaceholder = isLoadingMetadata
     ? 'Loading metadata...'
@@ -214,10 +212,11 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
       size="small"
       style={{ width: '100%' }}
       onChange={props.onChange}
-      showSearch
+      showSearch={{
+        onSearch: search,
+        filterOption: false,
+      }}
       defaultActiveFirstOption={false}
-      filterOption={false}
-      onSearch={search}
       onSelect={() => search('')}
       allowClear={true}
       placeholder={selectPlaceholder}
@@ -225,32 +224,24 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
       disabled={isLoadingMetadata}
       value={selectValue}
       notFoundContent={isLoading ? <Spin size="small" /> : null}
-    >
-      {dataLoaded &&
-        data.map((d: EntityData) => (
-          <Select.Option value={d.id} key={d.id}>
-            {getStringPropertyOrUndefined(d, "_displayName")}
-          </Select.Option>
-        ))}
-    </Select>
+      options={dataLoaded
+        ? data.map((d: EntityData) => ({ value: d.id, label: getStringPropertyOrUndefined(d, "_displayName") }))
+        : []}
+    />
   );
 };
 
 interface BaseFilterProps {
   id: string;
-  filter: ColumnFilter;
-  filterOption: IndexColumnFilterOption;
-  onChangeFilter?: (filterId: string, filter: ColumnFilter) => void;
+  filter: ColumnFilter | undefined;
+  filterOption: IndexColumnFilterOption | undefined;
+  onChangeFilter?: ((filterId: string, filter: ColumnFilter) => void) | undefined;
 }
 interface DateTimeFilterProps extends BaseFilterProps {
   format: string;
   showTime: boolean;
 }
 const DateTimeFilter: FC<DateTimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format, showTime }) => {
-  const onChange = (_dateEvent: any, dateString: string | string[]): void => {
-    onChangeFilter(id, dateString);
-  };
-
   // memoize moment to prevent re-rendeing of the DatePicker. On re-rendering it reset current view to current month
   const memoizedMoment = useMemo(() => {
     return filter instanceof Array ? null : getMoment(filter, format);
@@ -258,7 +249,7 @@ const DateTimeFilter: FC<DateTimeFilterProps> = ({ id, filter, filterOption, onC
 
   const memoizedRange = useMemo(() => {
     if (filter instanceof Array) {
-      const range: [Moment, Moment] = [undefined, undefined];
+      const range: [Moment | undefined, Moment | undefined] = [undefined, undefined];
       range[0] = getMoment(filter[0], format);
       range[1] = getMoment(filter[1], format);
       return range;
@@ -266,11 +257,21 @@ const DateTimeFilter: FC<DateTimeFilterProps> = ({ id, filter, filterOption, onC
   }, [filter, format]);
 
   return filterOption === 'between' ? (
-    <DatePicker.RangePicker size="small" onChange={onChange} value={memoizedRange} format={format} showTime={showTime} />
+    <DatePicker.RangePicker
+      size="small"
+      onChange={(_dates, datesString) => {
+        onChangeFilter?.(id, datesString);
+      }}
+      value={memoizedRange}
+      format={format}
+      showTime={showTime}
+    />
   ) : (
     <DatePicker
       size="small"
-      onChange={onChange}
+      onChange={(_date, dateString) => {
+        onChangeFilter?.(id, dateString);
+      }}
       value={memoizedMoment as Moment}
       format={format}
       showTime={showTime}
@@ -282,18 +283,16 @@ interface TimeFilterProps extends BaseFilterProps {
   format: string;
 }
 const TimeFilter: FC<TimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format }) => {
-  const onChange = (_dateEvent: any, dateString: string | string[]): void => {
-    onChangeFilter(id, dateString);
-  };
-
   // memoize moment to prevent re-rendeing of the DatePicker. On re-rendering it reset current view to current month
   const memoizedMoment = useMemo(() => {
-    return filter instanceof Array ? null : getMoment(filter, format);
+    return filter instanceof Array
+      ? null
+      : getMoment(filter, format) ?? null;
   }, [filter, format]);
 
   const memoizedRange = useMemo(() => {
     if (filter instanceof Array) {
-      const range: [Moment, Moment] = [undefined, undefined];
+      const range: [Moment | undefined, Moment | undefined] = [undefined, undefined];
       range[0] = getMoment(filter[0], format);
       range[1] = getMoment(filter[1], format);
       return range;
@@ -301,9 +300,23 @@ const TimeFilter: FC<TimeFilterProps> = ({ id, filter, filterOption, onChangeFil
   }, [filter, format]);
 
   return filterOption === 'between' ? (
-    <TimeRangePicker size="small" onChange={onChange} value={memoizedRange} format={ADVANCEDFILTER_TIME_FORMAT} />
+    <TimeRangePicker
+      size="small"
+      onChange={(_dates, dateStrings) => {
+        onChangeFilter?.(id, dateStrings);
+      }}
+      value={memoizedRange}
+      format={ADVANCEDFILTER_TIME_FORMAT}
+    />
   ) : (
-    <TimePicker size="small" onChange={onChange} value={memoizedMoment} format={ADVANCEDFILTER_TIME_FORMAT} />
+    <TimePicker
+      size="small"
+      onChange={(_date, dateString) => {
+        onChangeFilter?.(id, dateString);
+      }}
+      value={memoizedMoment}
+      format={ADVANCEDFILTER_TIME_FORMAT}
+    />
   );
 };
 
@@ -311,18 +324,18 @@ export interface IColumnItemFilterProps {
   id: string;
   filterName: string;
   accessor: string;
-  referenceListName: string;
-  referenceListModule: string;
-  entityTypeName: string;
-  entityTypeModule: string | null;
+  referenceListName?: string | undefined;
+  referenceListModule?: string | undefined;
+  entityTypeName?: string | undefined;
+  entityTypeModule?: string | undefined;
   autocompleteUrl?: string;
-  dataType: ProperyDataType;
+  dataType: ProperyDataType | undefined;
   filter?: ColumnFilter | undefined;
-  filterOption: IndexColumnFilterOption;
-  onRemoveFilter?: (id: string) => void;
-  onChangeFilterOption?: (filterId: string, filterOption: IndexColumnFilterOption) => void;
-  onChangeFilter?: (filterId: string, filter: ColumnFilter) => void;
-  applyFilters?: () => void;
+  filterOption: IndexColumnFilterOption | undefined;
+  onRemoveFilter?: ((id: string) => void) | undefined;
+  onChangeFilterOption?: ((filterId: string, filterOption: IndexColumnFilterOption) => void) | undefined;
+  onChangeFilter?: ((filterId: string, filter: ColumnFilter) => void) | undefined;
+  applyFilters?: (() => void) | undefined;
 }
 
 export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
@@ -360,36 +373,37 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   };
 
   const handleFilterOptionChange: MenuProps['onClick'] = ({ key }) => {
-    onChangeFilterOption(id, key as IndexColumnFilterOption);
+    onChangeFilterOption?.(id, key as IndexColumnFilterOption);
   };
 
   // Make sue that you initialize the `IndexColumnFilterOption` once when the component gets rendered
-  useEffect(() => {
-    if (!filter) {
-      onChangeFilterOption(id, options[0]);
+  useEffectOnce(() => {
+    if (!filter && isNonEmptyArray(options)) {
+      onChangeFilterOption?.(id, options[0]);
     }
-  }, []);
+  });
 
   const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>): void => {
     const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
-    onChangeFilter(id, value);
+    onChangeFilter?.(id, value);
   };
 
   const handleRawFilter = (changeValue: ColumnFilter): void => {
-    onChangeFilter(id, changeValue);
+    onChangeFilter?.(id, changeValue);
   };
+
 
   const handlePressEnter = (): void => {
     if (applyFilters) applyFilters();
   };
 
   const handleDeleteFilter = (): void => {
-    onRemoveFilter(id);
+    onRemoveFilter?.(id);
   };
 
-  const renderBooleanInput = (): JSX.Element => {
+  const renderBooleanInput = (): React.JSX.Element => {
     const onChange = (e: CheckboxChangeEvent): void => {
-      onChangeFilter(id, e.target.checked);
+      onChangeFilter?.(id, e.target.checked);
     };
     return (
       <Checkbox checked={typeof filter === 'boolean' ? filter : false} onChange={onChange}>
@@ -422,7 +436,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
               menu={{ items: filterOptions, onClick: handleFilterOptionChange }}
             >
               <a className="ant-dropdown-link" href="#">
-                {humanizeString(filterOption || '')} <DownOutlined />
+                {humanizeString(filterOption ?? "")} <DownOutlined />
               </a>
             </Dropdown>
           )}
@@ -446,7 +460,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
             onChange={handleRawFilter}
             onPressEnter={handlePressEnter}
             placeholder={`Filter ${filterName}`}
-            value={filter instanceof Array && filter.length === 2 ? (filter as number[]) : [null, null]}
+            value={Array.isArray(filter) && filter.length === 2 ? (filter as [number, number]) : [null, null]}
           />
         )}
 
@@ -467,23 +481,24 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
         {dataType === 'boolean' && renderBooleanInput()}
 
-        {dataType === 'entity' && (
+        {dataType === 'entity' && !isNullOrWhiteSpace(entityTypeName) && (
           <EntityFilter
             onChange={handleRawFilter}
             onPressEnter={handlePressEnter}
-            value={filter as string}
+            value={typeof (filter) === "string" ? filter : ""}
             entityTypeName={entityTypeName}
-            entityTypeModule={entityTypeModule}
+            entityTypeModule={entityTypeModule ?? null}
             autocompleteUrl={autocompleteUrl}
           />
         )}
 
-        {['reference-list-item', 'multiValueRefList'].includes(dataType) && (
+        {['reference-list-item', 'multiValueRefList'].includes(dataType) &&
+          !isNullOrWhiteSpace(referenceListName) && !isNullOrWhiteSpace(referenceListModule) && (
           <RefListFilter
             onChange={handleRawFilter}
             onPressEnter={handlePressEnter}
             placeholder={`Filter ${filterName}`}
-            value={(filter as number[]) || []}
+            value={Array.isArray(filter) && isNonEmptyArray<unknown>(filter) && typeof (filter[0]) === "number" ? filter as number[] : []}
             referenceListName={referenceListName}
             referenceListModule={referenceListModule}
           />

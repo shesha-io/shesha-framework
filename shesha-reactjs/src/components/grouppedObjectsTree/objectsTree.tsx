@@ -28,7 +28,7 @@ interface DataNodeWithObject<TItem> {
   object: TItem;
 }
 
-export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): JSX.Element => {
+export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): React.JSX.Element => {
   const [manuallyExpanded, setManuallyExpanded] = useState<string[]>([]);
   const [scrollId, setScrollId] = useState<string>(null);
   // const [nodes, setNodes] = useState<DataNode[]>([]);

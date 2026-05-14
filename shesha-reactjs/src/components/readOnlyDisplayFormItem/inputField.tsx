@@ -7,7 +7,7 @@ interface IInputFieldProps {
   children?: React.ReactNode;
 }
 
-function InputField({ value, style, children }: IInputFieldProps): JSX.Element {
+function InputField({ value, style, children }: IInputFieldProps): React.JSX.Element {
   const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
 
   const { height } = style || {};

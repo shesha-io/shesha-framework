@@ -70,7 +70,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
       onSave(values);
     },
     // delay in ms
-    300,
+    150,
   );
 
   const onValuesChange = (_changedValues, values): void => {

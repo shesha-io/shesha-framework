@@ -11,6 +11,7 @@ import { DataContextManager } from "../dataContextManager";
 import { DataContextProvider, IDataContextProviderProps } from "../dataContextProvider";
 import { useShaFormInstanceOrUndefined } from "../form/providers/shaFormProvider";
 import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, isConfigurableFormComponent } from "../form/models";
+import ComponentApiProvider from "../componentApi/provider";
 
 export interface IParentProviderStateContext<Values extends object = object> {
   id: string;
@@ -27,7 +28,7 @@ export interface IParentProviderProps<TValue extends object = object> {
   name?: string | undefined;
   formMode?: FormMode | undefined;
   context?: string | undefined;
-  model: TValue | undefined;
+  model: TValue | null | undefined;
   formFlatMarkup?: IFlatComponentsStructure | undefined;
   formApi?: IFormApi<TValue> | undefined;
   isScope?: boolean | undefined;
@@ -103,7 +104,7 @@ const ParentProvider = <TValue extends object = object>(props: PropsWithChildren
   ]);
 
   const contextProps: IDataContextProviderProps<object> | undefined = addContext && !props.contextProps
-    ? { id, name: SheshaCommonContexts.FormContext, type: "form", webStorageType: "sessionStorage", description: `${props.name || id}` }
+    ? { id: SheshaCommonContexts.FormContext, name: SheshaCommonContexts.FormContext, type: "form", webStorageType: "sessionStorage", description: `${props.name || id}` }
     : props.contextProps;
 
   return (
@@ -111,15 +112,17 @@ const ParentProvider = <TValue extends object = object>(props: PropsWithChildren
       condition={isScope}
       wrap={(children: React.ReactNode) => {
         return (
-          <ValidateProvider>
-            <DataContextManager id={id}>
-              <ConfigurableActionDispatcherProvider>
-                {addContext && contextProps
-                  ? <DataContextProvider {...contextProps}>{children}</DataContextProvider>
-                  : children}
-              </ConfigurableActionDispatcherProvider>
-            </DataContextManager>
-          </ValidateProvider>
+          <ComponentApiProvider id={props.name || id}>
+            <ValidateProvider>
+              <DataContextManager id={id}>
+                <ConfigurableActionDispatcherProvider>
+                  {addContext && contextProps
+                    ? <DataContextProvider {...contextProps}>{children}</DataContextProvider>
+                    : children}
+                </ConfigurableActionDispatcherProvider>
+              </DataContextManager>
+            </ValidateProvider>
+          </ComponentApiProvider>
         );
       }}
     >

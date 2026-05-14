@@ -33,7 +33,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       return (
         <Alert
           showIcon
-          message="ReflistStatus configuration is incomplete"
+          title="ReflistStatus configuration is incomplete"
           description="Please make sure that you've select a reference list."
           type="warning"
         />
@@ -52,6 +52,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
               solidBackground={solidBackground}
               style={model.allStyles?.fullStyle ?? {}}
               isDesigner={formMode === 'designer'}
+              readOnly={formMode === 'readonly'}
             />
           );
         }}

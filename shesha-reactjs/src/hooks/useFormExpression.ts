@@ -18,10 +18,10 @@ export const useFormExpression = (): IFormExpression => {
   const allData = useAvailableConstantsData();
 
   const executeActionViaPayload = (payload: IExecuteActionPayload): void => {
-    executeConfig(payload as IExecuteActionPayload);
+    void executeConfig(payload as IExecuteActionPayload);
   };
   const executeActionViaConfiguration = (payload: IConfigurableActionConfiguration): void => {
-    executeConfig({ actionConfiguration: payload as IConfigurableActionConfiguration, argumentsEvaluationContext: allData });
+    void executeConfig({ actionConfiguration: payload, argumentsEvaluationContext: allData });
   };
 
   const executeBooleanExpression = (expression: string, returnBoolean = true): boolean => {

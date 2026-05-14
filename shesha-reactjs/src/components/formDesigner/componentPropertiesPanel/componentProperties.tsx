@@ -5,12 +5,13 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { IConfigurableFormComponent, IPersistedFormProps, IToolboxComponentBase } from '@/interfaces';
+import { toCamelCase } from '@/utils/string';
 
 const getSourceFolderForComponent = (componentModel: IConfigurableFormComponent, formProps: IPersistedFormProps): string => {
   if (!componentModel || !formProps)
     return undefined;
 
-  const componentUid = componentModel.componentName ?? componentModel.id;
+  const componentUid = toCamelCase(componentModel.componentName, { keepLeadingSeparators: false }) || componentModel.id;
   return `/forms/${formProps.module}/${formProps.name}/${componentUid}`;
 };
 
@@ -28,7 +29,7 @@ export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = (props)
 
   const onSave = useCallback((values) => {
     if (!readOnly)
-      updateComponent({ componentId: id, settings: { ...values, id } });
+      updateComponent({ componentId: id, updater: () => ({ ...values, id }) });
     return Promise.resolve();
   }, [id, readOnly, updateComponent]);
 

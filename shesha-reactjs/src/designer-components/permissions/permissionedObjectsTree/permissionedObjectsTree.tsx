@@ -20,6 +20,8 @@ export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFor
   onSelectAction?: IConfigurableActionConfiguration;
 
   defaultAccess?: number;
+
+  searchText?: string;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;

@@ -196,8 +196,9 @@ export const Dropdown: FC<IDropdownProps> = ({
         popupMatchSelectWidth={false}
         style={{ width: 'max-content', height: 'max-content' }}
         placeholder={placeholder}
-        showSearch
-        filterOption={filterOption}
+        showSearch={{
+          filterOption: filterOption,
+        }}
         labelRender={(props) => {
           const option = options.find((o) => o.value === props.value);
           return (
@@ -215,13 +216,8 @@ export const Dropdown: FC<IDropdownProps> = ({
             />
           );
         }}
-      >
-        {options?.map(({ value: localValue, label }) => (
-          <Select.Option value={localValue} key={localValue} data={{}}>
-            {label}
-          </Select.Option>
-        ))}
-      </Select>
+        options={options?.map(({ value: localValue, label }) => ({ value: localValue, label }))}
+      />
     );
   }
 
@@ -229,8 +225,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     <Select
       {...commonSelectProps}
       style={style}
-      showSearch
-      filterOption={filterOption}
+      showSearch={{ filterOption }}
       placeholder={placeholder}
       {...(displayStyle === 'tags' ? {
         labelRender: (props) => {
@@ -250,12 +245,7 @@ export const Dropdown: FC<IDropdownProps> = ({
           );
         },
       } : {})}
-    >
-      {options?.map(({ value: localValue, label }) => (
-        <Select.Option value={localValue} key={label}>
-          {label}
-        </Select.Option>
-      ))}
-    </Select>
+      options={options?.map(({ value: localValue, label }) => ({ value: localValue, label }))}
+    />
   );
 };

@@ -18,10 +18,10 @@ import { strings } from '@/components/keyInformationBar/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IProps {
-  readOnly: boolean;
-  value?: object;
-  onChange?: any;
-  size?: SizeType;
+  readOnly: boolean | undefined;
+  value?: object | undefined;
+  onChange?: any | undefined;
+  size?: SizeType | undefined;
 }
 
 const EditableContext = React.createContext(null);
@@ -62,22 +62,22 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   let childNode = children;
 
-  const { Option } = Select;
-
-
   const textAlignValues = ['start', 'end', 'center', 'inherit'];
   const flexDirectionValues = ['row', 'column', 'row-reverse', 'column-reverse'];
 
   const Dropdown = (ref, values): ReactElement =>
     (
-      <Select ref={ref} onSelect={save} onBlur={save}>
-        {values.map((value, i) => (
-          <Option key={i} value={value}>{value.split('-').map((word) => {
+      <Select
+        ref={ref}
+        onSelect={save}
+        onBlur={save}
+        options={values.map((value) => ({
+          value: value,
+          label: value.split('-').map((word) => {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-          }).join(' ')}
-          </Option>
-        ))}
-      </Select>
+          }).join(' '),
+        }))}
+      />
     );
 
   if (editable) {

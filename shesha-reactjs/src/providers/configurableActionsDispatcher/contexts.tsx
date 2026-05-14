@@ -44,7 +44,7 @@ export interface RegisterActionType {
   ): void;
 }
 
-export type ActionDynamicContextEvaluationHook = (actionConfig: IConfigurableActionConfiguration) => GenericDictionary;
+export type ActionDynamicContextEvaluationHook = (actionConfig: IConfigurableActionConfiguration | undefined) => GenericDictionary;
 
 export interface IConfigurableActionDispatcherActionsContext {
   getConfigurableAction: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor<TArguments>;

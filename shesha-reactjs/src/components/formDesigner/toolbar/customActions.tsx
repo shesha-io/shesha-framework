@@ -21,7 +21,10 @@ export const CustomActions: FC = () => {
       key: 'exportJson',
       label: 'Get JSON',
       onClick: () => {
-        downloadAsJson({ httpClient, id: formProps.id });
+        downloadAsJson({ httpClient, id: formProps.id }).catch((error) => {
+          console.error('Failed to export form', error);
+          throw error;
+        });
       },
     },
     {
@@ -41,7 +44,10 @@ export const CustomActions: FC = () => {
           width: '60%',
           onSubmitted: () => {
             message.success('Form imported successfully');
-            loadForm({ skipCache: true });
+            loadForm({ skipCache: true }).catch((error) => {
+              console.error('Failed to load form', error);
+              throw error;
+            });
           },
         });
       },

@@ -136,6 +136,13 @@ export interface CamelCaseOptions {
 
 const leadingSeparatorsRegex = /^[-_.\s]+/;
 
+
+export function toCamelCase(str: string, options?: CamelCaseOptions): string;
+// eslint-disable-next-line no-redeclare
+export function toCamelCase(str: null, options?: CamelCaseOptions): null;
+// eslint-disable-next-line no-redeclare
+export function toCamelCase(str: undefined, options?: CamelCaseOptions): undefined;
+// eslint-disable-next-line no-redeclare
 export function toCamelCase(str: string | null | undefined, options?: CamelCaseOptions): string | null | undefined {
   const text = str?.trim();
 
@@ -147,16 +154,16 @@ export function toCamelCase(str: string | null | undefined, options?: CamelCaseO
     ? text.match(leadingSeparatorsRegex)?.[0] ?? ''
     : '';
 
-  const result = camelcase(text.replace(leadingSeparatorsRegex, ''), {
+  const result = camelcase(text, {
     locale: options?.locale ?? false,
     pascalCase: options?.pascalCase ?? false,
     preserveConsecutiveUppercase: options?.preserveConsecutiveUppercase ?? false,
-  });
+  }).replace(/[^\p{L}\p{N}]/gu, ''); // remove all non-alphanumeric characters
 
-  return leadingSeparators + result;
+  return leadingSeparators + result; // restore the leading separators if needed
 }
 
-export function getNumberFormat(str: string, format: string): string {
+export function numberToFormattedString(str: string, format: string | undefined): string {
   if (!isNullOrWhiteSpace(str)) {
     const value = parseFloat(str);
 

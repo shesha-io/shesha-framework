@@ -24,7 +24,10 @@ export const ArrayObjectProperty: FC<IProps> = (props) => {
 
   const onAddChildClick = (): void => {
     if (props.data.properties[0])
-      addItem(props.data.properties[0].id);
+      addItem(props.data.properties[0].id).catch((error) => {
+        console.error('Failed to add child', error);
+        throw error;
+      });
   };
 
   const itemsType = props.data.properties?.find((p) => p.isItemsType);

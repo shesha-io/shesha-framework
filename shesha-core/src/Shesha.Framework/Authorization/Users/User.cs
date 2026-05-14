@@ -14,6 +14,8 @@ namespace Shesha.Authorization.Users
     public class User : AbpUser<User>
     {
         public const string DefaultPassword = "123qwe";
+        public const string EmailAlreadyInUse = "Specified email already used by another person";
+        public const string MobileNoAlreadyInUse = "Specified mobile number already used by another person";
 
         public User()
         {

@@ -18,7 +18,7 @@ export function GenericSettingsEditor<TModel extends object = object>({
   markup,
   onValuesChange,
   readOnly = false,
-}: IProps<TModel>): JSX.Element {
+}: IProps<TModel>): React.JSX.Element {
   const formRef = useShaFormRef();
 
   return (

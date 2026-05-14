@@ -6,6 +6,7 @@ import { IKeyValue } from '@/interfaces/keyValue';
 import { ReactNode } from 'react';
 import { SettingsMigrationContext } from '@/interfaces';
 import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
+import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments'>): IConfigurableActionConfiguration => {
   return {
@@ -129,7 +130,7 @@ type ButtonGroupTypeV0 = 'inline' | 'dropdown';
 
 type ButtonTypeV0 = "default" | "primary" | "ghost" | "dashed" | "link" | "text";
 
-export interface IButtonGroupItemBaseV0 {
+export interface IButtonGroupItemBaseV0 extends IHasVersion {
   id: string;
   name: string;
   label?: string | ReactNode;

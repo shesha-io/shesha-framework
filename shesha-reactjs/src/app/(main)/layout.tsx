@@ -8,7 +8,7 @@ export default function CommonLayout({
   children,
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}): React.JSX.Element {
   const { LayoutComponent } = useLayoutSelection(LAYOUT_MODE);
 
   return (

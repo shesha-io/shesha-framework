@@ -97,7 +97,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
       return;
     }
 
-    executeAction({
+    void executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: allData,
     });
@@ -156,7 +156,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
       <Fragment>
         <Alert
           type="warning"
-          message="This component only shows in designer mode. Otherwise it will show only in the drawer"
+          title="This component only shows in designer mode. Otherwise it will show only in the drawer"
           showIcon
         />
         <ComponentsContainer containerId={id} />

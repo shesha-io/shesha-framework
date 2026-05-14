@@ -3,7 +3,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ComponentDefinition, EditMode, IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleType } from '@/interfaces';
 
 export interface ITabPaneProps
-  extends IStyleType, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
+  extends IStyleType, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled' | 'destroyInactiveTabPane'> {
   id: string;
   type?: string;
   icon?: string;
@@ -25,6 +25,8 @@ export interface ITabPaneProps
   desktop?: IInputStyles;
   mobile?: IInputStyles;
   tablet?: IInputStyles;
+
+  destroyInactiveTabPane?: boolean;
 }
 
 interface ICardProps {

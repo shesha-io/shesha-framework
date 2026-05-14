@@ -107,69 +107,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             description: 'Enter custom eventhandler on changing of event. (form, value, option) are exposed',
             validate: {},
             settingsValidationErrors: [],
-            exposedVariables: [
-              {
-                id: '374a28a4-b86e-4219-8071-4032154a040a',
-                name: 'data',
-                description: 'Selected form values',
-                type: 'object',
-              },
-              {
-                id: 'cba41d1b-6a43-46ec-8d0b-61b46c2a19d4',
-                name: 'form',
-                description: 'Form instance',
-                type: 'FormInstance',
-              },
-              {
-                id: 'fb1db16a-564e-4518-bc28-1380f1a80387',
-                name: 'formMode',
-                description: 'The form mode',
-                type: "'readonly' | 'edit' | 'designer'",
-              },
-              {
-                id: '789d0d0e-f489-4b7d-b67d-b3e86c82c37b',
-                name: 'globalState',
-                description: 'The global state of the application',
-                type: 'object',
-              },
-              {
-                id: 'bc5c08aa-621c-4b5b-98ed-cfc58800cb64',
-                name: 'http',
-                description: 'axios instance used to make http requests',
-                type: 'object',
-              },
-              {
-                id: '7772f2ac-301c-4128-9ccc-6bd2c647f762',
-                name: 'message',
-                description:
-                  'This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header',
-                type: 'object',
-              },
-              {
-                id: 'e056ac8b-8540-4141-ade7-3f4739fde9be',
-                name: 'moment',
-                description: 'The moment.js object',
-                type: 'object',
-              },
-              {
-                id: '8d1541db-2591-4568-b925-d7777cea8f0f',
-                name: 'value',
-                description: 'Component current value',
-                type: 'string | any',
-              },
-              {
-                id: '8d1541db-2591-4568-b925-d7777cea7f0f',
-                name: 'setFormData',
-                description: 'A function used to update the form data',
-                type: '({ values: object, mergeValues: boolean}) => void',
-              },
-              {
-                id: '8d1541db-2151-4568-b925-d8777cea7f0f',
-                name: "setGlobalState",
-                description: "Setting the global state of the application",
-                type: "(payload: { key: string, data: any } ) => void",
-              },
-            ],
             wrapInTemplate: true,
             templateSettings: {
               functionName: 'onChange',

@@ -700,7 +700,6 @@ namespace Shesha.DynamicEntities.Binder
                     var child = prop.GetValue(entity, null);
                     if (child != null)
                     {
-                        prop.SetValue(entity, null);
                         result |= await DeleteUnreferencedEntityAsync(child, entity);
                     }
                 }
@@ -714,7 +713,9 @@ namespace Shesha.DynamicEntities.Binder
             var typeShortAlias = entity.GetType().GetCustomAttribute<EntityAttribute>()?.TypeShortAlias;
             var entityType = entity.GetType().StripCastleProxyType();
             var entityTypeName = entityType.FullName;
-            var references = (await _entityPropertyRepository.GetAllAsync()).Where(x => x.EntityFullClassName == typeShortAlias || x.EntityFullClassName == entityTypeName);
+            var references = (await _entityPropertyRepository.GetAllAsync()).Where(x =>
+                x.DataType == DataTypes.EntityReference &&
+                (typeShortAlias != null && x.EntityFullClassName == typeShortAlias || x.EntityFullClassName == entityTypeName));
             if (!await references.AnyAsync())
                 return false;
 
@@ -729,15 +730,10 @@ namespace Shesha.DynamicEntities.Binder
             var any = false;
             foreach (var reference in references)
             {
-                var isList = reference.DataType == DataTypes.Array;
+                var isList = reference.ParentProperty?.DataType == DataTypes.Array;
 
-                if (
-                    // ToDo: AS - think how to check nested properties of objects since it can lead to data inconsistent
-                    // skip child properties (list properties will by processed from parent ones, objects nested properties is not allowed for Linq)
-                    reference.ParentProperty != null
-                    // skip entity reference arrays because relations are not cascade
-                    || isList && reference.DataFormat == ArrayFormats.EntityReference
-                    )
+                // ToDo: AS - think how to check nested properties of objects since it can lead to data inconsistent
+                if (reference.EntityConfig.IsDeleted || isList && reference.ParentProperty?.DataFormat != ArrayFormats.ManyToManyEntities)
                     continue;
 
                 var entityConfig = await _entityConfigRepository.GetAsync(reference.EntityConfig.Id);
@@ -745,7 +741,7 @@ namespace Shesha.DynamicEntities.Binder
                     && (x.Name == entityConfig.ClassName || x.GetTypeShortAliasOrNull() == entityConfig.ClassName))
                     .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
-                if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 
+                if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name))
                     continue;
 
                 LambdaExpression? lambda = null;

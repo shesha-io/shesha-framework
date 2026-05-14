@@ -30,7 +30,7 @@ export interface IRadioOption {
 
 export interface IDropdownOption {
   label: string | React.ReactNode;
-  value: any;
+  value: string | number | null;
   icon?: string | React.ReactNode;
 }
 
@@ -338,7 +338,7 @@ export interface IIconPickerSettingsInputProps extends ISettingsInputBase {
 export const isIconPickerProps = (value: ISettingsInputBase): value is IIconPickerSettingsInputProps => value.type === 'iconPicker';
 
 // Multi Color Picker
-export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase {
+export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<{ [key: string]: string | undefined }> {
   type: 'multiColorPicker';
 }
 export const isMultiColorPickerProps = (value: ISettingsInputBase): value is IMultiColorPickerSettingsInputProps => value.type === 'multiColorPicker';
@@ -350,18 +350,18 @@ export interface IColumnsConfigSettingsInputProps extends ISettingsInputBase<Col
 }
 export const isColumnsConfigProps = (value: ISettingsInputBase): value is IColumnsConfigSettingsInputProps => value.type === 'columnsConfig';
 
-export interface ISizableColumnsConfigSettingsInputProps extends ISettingsInputBase {
+export interface ISizableColumnsConfigSettingsInputProps extends ISettingsInputBase<object> {
   type: 'sizableColumnsConfig';
 }
 export const isSizableColumnsConfigProps = (value: ISettingsInputBase): value is ISizableColumnsConfigSettingsInputProps => value.type === 'sizableColumnsConfig';
 
 // Columns List
-export interface IColumnsListSettingsInputProps extends ISettingsInputBase {
+export interface IColumnsListSettingsInputProps extends ISettingsInputBase<object> {
   type: 'columnsList';
 }
 export const isColumnsListProps = (value: ISettingsInputBase): value is IColumnsListSettingsInputProps => value.type === 'columnsList';
 
-export interface IKeyInformationBarColumnsInputProps extends ISettingsInputBase {
+export interface IKeyInformationBarColumnsInputProps extends ISettingsInputBase<object> {
   type: 'keyInformationBarColumnsList';
 }
 export const isKeyInformationBarColumnsProps = (value: ISettingsInputBase): value is IKeyInformationBarColumnsInputProps => value.type === 'keyInformationBarColumnsList';
@@ -385,7 +385,7 @@ export interface ICustomLabelValueEditorSettingsInputProps extends BaseLabelValu
   iconName?: string;
   colorTitle?: string;
   iconTitle?: string;
-  dropdownOptions?: IDropdownOption[] | string;
+  dropdownOptions?: IDropdownOption[];
 }
 export const isCustomLabelValueEditorProps = (value: ISettingsInputBase): value is ICustomLabelValueEditorSettingsInputProps => value.type === 'customLabelValueEditor';
 
@@ -464,7 +464,7 @@ export interface IConfigurableActionConfiguratorSettingsInputProps extends ISett
 export const isConfigurableActionConfiguratorProps = (value: ISettingsInputBase): value is IConfigurableActionConfiguratorSettingsInputProps => value.type === 'configurableActionConfigurator';
 
 // Ref List Item Selector Settings Modal
-export interface IRefListItemSelectorSettingsModalProps extends ISettingsInputBase {
+export interface IRefListItemSelectorSettingsModalProps extends ISettingsInputBase<object> {
   type: 'RefListItemSelectorSettingsModal';
   referenceList?: any;
 }

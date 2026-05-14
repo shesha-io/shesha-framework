@@ -273,4 +273,8 @@ export class MetadataDispatcher implements IMetadataDispatcher {
   updateModel = (modelType: string, model: Promise<IModelMetadata>): void => {
     this.#models[modelType] = model;
   };
+
+  clearModels = (): void => {
+    this.#models = {};
+  };
 }

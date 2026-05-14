@@ -87,18 +87,12 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
   const { data: formData } = useFormData();
   const verb = props.httpVerb ? evaluateValueAsString(props.httpVerb, { data: formData }) : props.httpVerb;
 
-  // Helper to check if verb is a valid resolved string
-  const isValidVerb = (verbValue: any): verbValue is string => {
-    return typeof verbValue === 'string' && verbValue.trim() !== '';
-  };
-
 
   const doFetchItems = (term: string, verb: string): void => {
-    // Additional safety check: only make the request if verb is valid
-    if (!isValidVerb(verb)) {
-      return;
-    }
-    endpointsFetcher.refetch({ queryParams: { term, verb: verb } });
+    endpointsFetcher.refetch({ queryParams: { term, verb: verb } }).catch((error) => {
+      console.error('Failed to fetch endpoints', error);
+      throw error;
+    });
   };
   const debouncedFetchItems = useDebouncedCallback<(value: string, verb: string) => void>(
     (localValue, localVerb) => {
@@ -110,11 +104,6 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
 
   const currentVerb = mode === 'url' ? verb : getVerbFromValue(props.value);
   useEffect(() => {
-    // Only fetch if we have a valid resolved verb
-    if (!isValidVerb(currentVerb)) {
-      return;
-    }
-
     const url = getUrlFromValue(props.value);
     debouncedFetchItems(url, currentVerb);
   }, [currentVerb]);
@@ -149,8 +138,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
   const handleSearch = (localValue: string): void => {
     onChangeUrl(localValue);
 
-    // Only fetch if we have a valid search value and a valid resolved verb
-    if (localValue && isValidVerb(currentVerb)) {
+    if (localValue) {
       debouncedFetchItems(localValue, currentVerb);
     }
   };
@@ -170,11 +158,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
     >
-      <Space.Compact style={{ width: "100%" }}>
-        {props.prefix && <Space.Addon>{props.prefix}</Space.Addon>}
-        <Input size={props.size} />
-        {props.suffix && <Space.Addon>{props.suffix}</Space.Addon>}
-      </Space.Compact>
+      <Input addonBefore={props.prefix} addonAfter={props.suffix} size={props.size} />
     </AutoComplete>
   );
 

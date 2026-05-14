@@ -1,5 +1,5 @@
-import React, { createContext, PropsWithChildren, ReactElement, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { DefaultModelInstance, IDefaultModelInstance, IDefaultModelValueInfo } from './defaultModelInstance';
+import React, { createContext, PropsWithChildren, ReactElement, useContext, useEffect, useRef, useState } from 'react';
+import { DefaultModelInstance, DefaultModelSubscriptionType, IDefaultModelInstance, IDefaultModelValueInfo } from './defaultModelInstance';
 
 export interface IDefaultModelProviderProps<TData extends object = object> {
   name: string;
@@ -8,6 +8,10 @@ export interface IDefaultModelProviderProps<TData extends object = object> {
 }
 
 export interface IDefaultModelProviderState<TData extends object = object> {
+  subscribePropertyUpdate(propertyName: string, callback: (dfi: DefaultModelInstance<TData>) => void): () => void;
+  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<TData>) => void, data?: Record<string, any>): () => void;
+  notifySubscribers(type: DefaultModelSubscriptionType): void;
+
   setDefaultModel: (name: string, model: TData) => void;
   setModel: (model: TData) => void;
   getMergedModel: () => TData;
@@ -23,9 +27,34 @@ const DefaultModelProviderStateContext = createContext<IDefaultModelProviderStat
 
 export const useDefaultModelProviderStateOrUndefined = (): IDefaultModelProviderState<object> | undefined => useContext(DefaultModelProviderStateContext);
 
-const DefaultModelProvider = <TData extends object = object>(props: PropsWithChildren<IDefaultModelProviderProps<TData>>): ReactElement => {
-  const [refreshState, forceRefresh] = useState({});
+export const useDefaultModelPropertyUpdateSubscription = (propertyName: string): object => {
+  const defaultModel = useDefaultModelProviderStateOrUndefined();
+  const [dummy, forceUpdate] = useState({});
+  useEffect(() => {
+    if (!defaultModel) return undefined;
+    // Subscribe to changes
+    const unsubscribe = defaultModel.subscribePropertyUpdate(propertyName, () => forceUpdate({}));
+    return unsubscribe; // Cleanup on unmount
+  }, [defaultModel, propertyName]);
 
+  return dummy;
+};
+
+export const useDefaultModelSubscription = (subscriptionType: DefaultModelSubscriptionType): object => {
+  const defaultModel = useDefaultModelProviderStateOrUndefined();
+  const [dummy, forceUpdate] = useState({});
+  useEffect(() => {
+    if (!defaultModel) return undefined;
+    // Subscribe to changes
+    const unsubscribe = defaultModel.subscribe(subscriptionType, () => forceUpdate({}));
+    return unsubscribe; // Cleanup on unmount
+  }, [defaultModel, subscriptionType]);
+
+  return dummy;
+};
+
+const DefaultModelProvider = <TData extends object = object>(props: PropsWithChildren<IDefaultModelProviderProps<TData>>): ReactElement => {
+  const [, forceRefresh] = useState({});
   const valueInfo = useRef<Map<string, IDefaultModelValueInfo>>(new Map());
   const needUpdateInfo = useRef<Map<string, boolean>>(new Map());
   const [instance] = useState<IDefaultModelInstance<TData>>(new DefaultModelInstance<TData>());
@@ -43,8 +72,11 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
     }
   }, [instance, props.defaultModel, props.model, props.name]);
 
-  // ToDo: AS - check and optimize, probably need to memoize to prevent unnecessary rendering
-  const state: IDefaultModelProviderState<TData> = useMemo(() => ({
+  const state: IDefaultModelProviderState<TData> = {
+    subscribePropertyUpdate: (propertyName: string, callback: (dfi: DefaultModelInstance<TData>) => void) => instance.subscribePropertyUpdate(propertyName, callback),
+    subscribe: (type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<TData>) => void, data?: Record<string, any>) => instance.subscribe(type, callback, data),
+    notifySubscribers: (type: DefaultModelSubscriptionType) => instance.notifySubscribers(type),
+
     setDefaultModel: (name: string, model: TData) => {
       instance.setDefaultModel(name, model);
       needUpdateAllInfo();
@@ -54,7 +86,7 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
     setModel: (model: TData) => {
       instance.setModel(model);
       needUpdateAllInfo();
-      forceRefresh({});
+      // forceRefresh({});
     },
     overrideValue: (propName: string) => {
       instance.overrideValue(propName);
@@ -79,7 +111,7 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
       forceRefresh({});
     },
     getCurrentValueAdditionalInfo: instance.getCurrentValueAdditionalInfo,
-  }), [refreshState, instance]);
+  };
 
   return (
     <DefaultModelProviderStateContext.Provider value={state}>

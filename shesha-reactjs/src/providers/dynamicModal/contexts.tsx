@@ -13,6 +13,7 @@ export interface IDynamicModalActionsContext {
   modalExists: (id: string) => boolean;
   createModal: <TValue extends object = object>(modalProps: ICommonModalProps<TValue>) => void;
   removeModal: (id: string) => void;
+  removeAllModals: () => void;
 }
 
 export const DYNAMIC_MODAL_CONTEXT_INITIAL_STATE: IDynamicModalStateContext = {

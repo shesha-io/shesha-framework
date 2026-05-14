@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<NoWarn>$(NoWarn);CS1591;612;618;809;AsyncFixer01;8618;NU1903;NU1902;</NoWarn>
+		<NoWarn>$(NoWarn);CS1591;612;618;809;AsyncFixer01;8618;NU1903;NU1902;NU1901;</NoWarn>
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
 	</PropertyGroup>

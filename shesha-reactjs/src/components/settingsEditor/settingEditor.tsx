@@ -30,6 +30,9 @@ export const SettingEditor: FC = () => {
           ? <CustomFormSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name} />
           : <GenericSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name} />;
         setState((prev) => ({ ...prev, isLoading: false, value: response, initialValue: response, editor }));
+      }).catch((error) => {
+        console.error('Failed to fetch setting', error);
+        throw error;
       });
     } else {
       setState((prev) => ({ ...prev, isLoading: false, value: null, loadingError: null, editor: null }));

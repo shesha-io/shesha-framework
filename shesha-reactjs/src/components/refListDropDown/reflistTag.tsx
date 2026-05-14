@@ -16,7 +16,7 @@ interface IReflistTagProps {
   label?: string | React.ReactNode;
   placement?: TooltipProps['placement'];
 }
-function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps): JSX.Element {
+function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps): React.JSX.Element {
   const memoizedColor = !solidColor
     ? color?.toLowerCase()
     : convertCssColorNameToHex(color ?? '');

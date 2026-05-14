@@ -1,11 +1,12 @@
-import React, { FC, PropsWithChildren, useMemo, useRef } from "react";
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import DataContextBinder from "../dataContextBinder";
 import { SheshaCommonContexts } from "../../dataContextManager/models";
 import { DataTypes, IObjectMetadata, TypeDefinition } from "@/interfaces";
 import { WebStorageProxy } from "./webStorageProxy";
 import { webStorageCode } from '@/publicJsApis';
 import { splitDotNotation } from "@/utils/dotnotation";
-import { useDataContextManagerActions } from "@/providers/dataContextManager";
+import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
+import { useDeepCompareMemo } from "@/hooks";
 
 
 export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -16,10 +17,12 @@ export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) =
   } as IObjectMetadata), []);
 
   const manager = useDataContextManagerActions();
-  const localStorage = useRef<WebStorageProxy>(new WebStorageProxy('localStorage'));
-  localStorage.current.updateOnChangeHandler(manager.onChangeContextData);
-  const sessionStorage = useRef<WebStorageProxy>(new WebStorageProxy('sessionStorage'));
-  sessionStorage.current.updateOnChangeHandler(manager.onChangeContextData);
+  const [localStorage] = useState<WebStorageProxy>(() => new WebStorageProxy('localStorage'));
+  const [sessionStorage] = useState<WebStorageProxy>(() => new WebStorageProxy('sessionStorage'));
+  useEffect(() => {
+    localStorage.updateOnChangeHandler(manager.onChangeContextData);
+    sessionStorage.updateOnChangeHandler(manager.onChangeContextData);
+  }, [localStorage, sessionStorage, manager.onChangeContextData]);
 
   const setItem = (key: string, value: unknown): void => {
     const [storage, path] = splitDotNotation(key);
@@ -27,10 +30,10 @@ export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) =
       return;
     switch (storage) {
       case 'session':
-        sessionStorage.current.setItem(path, value);
+        sessionStorage.setItem(path, value);
         return;
       case 'local':
-        localStorage.current.setItem(path, value);
+        localStorage.setItem(path, value);
         return;
       default:
         return;
@@ -43,9 +46,9 @@ export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) =
 
     switch (storage) {
       case 'session':
-        return sessionStorage.current.getItem(path);
+        return sessionStorage.getItem(path);
       case 'local':
-        return localStorage.current.getItem(path);
+        return localStorage.getItem(path);
       default:
         return undefined;
     }
@@ -53,7 +56,7 @@ export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) =
   const setFieldValue = (name: string, value: unknown): void => setItem(name, value);
   const getFieldValue = (name: string): unknown => getItem(name);
 
-  const data = { local: localStorage.current, session: sessionStorage.current };
+  const data = useDeepCompareMemo(() => ({ local: localStorage, session: sessionStorage }), [localStorage, sessionStorage]);
 
   return (
     <DataContextBinder

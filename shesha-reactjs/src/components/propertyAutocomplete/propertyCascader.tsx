@@ -151,6 +151,9 @@ export const PropertyCascader: React.FC<IPropertyCascaderProps> = (props) => {
       targetOption.childrenLoader().then((loaded) => {
         if (loaded)
           setOptions([...options]);
+      }).catch((error) => {
+        console.error('Failed to load children', error);
+        throw error;
       });
   };
   return (

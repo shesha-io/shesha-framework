@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { getSettings } from './tableSettings';
-import { ColumnsItemProps, IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
+import { ColumnsItemProps, IConfigurableColumnsProps, IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps, TableComponentDefinition } from './models';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
@@ -29,6 +29,10 @@ import { useMetadata } from '@/providers/metadata';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
+import { isNonEmptyArray } from '@/utils/array';
+import { safeGetProperty } from '@/utils/object';
+import { isDefined } from '@/utils/nullables';
+import { IConfigurableActionConfiguration } from '@/providers';
 
 const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.';
 
@@ -36,7 +40,7 @@ const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not 
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStoreOrUndefined();
   const metadata = useMetadata(false);
-  const repositoryType = store?.getRepository?.()?.repositoryType;
+  const repositoryType = store?.getRepository().repositoryType;
   const isEntitySource = repositoryType === BackendRepositoryType;
   const configuredColumns = useMemo(
     () => flattenConfiguredColumns(model.items as ColumnsItemProps[]),
@@ -186,7 +190,7 @@ const TableComponent: TableComponentDefinition = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   validateModel: (model, addModelError) => {
     // CRITICAL: Validate that table has columns configured
-    const hasColumns = model.items && Array.isArray(model.items) && model.items.length > 0;
+    const hasColumns = !isNonEmptyArray(model.items);
     if (!hasColumns) {
       addModelError('items', 'Configure at least one column in the settings panel');
     }
@@ -196,16 +200,17 @@ const TableComponent: TableComponentDefinition = {
   migrator: (m) =>
     m
       .add<ITableComponentProps>(0, (prev) => {
-        const items = prev['items'] && Array.isArray(prev['items']) ? prev['items'] : [];
+        const items = 'items' in prev && prev.items && Array.isArray(prev.items) ? prev.items as IConfigurableColumnsProps[] : [];
+        const prevTyped = prev as ITableComponentProps;
         return {
-          ...prev,
+          ...prevTyped,
           items: items,
-          useMultiselect: prev['useMultiselect'] ?? false,
-          selectionMode: prev['selectionMode'] ?? 'single',
-          crud: prev['crud'] ?? false,
-          flexibleHeight: prev['flexibleHeight'] ?? false,
-          striped: prev['striped'] ?? true,
-        };
+          useMultiselect: 'useMultiselect' in prev && typeof (prev.useMultiselect) === 'boolean' ? prev.useMultiselect : false,
+          selectionMode: safeGetProperty(prevTyped, 'selectionMode') ?? 'single',
+          crud: safeGetProperty(prevTyped, 'crud') ?? false,
+          flexibleHeight: safeGetProperty(prevTyped, 'flexibleHeight') ?? false,
+          striped: safeGetProperty(prevTyped, 'striped') ?? true,
+        } satisfies ITableComponentProps;
       })
       .add<ITableComponentProps>(1, migrateV0toV1)
       .add<ITableComponentProps>(2, migrateV1toV2)
@@ -221,28 +226,29 @@ const TableComponent: TableComponentDefinition = {
       }))
       .add<ITableComponentProps>(4, (prev) => ({
         ...prev,
-        onRowSaveSuccessAction: prev['onRowSaveSuccess'] && typeof (prev['onRowSaveSuccess']) === 'string'
+        onRowSaveSuccessAction: 'onRowSaveSuccess' in prev && typeof (prev.onRowSaveSuccess) === 'string'
           ? {
             _type: undefined,
             actionOwner: SheshaActionOwners.Common,
             actionName: 'Execute Script',
             actionArguments: {
-              expression: prev['onRowSaveSuccess'],
+              expression: prev.onRowSaveSuccess,
             },
             handleFail: false,
             handleSuccess: false,
-          }
-          : null,
+          } satisfies IConfigurableActionConfiguration
+          : undefined,
       }))
       .add<ITableComponentProps>(5, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITableComponentProps>(6, (prev) => {
-        const columns = (prev.items ?? []).map((c) => (c.columnType === 'data' ? { ...c, allowSorting: true } as IDataColumnsProps : c));
+        const columns = (isDefined(prev.items) ? prev.items : []).map((c) => (c.columnType === 'data' ? { ...c, allowSorting: true } as IDataColumnsProps : c));
         return { ...prev, items: columns };
       })
       .add<ITableComponentProps>(7, (prev) => migrateVisibility(prev))
       .add<ITableComponentProps>(8, (prev) => ({ ...prev, onRowSaveSuccessAction: migrateNavigateAction(prev.onRowSaveSuccessAction) }))
       .add<ITableComponentProps>(9, (prev) => ({
-        ...prev, items: (prev.items ?? []).map((item) => {
+        ...prev,
+        items: (isDefined(prev.items) ? prev.items : []).map((item) => {
           return isActionColumnProps(item)
             ? { ...item, actionConfiguration: migrateNavigateAction(item.actionConfiguration) }
             : item;

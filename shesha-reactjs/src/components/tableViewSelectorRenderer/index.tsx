@@ -61,7 +61,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
 
   const { unevaluatedExpressions } = selectedFilter || {};
 
-  const getPopoverHintContent = (): JSX.Element => {
+  const getPopoverHintContent = (): React.JSX.Element => {
     if (unevaluatedExpressions) {
       return (
         <div style={{ width: 450 }}>
@@ -107,7 +107,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
     });
   }, [filters]);
 
-  const renderTitle = (): JSX.Element => {
+  const renderTitle = (): React.JSX.Element => {
     const hasFilters = (filters?.length || 0) > 1;
     const isActiveFilter = selectedFilter?.expression !== null && selectedFilter?.expression !== undefined;
 
@@ -142,7 +142,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
             }}
             trigger={['click']}
             placement="bottomLeft"
-            overlayClassName={styles.dropdownOverlay}
+            classNames={{ root: styles.dropdownOverlay }}
           >
             <div className={styles.clickableTitle}>
               {renderTitle()}

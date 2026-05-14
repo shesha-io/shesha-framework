@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useEffect } from 'react';
+import React, { ReactElement, ReactNode, useCallback } from 'react';
 import { getPropertySettingsFromValue } from './utils/utils';
 import { useStyles } from './styles/styles';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
@@ -11,8 +11,10 @@ import { Button } from 'antd';
 import { CodeOutlined, CodeFilled } from '@ant-design/icons';
 import { IPropertySetting, PropertySettingMode } from '@/providers/form/models';
 import { CodeEditor } from '../codeEditor/codeEditor';
+import { useDeepCompareMemo } from '@/hooks';
 
-export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement | ReactNode;
+export type SettingsControlChildrenFunc<T = unknown> = (value: T, onChange: (val: T) => void, propertyName: string) => ReactElement;
+export type SettingsControlChildrenType<T = unknown> = SettingsControlChildrenFunc<T> | ReactNode;
 
 export interface ISettingsControlProps<Value = any> {
   propertyName: string;
@@ -22,7 +24,7 @@ export interface ISettingsControlProps<Value = any> {
   hasCode?: boolean;
   mode: PropertySettingMode;
   onChange?: (value: IPropertySetting<Value>) => void;
-  readonly children?: SettingsControlChildrenType;
+  readonly children?: SettingsControlChildrenFunc<Value>;
   availableConstantsExpression?: string | GetAvailableConstantsFunc;
   resultTypeExpression?: string | GetResultTypeFunc;
   useAsyncEvaluation?: boolean;
@@ -41,9 +43,12 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "moment", description: "moment", type: "object" },
   { name: "http", description: "axiosHttp", type: "object" },
   { name: "message", description: "message framework", type: "object" },
+  { name: "modal", description: "API for displaying modal dialogs and forms", type: "object" },
 ];
 
-export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>): ReactElement => {
+export const SettingsControl = <Value extends unknown = unknown>(props: ISettingsControlProps<Value>): ReactElement => {
+  const { onChange } = props;
+
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
@@ -52,27 +57,24 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
 
   const { styles } = useStyles();
 
-  const onInternalChange = (value: IPropertySetting<Value>, m?: PropertySettingMode): void => {
+  const onInternalChange = useCallback((value: IPropertySetting<Value>, m?: PropertySettingMode): void => {
     const newSetting = { ...value, _mode: (m ?? mode) };
     const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
-    if (props.onChange)
-      props.onChange(newValue);
-  };
-
-  useEffect(() => {
-    if (setting._mode !== mode)
-      onInternalChange({ ...setting, _mode: mode }, mode);
-  }, [mode]);
+    if (onChange)
+      onChange(newValue);
+  }, [mode, onChange]);
 
   const codeOnChange = (val: string): void => {
     const newValue: IPropertySetting<Value> = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy } as IPropertySetting<Value>;
     onInternalChange(newValue);
   };
 
-  const valueOnChange = (val: Value): void => {
-    const newValue = { ...setting, _value: val };
-    onInternalChange(newValue);
-  };
+  const valueOnChange = useDeepCompareMemo(() => {
+    return (val: Value): void => {
+      const newValue = { ...setting, _value: val };
+      onInternalChange(newValue);
+    };
+  }, [setting]);
 
   const onSwitchMode = (): void => {
     const newMode = mode === 'code' ? 'value' : 'code';
@@ -99,7 +101,6 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     type: 'text',
     label: ' ',
     ghost: true,
-    exposedVariables: defaultExposedVariables,
     hidden: !setting._code && props.readOnly,
   };
 

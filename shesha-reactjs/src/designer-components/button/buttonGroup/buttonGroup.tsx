@@ -131,7 +131,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
       .map((childItem) => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
     // Ghost buttons: only foreground color, no background/border/shadow
     const isGhostType = item.buttonType === 'ghost';
-    const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+    const ghostOverrides = isGhostType ? getGhostStyleOverrides(item.font) : item.styles;
 
     return (
       <Dropdown
@@ -222,7 +222,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     return (
       <Alert
         className="sha-designer-warning"
-        message="Button group is empty. Press 'Customize Button Group' button to add items"
+        title="Button group is empty. Press 'Customize Button Group' button to add items"
         type="warning"
       />
     );

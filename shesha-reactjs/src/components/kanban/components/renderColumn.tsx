@@ -64,7 +64,10 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         ...userSettings,
         [column.itemValue]: newCollapseState,
       };
-      updateUserSettings(updatedSettings, props.componentName);
+      updateUserSettings(updatedSettings, props.componentName).catch((error) => {
+        console.error('Failed to update user settings', error);
+        throw error;
+      });
     } catch (error) {
       console.error('Error updating collapse state:', error);
       setIsCollapsed(!isCollapsed);
@@ -110,7 +113,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         };
 
         // Perform the action
-        executeAction({
+        void executeAction({
           actionConfiguration: targetColumn?.actionConfiguration,
           argumentsEvaluationContext: evaluationContext,
           success: () => {
@@ -148,7 +151,10 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         if (task.id === taskId) {
           const updatedTask = { ...task, [props.groupingProperty]: newColumnValue };
           const payload = { id: task.id, [props.groupingProperty]: newColumnValue };
-          updateKanban(payload, urls.updateUrl);
+          updateKanban(payload, urls.updateUrl).catch((error) => {
+            console.error('Failed to update item', error);
+            throw error;
+          });
           return updatedTask;
         }
         return task;

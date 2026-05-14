@@ -22,6 +22,9 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
     if (!isLoggedIn) {
       checkAuth(loginUrl).then(() => {
         forceUpdate({});
+      }).catch((error) => {
+        console.error('Failed to check auth', error);
+        throw error;
       });
     }
   }, [checkAuth, loginUrl, isLoggedIn]);

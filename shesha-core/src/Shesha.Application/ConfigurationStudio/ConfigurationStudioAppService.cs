@@ -272,12 +272,17 @@ namespace Shesha.ConfigurationStudio
             item.Module?.EnsureEditable();
 
             var revision = await RevisionRepo.GetAsync(request.RevisionId);
-            if (revision.ConfigurationItem != item)
-                throw new AbpValidationException("Selected revision doesn't belong to the item");
+            if (revision.ConfigurationItem != item) 
+            {
+                var closestParent = item.Closest(e => e.ExposedFrom, e => e == revision.ConfigurationItem);
+                if (closestParent == null)
+                    throw new AbpValidationException("Selected revision doesn't belong to the item hierarchy");
+            }
+                
             
             var manager = CiHelper.GetManagerByDiscriminator(item.ItemType);
 
-            await manager.RestoreRevisionAsync(revision);
+            await manager.RestoreRevisionAsync(item, revision);
         }
 
         /// <summary>

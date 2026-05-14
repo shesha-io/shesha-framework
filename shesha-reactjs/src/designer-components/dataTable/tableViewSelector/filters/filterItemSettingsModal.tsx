@@ -4,7 +4,7 @@ import { FilterItemSettingsEditor } from './filterItemSettingsEditor';
 import { IStoredFilter } from '@/interfaces';
 
 export interface IFilterItemSettingsModalProps {
-  value?: IStoredFilter;
+  value: IStoredFilter;
   onSave: (newValue: IStoredFilter) => void;
   onCancel: () => void;
   readOnly: boolean;

@@ -16,7 +16,6 @@ import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarComponentProps>> = (props) => {
   const { readOnly } = props;
-  const { Option } = Select;
   const { values } = useSettingsForm<IKeyInformationBarComponentProps>();
 
   const tooltip = strings.tooltip;
@@ -32,10 +31,12 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarC
       </SettingsFormItem>
 
       <SettingsFormItem name="orientation" label="Orientation">
-        <Select>
-          <Option value="horizontal">Horizontal</Option>
-          <Option value="vertical">Vertical</Option>
-        </Select>
+        <Select
+          options={[
+            { value: 'horizontal', label: 'Horizontal' },
+            { value: 'vertical', label: 'Vertical' },
+          ]}
+        />
       </SettingsFormItem>
 
       <SettingsFormItem name="backgroundColor" label="Background Color" jsSetting>
@@ -48,11 +49,13 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarC
 
       <Show when={values.orientation === "horizontal"}>
         <SettingsFormItem name="alignItems" label="Align Items">
-          <Select>
-            <Option value="flex-start">Flex Start</Option>
-            <Option value="flex-end">Flex End</Option>
-            <Option value="center">Center</Option>
-          </Select>
+          <Select
+            options={[
+              { value: 'flex-start', label: 'Flex Start' },
+              { value: 'flex-end', label: 'Flex End' },
+              { value: 'center', label: 'Center' },
+            ]}
+          />
         </SettingsFormItem>
       </Show>
 

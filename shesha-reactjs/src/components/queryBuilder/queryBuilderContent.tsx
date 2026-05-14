@@ -57,7 +57,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
     return checkedTree;
   }, [value]);
 
-  const renderBuilder = (props: BuilderProps): JSX.Element => {
+  const renderBuilder = (props: BuilderProps): React.JSX.Element => {
     const children1 = props.tree?.getIn?.(['children1']);
     const hasRules = Boolean(children1 && (children1 as { size?: number })?.size > 0);
     const plainTree = props.tree ? QbUtils.getTree(props.tree) : undefined;

@@ -478,6 +478,7 @@ export const useStyles = createStyles(({ token, css }) => {
       overflow: hidden;
       text-overflow: ellipsis;
       padding-right: ${token.padding}px;
+      max-height: 100%;
     `,
 
     taskName: css`

@@ -1,7 +1,9 @@
-import { IContainerComponentProps } from '@/designer-components/container/interfaces';
 import React from 'react';
 import { IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from '@/interfaces';
 import { useStyles } from '../styles/styles';
+import { getNestedPropertyValue } from '@/utils/dotnotation';
+import { isDefined } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 /**
  * Checks if the provided data is an instance of IPropertySetting.
@@ -19,123 +21,51 @@ export const isPropertySettings = <Value = unknown>(data: unknown): data is IPro
 export const getPropertySettingsFromData = (data: unknown, propName: string): IPropertySetting => {
   if (!propName || !data) return { _mode: 'value', _code: undefined, _value: undefined };
 
-  const propNames = propName.split('.');
-  let val = data;
-  propNames.forEach((p) => {
-    val = val?.[p];
-  });
+  const val = getNestedPropertyValue(data, propName);
 
   if (isPropertySettings(val)) return val;
   else return { _mode: 'value', _code: undefined, _value: val };
 };
 
-export const updateSettingsFromValues = <T = unknown>(model: T, values: T): T => {
+export const updateSettingsFromValues = <T extends object = object>(model: T, values: Partial<T>): T => {
   const copy = { ...model };
   Object.keys(values).forEach((k) => {
-    if (isPropertySettings(copy[k]) && !isPropertySettings(values[k])) copy[k]._value = values[k];
-    else copy[k] = values[k];
+    const key = k as keyof T;
+    if (isPropertySettings(copy[key]) && !isPropertySettings(values[key])) copy[key]._value = values[key];
+    else copy[key] = values[key]!;
   });
   return copy;
 };
 
-export const getValueFromPropertySettings = (value: unknown): any => {
+export const getValueFromPropertySettings = (value: unknown): unknown => {
   if (isPropertySettings(value)) return value._value;
   else return value;
 };
 
-export const getValuesFromSettings = <T = unknown>(model: T): T => {
+export const getValuesFromSettings = <T extends object = object>(model: T): T => {
   const copy = { ...model };
   Object.keys(copy).forEach((k) => {
-    copy[k] = getValueFromPropertySettings(copy[k]);
+    const key = k as keyof T;
+    copy[key] = getValueFromPropertySettings(copy[key]) as T[keyof T];
   });
   return copy;
 };
 
-export const getPropertySettingsFromValue = <Value extends unknown>(value: Value | IPropertySetting<Value>): IPropertySetting<Value> => {
+export const getPropertySettingsFromValue = <Value = unknown>(value: Value | IPropertySetting<Value>): IPropertySetting<Value> => {
   if (isPropertySettings(value))
     return value as IPropertySetting<Value>;
   else
     return { _mode: 'value', _code: undefined, _value: value };
 };
 
-/**
- * Update structure of components to use with Setting component
- *
- * @param toolboxComponents List of Toolbox components
- * @param components Components structure
- * @returns Updated components structure
- */
-export const updateSettingsComponents = (
-  toolboxComponents: IToolboxComponents,
-  components: IConfigurableFormComponent[],
-): IConfigurableFormComponent[] => {
-  const processComponent = (component: IConfigurableFormComponent): IConfigurableFormComponent => {
-    const componentRegistration = toolboxComponents[component.type];
-
-    const newComponent: IConfigurableFormComponent = { ...component, jsSetting: false };
-    if ((componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting) {
-      const oldComponent: IConfigurableFormComponent = { ...newComponent };
-
-      // If should be wrapped as Setting
-      newComponent.type = 'setting';
-      newComponent.id = oldComponent.id + '_setting';
-
-      if (component.jsSetting === 'lazy') newComponent['lazy'] = true;
-      if (oldComponent['availableConstantsExpression']) newComponent['availableConstantsExpression'] = oldComponent['availableConstantsExpression'];
-
-      // Add source component as a child of Setting component
-      if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {
-        newComponent['components'] = [
-          {
-            ...oldComponent,
-            components: oldComponent['components'].map((c) => {
-              return processComponent(c);
-            }),
-            parentId: newComponent.id,
-          } as IContainerComponentProps,
-        ];
-      } else {
-        newComponent['components'] = [
-          {
-            ...oldComponent,
-            parentId: newComponent.id,
-          } as IConfigurableFormComponent,
-        ];
-      }
-      return newComponent;
-    } else {
-      // If should not be wrapped as Setting then check all child containers
-
-      // custom containers
-      const customContainerNames = componentRegistration?.customContainerNames || [];
-      customContainerNames.forEach((subContainer) => {
-        if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
-          newComponent[subContainer].components = component[subContainer]?.components.map((c) => {
-            return processComponent(c);
-          });
-      });
-
-      // default container
-      if (Array.isArray(component['components']) && component['components'].length > 0)
-        newComponent['components'] = component['components'].map((c) => {
-          return processComponent(c);
-        });
-
-      return newComponent;
-    }
-  };
-
-  return components.map((c) => {
-    return processComponent(c);
-  });
-};
+const STANDARD_COMPONENTS_CONTAINER = "components";
 
 export const updateJsSettingsForComponents = (
   toolboxComponents: IToolboxComponents,
   components: IConfigurableFormComponent[]): IConfigurableFormComponent[] => {
-  const processComponent = (component: IConfigurableFormComponent): IConfigurableFormComponent => {
+  const processComponent = <TComponent extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TComponent): TComponent => {
     const componentRegistration = toolboxComponents[component.type];
-    const newComponent: IConfigurableFormComponent = {
+    const newComponent: TComponent = {
       ...component,
       jsSetting: component.jsSetting === 'lazy'
         ? 'lazy'
@@ -144,19 +74,30 @@ export const updateJsSettingsForComponents = (
 
     // Check all child containers
     // custom containers
-    const customContainerNames = componentRegistration?.customContainerNames || [];
+    const customContainerNames = (componentRegistration?.customContainerNames || []) as (keyof TComponent) [];
     customContainerNames.forEach((subContainer) => {
-      if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
-        newComponent[subContainer].components = component[subContainer]?.components.map((c) => {
-          return processComponent(c);
-        });
+      const container = component[subContainer];
+      const componentsKey = STANDARD_COMPONENTS_CONTAINER as keyof typeof container;
+      const containerComponents = isDefined(container) && typeof (container) === "object" && componentsKey in container
+        ? container[componentsKey] as IConfigurableFormComponent[]
+        : undefined;
+
+      if (Array.isArray(containerComponents) && isNonEmptyArray(containerComponents))
+        if (newComponent[subContainer] && typeof (newComponent[subContainer]) === "object") {
+          (newComponent[subContainer] as Record<string, unknown>)[STANDARD_COMPONENTS_CONTAINER] = containerComponents.map((c) => {
+            return processComponent(c);
+          });
+        }
     });
 
     // default container
-    if (Array.isArray(component['components']) && component['components'].length > 0)
-      newComponent['components'] = component['components'].map((c) => {
+    const standardContainerKey = "components" as keyof TComponent;
+    if (standardContainerKey in component && Array.isArray(component[standardContainerKey]) && component[standardContainerKey].length > 0) {
+      const container = component[standardContainerKey] as IConfigurableFormComponent[];
+      (newComponent[standardContainerKey] as IConfigurableFormComponent[]) = container.map((c) => {
         return processComponent(c);
       });
+    }
 
     return newComponent;
   };
@@ -166,7 +107,7 @@ export const updateJsSettingsForComponents = (
   });
 };
 
-export const StyledLabel = ({ label }: { label: string }): JSX.Element => {
+export const StyledLabel = ({ label }: { label: string }): React.JSX.Element => {
   const { styles } = useStyles();
 
   return <span className={styles.label}>{label}</span>;

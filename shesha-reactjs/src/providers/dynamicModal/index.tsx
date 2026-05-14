@@ -1,9 +1,10 @@
 import { App } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer } from 'react';
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
+import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
-import { createModalAction, openAction, removeModalAction } from './actions';
+import { createModalAction, openAction, removeAllModalsAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
   getShowConfirmationArgumentsForm,
@@ -26,6 +27,12 @@ import { DynamicModalRenderer } from './renderer';
 import { showDialogArgumentsFormFactory } from './configurable-actions/show-dialog-arguments';
 import { throwError } from '@/utils/errors';
 import { getLatestInstance } from './utils';
+import { createModalApi, IModalApi, createFallbackModalApi } from './modalApi';
+
+type IDynamicModalActionExecutionContext = IActionExecutionContext & {
+  configurableActionsDispatcherProxy?: FC<PropsWithChildren>;
+};
+
 
 const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, {
@@ -66,15 +73,28 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
     actionDependencies,
   );
 
-  const removeModal = (id: string): void => {
+  const removeModal = useCallback((id: string): void => {
     dispatch(removeModalAction(id));
-  };
+  }, []);
 
-  const createModal = (modalProps: IModalProps): void => {
+  const removeAllModals = useCallback((): void => {
+    // Settle any pending Show Dialog promises by invoking each instance's onClose(false)
+    // before clearing state, so awaiting callers reject instead of hanging forever.
+    Object.values(state.instances).forEach((instance) => {
+      try {
+        instance.onClose?.(false);
+      } catch (err) {
+        console.error('Failed to settle modal onClose during removeAllModals', err);
+      }
+    });
+    dispatch(removeAllModalsAction());
+  }, [state]);
+
+  const createModal = useCallback((modalProps: IModalProps): void => {
     dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
-  };
+  }, []);
 
-  useConfigurableAction<IShowModalActionArguments>(
+  useConfigurableAction<IShowModalActionArguments, unknown, IDynamicModalActionExecutionContext>(
     {
       name: 'Show Dialog',
       owner: 'Common',
@@ -120,7 +140,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
                 else
                   reject(result);
               },
-              wrapper: context["configurableActionsDispatcherProxy"] as FC<PropsWithChildren> | undefined,
+              wrapper: context.configurableActionsDispatcherProxy,
             };
 
             createModal({ ...modalProps });
@@ -140,7 +160,11 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
         const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy();
         return { configurableActionsDispatcherProxy };
       },
-      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
+      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0)
+        .add<IShowModalActionArguments>(1, (prev) => ({
+          ...prev,
+          showCloseIcon: prev.showCloseIcon !== undefined ? prev.showCloseIcon : true,
+        })),
     },
     actionDependencies,
   );
@@ -182,7 +206,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <DynamicModalStateContext.Provider value={state}>
-      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }}>
+      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, removeAllModals, modalExists }}>
         <DynamicModalRenderer id="root">
           {children}
         </DynamicModalRenderer>
@@ -193,11 +217,28 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
 
 const useDynamicModalState = (): IDynamicModalStateContext => useContext(DynamicModalStateContext) ?? throwError("useDynamicModalState must be used within a DynamicModalProvider");
 
+function useDynamicModalStateOrUndefined(): IDynamicModalStateContext | undefined {
+  return useContext(DynamicModalStateContext);
+}
+
 const useDynamicModalActions = (): IDynamicModalActionsContext => useContext(DynamicModalActionsContext) ?? throwError("useDynamicModalActions must be used within a DynamicModalProvider");
+
+function useDynamicModalActionsOrUndefined(): IDynamicModalActionsContext | undefined {
+  return useContext(DynamicModalActionsContext);
+}
 
 const useDynamicModals = (): IDynamicModalStateContext & IDynamicModalActionsContext => {
   return { ...useDynamicModalState(), ...useDynamicModalActions() };
 };
+
+function useDynamicModalsOrUndefined(): (IDynamicModalStateContext & IDynamicModalActionsContext) | undefined {
+  const state = useDynamicModalStateOrUndefined();
+  const actions = useDynamicModalActionsOrUndefined();
+
+  if (!state || !actions) return undefined;
+
+  return { ...state, ...actions };
+}
 
 interface SimpleModal {
   open: () => void;
@@ -223,4 +264,68 @@ function useClosestModal(): IDynamicModalInstanceContext {
   return context;
 }
 
-export { DynamicModalProvider, useClosestModal, useDynamicModals, useModal };
+/**
+ * Hook to get the modal API for use in scripts and code
+ * @returns Modal API instance with methods to show dialogs, forms, and confirmations
+ * @example
+ * const modalApi = useModalApi();
+ *
+ * // Show a form in a modal
+ * const result = await modalApi.showForm({
+ *   formId: { name: 'my-form', module: 'app' },
+ *   title: 'Edit Record'
+ * });
+ *
+ * // Show a confirmation
+ * const confirmed = await modalApi.confirm({
+ *   title: 'Delete',
+ *   content: 'Are you sure?'
+ * });
+ */
+function useModalApi(): IModalApi {
+  const { createModal, removeModal } = useDynamicModals();
+  const { modal: antModalApi } = App.useApp();
+
+  // Memoize the modal API to prevent unnecessary re-creations
+  const modalApi = useMemo(
+    () => createModalApi(createModal, removeModal, antModalApi),
+    [createModal, removeModal, antModalApi],
+  );
+
+  return modalApi;
+}
+
+/**
+ * Hook to get the modal API with fallback if provider is not available
+ * Use this in contexts where DynamicModalProvider may not be available
+ * @returns Modal API instance with full functionality when provider is available,
+ * or a fallback API with limited functionality (only static methods like confirm, warning, etc.) when provider is not available.
+ * Note: This hook always returns an IModalApi object, never undefined.
+ */
+function useModalApiWithFallback(): IModalApi {
+  const modals = useDynamicModalsOrUndefined();
+  const { modal: antModalApi } = App.useApp();
+
+  // Memoize the modal API to prevent unnecessary re-creations
+  const modalApi = useMemo(() => {
+    if (!modals) {
+      // Return fallback API with only static methods when provider is not available
+      return createFallbackModalApi(antModalApi);
+    }
+
+    return createModalApi(modals.createModal, modals.removeModal, antModalApi);
+  }, [modals, antModalApi]);
+
+  return modalApi;
+}
+
+export {
+  DynamicModalProvider,
+  useClosestModal,
+  useDynamicModals,
+  useDynamicModalsOrUndefined,
+  useModal,
+  useModalApi,
+  useModalApiWithFallback,
+};
+export type { IModalApi };

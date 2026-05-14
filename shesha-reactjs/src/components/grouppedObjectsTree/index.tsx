@@ -26,7 +26,7 @@ interface GrouppedObjects<TItem> {
   visibleItems: TItem[];
 }
 
-export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTreeProps<TItem>): JSX.Element => {
+export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTreeProps<TItem>): React.JSX.Element => {
   const childFieldName = props.childFieldName ?? 'children';
 
   const getVisible = (items: TItem[], searchText: string): TItem[] => {
@@ -104,7 +104,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
     }
   }, [groups]);
 
-  const defaultExpandAll = props.searchText.length > 1 && groups[0].visibleItems.length <= 6;
+  const defaultExpandAll = (props.searchText?.length ?? 0) > 1 && groups.length > 0 && groups[0].visibleItems.length <= 6;
 
   return (
     <>

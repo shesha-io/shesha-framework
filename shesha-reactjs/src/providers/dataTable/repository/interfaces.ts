@@ -8,7 +8,7 @@ export interface RowsReorderPayload {
   getOld: () => ITableRowData[];
   getNew: () => ITableRowData[];
   applyOrder: (orderedItems: ITableRowData[]) => void;
-  customReorderEndpoint?: string;
+  customReorderEndpoint?: string | undefined;
 }
 
 export type DefaultCreateOptions = object;

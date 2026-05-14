@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { ILinkComponentProps } from '@/designer-components/link/interfaces';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { ConfigurableItemFullName, extractAjaxResponse, GetAllResponse, IAjaxResponse, IGenericGetAllPayload } from '@/interfaces';
 import { isConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { FormFullName, HttpClientApi, IComponentsDictionary, IConfigurableFormComponent, IConfigurableMainMenu, isNavigationActionConfiguration, isScriptActionConfiguration, useFormManager, useHttpClient, useSettings, useSheshaApplication } from '@/providers';
@@ -8,7 +9,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormOutlined, SettingOutlined } from '@ant-design/icons';
 import { Space, Spin, Typography } from 'antd';
 import qs from 'qs';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -298,9 +299,9 @@ export const FormAnalyzer: FC = () => {
     setState({ items: allItems });
   };
 
-  useEffect(() => {
-    fetchFormsAsync();
-  }, []);
+  useEffectOnce(() => {
+    void fetchFormsAsync();
+  });
 
   return (
     <div>

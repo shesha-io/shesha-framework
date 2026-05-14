@@ -19,7 +19,7 @@ export const LayerGroupConfigurator: FC<ILayerGroupConfiguratorProps> = ({ setti
   return (
     <div className={styles.shaToolbarConfigurator}>
       <Alert
-        message={readOnly ? 'Here you can view layer configuration.' : 'Here you can configure the layer settings'}
+        title={readOnly ? 'Here you can view layer configuration.' : 'Here you can configure the layer settings'}
         className={styles.shaToolbarConfiguratorAlert}
       />
       <LayerProperties settings={settings} />

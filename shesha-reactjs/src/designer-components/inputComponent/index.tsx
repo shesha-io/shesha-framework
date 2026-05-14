@@ -5,12 +5,17 @@ import { useFormItem, useShaFormInstance } from '@/providers';
 import { Button, Divider, Popover } from 'antd';
 import { RollbackOutlined, SyncOutlined } from '@ant-design/icons';
 import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultModelProvider/defaultModelProvider';
-import { getValueByPropertyName } from '@/utils/object';
+import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
 import { convertValueToFriendlyString } from './utils';
+import { useDeepCompareMemo } from '@/hooks';
 
-export const InputComponent: FC<BaseInputProps> = (props) => {
+// make value unknown to process any type of value (InputComponent is not generic)
+export type InputComponentProps = Omit<BaseInputProps, 'value'> & { value: unknown };
+
+export const InputComponent: FC<InputComponentProps> = (props) => {
   const Editor = editorRegistry[props.type] as FC<BaseInputProps>;
   const tempData = useRef<unknown>(null);
+  const [popupOpen, setPopupOpen] = React.useState(false);
   const { formData, setFormData } = useShaFormInstance();
   const defaultModel = useDefaultModelProviderStateOrUndefined();
   const { namePrefix } = useFormItem();
@@ -27,8 +32,19 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
     tempData.current = onChangeSetting?.(v, formData, setFormData, tempData.current);
     onChange?.(v);
   }, [onChange, onChangeSetting, formData, setFormData]);
-  const setOverride = useCallback((): void => internalOnChange(defaultValue), [internalOnChange, defaultValue]);
-  const resetToDefault = useCallback((): void => internalOnChange(undefined), [internalOnChange]);
+
+  const setOverride = useCallback((): void => {
+    internalOnChange(defaultValue);
+    const values = setValueByPropertyName({}, props.propertyName, defaultValue);
+    setFormData({ values, mergeValues: true });
+    setPopupOpen(false);
+  }, [setFormData, props.propertyName, defaultValue, internalOnChange]);
+  const resetToDefault = useCallback((): void => {
+    internalOnChange(undefined);
+    const values = setValueByPropertyName({}, props.propertyName, undefined);
+    setFormData({ values, mergeValues: true });
+    setPopupOpen(false);
+  }, [internalOnChange, props.propertyName, setFormData]);
 
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
   const isInherited = valueInfo?.state === 'usedDefault';
@@ -36,32 +52,35 @@ export const InputComponent: FC<BaseInputProps> = (props) => {
   const additionalInfo = defaultModel?.getCurrentValueAdditionalInfo(defaultModelPropName);
 
   // ToDo: AS - review memoize
-  const content = useMemo(() => (
-    <div style={{ width: '100%' }}>
-      {Boolean(props.tooltip) && (
-        <div><div>{props.tooltip}</div><Divider size="small" /></div>
-      )}
-      {typeof additionalInfo === 'function' && (
-        <div><div>{additionalInfo()}</div><Divider size="small" /></div>
-      )}
-      <div>{isInherited ? `This value inherits from ${valueInfo.latestDefaultModelName}` : `This value is overridden.`}</div>
-      {isOverridden && <div>Inherited value: {convertValueToFriendlyString(defaultValue)}</div>}
-      <div>{isInherited
-        ? <Button type="link" onClick={() => setOverride()}><SyncOutlined /> Override inheritance</Button>
-        : <Button type="link" onClick={() => resetToDefault()}><RollbackOutlined /> Reset to default</Button>}
+  const content = useMemo(() => {
+    const addInfo = typeof additionalInfo === 'function' ? (<div>{additionalInfo()}</div>) : null;
+    const inheritanceInfo1 = isInherited ? `This value inherits from ${valueInfo.latestDefaultModelName}` : isOverridden ? `This value is overridden.` : null;
+    const inheritanceInfo2 = isOverridden ? `Inherited value: ${convertValueToFriendlyString(defaultValue)}` : null;
+    return props.tooltip || addInfo || inheritanceInfo1 || inheritanceInfo2 ? (
+      <div style={{ width: '100%' }}>
+        {Boolean(props.tooltip) && <div>{props.tooltip}</div>}
+        {(Boolean(props.tooltip) && (Boolean(addInfo) || Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2))) && <Divider size="small" />}
+        {addInfo}
+        {(Boolean(addInfo) && (Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2))) && <Divider size="small" />}
+        {inheritanceInfo1 && <div>{inheritanceInfo1}</div>}
+        {inheritanceInfo2 && <div>{inheritanceInfo2}</div>}
+        <div>{isInherited
+          ? <Button type="link" onClick={() => setOverride()}><SyncOutlined /> Override inheritance</Button>
+          : isOverridden && <Button type="link" onClick={() => resetToDefault()}><RollbackOutlined /> Reset to default</Button>}
+        </div>
       </div>
-    </div>
-  ), [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue, setOverride, resetToDefault]);
+    ) : null;
+  }, [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue, setOverride, resetToDefault]);
 
-  const newProps = { ...props, onChange: internalOnChange };
+  const newProps = useDeepCompareMemo(() => ({ ...props, onChange: internalOnChange } as BaseInputProps), [props, internalOnChange]);
 
   if (!Editor) return null;
 
-  if (isInherited || isOverridden) {
+  if (content) {
     return (
-      <Popover content={content} trigger="hover" autoAdjustOverflow={true} placement="topLeft">
+      <Popover content={content} trigger="hover" onOpenChange={setPopupOpen} open={popupOpen} autoAdjustOverflow={true} placement="topLeft">
         <div> {/* div is required to make Popover work for some input components */}
-          <Editor {...newProps} />
+          <Editor key={newProps.id} {...newProps} />
         </div>
       </Popover>
     );

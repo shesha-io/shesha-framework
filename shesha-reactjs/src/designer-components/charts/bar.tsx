@@ -55,7 +55,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
         <ConfigurableFormItem model={model}>
           <Alert
             showIcon
-            message="Error evaluating filters"
+            title="Error evaluating filters"
             description={filterError}
             type="error"
             style={{ margin: '16px' }}

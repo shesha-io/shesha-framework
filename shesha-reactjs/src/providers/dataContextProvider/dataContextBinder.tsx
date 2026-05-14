@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
-import { IModelMetadata } from "@/interfaces/metadata";
+import { IContextMetadata, IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
-import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager";
+import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager/hooks";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 import {
@@ -159,7 +159,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     type,
     parentUid: parentContext?.uid,
     ...actionContext,
-  }, []);
+  });
 
   useEffect(() => {
     setState({ ...state, metadata });
@@ -170,10 +170,12 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
         name,
         description,
         type,
-        metadata: res,
+        metadata: res as IContextMetadata,
         parentUid: parentContext?.uid,
         ...actionContext,
       });
+    }).catch((error) => {
+      console.error('Failed to fetch metadata', error);
     });
     metadataDispatcher.updateModel(id, metadata);
     // TODO: Alex, please review. List of dependencise shouls be full or there should be a function that updates metadata only

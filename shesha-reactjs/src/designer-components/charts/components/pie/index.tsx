@@ -48,7 +48,7 @@ ChartJS.register(
   Legend,
 );
 
-const PieChart = ({ data }: IPieChartProps): JSX.Element => {
+const PieChart = ({ data }: IPieChartProps): React.JSX.Element => {
   const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, strokeWidth, dataMode, titleFont, legendFont } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();

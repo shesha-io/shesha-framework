@@ -70,11 +70,9 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
             readOnly={readOnly}
             availableConstantsExpression={availableConstantsExpression}
           >
-            {CustomComponent ? <CustomComponent{...rest} /> : (
-              <InputComponent
-                {...nestedProps}
-              />
-            )}
+            {CustomComponent
+              ? <CustomComponent {...rest} />
+              : (value, onChange): React.ReactElement => <InputComponent {...nestedProps} value={value} onChange={onChange} />}
           </FormItem>
         </ConditionalWrap>
       </div>

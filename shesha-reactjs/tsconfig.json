@@ -2,9 +2,13 @@
   "extends": "./tsconfig.base.json",
   "references": [
       { "path": "./src/configuration-studio" },
-      { "path": "./src/providers" }, 
+      { "path": "./src/providers" },
+      { "path": "./src/interfaces" },
+      { "path": "./src/utils" },
       { "path": "./src/hooks" },
       { "path": "./src/designer-components/_settings/utils/background" },      
       { "path": "./src/form-factory" },
+      { "path": "./src/publicJsApis" },      
+      { "path": "./src/components/dataTable" },
   ]
 }

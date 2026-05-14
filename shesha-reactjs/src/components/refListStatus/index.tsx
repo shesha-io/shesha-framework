@@ -16,9 +16,10 @@ export interface IRefListStatusProps {
   style?: CSSProperties;
   value?: any;
   isDesigner?: boolean;
+  readOnly?: boolean;
 }
 
-const Icon = ({ type, ...rest }): JSX.Element => {
+const Icon = ({ type, ...rest }): React.JSX.Element => {
   const icons = antdIcons;
   const Component = icons[type];
   return <Component {...rest} />;
@@ -33,19 +34,20 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     showReflistName,
     style = {},
     isDesigner = false,
+    readOnly,
   } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
   const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };
   const { fontSize, fontWeight, textAlign, color, backgroundColor, backgroundImage, ...rest } = style;
   const fontStyles = { fontSize, fontWeight, textAlign };
-  const { styles } = useStyles({ dimensionsStyles, fontStyles });
+  const { styles } = useStyles({ dimensionsStyles, fontStyles, readOnly });
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
 
   if (listItem?.error && !listItem?.loading) {
     return (
       <Alert
         showIcon
-        message="Something went during Reflists fetch"
+        title="Something went during Reflists fetch"
         description={extractErrorMessage(listItem.error)}
         type="error"
       />

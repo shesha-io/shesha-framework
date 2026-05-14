@@ -1,12 +1,33 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { Badge, Button, Tooltip } from 'antd';
 import { FilterFilled, FilterOutlined } from '@ant-design/icons';
 import { FCUnwrapped, useDataTableStore } from '@/providers';
 import { useStyles } from './style';
-import * as Icons from '@ant-design/icons';
 import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { getGhostStyleOverrides } from '@/utils/style';
 import { IAdvancedFilterButtonComponentProps } from './types';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { IconType, ShaIcon } from '@/components/shaIcon';
+
+const splitByCapitalLetters = (str: string): string[] => {
+  return isNullOrWhiteSpace(str)
+    ? []
+    : str
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
+      .split(' ');
+};
+
+const getIconName = (icon: string | undefined, hasFilters: boolean): string | undefined => {
+  if (isNullOrWhiteSpace(icon))
+    return undefined;
+
+  const splitIconName = splitByCapitalLetters(icon);
+  splitIconName.pop();
+  splitIconName.push(hasFilters ? 'Filled' : 'Outlined');
+  const iconName = splitIconName.join('');
+  return iconName;
+};
 
 export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentProps> = (props) => {
   const {
@@ -14,11 +35,10 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
     toggleAdvancedFilter,
     tableFilter,
   } = useDataTableStore();
-  const [icon, setIcon] = useState(null);
   const { styles } = useStyles(props.styles?.fontSize);
 
-  const filterColumns = tableFilter?.map((filter) => filter.columnId);
-  const hasFilters = filterColumns?.length > 0 || isAdvancedFilterVisible;
+  const filterColumns = tableFilter.map((filter) => filter.columnId);
+  const hasFilters = filterColumns.length > 0 || isAdvancedFilterVisible;
 
   // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
   const isGhostType = props.buttonType === 'ghost';
@@ -42,7 +62,7 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
       : {};
 
   // Ghost buttons: only foreground color, no background/border/shadow
-  const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+  const ghostOverrides = isGhostType ? getGhostStyleOverrides({ color: props.color }) : props.styles;
 
   const buttonStyle = {
     ...baseButtonStyle,
@@ -51,51 +71,30 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
     ...ghostOverrides,
   };
 
-  const splitByCapitalLetters = (str: string): string[] => {
-    return str
-      ?.replace(/([a-z])([A-Z])/g, '$1 $2')
-      .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
-      .split(' ');
-  };
-
-  const customIcon = useCallback(() => {
-    if (props.icon) {
-      const splitIconName = splitByCapitalLetters(props.icon as string);
-      splitIconName.pop();
-      splitIconName.push(hasFilters ? 'Filled' : 'Outlined');
-      const iconName = splitIconName.join('');
-
-      return Icons[iconName];
-    }
-
-    return null;
-  }, [props.icon, hasFilters]);
-
-  useEffect(() => {
-    setIcon(customIcon());
-  }, [props.icon, hasFilters, customIcon]);
-
-  const IconComponent = icon;
-  const defaultIcon = hasFilters ? <FilterFilled /> : <FilterOutlined />;
-  const filterIcon = icon ? <IconComponent /> : defaultIcon;
+  const iconName = getIconName(props.icon, hasFilters);
+  const filterIcon = iconName
+    ? <ShaIcon iconName={iconName as IconType} />
+    : hasFilters
+      ? <FilterFilled />
+      : <FilterOutlined />;
   const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
 
   return (
     <span>
       <Badge
-        count={tableFilter?.length}
+        count={tableFilter.length}
         color={isAdvancedFilterVisible || props.readOnly ? styles.disabledColor : styles.primaryColor}
         size="small"
-        title={filterColumns?.join('  ')}
+        title={filterColumns.join('  ')}
       >
         <Tooltip title={props.tooltip}>
           <Button
             type={actualButtonType}
             ghost={isGhostType}
-            title={filterColumns?.join('  ')}
+            title={filterColumns.join('  ')}
             onClick={() => toggleAdvancedFilter(true)}
             className={styles.button}
-            danger={props.danger}
+            danger={props.danger === true}
             disabled={props.readOnly || isAdvancedFilterVisible}
             icon={filterIcon}
             size={props.size}

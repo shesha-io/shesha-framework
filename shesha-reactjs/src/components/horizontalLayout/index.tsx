@@ -127,7 +127,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
 };
 
 
-export const getHorizontalLayout = (page: ReactElement): JSX.Element => {
+export const getHorizontalLayout = (page: ReactElement): React.JSX.Element => {
   const AuthedLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = withAuth(DefaultHorizontalLayout);
   return (
     <AuthedLayout noPadding>

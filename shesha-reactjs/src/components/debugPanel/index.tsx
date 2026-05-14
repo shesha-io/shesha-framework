@@ -122,12 +122,17 @@ export const DebugPanel: FC<PropsWithChildren> = ({ children }) => {
       <Space>
         <CloseOutlined onClick={onClose} />
         <span>Debug panel</span>
-        <Select onChange={onChangePosition} value={position} style={{ minWidth: '7em' }}>
-          <Select.Option key="1" value="top">Top</Select.Option>
-          <Select.Option key="2" value="bottom">Bottom</Select.Option>
-          <Select.Option key="3" value="left">Left</Select.Option>
-          <Select.Option key="4" value="right">Right</Select.Option>
-        </Select>
+        <Select
+          onChange={onChangePosition}
+          value={position}
+          style={{ minWidth: '7em' }}
+          options={[
+            { label: 'Top', value: 'top' },
+            { label: 'Bottom', value: 'bottom' },
+            { label: 'Left', value: 'left' },
+            { label: 'Right', value: 'right' },
+          ]}
+        />
       </Space>
     </>
   );

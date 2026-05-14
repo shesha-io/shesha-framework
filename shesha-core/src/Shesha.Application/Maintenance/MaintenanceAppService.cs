@@ -1,14 +1,14 @@
-﻿using Abp.Dependency;
+using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Domain.Uow;
 using Abp.Reflection;
 using Abp.Web.Models;
-using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate.Cfg.XmlHbmBinding;
+using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.Controllers.Dtos;
 using Shesha.DynamicEntities;
+using Shesha.Elmah;
 using Shesha.Extensions;
 using Shesha.Modules;
 using Shesha.Reflection;
@@ -17,7 +17,6 @@ using Shesha.Settings;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -25,13 +24,9 @@ using System.Threading.Tasks;
 
 namespace Shesha.Controllers
 {
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class FrameworkController: ControllerBase, ITransientDependency
+    [AbpMvcAuthorize(ShaPermissionNames.Pages_Maintenance)]
+    public class MaintenanceAppService : SheshaAppServiceBase
     {
-        public ILogger Logger { get; set; } = new NullLogger();
-        public IIocManager IocManager { get; set; } = default!;
-
         [HttpPost]
         [UnitOfWork(IsDisabled = true)]
         public async Task<string> BootstrapModulesAsync(bool force)
@@ -80,7 +75,8 @@ namespace Shesha.Controllers
 
             var result = assemblies.Select(a => {
                 string architecture = "unknown";
-                if (a.Modules.Any()) {
+                if (a.Modules.Any())
+                {
                     a.Modules.First().GetPEKind(out var pekind, out var machine);
                     architecture = machine.ToString();
                 }
@@ -99,27 +95,8 @@ namespace Shesha.Controllers
                 };
             })
                 .ToList();
-            
+
             return result;
-        }
-
-        [HttpGet]
-        [DontWrapResult]
-        public long CurrentRamUsage()
-        {
-            var process = Process.GetCurrentProcess();
-            process.Refresh();
-            return process.WorkingSet64;
-        }
-
-        [HttpPost]
-        [DontWrapResult]
-        public string? TestException(ExceptionInput input)
-        {
-            if (input.GenerateException)
-                throw new Exception(input.Message);
-
-            return input.Message;
         }
 
         [HttpGet]
@@ -144,15 +121,15 @@ namespace Shesha.Controllers
             return bootstrapper.ProcessAsync(force);
         }
 
-        public class ExceptionInput 
-        { 
+        public class ExceptionInput
+        {
             public bool GenerateException { get; set; }
             public string? Message { get; set; }
         }
 
         [HttpGet]
         [DontWrapResult]
-        public List<ModuleHierarchyInfo> ModulesHierarchy() 
+        public List<ModuleHierarchyInfo> ModulesHierarchy()
         {
             var typeFinder = IocManager.Resolve<ITypeFinder>();
             var moduleTypes = typeFinder.FindModuleTypes().ToList();
@@ -163,7 +140,8 @@ namespace Shesha.Controllers
 
                 var baseModules = moduleInfo.Hierarchy.Select(t => IocManager.Resolve(t).ForceCastAs<SheshaModule>()).ToList();
 
-                return new ModuleHierarchyInfo { 
+                return new ModuleHierarchyInfo
+                {
                     Name = moduleInfo.Name,
                     BaseModules = baseModules.Select(m => m.ModuleInfo.Name).ToList()
                 };
@@ -173,9 +151,41 @@ namespace Shesha.Controllers
         }
 
         public class ModuleHierarchyInfo
-        { 
+        {
             public string Name { get; set; }
             public List<string> BaseModules { get; set; }
         }
+
+        #region Elmah
+
+        public string DisableElmahLogging()
+        {
+            SheshaElmahSettings.IsLoggingDisabled = true;
+            return "Disabled";
+        }
+
+        public string EnableElmahLogging()
+        {
+            SheshaElmahSettings.IsLoggingDisabled = false;
+            return "Enabled";
+        }
+
+        public bool IsElmahLoggingDisabled() => SheshaElmahSettings.IsLoggingDisabled;
+
+        public string DisableElmahFetching()
+        {
+            SheshaElmahSettings.IsFetchingDisabled = true;
+            return "Disabled";
+        }
+
+        public string EnableElmahFetching()
+        {
+            SheshaElmahSettings.IsFetchingDisabled = false;
+            return "Enabled";
+        }
+
+        public bool IsElmahFetchingDisabled() => SheshaElmahSettings.IsFetchingDisabled;
+
+        #endregion
     }
 }

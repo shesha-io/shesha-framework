@@ -106,14 +106,6 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
             label="Style"
             propertyName="externalColumnStyle"
             description="CSS Style"
-            exposedVariables={[
-              {
-                id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                name: 'data',
-                description: 'Form data',
-                type: 'object',
-              },
-            ]}
             wrapInTemplate={true}
             availableConstants={getStyleConstants}
           />
@@ -153,14 +145,6 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
             label="Style"
             propertyName="headerStyles"
             description="CSS Style"
-            exposedVariables={[
-              {
-                id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                name: 'data',
-                description: 'Form data',
-                type: 'object',
-              },
-            ]}
             wrapInTemplate={true}
             availableConstants={getStyleConstants}
           />

@@ -1,19 +1,19 @@
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 export interface IQueryBuilderProps {
-  jsonExpanded?: boolean;
-  showJsonTestingTools?: boolean;
-  modelType?: string | IEntityTypeIdentifier;
-  fieldsUnavailableHint?: string;
-  value?: object;
-  onChange?: (value: Object) => void;
-  readOnly?: boolean;
+  jsonExpanded?: boolean | undefined;
+  showJsonTestingTools?: boolean | undefined;
+  modelType?: string | IEntityTypeIdentifier | undefined;
+  fieldsUnavailableHint?: string | undefined;
+  value?: object | undefined;
+  onChange?: (value: Object) => void | undefined;
+  readOnly?: boolean | undefined;
 }
 
 export interface IQueryBuilderFieldProps {
-  jsonExpanded?: boolean;
-  showJsonTestingTools?: boolean;
-  value?: object;
-  onChange?: (value: any) => void;
-  readOnly?: boolean;
+  jsonExpanded?: boolean | undefined;
+  showJsonTestingTools?: boolean | undefined;
+  value?: object | undefined;
+  onChange?: (value: any) => void | undefined;
+  readOnly?: boolean | undefined;
 }

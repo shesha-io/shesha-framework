@@ -226,7 +226,7 @@ export function filterNonNull<T extends object>(obj: T): Partial<T> {
   ) as Partial<T>;
 }
 
-export const renderChart = (chartType: string, data: IChartData): JSX.Element => {
+export const renderChart = (chartType: string, data: IChartData): React.JSX.Element => {
   switch (chartType) {
     case 'line':
       return <LineChart data={data} />;
@@ -561,17 +561,17 @@ export function filterData(preFilteredData: object[], property: string, operator
         return itemValue !== value;
 
       case 'contains':
-        const result = typeof itemValue === 'string' && ((itemValue as string).toLowerCase()).includes((value as unknown as string).toLowerCase());
+        const result = typeof itemValue === 'string' && (itemValue.toLowerCase()).includes(value.toString().toLowerCase());
         return result;
 
       case 'does_not_contain':
-        return typeof itemValue === 'string' && !((itemValue as string).toLowerCase()).includes((value as unknown as string).toLowerCase());
+        return typeof itemValue === 'string' && !(itemValue.toLowerCase()).includes(value.toString().toLowerCase());
 
       case 'is_empty':
-        return (itemValue as unknown as string) === '' || itemValue == null;
+        return typeof itemValue === 'string' && (itemValue === '' || itemValue == null);
 
       case 'is_not_empty':
-        return (itemValue as unknown as string) !== '' && itemValue != null;
+        return typeof itemValue === 'string' && itemValue !== '' && itemValue != null;
 
       case 'is_greater_than':
         return typeof itemValue === 'number' && itemValue > (value as number);
@@ -586,10 +586,10 @@ export function filterData(preFilteredData: object[], property: string, operator
         return typeof itemValue === 'number' && itemValue <= (value as number);
 
       case 'starts_with':
-        return typeof itemValue === 'string' && (itemValue as unknown as string).startsWith(value as unknown as string);
+        return typeof itemValue === 'string' && itemValue.startsWith(value as unknown as string);
 
       case 'ends_with':
-        return typeof itemValue === 'string' && (itemValue as unknown as string).endsWith(value as unknown as string);
+        return typeof itemValue === 'string' && itemValue.endsWith(value as unknown as string);
 
       case 'is':
         return itemValue === value;

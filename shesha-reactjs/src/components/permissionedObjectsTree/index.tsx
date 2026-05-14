@@ -1,5 +1,5 @@
 import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { ApiOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from '@/apis/permissionedObject';
@@ -29,6 +29,8 @@ export interface IPermissionedObjectsTreeProps {
   formComponentId?: string;
 
   onSelectAction?: IConfigurableActionConfiguration;
+
+  searchText?: string;
 }
 
 export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props) => {
@@ -38,28 +40,33 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   const [allItems, setAllItems] = useState<PermissionedObjectDto[]>();
 
   const { executeAction } = useConfigurableActionDispatcher();
-  const allData = useRef<any>({});
-  allData.current = useAvailableConstantsData();
+  const allData = useAvailableConstantsData();
 
   const fetcher = usePermissionedObjectGetAllTree({ queryParams: { type: props.objectsType }, lazy: true });
-  const { loading: isFetchingData, error: fetchingDataError, data: fetchingDataResponse } = fetcher;
+  const { loading: isFetchingData, refetch } = fetcher;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadData = async (): Promise<void> => {
+      try {
+        const response = await refetch();
+        if (isMounted && isAjaxSuccessResponse(response)) {
+          setAllItems(response.result);
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
+
+    void loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [props.objectsType, refetch]);
 
   const [objectId, setObjectId] = useState("");
-
-  useEffect(() => {
-    fetcher.refetch();
-  }, [props.objectsType]);
-
-  useEffect(() => {
-    if (!isFetchingData) {
-      if (isAjaxSuccessResponse(fetchingDataResponse)) {
-        const fetchedData = fetchingDataResponse.result;
-        if (fetchedData) {
-          setAllItems(fetchedData);
-        }
-      }
-    }
-  }, [isFetchingData, fetchingDataError, fetchingDataResponse]);
 
   const findItem = (items: PermissionedObjectDto[], key: string): PermissionedObjectDto => {
     let res = null;
@@ -130,9 +137,9 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   const onChangeAction = (selectedRow: PermissionedObjectDto): void => {
     if (props.onSelectAction?.actionName) {
-      executeAction({
+      void executeAction({
         actionConfiguration: props.onSelectAction,
-        argumentsEvaluationContext: { ...allData.current, selectedRow },
+        argumentsEvaluationContext: { ...allData, selectedRow },
       });
     }
   };
@@ -183,7 +190,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
       <GrouppedObjectsTree<PermissionedObjectDto>
         items={allItems}
         openedKeys={openedKeys}
-        searchText={searchText}
+        searchText={searchText || props.searchText || ''}
         groupBy={groupBy}
         defaultSelected={objectId}
         isMatch={(item, searchText) => (

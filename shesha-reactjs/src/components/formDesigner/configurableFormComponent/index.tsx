@@ -3,7 +3,6 @@ import DragWrapper from './dragWrapper';
 import FormComponent from '../formComponent';
 import React, {
   FC,
-  MutableRefObject,
   memo,
   useMemo,
   useRef,
@@ -37,7 +36,7 @@ export interface IConfigurableFormComponentDesignerProps {
   componentModel: IComponentModelProps;
   selectedComponentId?: string;
   readOnly?: boolean;
-  settingsPanelRef?: MutableRefObject<HTMLElement>;
+  settingsPanelElement?: HTMLDivElement | null;
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
@@ -45,7 +44,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   componentModel,
   selectedComponentId,
   readOnly,
-  settingsPanelRef,
+  settingsPanelElement,
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
@@ -123,7 +122,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // when typing in the properties panel. The portal is created once and the component
   // receives updates through its own internal state management.
   const settingsEditor = useMemo(() => {
-    const renderRequired = isSelected && settingsPanelRef?.current;
+    const renderRequired = isSelected && settingsPanelElement;
 
     if (!renderRequired)
       return null;
@@ -140,10 +139,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
           toolboxComponent={component}
         />
       </div>
-    ), settingsPanelRef.current, "propertiesPanel");
+    ), settingsPanelElement, "propertiesPanel");
 
     return result;
-  }, [isSelected, settingsPanelRef, readOnly, component]);
+  }, [isSelected, settingsPanelElement, readOnly, component]);
 
   // Extract margins from ORIGINAL component styling (both stylingBox and custom styles)
   // Custom style margins take precedence over stylingBox margins
@@ -302,10 +301,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 const ConfigurableFormComponentDesignerMemo = memo(ConfigurableFormComponentDesignerInner);
 
 export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = (props) => {
-  const { settingsPanelRef } = useFormDesigner();
+  const { settingsPanelElement } = useFormDesigner();
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const readOnly = useFormDesignerReadOnly();
-  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef }} />;
+  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelElement }} />;
 };
 
 export interface IConfigurableFormComponentProps {

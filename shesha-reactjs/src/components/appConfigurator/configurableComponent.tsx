@@ -44,7 +44,7 @@ export const ConfigurableComponent = <TSettings extends any>({
   children,
   canConfigure = true,
   onStartEdit,
-}: IConfigurableComponentProps<TSettings>): JSX.Element => {
+}: IConfigurableComponentProps<TSettings>): React.JSX.Element => {
   const { mode } = useAppConfigurator();
   const { styles } = useStyles();
 

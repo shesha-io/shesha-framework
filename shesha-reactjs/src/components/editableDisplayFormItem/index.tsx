@@ -76,7 +76,7 @@ export const EditableDisplayFormItem: FC<IEditableDisplayLabelProps> = ({
     onChange(event.target.value);
   };
 
-  const renderInput = (): JSX.Element => {
+  const renderInput = (): React.JSX.Element => {
     if (dataType === 'string') {
       return <Input value={value as string} onChange={handleTextChange} />;
     } else if (dataType === 'date') {
@@ -99,14 +99,14 @@ export const EditableDisplayFormItem: FC<IEditableDisplayLabelProps> = ({
     return <>{Boolean(value) ? 'Yes' : 'No'}</>;
   };
 
-  const renderFormItemProperComponent = (): JSX.Element => {
+  const renderFormItemProperComponent = (): React.JSX.Element => {
     if (isEditing) {
       return renderInput();
     }
 
     const iconClass = `sha-label-icon ${labelIconPlacement}`;
 
-    const displayIcon = (): JSX.Element =>
+    const displayIcon = (): React.JSX.Element =>
       readOnly ? (
         <LockOutlined className={iconClass} />
       ) : (

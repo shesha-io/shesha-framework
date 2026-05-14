@@ -12,14 +12,14 @@ export type IConfigurableFormItemChildFunc = (
 export interface IConfigurableFormItemProps {
   model: IComponentModelProps;
   readonly children?: ReactNode | IConfigurableFormItemChildFunc;
-  className?: string;
-  valuePropName?: string;
-  initialValue?: any;
-  customVisibility?: string;
-  wrapperCol?: ColProps;
-  labelCol?: ColProps;
+  className?: string | undefined;
+  valuePropName?: string | undefined;
+  initialValue?: any | undefined;
+  customVisibility?: string | undefined;
+  wrapperCol?: ColProps | undefined;
+  labelCol?: ColProps | undefined;
   hidden?: boolean;
-  autoAlignLabel?: boolean;
-  lazy?: boolean;
-  availableConstantsExpression?: string | GetAvailableConstantsFunc;
+  autoAlignLabel?: boolean | undefined;
+  lazy?: boolean | undefined;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
 }

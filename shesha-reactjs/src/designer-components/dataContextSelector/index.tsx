@@ -5,7 +5,7 @@ import React, { FC } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { Select } from 'antd';
-import { useDataContextManager } from '@/providers/dataContextManager';
+import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IDataContextSelectorProps<TValue = any> {
@@ -26,11 +26,15 @@ const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   };
 
   return (
-    <Select allowClear={true} disabled={props.readOnly} showSearch value={props.value} size={props.size} onChange={onChange}>
-      {dataContexts.map((item) => {
-        return <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>;
-      })}
-    </Select>
+    <Select
+      allowClear={true}
+      disabled={props.readOnly}
+      showSearch
+      value={props.value}
+      size={props.size}
+      onChange={onChange}
+      options={dataContexts.map((item) => ({ value: item.id, label: item.name }))}
+    />
   );
 };
 

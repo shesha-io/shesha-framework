@@ -20,6 +20,9 @@ export const SettingsEditorToolbar: FC = () => {
     // saveSetting();
     saveSetting().then(() => {
       message.success('Setting saved successfully');
+    }).catch((error) => {
+      console.error('Failed to save setting', error);
+      message.error('Failed to save setting');
     });
   };
   const onCancelEditClick = (): void => {

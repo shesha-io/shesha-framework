@@ -54,7 +54,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
         <ConfigurableFormItem model={model} className={styles.formItem}>
           <Alert
             showIcon
-            message="Error evaluating filters"
+            title="Error evaluating filters"
             description={filterError}
             type="error"
             style={{ margin: '16px' }}

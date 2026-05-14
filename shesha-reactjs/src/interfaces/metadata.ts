@@ -28,6 +28,7 @@ export interface SourceFile {
 
 export interface TypeDefinition {
   typeName: string;
+  isNullable?: boolean;
   files: SourceFile[];
 }
 
@@ -101,8 +102,8 @@ export interface ModelTypeIdentifier {
 
 export interface IHasEntityType {
   fullClassName?: string;
-  entityType?: string;
-  entityModule?: string | null;
+  entityType?: string | undefined;
+  entityModule?: string | undefined;
 }
 
 export interface IHasFullyQualifiedEntityType {
@@ -132,7 +133,7 @@ export const isIHasInheritedFromEntityType = (value: unknown): value is IHasInhe
   return isDefined(value) && "inheritedFromEntityType" in value && typeof value.inheritedFromEntityType === 'string';
 };
 
-export interface IObjectProperty extends IPropertyMetadata, IHasTypeDefinition {
+export interface IObjectProperty extends IPropertyMetadata, Partial<IHasTypeDefinition> {
 }
 
 export interface IFunctionProperty extends IPropertyMetadata, IHasTypeDefinition {
@@ -159,7 +160,7 @@ export const isEntityReferencePropertyMetadata = (propMeta: IMemberMetadata): pr
 };
 
 export const isEntityReferenceArrayPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferenceArrayPropertyMetadata => {
-  return isDefined(propMeta) && propMeta.dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(propMeta.dataFormat);
+  return isDefined(propMeta) && propMeta.dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(propMeta.dataFormat ?? '');
 };
 
 export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {

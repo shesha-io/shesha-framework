@@ -47,13 +47,13 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
     <div className={styles.shaGlobalTableFilter} style={style}>
       <Search
         value={quickSearch}
-        onKeyPress={(event) => event?.stopPropagation()}
+        onKeyDown={(event) => event.stopPropagation()}
         onSearch={onSearch}
         onChange={(e) => {
           e?.stopPropagation();
           changeQuickSearch(e.target.value);
         }}
-        onClick={(event) => event?.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
         {...srcProps}
       />
     </div>

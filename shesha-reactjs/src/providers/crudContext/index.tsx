@@ -32,7 +32,7 @@ import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { IFormActionsContext } from '../form/contexts';
 import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
-import { extractErrorInfo } from '@/utils/errors';
+import { extractErrorInfo, throwError } from '@/utils/errors';
 
 export type DataProcessor = (data: unknown) => Promise<unknown>;
 
@@ -79,7 +79,10 @@ const InternalCrudProvider = <TData extends object = object>(props: PropsWithChi
       Promise.resolve(dataResponse).then((response) => {
         setInitialValues(response);
         form?.setFieldsValue(response);
-      });
+      }).catch((error) => {
+        console.error('Failed to fetch initial values', error);
+        throw error;
+      }); ;
     } else {
       setInitialValues(data);
 
@@ -279,7 +282,9 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
 
     if (!form.isFieldsTouched()) return;
 
-    debouncedUpdate();
+    debouncedUpdate()?.catch((error) => {
+      console.error('Failed to auto-save', error);
+    });
   }, [state.autoSave, state.mode, form, debouncedUpdate]);
 
   // Cancel pending auto-save when mode changes or component unmounts
@@ -307,12 +312,22 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
     antdForm: form,
     form: undefined,
     init: (form) => {
-      form.initByMarkup({
+      form.initFormByMarkup({
         formFlatMarkup: flatMarkup,
         formSettings: formSettings,
+      }).catch((error) => {
+        console.error('Failed to init form', error);
+        throw error;
       });
     },
   });
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
+      void shaForm.triggerEvents();
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status]);
+
   return (
     <ShaFormProvider shaForm={shaForm}>
       <ShaForm.MarkupProvider markup={flatMarkup}>
@@ -356,14 +371,6 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
   );
 };
 
-function useCrud(require: boolean = true): ICrudContext | undefined {
-  const context = useContext(CrudContext);
-
-  if (context === undefined && require) {
-    throw new Error('useCrud must be used within a CrudProvider');
-  }
-
-  return context;
-}
+const useCrud = (): ICrudContext => useContext(CrudContext) ?? throwError("useCrud must be used within a CrudProvider");
 
 export { CrudProvider, useCrud };

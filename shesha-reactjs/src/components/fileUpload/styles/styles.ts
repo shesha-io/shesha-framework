@@ -185,7 +185,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
             color: ${color} !important;
           }
         }
-        ${listType !== 'thumbnail' && style?.jsStyle}
+        ${style?.jsStyle}
       }
 
       .thumbnail-stub {
@@ -193,7 +193,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border: 1px ${borderStyle} ${borderColor} !important;
+        border: 1px ${borderStyle} transparent !important;
         ${style}
       }
 
@@ -212,8 +212,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .${prefixCls}-upload {
 
-        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : '100%'} !important;
-        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : '100%'} !important;
+        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : (width ?? height ?? '120px')} !important;
+        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : (height ?? width ?? '120px')} !important;
         border-radius: ${borderRadius} !important;
         align-items: center;
 
@@ -243,9 +243,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         * {
           ${commonTextStyles}
         }
-        ${listType === 'thumbnail' && style}
-        width: 100%;
-        height: 100%;
+        ${style}
+        width: 100% !important;
+        height: 100% !important;
       }
 
       .ant-upload-list-item-container {
@@ -253,7 +253,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
         border-radius: ${borderRadius} !important;
-        border: ${borderWidth} ${listType === 'thumbnail' ? borderStyle : 'none'} ${borderColor} !important;
+        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
         &.ant-upload-animate-inline-appear,
         &.ant-upload-animate-inline-appear-active,
         &.ant-upload-animate-inline {
@@ -261,7 +261,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           animation: none !important;
           transition: none !important;
         }
-        ${listType !== 'thumbnail' && style}
+        ${style}
       }
     `,
   );

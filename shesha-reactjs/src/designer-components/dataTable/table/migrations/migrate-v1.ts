@@ -5,6 +5,7 @@ import { IModalProps } from '@/providers/dynamicModal/models';
 import { ITableComponentProps } from '../models';
 import { SettingsMigrationContext } from '@/interfaces';
 import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
+import { IKeyValue } from '@/interfaces/keyValue';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
   return {
@@ -85,28 +86,28 @@ const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0)
     actionName: 'Show Dialog',
   });
   const convertedProps = oldColumn as Omit<IModalProps, 'formId'> & {
-    submitHttpVerb?: 'POST' | 'PUT';
+    submitHttpVerb?: 'POST' | 'PUT' | undefined;
     onSuccessRedirectUrl?: string;
   }; // very strange code, took it from column renderer
 
   const modalArguments: IShowModalActionArgumentsV0 = {
-    modalTitle: oldColumn.modalTitle,
-    formId: oldColumn.modalFormId,
-    additionalProperties: oldColumn.additionalProperties,
-    modalWidth: oldColumn.modalWidth,
+    modalTitle: oldColumn.modalTitle ?? "",
+    formId: oldColumn.modalFormId ?? "",
+    additionalProperties: oldColumn.additionalProperties ?? [],
+    modalWidth: oldColumn.modalWidth ?? "",
 
-    showModalFooter: convertedProps?.showModalFooter ?? false,
-    submitHttpVerb: convertedProps?.submitHttpVerb,
+    showModalFooter: convertedProps.showModalFooter ?? false,
+    submitHttpVerb: convertedProps.submitHttpVerb,
   };
   actionConfiguration.actionArguments = modalArguments;
 
-  if (convertedProps?.onSuccessRedirectUrl) {
+  if (convertedProps.onSuccessRedirectUrl) {
     actionConfiguration.handleSuccess = true;
     actionConfiguration.onSuccess = makeAction({
       actionOwner: 'Common',
       actionName: 'Navigate',
       actionArguments: {
-        target: convertedProps?.onSuccessRedirectUrl,
+        target: convertedProps.onSuccessRedirectUrl,
       },
     });
   };
@@ -160,13 +161,13 @@ interface IConfigurableActionColumnsPropsV0 {
    */
   deleteWarningMessage?: string;
 
-  additionalProperties?: any;
+  additionalProperties?: IKeyValue[];
 
   uniqueStateId?: string;
 
   modalFormMode?: FormMode;
 
-  modalWidth?: any;
+  modalWidth?: number | string;
   //#endregion
 
   showConfirmDialogBeforeSubmit?: boolean;
