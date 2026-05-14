@@ -74,7 +74,7 @@ const AlertComponent: AlertComponentDefinition = {
 
       if (hasHtmlTags) {
         const sanitizedContent = DOMPurify.sanitize(contentStr, { USE_PROFILES: { html: true } });
-        const parsedContent: any = parse(sanitizedContent);
+        const parsedContent = parse(sanitizedContent);
         // If parsed content is a React element, apply our styles
         if (React.isValidElement(parsedContent)) {
           return React.cloneElement(parsedContent as React.ReactElement, {
