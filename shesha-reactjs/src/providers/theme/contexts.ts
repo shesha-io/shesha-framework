@@ -1,7 +1,7 @@
 import { createNamedContext } from '@/utils/react';
-import { FormItemLayout } from 'antd/es/form/Form';
-import { FormLabelAlign } from 'antd/es/form/interface';
 import { Theme } from 'antd/lib/config-provider/context';
+import { FormItemLayout } from 'antd/lib/form/Form';
+import { FormLabelAlign } from 'antd/lib/form/interface';
 
 interface ITextTheme {
   default?: string;
@@ -19,6 +19,7 @@ export interface IConfigurableTheme {
   componentSpan?: number;
   labelAlign?: FormLabelAlign;
   layout?: FormItemLayout;
+  colon?: boolean;
 }
 
 export interface IThemeStateContext {
@@ -27,6 +28,9 @@ export interface IThemeStateContext {
   iconPrefixCls: string;
   labelSpan: number;
   componentSpan: number;
+  labelAlign?: FormLabelAlign;
+  layout?: FormItemLayout;
+  colon?: boolean;
 }
 
 export interface IThemeActionsContext {
@@ -57,6 +61,8 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
   iconPrefixCls: 'antdicon',
   labelSpan: 6,
   componentSpan: 18,
+  colon: true,
+  layout: 'horizontal',
 };
 
 export const UiStateContext = createNamedContext<IThemeStateContext | undefined>(THEME_CONTEXT_INITIAL_STATE, "UiStateContext");

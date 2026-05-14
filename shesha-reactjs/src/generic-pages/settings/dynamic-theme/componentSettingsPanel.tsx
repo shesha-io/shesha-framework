@@ -136,7 +136,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
       {/* Right: Component Appearance Settings */}
       <Col xs={24} sm={24} md={18} lg={18} xl={18} xxl={18}>
-      {/* Edit Card: allows editing the component's appearance/theme values */}
+        {/* Edit Card: allows editing the component's appearance/theme values */}
         <Card
           title={(
             <div>
@@ -188,13 +188,13 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
                     },
                   ],
                   formSettings: {
-                    colon: true, // TODO: use theme value
-                    layout: 'horizontal' as const,
-                    labelCol: { span: 6 },
-                    wrapperCol: { span: 18 },
+                    colon: theme.colon, // TODO: use theme value
+                    layout: theme.layout,
+                    labelCol: { span: theme.labelSpan },
+                    wrapperCol: { span: theme.componentSpan },
                   },
                 }}
-                onValuesChange={handleFormDataChange}
+                initialValues={theme ?? {}}
                 className={styles.appearanceForm}
               />
             </div>

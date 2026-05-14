@@ -1,12 +1,10 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Col, Form, Input, Radio, Row, Slider, Space, Tooltip, Typography } from 'antd';
+import { Button, Card, Col, Radio, Row, Slider, Space, Tooltip, Typography } from 'antd';
 import React, { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettingsPanel';
 import { useStyles } from './styles/styles';
-import { ConfigurableForm } from '@/components';
-import { nanoid } from '@/utils/uuid';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
@@ -48,8 +46,7 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readonly })
   );
 };
 
-const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly, themeLevel }) => {
-
+const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly, themeLevel = 1 }) => {
   const changeThemeInternal = (theme: IConfigurableTheme): void => {
     if (onChange) onChange(theme);
   };
@@ -106,7 +103,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
               changeThemeInternal({
                 ...theme,
                 sidebar: e.target.value,
-              })
+              });
             }}
             disabled={readonly}
             optionType="button"
@@ -229,11 +226,11 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 <Col xs={24} md={8}>
                   <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Buttons</Typography.Text>
                   <Space orientation="vertical" style={{ width: '100%' }} size="small">
-                    <Button size='small' type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
-                    <Button size='small' danger block>Error</Button>
-                    <Button size='small' block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
-                    <Button size='small' block>Default</Button>
-                    <TextsPreview/>
+                    <Button size="small" type="primary" block style={{ background: primaryColor, borderColor: primaryColor }}>Primary</Button>
+                    <Button size="small" danger block>Error</Button>
+                    <Button size="small" block style={{ color: successColor, borderColor: successColor }}>Secondary</Button>
+                    <Button size="small" block>Default</Button>
+                    <TextsPreview />
                   </Space>
                 </Col>
               </Row>
