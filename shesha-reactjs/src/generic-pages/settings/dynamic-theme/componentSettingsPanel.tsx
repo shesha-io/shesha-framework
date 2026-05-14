@@ -36,7 +36,7 @@ export interface IComponentDefaultsPanelProps {
 /**
  * Component Defaults Panel - Shows menu of components on left, appearance settings on right
  */
-export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange }) => {
+export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readonly }) => {
   const { styles } = useStyles();
   const [selectedKey, setSelectedKey] = useState<string>('button');
 
@@ -152,7 +152,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         >
           {appearanceMarkup && componentType ? (
             <ConfigurableForm
-              mode="edit"
+              mode={readonly ? 'readonly' : 'edit'}
               markup={appearanceMarkup}
               initialValues={theme ?? {}}
               onValuesChange={handleFormDataChange}
