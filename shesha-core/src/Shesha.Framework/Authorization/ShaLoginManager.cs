@@ -155,6 +155,8 @@ namespace Shesha.Authorization
 
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
 
+            await EnforceLoginOtpCooldownAsync(user.PasswordResetCode, securitySettings.OtpCooldownSeconds);
+
             var response = await OtpManager.SendPinAsync(new SendPinInput()
             {
                 SendTo = mobileNumber,
@@ -169,6 +171,32 @@ namespace Shesha.Authorization
             await UserManager.UpdateAsync(user);
 
             return response;
+        }
+
+        /// <summary>
+        /// Throws when a previous OTP for the same user was sent inside the cooldown window.
+        /// Returning the remaining wait time prevents the SMS gateway from being hit on every retry.
+        /// </summary>
+        private async Task EnforceLoginOtpCooldownAsync(string lastOperationCode, int cooldownSeconds)
+        {
+            if (cooldownSeconds <= 0 || string.IsNullOrWhiteSpace(lastOperationCode))
+                return;
+
+            var existingOtpId = lastOperationCode.ToGuidOrNull();
+            if (!existingOtpId.HasValue)
+                return;
+
+            var existingOtp = await OtpManager.GetAsync(existingOtpId.Value);
+            if (existingOtp == null)
+                return;
+
+            var nextAllowed = existingOtp.CreationTime.AddSeconds(cooldownSeconds);
+            if (nextAllowed <= DateTime.UtcNow)
+                return;
+
+            var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.UtcNow).TotalSeconds);
+            throw new UserFriendlyException(
+                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
         }
 
         public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string imei = null, string tenancyName = null, bool shouldLockout = true)
