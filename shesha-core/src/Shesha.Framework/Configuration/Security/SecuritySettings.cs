@@ -50,6 +50,7 @@ namespace Shesha.Configuration.Security
         /// Minimum seconds that must elapse between consecutive OTP send requests for the same
         /// user. Mitigates SMS-flooding / toll-fraud abuse against the SMS gateway. Set to 0 to disable.
         /// </summary>
+        [Range(0, int.MaxValue)]
         [Display(Name = "OTP send cooldown (sec)")]
         public int OtpCooldownSeconds { get; set; }
 

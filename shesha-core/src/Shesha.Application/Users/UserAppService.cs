@@ -249,15 +249,34 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="mobileNo">mobile number of the user</param>
         [AbpAllowAnonymous]
+        [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtpAsync(string mobileNo)
         {
             // todo: cleanup mobile number
             // todo: store clear mobile number in the DB
 
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+
             // ensure that the user exists
             var user = await GetUniqueUserByMobileNoAsync(mobileNo);
+            
+            if (user == null)
+                throw new UserFriendlyException("Your username is not recognised");
+            
+            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
 
-            var otpResponse = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = mobileNo, SendType = OtpSendType.Sms });
+            await EnforceOtpCooldownAsync(user.PasswordResetCode, securitySettings.OtpCooldownSeconds);
+
+            var otpResponse = await _otpManager.SendPinAsync(new SendPinInput()
+            {
+                SendTo = mobileNo,
+                SendType = OtpSendType.Sms,
+                Lifetime = securitySettings.ResetPasswordSmsOtpLifetime,
+            });
+
+            user.PasswordResetCode = otpResponse.OperationId.ToString();
+            await _userManager.UpdateAsync(user);
 
             return new ResetPasswordSendOtpResponse()
             {
@@ -488,9 +507,20 @@ namespace Shesha.Users
 
             var validationErrors = 0;
 
-            // Require an answer for every question the user has configured — otherwise
-            // a caller could trivially pass verification by submitting a subset (or none).
-            if (submittedQuestions.Count != configuredQuestions.Count)
+            // Require the submitted question IDs to exactly match the configured set (no duplicates,
+            // no subset, no extras) — otherwise a caller could pass verification by submitting the
+            // same known answer multiple times, or by sending an empty list against an empty config.
+            var configuredQuestionIds = configuredQuestions
+                .Select(q => q.SelectedQuestion.Id)
+                .ToHashSet();
+            var submittedQuestionIds = submittedQuestions
+                .Select(q => q.QuestionId)
+                .ToHashSet();
+
+            if (configuredQuestionIds.Count == 0
+                || submittedQuestions.Count != configuredQuestionIds.Count
+                || submittedQuestionIds.Count != configuredQuestionIds.Count
+                || !submittedQuestionIds.SetEquals(configuredQuestionIds))
             {
                 validationErrors++;
             }
@@ -499,10 +529,9 @@ namespace Shesha.Users
                 foreach (var submittedQuestionPair in submittedQuestions)
                 {
                     var answeredQuestion = configuredQuestions
-                        .FirstOrDefault(q => q.SelectedQuestion.Id == submittedQuestionPair.QuestionId);
+                        .Single(q => q.SelectedQuestion.Id == submittedQuestionPair.QuestionId);
 
-                    if (answeredQuestion == null
-                        || string.IsNullOrEmpty(submittedQuestionPair.SubmittedAnswer)
+                    if (string.IsNullOrEmpty(submittedQuestionPair.SubmittedAnswer)
                         || !string.Equals(submittedQuestionPair.SubmittedAnswer, answeredQuestion.Answer, StringComparison.OrdinalIgnoreCase))
                     {
                         validationErrors++;
@@ -653,9 +682,6 @@ namespace Shesha.Users
             var isEmailLinkEnabled = securitySettings.UseResetPasswordViaEmailLink;
             var isSmsOtpEnabled = securitySettings.UseResetPasswordViaSmsOtp;
             var isSecurityQuestionsEnabled = securitySettings.UseResetPasswordViaSecurityQuestions;
-
-            if (user == null)
-                throw new UserFriendlyException("Your username is not recognised");
 
             var userSupportedMethods = EntityExtensions.DecomposeIntoBitFlagComponents(user.SupportedPasswordResetMethods);
 
