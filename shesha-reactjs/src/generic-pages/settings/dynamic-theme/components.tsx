@@ -1,5 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Input, InputNumber, Space, Tooltip } from 'antd';
+import { ColorValueType } from 'antd/es/color-picker/interface';
 import React, { FC } from 'react';
 import { ColorPicker, SectionSeparator, Show } from '../../../components';
 import { humanizeString } from '@/utils/string';
@@ -26,60 +27,68 @@ export const HeaderContent: FC<IHeaderProps> = ({ title, subtitle }) => {
 };
 
 /**
- * Props for the input renderer
+ * Props for the input renderer - discriminated union for type safety
  */
-export interface IRenderInputProps {
-  value: number | string;
-  onChange: (value: number | string) => void;
+type IRenderInputPropsNumber = {
+  value: number;
+  onChange: (value: number) => void;
   icon?: string;
   label?: string;
   hint?: string;
-  type?: 'number' | 'string';
+  type: 'number';
   disabled?: boolean;
-}
+};
+
+type IRenderInputPropsString = {
+  value: string;
+  onChange: (value: string) => void;
+  icon?: string;
+  label?: string;
+  hint?: string;
+  type: 'string';
+  disabled?: boolean;
+};
+
+export type IRenderInputProps = IRenderInputPropsNumber | IRenderInputPropsString;
 
 /**
  * Renders an input field with optional icon and tooltip
  */
-export const RenderInput: FC<IRenderInputProps> = ({
-  value,
-  onChange,
-  icon,
-  label,
-  hint,
-  type = 'number',
-  disabled = false,
-}) => (
-  <Space>
-    <Show when={Boolean(label)}>
-      <span>{humanizeString(label)} </span>
-    </Show>
-    <Show when={Boolean(hint)}>
-      <Tooltip title={hint}>
-        <span className="sha-input-tooltip" style={{ cursor: 'pointer' }}>
-          <QuestionCircleOutlined />
-        </span>
-      </Tooltip>
-    </Show>
-    {type === 'number' ? (
-      <InputNumber
-        prefix={icon ? <Icon icon={icon} style={{ color: '#d9d9d9', height: 16 }} /> : undefined}
-        value={value}
-        size="small"
-        onChange={(val) => onChange(val ?? 0)}
-        disabled={disabled}
-      />
-    ) : (
-      <Input
-        prefix={icon ? <Icon icon={icon} /> : undefined}
-        value={value}
-        size="small"
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-      />
-    )}
-  </Space>
-);
+export const RenderInput: FC<IRenderInputProps> = (props) => {
+  const { icon, label, hint, type, disabled = false } = props;
+
+  return (
+    <Space>
+      <Show when={Boolean(label)}>
+        <span>{humanizeString(label)} </span>
+      </Show>
+      <Show when={Boolean(hint)}>
+        <Tooltip title={hint}>
+          <span className="sha-input-tooltip" style={{ cursor: 'pointer' }}>
+            <QuestionCircleOutlined />
+          </span>
+        </Tooltip>
+      </Show>
+      {type === 'number' ? (
+        <InputNumber
+          prefix={icon ? <Icon icon={icon} style={{ color: '#d9d9d9', height: 16 }} /> : undefined}
+          value={props.value}
+          size="small"
+          onChange={(val) => props.onChange(val ?? 0)}
+          disabled={disabled}
+        />
+      ) : (
+        <Input
+          prefix={icon ? <Icon icon={icon} /> : undefined}
+          value={props.value}
+          size="small"
+          onChange={(e) => props.onChange(e.target.value)}
+          disabled={disabled}
+        />
+      )}
+    </Space>
+  );
+};
 
 /**
  * Props for the color picker renderer
@@ -87,7 +96,7 @@ export const RenderInput: FC<IRenderInputProps> = ({
 export interface IRenderColorProps {
   colorName: string;
   initialColor: string;
-  onChange: (color: any) => void;
+  onChange: (color: ColorValueType) => void;
   presetColors?: string[];
   hint?: string;
   label?: string;
@@ -113,7 +122,7 @@ export const RenderColor: FC<IRenderColorProps> = ({
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
     <Space className={className}>
       <Show when={Boolean(colorName)}>
-        <span>{label ? label : humanizeString(colorName)} </span>
+        <span>{label ?? humanizeString(colorName)} </span>
       </Show>
       <Show when={Boolean(hint)}>
         <Tooltip title={hint}>

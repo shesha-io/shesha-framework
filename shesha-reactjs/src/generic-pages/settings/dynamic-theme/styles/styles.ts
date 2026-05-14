@@ -165,7 +165,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     'theme-color-picker',
     css`
       > .ant-color-picker-color-block {
-       border-radius: 50% !important;
+       border-radius: 50%;
       }
     `,
   );

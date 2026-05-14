@@ -7,7 +7,6 @@ import { ConfigurableForm } from '@/components/configurableForm';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import {
   IConfigurableFormComponent,
-  IFormSettings,
   isConfigurableFormComponent,
   isRawComponentsContainer,
 } from '@/providers/form/models';
@@ -77,7 +76,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     const components: IConfigurableFormComponent[] | undefined = Array.isArray(settingsFormMarkup)
       ? settingsFormMarkup
       : settingsFormMarkup?.components;
-    const formSettings = Array.isArray(settingsFormMarkup) ? {} : settingsFormMarkup?.formSettings;
+    const formSettings = Array.isArray(settingsFormMarkup) ? undefined : settingsFormMarkup?.formSettings;
 
     if (!components) return null;
 
@@ -99,7 +98,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     return {
       components: appearanceMarkupComponents,
-      formSettings: formSettings as IFormSettings,
+      formSettings: formSettings ?? undefined,
     };
   }, [componentType]);
 
@@ -154,7 +153,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             <ConfigurableForm
               mode="edit"
               markup={appearanceMarkup}
-              initialValues={[]}
+              initialValues={theme ?? {}}
               onValuesChange={handleFormDataChange}
               className={styles.appearanceForm}
             />

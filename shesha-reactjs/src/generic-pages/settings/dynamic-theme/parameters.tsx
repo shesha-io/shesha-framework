@@ -44,8 +44,26 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readonly })
 };
 
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly, themeLevel }) => {
-  const updateTheme = (update: Partial<IConfigurableTheme>): void => {
-    onChange?.({ ...theme, ...update });
+  
+  const changeThemeInternal = (theme: IConfigurableTheme): void => {
+    if (onChange) onChange(theme);
+  };
+
+  const mergeThemeSection = (
+    section: keyof IConfigurableTheme,
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
+  ): IConfigurableTheme => {
+    return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
+  };
+
+  const updateTheme = (
+    section: keyof IConfigurableTheme,
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
+  ): void => {
+    changeThemeInternal({
+      ...theme,
+      [section]: mergeThemeSection(section, update),
+    });
   };
 
   const { styles } = useStyles();
@@ -93,7 +111,12 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           <Typography.Title level={5} style={{ marginBottom: 12 }}>Theme</Typography.Title>
           <Radio.Group
             value={theme?.sidebar || 'light'}
-            onChange={(e) => updateTheme({ sidebar: e.target.value })}
+            onChange={(e) => {
+              changeThemeInternal({
+                ...theme,
+                sidebar: e.target.value,
+              })
+            }}
             disabled={readonly}
             optionType="button"
             buttonStyle="solid"
@@ -110,11 +133,11 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 Select a circle below to choose your desired colour.
               </Typography.Text>
               <Space size={16} wrap>
-                <ColorCircle color={primaryColor} onChange={(c) => updateTheme({ application: { ...theme?.application, primaryColor: c } })} label="Primary" readonly={readonly} />
-                <ColorCircle color={errorColor} onChange={(c) => updateTheme({ application: { ...theme?.application, errorColor: c } })} label="Error" readonly={readonly} />
-                <ColorCircle color={warningColor} onChange={(c) => updateTheme({ application: { ...theme?.application, warningColor: c } })} label="Warning" readonly={readonly} />
-                <ColorCircle color={successColor} onChange={(c) => updateTheme({ application: { ...theme?.application, successColor: c } })} label="Success" readonly={readonly} />
-                <ColorCircle color={infoColor} onChange={(c) => updateTheme({ application: { ...theme?.application, infoColor: c } })} label="Info" readonly={readonly} />
+                <ColorCircle color={primaryColor} onChange={(c) => updateTheme('application', { ...theme?.application, primaryColor: c })} label="Primary" readonly={readonly} />
+                <ColorCircle color={errorColor} onChange={(c) => updateTheme('application', { ...theme?.application, errorColor: c })} label="Error" readonly={readonly} />
+                <ColorCircle color={warningColor} onChange={(c) => updateTheme('application', { ...theme?.application, warningColor: c })} label="Warning" readonly={readonly} />
+                <ColorCircle color={successColor} onChange={(c) => updateTheme( 'application', { ...theme?.application, successColor: c })} label="Success" readonly={readonly} />
+                <ColorCircle color={infoColor} onChange={(c) => updateTheme( 'application', { ...theme?.application, infoColor: c })} label="Info" readonly={readonly} />
               </Space>
             </Col>
 
@@ -124,8 +147,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 Select a circle below to choose your desired colour.
               </Typography.Text>
               <Space size={16} wrap>
-                <ColorCircle color={theme?.text?.default} onChange={(c) => updateTheme({ text: { ...theme?.text, default: c } })} label="Default" readonly={readonly} />
-                <ColorCircle color={theme?.text?.secondary} onChange={(c) => updateTheme({ text: { ...theme?.text, secondary: c } })} label="Secondary" readonly={readonly} />
+                <ColorCircle color={theme?.text?.default} onChange={(c) => updateTheme('text', { ...theme?.text, default: c })} label="Default" readonly={readonly} />
+                <ColorCircle color={theme?.text?.secondary} onChange={(c) => updateTheme( 'text', { ...theme?.text, secondary: c })} label="Secondary" readonly={readonly} />
               </Space>
             </Col>
 
@@ -135,7 +158,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 Select a circle below to choose your desired colour.
               </Typography.Text>
               <Space size={16} wrap>
-                <ColorCircle color={theme?.layoutBackground} onChange={(c) => updateTheme({ layoutBackground: c })} label="Page" readonly={readonly} />
+                <ColorCircle color={theme?.layoutBackground} onChange={(c) => changeThemeInternal({ layoutBackground: c })} label="Page" readonly={readonly} />
               </Space>
             </Col>
           </Row>
