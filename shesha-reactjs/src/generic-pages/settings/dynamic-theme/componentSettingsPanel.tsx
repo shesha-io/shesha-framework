@@ -136,6 +136,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
       {/* Right: Component Appearance Settings */}
       <Col xs={24} sm={24} md={18} lg={18} xl={18} xxl={18}>
+      {/* Edit Card: allows editing the component's appearance/theme values */}
         <Card
           title={(
             <div>
@@ -165,6 +166,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             </div>
           )}
         </Card>
+        {/* Preview Card: renders the component with the current theme to show a live preview */}
         <Card>
           {componentType && (
             <div>

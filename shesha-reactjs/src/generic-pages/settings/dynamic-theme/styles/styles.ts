@@ -61,10 +61,10 @@ export const useStyles = createStyles(({ css, cx }) => {
   const colorCircle = cx(
     'color-circle',
     css`
-    border-radius: 50%;
-    .ant-color-picker-color-block {
       border-radius: 50%;
-      overflow: hidden;
+      .ant-color-picker-color-block {
+        border-radius: 50%;
+        overflow: hidden;
       }
     `,
   );
