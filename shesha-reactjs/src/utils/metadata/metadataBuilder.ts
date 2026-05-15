@@ -2,12 +2,12 @@ import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
 import { IEntityProperty, IFunctionProperty, IMethodMetadata, IObjectMetadata, IObjectProperty, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
 import { Environment, PropertiesBuilder, StandardConstantInclusionArgs,
   IMetadataBuilder as IPublicMetadataBuilder,
-  IObjectMetadataBuilder as IPublicObjectMetadataBuilder } from "@/publicJsApis/metadataBuilder";
+  IObjectMetadataBuilder as IPublicObjectMetadataBuilder } from "@/publicJsApis/apis/metadataBuilder";
 import { registerMetadataBuilderAction } from "./standardProperties";
 
 
-import { IMemberType, IMetadata } from '@/publicJsApis/metadata';
-import { metadataSourceCode } from '@/publicJsApis';
+import { IMemberType, IMetadata } from '@/publicJsApis/apis/metadata';
+import { metadataSourceCode } from '@/publicJsApis/apis';
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifier } from "@/providers/metadataDispatcher/entities/utils";
 import { isDefined } from "../nullables";

@@ -4,7 +4,7 @@ import { isArrayType, isEntityType, isObjectType, ResultType } from "../models";
 import { TypesBuilder } from "@/utils/metadata/typesBuilder";
 import { isEmptyString, trimSuffix } from "@/utils/string";
 import { DTS_EXTENSION, TypesImporter } from "@/utils/metadata/typesImporter";
-import { Environment } from "@/publicJsApis/metadataBuilder";
+import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 
 export interface ISourceCodeFile {
   content: string;

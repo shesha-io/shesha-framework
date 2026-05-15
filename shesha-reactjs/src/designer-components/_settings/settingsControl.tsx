@@ -49,7 +49,7 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
 export const SettingsControl = <Value extends unknown = unknown>(props: ISettingsControlProps<Value>): ReactElement => {
   const { onChange } = props;
 
-  const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
+  const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression, makeComponentsNullable: true });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue(props.value);
@@ -105,9 +105,8 @@ export const SettingsControl = <Value extends unknown = unknown>(props: ISetting
   };
 
   const editor = constantsEvaluator
-
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType} />
-    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} />;
+    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} makeComponentsNullable={true} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>

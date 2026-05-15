@@ -53,7 +53,7 @@ export const CreateTouchableProperty = (data: object, parent: IPropertyTouched, 
       const propertyName = prop.toString();
       const data = target.accessor._data;
       if (isDefined(data) && propertyName in data)
-        return { enumerable: true, configurable: true, writable: true };
+        return Reflect.getOwnPropertyDescriptor(data, propertyName);
       return undefined;
     },
   });

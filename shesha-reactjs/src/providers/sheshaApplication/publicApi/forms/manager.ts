@@ -1,4 +1,4 @@
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 
 export class FormsManager {
   readonly _httpClient: HttpClientApi;

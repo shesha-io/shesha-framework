@@ -4,7 +4,7 @@ import { isPropertiesArray } from "@/interfaces/metadata";
 import { IObjectMetadataBuilder } from "../metadataBuilder";
 import { useGlobalConstants } from "./useGlobalConstants";
 import { SheshaConstants } from "@/utils/metadata/standardProperties";
-import { StandardConstantInclusionArgs } from "@/publicJsApis/metadataBuilder";
+import { StandardConstantInclusionArgs } from "@/publicJsApis/apis/metadataBuilder";
 import { useMetadataBuilderFactory } from "./useMetadataBuilderFactory";
 
 const ALL_STANDARD_CONSTANTS = [
@@ -13,6 +13,7 @@ const ALL_STANDARD_CONSTANTS = [
   SheshaConstants.selectedRow,
   SheshaConstants.contexts,
   SheshaConstants.pageContext,
+  SheshaConstants.page,
   SheshaConstants.http,
   SheshaConstants.message,
   SheshaConstants.modal,
@@ -21,18 +22,20 @@ const ALL_STANDARD_CONSTANTS = [
   SheshaConstants.form,
   SheshaConstants.formData,
   SheshaConstants.components,
+  SheshaConstants.webStorage,
 ];
 
 export interface AvailableConstantsArgs {
   addGlobalConstants?: boolean;
   standardConstants?: StandardConstantInclusionArgs[];
+  makeComponentsNullable?: boolean | undefined;
   onBuild?: (metaBuilder: IObjectMetadataBuilder) => void;
 }
 
-export const useAvailableConstantsMetadata = ({ addGlobalConstants, onBuild, standardConstants = ALL_STANDARD_CONSTANTS }: AvailableConstantsArgs): IObjectMetadata => {
+export const useAvailableConstantsMetadata = ({ addGlobalConstants, makeComponentsNullable, onBuild, standardConstants = ALL_STANDARD_CONSTANTS }: AvailableConstantsArgs): IObjectMetadata => {
   const globalProps = useGlobalConstants();
 
-  const metadataBuilderFactory = useMetadataBuilderFactory();
+  const metadataBuilderFactory = useMetadataBuilderFactory(makeComponentsNullable);
 
   const response = useMemo<IObjectMetadata>(() => {
     const metaBuilder = metadataBuilderFactory();

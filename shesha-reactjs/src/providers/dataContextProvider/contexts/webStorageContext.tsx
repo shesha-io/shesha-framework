@@ -3,7 +3,7 @@ import DataContextBinder from "../dataContextBinder";
 import { SheshaCommonContexts } from "../../dataContextManager/models";
 import { DataTypes, IObjectMetadata, TypeDefinition } from "@/interfaces";
 import { WebStorageProxy } from "./webStorageProxy";
-import { webStorageCode } from '@/publicJsApis';
+import { webStorageCode } from '@/publicJsApis/apis';
 import { splitDotNotation } from "@/utils/dotnotation";
 import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 import { useDeepCompareMemo } from "@/hooks";

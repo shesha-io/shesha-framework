@@ -7,7 +7,7 @@ import { IEntityTypeIdentifier } from "../../entities/models";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
 import { FormBuilder } from "@/form-factory/interfaces";
 import { isDefined } from "@/utils/nullables";
-import { IPropertyMetadata } from "@/publicJsApis/metadata";
+import { IPropertyMetadata } from "@/publicJsApis/apis/metadata";
 
 /**
  * Helper class for fetching entity metadata and generating form fields based on that metadata.
