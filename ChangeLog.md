@@ -2,10 +2,11 @@
 
 ## 🐞 Bug Fixes
 
-- **Email Validation:** - Corrected validation logic that incorrectly flagged valid email addresses as invalid, which prevented email sending and caused misleading error logs.
-- **Table View Actions:** - Resolved an error where using the `application` object in Action column scripts (e.g., `application.navigator.navigateToUrl`) would fail at runtime, despite being listed as an available variable in the script editor.
-- **External Authentication:** - Fixed an issue where external login accounts were not reliably linked during registration, improving sign-in continuity for third-party providers.
+- **User Details Form:** Resolved an error that occurred when trying to delete an assigned role.
+- **Generic Entity Reference:** Fixed an exception related to `GenericEntityReference` lacking a default constructor.
 
 ## 💪 Enhancements
 
-- **Tree optimisation**
+- **SyncClientApi:** Added a server-snapshot shortcut to skip per-entity comparison on no-change hot paths, reducing unnecessary processing.
+- **EntityModelProviderCache:** Fixed cache invalidation to trigger only on `EntityConfig` changes instead of any `ConfigurationItem` change.
+- **SyncClientApi Metadata:** Prevented re-fetching metadata for new modules by using cached `EntityModelDto.Metadata` where applicable.
