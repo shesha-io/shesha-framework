@@ -328,14 +328,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {
+    const blobUrls = uploadedFileBlobUrls.current;
     return () => {
-      uploadedFileBlobUrls.current.forEach((url) => {
+      blobUrls.forEach((url) => {
         URL.revokeObjectURL(url);
       });
-      uploadedFileBlobUrls.current.clear();
+      blobUrls.clear();
     };
   }, []);
-
 
   const handlePreview = (file: UploadFile): void => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
