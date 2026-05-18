@@ -1,5 +1,5 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { Input, InputRef } from 'antd';
+import { Input, InputRef, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -16,7 +16,7 @@ import { IconType, ShaIcon } from '@/components/shaIcon';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
-import { defaultStyles } from './utils';
+import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySettings, validatePasswordValue } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 
@@ -75,6 +75,27 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       }
     }, [model]);
 
+    const isPassword = model.textType === 'password';
+    const passwordComplexity = usePasswordComplexitySettings();
+
+    const passwordValidator = useMemo(() =>
+      isPassword ? buildPasswordValidatorString(passwordComplexity) : null,
+    [isPassword, passwordComplexity],
+    );
+
+    const modelWithValidation = useMemo(() => {
+      if (!isPassword || !passwordValidator || model.validate?.validator) return model;
+      return {
+        ...model,
+        validate: {
+          ...(model.validate || {}),
+          minLength: undefined,
+          maxLength: undefined,
+          validator: passwordValidator,
+        },
+      };
+    }, [model, isPassword, passwordValidator]);
+
     if (model.hidden) return null;
 
     const inputProps: InputProps = {
@@ -88,19 +109,33 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       readOnly: model.readOnly,
       spellCheck: model.spellCheck ?? false,
       style: model.allStyles.fullStyle,
-      maxLength: model.validate?.maxLength,
-      max: model.validate?.maxLength,
-      minLength: model.validate?.minLength,
     };
 
-    return (
-      <ConfigurableFormItem model={model}>
+    const fieldContent = (
+      <ConfigurableFormItem model={modelWithValidation}>
         {(value, onChange) => {
+          // Derive password tooltip error from committed value so it stays in sync with
+          // the form validator (handles initial values, programmatic changes, and resets).
+          // Only active when the complexity validator is actually composed into the model
+          // (i.e. no custom validator has overridden it).
+          const isPasswordComplexityActive = isPassword && !!passwordValidator && !model.validate?.validator;
+          const passwordError = isPasswordComplexityActive && value
+            ? (() => {
+              const errors = validatePasswordValue(value as string, passwordComplexity);
+              return errors.length > 0 ? `Password must contain ${errors.join(', ')}` : null;
+            })()
+            : null;
+
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]): void => {
-            const rawValue = args[0]?.currentTarget ? args[0]?.currentTarget?.value : args[0];
-            const inputValue: string | undefined = rawValue == null ? undefined : String(rawValue);
+          const onChangeInternal = (...args: unknown[]): void => {
+            const arg = args[0];
+            const inputValue: string | undefined =
+              arg !== null && typeof arg === 'object' && 'currentTarget' in arg &&
+              arg.currentTarget !== null && typeof arg.currentTarget === 'object' && 'value' in arg.currentTarget
+                ? arg.currentTarget.value?.toString()
+                : undefined;
             const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
+
             const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
             if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
               const changedValue = customEvents.onChange({ value: inputValue }, args[0]);
@@ -117,12 +152,24 @@ const TextFieldComponent: TextFieldComponentDefinition = {
 
           apiRef.current = { value, onChange: onChangeInternal };
 
-          return inputProps.readOnly
+          const inputElement = inputProps.readOnly
             ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} style={finalStyle} />
             : <InputComponentType ref={inputRef} {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+
+          if (isPassword) {
+            return (
+              <Tooltip title={passwordError ?? undefined} placement="bottom">
+                <div className={styles.passwordFieldWrapper}>{inputElement}</div>
+              </Tooltip>
+            );
+          }
+
+          return inputElement;
         }}
       </ConfigurableFormItem>
     );
+
+    return fieldContent;
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
