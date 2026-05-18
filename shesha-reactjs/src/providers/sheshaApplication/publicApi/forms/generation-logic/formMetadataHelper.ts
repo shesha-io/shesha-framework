@@ -142,80 +142,93 @@ export class FormMetadataHelper {
       hideBorder: isReadOnly,
     };
 
-    switch (property.dataType) {
-      case DataTypes.string:
-        if (property.dataFormat === 'multiline') {
-          builder.addTextArea(styledProps, property);
-        } else {
-          builder.addTextField(styledProps, property);
-        }
-        break;
+    const defaultEditor = property.formatting?.defaultEditor;
+    const pickType = (fallback: string): string =>
+      isDefined(defaultEditor) && defaultEditor !== '' ? defaultEditor : fallback;
 
-      case DataTypes.number:
-        builder.addNumberField(styledProps, property);
-        break;
+    try {
+      switch (property.dataType) {
+        case DataTypes.string:
+          if (property.dataFormat === 'multiline') {
+            builder.addByType(pickType('textArea'), styledProps, property);
+          } else {
+            builder.addByType(pickType('textField'), styledProps, property);
+          }
+          break;
 
-      case DataTypes.entityReference:
-        if (!property.entityType) {
-          throw new Error(`Entity type is required for entityReference type. Property: ${property.path}`);
-        }
-        builder.addAutocomplete({
-          ...commonProps,
-          entityType: property.entityType
-            ? { name: property.entityType, module: property.entityModule } as IEntityTypeIdentifier
-            : undefined,
-          dataSourceType: 'entitiesList',
-        }, property);
-        break;
+        case DataTypes.number:
+          builder.addByType(pickType('numberField'), styledProps, property);
+          break;
 
-      case DataTypes.referenceListItem:
-        if (!property.referenceListName || !property.referenceListModule) {
-          throw new Error('Reference list name and namespace are required for referenceListItem type');
-        }
-        builder.addDropdown({
-          ...styledProps,
-          dataSourceType: 'referenceList',
-          border: {
-            hideBorder: false,
-            radiusType: 'all',
-            borderType: 'all',
+        case DataTypes.entityReference:
+          if (!property.entityType) {
+            console.warn(`Entity type is missing for entityReference property '${property.path}'; skipping`);
+            break;
+          }
+          builder.addByType(pickType('autocomplete'), {
+            ...commonProps,
+            entityType: { name: property.entityType, module: property.entityModule } as IEntityTypeIdentifier,
+            dataSourceType: 'entitiesList',
+          }, property);
+          break;
+
+        case DataTypes.referenceListItem:
+          if (!property.referenceListName || !property.referenceListModule) {
+            console.warn(`Reference list metadata missing for property '${property.path}'; skipping`);
+            break;
+          }
+          builder.addByType(pickType('dropdown'), {
+            ...styledProps,
+            dataSourceType: 'referenceList',
             border: {
-              all: { width: 1, style: 'solid', color: '#d9d9d9' },
+              hideBorder: false,
+              radiusType: 'all',
+              borderType: 'all',
+              border: {
+                all: { width: 1, style: 'solid', color: '#d9d9d9' },
+              },
+              radius: { all: 8 },
             },
-            radius: { all: 8 },
-          },
-          referenceListName: property.referenceListName,
-          referenceListId: {
-            module: property.referenceListModule,
-            name: property.referenceListName,
-          },
-        }, property);
-        break;
+            referenceListName: property.referenceListName,
+            referenceListId: {
+              module: property.referenceListModule,
+              name: property.referenceListName,
+            },
+          }, property);
+          break;
 
-      case DataTypes.boolean:
-        builder.addCheckbox(styledProps, property);
-        break;
+        case DataTypes.boolean:
+          builder.addByType(pickType('checkbox'), styledProps, property);
+          break;
 
-      case DataTypes.date:
-      case DataTypes.dateTime:
-        builder.addDateField(styledProps, property);
-        break;
+        case DataTypes.date:
+        case DataTypes.dateTime:
+          builder.addByType(pickType('dateField'), styledProps, property);
+          break;
 
-      case DataTypes.time:
-        builder.addTimePicker(styledProps, property);
-        break;
+        case DataTypes.time:
+          builder.addByType(pickType('timePicker'), styledProps, property);
+          break;
 
-      case DataTypes.file:
-        builder.addFileUpload({
-          ...commonProps,
-          font: { size: 14 },
-          ownerId: '{data.id}',
-          ownerType: this._modelType || '',
-          useSync: false,
-        }, property);
-        break;
-      default:
-        break;
+        case DataTypes.file:
+          builder.addByType(pickType('fileUpload'), {
+            ...commonProps,
+            font: { size: 14 },
+            ownerId: '{data.id}',
+            ownerType: this._modelType || '',
+            useSync: false,
+          }, property);
+          break;
+
+        default:
+          // Unmapped dataType — if the user picked a default editor, honour it; otherwise drop.
+          if (isDefined(defaultEditor) && defaultEditor !== '') {
+            builder.addByType(defaultEditor, styledProps, property);
+          }
+          break;
+      }
+    } catch (err) {
+      console.warn(`Failed to generate field for property '${property.path}':`, err);
     }
   }
 }

@@ -23,6 +23,9 @@ export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
 
   const {
     propertyName: name,
+    placeholder,
+    onFocus,
+    onBlur,
     hideBorder,
     range,
     value,
@@ -194,6 +197,9 @@ export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
           style={finalStyles}
           allowClear
           variant={hideBorder ? 'borderless' : undefined}
+          placeholder={placeholder ? [placeholder, placeholder] : undefined}
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
       </div>
     );
@@ -221,6 +227,9 @@ export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
           if (dates && showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);
         }}
         value={momentValue}
+        placeholder={placeholder}
+        onFocus={onFocus}
+        onBlur={onBlur}
         allowClear
       />
     </div>

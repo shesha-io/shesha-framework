@@ -72,9 +72,10 @@ export const disabledTime = (props: IDateFieldProps, data: object, globalState: 
 
   if (typeof disabledTimeExpressionFunc === 'string') {
     // tslint:disable-next-line:function-constructor
-    const disabledFunc = new Function('moment', 'data', 'globalState', 'range', disabledTimeExpressionFunc);
+    const disabledFunc = new Function('current', 'moment', 'data', 'globalState', 'range', disabledTimeExpressionFunc);
 
-    return disabledFunc(moment, data, globalState, range);
+    type DisabledTimeCurrent = Parameters<NonNullable<DisabledTimeFunc>>[0];
+    return (current: DisabledTimeCurrent) => disabledFunc(current, moment, data, globalState, range);
   }
 
   return disabledTimeExpressionFunc;
