@@ -87,7 +87,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  gap?: string | number | undefined;
   container?: IStyleType;
   allStyles?: IFormComponentStyles;
   enableStyleOnReadonly?: boolean;
