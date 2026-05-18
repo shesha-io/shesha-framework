@@ -91,8 +91,7 @@ export const fetchStoredFile = async (
   url: string,
   httpHeaders: Record<string, string> = {},
 ): Promise<IFetchStoredFileResult> => {
-  const fetchUrl = buildUrl(url, { skipMarkDownload: 'true' });
-  const response = await fetch(fetchUrl, {
+  const response = await fetch(url, {
     headers: { ...httpHeaders },
   });
 

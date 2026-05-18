@@ -139,7 +139,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   ...rest
 }) => {
   const { message, notification } = App.useApp();
-  const { httpHeaders } = useSheshaApplication();
+  const { backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
@@ -284,7 +284,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           }
 
           try {
-            const thumbnailUrl = `${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}?id=${file.id}`;
+            if (!file.id) {
+              continue;
+            }
+            const thumbnailUrl = `${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}?id=${file.id}`;
             const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
             if (isCancelled) {
               // Cleanup if cancelled after fetch completes
