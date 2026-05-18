@@ -5,6 +5,7 @@ import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { IFormComponentStyles, IInputStyles, IStyleType } from '@/providers/form/models';
 import { addPx } from '@/utils/style';
 import { useAvailableConstantsData } from '@/providers/form/utils';
+import { STORED_FILE_URLS } from '@/utils/storedFile/models';
 import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
@@ -147,7 +148,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const [fileToReplace, setFileToReplace] = useState<{ uid: string; id: string } | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
-  // Track blob URLs and their revoke functions to prevent memory leaks
+  // Cache blob URLs created from uploaded File objects to avoid immediate server round-trip
+  const uploadedFileBlobUrls = useRef<Map<string, string>>(new Map());
   const model = rest;
 
   // Handler for replacing a file
@@ -262,8 +264,29 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       const newImageUrls: { [key: string]: string } = {};
       for (const file of fileList) {
         if (isImageType(file.type)) {
+          // Preserve existing URL to avoid unnecessary re-fetches
+          if (imageUrlsRef.current[file.uid]) {
+            newImageUrls[file.uid] = imageUrlsRef.current[file.uid];
+            continue;
+          }
+
+          // Check for blob URL from recent upload (avoids server round-trip immediately after upload).
+          // Keep the cache entry while the file is still uploading: the instance will replace the
+          // temp uid (nanoid) with the server-assigned GUID on completion, triggering a second
+          // fetchImages run with a different uid but the same name/size key.
+          const tempKey = `${file.name}_${file.size}`;
+          const blobUrl = uploadedFileBlobUrls.current.get(tempKey);
+          if (blobUrl) {
+            newImageUrls[file.uid] = blobUrl;
+            if (file.status !== 'uploading') {
+              uploadedFileBlobUrls.current.delete(tempKey);
+            }
+            continue;
+          }
+
           try {
-            const { url: imageUrl, revoke } = await fetchStoredFile(file.url, httpHeaders);
+            const thumbnailUrl = `${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}?id=${file.id}`;
+            const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
             if (isCancelled) {
               // Cleanup if cancelled after fetch completes
               revoke();
@@ -302,6 +325,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       revokeCallbacks.forEach((revoke) => revoke());
     };
   }, [fileList, httpHeaders]);
+
+  // Clean up uploaded blob URLs on component unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      uploadedFileBlobUrls.current.forEach((url) => {
+        URL.revokeObjectURL(url);
+      });
+      uploadedFileBlobUrls.current.clear();
+    };
+  }, []);
 
 
   const handlePreview = (file: UploadFile): void => {
@@ -533,8 +566,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
+      const file = options.file;
+      const tempKey = `${file.name}_${file.size}`;
+      let blobUrl: string | null = null;
 
-      uploadFile({ file: options.file, ownerId, ownerType }).catch((error) => {
+      // For image files, create a blob URL directly from the File object to avoid
+      // an immediate server round-trip for the thumbnail right after upload.
+      // file.type is the browser MIME type (e.g. 'image/jpeg'), but isImageType expects
+      // the extension format (e.g. '.jpg'), so derive the extension from the file name.
+      const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+      if (isImageType(fileExt)) {
+        blobUrl = URL.createObjectURL(file);
+        uploadedFileBlobUrls.current.set(tempKey, blobUrl);
+      }
+
+      uploadFile({ file, ownerId, ownerType }).catch((error) => {
+        // Clean up blob URL if upload failed
+        if (blobUrl) {
+          URL.revokeObjectURL(blobUrl);
+          uploadedFileBlobUrls.current.delete(tempKey);
+        }
         console.error('Failed to upload file', error);
         throw error;
       });

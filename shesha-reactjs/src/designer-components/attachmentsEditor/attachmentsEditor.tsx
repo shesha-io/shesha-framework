@@ -153,6 +153,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   onDownload?: string;
   downloadZip?: boolean;
   filesLayout?: layoutType;
+  gap?: number;
   listType: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
@@ -270,6 +271,11 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     ...model,
     filesCategory: metadata.path,
   }),
+  initModel:(model)=>({
+    ...model,
+    gap: 8,
+    filesLayout: 'horizontal'
+  }),
   // remove field from the payload even if propertyName is provided
   getFieldsToFetch: () => [],
   migrator: (m) => m
@@ -369,7 +375,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
       return result;
     })
-    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ? false : prev.downloadZip })),
+    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ? false : prev.downloadZip }))
+    .add<IAttachmentsEditorProps>(15, (prev) => ({
+      ...prev,
+      desktop: { ...prev.desktop, filesLayout: prev.desktop?.filesLayout ?? prev.filesLayout ?? 'horizontal', gap: prev.desktop?.gap ?? prev.gap ?? 8 },
+      mobile: { ...prev.mobile, filesLayout: prev.mobile?.filesLayout ?? prev.filesLayout ?? 'horizontal', gap: prev.mobile?.gap ?? prev.gap ?? 8 },
+      tablet: { ...prev.tablet, filesLayout: prev.tablet?.filesLayout ?? prev.filesLayout ?? 'horizontal', gap: prev.tablet?.gap ?? prev.gap ?? 8 },
+    })),
 };
 
 export default AttachmentsEditor;

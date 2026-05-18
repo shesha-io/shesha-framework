@@ -117,9 +117,9 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       const newFile: StoredFileModel = {
         uid: fileUid,
         name: file.name,
+        size: file.size,
         status: 'uploading',
-
-        type: getFileExtension(file),
+        type: `.${getFileExtension(file)}`,
         fileCategory: filesCategory ?? null,
         url: null,
         temporary: false,
