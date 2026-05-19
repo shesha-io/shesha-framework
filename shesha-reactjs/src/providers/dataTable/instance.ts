@@ -97,15 +97,12 @@ export class DatasetInstance implements IDatasetInstance {
     let processedColumns = this.columns;
     await this.initColumnsAsync(processedColumns, userConfig);
 
-    this.isInitialized = true;
-
-    // If `registerConfigurableColumns` fired while we were inside `initColumnsAsync`
-    // it would have stored its columns in `this.columns` and short-circuited because
-    // `isInitialized` was still false. Re-process with the latest columns before fetching.
     while (this.columns !== processedColumns) {
       processedColumns = this.columns;
       await this.initColumnsAsync(processedColumns, userConfig);
     }
+
+    this.isInitialized = true;
 
     await this.fetchData();
 
