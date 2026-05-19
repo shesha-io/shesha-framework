@@ -22,6 +22,7 @@ export interface IColorPickerProps {
   readOnly?: boolean;
   size?: SizeType;
   style?: CSSProperties;
+  className?: string;
   defaultValue?: ColorValueType;
 }
 
@@ -64,6 +65,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
   size,
   style,
   defaultValue,
+  className,
 }) => {
   const [format, setFormat] = useState<ColorFormat>('hex');
   const { theme } = useTheme();
@@ -155,6 +157,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
           onChange={handleChange}
           presets={presets}
           panelRender={panelRender}
+          className={className}
         />
       </div>
     </div>

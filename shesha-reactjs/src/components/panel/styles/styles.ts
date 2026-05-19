@@ -125,7 +125,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       height: 100%;
     }
    
-    > .ant-collapse-item > .ant-collapse-content {
+    > .ant-collapse-item > .ant-collapse-panel {
       flex: 1;
       background: ${backgroundImage || backgroundColor};
       background-size: ${backgroundSize};
