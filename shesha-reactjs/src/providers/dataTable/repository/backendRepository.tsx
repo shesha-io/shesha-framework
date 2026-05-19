@@ -61,6 +61,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     columns.forEach((column) => {
       if (!column.propertiesToFetch)
         return;
+      // Skip collection-of-entity columns. The backend auto-expands them to `{ id _className _displayName }`
+      // and then trips ProjectionHelper.BuildNestedMemberInit looking for `Id` on `IList<T>`.
+      // See https://github.com/shesha-io/shesha-framework/issues/4961.
+      if (column.dataType === 'array'
+        && (column.dataFormat === 'entity' || column.dataFormat === 'many-entity' || column.dataFormat === 'child-entity'))
+        return;
       if (Array.isArray(column.propertiesToFetch)) {
         column.propertiesToFetch.forEach((p) => {
           if (!!p)
