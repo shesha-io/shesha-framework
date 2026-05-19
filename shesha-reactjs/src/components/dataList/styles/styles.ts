@@ -129,7 +129,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         }
 
         .${shaDatalistCard} {
-            padding: 16px;
             background-color: #ffffff;
             border-radius: 8px;
             position: relative;
@@ -168,7 +167,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
 
         .${shaDatalistComponentItem} {
             position: relative;
-            padding: 12px;
             border-radius: 6px;
             transition: background-color 0.2s ease-in-out;
 
