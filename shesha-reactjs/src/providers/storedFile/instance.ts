@@ -1,4 +1,4 @@
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { MessageInstance } from "antd/es/message/interface";
 import { DelayedUpdateClient } from "../delayedUpdateProvider/context";
 import { IStoredFileHelper, StoredFileHelper } from "../../utils/storedFile/storedFileHelper";

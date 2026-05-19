@@ -5,7 +5,7 @@ import { IEntityMetadataFetcher } from "./entities/models";
 import camelcase from 'camelcase';
 import { asPropertiesArray, IHasEntityType, isDataPropertyMetadata, isEntityReferenceArrayPropertyMetadata, isObjectReferencePropertyMetadata } from "@/interfaces/metadata";
 import { MetadataDtoAjaxResponse, MetadataGetQueryParams, PropertyMetadataDto } from "@/apis/metadata";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import qs from "qs";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";

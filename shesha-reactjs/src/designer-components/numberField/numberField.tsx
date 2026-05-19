@@ -22,10 +22,9 @@ import { ShaIcon } from '@/components/shaIcon';
 import { isPropertySettings } from '../_settings/utils/utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { NumberFieldApi } from '../../componentsApi/componentApi';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { IComponentApiInputRef } from '@/providers/componentApi/model';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -59,17 +58,14 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
 
     const componentApi = useComponentApi();
     const inputRef = useRef<InputNumberRef>();
-    const apiRef = useRef<IComponentApiInputRef<number>>();
     useEffect(() => {
-      componentApi?.updateApi<NumberFieldApi>(
-        {
-          id: model.id,
-          componentName: model.componentName,
-          typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-          api: { focus: () => inputRef.current?.focus() },
-        },
-        [{ name: 'value', getter: () => apiRef.current.value, setter: apiRef.current.onChange }],
-      );
+      componentApi?.updateApi<NumberFieldApi>({
+        id: model.id,
+        componentName: model.componentName,
+        level: 3,
+        typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        api: { focus: () => inputRef.current?.focus() },
+      });
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
@@ -185,8 +181,6 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
             // force refresh because Antd InputNumber does not trigger render
             forceRefresh({});
           };
-
-          apiRef.current = { value, onChange: onChangeInternal };
 
           return model.readOnly
             ? <ReadOnlyDisplayFormItem type="number" value={numberToFormattedString(value, getDataProperty(properties, model.propertyName, 'dataFormat'))} style={finalStyle} />

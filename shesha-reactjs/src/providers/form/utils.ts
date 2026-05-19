@@ -48,7 +48,6 @@ import Mustache from 'mustache';
 import { CSSProperties, useRef } from 'react';
 import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
 import { IDataContextManagerActions, IDataContextManagerFullInstance, IDataContextsData, SheshaCommonContexts } from '../dataContextManager/models';
-import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
 import { IAnyObject } from './../../interfaces/anyObject';
@@ -88,8 +87,7 @@ import {
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
-import { IComponentApi } from '../componentApi/model';
-import { useComponentApi } from '../componentApi/provider';
+import { ICanvasContextApi } from '@/publicJsApis/apis/canvasContextApi';
 
 export {
   executeExpression, executeScript,
@@ -104,17 +102,28 @@ export {
 
 type MomentType = typeof moment;
 
+export interface IPageApi {
+  readonly context: IDataContextFull | undefined;
+  readonly canvas: ICanvasContextApi | undefined;
+}
+
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value extends object = object> {
-  components: Record<string, Record<string, unknown>>;
-
-  application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   metadataDispatcher?: IMetadataDispatcher;
+
+  /** Application Api */
+  readonly application?: IApplicationApi;
+  /** Page Api */
+  readonly page?: IPageApi;
+  /** Form Api */
+  readonly form?: IFormApi<Value> | undefined;
+
+  readonly webStorage?: IDataContextFull;
+
   /** Form data */
   data?: Value | undefined;
 
-  form?: IFormApi<Value> | undefined;
   /** Contexts datas */
   contexts: IDataContextsData | undefined;
   /** Global state */
@@ -136,6 +145,7 @@ export interface IApplicationContext<Value extends object = object> {
   lastUpdated?: Date;
 
   pageContext?: IDataContextFull;
+
   setGlobalState: (payload: ISetStatePayload) => void;
   /**
    * Query string values. Is used for backward compatibility only
@@ -165,7 +175,6 @@ export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
 };
 
 export type AvailableConstantsContext = {
-  componentApi?: IComponentApi | undefined;
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
   dcm: IDataContextManagerActions | undefined;
@@ -195,10 +204,8 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
-  const componentApi = useComponentApi();
 
   const result: AvailableConstantsContext = {
-    componentApi: componentApi,
     closestShaFormApi: undefined,
     selectedRow,
     dcm: undefined,
@@ -222,10 +229,7 @@ export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsCont
   const metadataDispatcher = useMetadataDispatcher();
   const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
-  baseContext.closestShaFormApi = closestShaFormApi;
-  baseContext.dcm = dcm;
-  baseContext.metadataDispatcher = metadataDispatcher;
-  return baseContext;
+  return { ...baseContext, closestShaFormApi, dcm, metadataDispatcher };
 };
 
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
@@ -240,10 +244,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const parent = useParentOrUndefined();
   const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
-  baseContext.closestShaFormApi = closestShaFormApi;
-  baseContext.dcm = dcm;
-  baseContext.metadataDispatcher = metadataDispatcher;
-  return baseContext;
+  return { ...baseContext, closestShaFormApi, dcm, metadataDispatcher };
 };
 
 export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailableConstantsDataArgs<TValues> & {
@@ -285,27 +286,14 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message,
     metadataDispatcher,
     modal,
-
-    componentApi,
   } = fullContext;
-  const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
+  const shaFormApi = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
+
+  const pageContext = dcm?.getPageContext()?.getFull();
+  const canvasContext = dcm?.getNearestDataContext(SheshaCommonContexts.CanvasContext, 'appLayer')?.getFull();
+  const webStorageContext = dcm?.getNearestDataContext(SheshaCommonContexts.WebStorageContext, 'storage')?.getFull();
 
   const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
-    components: () => {
-      const api: Record<string, Record<string, unknown>> = {};
-      if (componentApi) {
-        const components = componentApi.getComponents();
-        components.forEach((component) => {
-          if (component.api === undefined || !component.componentName) return;
-          if (api[component.componentName]) {
-            console.warn(`Duplicate componentName "${component.componentName}" detected. The earlier component's API will be overwritten.`);
-          }
-          api[component.componentName] = component.api;
-        });
-      }
-      return api;
-    },
-
     application: () => {
       // get application context
       const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
@@ -319,13 +307,12 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
         ? { ...dcm.getDataContextsData(tcId) }
         : undefined;
     },
-    pageContext: () => {
+    page: () => {
       // get page context
-      const pc = dcm?.getPageContext();
-      // get full page context data
-      const pageContext = pc?.getFull();
-      return pageContext;
+      return { context: pageContext, canvas: canvasContext } as IPageApi;
     },
+    pageContext: () => pageContext,
+    webStorage: () => webStorageContext,
     selectedRow: () => selectedRow,
     globalState: () => globalState,
     setGlobalState: () => setGlobalState,
@@ -334,11 +321,11 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message: () => message,
     modal: () => modal,
     fileSaver: () => FileSaver,
-    data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
-    form: () => shaFormInstance,
+    data: () => (shaFormApi?.data ?? EMPTY_DATA) as TValues,
+    form: () => shaFormApi,
     query: () => queryStringGetter?.() ?? {},
-    initialValues: () => shaFormInstance?.initialValues,
-    parentFormValues: () => shaFormInstance?.parentFormValues,
+    initialValues: () => shaFormApi?.initialValues,
+    parentFormValues: () => shaFormApi?.parentFormValues,
     // don't delete this as is used for debug the proxied data from the form scripts
     test: () => ({ getArguments }),
   };

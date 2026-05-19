@@ -3,7 +3,7 @@ import { DataTypes } from "@/interfaces";
 import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { SettingConfigurationDto } from "./models";
 import { SettingsManager } from "./manager";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { StringBuilder } from "@/utils/metadata/stringBuilder";
 import { isDefined } from "@/utils/nullables";
 

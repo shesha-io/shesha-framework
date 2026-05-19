@@ -122,19 +122,13 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                               <EntityMetadataFetcherProvider>
                                 <MetadataDispatcherProvider>
                                   <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
-                                    <ApplicationContextsProvider>
+                                    <DataContextProvider id={SheshaCommonContexts.AppContext} name={SheshaCommonContexts.AppContext} description="Application data store context" type="app" webStorageType="localStorage">
                                       <WebStorageContextProvider>
-                                        <DataContextProvider
-                                          id={SheshaCommonContexts.AppContext}
-                                          name={SheshaCommonContexts.AppContext}
-                                          description="Application data store context"
-                                          type="app"
-                                          webStorageType="localStorage"
-                                        >
-                                          <ConfigurationStudioEnvironmentProvider>
-                                            <FormDataLoadersProvider>
-                                              <FormDataSubmittersProvider>
-                                                <CanvasProvider>
+                                        <CanvasProvider>
+                                          <ApplicationContextsProvider>
+                                            <ConfigurationStudioEnvironmentProvider>
+                                              <FormDataLoadersProvider>
+                                                <FormDataSubmittersProvider>
                                                   <DataSourcesProvider>
                                                     <DynamicModalProvider>
                                                       {(status === 'inprogress' || status === 'waiting') && (
@@ -158,13 +152,13 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                       )}
                                                     </DynamicModalProvider>
                                                   </DataSourcesProvider>
-                                                </CanvasProvider>
-                                              </FormDataSubmittersProvider>
-                                            </FormDataLoadersProvider>
-                                          </ConfigurationStudioEnvironmentProvider>
-                                        </DataContextProvider>
+                                                </FormDataSubmittersProvider>
+                                              </FormDataLoadersProvider>
+                                            </ConfigurationStudioEnvironmentProvider>
+                                          </ApplicationContextsProvider>
+                                        </CanvasProvider>
                                       </WebStorageContextProvider>
-                                    </ApplicationContextsProvider>
+                                    </DataContextProvider>
                                   </DataContextManager>
                                 </MetadataDispatcherProvider>
                               </EntityMetadataFetcherProvider>

@@ -8,7 +8,7 @@ import React, { FC, useMemo } from 'react';
 import { BaseFilterProperties, FilterItemProperties } from './filterItemProperties';
 import { IStoredFilter } from '@/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { FilterExpression } from '@/publicJsApis/dataTableContextApi';
+import { FilterExpression } from '@/publicJsApis/apis/dataTableContextApi';
 
 export interface IFilterItemSettingsEditorProps {
   value: IStoredFilter;

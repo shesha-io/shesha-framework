@@ -1,15 +1,17 @@
 import { useCallback } from "react";
-import { isPropertiesArray, TypeDefinition } from "@/interfaces/metadata";
 import { IObjectMetadataBuilder, MetadataBuilderAction } from "../metadataBuilder";
-import { isDefined } from "@/utils/nullables";
 import { useComponentApi } from "@/providers/componentApi/provider";
+import { isDefined } from "@/utils/nullables";
+import { isPropertiesArray, TypeDefinition } from "@/interfaces";
 
+// Not used in current implementation
+// Use this method if you need to add separate Components variable to the code editor
 export const useComponentsRegistration = (): MetadataBuilderAction => {
   const componentApi = useComponentApi();
 
   const action = useCallback((builder: IObjectMetadataBuilder) => {
     const components = componentApi?.getComponents();
-    if (components?.length) {
+    if (componentApi && components?.length) {
       builder.addObject('components', "Components API", (builder) => {
         for (const component of components) {
           const componentName = component.componentName;

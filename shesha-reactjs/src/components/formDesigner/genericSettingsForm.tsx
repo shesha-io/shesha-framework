@@ -8,7 +8,7 @@ import { ConfigurableForm } from '../configurableForm';
 import { sheshaStyles } from '@/styles';
 import { ICanvasStateContext } from '@/providers/canvas/contexts';
 import { deepCopyViaJson, deepMergeValues, unproxyValue } from '@/utils/object';
-import { DeviceTypes } from '@/publicJsApis/canvasContextApi';
+import { DeviceTypes } from '@/publicJsApis/apis/canvasContextApi';
 import { useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { useDataContextManager } from '@/providers/dataContextManager/hooks';

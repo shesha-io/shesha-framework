@@ -5,7 +5,7 @@ import { ISetStatePayload } from '@/providers/globalState/contexts';
 import { IAddressAndCoords, IGooglePlacesAutocompleteProps } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
 import { IFormApi } from '@/providers/form/formApi';
-import { HttpClientApi } from '@/publicJsApis/httpClient';
+import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
 import { ObservableProxy } from '@/providers/form/observableProxy';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { TouchableProxy } from '@/providers/form/touchableProxy';
@@ -44,7 +44,7 @@ export interface ICustomAddressEventHandler extends ICustomEventHandler {
 export type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
 
 export interface IEventHandlers<T = any> extends Pick<DOMAttributes<T>, 'onBlur' | 'onFocus' | 'onClick'> {
-  onChange: (values: object, event?: any) => void;
+  onChange: (values: object, event?: unknown) => unknown;
 };
 
 /** @deprecated use getAllEventHandlers instead */
@@ -91,7 +91,7 @@ export const customDateEventHandler = (
   model: IConfigurableFormComponent,
   context: IApplicationContext,
 ): IEventHandlers => ({
-  onChange: (value: any | null, dateString: string | [string, string]) => {
+  onChange: (value: any | null, dateString: string | [string, string]): unknown => {
     const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(
@@ -99,6 +99,7 @@ export const customDateEventHandler = (
         addContextData(context, { dateString, value }),
       );
     }
+    return undefined;
   },
 
   onFocus: (event: FocusEvent<HTMLInputElement>) => {
@@ -123,29 +124,32 @@ export const customDateEventHandler = (
 });
 
 export const customTimeEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
-  onChange: (value: any | null, timeString: string | [string, string]) => {
+  onChange: (value: any | null, timeString: string | [string, string]): unknown => {
     const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { timeString, value }));
     }
+    return undefined;
   },
 });
 
 export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
-  onChange: (value: CustomLabeledValue<T>, option: any) => {
+  onChange: (value: CustomLabeledValue<T>, option: any): unknown => {
     const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { option, value }));
     }
+    return undefined;
   },
 });
 
 export const customOnChangeValueEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
-  onChange: (value: any) => {
+  onChange: (value: any): unknown => {
     const expression = model.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { value }));
     }
+    return undefined;
   },
 });
 

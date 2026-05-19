@@ -12,6 +12,7 @@ import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager/hooks';
 
 export interface ApplicationPluginRegistration {
   name: string;
@@ -39,13 +40,15 @@ export const ApplicationDataProvider: FC<PropsWithChildren> = ({ children }) => 
   const cacheProvider = useCacheProvider();
   const metadataFetcher = useEntityMetadataFetcher();
   const metadataDispatcher = useMetadataDispatcher();
+  const dcm = useDataContextManagerActionsOrUndefined();
   const shaRouter = useShaRouting();
   const fbf = useFormBuilderFactory();
 
   // inject fields from plugins
-  const [contextData] = useState<IApplicationApi>(
-    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher, fbf),
-  );
+  const [contextData] = useState<IApplicationApi>(() => {
+    const appContext = dcm?.getNearestDataContext(SheshaCommonContexts.AppContext, 'app');
+    return new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher, appContext, fbf);
+  });
 
   const { loginInfo } = useAuthOrUndefined() ?? {};
   useEffect(() => {
