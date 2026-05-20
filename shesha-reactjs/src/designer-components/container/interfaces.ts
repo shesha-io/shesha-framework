@@ -142,7 +142,6 @@ export type AlignSelf =
 export type ShadowStyleType = 'none' | 'above' | 'below';
 
 export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
-  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
   direction?: ContainerDirection | undefined;
   flexWrap?: FlexWrap | undefined;
   flexDirection?: FlexDirection | undefined;
@@ -154,7 +153,6 @@ export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   justifySelf?: JustifySelf | undefined;
   noDefaultStyling?: boolean | undefined;
   gridColumnsCount?: number | undefined;
-  gap?: string | number | undefined;
   width?: string | number | undefined;
   minWidth?: string | number | undefined;
   maxWidth?: string | number | undefined;

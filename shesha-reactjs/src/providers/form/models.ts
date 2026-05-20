@@ -138,7 +138,7 @@ export interface IInputStyles extends IStyleType {
   container?: IStyleType | undefined;
   display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
   filesLayout?: 'vertical' | 'horizontal' | 'grid' | undefined;
-  gap?: number | SizeType | undefined;
+  gap?: string | number | SizeType | undefined;
 };
 
 export type ConfigurableFormComponentTypes =
