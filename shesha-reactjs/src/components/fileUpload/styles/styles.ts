@@ -24,6 +24,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     background = 'transparent',
     backgroundImage,
     borderRadius = '8px',
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
     borderWidth = '0',
     borderTopWidth,
     width,
@@ -79,6 +83,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const storedFilesRendererBtnContainer = 'stored-files-renderer-btn-container';
   const storedFilesRendererNoFiles = 'stored-files-renderer-no-files';
 
+  const borderRadiusCss = `
+    border-top-left-radius: ${borderTopLeftRadius ?? borderRadius} !important;
+    border-top-right-radius: ${borderTopRightRadius ?? borderRadius} !important;
+    border-bottom-right-radius: ${borderBottomRightRadius ?? borderRadius} !important;
+    border-bottom-left-radius: ${borderBottomLeftRadius ?? borderRadius} !important;
+  `;
+
   const commonBorderStyles = css`
     border: ${borderWidth} ${borderStyle} ${borderColor};
     border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
@@ -119,19 +130,20 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${backgroundPosition ? `background-position: ${backgroundPosition};` : ''}
       ${backgroundRepeat ? `background-repeat: ${backgroundRepeat};` : ''}
       ${backgroundSize ? `background-size: ${backgroundSize};` : ''}
-      ${layout && !isDragger ? `
-        border-width: ${borderWidth};
-        border-style: ${borderStyle};
-        border-color: ${borderColor};
-        border-radius: ${borderRadius};
-      ` : ''}
 
-      .ant-upload-select-picture-card {
+      .ant-upload-select-picture-card,
+      .ant-upload-list-picture-card .ant-upload-select,
+      .ant-upload-list-picture-card .ant-upload.ant-upload-select {
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
         background-position: ${backgroundPosition} !important;
         background-repeat: ${backgroundRepeat} !important;
         background-size: ${backgroundSize} !important;
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
 
       .ant-upload-list-item {
@@ -169,21 +181,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         --ant-padding-xs: 0px !important;
         --font-size: ${fontSize} !important;
         --ant-font-size: ${fontSize} !important;
-        border-radius: ${borderRadius} !important;
-        border: 1px dashed ${borderColor} !important;
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
         display: flex;
 
         :before {
           top: 0;
           width: 100% !important;
-          border-radius: ${borderRadius} !important;
-          border: 1px dashed ${borderColor} !important;
+          ${borderRadiusCss}
+          border: ${borderWidth} ${borderStyle} ${borderColor} !important;
           height: 100% !important;
         }
       }
 
       .ant-upload-list-item-thumbnail {
-        border-radius: ${borderRadius} !important;
+        ${borderRadiusCss}
         padding: 0 !important;
         ${commonBorderStyles}
         ${style}
@@ -207,7 +219,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border: 1px ${borderStyle} transparent !important;
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
         ${style}
       }
 
@@ -228,7 +241,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
         width: ${layout && !isDragger ? 'var(--thumbnail-width)' : isDragger ? (width ?? height ?? '120px') : 'auto'} !important;
         height: ${layout && !isDragger ? 'var(--thumbnail-height)' : isDragger ? (height ?? width ?? '120px') : (height ?? width ?? '54px')} !important;
-        border-radius: ${borderRadius} !important;
+        ${borderRadiusCss}
         align-items: center;
 
         &.${prefixCls}-upload-btn {
@@ -268,8 +281,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         background: ${backgroundImage ?? backgroundColor} !important;
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
-        border-radius: ${borderRadius} !important;
-        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} transparent !important;
         &.ant-upload-animate-inline-appear,
         &.ant-upload-animate-inline-appear-active,
         &.ant-upload-animate-inline {
@@ -300,7 +313,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     css`
       width: var(--thumbnail-width, 54px) !important;
       height: var(--thumbnail-height, 54px) !important;
-      border-radius: ${borderRadius} !important;
+      ${borderRadiusCss}
       object-fit: cover !important;
       display: flex !important;
       justify-content: center !important;
@@ -342,7 +355,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     css`
       ${commonBorderStyles}
       ${commonTextStyles}
-      border-radius: ${borderRadius} !important;
+      ${borderRadiusCss}
       padding: 0 !important;
       background: ${background ?? backgroundImage ?? backgroundColor} !important;
       width: ${width || '54px'} !important;
