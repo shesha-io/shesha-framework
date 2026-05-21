@@ -187,14 +187,14 @@ namespace Shesha.Authorization
                 return;
 
             var existingOtp = await OtpManager.GetOrNullAsync(existingOtpId.Value);
-            if (existingOtp == null)
+            if (existingOtp?.SentOn == null)
                 return;
 
-            var nextAllowed = existingOtp.CreationTime.AddSeconds(cooldownSeconds);
-            if (nextAllowed <= DateTime.UtcNow)
+            var nextAllowed = existingOtp.SentOn.Value.AddSeconds(cooldownSeconds);
+            if (nextAllowed <= DateTime.Now)
                 return;
 
-            var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.UtcNow).TotalSeconds);
+            var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.Now).TotalSeconds);
             throw new UserFriendlyException(
                 $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
         }
