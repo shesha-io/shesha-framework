@@ -746,7 +746,7 @@ export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object
   // typed arrays, etc. are returned as-is so their prototype/semantics survive.
   const isArray = Array.isArray(input);
   if (!isArray) {
-    const proto = Object.getPrototypeOf(input);
+    const proto = Object.getPrototypeOf(input) as object | null;
     if (proto !== Object.prototype && proto !== null) return input;
   }
 
@@ -770,22 +770,6 @@ export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object
     writable: true,
   });
   return result;
-};
-
-/**
- * Module-level cache for decorated clones, keyed by the *original* top-level data reference.
- * `evaluateString` is called per Mustache tag, so within a single render pass dozens of calls
- * arrive with the same `data` object — we clone it once and reuse the result.
- * WeakMap lets the cache entry get GC'd as soon as the source data is no longer referenced.
- */
-const decoratedDataCache = new WeakMap<object, unknown>();
-
-const getDecoratedData = (data: object): unknown => {
-  const cached = decoratedDataCache.get(data);
-  if (cached !== undefined) return cached;
-  const cloned = cloneAndDecorateForMustache(data);
-  decoratedDataCache.set(data, cloned);
-  return cloned;
 };
 
 /**
@@ -819,8 +803,11 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
 
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
+      // Clone per call: caching the decorated structure is unsafe because long-lived proxies
+      // (e.g. the constants context) refresh in place, and skipUnknownTags mutates the view's
+      // nested nodes — both would leak shared state across evaluations.
       const view: IAnyObject = {
-        ...(getDecoratedData(data) as IAnyObject),
+        ...(cloneAndDecorateForMustache(data) as IAnyObject),
         // adding a function to the data object that will format datetime
         dateFormat: function () {
           return function (timestamp: unknown, render: (renderArgs: unknown) => string) {
