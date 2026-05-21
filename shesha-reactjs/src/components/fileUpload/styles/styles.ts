@@ -1,5 +1,6 @@
 import { createStyles } from '@/styles';
 import { CSSObject } from '@emotion/serialize';
+import { addPx } from '@/utils/style';
 
 interface StyleProps extends CSSObject {
   jsStyle?: CSSObject;
@@ -83,11 +84,19 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const storedFilesRendererBtnContainer = 'stored-files-renderer-btn-container';
   const storedFilesRendererNoFiles = 'stored-files-renderer-no-files';
 
+  const normalizeRadius = (value: unknown): string => {
+    const scalar = typeof value === 'string' || typeof value === 'number'
+      ? value
+      : typeof borderRadius === 'string' || typeof borderRadius === 'number'
+        ? borderRadius
+        : undefined;
+    return addPx(scalar) ?? '0';
+  };
   const borderRadiusCss = `
-    border-top-left-radius: ${borderTopLeftRadius ?? borderRadius} !important;
-    border-top-right-radius: ${borderTopRightRadius ?? borderRadius} !important;
-    border-bottom-right-radius: ${borderBottomRightRadius ?? borderRadius} !important;
-    border-bottom-left-radius: ${borderBottomLeftRadius ?? borderRadius} !important;
+    border-top-left-radius: ${normalizeRadius(borderTopLeftRadius)} !important;
+    border-top-right-radius: ${normalizeRadius(borderTopRightRadius)} !important;
+    border-bottom-right-radius: ${normalizeRadius(borderBottomRightRadius)} !important;
+    border-bottom-left-radius: ${normalizeRadius(borderBottomLeftRadius)} !important;
   `;
 
   const commonBorderStyles = css`
