@@ -726,6 +726,47 @@ type MomentProto = {
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
+/**
+ * Deep-clones data into plain objects/arrays and attaches a JSON-producing `toString` so
+ * Mustache's `{{path}}` interpolation yields JSON instead of "[object Object]" / "1,2,3".
+ *
+ * Why this is needed:
+ *  - Shesha data-access proxies (ShaArrayAccessProxy / ShaObjectAccessProxy) route every
+ *    property read through their `get` trap, including `toString`. We unwrap them via
+ *    `getAccessorValue()` to recover the underlying data.
+ *  - Plain arrays/objects produce useless default string forms when Mustache stringifies them.
+ *
+ * Exported separately so it can be unit-tested without going through the full evaluator.
+ *
+ * Note on circular references: the `seen` WeakMap preserves cycles in the cloned structure,
+ * which means the custom `toString` will catch the JSON.stringify error and return ''.
+ * That's intentional — better than throwing during template rendering.
+ */
+export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object, unknown> = new WeakMap()): unknown => {
+  if (input == null || typeof input !== 'object') return input;
+  if (input instanceof Date || moment.isMoment(input)) return input;
+
+  const accessor = (input as { getAccessorValue?: () => unknown }).getAccessorValue;
+  if (typeof accessor === 'function') {
+    try {
+      const unwrapped = accessor.call(input);
+      if (unwrapped !== input && unwrapped != null) return cloneAndDecorateForMustache(unwrapped, seen);
+    } catch { /* fall through, treat as plain object */ }
+  }
+
+  const cached = seen.get(input);
+  if (cached) return cached;
+
+  const result: Record<string, unknown> = Array.isArray(input) ? [] as unknown as Record<string, unknown> : {};
+  seen.set(input, result);
+  for (const key of Object.keys(input)) result[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
+  Object.defineProperty(result, 'toString', {
+    value: () => { try { return JSON.stringify(result); } catch { return ''; } },
+    configurable: true, enumerable: false, writable: true,
+  });
+  return result;
+};
+
 export const evaluateString = (template: string = '', data: object, skipUnknownTags: boolean = false): string => {
   const prototype = moment.prototype as MomentProto;
   // store moment toString function to get ISO format of datetime
@@ -741,7 +782,7 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
       const view: IAnyObject = {
-        ...data,
+        ...(cloneAndDecorateForMustache(data) as IAnyObject),
         // adding a function to the data object that will format datetime
         dateFormat: function () {
           return function (timestamp: unknown, render: (renderArgs: unknown) => string) {
