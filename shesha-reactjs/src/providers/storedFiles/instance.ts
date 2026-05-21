@@ -12,6 +12,7 @@ import { AttachmentsEditorEvents, IAttachmentsEditorInstance } from "./contexts"
 import { fileListReferenceEqual, getFileExtension, storedFileDtoToModel } from "@/utils/storedFile/utils";
 import { OnFileDownloaded, OnFileListChanged } from "./models";
 import { isOwnerReferenceValid } from "@/utils/entity";
+import { isEntityTypeIdEmpty } from "../metadataDispatcher/entities/utils";
 
 export type StoredFilesProcessorArgs = {
   httpClient: HttpClientApi;
@@ -106,10 +107,24 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     this.updateFileList((files) => files.map((f) => (f.uid === uid ? updater(f) : f)));
   };
 
+  private updateFileById = (id: string, updater: (file: StoredFileModel) => StoredFileModel): void => {
+    this.updateFileList((files) => files.map((f) => (f.id === id ? updater(f) : f)));
+  };
+
   uploadFile = async (args: UploadFileAsAttachmentArgs): Promise<void> => {
     const fileUid = nanoid();
     try {
-      const { file, filesCategory, ownerId } = args;
+      // Merge args with stored file list reference to ensure all owner properties are included
+      // Use provided values, but fall back to stored reference for missing/empty values
+      const uploadArgs: UploadFileAsAttachmentArgs = {
+        file: args.file,
+        ownerId: !isNullOrWhiteSpace(args.ownerId) ? args.ownerId : this.#fileListReference?.ownerId,
+        ownerType: !isEntityTypeIdEmpty(args.ownerType) ? args.ownerType : this.#fileListReference?.ownerType,
+        ownerName: !isNullOrWhiteSpace(args.ownerName) ? args.ownerName : this.#fileListReference?.ownerName,
+        filesCategory: !isNullOrWhiteSpace(args.filesCategory) ? args.filesCategory : this.#fileListReference?.filesCategory,
+      };
+
+      const { file, filesCategory, ownerId } = uploadArgs;
 
       if (isNullOrWhiteSpace(ownerId) && !this.#delayedUpdateClient)
         throw new Error("Delayed update client is mandatory if owner id is not defined");
@@ -127,13 +142,13 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       };
       this.addFileToList(newFile);
 
-      const responseFile = await this.#fileHelper.uploadFileAsAttachmentAsync(args);
+      const responseFile = await this.#fileHelper.uploadFileAsAttachmentAsync(uploadArgs);
 
       this.updateFileByUid(fileUid, () => storedFileDtoToModel(responseFile));
 
       if (responseFile.temporary && this.#delayedUpdateClient)
         this.#delayedUpdateClient.addItem(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
-          ownerName: args.ownerName,
+          ownerName: uploadArgs.ownerName,
         });
 
       this.#onChange?.(this.#fileList, true);
@@ -150,11 +165,11 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     const { fileId } = args;
 
     try {
-      this.updateFileByUid(fileId, (file) => ({ ...file, status: 'uploading' }));
+      this.updateFileById(fileId, (file) => ({ ...file, status: 'uploading' }));
 
       const uploadedFile = await this.#fileHelper.replaceFileAsync(args);
 
-      this.updateFileByUid(fileId, () => storedFileDtoToModel(uploadedFile));
+      this.updateFileById(fileId, () => storedFileDtoToModel(uploadedFile));
 
       this.#onChange?.(this.#fileList, true);
 
@@ -163,14 +178,14 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       console.error(error);
 
       const errorMessage = extractErrorMessage(error);
-      this.updateFileByUid(fileId, (file) => ({ ...file, status: 'error', error: errorMessage }));
+      this.updateFileById(fileId, (file) => ({ ...file, status: 'error', error: errorMessage }));
       this.#message.error(`File replacement failed. ${errorMessage}`);
     }
   };
 
   deleteFile = async (fileId: string): Promise<void> => {
     try {
-      this.updateFileByUid(fileId, (file) => ({ ...file, status: 'removed' }));
+      this.updateFileById(fileId, (file) => ({ ...file, status: 'removed' }));
 
       await this.#fileHelper.deleteFileByIdAsync(fileId);
 
@@ -184,7 +199,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       console.error(error);
 
       const errorMessage = extractErrorMessage(error);
-      this.updateFileByUid(fileId, (file) => ({ ...file, status: 'error', error: errorMessage }));
+      this.updateFileById(fileId, (file) => ({ ...file, status: 'error', error: errorMessage }));
       this.#message.error(`File deletion failed. ${errorMessage}`);
     }
   };
@@ -204,7 +219,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
   downloadFile = async (args: DownloadFileArgs): Promise<void> => {
     await this.#fileHelper.downloadFileAsync(args);
-    this.updateFileByUid(args.fileId, (file) => ({ ...file, userHasDownloaded: true }));
+    this.updateFileById(args.fileId, (file) => ({ ...file, userHasDownloaded: true }));
     this.#onFileDownloaded?.(this.#fileList, true);
   };
 }

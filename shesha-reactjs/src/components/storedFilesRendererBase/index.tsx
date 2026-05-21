@@ -405,13 +405,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               }}
             />
           )}
-          {allowDelete && !disabled && (
+          {allowDelete && !disabled && persistedFileId && (
             <Popconfirm
               title="Delete Attachment"
               onConfirm={(e) => {
                 e?.preventDefault();
                 e?.stopPropagation();
-                deleteFile(file.uid).catch((error) => {
+                deleteFile(persistedFileId).catch((error) => {
                   console.error('Failed to delete file', error);
                   throw error;
                 });
@@ -437,18 +437,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               }}
             />
           )}
-          <Button
-            size="small"
-            icon={<DownloadOutlined />}
-            title="Download file"
-            onClick={(e) => {
-              e.stopPropagation();
-              downloadFile({ fileId: file.uid, fileName: file.name }).catch((error) => {
-                console.error('Failed to download file', error);
-                throw error;
-              });
-            }}
-          />
+          {persistedFileId && (
+            <Button
+              size="small"
+              icon={<DownloadOutlined />}
+              title="Download file"
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadFile({ fileId: persistedFileId, fileName: file.name }).catch((error) => {
+                  console.error('Failed to download file', error);
+                  throw error;
+                });
+              }}
+            />
+          )}
           {/* Custom Actions Button Group */}
           {customActions && customActions.length > 0 && (
             <div onClick={(e) => e.stopPropagation()}>
@@ -475,13 +477,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     );
 
     const handleItemClick = (e: React.MouseEvent): void => {
+      // Only allow interaction with persisted files (those with a GUID)
+      if (!persistedFileId) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       // If it's an image, trigger preview instead of download
       if (isImageType(file.type)) {
         e.preventDefault();
         e.stopPropagation();
         handlePreview(file);
       } else {
-        downloadFile({ fileId: file.uid, fileName: file.name }).catch((error) => {
+        downloadFile({ fileId: persistedFileId, fileName: file.name }).catch((error) => {
           console.error('Failed to download file', error);
           throw error;
         });
