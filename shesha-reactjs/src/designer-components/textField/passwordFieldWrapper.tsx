@@ -54,9 +54,13 @@ export const PasswordFieldWrapper: FC<PropsWithChildren<Props>> = ({ children, c
   }, []);
 
   const handleMouseOver = (e: React.MouseEvent<HTMLDivElement>): void => {
-    const el = e.target as HTMLElement;
-    if (el.classList.contains('ant-form-item-explain-error') && el.scrollWidth > el.clientWidth) {
-      showTooltip(el.textContent ?? '');
+    if (!(e.target instanceof HTMLElement)) {
+      hideTooltip();
+      return;
+    }
+    const errorEl = e.target.closest<HTMLElement>('.ant-form-item-explain-error');
+    if (errorEl && errorEl.scrollWidth > errorEl.clientWidth) {
+      showTooltip(errorEl.textContent ?? '');
     } else {
       hideTooltip();
     }
