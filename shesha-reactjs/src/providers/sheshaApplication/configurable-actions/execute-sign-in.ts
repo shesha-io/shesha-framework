@@ -15,9 +15,13 @@ export const useExecuteSignIn = (): void => {
       ownerUid: SheshaActionOwners.Common,
       sortOrder: 8,
       hasArguments: false,
-      executer: (_, actionContext) => {
+      executer: async (_, actionContext) => {
         if (!auth)
           throw new Error("Authentication is not available");
+
+        const formInstance = actionContext.form?.formInstance;
+        if (formInstance)
+          await formInstance.validateFields();
 
         const data = actionContext.form?.data as ILoginForm;
         return auth.loginUserAsync(data);
