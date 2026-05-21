@@ -710,23 +710,6 @@ type MomentProto = {
 };
 
 /**
- * Evaluates the string using Mustache template.
- *
- * Given a the below expression
- * const expression =  'My name is {{name}}';
- *
- * and the below data
- *  const data = { name: 'John', surname: 'Dow' };
- *  evaluateString()
- * the expression below
- *   evaluateString(expression, data);
- * The below expression will return 'My name is John';
- *
- * @param template - string template
- * @param data - data to use to evaluate the string
- * @returns {string} evaluated string
- */
-/**
  * Deep-clones data into plain objects/arrays and attaches a JSON-producing `toString` so
  * Mustache's `{{path}}` interpolation yields JSON instead of "[object Object]" / "1,2,3".
  *
@@ -746,27 +729,82 @@ export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object
   if (input == null || typeof input !== 'object') return input;
   if (input instanceof Date || moment.isMoment(input)) return input;
 
+  // Shesha data-access proxies are terminal: never iterate them via Object.keys (each
+  // property access re-triggers the proxy's `get` trap and may expose internal accessor
+  // properties or cause side effects). Whatever `getAccessorValue` returns is the answer.
   const accessor = (input as { getAccessorValue?: () => unknown }).getAccessorValue;
   if (typeof accessor === 'function') {
     try {
       const unwrapped = accessor.call(input);
-      if (unwrapped !== input && unwrapped != null) return cloneAndDecorateForMustache(unwrapped, seen);
-    } catch { /* fall through, treat as plain object */ }
+      return unwrapped === input ? undefined : cloneAndDecorateForMustache(unwrapped, seen);
+    } catch {
+      return undefined;
+    }
+  }
+
+  // Only deep-clone plain objects and arrays. Class instances, Map, Set, RegExp, Error, URL,
+  // typed arrays, etc. are returned as-is so their prototype/semantics survive.
+  const isArray = Array.isArray(input);
+  if (!isArray) {
+    const proto = Object.getPrototypeOf(input);
+    if (proto !== Object.prototype && proto !== null) return input;
   }
 
   const cached = seen.get(input);
   if (cached) return cached;
 
-  const result: Record<string, unknown> = Array.isArray(input) ? [] as unknown as Record<string, unknown> : {};
+  const result: Record<string, unknown> | unknown[] = isArray ? [] : {};
   seen.set(input, result);
-  for (const key of Object.keys(input)) result[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
+  for (const key of Object.keys(input))
+    (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
   Object.defineProperty(result, 'toString', {
-    value: () => { try { return JSON.stringify(result); } catch { return ''; } },
-    configurable: true, enumerable: false, writable: true,
+    value: () => {
+      try {
+        return JSON.stringify(result);
+      } catch {
+        return '';
+      }
+    },
+    configurable: true,
+    enumerable: false,
+    writable: true,
   });
   return result;
 };
 
+/**
+ * Module-level cache for decorated clones, keyed by the *original* top-level data reference.
+ * `evaluateString` is called per Mustache tag, so within a single render pass dozens of calls
+ * arrive with the same `data` object — we clone it once and reuse the result.
+ * WeakMap lets the cache entry get GC'd as soon as the source data is no longer referenced.
+ */
+const decoratedDataCache = new WeakMap<object, unknown>();
+
+const getDecoratedData = (data: object): unknown => {
+  const cached = decoratedDataCache.get(data);
+  if (cached !== undefined) return cached;
+  const cloned = cloneAndDecorateForMustache(data);
+  decoratedDataCache.set(data, cloned);
+  return cloned;
+};
+
+/**
+ * Evaluates the string using Mustache template.
+ *
+ * Given a the below expression
+ * const expression =  'My name is {{name}}';
+ *
+ * and the below data
+ *  const data = { name: 'John', surname: 'Dow' };
+ *  evaluateString()
+ * the expression below
+ *   evaluateString(expression, data);
+ * The below expression will return 'My name is John';
+ *
+ * @param template - string template
+ * @param data - data to use to evaluate the string
+ * @returns {string} evaluated string
+ */
 export const evaluateString = (template: string = '', data: object, skipUnknownTags: boolean = false): string => {
   const prototype = moment.prototype as MomentProto;
   // store moment toString function to get ISO format of datetime
@@ -782,7 +820,7 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
       const view: IAnyObject = {
-        ...(cloneAndDecorateForMustache(data) as IAnyObject),
+        ...(getDecoratedData(data) as IAnyObject),
         // adding a function to the data object that will format datetime
         dateFormat: function () {
           return function (timestamp: unknown, render: (renderArgs: unknown) => string) {
@@ -1599,7 +1637,8 @@ export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSett
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version
-  upgradeComponents(designerComponents, formSettings, newFlatComponents);
+  if (formSettings)
+    upgradeComponents(designerComponents, formSettings, newFlatComponents);
 
   return newFlatComponents;
 };
