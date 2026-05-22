@@ -114,7 +114,6 @@ namespace Shesha.Domain
         /// User record, may be null for non registered users
         /// </summary>
         [CanBeNull]
-        [JsonIgnore]
         [CascadeUpdateRules(false, true)]
         public virtual User User { get; set; }
 

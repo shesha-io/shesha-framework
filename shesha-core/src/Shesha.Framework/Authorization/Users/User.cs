@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Authorization.Users;
 using Abp.Extensions;
+using Newtonsoft.Json;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.EntityHistory;
@@ -23,6 +24,34 @@ namespace Shesha.Authorization.Users
         }
 
         public virtual DateTime? LastLoginDate { get; set; }
+
+        /// <summary>
+        /// Password hash. Marked [JsonIgnore] so it cannot be exposed via
+        /// metadata, GraphQL, or used as a sort key — see issue #4774.
+        /// </summary>
+        [JsonIgnore]
+        public override string Password { get; set; }
+
+        /// <summary>
+        /// Password reset code. Marked [JsonIgnore] so it cannot be exposed via
+        /// metadata, GraphQL, or used as a sort key — see issue #4774.
+        /// </summary>
+        [JsonIgnore]
+        public override string PasswordResetCode { get; set; }
+
+        /// <summary>
+        /// Security stamp used for token/session invalidation. Marked [JsonIgnore]
+        /// so it cannot be exposed via metadata, GraphQL, or used as a sort key.
+        /// </summary>
+        [JsonIgnore]
+        public override string SecurityStamp { get; set; }
+
+        /// <summary>
+        /// Concurrency stamp. Marked [JsonIgnore] so it cannot be exposed via
+        /// metadata, GraphQL, or used as a sort key.
+        /// </summary>
+        [JsonIgnore]
+        public override string ConcurrencyStamp { get; set; }
 
         public static string CreateRandomPassword()
         {
