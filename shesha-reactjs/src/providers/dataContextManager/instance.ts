@@ -203,7 +203,6 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
       const changed = !isEqual(existingContext, newCtx);
       if (changed) {
         this.contexts[payload.id] = newCtx;
-        this.forceUpdate?.();
       }
     }
   };

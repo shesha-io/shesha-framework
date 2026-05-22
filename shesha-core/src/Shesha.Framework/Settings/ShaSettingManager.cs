@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using Abp.UI;
+using Castle.Core.Logging;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,7 +31,8 @@ namespace Shesha.Settings
         private readonly Services.Settings.ISettingStore _settingStore;
         private readonly IRepository<User, long> _userRepository;
 
-        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;        
+        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public ShaSettingManager(ISettingDefinitionManager settingDefinitionManager, 
             IConfigurationFrameworkRuntime cfRuntime, 
@@ -215,11 +217,20 @@ namespace Shesha.Settings
             };
         }
 
-        private TValue? Deserialize<TValue>(string value) 
+        private TValue? Deserialize<TValue>(string value)
         {
             if (typeof(TValue).IsClass)
             {
-                return JsonConvert.DeserializeObject<TValue>(value);
+                try
+                {
+                    // note: NullToDefaultConverter is used to convert null values to defaults for non nullable types
+                    return JsonConvert.DeserializeObject<TValue>(value, new NullToDefaultConverter());
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to deserialize setting value to type '{typeof(TValue).FullName}'. Value: {value}", ex);
+                    return default;
+                }
             }
             else
                 return To<TValue>(value);
@@ -229,13 +240,14 @@ namespace Shesha.Settings
         {
             if (targetType.IsClass)
             {
-                try 
+                try
                 {
                     // note: NullToDefaultConverter is used to convert null values to defaults for non nullable types
                     return JsonConvert.DeserializeObject(value, targetType, new NullToDefaultConverter());
                 }
-                catch (Exception) 
+                catch (Exception ex)
                 {
+                    Logger.Error($"Failed to deserialize setting value to type '{targetType.FullName}'. Value: {value}", ex);
                     return null;
                 }
             }

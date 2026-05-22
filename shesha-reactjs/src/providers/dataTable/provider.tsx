@@ -6,7 +6,7 @@ import { IDataTableProviderBaseProps } from "./provider.props";
 import { IHasModelType, IHasRepository } from "./repository/interfaces";
 import DataContextBinder from "../dataContextProvider/dataContextBinder";
 import { IObjectMetadata } from "@/interfaces/metadata";
-import { dataTableContextCode } from '@/publicJsApis';
+import { dataTableContextCode } from '@/publicJsApis/apis';
 import { DataTypes } from "@/interfaces/dataTypes";
 import { isDefined } from "@/utils/nullables";
 import { isEqual } from "lodash";

@@ -1,5 +1,5 @@
 import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TLegendPosition, TTimeSeriesFormat } from "@/designer-components/charts/model";
-import { FilterExpression } from "@/publicJsApis/dataTableContextApi";
+import { FilterExpression } from "@/publicJsApis/apis/dataTableContextApi";
 import { createContext } from "react";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 

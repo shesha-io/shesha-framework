@@ -1,6 +1,6 @@
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { ILogEvent, IProcessMonitor, ProcessMonitorSubscriptionCallback, ProcessMonitorSubscriptionType, ProcessStateDto, ProcessStatus, SignalLogEventDto } from './interfaces';
-import { HttpClientApi } from '@/publicJsApis/httpClient';
+import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
 import moment from 'moment';
 import { IAjaxResponse } from '@/interfaces';
 import FileSaver from 'file-saver';

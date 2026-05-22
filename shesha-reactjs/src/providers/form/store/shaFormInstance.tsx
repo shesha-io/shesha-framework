@@ -41,6 +41,11 @@ import { addDelayedUpdateProperty } from "@/providers/delayedUpdateProvider";
 import { RecursivePartial } from "@/interfaces/entity";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractErrorInfo, throwError } from "@/utils/errors";
+import { GetShaFormDataAccessor } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
+import { IComponentApi } from "@/providers/componentApi/model";
+import { IDataContextDescriptor, SheshaCommonContexts } from "@/providers/dataContextManager/models";
+import { useComponentApi } from "@/providers/componentApi/provider";
+import { useDataContextManager } from "@/providers/dataContextManager/hooks";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
   formDataGetter?: (() => Values | undefined) | undefined;
@@ -52,13 +57,24 @@ interface ShaFormInstanceArguments<Values extends object = object> {
   dataLoaders: IFormDataLoadersContext;
   dataSubmitters: IFormDataSubmittersContext;
   antdForm: FormInstance<Values>;
+  context: IDataContextDescriptor | undefined;
+  componentApi: IComponentApi | undefined;
 }
 
 class PublicFormApi<Values extends object = object> implements IFormApi<Values> {
   #form: IShaFormInstance<Values>;
 
-  constructor(form: IShaFormInstance<Values>) {
+  #data: Values;
+
+  #context: IDataContextDescriptor | undefined;
+
+  #componentApi: IComponentApi | undefined;
+
+  constructor(form: IShaFormInstance<Values>, context: IDataContextDescriptor | undefined, componentApi: IComponentApi | undefined) {
     this.#form = form;
+    this.#data = GetShaFormDataAccessor<Values>(this) as Values;
+    this.#context = context;
+    this.#componentApi = componentApi;
   }
 
   addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[] => {
@@ -113,7 +129,7 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
   };
 
   get data(): Values | undefined {
-    return this.#form.formData;
+    return this.#data;
   };
 
   get defaultApiEndpoints(): IEntityEndpoints {
@@ -130,6 +146,14 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
 
   get initialValues(): Values | undefined {
     return this.#form.initialValues;
+  }
+
+  get context(): Record<string, unknown> | undefined {
+    return this.#context?.getData() as Record<string, unknown>;
+  }
+
+  get components(): Record<string, Record<string, unknown>> {
+    return this.#componentApi?.components ?? {};
   }
 };
 
@@ -155,6 +179,10 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   private dataSubmitContext: IDataSubmitContext | undefined;
 
   private _formData: Values | undefined;
+
+  private context: IDataContextDescriptor | undefined;
+
+  private componentApi: IComponentApi | undefined;
 
   formDataSetter: ((data: Values | undefined) => void) | undefined;
 
@@ -238,6 +266,8 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.dataLoaders = args.dataLoaders;
     this.dataSubmitters = args.dataSubmitters;
     this.expressionExecuter = undefined;
+    this.context = args.context;
+    this.componentApi = args.componentApi;
 
     this.logEnabled = false;
     this.isSettingsForm = false;
@@ -361,7 +391,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   #publicFormApi: PublicFormApi<Values> | undefined;
 
   getPublicFormApi = (): IFormApi<Values> => {
-    return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this));
+    return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this, this.context, this.componentApi));
   };
 
   //#region Antd methods
@@ -811,6 +841,8 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   const [antdFormInstance] = Form.useForm(antdForm);
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const metadataDispatcher = useMetadataDispatcher();
+  const componentApi = useComponentApi();
+  const formContext = useDataContextManager().getNearestDataContext(SheshaCommonContexts.FormContext, 'form');
 
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {
     if (form) {
@@ -831,6 +863,8 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
         dataSubmitters: dataSubmitters,
         antdForm: antdFormInstance,
         metadataDispatcher: metadataDispatcher,
+        componentApi: componentApi,
+        context: formContext,
       });
       const accessors = wrapConstantsData<Values>({
         topContextId: DataContextTopLevels.Full,

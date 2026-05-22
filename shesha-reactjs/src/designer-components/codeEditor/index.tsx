@@ -12,7 +12,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { CodeEditorWithStandardConstants } from './codeEditorWithConstants';
 import { useResultTypeEvaluator } from './hooks/useResultType';
 import { useConstantsEvaluator } from './hooks/useConstantsEvaluator';
-import { Environment } from '@/publicJsApis/metadataBuilder';
+import { Environment } from '@/publicJsApis/apis/metadataBuilder';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

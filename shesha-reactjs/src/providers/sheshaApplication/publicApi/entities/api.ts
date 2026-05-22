@@ -1,5 +1,5 @@
 import { ICacheProvider, IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { EntitiesManager } from "./manager";
 import { EntitiesModuleAccessor } from "./moduleAccessor";
 import { createProxy } from "@/utils/proxy";

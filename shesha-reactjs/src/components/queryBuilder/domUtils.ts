@@ -39,7 +39,7 @@ export const BUILT_IN_PLACEMENTS = {
 
 export const calcTextWidth = (str: string, fontFamily: string = DEFAULT_FONT_FAMILY, fontSize: string = DEFAULT_FONT_SIZE): number => {
   var div = document.createElement("div");
-  div.innerHTML = str;
+  div.textContent = str;
   var css = {
     "position": "absolute", "float": "left", "white-space": "nowrap", "visibility": "hidden",
     "font-size": fontSize, "font-family": fontFamily,

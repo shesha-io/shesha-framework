@@ -1,6 +1,6 @@
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { CSSProperties } from 'react';
+import { CSSProperties, FocusEventHandler } from 'react';
 
 export type RangeType = 'start' | 'end';
 
@@ -16,6 +16,9 @@ export type RangePickerChangeEvent = (values: any, formatString: [string, string
 export type DisabledDateTemplate = 'disabledPastTime' | 'disableFutureTime';
 
 export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyles {
+  placeholder?: string;
+  onFocus?: FocusEventHandler<HTMLInputElement>;
+  onBlur?: FocusEventHandler<HTMLInputElement>;
   dateFormat?: string;
   value?: any;
   hideBorder?: boolean;

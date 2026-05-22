@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { HttpClientApi } from '@/publicJsApis/httpClient';
+import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
 import { IAjaxResponse, IEntityReferenceDto } from '@/interfaces';
 import { GrantedPermissionDto } from '@/apis/session';
 import { extractAjaxResponse, isAjaxErrorResponse } from '@/interfaces/ajaxResponse';

@@ -1,5 +1,6 @@
-import React, { FC, lazy, useState, useEffect } from 'react';
+import React, { FC, lazy, useMemo, useState, useEffect } from 'react';
 import { Skeleton } from 'antd';
+import DOMPurify from 'dompurify';
 
 let defaultOptions = {};
 const JoditEditor = lazy(async () => {
@@ -20,6 +21,11 @@ export interface IJoditEditorProps {
 
 export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   const { config, value, onChange } = props;
+
+  const sanitizedValue = useMemo(
+    () => (typeof value === 'string' ? DOMPurify.sanitize(value, { USE_PROFILES: { html: true } }) : value),
+    [value],
+  );
 
   const getPlaceholder = (text: string): string | undefined => {
     return !text ? config?.placeholder : "";
@@ -43,7 +49,10 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   }, [config]);
 
   const handleBlur = (newValue: string): void => {
-    onChange?.(newValue);
+    const cleanValue = typeof newValue === 'string'
+      ? DOMPurify.sanitize(newValue, { USE_PROFILES: { html: true } })
+      : newValue;
+    onChange?.(cleanValue);
   };
 
   const handleChange = (newValue: string): void => {
@@ -59,7 +68,7 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   ) : (
     <React.Suspense fallback={<div>Loading editor...</div>}>
       <JoditEditor
-        value={value}
+        value={sanitizedValue}
         config={fullConfig}
         onBlur={handleBlur} // preferred to use only this option to update the content for performance reasons
         onChange={handleChange}
