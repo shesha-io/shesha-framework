@@ -65,6 +65,10 @@ export class DatasetInstance implements IDatasetInstance {
     this.log = args.logEnabled ? console.log : () => {};
   }
 
+  updateRepository = (repository: IRepository): void => {
+    this.repository = repository;
+  };
+
   subscribe: SubscribeFunc<DatasetEvents, IDatasetInstance> = (type, callback) => {
     return this.#subscriptionManager.subscribe(type, callback);
   };
