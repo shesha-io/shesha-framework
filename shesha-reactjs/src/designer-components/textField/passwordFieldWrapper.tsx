@@ -71,7 +71,7 @@ export const PasswordFieldWrapper: FC<PropsWithChildren<Props>> = ({ children, c
       title={tooltipState.title}
       open={tooltipState.open}
       placement="bottom"
-      destroyTooltipOnHide
+      destroyOnHidden
     >
       <div
         ref={containerRef}
