@@ -16,6 +16,12 @@ export const useStyles = createStyles(({ css, cx, token }, { fontWeight, fontFam
   `);
 
   const passwordFieldWrapper = cx("sha-password-field-wrapper", css`
+    .ant-form-item-explain,
+    .ant-form-item-explain-connected {
+      max-width: var(--sha-password-input-width, 100%);
+      overflow: hidden;
+    }
+
     .ant-form-item-explain-error {
       white-space: nowrap;
       overflow: hidden;
