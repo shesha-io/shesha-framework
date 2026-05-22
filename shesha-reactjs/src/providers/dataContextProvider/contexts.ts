@@ -12,7 +12,7 @@ export interface IDataContextProviderStateContext {
   name: string;
   description?: string | undefined;
   type: string;
-  parentDataContext?: IDataContextFullInstance | undefined;
+  parent?: IDataContextFullInstance | undefined;
   metadata: Promise<IModelMetadata>;
 }
 

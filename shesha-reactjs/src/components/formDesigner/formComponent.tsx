@@ -15,12 +15,13 @@ import { FormComponentValidationProvider, useValidationErrorsStateOrDefault } fr
 import { isValidGuid } from './components/utils';
 import { toCamelCase } from '@/utils/string';
 import { useComponentApi } from '@/providers/componentApi/provider';
-import { deepMergeValues, removeUndefinedProps } from '@/utils/object';
-import { CommonComponentApi, IComponentStyle, InputComponentApi } from '../../componentsApi/componentApi';
+import { deepMergeValues, getValueByPropertyName, removeUndefinedProps, setValueByPropertyName } from '@/utils/object';
+import { IComponentStyle, InputComponentApi } from '../../componentsApi/componentApi';
 import { IBackgroundValue } from '@/designer-components/_settings/utils';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { ComponentApiProperty, IComponentApiDescription } from '@/providers/componentApi/model';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -136,20 +137,22 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
 
   if (componentApi !== undefined) {
     // common Api
-    componentApi.updateApi<CommonComponentApi>(
-      {
-        id: actualModel.id,
+
+    const commonApi: IComponentApiDescription<InputComponentApi> = {
+      id: actualModel.id,
+      componentName: actualModel.componentName,
+      componentModel: actualModel,
+      level: 1,
+      isInput: toolboxComponent?.isInput,
+      rawComponentModel: sourceComponentModel,
+      api: {
         componentName: actualModel.componentName,
-        componentModel: actualModel,
-        rawComponentModel: sourceComponentModel,
-        api: {
-          componentName: actualModel.componentName,
-          context: actualModel.context,
-          propertyName: actualModel.propertyName,
-        },
-        typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        context: actualModel.context,
+        propertyName: actualModel.propertyName,
       },
-      [
+      typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+      skipUpdateTypeDefinitionIfExists: true,
+      properties: [
         // component properties
         // use actualModel.hidden because it's already filtered by some other means (eg permissions)
         { name: 'visible', getter: () => actualApiModel.visible, setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden || !value }) },
@@ -161,52 +164,47 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
         {
           name: 'style', getter: () => {
             const style = {} as IComponentStyle;
-            componentApi.createApiProperty(style, { name: 'font', getter: () => actualApiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value }) });
-            componentApi.createApiProperty(style, { name: 'background', getter: () => actualApiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
-            componentApi.createApiProperty(style, { name: 'border', getter: () => actualApiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value }) });
+            componentApi.createOrUpdateApiProperty(style, { name: 'font', getter: () => actualApiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value }) });
+            componentApi.createOrUpdateApiProperty(style, { name: 'background', getter: () => actualApiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
+            componentApi.createOrUpdateApiProperty(style, { name: 'border', getter: () => actualApiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value }) });
             return style;
           },
         },
       ],
-    );
+    };
 
     // input common Api
     if (toolboxComponent?.isInput) {
-      componentApi.updateApi<InputComponentApi>(
-        {
-          id: actualModel.id,
-          componentName: actualModel.componentName,
-          api: {
-            isValid: () => actualModel.propertyName
-              ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
-                .then(() => true).catch(() => false)
-              : Promise.resolve(true),
-            getErrors: () => actualModel.propertyName
-              ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
-                .then(() => []).catch((e) => e.errorFields?.length ? e.errorFields[0].errors : [])
-              : Promise.resolve([]),
-            reset: () => actualModel.propertyName
-              ? shaForm.antdForm.resetFields([actualModel.propertyName])
-              : undefined,
+      commonApi.api = {
+        ...commonApi.api,
+        isValid: () => actualModel.propertyName
+          ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
+            .then(() => true).catch(() => false)
+          : Promise.resolve(true),
+        getErrors: () => actualModel.propertyName
+          ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
+            .then(() => []).catch((e) => e.errorFields?.length ? e.errorFields[0].errors : [])
+          : Promise.resolve([]),
+        reset: () => actualModel.propertyName
+          ? shaForm.antdForm.resetFields([actualModel.propertyName])
+          : undefined,
+      } as InputComponentApi;
+      commonApi.typeDefinition = { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] };
+
+      commonApi.properties = [
+        ...commonApi.properties,
+        ...[
+          { name: 'required', getter: () => actualApiModel.validate?.required, setter: (v) => updateApiModel(setApiModel, { validate: { required: v } }) },
+          {
+            name: 'value',
+            getter: () => getValueByPropertyName(shaForm.formData as Record<string, unknown>, actualModel.propertyName),
+            setter: (value) => shaForm.setFieldsValue(setValueByPropertyName({}, actualModel.propertyName, value)),
           },
-          typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        },
-        [
-          { name: 'required', getter: () => actualApiModel.validate?.required, setter: (value) => updateApiModel(setApiModel, { validate: { required: value } }) },
-          { name: 'value', skipIfExists: true,
-            getter: () => {
-              return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
-            },
-            setter: (value) => {
-              if (actualModel.propertyName)
-                shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
-              else
-                console.warn(`Property name for component "${actualModel.type}: ${actualModel.componentName}" is not defined`);
-            },
-          },
-        ],
-      );
+        ] as ComponentApiProperty<InputComponentApi>[],
+      ];
     }
+
+    componentApi.updateApi<InputComponentApi>(commonApi);
   };
   useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
 

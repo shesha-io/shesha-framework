@@ -2,7 +2,7 @@ import { MetadataDto } from "@/apis/metadata";
 import { FormIdentifier, IEntityMetadata, IReferenceListIdentifier } from "@/interfaces";
 import { IConfigurationLoader } from "@/providers/configurationItemsLoader/configurationLoader";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 
 export type SyncStatus = 'uptodate' | 'unknown' | 'outofdate';
 

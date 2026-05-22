@@ -8,6 +8,7 @@ import { evaluateString } from '@/providers/form/utils';
 import { getUrlKeyParam } from '@/utils';
 import { getValueByPropertyName, unsafeGetValueByPropertyName } from '@/utils/object';
 import { Select, Spin, Typography } from 'antd';
+import DOMPurify from 'dompurify';
 import { isEqual, uniqWith } from 'lodash';
 import QueryString from 'qs';
 import React, { FC, useEffect, useId, useMemo, useRef, useState } from 'react';
@@ -264,7 +265,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     const label = rawLabel == null || typeof rawLabel === 'object' ? '' : String(rawLabel);
     return (
       <Select.Option value={key} key={index} data={row} title={label}>
-        <span dangerouslySetInnerHTML={{ __html: label }} />
+        <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(label) }} />
       </Select.Option>
     );
   };

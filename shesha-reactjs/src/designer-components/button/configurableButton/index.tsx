@@ -7,7 +7,7 @@ import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
-import { IFullAuditedEntity } from '@/publicJsApis/entities';
+import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { useStyles } from './style';
 import { getGhostStyleOverrides } from '@/utils/style';
 import { DataContextTopLevels } from '@/providers/dataContextManager';

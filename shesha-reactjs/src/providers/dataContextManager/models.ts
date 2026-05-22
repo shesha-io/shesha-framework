@@ -26,6 +26,7 @@ export const SHESHA_ROOT_DATA_CONTEXT_MANAGER = 'SHESHA_ROOT_DATA_CONTEXT_MANAGE
 export enum SheshaCommonContexts {
   ApplicationContext = 'application',
   WebStorageContext = 'webStorage',
+  CanvasContext = 'canvasContext',
   AppContext = 'appContext',
   PageContext = 'pageContext',
   FormContext = 'formContext',

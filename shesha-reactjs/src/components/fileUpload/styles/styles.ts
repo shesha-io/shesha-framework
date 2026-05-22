@@ -114,6 +114,17 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       min-height: ${layout ? (minHeight) : '100%'} !important;
       max-width: ${layout ? (maxWidth) : '100%'} !important;
       min-width: ${layout ? (minWidth) : '100%'} !important;
+      display: inline-block;
+      background: ${backgroundImage ?? backgroundColor ?? background};
+      ${backgroundPosition ? `background-position: ${backgroundPosition};` : ''}
+      ${backgroundRepeat ? `background-repeat: ${backgroundRepeat};` : ''}
+      ${backgroundSize ? `background-size: ${backgroundSize};` : ''}
+      ${layout && !isDragger ? `
+        border-width: ${borderWidth};
+        border-style: ${borderStyle};
+        border-color: ${borderColor};
+        border-radius: ${borderRadius};
+      ` : ''}
 
       .ant-upload-select-picture-card {
         width: var(--thumbnail-width) !important;
@@ -133,6 +144,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-upload-list-picture-card {
         height: ${hideFileName
+          ? 'var(--thumbnail-height)'
+          : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
+        min-height: ${hideFileName
           ? 'var(--thumbnail-height)'
           : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
         padding-bottom: 1rem;
@@ -212,8 +226,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .${prefixCls}-upload {
 
-        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : (width ?? height ?? '120px')} !important;
-        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : (height ?? width ?? '120px')} !important;
+        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : isDragger ? (width ?? height ?? '120px') : 'auto'} !important;
+        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : isDragger ? (height ?? width ?? '120px') : (height ?? width ?? '54px')} !important;
         border-radius: ${borderRadius} !important;
         align-items: center;
 
@@ -246,6 +260,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         ${style}
         width: 100% !important;
         height: 100% !important;
+        border: none !important;
+        background: transparent !important;
       }
 
       .ant-upload-list-item-container {

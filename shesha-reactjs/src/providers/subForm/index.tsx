@@ -501,7 +501,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     const data = parentFormApi.getFormData();
     return !isNullOrWhiteSpace(props.propertyName) && isDefined(data)
       ? (data as Record<string, unknown>)[props.propertyName] as object
-      : data;
+      : data ?? {};
   };
 
   const subFormApi: IFormApi = {
@@ -522,7 +522,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     },
     setFormData: function (payload: ISetFormDataPayload): void {
       if (payload.mergeValues) {
-        onChangeInternal(deepMergeValues(value, payload.values));
+        onChangeInternal(deepMergeValues(value ?? {}, payload.values));
       } else {
         onChangeInternal(payload.values);
       }
@@ -539,6 +539,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       ? (parentFormApi.data as Record<string, unknown>)[props.propertyName] as object
       : {},
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
+    context: {},
+    components: {},
   };
 
   return (

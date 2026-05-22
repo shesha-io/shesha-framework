@@ -6,7 +6,7 @@ import {
   isGroup,
   isButtonItem,
 } from '@/providers/buttonGroupConfigurator/models';
-import { IFullAuditedEntity } from '@/publicJsApis/entities';
+import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { ItemType } from 'antd/es/menu/interface';
 import React, { Fragment } from 'react';
 

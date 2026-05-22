@@ -200,6 +200,7 @@ export const safeGetProperty = <T extends object, K extends keyof T | string>(ob
 
 export const setValueByPropertyName = <TData extends object = object>(data: TData, propertyName: string, value: unknown, makeCopy: boolean = false): TData => {
   const resultData = makeCopy ? { ...data } : data;
+  if (!propertyName) return resultData;
   const path = propertyName.split(/\.|\[|\]/g).filter(Boolean);
   const lastPropName = path.length > 0 ? path[path.length - 1] : undefined;
   if (isNullOrWhiteSpace(lastPropName))
