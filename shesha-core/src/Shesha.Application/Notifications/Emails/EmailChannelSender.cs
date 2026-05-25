@@ -73,7 +73,7 @@ namespace Shesha.Notifications
                     Logger.Error("Failed to send email", e);
                     return SendStatus.Failed(e.Message);
                 }
-            };
+            }
         }
 
         #region private methods

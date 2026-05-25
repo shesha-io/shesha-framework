@@ -85,7 +85,8 @@ namespace Shesha.Tests.Users
                     Name = "Test",
                     Surname = "User",
                     Password = oldPassword,
-                    UserName = userName
+                    UserName = userName,
+                    SupportedPasswordResetMethods = [(long)RefListPasswordResetMethods.SmsOtp]
                 });
 
             // try to login using current password

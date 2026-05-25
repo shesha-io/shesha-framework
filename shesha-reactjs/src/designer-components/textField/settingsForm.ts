@@ -123,6 +123,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 label: 'Spell Check',
                 inputType: 'switch',
                 jsSetting: true,
+                hidden: {
+                  _code: 'return getSettingValue(data?.textType) === "password";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
               })
               .toJson(),
             ],
