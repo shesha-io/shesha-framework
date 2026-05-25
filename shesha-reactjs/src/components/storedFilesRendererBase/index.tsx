@@ -345,12 +345,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   const iconRender = (file: UploadFile): React.ReactElement => {
-    const { type, uid, status } = file;
-
-    // If upload failed, show red default icon instead of thumbnail
-    if (status === 'error') {
-      return null;
-    }
+    const { type, uid } = file;
 
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
@@ -570,7 +565,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     name: '',
     accept: allowedFileTypes?.join(','),
     multiple,
-    fileList,
+    fileList: fileList.filter(f => f.status !== 'error'),
     disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;

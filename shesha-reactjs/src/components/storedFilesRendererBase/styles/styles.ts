@@ -191,16 +191,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     .ant-upload-list-item {
       display: flex;
       padding: 0 !important;
-      border: unset !important; 
+      border: unset !important;
       width: ${layout ? width : '100%'};
       :before {
         ${rest}
         display: none;
       }
-    }
-
-    .ant-upload-list-item-error {
-      border: 2px solid ${token.colorError} !important;
     }
 
     .ant-upload-list-item-thumbnail {
