@@ -1,7 +1,7 @@
 import { FormIdFullNameDtoAjaxResponse } from "@/apis/entityConfig";
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents } from "@/interfaces";
 import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
-import { HttpClientApi, HttpResponse } from "@/publicJsApis/httpClient";
+import { HttpClientApi, HttpResponse } from "@/publicJsApis/apis/httpClient";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { PromisedValue, StatefulPromise } from "@/utils/promises";
 import { buildUrl } from "@/utils/url";

@@ -34,6 +34,7 @@ using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -72,6 +73,8 @@ namespace Shesha.Web.Host.Startup
             });
 
             services.AddSheshaElmah(_appConfiguration);
+
+            services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
                 {
@@ -163,9 +166,10 @@ namespace Shesha.Web.Host.Startup
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
             app.UseStaticFiles();
+            app.UseRouting();
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAbpRequestLocalization();
-            app.UseRouting();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -1,7 +1,7 @@
 import { IHasFullEntityType, IPropertyMetadata, ITypeDefinitionLoadingContext, SourceFile, TypeDefinition, isEntityReferencePropertyMetadata, isHasFullyQualifiedEntityType, isPropertiesArray } from "@/interfaces/metadata";
 import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { EntitiesManager } from "./manager";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { EntityConfigurationDto } from "./models";
 import { DataTypes } from "@/interfaces";
 import { StringBuilder } from "@/utils/metadata/stringBuilder";

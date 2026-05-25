@@ -557,7 +557,6 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                 default:
                     // ToDo: AS - need to decide ignore wrong properties or raise exception (write critical log)
                     return null;
-                    throw new NotSupportedException($"Data type not supported: {dataType}");
             }
         }
 

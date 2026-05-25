@@ -1,4 +1,4 @@
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { SettingsManager } from "./manager";
 import { SettingsModuleAccessor } from "./moduleAccessor";
 import { createProxy } from "@/utils/proxy";

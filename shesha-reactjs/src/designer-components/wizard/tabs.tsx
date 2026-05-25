@@ -11,7 +11,7 @@ import { IStepProps, IWizardComponentProps } from './models';
 import { useStyles } from './styles';
 import { useWizard } from './hooks';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
-import { wizardApiCode } from '@/publicJsApis';
+import { wizardApiCode } from '@/publicJsApis/apis';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { addPx } from '@/utils/style';

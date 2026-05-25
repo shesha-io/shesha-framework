@@ -3,7 +3,7 @@ import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { requestHeaders } from './requestHeaders';
 import { buildUrl } from './url';
-import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
+import { HttpClientApi, HttpResponse } from '@/publicJsApis/apis/httpClient';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { Key } from 'react';
 import { IApiEndpoint } from '@/interfaces';

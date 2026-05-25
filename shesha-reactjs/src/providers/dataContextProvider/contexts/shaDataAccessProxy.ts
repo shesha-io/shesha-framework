@@ -82,7 +82,7 @@ export const CreateDataAccessor = <TData extends object = object>(
       const propertyName = prop.toString();
       const data = target.getAccessorValue();
       if (isDefined(data) && propertyName in data)
-        return { enumerable: true, configurable: true, writable: true };
+        return Reflect.getOwnPropertyDescriptor(data, propertyName); // { enumerable: true, configurable: true, writable: true };
       return undefined;
     },
   });
@@ -179,5 +179,5 @@ export class ShaDataAccessor<TData extends object = object> implements IShaDataA
 }
 
 export const GetShaFormDataAccessor = <TValues extends object = object>(shaInstance: IFormApi<TValues>): IShaDataAccessor<TValues> => {
-  return CreateDataAccessor(() => shaInstance.getFormData(), shaInstance.setFieldsValue, shaInstance.setFieldValue) as IShaDataAccessor<TValues>;
+  return CreateDataAccessor(() => shaInstance.getFormData() ?? {} as TValues, shaInstance.setFieldsValue, shaInstance.setFieldValue) as IShaDataAccessor<TValues>;
 };

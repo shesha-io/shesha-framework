@@ -14,15 +14,15 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index'
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon } from '@/components/shaIcon';
 import { useStyles } from './styles';
+import { PasswordFieldWrapper } from './passwordFieldWrapper';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySettings, validatePasswordValue } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { IComponentApiInputRef } from '@/providers/componentApi/model';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
@@ -43,17 +43,14 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   Factory: ({ model, calculatedModel }) => {
     const componentApi = useComponentApi();
     const inputRef = useRef<InputRef>(null);
-    const apiRef = useRef<IComponentApiInputRef<string>>();
     useEffect(() => {
-      componentApi?.updateApi<TextFieldApi>(
-        {
-          id: model.id,
-          componentName: model.componentName,
-          typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-          api: { focus: () => inputRef.current?.focus() },
-        },
-        [{ name: 'value', getter: () => apiRef.current.value, setter: apiRef.current.onChange }],
-      );
+      componentApi?.updateApi<TextFieldApi>({
+        id: model.id,
+        componentName: model.componentName,
+        level: 3,
+        typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        api: { focus: () => inputRef.current?.focus() },
+      });
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
@@ -137,9 +134,11 @@ const TextFieldComponent: TextFieldComponentDefinition = {
             const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
 
             const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
+
+            let val = inputValue;
             if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
-              const changedValue = customEvents.onChange({ value: inputValue }, args[0]);
-              if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : inputValue);
+              const changedValue = customEvents.onChange({ value: inputValue }, args[0]) as string | undefined;
+              val = changedValue !== undefined ? changedValue : inputValue;
             } else {
               // Workaround because if the value is undefined, input component leave the inputed value
               // Rendering of the component is not called
@@ -147,10 +146,10 @@ const TextFieldComponent: TextFieldComponentDefinition = {
               if (Boolean(regExpObj) && value === undefined && typeof onChange === 'function') {
                 onChange('');
               }
+              return;
             }
+            if (typeof onChange === 'function') onChange(val);
           };
-
-          apiRef.current = { value, onChange: onChangeInternal };
 
           const inputElement = inputProps.readOnly
             ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} style={finalStyle} />
@@ -159,7 +158,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
           if (isPassword) {
             return (
               <Tooltip title={passwordError ?? undefined} placement="bottom">
-                <div className={styles.passwordFieldWrapper}>{inputElement}</div>
+                {inputElement}
               </Tooltip>
             );
           }
@@ -168,6 +167,10 @@ const TextFieldComponent: TextFieldComponentDefinition = {
         }}
       </ConfigurableFormItem>
     );
+
+    if (isPassword) {
+      return <PasswordFieldWrapper className={styles.passwordFieldWrapper}>{fieldContent}</PasswordFieldWrapper>;
+    }
 
     return fieldContent;
   },

@@ -1,7 +1,7 @@
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdentifier } from "../../providers/metadataDispatcher/entities/utils";
 import { DeleteFileArgs, DownloadFileArgs, DownloadZipByIdsArgs, DownloadZipByOwnerArgs, FileListReference, FileReference, ReplaceFilePayload, STORED_FILE_URLS, UploadFileAsAttachmentArgs, UploadFileArgs } from "./models";
-import { HttpClientApi, HttpResponse } from "@/publicJsApis/httpClient";
+import { HttpClientApi, HttpResponse } from "@/publicJsApis/apis/httpClient";
 import { extractAjaxResponse, IAjaxResponse } from "@/interfaces";
 import { buildUrl } from "@/utils";
 import FileSaver from 'file-saver';

@@ -14,9 +14,11 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Shesha.Excel
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
     public class ExcelUtility: IExcelUtility, ITransientDependency
     {
         #region Constants
@@ -219,6 +221,7 @@ namespace Shesha.Excel
 
                 using (var xmlReader = OpenXmlReader.Create(worksheetPart))
                 {
+                    var settings = new XmlWriterSettings { Async = true };
                     using (var xmlWriter = OpenXmlWriter.Create(replacementPart))
                     {
                         while (xmlReader.Read())
@@ -227,24 +230,24 @@ namespace Shesha.Excel
                             {
                                 if (xmlReader.IsEndElement)
                                     continue;
-                                await xmlWriter.WriteStartElementAsync(new SheetData());
+                                xmlWriter.WriteStartElement(new SheetData());
 
                                 var headerCell = new Cell(new CellValue());
                                 headerCell.DataType = new EnumValue<CellValues>(CellValues.String);
 
                                 // write headers
-                                await xmlWriter.WriteStartElementAsync(new Row());
+                                xmlWriter.WriteStartElement(new Row());
                                 SetHeaderStyle(document, headerCell);
                                 foreach (var header in headers)
                                 {
                                     headerCell.CellValue.NotNull().Text = header;
-                                    await xmlWriter.WriteElementAsync(headerCell);
+                                    xmlWriter.WriteElement(headerCell);
                                 }
-                                await xmlWriter.WriteEndElementAsync();
+                                xmlWriter.WriteEndElement();
 
                                 await writeRows.Invoke(xmlWriter);
 
-                                await xmlWriter.WriteEndElementAsync();
+                                xmlWriter.WriteEndElement();
                             }
                             else
                             {
@@ -254,7 +257,7 @@ namespace Shesha.Excel
                                 }
                                 else if (xmlReader.IsEndElement)
                                 {
-                                    await xmlWriter.WriteEndElementAsync();
+                                    xmlWriter.WriteEndElement();
                                 }
                             }
                         }
@@ -286,14 +289,14 @@ namespace Shesha.Excel
                 };
             }).ToList();
 
-            var result = await DataToExcelStreamAsync(async (writer) =>
+            var result = await DataToExcelStreamAsync((writer) =>
             {
                 var r = new Row();
                 var c = new Cell(new CellValue());
 
                 foreach (var row in list)
                 {
-                    await writer.WriteStartElementAsync(r);
+                    writer.WriteStartElement(r);
 
                     foreach (var column in colProcessing)
                     {
@@ -303,11 +306,12 @@ namespace Shesha.Excel
                         strValue = ReplaceSpecialCharacters(strValue);
 
                         FillCellValue(c, strValue, typeof(string));
-                        await writer.WriteElementAsync(c);
+                        writer.WriteElement(c);
                     }
 
-                    await writer.WriteEndElementAsync();
+                    writer.WriteEndElement();
                 }
+                return Task.CompletedTask;
             }, headers, sheetName);
 
             return result;
