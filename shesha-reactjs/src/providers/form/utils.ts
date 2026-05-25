@@ -821,6 +821,16 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       };
 
       if (skipUnknownTags) {
+        // A non-plain object (Date / class instance / Map / etc.) is preserved by reference
+        // through cloneAndDecorateForMustache. When the traversal would descend into one and
+        // write a placeholder, we shallow-clone it into a plain object and replace it in its
+        // parent so the placeholder never lands on the caller-owned instance.
+        const isNonPlainObject = (val: unknown): val is object => {
+          if (!val || typeof val !== 'object' || Array.isArray(val)) return false;
+          const proto = Object.getPrototypeOf(val) as object | null;
+          return proto !== Object.prototype && proto !== null;
+        };
+
         template.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
           const tag = mathes && mathes.length > 0
@@ -835,9 +845,15 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
             return;
 
           const container = parts.reduce((level: IAnyObject, key: string) => {
-            return level.hasOwnProperty(key)
-              ? level[key] as IAnyObject
-              : (level[key] = {} as IAnyObject);
+            if (!level.hasOwnProperty(key))
+              return (level[key] = {} as IAnyObject);
+            const existing = level[key] as unknown;
+            if (isNonPlainObject(existing)) {
+              const detached: IAnyObject = { ...(existing as IAnyObject) };
+              level[key] = detached;
+              return detached;
+            }
+            return existing as IAnyObject;
           }, view);
           if (!container.hasOwnProperty(field)) {
             container[field] = new StaticMustacheTag(tag);
