@@ -224,8 +224,12 @@ namespace Shesha.Otp
                         }
                         else
                         {
-                            subjectTemplate = settings.DefaultEmailSubjectTemplate;
-                            bodyTemplate = settings.DefaultEmailBodyTemplate;
+                            subjectTemplate = !string.IsNullOrWhiteSpace(settings.DefaultEmailSubjectTemplate)
+                                ? settings.DefaultEmailSubjectTemplate
+                                : OtpDefaults.DefaultEmailSubjectTemplate;
+                            bodyTemplate = !string.IsNullOrWhiteSpace(settings.DefaultEmailBodyTemplate)
+                                ? settings.DefaultEmailBodyTemplate
+                                : OtpDefaults.DefaultEmailBodyTemplate;
                         }
 
                         var body = bodyTemplate.Replace("{{token}}", otp.Pin);
