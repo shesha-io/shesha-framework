@@ -36,5 +36,15 @@
         /// Email template body
         /// </summary>
         public string EmailBodyTemplate { get; set; }
+
+        /// <summary>
+        /// Subject for the registration email link
+        /// </summary>
+        public string RegistrationEmailSubject { get; set; }
+
+        /// <summary>
+        /// Registration email template body
+        /// </summary>
+        public string RegistrationEmailBodyTemplate { get; set; }
     }
 }

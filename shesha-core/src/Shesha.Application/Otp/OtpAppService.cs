@@ -64,6 +64,8 @@ namespace Shesha.Otp
                 IgnoreOtpValidation = input.IgnoreOtpValidation,
                 DefaultEmailBodyTemplate = input.EmailBodyTemplate,
                 DefaultEmailSubjectTemplate = input.EmailSubject,
+                DefaultRegistrationEmailSubjectTemplate = input.RegistrationEmailSubject,
+                DefaultRegistrationEmailBodyTemplate = input.RegistrationEmailBodyTemplate,
             });
 
             return true;
@@ -83,6 +85,8 @@ namespace Shesha.Otp
                 IgnoreOtpValidation = emailSettings.IgnoreOtpValidation,
                 EmailSubject = emailSettings.DefaultEmailSubjectTemplate,
                 EmailBodyTemplate = emailSettings.DefaultEmailBodyTemplate,
+                RegistrationEmailSubject = emailSettings.DefaultRegistrationEmailSubjectTemplate,
+                RegistrationEmailBodyTemplate = emailSettings.DefaultRegistrationEmailBodyTemplate,
             };
             
             return settings;
