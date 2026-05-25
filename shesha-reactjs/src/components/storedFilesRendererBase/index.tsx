@@ -287,7 +287,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             if (!file.id) {
               continue;
             }
-            const thumbnailUrl = `${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}?id=${file.id}`;
+            const thumbnailUrl = `${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}?id=${file.id}`;
             const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
             if (isCancelled) {
               // Cleanup if cancelled after fetch completes
@@ -345,7 +345,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   const iconRender = (file: UploadFile): React.ReactElement => {
-    const { type, uid } = file;
+    const { type, uid, status } = file;
+
+    // If upload failed, show red default icon instead of thumbnail
+    if (status === 'error') {
+      return null;
+    }
 
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
@@ -359,7 +364,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
 
 
-    return getFileIcon(type, model.allStyles?.fontStyles?.fontSize);
+    return getFileIcon(type, { fontSize: model.allStyles?.fontStyles?.fontSize});
   };
 
   // Helper function to get or create cached file context data

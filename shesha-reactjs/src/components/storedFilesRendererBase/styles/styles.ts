@@ -199,6 +199,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       }
     }
 
+    .ant-upload-list-item-error {
+      border: 2px solid ${token.colorError} !important;
+    }
+
     .ant-upload-list-item-thumbnail {
       ${rest}
       background: ${background ?? backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
