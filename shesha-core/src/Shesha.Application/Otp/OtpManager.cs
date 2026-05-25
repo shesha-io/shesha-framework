@@ -210,8 +210,27 @@ namespace Shesha.Otp
                     }
                 case OtpSendType.EmailLink:
                     {
-                        var subjectTemplate = settings.DefaultEmailSubjectTemplate;
-                        var bodyTemplate = settings.DefaultEmailBodyTemplate;
+                        string subjectTemplate;
+                        string bodyTemplate;
+
+                        if (otp.ActionType == OtpActionTypes.Registration)
+                        {
+                            subjectTemplate = !string.IsNullOrWhiteSpace(settings.DefaultRegistrationEmailSubjectTemplate)
+                                ? settings.DefaultRegistrationEmailSubjectTemplate
+                                : OtpDefaults.DefaultRegistrationEmailSubjectTemplate;
+                            bodyTemplate = !string.IsNullOrWhiteSpace(settings.DefaultRegistrationEmailBodyTemplate)
+                                ? settings.DefaultRegistrationEmailBodyTemplate
+                                : OtpDefaults.DefaultRegistrationEmailBodyTemplate;
+                        }
+                        else
+                        {
+                            subjectTemplate = !string.IsNullOrWhiteSpace(settings.DefaultEmailSubjectTemplate)
+                                ? settings.DefaultEmailSubjectTemplate
+                                : OtpDefaults.DefaultEmailSubjectTemplate;
+                            bodyTemplate = !string.IsNullOrWhiteSpace(settings.DefaultEmailBodyTemplate)
+                                ? settings.DefaultEmailBodyTemplate
+                                : OtpDefaults.DefaultEmailBodyTemplate;
+                        }
 
                         var body = bodyTemplate.Replace("{{token}}", otp.Pin);
                         body = body.Replace("{{userid}}", otp.RecipientId);
