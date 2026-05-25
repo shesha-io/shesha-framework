@@ -4,7 +4,6 @@ using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Exceptions;
-using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
@@ -168,7 +167,7 @@ namespace Shesha.Metadata
 
             int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)
             {
-                return obj.GetHashCode();
+                return obj?.ClassName?.GetHashCode(StringComparison.Ordinal) ?? 0;
             }
         }
     }

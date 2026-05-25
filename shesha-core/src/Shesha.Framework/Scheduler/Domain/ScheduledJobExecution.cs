@@ -12,7 +12,7 @@ namespace Shesha.Scheduler.Domain
     /// <summary>
     /// Contains info about scheduled job execution
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJobExecution", FriendlyName = "Scheduled Job Execution")]
+    [Entity(TypeShortAlias = "Shesha.Scheduler.ScheduledJobExecution", FriendlyName = "Scheduled Job Execution", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     [Table("Core_ScheduledJobExecutions")]
     public class ScheduledJobExecution : FullAuditedEntity<Guid>
     {
