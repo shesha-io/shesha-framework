@@ -44,7 +44,10 @@ namespace Shesha.Metadata
 
             var flags = BindingFlags.Public | BindingFlags.Instance;
 
-            var allProps = containerType.GetPropertiesWithoutHidden(flags).OrderBy(p => p.Name).ToList();
+            var allProps = containerType.GetPropertiesWithoutHidden(flags)
+                .Where(p => !p.IsJsonIgnored())
+                .OrderBy(p => p.Name)
+                .ToList();
             if (containerType.IsEntityType())
                 allProps = allProps.Where(p => MappingHelper.IsPersistentProperty(p) || p.CanRead && p.HasAttribute<NotMappedAttribute>()).ToList();
 

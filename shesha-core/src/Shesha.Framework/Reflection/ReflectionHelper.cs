@@ -1,5 +1,4 @@
-﻿using Abp.Dependency;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Reflection;
 using Shesha.Attributes;
 using Shesha.Domain;
@@ -74,6 +73,24 @@ namespace Shesha.Reflection
         public static bool HasAttribute<T>(this MemberInfo memberInfo, bool inherit = false) where T : Attribute
         {
             return memberInfo.GetAttribute<T>() != null;
+        }
+
+        /// <summary>
+        /// Returns true if the specified <paramref name="memberInfo"/> is marked with a JsonIgnore attribute
+        /// that causes the property to be unconditionally omitted from JSON serialization. Matches
+        /// Newtonsoft's <see cref="Newtonsoft.Json.JsonIgnoreAttribute"/> (always ignores) and
+        /// <see cref="System.Text.Json.Serialization.JsonIgnoreAttribute"/> with
+        /// <see cref="System.Text.Json.Serialization.JsonIgnoreCondition.Always"/> (the default).
+        /// Conditional STJ variants (<c>Never</c>, <c>WhenWritingNull</c>, <c>WhenWritingDefault</c>) do not count.
+        /// </summary>
+        public static bool IsJsonIgnored(this MemberInfo memberInfo)
+        {
+            if (memberInfo.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>())
+                return true;
+
+            var stjIgnore = memberInfo.GetAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>();
+            return stjIgnore != null
+                && stjIgnore.Condition == System.Text.Json.Serialization.JsonIgnoreCondition.Always;
         }
 
         // todo: added unique check
