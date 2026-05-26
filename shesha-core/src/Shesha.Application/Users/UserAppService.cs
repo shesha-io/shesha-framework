@@ -9,9 +9,9 @@ using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Web.Models.AbpUserConfiguration;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
@@ -22,6 +22,7 @@ using Shesha.Extensions;
 using Shesha.NHibernate.EntityHistory;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
+using Shesha.RateLimiting;
 using Shesha.Roles.Dto;
 using Shesha.SecurityQuestions.Dto;
 using Shesha.Users.Dto;
@@ -248,15 +249,34 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="mobileNo">mobile number of the user</param>
         [AbpAllowAnonymous]
+        [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtpAsync(string mobileNo)
         {
             // todo: cleanup mobile number
             // todo: store clear mobile number in the DB
 
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+
             // ensure that the user exists
             var user = await GetUniqueUserByMobileNoAsync(mobileNo);
+            
+            if (user == null)
+                throw new UserFriendlyException("Your username is not recognised");
+            
+            ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
 
-            var otpResponse = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = mobileNo, SendType = OtpSendType.Sms });
+            await EnforceOtpCooldownAsync(user.PasswordResetCode, securitySettings.OtpCooldownSeconds);
+
+            var otpResponse = await _otpManager.SendPinAsync(new SendPinInput()
+            {
+                SendTo = mobileNo,
+                SendType = OtpSendType.Sms,
+                Lifetime = securitySettings.ResetPasswordSmsOtpLifetime,
+            });
+
+            user.PasswordResetCode = otpResponse.OperationId.ToString();
+            await _userManager.UpdateAsync(user);
 
             return new ResetPasswordSendOtpResponse()
             {
@@ -344,12 +364,15 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         [AbpAllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<bool> SendSmsOtpAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
             var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == username);
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
+
+            await EnforceOtpCooldownAsync(user.PasswordResetCode, securitySettings.OtpCooldownSeconds);
 
             var lifetime = securitySettings.ResetPasswordSmsOtpLifetime;
 
@@ -360,6 +383,32 @@ namespace Shesha.Users
             await _userManager.UpdateAsync(user);
 
             return true;
+        }
+
+        /// <summary>
+        /// Throws when a previous OTP for the same user was sent inside the cooldown window.
+        /// Returning the remaining wait time prevents the SMS gateway from being hit on every retry.
+        /// </summary>
+        private async Task EnforceOtpCooldownAsync(string? lastOperationCode, int cooldownSeconds)
+        {
+            if (cooldownSeconds <= 0 || string.IsNullOrWhiteSpace(lastOperationCode))
+                return;
+
+            var existingOtpId = lastOperationCode.ToGuidOrNull();
+            if (!existingOtpId.HasValue)
+                return;
+
+            var existingOtp = await _otpManager.GetOrNullAsync(existingOtpId.Value);
+            if (existingOtp?.SentOn == null)
+                return;
+
+            var nextAllowed = existingOtp.SentOn.Value.AddSeconds(cooldownSeconds);
+            if (nextAllowed <= DateTime.Now)
+                return;
+
+            var secondsRemaining = (int)Math.Ceiling((nextAllowed - DateTime.Now).TotalSeconds);
+            throw new UserFriendlyException(
+                $"An OTP was recently sent. Please wait {secondsRemaining} seconds before requesting a new one.");
         }
 
         /// <summary>
@@ -387,6 +436,7 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         [AbpAllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordVerifyOtpResponse> ValidateResetCodeAsync(ResetPasswordValidateCodeInput input)
         {
             var username = input.Username;
@@ -439,47 +489,88 @@ namespace Shesha.Users
         /// <returns></returns>
         [AbpAllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<ResetPasswordVerifyOtpResponse> ValidateSecurityQuestionsAsync(SecurityQuestionVerificationDto input)
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == input.Username);
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SecurityQuestions);
 
+            if (user.SecurityQuestionLockoutEnd.HasValue && user.SecurityQuestionLockoutEnd.Value > DateTime.UtcNow)
+                throw new UserFriendlyException("Account is temporarily locked due to too many failed attempts.");
+
+            var configuredQuestions = await (await _questionRepository.GetAllAsync())
+                .Where(q => q.User == user)
+                .ToListAsync();
+
+            var submittedQuestions = input.SubmittedQuestions ?? new List<SecurityQuestionPair>();
+
             var validationErrors = 0;
-            var validationResult = new VerifyPinResponse();
-            var response = new ResetPasswordVerifyOtpResponse();
 
-            foreach(var submittedQuestionPair in input.SubmittedQuestions)
+            // Require the submitted question IDs to exactly match the configured set (no duplicates,
+            // no subset, no extras) — otherwise a caller could pass verification by submitting the
+            // same known answer multiple times, or by sending an empty list against an empty config.
+            var configuredQuestionIds = configuredQuestions
+                .Select(q => q.SelectedQuestion.Id)
+                .ToHashSet();
+            var submittedQuestionIds = submittedQuestions
+                .Select(q => q.QuestionId)
+                .ToHashSet();
+
+            if (configuredQuestionIds.Count == 0
+                || submittedQuestions.Count != configuredQuestionIds.Count
+                || submittedQuestionIds.Count != configuredQuestionIds.Count
+                || !submittedQuestionIds.SetEquals(configuredQuestionIds))
             {
-                var answeredQuestion = await _questionRepository.FirstOrDefaultAsync(q => q.User == user && q.SelectedQuestion.Id == submittedQuestionPair.QuestionId);
-
-                if (submittedQuestionPair.SubmittedAnswer.ToLower() != answeredQuestion.Answer.ToLower())
+                validationErrors++;
+            }
+            else
+            {
+                foreach (var submittedQuestionPair in submittedQuestions)
                 {
-                    validationErrors ++;
+                    var answeredQuestion = configuredQuestions
+                        .Single(q => q.SelectedQuestion.Id == submittedQuestionPair.QuestionId);
+
+                    if (string.IsNullOrEmpty(submittedQuestionPair.SubmittedAnswer)
+                        || !string.Equals(submittedQuestionPair.SubmittedAnswer, answeredQuestion.Answer, StringComparison.OrdinalIgnoreCase))
+                    {
+                        validationErrors++;
+                    }
                 }
             }
 
             if (validationErrors > 0)
             {
-                validationResult = VerifyPinResponse.Failed($"There are some questions you have answered incorrectly");
-            }
-            else
-            {
-                validationResult = VerifyPinResponse.Success();
-            }
+                user.SecurityQuestionFailedAttempts = (user.SecurityQuestionFailedAttempts ?? 0) + 1;
 
-            ObjectMapper.Map(validationResult, response);
+                var maxAttempts = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
 
-            if (validationResult.IsSuccess)
-            {
-                user.SetNewPasswordResetCode();
+                if (user.SecurityQuestionFailedAttempts >= maxAttempts)
+                {
+                    var lockoutSeconds = await _securitySettings.DefaultAccountLockoutSeconds.GetValueAsync();
+                    user.SecurityQuestionLockoutEnd = DateTime.UtcNow.AddSeconds(lockoutSeconds);
+                    user.SecurityQuestionFailedAttempts = 0;
+                    await _userManager.UpdateAsync(user);
+                    throw new UserFriendlyException("Account is temporarily locked due to too many failed attempts.");
+                }
+
                 await _userManager.UpdateAsync(user);
 
-                // real password reset will be done using token
-                response.Token = user.PasswordResetCode;
+                var validationResult = VerifyPinResponse.Failed("There are some questions you have answered incorrectly");
+                var failedResponse = new ResetPasswordVerifyOtpResponse();
+                ObjectMapper.Map(validationResult, failedResponse);
+                return failedResponse;
             }
 
-            return response;
+            user.SecurityQuestionFailedAttempts = 0;
+            user.SecurityQuestionLockoutEnd = null;
+            user.SetNewPasswordResetCode();
+            await _userManager.UpdateAsync(user);
+
+            var successResponse = new ResetPasswordVerifyOtpResponse();
+            ObjectMapper.Map(VerifyPinResponse.Success(), successResponse);
+            successResponse.Token = user.PasswordResetCode;
+            return successResponse;
         }
 
 
@@ -591,9 +682,6 @@ namespace Shesha.Users
             var isEmailLinkEnabled = securitySettings.UseResetPasswordViaEmailLink;
             var isSmsOtpEnabled = securitySettings.UseResetPasswordViaSmsOtp;
             var isSecurityQuestionsEnabled = securitySettings.UseResetPasswordViaSecurityQuestions;
-
-            if (user == null)
-                throw new UserFriendlyException("Your username is not recognised");
 
             var userSupportedMethods = EntityExtensions.DecomposeIntoBitFlagComponents(user.SupportedPasswordResetMethods);
 

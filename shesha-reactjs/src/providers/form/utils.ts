@@ -710,6 +710,69 @@ type MomentProto = {
 };
 
 /**
+ * Deep-clones data into plain objects/arrays and attaches a JSON-producing `toString` so
+ * Mustache's `{{path}}` interpolation yields JSON instead of "[object Object]" / "1,2,3".
+ *
+ * Why this is needed:
+ *  - Shesha data-access proxies (ShaArrayAccessProxy / ShaObjectAccessProxy) route every
+ *    property read through their `get` trap, including `toString`. We unwrap them via
+ *    `getAccessorValue()` to recover the underlying data.
+ *  - Plain arrays/objects produce useless default string forms when Mustache stringifies them.
+ *
+ * Exported separately so it can be unit-tested without going through the full evaluator.
+ *
+ * Note on circular references: the `seen` WeakMap preserves cycles in the cloned structure,
+ * which means the custom `toString` will catch the JSON.stringify error and return ''.
+ * That's intentional — better than throwing during template rendering.
+ */
+export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object, unknown> = new WeakMap()): unknown => {
+  if (input == null || typeof input !== 'object') return input;
+  if (input instanceof Date || moment.isMoment(input)) return input;
+
+  // Shesha data-access proxies are terminal: never iterate them via Object.keys (each
+  // property access re-triggers the proxy's `get` trap and may expose internal accessor
+  // properties or cause side effects). Whatever `getAccessorValue` returns is the answer.
+  const accessor = (input as { getAccessorValue?: () => unknown }).getAccessorValue;
+  if (typeof accessor === 'function') {
+    try {
+      const unwrapped = accessor.call(input);
+      return unwrapped === input ? undefined : cloneAndDecorateForMustache(unwrapped, seen);
+    } catch {
+      return undefined;
+    }
+  }
+
+  // Only deep-clone plain objects and arrays. Class instances, Map, Set, RegExp, Error, URL,
+  // typed arrays, etc. are returned as-is so their prototype/semantics survive.
+  const isArray = Array.isArray(input);
+  if (!isArray) {
+    const proto = Object.getPrototypeOf(input) as object | null;
+    if (proto !== Object.prototype && proto !== null) return input;
+  }
+
+  const cached = seen.get(input);
+  if (cached) return cached;
+
+  const result: Record<string, unknown> | unknown[] = isArray ? [] : {};
+  seen.set(input, result);
+  for (const key of Object.keys(input))
+    (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
+  Object.defineProperty(result, 'toString', {
+    value: () => {
+      try {
+        return JSON.stringify(result);
+      } catch {
+        return '';
+      }
+    },
+    configurable: true,
+    enumerable: false,
+    writable: true,
+  });
+  return result;
+};
+
+/**
  * Evaluates the string using Mustache template.
  *
  * Given a the below expression
@@ -740,8 +803,11 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
 
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
+      // Clone per call: caching the decorated structure is unsafe because long-lived proxies
+      // (e.g. the constants context) refresh in place, and skipUnknownTags mutates the view's
+      // nested nodes — both would leak shared state across evaluations.
       const view: IAnyObject = {
-        ...data,
+        ...(cloneAndDecorateForMustache(data) as IAnyObject),
         // adding a function to the data object that will format datetime
         dateFormat: function () {
           return function (timestamp: unknown, render: (renderArgs: unknown) => string) {
@@ -755,6 +821,16 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       };
 
       if (skipUnknownTags) {
+        // A non-plain object (Date / class instance / Map / etc.) is preserved by reference
+        // through cloneAndDecorateForMustache. When the traversal would descend into one and
+        // write a placeholder, we shallow-clone it into a plain object and replace it in its
+        // parent so the placeholder never lands on the caller-owned instance.
+        const isNonPlainObject = (val: unknown): val is object => {
+          if (!val || typeof val !== 'object' || Array.isArray(val)) return false;
+          const proto = Object.getPrototypeOf(val) as object | null;
+          return proto !== Object.prototype && proto !== null;
+        };
+
         template.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
           const tag = mathes && mathes.length > 0
@@ -769,9 +845,15 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
             return;
 
           const container = parts.reduce((level: IAnyObject, key: string) => {
-            return level.hasOwnProperty(key)
-              ? level[key] as IAnyObject
-              : (level[key] = {} as IAnyObject);
+            if (!level.hasOwnProperty(key))
+              return (level[key] = {} as IAnyObject);
+            const existing = level[key] as unknown;
+            if (isNonPlainObject(existing)) {
+              const detached: IAnyObject = { ...(existing as IAnyObject) };
+              level[key] = detached;
+              return detached;
+            }
+            return existing as IAnyObject;
           }, view);
           if (!container.hasOwnProperty(field)) {
             container[field] = new StaticMustacheTag(tag);
@@ -1558,7 +1640,8 @@ export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSett
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version
-  upgradeComponents(designerComponents, formSettings, newFlatComponents);
+  if (formSettings)
+    upgradeComponents(designerComponents, formSettings, newFlatComponents);
 
   return newFlatComponents;
 };

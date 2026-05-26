@@ -14,6 +14,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index'
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon } from '@/components/shaIcon';
 import { useStyles } from './styles';
+import { PasswordFieldWrapper } from './passwordFieldWrapper';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySettings, validatePasswordValue } from './utils';
@@ -157,7 +158,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
           if (isPassword) {
             return (
               <Tooltip title={passwordError ?? undefined} placement="bottom">
-                <div className={styles.passwordFieldWrapper}>{inputElement}</div>
+                {inputElement}
               </Tooltip>
             );
           }
@@ -166,6 +167,10 @@ const TextFieldComponent: TextFieldComponentDefinition = {
         }}
       </ConfigurableFormItem>
     );
+
+    if (isPassword) {
+      return <PasswordFieldWrapper className={styles.passwordFieldWrapper}>{fieldContent}</PasswordFieldWrapper>;
+    }
 
     return fieldContent;
   },
