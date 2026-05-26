@@ -93,7 +93,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
 
   return (
     <DataListItemErrorBoundary>
-      <div key={itemListId}>
+      <div key={itemListId} style={{ width: '100%' }}>
 
         <FormMarkupConverter markup={markup} formSettings={formSettings}>
           {(flatComponents) => {
