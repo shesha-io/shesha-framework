@@ -76,12 +76,48 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [imageUrl, setImageUrl] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
+  // Cache blob URL created from uploaded File object to avoid immediate server round-trip
+  const uploadedFileBlobUrl = useRef<string | null>(null);
 
   const isUploading = false; // TODO: replace with status of file
 
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
+
+  // Clean up blob URL on unmount
   useEffect(() => {
-    if (fileInfo && url) {
+    return () => {
+      if (uploadedFileBlobUrl.current) {
+        URL.revokeObjectURL(uploadedFileBlobUrl.current);
+        uploadedFileBlobUrl.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!fileInfo) {
+      // Clear image URL if no file
+      setImageUrl('');
+      if (uploadedFileBlobUrl.current) {
+        URL.revokeObjectURL(uploadedFileBlobUrl.current);
+        uploadedFileBlobUrl.current = null;
+      }
+      return;
+    }
+
+    // For newly uploaded files, use the blob URL if available
+    if (uploadedFileBlobUrl.current && fileInfo.status === 'uploading') {
+      setImageUrl(uploadedFileBlobUrl.current);
+      return;
+    }
+
+    // For persisted files with done status, fetch from server
+    if (fileInfo.status === 'done' && url) {
+      // Clean up any previous blob URL since we're fetching from server
+      if (uploadedFileBlobUrl.current) {
+        URL.revokeObjectURL(uploadedFileBlobUrl.current);
+        uploadedFileBlobUrl.current = null;
+      }
+
       fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
         .then((response) => response.blob())
         .then((blob) => URL.createObjectURL(blob))
@@ -91,13 +127,29 @@ export const FileUpload: FC<IFileUploadProps> = ({
           throw error;
         });
     }
-  }, [fileInfo]);
+  }, [fileInfo, url]);
 
   const onCustomRequest: UploadProps['customRequest'] = ({ file }): void => {
     if (file instanceof File) {
+      // For image files, create a blob URL directly from the File object to avoid
+      // an immediate server round-trip for the thumbnail right after upload
+      const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+      if (isImageType(fileExt)) {
+        // Clean up any previous blob URL
+        if (uploadedFileBlobUrl.current) {
+          URL.revokeObjectURL(uploadedFileBlobUrl.current);
+        }
+        uploadedFileBlobUrl.current = URL.createObjectURL(file);
+      }
+
       uploadFile({ file }).then(() => {
         callback?.();
       }).catch((error) => {
+        // Clean up blob URL if upload failed
+        if (uploadedFileBlobUrl.current) {
+          URL.revokeObjectURL(uploadedFileBlobUrl.current);
+          uploadedFileBlobUrl.current = null;
+        }
         console.error('Failed to upload file', error);
         throw error;
       });
@@ -191,7 +243,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
         return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls} />;
       }
     }
-    return getFileIcon(type);
+    return getFileIcon(type, {});
   };
 
   const styledfileControls = (): React.JSX.Element =>
@@ -219,7 +271,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
                   style={{ marginRight: '5px' }}
                   onClick={isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })}
                 >
-                  {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file?.size || 0)})`}
+                  {listType !== 'thumbnail' && getFileIcon(file?.type, {})} {`${file.name} (${filesize(file?.size || 0)})`}
                 </a>
               )}
               {showTextControls && fileControls(theme.application.primaryColor)}
@@ -352,7 +404,23 @@ export const FileUpload: FC<IFileUploadProps> = ({
               e.target.value = '';
               return;
             }
+
+            // For image files, create a blob URL for immediate display
+            const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+            if (isImageType(fileExt)) {
+              // Clean up any previous blob URL
+              if (uploadedFileBlobUrl.current) {
+                URL.revokeObjectURL(uploadedFileBlobUrl.current);
+              }
+              uploadedFileBlobUrl.current = URL.createObjectURL(file);
+            }
+
             uploadFile({ file }).then(() => callback?.()).catch((error) => {
+              // Clean up blob URL if upload failed
+              if (uploadedFileBlobUrl.current) {
+                URL.revokeObjectURL(uploadedFileBlobUrl.current);
+                uploadedFileBlobUrl.current = null;
+              }
               console.error('Failed to upload file', error);
               throw error;
             });
