@@ -142,6 +142,21 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 jsSetting: true,
                 parentId: validationTabId,
               })
+              .addSettingsInput({
+                id: nanoid(),
+                propertyName: 'excludeGlobalComplexityConfig',
+                label: 'Exclude Global Complexity Config',
+                inputType: 'switch',
+                size: 'small',
+                layout: 'horizontal',
+                jsSetting: true,
+                parentId: validationTabId,
+                hidden: {
+                  _code: 'return getSettingValue(data?.textType) !== "password";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+              })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: validationTabId,

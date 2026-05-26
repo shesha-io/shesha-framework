@@ -75,8 +75,8 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const passwordComplexity = usePasswordComplexitySettings();
 
     const passwordValidator = useMemo(() =>
-      isPassword ? buildPasswordValidatorString(passwordComplexity) : null,
-    [isPassword, passwordComplexity],
+      isPassword && !model.excludeGlobalComplexityConfig ? buildPasswordValidatorString(passwordComplexity) : null,
+    [isPassword, model.excludeGlobalComplexityConfig, passwordComplexity],
     );
 
     const modelWithValidation = useMemo(() => {
@@ -114,7 +114,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
           // the form validator (handles initial values, programmatic changes, and resets).
           // Only active when the complexity validator is actually composed into the model
           // (i.e. no custom validator has overridden it).
-          const isPasswordComplexityActive = isPassword && !!passwordValidator && !model.validate?.validator;
+          const isPasswordComplexityActive = isPassword && !model.excludeGlobalComplexityConfig && !!passwordValidator && !model.validate?.validator;
           const passwordError = isPasswordComplexityActive && value
             ? (() => {
               const errors = validatePasswordValue(value as string, passwordComplexity);
