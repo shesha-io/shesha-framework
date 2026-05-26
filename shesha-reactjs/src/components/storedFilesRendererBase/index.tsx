@@ -36,6 +36,7 @@ import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel, UploadFileAsAttachmentArgs } from '@/utils/storedFile/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { ValidationErrors } from '../validationErrors';
+import { buildUrl } from '@/utils';
 
 interface IUploaderFileTypes {
   name: string;
@@ -287,7 +288,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             if (!file.id) {
               continue;
             }
-            const thumbnailUrl = `${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}?id=${file.id}`;
+            const queryParams = {
+              id: file?.id,
+              width: parseFloat(`${model?.dimensions?.width}`),
+              height: parseFloat(`${model?.dimensions?.height}`),
+            };
+      
+            const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}`, queryParams);
+
             const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
             if (isCancelled) {
               // Cleanup if cancelled after fetch completes
