@@ -173,11 +173,12 @@ export const setValueByPropertyName = <TData extends object = object>(data: TDat
       prop[propName] = (Number.isNaN(Number(path[i + 1])) ? {} : []) as never;
       prop = prop[propName];
     } else {
+      let next: object = level;
       if (makeCopy) {
-        const newCopy = Array.isArray(level) ? [...level] : { ...(level as object) };
-        prop[propName] = newCopy as never;
+        next = Array.isArray(level) ? [...level] : { ...(level as object) };
+        prop[propName] = next as never;
       }
-      prop = level;
+      prop = next;
     }
   }
   prop[lastPropName as keyof typeof prop] = value as never;
