@@ -513,7 +513,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     return (
       <AttributeDecorator attributes={attributes}>
-        <div onDoubleClick={dblClick}>
+        <div onDoubleClick={dblClick} style={{ width: '100%' }}>
           <DataListItemRenderer
             isNewObject={false}
             markup={entityForm?.formConfiguration?.markup}
@@ -640,8 +640,15 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       }),
     };
 
+    const wrapperStyle: CSSProperties =
+      orientation === 'horizontal'
+        ? { flex: '0 0 auto', width: itemWidth, overflow: 'visible' }
+        : orientation === 'wrap'
+          ? { flex: `0 0 ${itemWidth}`, width: itemWidth, overflow: 'visible' }
+          : { flex: '0 0 100%', overflow: 'visible' };
+
     return (
-      <div key={`row-${index}`}>
+      <div key={`row-${index}`} style={wrapperStyle}>
         <ConditionalWrap
           condition={selectionMode === 'multiple'}
           wrap={(children) => (
@@ -677,7 +684,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                 onListItemHover(index, item);
               }
             }}
-            style={{ ...itemStyles, width: orientation === 'wrap' ? 'unset' : itemStyles.width, overflow: 'auto' }}
+            style={{ ...itemStyles, width: orientation === 'wrap' ? '100%' : itemStyles.width, overflow: 'auto' }}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
@@ -725,6 +732,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
 
+  const rawItemWidth =
+    (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
+  const isFixedWidth = (val: unknown): boolean => {
+    if (val === undefined || val === null || val === '') return false;
+    if (typeof val === 'number') return true;
+    const s = String(val).trim().toLowerCase();
+    return s !== 'auto' && s !== 'unset' && s !== 'inherit' && s !== 'initial' && s !== 'none';
+  };
+  const itemWidth = isFixedWidth(rawItemWidth)
+    ? (typeof rawItemWidth === 'number' ? `${rawItemWidth}px` : rawItemWidth)
+    : '300px';
+
   const getContainerStyles = (): CSSProperties => {
     const containerStyles: CSSProperties = {
       gap: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
@@ -732,15 +751,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       ...fcContainerStyles.stylingBoxAsCSS,
       ...fcContainerStyles.dimensionsStyles,
     };
-
-    const rawItemWidth =
-      (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
-    const itemWidth =
-      rawItemWidth !== undefined
-        ? typeof rawItemWidth === 'number'
-          ? `${rawItemWidth}px`
-          : rawItemWidth
-        : '300px';
 
     switch (orientation) {
       case 'horizontal':
@@ -755,9 +765,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       case 'wrap':
         return {
           ...containerStyles,
-          display: 'grid',
-          gridTemplateColumns: `repeat(auto-fill, ${itemWidth})`,
-          alignItems: 'start',
+          width: '100%',
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'flex-start',
         };
 
       case 'vertical':
@@ -832,16 +843,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             </Show>
 
             <Show when={records?.length > 0}>
-              {React.Children.map(content, (child, index) => {
-                return React.cloneElement(child, {
-                  key: child.key || index,
-                  style: {
-                    ...child.props.style,
-                    overflow: 'visible',
-                    ...(orientation !== 'horizontal' && { flex: '0 0 100%' }),
-                  },
-                });
-              })}
+              {content}
             </Show>
           </div>
         </ShaSpin>
