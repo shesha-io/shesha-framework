@@ -6,7 +6,7 @@ import { DataTypes, IToolboxComponent } from '@/interfaces';
 import { IStyleType, useForm, useFormData, useGlobalState } from '@/providers';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
-  evaluateValueAsString,
+  evaluateString,
   executeScriptSync,
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
@@ -18,7 +18,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
-import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/she shaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -174,7 +174,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const executionContext = useAvailableConstantsData();
-    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
+    const ownerId = evaluateString(`${model.ownerId}`, { data: data, globalState });
     const enabled = !model.readOnly;
 
     const {

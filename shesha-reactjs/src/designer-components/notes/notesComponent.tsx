@@ -4,7 +4,7 @@ import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components/notesRenderer';
 import { useFormData, useGlobalState } from '@/providers';
-import { evaluateValueAsString, executeScript, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, executeScript, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import { NotesEditorProvider, OnNoteCreatedFunc, OnNoteDeletedFunc, OnNoteUpdatedFunc } from '@/providers/notes';
 import {
@@ -49,7 +49,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
     if (model.hidden) return null;
 
-    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
+    const ownerId = evaluateString(`${model.ownerId}`, { data: data, globalState });
 
     const handleCreateAction: OnNoteCreatedFunc = (note) => {
       if (!model.onCreateAction) return;
