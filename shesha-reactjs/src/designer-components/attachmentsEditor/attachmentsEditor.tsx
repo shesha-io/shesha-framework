@@ -174,7 +174,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const executionContext = useAvailableConstantsData();
-    const ownerId = evaluateString(`${model.ownerId}`, { data: data, globalState });
+    const ownerId = evaluateString(model.ownerId, { data: data, globalState });
     const enabled = !model.readOnly;
 
     const {

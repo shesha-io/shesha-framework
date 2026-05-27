@@ -46,8 +46,6 @@ const AttachmentsEditorProvider: FC<PropsWithChildren<IStoredFilesProviderProps>
     instance.init({ ownerId, ownerType, ownerName, filesCategory });
   }, [instance, ownerId, ownerType, ownerName, filesCategory]);
 
-  console.log("Owner ID Provider :: ", ownerId);
-
   instance.setOnFileListChanged(onChange);
   instance.setOnFileDownloaded(onDownload);
 

@@ -293,7 +293,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               width: parseFloat(`${model?.dimensions?.width}`),
               height: parseFloat(`${model?.dimensions?.height}`),
             };
-      
+
             const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}`, queryParams);
 
             const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
@@ -367,7 +367,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
 
 
-    return getFileIcon(type, { fontSize: model.allStyles?.fontStyles?.fontSize});
+    return getFileIcon(type, { fontSize: model.allStyles?.fontStyles?.fontSize });
   };
 
   // Helper function to get or create cached file context data
@@ -573,7 +573,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     name: '',
     accept: allowedFileTypes?.join(','),
     multiple,
-    fileList: fileList.filter(f => f.status !== 'error'),
+    fileList: fileList.filter((f) => f.status !== 'error'),
     disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
