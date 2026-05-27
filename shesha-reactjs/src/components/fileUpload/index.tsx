@@ -80,7 +80,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   // Cache blob URL created from uploaded File object to avoid immediate server round-trip
   const uploadedFileBlobUrl = useRef<string | null>(null);
 
-  const isUploading = false; // TODO: replace with status of file
+  const isUploading = fileInfo?.status === 'uploading';
 
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
 
@@ -284,7 +284,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     disabled: !allowUpload,
     accept: allowedFileTypes?.join(','),
     multiple: false,
-    fileList: fileInfo ? [fileInfo] : [],
+    fileList: fileInfo && fileInfo.status !== 'error' ? [fileInfo] : [],
     style: !isDragger && listType !== 'thumbnail' ? stylesProp : undefined,
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
@@ -309,7 +309,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const uploadButton = (
     allowUpload && (
       <Button
-        icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
+        icon={!fileInfo || fileInfo.status === 'error' ? <UploadOutlined /> : <PictureOutlined />}
         type="link"
         disabled={!showUploadButton}
       >
@@ -341,6 +341,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const renderUploader = (): React.JSX.Element => {
     const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';
+    const showUpload = !fileInfo || fileInfo.status === 'error';
 
     if (isDragger && allowUpload) {
       return (
@@ -355,7 +356,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       <div>
         {!isUploading && (
           <Upload {...fileProps} listType={antListType}>
-            {!fileInfo && uploadButton}
+            {showUpload && uploadButton}
           </Upload>
         )}
       </div>

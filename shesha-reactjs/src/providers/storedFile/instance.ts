@@ -190,8 +190,16 @@ export class FileUploadInstance implements IFileUpload {
     this.uploadMode = args.uploadMode;
 
     // TODO: check current state and sync if required
-    if (this.uploadMode === 'async')
+
+    // Only fetch file info if we need it and don't already have it
+    // This avoids unnecessary fetch after upload (which already returns file info)
+    const shouldFetch = this.uploadMode === 'async'
+      && (this.fileId || this.getValidFileReference())
+      && (!this.fileInfo || this.fileInfo.id !== this.fileId);
+
+    if (shouldFetch) {
       void this.fetchFileInfo();
+    }
   };
 
   fetchFileInfo = async (): Promise<void> => {

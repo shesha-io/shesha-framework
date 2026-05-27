@@ -39,7 +39,13 @@ const FileUploadProvider: FC<PropsWithChildren<IFileUploadProviderProps>> = (pro
   const instance = useFileUploadInstance();
   instance.setOnChange(onChange);
   useEffect(() => {
-    instance.init({ ownerId, ownerType, propertyName, uploadMode, fileId: value });
+    instance.init({
+      ownerId,
+      ownerType,
+      propertyName,
+      uploadMode,
+      fileId: typeof value === 'string' ? value : undefined
+    });
   }, [instance, ownerId, ownerType, propertyName, uploadMode, value]);
 
   return (
