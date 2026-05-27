@@ -15,6 +15,7 @@ import { listType } from '@/designer-components/attachmentsEditor/attachmentsEdi
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useFileUploadState, useSheshaApplication, useFileUpload, useTheme } from '@/providers';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
+import { StoredFileModel } from '@/utils/storedFile/models';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
@@ -105,19 +106,15 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
 
     // For newly uploaded files, use the blob URL if available
-    if (uploadedFileBlobUrl.current && fileInfo.status === 'uploading') {
+    // Keep using it even when status becomes 'done' to avoid fetching from server
+    if (uploadedFileBlobUrl.current) {
       setImageUrl(uploadedFileBlobUrl.current);
       return;
     }
 
     // For persisted files with done status, fetch from server
+    // Only fetch if we don't have a local blob URL (i.e., file was loaded from backend, not just uploaded)
     if (fileInfo.status === 'done' && url) {
-      // Clean up any previous blob URL since we're fetching from server
-      if (uploadedFileBlobUrl.current) {
-        URL.revokeObjectURL(uploadedFileBlobUrl.current);
-        uploadedFileBlobUrl.current = null;
-      }
-
       fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
         .then((response) => response.blob())
         .then((blob) => URL.createObjectURL(blob))
@@ -236,7 +233,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </Space>
   );
 
-  const iconRender = (fileInfo): React.JSX.Element => {
+  const iconRender = (fileInfo: StoredFileModel): React.JSX.Element => {
     const { type, name } = fileInfo;
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
