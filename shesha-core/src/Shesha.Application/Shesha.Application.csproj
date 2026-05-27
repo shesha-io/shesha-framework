@@ -197,6 +197,7 @@
         </PackageReference>
         <PackageReference Include="NETStandard.Library" />
         <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
         <PackageReference Include="Stubble.Core" />
     </ItemGroup>
     <ItemGroup>
