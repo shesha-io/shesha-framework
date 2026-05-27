@@ -294,7 +294,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               height: parseFloat(`${model?.dimensions?.height}`),
             };
 
-            const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}`, queryParams);
+            const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}`, queryParams);
 
             const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
             if (isCancelled) {
