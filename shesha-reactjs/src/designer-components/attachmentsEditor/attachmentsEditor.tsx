@@ -18,7 +18,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
-import { IEntityTypeIdentifier } from '@/providers/she shaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
