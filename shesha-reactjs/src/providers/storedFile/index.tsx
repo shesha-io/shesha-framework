@@ -44,7 +44,7 @@ const FileUploadProvider: FC<PropsWithChildren<IFileUploadProviderProps>> = (pro
       ownerType,
       propertyName,
       uploadMode,
-      fileId: typeof value === 'string' ? value : undefined
+      fileId: typeof value === 'string' ? value : undefined,
     });
   }, [instance, ownerId, ownerType, propertyName, uploadMode, value]);
 

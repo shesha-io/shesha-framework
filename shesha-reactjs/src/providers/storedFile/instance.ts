@@ -193,9 +193,9 @@ export class FileUploadInstance implements IFileUpload {
 
     // Only fetch file info if we need it and don't already have it
     // This avoids unnecessary fetch after upload (which already returns file info)
-    const shouldFetch = this.uploadMode === 'async'
-      && (this.fileId || this.getValidFileReference())
-      && (!this.fileInfo || this.fileInfo.id !== this.fileId);
+    const shouldFetch = this.uploadMode === 'async' && 
+    (this.fileId || this.getValidFileReference()) &&
+    (!this.fileInfo || this.fileInfo.id !== this.fileId);
 
     if (shouldFetch) {
       void this.fetchFileInfo();
