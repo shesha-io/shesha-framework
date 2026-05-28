@@ -90,10 +90,6 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     this.notifySubscribers(['fileList']);
   };
 
-  private removeFileFromList = (fileId: string): void => {
-    this.updateFileList((files) => files.filter((f) => f.id !== fileId));
-  };
-
   private addFileToList = (file: StoredFileModel): void => {
     this.updateFileList((files) => [...files, file]);
   };
@@ -102,8 +98,23 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     this.updateFileList((files) => files.map((f) => (f.uid === uid ? updater(f) : f)));
   };
 
-  private updateFileById = (id: string, updater: (file: StoredFileModel) => StoredFileModel): void => {
-    this.updateFileList((files) => files.map((f) => (f.id === id ? updater(f) : f)));
+  /**
+   * Normalizes file identifier to handle both persisted IDs and temporary UIDs.
+   * When a file is first uploaded, it has only a uid. After server persistence, it gets an id.
+   * Callers may pass file.id || file.uid, so we need to find the file by matching either.
+   * @param fileId - The file identifier (could be persisted id or temporary uid)
+   * @returns The file matching the identifier, or undefined if not found
+   */
+  private findFileById = (fileId: string): StoredFileModel | undefined => {
+    return this.#fileList.find((f) => f.id === fileId || f.uid === fileId);
+  };
+
+  /**
+   * Updates a file by its id (persisted) or uid (temporary).
+   * This handles cases where callers pass file.id || file.uid.
+   */
+  private updateFileByIdOrUid = (fileId: string, updater: (file: StoredFileModel) => StoredFileModel): void => {
+    this.updateFileList((files) => files.map((f) => (f.id === fileId || f.uid === fileId ? updater(f) : f)));
   };
 
   uploadFile = async (args: UploadFileAsAttachmentArgs): Promise<void> => {
@@ -160,11 +171,24 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     const { fileId } = args;
 
     try {
-      this.updateFileById(fileId, (file) => ({ ...file, status: 'uploading' }));
+      // Find the file to get its persisted id if available
+      const file = this.findFileById(fileId);
+      if (!file) {
+        throw new Error(`File with id ${fileId} not found`);
+      }
 
-      const uploadedFile = await this.#fileHelper.replaceFileAsync(args);
+      // Use the persisted id for the API call if available, otherwise use the provided id
+      const persistedId = file.id || fileId;
+      const replaceArgs: ReplaceFilePayload = {
+        ...args,
+        fileId: persistedId,
+      };
 
-      this.updateFileById(fileId, () => storedFileDtoToModel(uploadedFile));
+      this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'uploading' }));
+
+      const uploadedFile = await this.#fileHelper.replaceFileAsync(replaceArgs);
+
+      this.updateFileByIdOrUid(fileId, () => storedFileDtoToModel(uploadedFile));
 
       this.#onChange?.(this.#fileList, true);
 
@@ -173,28 +197,38 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       console.error(error);
 
       const errorMessage = extractErrorMessage(error);
-      this.updateFileById(fileId, (file) => ({ ...file, status: 'error', error: errorMessage }));
+      this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'error', error: errorMessage }));
       this.#message.error(`File replacement failed. ${errorMessage}`);
     }
   };
 
   deleteFile = async (fileId: string): Promise<void> => {
     try {
-      this.updateFileById(fileId, (file) => ({ ...file, status: 'removed' }));
+      // Find the file to get its persisted id if available
+      const file = this.findFileById(fileId);
+      if (!file) {
+        throw new Error(`File with id ${fileId} not found`);
+      }
 
-      await this.#fileHelper.deleteFileByIdAsync(fileId);
+      // Use the persisted id for the API call if available, otherwise use the provided id
+      const persistedId = file.id || fileId;
 
-      this.removeFileFromList(fileId);
+      this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'removed' }));
+
+      await this.#fileHelper.deleteFileByIdAsync(persistedId);
+
+      // Remove using the original fileId to handle both id and uid lookups
+      this.updateFileList((files) => files.filter((f) => f.id !== fileId && f.uid !== fileId));
 
       if (this.#delayedUpdateClient)
-        this.#delayedUpdateClient.removeItem(STORED_FILES_DELAYED_UPDATE, fileId);
+        this.#delayedUpdateClient.removeItem(STORED_FILES_DELAYED_UPDATE, persistedId);
 
       this.#onChange?.(this.#fileList, true);
     } catch (error) {
       console.error(error);
 
       const errorMessage = extractErrorMessage(error);
-      this.updateFileById(fileId, (file) => ({ ...file, status: 'error', error: errorMessage }));
+      this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'error', error: errorMessage }));
       this.#message.error(`File deletion failed. ${errorMessage}`);
     }
   };
@@ -213,8 +247,21 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
   };
 
   downloadFile = async (args: DownloadFileArgs): Promise<void> => {
-    await this.#fileHelper.downloadFileAsync(args);
-    this.updateFileById(args.fileId, (file) => ({ ...file, userHasDownloaded: true }));
+    // Find the file to get its persisted id if available
+    const file = this.findFileById(args.fileId);
+    if (!file) {
+      throw new Error(`File with id ${args.fileId} not found`);
+    }
+
+    // Use the persisted id for the API call if available, otherwise use the provided id
+    const persistedId = file.id || args.fileId;
+    const downloadArgs: DownloadFileArgs = {
+      ...args,
+      fileId: persistedId,
+    };
+
+    await this.#fileHelper.downloadFileAsync(downloadArgs);
+    this.updateFileByIdOrUid(args.fileId, (file) => ({ ...file, userHasDownloaded: true }));
     this.#onFileDownloaded?.(this.#fileList, true);
   };
 }

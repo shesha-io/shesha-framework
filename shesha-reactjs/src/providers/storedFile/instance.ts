@@ -199,6 +199,9 @@ export class FileUploadInstance implements IFileUpload {
 
     if (shouldFetch) {
       void this.fetchFileInfo();
+    } else if (this.uploadMode === 'async' && !this.fileId && !this.getValidFileReference()) {
+      // Clear stale fileInfo when there's no valid target to prevent showing old data
+      this.clearFileInfo();
     }
   };
 

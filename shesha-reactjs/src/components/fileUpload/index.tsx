@@ -191,11 +191,12 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const onPreview = (): void => {
     if (fileInfo) {
-      if (!url) {
+      const previewUrl = imageUrl || url;
+      if (!previewUrl) {
         message.error('Preview URL not available');
         return;
       }
-      setPreviewImage({ url, uid: fileInfo?.id, name: fileInfo?.name });
+      setPreviewImage({ url: previewUrl, uid: fileInfo?.id, name: fileInfo?.name });
       setPreviewOpen(true);
     }
   };
