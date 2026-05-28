@@ -129,7 +129,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         name: file.name,
         size: file.size,
         status: 'uploading',
-        type: `.${getFileExtension(file)}`,
+        type: getFileExtension(file) ? `.${getFileExtension(file)}` : null,
         fileCategory: filesCategory ?? null,
         url: null,
         temporary: false,

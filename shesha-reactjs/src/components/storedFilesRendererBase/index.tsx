@@ -290,11 +290,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             }
             const queryParams = {
               id: file?.id,
-              width: parseFloat(`${model?.dimensions?.width}`),
-              height: parseFloat(`${model?.dimensions?.height}`),
+              width: model?.dimensions?.width ? parseFloat(`${model.dimensions.width}`) : undefined,
+              height: model?.dimensions?.height ? parseFloat(`${model.dimensions.height}`) : undefined,
             };
 
-            const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}`, queryParams);
+            // Filter out undefined/NaN values
+            const cleanedParams = Object.fromEntries(
+              Object.entries(queryParams).filter(([_, v]) => v !== undefined && !Number.isNaN(v))
+            );
+
+            const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}`, cleanedParams);
 
             const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
             if (isCancelled) {
