@@ -296,7 +296,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
             // Filter out undefined/NaN values
             const cleanedParams = Object.fromEntries(
-              Object.entries(queryParams).filter(([_, v]) => v !== undefined && !Number.isNaN(v))
+              Object.entries(queryParams).filter(([_, v]) => v !== undefined && !Number.isNaN(v)),
             );
 
             const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}`, cleanedParams);
