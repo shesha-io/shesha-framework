@@ -28,5 +28,5 @@ export interface IPropertiesTabsComponentProps extends IConfigurableFormComponen
   tabType?: 'line' | 'card';
   hidden?: boolean;
   customVisibility?: string;
-  position?: 'left' | 'right' | 'top' | 'bottom';
+  position?: TabPlacement;
 }
