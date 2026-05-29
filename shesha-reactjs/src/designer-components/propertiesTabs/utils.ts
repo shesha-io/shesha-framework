@@ -50,7 +50,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
     // Handle collapsiblePanel
     if (isCollapsiblePanel(c)) {
       const contentComponents = filterDynamicComponents(c.content?.components || [], query);
-      const visibleChildrenCount = contentComponents.filter(child => !child.hidden).length;
+      const visibleChildrenCount = contentComponents.filter((child) => !child.hidden).length;
       const hasVisibleChildren = visibleChildrenCount > 0;
 
       return {
@@ -83,7 +83,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
         return isSearching ? { ...input, hidden: !inputMatches } : input;
       }) || [];
 
-      const visibleInputsCount = filteredInputs.filter(input => !input.hidden).length;
+      const visibleInputsCount = filteredInputs.filter((input) => !input.hidden).length;
 
       return {
         ...c,
@@ -95,7 +95,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
     // Handle components with nested components
     if (isComponentsContainer(c)) {
       const filteredComponents = filterDynamicComponents(c.components, query);
-      const visibleChildrenCount = filteredComponents.filter(child => !child.hidden).length;
+      const visibleChildrenCount = filteredComponents.filter((child) => !child.hidden).length;
       const hasVisibleChildren = visibleChildrenCount > 0;
 
       return {
@@ -125,13 +125,13 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
     // When searching, use the evaluated boolean hidden to determine visibility
     const countVisibleChildren = (children: IConfigurableFormComponent[] | undefined): number => {
       if (!children || !Array.isArray(children)) return 0;
-      return children.filter(child => !child.hidden).length;
+      return children.filter((child) => !child.hidden).length;
     };
 
     const hasVisibleChildren = (
       (isComponentsContainer(c) && countVisibleChildren(c.components) > 0) ||
       (isCollapsiblePanel(c) && countVisibleChildren(c.content?.components) > 0) ||
-      (isSettingsInputRow(c) && c.inputs && c.inputs.filter(input => !input.hidden).length > 0)
+      (isSettingsInputRow(c) && c.inputs && c.inputs.filter((input) => !input.hidden).length > 0)
     );
 
     return !c.hidden || hasVisibleChildren;
