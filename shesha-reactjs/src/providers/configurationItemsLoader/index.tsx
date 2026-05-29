@@ -130,6 +130,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       markup: markupWithSettings?.components,
       settings: {
         ...markupWithSettings?.formSettings,
+       modelType: markupWithSettings?.formSettings?.modelType ?? dto.modelType ?? undefined,
        access: dto.access,
        permissions: dto.permissions,
       }
