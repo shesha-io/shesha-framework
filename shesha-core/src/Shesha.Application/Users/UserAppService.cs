@@ -576,6 +576,7 @@ namespace Shesha.Users
 
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
             user.PasswordResetCode = null;
+            user.RequireChangePassword = false;
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -622,6 +623,7 @@ namespace Shesha.Users
 
         #endregion
 
+        [SheshaAuthorize(RefListPermissionedAccess.AnyAuthenticated)]
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
             if (!_abpSession.UserId.HasValue)

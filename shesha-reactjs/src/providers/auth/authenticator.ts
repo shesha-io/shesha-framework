@@ -18,6 +18,10 @@ import { ISettingsActionsContext } from "../settings/contexts";
 type RerenderTrigger = () => void;
 
 const RETURN_URL_KEY = 'returnUrl';
+const getRequiredPasswordChangeUrl = (returnUrl?: string) =>
+    returnUrl
+        ? `/no-auth/Shesha/change-password?mode=edit&${RETURN_URL_KEY}=${encodeURIComponent(returnUrl)}`
+        : '/no-auth/Shesha/change-password?mode=edit';
 
 const isAccessToken = (value: unknown): value is IAccessToken =>
     typeof value === 'object' &&
@@ -194,6 +198,12 @@ export class Authenticator implements IAuthenticator {
     };
 
     #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
+        if (userLogin?.requireChangePassword) {
+            const returnUrlParam = this.#router.query[RETURN_URL_KEY];
+            const returnUrl = returnUrlParam ? decodeURIComponent(returnUrlParam.toString()) : undefined;
+            return getRequiredPasswordChangeUrl(returnUrl);
+        }
+
         const currentUrlWithoutReturn = this.#stripReturnUrl(currentPath);
 
         if (isSameUrls(currentUrlWithoutReturn, this.#unauthorizedRedirectUrl)) {
@@ -224,12 +234,21 @@ export class Authenticator implements IAuthenticator {
         try {
             // fetch user profile
             const userProfile = await this.#fetchUserInfoHttp();
-            this.#loginInfo = userProfile;
 
+            if (userProfile.user?.requireChangePassword) {
+                this.#updateState('waiting', 'Password change required', null);
+                const returnUrlParam = this.#router.query[RETURN_URL_KEY];
+                const returnUrl = returnUrlParam ? decodeURIComponent(returnUrlParam.toString()) : undefined;
+                return {
+                    userProfile: userProfile,
+                    url: getRequiredPasswordChangeUrl(returnUrl)
+                };
+            }
+
+            this.#loginInfo = userProfile;
             this.#updateState('ready', null, null);
 
             const redirectUrl = this.#getRedirectUrl(this.#router.fullPath, userProfile.user);
-
             return {
                 userProfile: userProfile,
                 url: redirectUrl ?? this.#router.fullPath
@@ -255,24 +274,20 @@ export class Authenticator implements IAuthenticator {
         // This propagates the cleared state to all components before logout API call
         this.refreshAuthHeaders();
 
-        // Now make the logout API call with the token we saved earlier
-        // We pass the token explicitly in headers since it's no longer in localStorage
-        try {
-            if (currentToken?.accessToken) {
-                await this.#httpClient.post<void, void>(
-                    URLS.LOGOFF,
-                    {},
-                    { headers: { 'Authorization': `Bearer ${currentToken.accessToken}` } }
-                );
-            }
-        } catch (error) {
-            // Ignore logout API errors - we've already cleared everything locally
-            console.warn('Logout API call failed, but local session is cleared:', error);
-        }
-
         this.#updateState('waiting', null, null);
-
         this.#redirect(this.#unauthorizedRedirectUrl);
+
+        // Fire-and-forget: best-effort server-side token invalidation
+        if (currentToken?.accessToken) {
+            this.#httpClient.post<void, void>(
+                URLS.LOGOFF,
+                {},
+                { headers: { 'Authorization': `Bearer ${currentToken.accessToken}` } }
+            ).catch((error: unknown) => {
+                const message = error instanceof Error ? error.message : 'Unknown error';
+                console.warn(`Logout API call failed after local session clear: ${message}`);
+            });
+        }
     };
 
     #timer: NodeJS.Timeout | undefined;
@@ -334,6 +349,15 @@ export class Authenticator implements IAuthenticator {
                 // fetch user profile
                 const userProfile = await this.#fetchUserInfoHttp();
                 if (userProfile.user) {
+                    if (userProfile.user.requireChangePassword) {
+                        this.#startTokenExpirationTimer(token.expireOn);
+                        this.#updateState('waiting', 'Password change required', null);
+                        const currentFullPath = this.#router.fullPath;
+                        const returnUrl = currentFullPath.startsWith('/no-auth/') ? undefined : currentFullPath;
+                        this.#router.push(getRequiredPasswordChangeUrl(returnUrl));
+                        return;
+                    }
+
                     this.#loginInfo = userProfile;
                     this.#updateState('ready', null, null);
                     this.#startTokenExpirationTimer(token.expireOn);
