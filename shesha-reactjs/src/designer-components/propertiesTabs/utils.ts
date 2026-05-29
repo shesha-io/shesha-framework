@@ -23,7 +23,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
   // Helper function to check if text
   // matches query
 
-  const matchesQuery = (text): boolean => {
+  const matchesQuery = (text: unknown): boolean => {
     return typeof text === 'string' && text.toLowerCase().includes(lowerCaseQuery);
   };
 

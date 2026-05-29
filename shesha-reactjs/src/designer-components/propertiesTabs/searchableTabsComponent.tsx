@@ -77,16 +77,18 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   ): (IConfigurableFormComponent & { inputs?: IConfigurableFormComponent[] }) | null => {
     if (!formActions?.isComponentFiltered) return component;
 
+    const isComponentFiltered = formActions.isComponentFiltered;
+
     if (component.inputs) {
       const visibleInputs = component.inputs.filter((input) => {
         if (!input.propertyName) return true;
-        return formActions.isComponentFiltered(input);
+        return isComponentFiltered(input);
       });
       if (visibleInputs.length === 0) return null;
       return { ...component, inputs: visibleInputs };
     }
 
-    return formActions.isComponentFiltered(component) ? component : null;
+    return isComponentFiltered(component) ? component : null;
   };
 
   const isSearching = searchQuery.trim() !== '';
@@ -96,8 +98,12 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   // form markup store. Marking the components as dynamic forces
   // ConfigurableFormComponent to use the model we pass in (with its pruned
   // children/inputs) rather than re-fetching the original by id.
-  const markDynamic = (component: IConfigurableFormComponent): IConfigurableFormComponent => {
-    const c: any = { ...component, isDynamic: true };
+  const markDynamic = (component: IConfigurableFormComponent): IConfigurableFormComponent & { isDynamic: true } => {
+    const c: IConfigurableFormComponent & {
+      isDynamic: true;
+      components?: IConfigurableFormComponent[];
+      content?: { components?: IConfigurableFormComponent[] };
+    } = { ...component, isDynamic: true };
     if (Array.isArray(c.components)) c.components = c.components.map(markDynamic);
     if (c.content && Array.isArray(c.content.components)) {
       c.content = { ...c.content, components: c.content.components.map(markDynamic) };
