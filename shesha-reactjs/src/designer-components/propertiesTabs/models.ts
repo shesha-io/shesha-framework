@@ -1,6 +1,7 @@
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { EditMode, IConfigurableFormComponent } from '@/interfaces';
+import { TabPlacement } from 'antd/es/tabs';
 
 export interface ITabPaneProps
   extends Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {

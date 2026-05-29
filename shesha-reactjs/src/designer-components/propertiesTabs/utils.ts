@@ -11,25 +11,27 @@ const isComponentsContainer = (component: IConfigurableFormComponent): component
 export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string): IConfigurableFormComponent[] => {
   if (!components || !Array.isArray(components)) return [];
 
-  const lowerCaseQuery = query.toLowerCase();
-  const isSearching = Boolean(query);
+  if (!query || !query.trim()) return components;
 
-  const matchesQuery = (text): boolean => {
-    return text?.toLowerCase().includes(lowerCaseQuery);
+  const lowerCaseQuery = query.toLowerCase().trim();
+
+  // Helper function to evaluate hidden property
+  const evaluateHidden = (hidden: boolean, directMatch: boolean, hasVisibleChildren: boolean): boolean => {
+    return hidden === true || (!directMatch && !hasVisibleChildren);
   };
 
-  // When searching, override hidden based on text match. When not searching, preserve the
-  // original hidden value (which may be an IPropertySetting code expression) so that
-  // FormComponentInner can evaluate it at render time.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const resolveHidden = (originalHidden: any, directMatch: boolean, hasVisibleChildren: boolean): any => {
-    if (!isSearching) return originalHidden;
-    return originalHidden === true || (!directMatch && !hasVisibleChildren);
+  // Helper function to check if text
+  // matches query
+
+  const matchesQuery = (text): boolean => {
+    return typeof text === 'string' && text.toLowerCase().includes(lowerCaseQuery);
   };
 
   const filterResult = components.map<IConfigurableFormComponent>((component) => {
+    // Deep clone the component to avoid mutations
     const c = { ...component };
 
+    // Check if component matches query directly
     const directMatch = (
       matchesQuery(c.label) ||
       matchesQuery(c.propertyName) ||
@@ -50,8 +52,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
     // Handle collapsiblePanel
     if (isCollapsiblePanel(c)) {
       const contentComponents = filterDynamicComponents(c.content?.components || [], query);
-      const visibleChildrenCount = contentComponents.filter((child) => !child.hidden).length;
-      const hasVisibleChildren = visibleChildrenCount > 0;
+      const hasVisibleChildren = contentComponents.length > 0;
 
       return {
         ...c,
@@ -60,78 +61,57 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
           ...c.content,
           components: contentComponents,
         },
-        hidden: resolveHidden(c.hidden, directMatch, hasVisibleChildren),
+        hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
         collapsedByDefault: false,
       } satisfies ICollapsiblePanelComponentProps;
     }
 
     // Handle settingsInputRow
     if (isSettingsInputRow(c)) {
-      const filteredInputs = c.inputs?.filter((input) => {
-        const inputMatches = (
-          matchesQuery(input.label) ||
-          matchesQuery(input.propertyName) ||
-          (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-        );
-        return inputMatches || !isSearching;
-      }).map((input) => {
-        const inputMatches = (
-          matchesQuery(input.label) ||
-          matchesQuery(input.propertyName) ||
-          (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-        );
-        return isSearching ? { ...input, hidden: !inputMatches } : input;
-      }) || [];
+      const filteredInputs = c.inputs?.filter((input) =>
+        matchesQuery(input.label) ||
+        matchesQuery(input.propertyName) ||
+        (input.propertyName && matchesQuery(input.propertyName.split('.').join(' '))),
+      ) || [];
 
-      const visibleInputsCount = filteredInputs.filter((input) => !input.hidden).length;
-
+      // A row is only meaningful when it has at least one matching input.
+      // The row's own label/propertyName must not surface an empty row, so
+      // visibility depends solely on the presence of matching inputs.
       return {
         ...c,
         inputs: filteredInputs,
-        hidden: resolveHidden(c.hidden, directMatch, visibleInputsCount > 0),
+        hidden: c.hidden === true || filteredInputs.length === 0,
       } satisfies ISettingsInputRowProps;
     }
 
     // Handle components with nested components
     if (isComponentsContainer(c)) {
       const filteredComponents = filterDynamicComponents(c.components, query);
-      const visibleChildrenCount = filteredComponents.filter((child) => !child.hidden).length;
-      const hasVisibleChildren = visibleChildrenCount > 0;
+      const hasVisibleChildren = filteredComponents.length > 0;
 
       return {
         ...c,
         components: filteredComponents,
-        hidden: resolveHidden(c.hidden, directMatch, hasVisibleChildren),
+        hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
       } satisfies IConfigurableFormComponent & IComponentsContainer;
     }
 
     // Handle basic component
     return {
       ...c,
-      hidden: resolveHidden(c.hidden, directMatch, false),
+      hidden: evaluateHidden(c.hidden, directMatch, false),
     } satisfies IConfigurableFormComponent;
   });
 
-  // Filter out null components
+  // Filter out null components and handle visibility
   return filterResult.filter((c) => {
     if (!c) return false;
 
-    if (!isSearching) {
-      // When not searching, only remove components that are explicitly hidden (boolean true).
-      // IPropertySetting expressions and other values are preserved for FormComponentInner to evaluate.
-      return c.hidden !== true;
-    }
-
-    // When searching, use the evaluated boolean hidden to determine visibility
-    const countVisibleChildren = (children: IConfigurableFormComponent[] | undefined): number => {
-      if (!children || !Array.isArray(children)) return 0;
-      return children.filter((child) => !child.hidden).length;
-    };
-
+    // Evaluate final hidden state
     const hasVisibleChildren = (
-      (isComponentsContainer(c) && countVisibleChildren(c.components) > 0) ||
-      (isCollapsiblePanel(c) && countVisibleChildren(c.content?.components) > 0) ||
-      (isSettingsInputRow(c) && c.inputs && c.inputs.filter((input) => !input.hidden).length > 0)
+      (isComponentsContainer(c) && c.components.length > 0) ||
+      (isCollapsiblePanel(c) && c.content?.components?.length > 0) ||
+      (isSettingsInputRow(c) && c.inputs?.length > 0)
     );
 
     return !c.hidden || hasVisibleChildren;
