@@ -213,7 +213,7 @@ export interface IDecimalFormatting extends INumberFormatting {
 export const isDecimalFormatting = (value: object | null | undefined): value is IDecimalFormatting =>
   isDefined(value) && ("numDecimalPlaces" in value || "showAsPercentage" in value);
 
-export interface IPropertyMetadata extends IPublicPropertyMetadata, Partial<IHasTypeDefinition> {
+export interface IPropertyMetadata extends IPublicPropertyMetadata {
   containerType?: string;
   functions?: IFunctionMetadata[] | null;
   itemsType?: IPropertyMetadata | undefined;

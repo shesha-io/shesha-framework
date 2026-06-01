@@ -6,6 +6,7 @@ import {
   NestedProperties,
   TypeDefinition,
   TypeDefinitionLoader,
+  hasTypeDefinition,
   isPropertiesArray,
   isPropertiesLoader,
 } from '@/interfaces/metadata';
@@ -491,7 +492,7 @@ async function buildPropertyContext(property: IPropertyMetadata): Promise<Expres
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   mergeExpressionContexts(nestedContext, await buildExpressionContextFromProperties(property.properties));
-  if (property.typeDefinitionLoader) {
+  if (hasTypeDefinition(property)) {
     mergeExpressionContexts(nestedContext, await buildContextFromTypeDefinitionLoader(property.typeDefinitionLoader));
   }
 

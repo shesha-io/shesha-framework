@@ -101,8 +101,19 @@ const isJsonLogicNode = (value: unknown): value is Record<string, unknown> => {
   return keys.length > 0 && keys.every((key) => jsonLogicOperators.has(key));
 };
 
-export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSource): TObject & TSource => {
+export const deepMergeValues = <TObject, TSource>(
+  target: TObject,
+  source: TSource,
+  skipProp: ((target: Record<string, unknown>, source: Record<string, unknown>, key: string) => boolean) | undefined = undefined,
+): TObject & TSource => {
   return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
+    // Check if the property should be skipped
+    const skip = skipProp
+      ? skipProp(target as Record<string, unknown>, source as Record<string, unknown>, key)
+      : false;
+    // if skip is true, return original value
+    if (skip) return objValue;
+
     // handle null
     if (srcValue === null) {
       // reset field to null
@@ -138,7 +149,7 @@ export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSour
         return srcValue;
 
       // make a copy of merged objects
-      return deepMergeValues(objValue, srcValue, skipProp);
+      return deepMergeValues(objValue as TObject, srcValue as TSource, skipProp);
     }
 
     return undefined;
