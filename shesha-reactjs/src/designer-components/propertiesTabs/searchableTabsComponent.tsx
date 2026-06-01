@@ -7,7 +7,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { ITabPaneProps, IPropertiesTabsComponentProps } from './models';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { useFormStateOrUndefined, useFormActionsOrUndefined } from '@/providers/form';
+import { useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 
@@ -22,7 +22,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const [localActiveTabKey, setLocalActiveTabKey] = useState<string>(formDesigner?.activeSettingsTabKey ?? '1');
   const { styles } = useStyles();
 
-  const formState = useFormStateOrUndefined();
   const formActions = useFormActionsOrUndefined();
 
   useShaFormDataUpdate();
@@ -68,42 +67,62 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     setLocalActiveTabKey(newActiveKey);
   }, [formDesigner]);
 
-  const isComponentHidden = (component: IConfigurableFormComponent & { inputs?: IConfigurableFormComponent[] }): boolean => {
-    if (formState?.name === "modalSettings") {
-      if (component.inputs) {
-        const visibleInputs = component.inputs.filter((input) => {
-          if (!input.propertyName) return true;
-          return formActions?.isComponentFiltered(input);
-        });
+  // Applies the form-level component filter (e.g. permissions / modal settings)
+  // on top of the search filter. For components that hold a list of `inputs`
+  // (such as settingsInputRow), it prunes the inputs to only those allowed so
+  // that non-matching/non-permitted inputs never leak through. Returns the
+  // (possibly pruned) component, or null when nothing should remain visible.
+  const applyComponentFilter = (
+    component: IConfigurableFormComponent & { inputs?: IConfigurableFormComponent[] },
+  ): (IConfigurableFormComponent & { inputs?: IConfigurableFormComponent[] }) | null => {
+    if (!formActions?.isComponentFiltered) return component;
 
-        if (visibleInputs.length === 0) {
-          return false;
-        }
+    const isComponentFiltered = formActions.isComponentFiltered;
 
-        component.inputs = visibleInputs;
-
-        return visibleInputs.length > 0;
-      }
-
-      return formActions?.isComponentFiltered(component);
-    } else {
-      return true;
+    if (component.inputs) {
+      const visibleInputs = component.inputs.filter((input) => {
+        if (!input.propertyName) return true;
+        return isComponentFiltered(input);
+      });
+      if (visibleInputs.length === 0) return null;
+      return { ...component, inputs: visibleInputs };
     }
+
+    return isComponentFiltered(component) ? component : null;
+  };
+
+  const isSearching = searchQuery.trim() !== '';
+
+  // While searching we render the *filtered* component models directly instead
+  // of letting the designer re-read the original (unfiltered) models from the
+  // form markup store. Marking the components as dynamic forces
+  // ConfigurableFormComponent to use the model we pass in (with its pruned
+  // children/inputs) rather than re-fetching the original by id.
+  const markDynamic = (component: IConfigurableFormComponent): IConfigurableFormComponent & { isDynamic: true } => {
+    const c: IConfigurableFormComponent & {
+      isDynamic: true;
+      components?: IConfigurableFormComponent[];
+      content?: { components?: IConfigurableFormComponent[] };
+    } = { ...component, isDynamic: true };
+    if (Array.isArray(c.components)) c.components = c.components.map(markDynamic);
+    if (c.content && Array.isArray(c.content.components)) {
+      c.content = { ...c.content, components: c.content.components.map(markDynamic) };
+    }
+    return c;
   };
 
   type TabItem = ITabPaneProps & { children?: IConfigurableFormComponent[] };
 
   const newFilteredTabs = tabs
     .map((tab: TabItem, index: number) => {
-      const filteredComponents = tab.children ?? filterDynamicComponents(tab.components ?? [], searchQuery);
+      const searchFiltered = filterDynamicComponents(tab.components ?? [], searchQuery);
 
-      const visibleComponents = Array.isArray(filteredComponents)
-        ? filteredComponents.filter((comp) => isComponentHidden(comp))
-        : filteredComponents;
+      const visibleComponents = searchFiltered
+        .map((comp) => applyComponentFilter(comp))
+        .filter((comp): comp is IConfigurableFormComponent => comp !== null)
+        .map((comp) => (isSearching ? markDynamic(comp) : comp));
 
-      const hasVisibleComponents = Array.isArray(visibleComponents)
-        ? visibleComponents.length > 0
-        : !!visibleComponents;
+      const hasVisibleComponents = visibleComponents.length > 0;
 
       const tabKey = tab.key || (index + 1).toString();
 
@@ -112,7 +131,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         key: tabKey,
         label: tab.label ?? tab.title,
         components: visibleComponents,
-        children: visibleComponents.length === 0
+        children: !hasVisibleComponents
           ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
           : (
             <ParentProvider model={model}>
@@ -123,36 +142,22 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
             </ParentProvider>
           ),
         forceRender: false,
-        hidden: tab.hidden || !hasVisibleComponents,
+        hidden: tab.hidden || (searchQuery.trim() !== '' && !hasVisibleComponents),
       };
     })
     .filter((tab) => !tab.hidden);
 
   const effectiveActiveKey = useMemo(() => {
-    if (newFilteredTabs.length === 0) {
-      return undefined;
-    }
+    if (newFilteredTabs.length === 0) return undefined;
 
     const persistedKey = formDesigner?.activeSettingsTabKey ?? localActiveTabKey;
 
-    // When searching, only auto-switch if the currently persisted tab is no longer visible
-    if (searchQuery && !newFilteredTabs.some((tab) => tab.key === persistedKey)) {
-      const firstVisibleTab = newFilteredTabs.find((tab) =>
-        Array.isArray(tab.components) ? tab.components.length > 0 : !!tab.components,
-      );
-      if (firstVisibleTab) {
-        return firstVisibleTab.key;
-      }
-    }
-
-    // Use persisted/local key if still valid
     if (newFilteredTabs.some((tab) => tab.key === persistedKey)) {
       return persistedKey;
     }
 
-    // Fallback to first available tab
     return newFilteredTabs[0].key;
-  }, [searchQuery, newFilteredTabs, formDesigner, localActiveTabKey]);
+  }, [newFilteredTabs, formDesigner, localActiveTabKey]);
 
   const localTabs = useMemo(() => (
     <Tabs
@@ -161,7 +166,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       onChange={handleTabChange}
       size={model.size}
       type={model.tabType || 'card'}
-      tabPosition={model.position || 'top'}
+      tabPlacement={model.position || 'top'}
       items={newFilteredTabs}
       className={styles.content}
     />
