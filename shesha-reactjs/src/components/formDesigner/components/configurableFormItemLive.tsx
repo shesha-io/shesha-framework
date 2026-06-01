@@ -101,6 +101,8 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
         <ConfigurableFormItemForm
           formItemProps={formItemProps}
           valuePropName={valuePropName}
+          componentName={model.componentName}
+          componentId={model.id}
         >
           {children}
         </ConfigurableFormItemForm>

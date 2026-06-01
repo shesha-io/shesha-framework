@@ -65,6 +65,10 @@ export class DatasetInstance implements IDatasetInstance {
     this.log = args.logEnabled ? console.log : () => {};
   }
 
+  updateRepository = (repository: IRepository): void => {
+    this.repository = repository;
+  };
+
   subscribe: SubscribeFunc<DatasetEvents, IDatasetInstance> = (type, callback) => {
     return this.#subscriptionManager.subscribe(type, callback);
   };
@@ -92,7 +96,15 @@ export class DatasetInstance implements IDatasetInstance {
       ? await this.featchUserConfigAsync()
       : undefined;
 
-    await this.initColumnsAsync(this.columns, userConfig);
+    // Snapshot the columns reference we're about to process so we can detect if
+    // `registerConfigurableColumns` updates `this.columns` while we are awaiting.
+    let processedColumns = this.columns;
+    await this.initColumnsAsync(processedColumns, userConfig);
+
+    while (this.columns !== processedColumns) {
+      processedColumns = this.columns;
+      await this.initColumnsAsync(processedColumns, userConfig);
+    }
 
     this.isInitialized = true;
 

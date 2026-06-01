@@ -8,12 +8,13 @@ import { IObjectMetadata } from "@/interfaces";
 
 export interface UseResultTypeEvaluatorArgs {
   availableConstantsExpression?: string | GetAvailableConstantsFunc;
+  makeComponentsNullable?: boolean;
 }
 
 export type ConstantsEvaluator = () => Promise<IObjectMetadata>;
 
 export const useConstantsEvaluator = (model: UseResultTypeEvaluatorArgs): ConstantsEvaluator => {
-  const metadataBuilderFactory = useMetadataBuilderFactory();
+  const metadataBuilderFactory = useMetadataBuilderFactory(model.makeComponentsNullable);
   const { data: formData } = useFormData();
   const shaFormInstance = useShaFormInstanceOrUndefined();
 

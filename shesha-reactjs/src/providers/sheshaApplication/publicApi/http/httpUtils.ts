@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { HttpResponse } from "@/publicJsApis/httpClient";
+import { HttpResponse } from "@/publicJsApis/apis/httpClient";
 
 export const unwrapAxiosCall = <Response = unknown>(promise: Promise<HttpResponse<Response>>): Promise<Response> => {
   return promise.then((response) => response.data).catch((error: unknown) => {

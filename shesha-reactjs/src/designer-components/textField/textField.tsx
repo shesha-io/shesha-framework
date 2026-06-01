@@ -1,5 +1,5 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { Input, InputRef } from 'antd';
+import { Input, InputRef, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -14,15 +14,15 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index'
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon } from '@/components/shaIcon';
 import { useStyles } from './styles';
+import { PasswordFieldWrapper } from './passwordFieldWrapper';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
-import { defaultStyles } from './utils';
+import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySettings, validatePasswordValue } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { IComponentApiInputRef } from '@/providers/componentApi/model';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
@@ -43,17 +43,14 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   Factory: ({ model, calculatedModel }) => {
     const componentApi = useComponentApi();
     const inputRef = useRef<InputRef>(null);
-    const apiRef = useRef<IComponentApiInputRef<string>>();
     useEffect(() => {
-      componentApi?.updateApi<TextFieldApi>(
-        {
-          id: model.id,
-          componentName: model.componentName,
-          typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-          api: { focus: () => inputRef.current?.focus() },
-        },
-        [{ name: 'value', getter: () => apiRef.current.value, setter: apiRef.current.onChange }],
-      );
+      componentApi?.updateApi<TextFieldApi>({
+        id: model.id,
+        componentName: model.componentName,
+        level: 3,
+        typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        api: { focus: () => inputRef.current?.focus() },
+      });
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
@@ -75,6 +72,27 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       }
     }, [model]);
 
+    const isPassword = model.textType === 'password';
+    const passwordComplexity = usePasswordComplexitySettings();
+
+    const passwordValidator = useMemo(() =>
+      isPassword ? buildPasswordValidatorString(passwordComplexity) : null,
+    [isPassword, passwordComplexity],
+    );
+
+    const modelWithValidation = useMemo(() => {
+      if (!isPassword || !passwordValidator || model.validate?.validator) return model;
+      return {
+        ...model,
+        validate: {
+          ...(model.validate || {}),
+          minLength: undefined,
+          maxLength: undefined,
+          validator: passwordValidator,
+        },
+      };
+    }, [model, isPassword, passwordValidator]);
+
     if (model.hidden) return null;
 
     const inputProps: InputProps = {
@@ -88,23 +106,39 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       readOnly: model.readOnly,
       spellCheck: model.spellCheck ?? false,
       style: model.allStyles.fullStyle,
-      maxLength: model.validate?.maxLength,
-      max: model.validate?.maxLength,
-      minLength: model.validate?.minLength,
     };
 
-    return (
-      <ConfigurableFormItem model={model}>
+    const fieldContent = (
+      <ConfigurableFormItem model={modelWithValidation}>
         {(value, onChange) => {
+          // Derive password tooltip error from committed value so it stays in sync with
+          // the form validator (handles initial values, programmatic changes, and resets).
+          // Only active when the complexity validator is actually composed into the model
+          // (i.e. no custom validator has overridden it).
+          const isPasswordComplexityActive = isPassword && !!passwordValidator && !model.validate?.validator;
+          const passwordError = isPasswordComplexityActive && value
+            ? (() => {
+              const errors = validatePasswordValue(value as string, passwordComplexity);
+              return errors.length > 0 ? `Password must contain ${errors.join(', ')}` : null;
+            })()
+            : null;
+
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]): void => {
-            const rawValue = args[0]?.currentTarget ? args[0]?.currentTarget?.value : args[0];
-            const inputValue: string | undefined = rawValue == null ? undefined : String(rawValue);
+          const onChangeInternal = (...args: unknown[]): void => {
+            const arg = args[0];
+            const inputValue: string | undefined =
+              arg !== null && typeof arg === 'object' && 'currentTarget' in arg &&
+              arg.currentTarget !== null && typeof arg.currentTarget === 'object' && 'value' in arg.currentTarget
+                ? arg.currentTarget.value?.toString()
+                : undefined;
             const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
+
             const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
+
+            let val = inputValue;
             if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
-              const changedValue = customEvents.onChange({ value: inputValue }, args[0]);
-              if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : inputValue);
+              const changedValue = customEvents.onChange({ value: inputValue }, args[0]) as string | undefined;
+              val = changedValue !== undefined ? changedValue : inputValue;
             } else {
               // Workaround because if the value is undefined, input component leave the inputed value
               // Rendering of the component is not called
@@ -112,17 +146,33 @@ const TextFieldComponent: TextFieldComponentDefinition = {
               if (Boolean(regExpObj) && value === undefined && typeof onChange === 'function') {
                 onChange('');
               }
+              return;
             }
+            if (typeof onChange === 'function') onChange(val);
           };
 
-          apiRef.current = { value, onChange: onChangeInternal };
-
-          return inputProps.readOnly
+          const inputElement = inputProps.readOnly
             ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} style={finalStyle} />
             : <InputComponentType ref={inputRef} {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+
+          if (isPassword) {
+            return (
+              <Tooltip title={passwordError ?? undefined} placement="bottom">
+                {inputElement}
+              </Tooltip>
+            );
+          }
+
+          return inputElement;
         }}
       </ConfigurableFormItem>
     );
+
+    if (isPassword) {
+      return <PasswordFieldWrapper className={styles.passwordFieldWrapper}>{fieldContent}</PasswordFieldWrapper>;
+    }
+
+    return fieldContent;
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),

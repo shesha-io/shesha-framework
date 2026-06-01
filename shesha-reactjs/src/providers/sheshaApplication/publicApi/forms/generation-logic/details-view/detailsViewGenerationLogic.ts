@@ -4,7 +4,7 @@ import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
 import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
-import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
+import { findContainersWithPlaceholder, findComponentsWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
@@ -97,14 +97,13 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       ? `{{${toCamelCase(displayNameProperty)}}}`
       : `${entity.typeAccessor} Details`;
 
-    const titleContainer = findContainersWithPlaceholder(markup, "//*TITLE*//");
+    const titleComponents = findComponentsWithPlaceholder(markup, "//*TITLE*//");
 
-    if (titleContainer.length === 0) {
-      throw new Error("No title container found in the markup.");
+    if (titleComponents.length === 0) {
+      throw new Error("No title component found in the markup.");
     }
 
-    // text
-    const titleComponent = titleContainer[0];
+    const titleComponent = titleComponents[0];
     if (isConfigurableFormComponent(titleComponent) && isTextComponent(titleComponent))
       titleComponent.content = title;
 

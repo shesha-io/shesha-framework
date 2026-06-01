@@ -85,12 +85,15 @@ namespace Shesha.Elmah.PostgreSql
                 // gather refs and log them
                 if (error.Exception != null && provider.CurrentState != null)
                 {
-                    var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
-                    if (allRefs.Any())
+                    if (provider.CurrentState.AllExceptions != null)
                     {
-                        foreach (var item in allRefs)
+                        var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
+                        if (allRefs.Any())
                         {
-                            ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                            foreach (var item in allRefs)
+                            {
+                                ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                            }
                         }
                     }
                 }

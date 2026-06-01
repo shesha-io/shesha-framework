@@ -8,7 +8,7 @@ import {
   IAttachmentsEditorInstance,
 } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
-import { fileListContextCode } from '@/publicJsApis';
+import { fileListContextCode } from '@/publicJsApis/apis';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { useAttachmentsEditorInstance } from './hooks';
 import { isNullOrWhiteSpace } from '@/utils/nullables';

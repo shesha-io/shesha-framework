@@ -13,9 +13,25 @@ export const useStyles = createStyles(({ css, cx, token }, { fontWeight, fontFam
         :hover {
             border-color: ${token.colorPrimary} !important;
         }
-
   `);
+
+  const passwordFieldWrapper = cx("sha-password-field-wrapper", css`
+    .ant-form-item-explain,
+    .ant-form-item-explain-connected {
+      max-width: var(--sha-password-input-width, 100%);
+      overflow: hidden;
+    }
+
+    .ant-form-item-explain-error {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: default;
+    }
+  `);
+
   return {
     textField,
+    passwordFieldWrapper,
   };
 });
