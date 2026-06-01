@@ -6,6 +6,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const shaSettingsEditorToolbarRight = "sha-settings-editor-toolbar-right";
   const shaSettingsEditorMain = "sha-settings-editor-main";
   const shaSettingsEditorToolbox = "sha-settings-editor-toolbox";
+  const shaSettingsEditorToolboxHeader = "sha-settings-editor-toolbox-header";
+  const shaSettingsEditorToolboxList = "sha-settings-editor-toolbox-list";
+  const shaSettingsEditorToolboxFooter = "sha-settings-editor-toolbox-footer";
+  const shaSettingsAppSection = "sha-settings-app-section";
+  const shaSettingsGroup = "sha-settings-group";
+  const shaSettingsGroupHeader = "sha-settings-group-header";
   const shaSettingSearch = "sha-setting-search";
   const shaToolboxPanel = "sha-toolbox-panel";
   const shaToolboxComponent = "sha-toolbox-component";
@@ -44,8 +50,56 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         .${shaSettingsEditorToolbox} {
           padding: 8px;
           height: 100%;
+          overflow: hidden;
           background-color: white;
-      
+          display: flex;
+          flex-direction: column;
+
+          .${shaSettingsEditorToolboxHeader} {
+            flex: 0 0 auto;
+          }
+
+          /* the Spin root is the scrollable list region */
+          .${shaSettingsEditorToolboxList} {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            ${sheshaStyles.thinScrollbars}
+
+            .${prefixCls}-spin-container {
+              height: 100%;
+            }
+          }
+
+          .${shaSettingsEditorToolboxFooter} {
+            flex: 0 0 auto;
+          }
+
+          .${shaSettingsAppSection} {
+            margin-bottom: 16px;
+          }
+
+          .${shaSettingsGroup} {
+            margin-bottom: 4px;
+          }
+
+          .${shaSettingsGroupHeader} {
+            font-weight: 500;
+            color: ${token.colorText};
+            padding: 4px 8px;
+          }
+
+          .${prefixCls}-menu {
+            border-inline-end: none;
+            background: transparent;
+          }
+
+          .${prefixCls}-menu-item-selected {
+            color: ${token.colorPrimary};
+            background-color: ${token.colorPrimaryBg};
+          }
+
           .${prefixCls}-collapse-item {
             .${prefixCls}-collapse-header {
               padding: 4px 8px;
@@ -144,12 +198,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
       box-sizing: border-box;
 
       .${mainArea} {
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: hidden;
         padding-right: 5px;
         height: calc(100vh - 160px);
-        ${sheshaStyles.thinScrollbars}
-        
+
         .ant-spin-nested-loading {
           height: 100%;
           .ant-spin-container{
@@ -209,6 +261,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     shaSettingsEditorToolbarRight,
     shaSettingsEditorMain,
     shaSettingsEditorToolbox,
+    shaSettingsEditorToolboxHeader,
+    shaSettingsEditorToolboxList,
+    shaSettingsEditorToolboxFooter,
+    shaSettingsAppSection,
+    shaSettingsGroup,
+    shaSettingsGroupHeader,
     shaSettingSearch,
     shaToolboxPanel,
     shaToolboxComponent,
