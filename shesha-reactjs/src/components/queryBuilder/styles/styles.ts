@@ -98,6 +98,22 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             gap: 10px;
             width: 100%;
             min-width: 0;
+            align-items: flex-start;
+        }
+
+        /* Single horizontal scrollbar for the whole rule set (incl. nested
+           groups) lives here, on the rule container, instead of on each row. */
+        .sha-query-builder-filter-body {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 6px 0;
+        }
+
+        /* Nested group rows must not scroll on their own — they size to their
+           content so the width bubbles up to the filter-body scroller. */
+        .sha-query-builder-group-children {
+            width: max-content;
+            min-width: 100%;
         }
 
         .sha-query-builder-filter-actions,
@@ -154,8 +170,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-group-card {
-            width: 100%;
-            min-width: 0;
+            width: max-content;
+            min-width: 100%;
             min-height: 0;
             display: flex;
             flex-direction: column;
@@ -308,8 +324,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             grid-template-columns: var(--sha-query-builder-prefix-width) minmax(0, 1fr);
             align-items: stretch;
             gap: 10px;
-            width: 100%;
-            min-width: 0;
+            width: max-content;
+            min-width: 100%;
         }
 
         .sha-query-builder-item-row:not(.is-group) .sha-query-builder-item-prefix {
@@ -402,8 +418,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-item-shell {
-            width: 100%;
-            min-width: 0;
+            width: max-content;
+            min-width: 100%;
             display: grid;
             grid-template-columns: minmax(0, 1fr) 32px 32px;
             align-items: stretch;
@@ -412,22 +428,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-sizing: border-box;
             background: #fff;
             border-radius: 5px;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .sha-query-builder-rule-scroll {
-            overflow-x: hidden;
-            overflow-y: hidden;
+            overflow: visible;
+            width: max-content;
             min-width: 100%;
-        }
-
-        .sha-query-builder-rule-scroll:has(.sha-query-builder-mustache-expression-input) {
-            overflow-x: auto;
-        }
-
-        .group--children .sha-query-builder-rule-scroll,
-        .sha-query-builder-group-children .sha-query-builder-rule-scroll {
-            overflow-x: auto;
         }
 
         .sha-query-builder-group-children .sha-query-builder-item-shell {
