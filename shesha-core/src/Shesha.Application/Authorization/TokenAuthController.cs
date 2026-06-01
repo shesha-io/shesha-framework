@@ -7,6 +7,7 @@ using Abp.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Shesha.Authentication.External;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization.Models;
@@ -16,6 +17,7 @@ using Shesha.Controllers;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Models.TokenAuth;
+using Shesha.RateLimiting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -76,6 +78,7 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Auth)]
         public async Task<AuthenticateResultModel> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
             // Check for user registration status
@@ -217,6 +220,7 @@ namespace Shesha.Authorization
         /// </summary>
         [AbpAllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)
         {
             var persons = await _personRepository.GetAllListAsync(u => u.MobileNumber1 == userNameOrMobileNo || u.User != null && u.User.UserName == userNameOrMobileNo);

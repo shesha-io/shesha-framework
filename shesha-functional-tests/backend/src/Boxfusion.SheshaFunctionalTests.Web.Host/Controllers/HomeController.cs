@@ -1,17 +1,8 @@
-using System;
-using System.Threading.Tasks;
-using Abp;
-using Abp.Authorization.Users;
 using Abp.Dependency;
-using Abp.Domain.Repositories;
-using Abp.Extensions;
 using Abp.Notifications;
-using Abp.Timing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NHibernate;
 using Shesha.Controllers;
-using Shesha.MultiTenancy;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Controllers
 {
