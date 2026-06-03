@@ -289,9 +289,24 @@ export const useStyles = createStyles(
       }
     `;
 
-  
-    // the scroll buttons end up taller than the menu items.
-    const menuItemExtraHeight = 9.5
+    // The scroll buttons share the row with antd's `.ant-menu-item` elements and must match
+    // their rendered height exactly, otherwise the buttons sit higher/lower than the items.
+    //
+    // Antd's horizontal menu items don't expose a usable height value at design time — the
+    // final height comes from (in order of contribution):
+    //   - 48px content box from antd's `--ant-menu-item-height` token + line-height,
+    //   - 2× vertical padding from our own `.ant-menu-item` rule above,
+    //   - a sub-pixel rounding adjustment antd applies via its internal line-height calc
+    //     (≈ -0.5px when itemStyle is set, because the base padding also gets `padding.y - 1`
+    //     instead of `padding.y` — see the menu-item rule earlier in this file).
+    //
+    // Without runtime DOM measurement (which we can't do here — styles are computed at render
+    // time before the menu mounts), the empirically-measured constant `9.5` is what lines up
+    // pixel-perfectly with menu items for the standard configuration (padding.y = 5 and
+    // itemStyle set). If a future change alters the menu-item padding rule or antd's base
+    // height, re-measure the rendered `.ant-menu-item` height in DevTools and update this
+    // constant to match.
+    const menuItemExtraHeight = 9.5;
     const menuItemHeight = `calc(48px + ${menuItemExtraHeight}px)`;
 
     const scrollButtons = css`

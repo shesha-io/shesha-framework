@@ -2,7 +2,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import React, { FC } from "react";
 
 interface IScrollButtonProps {
-  styles: { [key in string]: any };
+  styles: Record<string, string>;
   onClick: () => void;
   direction: 'left' | 'right';
 }
