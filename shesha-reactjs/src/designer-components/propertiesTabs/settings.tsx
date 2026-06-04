@@ -29,8 +29,8 @@ const SIZES: DefaultOptionType[] = [
 const POSITIONS: DefaultOptionType[] = [
   { value: 'top', label: 'Top' },
   { value: 'bottom', label: 'Bottom' },
-  { value: 'left', label: 'Left' },
-  { value: 'right', label: 'Right' },
+  { value: 'start', label: 'Start' },
+  { value: 'end', label: 'End' },
 ];
 
 const TabSettings: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> = (props) => {

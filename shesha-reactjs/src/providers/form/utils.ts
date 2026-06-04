@@ -742,18 +742,22 @@ export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object
     }
   }
 
-  // Only deep-clone plain objects and arrays. Class instances, Map, Set, RegExp, Error, URL,
-  // typed arrays, etc. are returned as-is so their prototype/semantics survive.
-  const isArray = Array.isArray(input);
-  if (!isArray) {
-    const proto = Object.getPrototypeOf(input) as object | null;
-    if (proto !== Object.prototype && proto !== null) return input;
-  }
+  // Preserve known special types that carry internal state which would break under a generic
+  // clone (Map, Set, RegExp, Error, URL, typed arrays, etc.). We detect them via the
+  // [[Class]] tag — anything that's not `[object Object]` or `[object Array]` is returned by
+  // reference. Class instances (which have `[object Object]` tag) ARE walked so their
+  // enumerable fields are cloned and any nested Shesha proxies inside get unwrapped.
+  const tag = Object.prototype.toString.call(input);
+  if (tag !== '[object Object]' && tag !== '[object Array]') return input;
 
   const cached = seen.get(input);
   if (cached) return cached;
 
-  const result: Record<string, unknown> | unknown[] = isArray ? [] : {};
+  const isArray = Array.isArray(input);
+  // Preserve the prototype for class instances so prototype methods/getters remain reachable.
+  const result: Record<string, unknown> | unknown[] = isArray
+    ? []
+    : Object.create(Object.getPrototypeOf(input) as object | null) as Record<string, unknown>;
   seen.set(input, result);
   for (const key of Object.keys(input))
     (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
@@ -821,16 +825,6 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       };
 
       if (skipUnknownTags) {
-        // A non-plain object (Date / class instance / Map / etc.) is preserved by reference
-        // through cloneAndDecorateForMustache. When the traversal would descend into one and
-        // write a placeholder, we shallow-clone it into a plain object and replace it in its
-        // parent so the placeholder never lands on the caller-owned instance.
-        const isNonPlainObject = (val: unknown): val is object => {
-          if (!val || typeof val !== 'object' || Array.isArray(val)) return false;
-          const proto = Object.getPrototypeOf(val) as object | null;
-          return proto !== Object.prototype && proto !== null;
-        };
-
         template.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
           const tag = mathes && mathes.length > 0
@@ -845,15 +839,9 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
             return;
 
           const container = parts.reduce((level: IAnyObject, key: string) => {
-            if (!level.hasOwnProperty(key))
-              return (level[key] = {} as IAnyObject);
-            const existing = level[key] as unknown;
-            if (isNonPlainObject(existing)) {
-              const detached: IAnyObject = { ...(existing as IAnyObject) };
-              level[key] = detached;
-              return detached;
-            }
-            return existing as IAnyObject;
+            return level.hasOwnProperty(key)
+              ? level[key] as IAnyObject
+              : (level[key] = {} as IAnyObject);
           }, view);
           if (!container.hasOwnProperty(field)) {
             container[field] = new StaticMustacheTag(tag);
