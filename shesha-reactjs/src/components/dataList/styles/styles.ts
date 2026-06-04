@@ -134,14 +134,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             position: relative;
             max-width: 100%;
             overflow: auto;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
-            transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
-            cursor: pointer;
-
-            &:hover {
-                box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.05);
-                transform: translateY(-2px);
-            }
         }
 
         .${shaDatalistCard} > *,
