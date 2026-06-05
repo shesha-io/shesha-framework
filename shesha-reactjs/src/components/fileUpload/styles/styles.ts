@@ -134,7 +134,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       min-height: ${layout ? (minHeight) : '100%'} !important;
       max-width: ${layout ? (maxWidth) : '100%'} !important;
       min-width: ${layout ? (minWidth) : '100%'} !important;
-      display: inline-block;
       background: ${backgroundImage ?? backgroundColor ?? background};
       ${backgroundPosition ? `background-position: ${backgroundPosition};` : ''}
       ${backgroundRepeat ? `background-repeat: ${backgroundRepeat};` : ''}
@@ -155,9 +154,17 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         justify-content: center !important;
       }
 
+      /* Hide the upload trigger once a file is present (single-file upload). antd's
+         maxCount=1 isn't auto-hiding the trigger in this version, so suppress it via
+         a sibling-combinator rule: any .ant-upload-select that follows a file item is hidden. */
+      .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload-select,
+      .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload.ant-upload-select {
+        display: none !important;
+      }
+
       .ant-upload-list-item {
         width: var(--thumbnail-width) !important;
-        height: calc(var(--thumbnail-height) + 32px) !important;
+        height: ${hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)'} !important;
         border-top: ${borderTop} !important;
         border-bottom: ${borderBottom} !important;
         border-right: ${borderRight} !important;
@@ -292,6 +299,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         height: var(--thumbnail-height) !important;
         ${borderRadiusCss}
         border: ${borderWidth} ${borderStyle} transparent !important;
+        /* antd's default margin-block on this container shifts the file tile down after upload;
+           the trigger has no such margin, so reset both margin and padding to keep the file
+           tile in the same spot the trigger occupied. */
+        margin: 0 !important;
+        padding: 0 !important;
         &.ant-upload-animate-inline-appear,
         &.ant-upload-animate-inline-appear-active,
         &.ant-upload-animate-inline {
@@ -372,6 +384,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
+      position: relative !important;
 
       .anticon {
         img {
