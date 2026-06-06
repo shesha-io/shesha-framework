@@ -7,11 +7,11 @@ import { useFormData } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { IPhoneNumberInputComponentProps, IPhoneNumberValue } from './interface';
 import PhoneInput from 'antd-phone-input';
-import { nanoid } from '@/utils/uuid';
 import { parsePhoneNumberFromString, CountryCode, getExampleNumber } from 'libphonenumber-js';
 import examples from 'libphonenumber-js/mobile/examples';
 import settingsFormJson from './settingsForm.json';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { useStyles } from './styles';
 
 const settingsFormMarkup = settingsFormJson as FormMarkup;
 
@@ -72,26 +72,18 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
         country,
         defaultCountry,
         allowClear,
-        enableArrow = true,
-        enableSearch = true,
+        enableArrow = false,
         distinct,
         disableParentheses,
         disableDropdown,
         onlyCountries,
         excludeCountries,
         preferredCountries,
-        searchNotFound,
-        searchPlaceholder,
         placeholder,
         size,
         style,
         valueFormat,
         stripCountryCode = false,
-        wrapperStyle,
-        inputGroupWrapperStyle,
-        inputWrapperStyle,
-        inputGroupStyle,
-        inputStyle,
         ...model
     } = props;
 
@@ -101,6 +93,7 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     const prevValueRef = useRef(value);
     const { data: formData } = useFormData();
     const allData = useAvailableConstantsData();
+    const { styles: styleClasses } = useStyles();
 
     // Only trigger remount when value transitions from having content to null/empty
     useEffect(() => {
@@ -128,9 +121,10 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     const parsedPreferredCountries = parseCountryCodes(preferredCountries);
 
     // Evaluate style with form data to support dynamic styling
-    const componentStyle = getStyle(style, formData, allData?.globalState) || {};
-
-
+    const componentStyle = useMemo(() =>
+        getStyle(style, formData, allData?.globalState) || {},
+        [style, formData, allData?.globalState]
+    );
 
     const onChangeInternal = (phoneNumber: any) => {
         // Extract the raw value - phoneNumber can be:
@@ -346,125 +340,40 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
 
     const displayValue = typeof value === 'string' ? value : (value as IPhoneNumberValue)?.number;
 
-    // Generate unique class name for this instance
-    const uniqueClass = useMemo(() => `phone-input-${nanoid()}`, []);
-
-    // Evaluate individual styles with form data
-    const evaluatedWrapperStyle = getStyle(wrapperStyle, formData, allData?.globalState) || {};
-    const evaluatedInputGroupWrapperStyle = getStyle(inputGroupWrapperStyle, formData, allData?.globalState) || {};
-    const evaluatedInputWrapperStyle = getStyle(inputWrapperStyle, formData, allData?.globalState) || {};
-    const evaluatedInputGroupStyle = getStyle(inputGroupStyle, formData, allData?.globalState) || {};
-    const evaluatedInputStyle = getStyle(inputStyle, formData, allData?.globalState) || {};
-
-    // Helper to sanitize CSS values to prevent injection attacks
-    const sanitizeCssValue = (value: any): string => {
-        if (typeof value !== 'string') return String(value);
-        // Remove potentially dangerous characters: braces, comments, semicolons outside of expected contexts
-        return value
-            .replace(/[{}]/g, '') // Remove braces
-            .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
-            .replace(/<!--[\s\S]*?-->/g, '') // Remove HTML comments
-            .trim();
-    };
-
-    // Helper to convert style object to CSS string
-    const styleToCss = (styleObj: any) => {
-        if (!styleObj || Object.keys(styleObj).length === 0) return '';
-        const rules: string[] = [];
-        Object.entries(styleObj).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-                const sanitizedValue = sanitizeCssValue(value);
-                rules.push(`${cssKey}: ${sanitizedValue} !important`);
-            }
-        });
-        return rules.join('; ');
-    };
-
-    // Convert CSSProperties to CSS string - target specific elements individually
-    // Design: componentStyle acts as a base style applied to all child elements,
-    // while specific style props (wrapperStyle, inputStyle, etc.) allow targeted overrides
-    const cssString = useMemo(() => {
-        const rules: string[] = [];
-
-        // Apply general style to all elements if provided
-        if (componentStyle && Object.keys(componentStyle).length > 0) {
-            const generalStyles = styleToCss(componentStyle);
-            if (generalStyles) {
-                rules.push(`
-                    .${uniqueClass} .ant-phone-input-wrapper { ${generalStyles} }
-                    .${uniqueClass} .ant-input-group-wrapper { ${generalStyles} }
-                    .${uniqueClass} .ant-input-wrapper { ${generalStyles} }
-                    .${uniqueClass} .ant-input-group { ${generalStyles} }
-                    .${uniqueClass} .ant-input { ${generalStyles} }
-                `);
-            }
-        }
-
-        // Apply specific styles to individual elements
-        if (Object.keys(evaluatedWrapperStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-phone-input-wrapper { ${styleToCss(evaluatedWrapperStyle)} }`);
-        }
-        if (Object.keys(evaluatedInputGroupWrapperStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-group-wrapper { ${styleToCss(evaluatedInputGroupWrapperStyle)} }`);
-        }
-        if (Object.keys(evaluatedInputWrapperStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-wrapper { ${styleToCss(evaluatedInputWrapperStyle)} }`);
-        }
-        if (Object.keys(evaluatedInputGroupStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-group { ${styleToCss(evaluatedInputGroupStyle)} }`);
-        }
-        if (Object.keys(evaluatedInputStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input { ${styleToCss(evaluatedInputStyle)} }`);
-        }
-
-        return rules.join('\n');
-    }, [componentStyle, uniqueClass, evaluatedWrapperStyle, evaluatedInputGroupWrapperStyle, evaluatedInputWrapperStyle, evaluatedInputGroupStyle, evaluatedInputStyle]);
-
     return readOnly ? (
         <ReadOnlyDisplayFormItem
             value={displayValue}
             disabled={readOnly}
         />
     ) : (
-        <>
-            {cssString && <style>{cssString}</style>}
-            <div className={uniqueClass} style={componentStyle}>
-                <PhoneInput
-                    key={clearKey}
-                    placeholder={placeholder}
-                    size={size}
-                    disabled={readOnly}
-                    allowClear={allowClear}
-                    value={phoneInputValue}
-                    onChange={onChangeInternal}
-                    onBlur={onBlurInternal}
-                    onFocus={onFocusInternal}
-                    enableSearch={enableSearch}
-                    enableArrow={enableArrow}
-                    distinct={distinct}
-                    disableParentheses={disableParentheses}
-                    disableDropdown={disableDropdown}
-                    country={country || defaultCountry || 'za'}
-                    status={!isValid ? 'error' : undefined}
-                    searchNotFound={searchNotFound}
-                    searchPlaceholder={searchPlaceholder}
-                    onlyCountries={parsedOnlyCountries}
-                    excludeCountries={parsedExcludeCountries}
-                    preferredCountries={parsedPreferredCountries}
-                />
-                {validationMessage && (
-                    <div style={{
-                        color: '#ff4d4f',
-                        fontSize: '14px',
-                        marginTop: '4px',
-                        lineHeight: '1.5715'
-                    }}>
-                        {validationMessage}
-                    </div>
-                )}
-            </div>
-        </>
+        <div className={styleClasses.shaPhoneNumberWrapper}>
+            <PhoneInput
+                key={clearKey}
+                placeholder={placeholder}
+                size={size}
+                disabled={readOnly}
+                allowClear={allowClear}
+                value={phoneInputValue}
+                onChange={onChangeInternal}
+                onBlur={onBlurInternal}
+                onFocus={onFocusInternal}
+                enableArrow={enableArrow}
+                distinct={distinct}
+                disableParentheses={disableParentheses}
+                disableDropdown={disableDropdown}
+                country={country || defaultCountry || 'za'}
+                status={!isValid ? 'error' : undefined}
+                onlyCountries={parsedOnlyCountries}
+                excludeCountries={parsedExcludeCountries}
+                preferredCountries={parsedPreferredCountries}
+                style={componentStyle}
+            />
+            {validationMessage && (
+                <div className={styleClasses.shaPhoneNumberValidationMessage}>
+                    {validationMessage}
+                </div>
+            )}
+        </div>
     );
 };
 
@@ -479,7 +388,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
         if (model.hidden) return null;
 
         return (
-            <ConfigurableFormItem model={model}>
+            <ConfigurableFormItem model={model} initialValue={model.initialValue}>
                 {(value, onChange) => (
                     <PhoneNumberControl {...model} value={value} onChange={onChange} />
                 )}
@@ -494,7 +403,6 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
         stripCountryCode: model.stripCountryCode !== undefined ? model.stripCountryCode : false,
         defaultCountry: model.defaultCountry || 'za',
         enableArrow: model.enableArrow !== undefined ? model.enableArrow : true,
-        enableSearch: model.enableSearch !== undefined ? model.enableSearch : true,
         labelAlign: model.labelAlign || 'left',
     }),
     migrator: (m) => m
