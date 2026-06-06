@@ -18,6 +18,7 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent, II
   tablet?: IInputStyles;
   spellCheck?: boolean;
   regExp?: string;
+  excludeGlobalComplexityConfig?: boolean;
 }
 
 interface ITextFieldComponentCalulatedValues {
