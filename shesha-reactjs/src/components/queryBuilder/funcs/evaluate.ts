@@ -1,13 +1,15 @@
 import { FieldSettings, Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue } from '@react-awesome-query-builder/antd';
 import { getEvaluationNodeFromJsonLogicNode, IEvaluateJsonLogicNode } from '@/utils/jsonLogic';
 import { IHasHideForSelect } from '../interfaces';
+import { ignoreIfUnassignedTooltip } from '../widgets/ignoreIfUnassigned/constants';
 
 const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, JsonLogicValue>): JsonLogicTree => {
+  const ignoreIfUnassigned = Boolean(funcArgs.ignoreIfUnassigned);
   const node: IEvaluateJsonLogicNode = {
     evaluate: [
       {
         expression: funcArgs.expression,
-        required: funcArgs.required,
+        required: !ignoreIfUnassigned,
         type: 'mustache',
       },
     ],
@@ -18,10 +20,16 @@ const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, JsonLogicV
 
 const jsonLogic2Args: JsonLogicImportFunc = (val): RuleValue[] => {
   const node = getEvaluationNodeFromJsonLogicNode(val);
-  if (!node || node.evaluate?.type !== 'mustache')
+  if (!node || (node.evaluate?.type !== 'mustache' && node.evaluate?.type !== 'javascript'))
     throw `Can't parse 'evaluate' function`; // throw exception to skip current function and try to parse others
 
-  return [node.evaluate.expression, node.evaluate.required];
+  // Keep backward compatibility for legacy javascript evaluate nodes.
+  const required = node.evaluate.type === 'javascript'
+    ? true
+    : node.evaluate.required === true;
+  const ignoreIfUnassigned = !required;
+
+  return [node.evaluate.expression, ignoreIfUnassigned];
 };
 
 type CustomFieldSettings = FieldSettings & {
@@ -34,9 +42,7 @@ type CustomFieldSettings = FieldSettings & {
 
 const requiredFieldSettings: CustomFieldSettings = {
   customProps: {
-    checkedChildren: "Required",
-    unCheckedChildren: "Optional",
-    title: 'Whole filter will be marked as `unevaluated` if the expression is marked as `required` and the evaluation result is empty',
+    title: ignoreIfUnassignedTooltip,
   },
 };
 
@@ -47,19 +53,33 @@ export const getEvaluateFunc = (type: string): Func & IHasHideForSelect => {
     label: 'Evaluate (mustache)',
     jsonLogic: args2JsonLogic,
     jsonLogicImport: jsonLogic2Args,
+    renderBrackets: ['', ''],
+    renderSeps: [''],
     args: {
       expression: {
         label: "Expression",
         type: 'text',
         defaultValue: '',
         valueSources: ['value'],
+        widgets: {
+          mustacheExpression: {
+            operators: ['equal'],
+          },
+        },
+        preferWidgets: ['mustacheExpression'],
       },
-      required: {
-        label: 'Allow empty',
+      ignoreIfUnassigned: {
+        label: 'Ignore if unassigned',
         type: 'boolean',
         valueSources: ['value'],
         defaultValue: false,
         fieldSettings: requiredFieldSettings,
+        widgets: {
+          ignoreIfUnassigned: {
+            operators: ['equal'],
+          },
+        },
+        preferWidgets: ['ignoreIfUnassigned'],
       },
     },
   };
