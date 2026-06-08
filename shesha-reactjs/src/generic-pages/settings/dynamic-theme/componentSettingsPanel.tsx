@@ -14,6 +14,13 @@ import { ITabPaneProps } from '@/designer-components/propertiesTabs/models';
 import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { ItemType } from 'antd/es/menu/interface';
 import { deepCopyViaJson, deepMergeValues } from '@/utils/object';
+import {
+  getPreviewComponentProps,
+  getPreviewFormData,
+  isInputComponent,
+  PREVIEW_PROPERTY_NAME,
+} from './previewData';
+import { getExtraAppearanceComponents } from './appearanceAdapter';
 
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
 export interface SearchableTabsMarkup extends IConfigurableFormComponent {
@@ -96,11 +103,49 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     if (!appearanceMarkupComponents) return null;
 
+    // Surface configured properties that live on other tabs (e.g. fileUpload's `listType`) so they
+    // can be themed/previewed from the appearance panel. See ./appearanceAdapter.
+    const extraComponents = getExtraAppearanceComponents(componentType, components);
+
     return {
-      components: appearanceMarkupComponents,
+      components: [...extraComponents, ...appearanceMarkupComponents],
       formSettings: formSettings ?? undefined,
     };
   }, [componentType]);
+
+  // Build the preview markup + data once per selected component. Dummy content/children/values are
+  // injected so the component renders something visible (see ./previewData). Memoised because the
+  // dummy children use generated ids that should stay stable across re-renders.
+  const previewConfig = useMemo(() => {
+    if (!selectedNode?.type) return null;
+
+    const type = selectedNode.type;
+    // Input components bind to a known property name so their dummy value is displayed.
+    const propertyName = isInputComponent(type) ? PREVIEW_PROPERTY_NAME : `${type}Appearance`;
+
+    const previewComponent: IConfigurableFormComponent = {
+      type,
+      id: selectedNode.key,
+      propertyName,
+      label: selectedNode.title,
+      parentId: 'root',
+      hidden: false,
+      ...getPreviewComponentProps(type),
+    } as IConfigurableFormComponent;
+
+    const markup = {
+      components: [previewComponent],
+      formSettings: {
+        colon: theme?.colon,
+        layout: theme?.layout,
+        labelCol: { span: theme?.labelSpan },
+        wrapperCol: { span: theme?.componentSpan },
+      },
+    };
+
+    return { markup, data: getPreviewFormData(type, theme ?? {}) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNode?.key, selectedNode?.type, theme]);
 
   // Handle form data change — deep-merge so nested keys (e.g. application) are not replaced wholesale
   const handleFormDataChange = (changedValues: Partial<IConfigurableTheme>): void => {
@@ -166,35 +211,20 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             </div>
           )}
         </Card>
-        {/* Preview Card: renders the component with the current theme to show a live preview */}
+        {/* Preview Card: renders the component with the current theme to show a live preview.
+            Dummy content/children/values are injected (see ./previewData) so every component
+            shows how it looks by default instead of rendering empty. */}
         <Card>
-          {componentType && (
+          {componentType && previewConfig && (
             <div>
               <h4 style={{ marginBottom: 4 }}>{selectedNode?.title || 'Select a Component'}</h4>
               <span style={{ color: '#999', fontSize: '12px' }}>
-                Configure default appearance for {selectedNode?.title?.toLowerCase() || 'components'}
+                Preview of {selectedNode?.title?.toLowerCase() || 'the component'} with sample data
               </span>
               <ConfigurableForm
                 mode="edit"
-                markup={{
-                  components: [
-                    {
-                      type: selectedNode?.type,
-                      id: selectedNode.key,
-                      propertyName: `${selectedNode?.type}Appearance`,
-                      label: `${selectedNode?.title}`,
-                      parentId: 'root',
-                      hidden: false,
-                    },
-                  ],
-                  formSettings: {
-                    colon: theme.colon, // TODO: use theme value
-                    layout: theme.layout,
-                    labelCol: { span: theme.labelSpan },
-                    wrapperCol: { span: theme.componentSpan },
-                  },
-                }}
-                initialValues={theme ?? {}}
+                markup={previewConfig.markup}
+                initialValues={previewConfig.data}
                 className={styles.appearanceForm}
               />
             </div>
