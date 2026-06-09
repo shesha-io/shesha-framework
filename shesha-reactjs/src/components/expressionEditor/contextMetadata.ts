@@ -476,7 +476,10 @@ const loadTypeDefinition = async (typeDefinitionLoader: TypeDefinitionLoader): P
       files: [...definition.files, ...extraFiles],
     };
   } catch (error) {
-    console.error('Failed to load expression editor type definition', error);
+    console.error('Failed to load expression editor type definition:', {
+      message: error instanceof Error ? error.message : String(error),
+      error,
+    });
     return null;
   }
 };
@@ -515,8 +518,15 @@ export async function buildExpressionContextFromProperties(properties: NestedPro
   const context: ExpressionContextTree = {};
   const loadedProperties = await loadProperties(properties);
 
-  for (const property of loadedProperties) {
-    setPropertyPath(context, property.path, await buildPropertyContext(property));
+  const results = await Promise.all(
+    loadedProperties.map(async (property) => ({
+      path: property.path,
+      ctx: await buildPropertyContext(property),
+    }))
+  );
+
+  for (const { path, ctx } of results) {
+    setPropertyPath(context, path, ctx);
   }
 
   return context;

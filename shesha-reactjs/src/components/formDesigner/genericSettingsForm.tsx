@@ -63,7 +63,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   // the settings panel (e.g. a canvas-side onChange) remains stale in allValues and gets
   // written back through onValuesChange → auto-save.
   useEffect(() => {
-    form.setFieldsValue(model as object);
+    form.setFieldsValue(model);
   }, [model]);
 
   const isMounted = useRef(true);

@@ -65,10 +65,12 @@ export interface BuildExpressionContextFromPathsOptions {
  */
 export const BRACKET_PALETTE_SIZE = 5;
 
+const isExpressionContext = (value: unknown): value is ExpressionContext =>
+  value !== null && typeof value === 'object' && !Array.isArray(value);
+
 const ensureObjectBranch = (node: ExpressionContext, segment: string): ExpressionContext => {
   const existing = node[segment];
-  if (existing && typeof existing === 'object' && !Array.isArray(existing))
-    return existing as ExpressionContext;
+  if (isExpressionContext(existing)) return existing;
 
   const nextNode: ExpressionContext = {};
   node[segment] = nextNode;
@@ -167,6 +169,16 @@ const getMustacheContext = (
   };
 };
 
+// Returns true when the quote at `quoteIndex` is escaped (preceded by an odd
+// number of consecutive backslashes). Even runs mean the backslashes escape
+// each other and the quote is NOT escaped.
+const isQuoteEscaped = (str: string, quoteIndex: number): boolean => {
+  let count = 0;
+  let j = quoteIndex - 1;
+  while (j >= 0 && str[j] === '\\') { count++; j--; }
+  return count % 2 !== 0;
+};
+
 const extractToken = (partial: string): { token: string; prefixPath: string[]; inFunctionArg: boolean } => {
   let relevantPart = partial;
   let inFunctionArg = false;
@@ -179,7 +191,7 @@ const extractToken = (partial: string): { token: string; prefixPath: string[]; i
     const character = partial[i];
 
     if (inString) {
-      if (character === stringChar && partial[i - 1] !== '\\') inString = false;
+      if (character === stringChar && !isQuoteEscaped(partial, i)) inString = false;
       continue;
     }
 
@@ -629,17 +641,15 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       updateInlineDropdownPosition();
     }
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const textarea = textareaRef.current;
-        if (!textarea) return;
+      const textarea = textareaRef.current;
+      if (!textarea) return;
 
-        const cursorPos = textarea.value.length;
-        textarea.focus();
-        textarea.setSelectionRange(cursorPos, cursorPos);
-        updateSuggestions(textarea.value, cursorPos);
-        updateInlineEditorPosition();
-        updateInlineDropdownPosition();
-      });
+      const cursorPos = textarea.value.length;
+      textarea.focus();
+      textarea.setSelectionRange(cursorPos, cursorPos);
+      updateSuggestions(textarea.value, cursorPos);
+      updateInlineEditorPosition();
+      updateInlineDropdownPosition();
     });
   }, [disabled, inline, updateInlineDropdownPosition, updateInlineEditorPosition, updateSuggestions]);
 
@@ -692,7 +702,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       for (let i = 0; i < beforeCursor.length; i += 1) {
         const character = beforeCursor[i];
         if (inString) {
-          if (character === stringChar && beforeCursor[i - 1] !== '\\') inString = false;
+          if (character === stringChar && !isQuoteEscaped(beforeCursor, i)) inString = false;
           continue;
         }
 

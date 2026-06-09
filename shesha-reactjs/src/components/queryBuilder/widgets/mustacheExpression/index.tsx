@@ -1,6 +1,6 @@
 import React from 'react';
 import { BasicConfig } from '@react-awesome-query-builder/antd';
-import type { BaseWidget, TextFieldSettings } from '@react-awesome-query-builder/antd';
+import type { BaseWidget, TextFieldSettings, TextWidgetProps } from '@react-awesome-query-builder/antd';
 import { ExpressionEditor, buildExpressionContextFromPaths } from '@/components/expressionEditor';
 import { buildExpressionContextFromMetadata, mergeExpressionContexts } from '@/components/expressionEditor/contextMetadata';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
@@ -70,7 +70,7 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
 export const ExpressionEditorWidget: ExpressionEditorWidgetType = {
   ...BasicConfig.widgets.text,
   valueSrc: 'value',
-  factory: (props) => {
+  factory: (props: TextWidgetProps) => {
     return <ExpressionEditorWidgetControl value={props.value} setValue={props.setValue} readonly={props.readonly} />;
   },
 };
