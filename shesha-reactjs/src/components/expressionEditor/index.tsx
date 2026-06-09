@@ -175,7 +175,10 @@ const getMustacheContext = (
 const isQuoteEscaped = (str: string, quoteIndex: number): boolean => {
   let count = 0;
   let j = quoteIndex - 1;
-  while (j >= 0 && str[j] === '\\') { count++; j--; }
+  while (j >= 0 && str[j] === '\\') {
+    count++;
+    j--;
+  }
   return count % 2 !== 0;
 };
 

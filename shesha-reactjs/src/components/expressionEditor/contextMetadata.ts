@@ -522,7 +522,7 @@ export async function buildExpressionContextFromProperties(properties: NestedPro
     loadedProperties.map(async (property) => ({
       path: property.path,
       ctx: await buildPropertyContext(property),
-    }))
+    })),
   );
 
   for (const { path, ctx } of results) {
