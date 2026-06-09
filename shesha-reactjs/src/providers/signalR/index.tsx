@@ -95,11 +95,11 @@ function SignalRProvider({
 
     return () => {
       isActive = false;
+      // No need to call onDisconnected here — stop() triggers onclose, which already
+      // invokes onDisconnectedRef.current. If the connection never started, neither
+      // fires, mirroring the fact that onConnected was never called either.
       connection
         ?.stop()
-        ?.then(() => {
-          onDisconnectedRef.current?.();
-        })
         ?.catch((err) => console.error('SignalRProvider connection error', err));
 
       setConnection();
