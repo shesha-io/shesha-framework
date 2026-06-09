@@ -1,5 +1,4 @@
-// tslint:disable-next-line:no-var-requires
-const signalR = require('@microsoft/signalr');
+import * as signalR from '@microsoft/signalr';
 
 import React, { PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -10,8 +9,6 @@ import {
   SignalRStateContext,
 } from './contexts';
 import { signalRReducer } from './reducer';
-//@ts-ignore
-import { usePrevious } from '@/hooks';
 import { setConnectionAction } from './actions';
 import { useSheshaApplication } from '../sheshaApplication';
 
@@ -38,8 +35,6 @@ function SignalRProvider({
   const [state, dispatch] = useReducer(signalRReducer, { ...SIGNAL_R_CONTEXT_INITIAL_STATE });
   const { backendUrl } = useSheshaApplication();
 
-  const previousBaseUrl = usePrevious(baseUrl);
-
   const setConnection = (connection?: ISignalRConnection) => {
     dispatch(setConnectionAction(connection));
   };
@@ -60,10 +55,6 @@ function SignalRProvider({
   const reconnectIntervalsKey = (reconnectIntervals ?? DEFAULT_RECONNECT_INTERVALS).join(',');
 
   useEffect(() => {
-    if (state.connection || (previousBaseUrl && previousBaseUrl === baseUrl)) {
-      return undefined;
-    }
-
     // Guards against a start() that resolves after this effect has been cleaned up,
     // which would otherwise push an already-stopped connection back into state.
     let isActive = true;
