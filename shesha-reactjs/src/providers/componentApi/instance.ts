@@ -67,8 +67,6 @@ export class ComponentApiInstance implements IComponentApi {
       localApi.typeDefinition = { ...api.typeDefinition };
     if (api.componentModel)
       localApi.componentModel = api.componentModel;
-    if (api.rawComponentModel)
-      localApi.rawComponentModel = api.rawComponentModel;
     if (api.metadata)
       localApi.metadata = api.metadata;
     if (api.isInput)

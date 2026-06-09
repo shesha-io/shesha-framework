@@ -2,9 +2,10 @@ import { useMemo, useRef, useState } from "react";
 import {
   DataContextTopLevels,
   IApplicationContext,
+  IBackgroundValue,
   IConfigurableFormComponent,
   IFormComponentStyles,
-  IStyleType,
+  IStyleValue,
   ProxyPropertiesAccessors,
   StyleBoxValue,
   UnwrapCodeEvaluators,
@@ -16,7 +17,6 @@ import {
   useAvailableConstantsContextsNoRefresh,
   useCanvas,
   useDeepCompareMemo,
-  useSheshaApplication,
   wrapConstantsData,
 } from "..";
 import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
@@ -32,6 +32,7 @@ import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimens
 import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useIsFirstRender } from "./useIsFirstRender";
+import { ISheshaApplicationInstance } from "@/providers/sheshaApplication/application";
 
 type MayHaveEditMode<T> = T & {
   editMode?: unknown | undefined;
@@ -144,7 +145,7 @@ export function useCalculatedModel<T extends IConfigurableFormComponent = IConfi
   if (contextProxyRef.changed || modelChanged || useCalculatedModelChanged) {
     calculatedModelRef.current = calculateModel
       ? calculateModel(model, allData, useCalculatedModel)
-      : undefined;
+      : useCalculatedModel;
   }
 
   if (useCalculatedModelChanged)
@@ -205,11 +206,53 @@ export interface IUseFormComponentStylesOptions {
   useWrapperStyle?: boolean;
 }
 
+export const useBackgroundStoredFile = (model: IBackgroundValue | undefined, app: ISheshaApplicationInstance): IBackgroundValue | undefined => {
+  const [background, setBackground] = useState<IBackgroundValue | undefined>(model);
+  const objectUrlRef = useRef<string | null>(null);
+
+  const storedFileId = model?.storedFile?.id;
+  const storedFileType = model?.type;
+
+  useDeepCompareEffect(() => {
+    if (storedFileType === 'storedFile') {
+      if (storedFileId) {
+        fetch(`${app.backendUrl}/api/StoredFile/Download?id=${storedFileId}`,
+          { headers: { ...app.httpHeaders, "Content-Type": "application/octet-stream" } })
+          .then((response) => {
+            return response.blob();
+          })
+          .then((blob) => {
+            // Revoke previous object URL to prevent memory leak
+            if (objectUrlRef.current) {
+              URL.revokeObjectURL(objectUrlRef.current);
+              objectUrlRef.current = null;
+            }
+            objectUrlRef.current = URL.createObjectURL(blob);
+            setBackground({ ...model, url: objectUrlRef.current });
+          })
+          .catch((error) => {
+            console.error('Failed to fetch image', error);
+          });
+      }
+    }
+    // Cleanup on unmount
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
+    };
+  }, [storedFileId, storedFileType, app.backendUrl, app.httpHeaders, model]);
+
+  return storedFileType === 'storedFile' ? background : model;
+};
+
+// ToDo: AS - remove after migration all components to the new styles
+
 export const useFormComponentStyles = <TModel extends IStyleType & Pick<IConfigurableFormComponent, 'style' | 'wrapperStyle'>>(
   model: TModel/* & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>*/,
   options?: IUseFormComponentStylesOptions,
 ): IFormComponentStyles => {
-  const app = useSheshaApplication();
   const { useWrapperStyle = false } = options || {};
   // For container components, use wrapperStyle instead of style
   const styleSource = useWrapperStyle && !isNullOrWhiteSpace(model.wrapperStyle)
@@ -220,47 +263,16 @@ export const useFormComponentStyles = <TModel extends IStyleType & Pick<IConfigu
 
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
-  const backgroundLocal = getBackgroundStyle(background, jsStyle);
-
-  const [backgroundStyles, setBackgroundStyles] = useState(() =>
-    background && background.type === 'storedFile' && !isNullOrWhiteSpace(background.storedFile?.id)
-      ? {
-        backgroundImage: `url(${app.backendUrl}/api/StoredFile/Download?id=${background.storedFile.id})`,
-        backgroundSize: background.size,
-        backgroundPosition: background.position,
-        backgroundRepeat: background.repeat,
-      }
-      : backgroundLocal,
-  );
+  const backgroundLocal = getBackgroundStyle(background, jsStyle, background?.url);
 
   const stylingBoxParsed = useMemo(() => !isNullOrWhiteSpace(stylingBox) ? jsonSafeParse<StyleBoxValue>(stylingBox) : {}, [stylingBox]);
 
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(stylingBoxParsed), [stylingBoxParsed]);
+  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(stylingBoxParsed as StyleBoxValue), [stylingBoxParsed]);
   const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth, undefined), [dimensions, designerWidth]);
   const overflowStyles = useMemo(() => isDefined(overflow) ? getOverflowStyle(overflow, false) : {}, [overflow]);
-
-  useDeepCompareEffect(() => {
-    if (background && background.type === 'storedFile' && !isNullOrWhiteSpace(background.storedFile?.id)) {
-      fetch(`${app.backendUrl}/api/StoredFile/Download?id=${background.storedFile.id}`,
-        { headers: { ...app.httpHeaders, "Content-Type": "application/octet-stream" } })
-        .then((response) => {
-          return response.blob();
-        })
-        .then((blob) => {
-          const url = URL.createObjectURL(blob);
-          const style = getBackgroundStyle(background, jsStyle, url);
-          setBackgroundStyles(style);
-        })
-        .catch((error) => {
-          console.error('Failed to fetch image', error);
-        });
-    } else {
-      setBackgroundStyles(backgroundLocal);
-    }
-  }, [background, jsStyle, app.backendUrl, app.httpHeaders]);
 
   const appearanceStyle = useDeepCompareMemo(() => removeUndefinedProps(
     {
@@ -268,11 +280,11 @@ export const useFormComponentStyles = <TModel extends IStyleType & Pick<IConfigu
       ...dimensionsStyles,
       ...borderStyles,
       ...fontStyles,
-      ...(background && background.type === 'storedFile' && !isNullOrWhiteSpace(background.storedFile?.id) ? backgroundStyles : backgroundLocal),
+      ...backgroundLocal,
       ...shadowStyles,
       ...overflowStyles,
       fontWeight: fontStyles.fontWeight || 400,
-    }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, background, backgroundStyles, backgroundLocal, shadowStyles, overflowStyles]);
+    }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, background, backgroundLocal, shadowStyles, overflowStyles]);
 
   const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, ...jsStyle }), [appearanceStyle, jsStyle]);
 
@@ -289,14 +301,14 @@ export const useFormComponentStyles = <TModel extends IStyleType & Pick<IConfigu
     dimensionsStyles,
     borderStyles,
     fontStyles,
-    backgroundStyles,
+    backgroundStyles: backgroundLocal,
     shadowStyles,
     overflowStyles,
     jsStyle,
     appearanceStyle,
     fullStyle,
     margins,
-  }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, overflowStyles, jsStyle, appearanceStyle, fullStyle, margins]);
+  }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundLocal, shadowStyles, overflowStyles, jsStyle, appearanceStyle, fullStyle, margins]);
 
   return allStyles;
 };

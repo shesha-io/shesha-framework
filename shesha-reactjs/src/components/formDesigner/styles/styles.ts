@@ -374,7 +374,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
 
                 .${shaComponent} {
-                    min-height: 48px;
+                    min-height: 42px;
                 }
             }
 

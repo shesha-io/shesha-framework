@@ -1,6 +1,6 @@
 import { ComponentDefinition } from '@/interfaces';
 import { headerType } from './../../components/panel/index';
-import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
 import { isDefined } from '@/utils/nullables';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 import { Collapse } from 'antd';
@@ -13,7 +13,7 @@ export interface ICollapsiblePanelContent {
   components?: IConfigurableFormComponent[];
 }
 
-export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent, IStyleType {
+export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent, IStyleValue {
   label?: string | ReactNode;
   collapsedByDefault?: boolean | undefined;
   expandIconPosition?: ExpandIconPlacement | 'hide' | undefined;
@@ -35,7 +35,7 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   hasCustomHeader?: boolean | undefined;
   customHeader?: ICollapsiblePanelContent | undefined;
   panelHeadType?: headerType | undefined;
-  headerStyles?: IStyleType | undefined;
+  headerStyles?: IStyleValue | undefined;
 };
 
 // TODO: implement generic guard on the component level
@@ -49,4 +49,8 @@ export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComp
   components?: IConfigurableFormComponent[] | undefined;
 }
 
-export type CollapsiblePanelComponentDefinition = ComponentDefinition<"collapsiblePanel", ICollapsiblePanelComponentProps>;
+export interface ICollapsiblePanelComponentCalcProps {
+  evaluatedLabel?: string | ReactNode;
+}
+
+export type CollapsiblePanelComponentDefinition = ComponentDefinition<"collapsiblePanel", ICollapsiblePanelComponentProps, ICollapsiblePanelComponentCalcProps>;

@@ -1,5 +1,5 @@
 import { RefObject } from 'react';
-import { FormIdentifier, IStyleType } from '@/interfaces';
+import { FormIdentifier, IStyleValue } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ISelectionProps, RowSelection } from '@/providers/dataTable/interfaces';
@@ -43,7 +43,7 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   noDataIcon?: string | undefined;
 }
 
-export interface IDataListBaseProps extends IStyleType {
+export interface IDataListBaseProps extends IStyleValue {
   id: string;
   dataSource?: string | undefined;
   formSelectionMode?: FormSelectionMode | undefined;

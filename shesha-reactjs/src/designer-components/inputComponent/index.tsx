@@ -4,31 +4,33 @@ import { BaseInputProps } from '../settingsInput/interfaces';
 import { useFormItem, useShaFormInstance } from '@/providers';
 import { Button, Divider, Popover } from 'antd';
 import { RollbackOutlined, SyncOutlined } from '@ant-design/icons';
-import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultModelProvider/defaultModelProvider';
+import { useDefaultModelActionsOrUndefined, useDefaultModelPropertyUpdateSubscription } from '../_settings/defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
 import { convertValueToFriendlyString } from './utils';
 import { useDeepCompareMemo } from '@/hooks';
 
 // make value unknown to process any type of value (InputComponent is not generic)
-export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value' | 'onChange'> & {
+export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value'> & {
   value: TValue;
-  onChange: (value: TValue | null) => void;
+  skipInheritance?: boolean;
 };
 
 export const InputComponent = <TValue = string>(props: InputComponentProps<TValue>): ReactNode => {
+  const { onChange, onChangeSetting, propertyName } = props;
   const Editor = editorRegistry[props.type] as FC<BaseInputProps> | undefined;
   const tempData = useRef<unknown>(null);
   const [popupOpen, setPopupOpen] = React.useState(false);
   const { formData, setFormData } = useShaFormInstance();
-  const defaultModel = useDefaultModelProviderStateOrUndefined();
+  const defaultModel = useDefaultModelActionsOrUndefined();
   const { namePrefix } = useFormItem();
-  const defaultModelPropName = Boolean(namePrefix) ? namePrefix + '.' + props.propertyName : props.propertyName;
 
-  const { onChange, onChangeSetting } = props;
+  useDefaultModelPropertyUpdateSubscription(propertyName);
+
+  const defaultModelPropertyName = Boolean(namePrefix) ? namePrefix + '.' + props.propertyName : props.propertyName;
 
   // do not memoize because default model can be not initialized
   const defaultValue = defaultModel
-    ? getValueByPropertyName(defaultModel.getDefaultModel() as Record<string, unknown>, defaultModelPropName) as TValue | undefined
+    ? getValueByPropertyName(defaultModel.getDefaultModel() as Record<string, unknown>, defaultModelPropertyName) as TValue | undefined
     : undefined;
 
   const internalOnChange = useCallback((v: TValue | undefined): void => {
@@ -38,21 +40,21 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
 
   const setOverride = useCallback((): void => {
     internalOnChange(defaultValue);
-    const values = setValueByPropertyName({}, props.propertyName, defaultValue);
+    const values = setValueByPropertyName({}, propertyName, defaultValue);
     setFormData({ values, mergeValues: true });
     setPopupOpen(false);
-  }, [setFormData, props.propertyName, defaultValue, internalOnChange]);
+  }, [setFormData, propertyName, defaultValue, internalOnChange]);
   const resetToDefault = useCallback((): void => {
     internalOnChange(undefined);
-    const values = setValueByPropertyName({}, props.propertyName, undefined);
+    const values = setValueByPropertyName({}, propertyName, undefined);
     setFormData({ values, mergeValues: true });
     setPopupOpen(false);
-  }, [internalOnChange, props.propertyName, setFormData]);
+  }, [internalOnChange, propertyName, setFormData]);
 
-  const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
+  const valueInfo = defaultModel?.getValueInfo(defaultModelPropertyName);
   const isInherited = valueInfo?.state === 'usedDefault';
   const isOverridden = valueInfo?.state === 'usedModel';
-  const additionalInfo = defaultModel?.getCurrentValueAdditionalInfo(defaultModelPropName);
+  const additionalInfo = defaultModel?.getCurrentValueAdditionalInfo(defaultModelPropertyName);
 
   // ToDo: AS - review memoize
   const content = useMemo(() => {
@@ -75,11 +77,11 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
     ) : null;
   }, [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue, setOverride, resetToDefault]);
 
-  const newProps = useDeepCompareMemo(() => ({ ...props, onChange: internalOnChange } as BaseInputProps), [props, internalOnChange]);
+  const newProps = useDeepCompareMemo(() => ({ ...props, defaultModelPropertyName, onChange: internalOnChange } as BaseInputProps), [props, internalOnChange]);
 
   if (!Editor) return null;
 
-  if (content) {
+  if (content && !props.skipInheritance) {
     return (
       <Popover content={content} trigger="hover" onOpenChange={setPopupOpen} open={popupOpen} autoAdjustOverflow={true} placement="topLeft">
         <div> {/* div is required to make Popover work for some input components */}

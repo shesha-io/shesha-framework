@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import DragWrapper from './dragWrapper';
-import FormComponent from '../formComponent/formComponent';
+import FormComponent, { FormComponentPreparer, FormComponentRaw } from '../formComponent';
 import React, {
   CSSProperties,
   FC,
@@ -31,7 +31,7 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { dimensionUtils } from '../utils/dimensionUtils';
 import { stylingUtils } from '../utils/stylingUtils';
 import { designerConstants } from '../utils/designerConstants';
-import { jsonSafeParse } from '@/utils/object';
+import { IToolboxComponent } from '../../../interfaces/formDesigner';
 import { isNonEmptyArray } from '@/utils/array';
 import { getDeviceModel } from '@/utils/form';
 import { isDefined } from '@/utils/nullables';
@@ -45,11 +45,19 @@ export interface IConfigurableFormComponentDesignerProps {
   hidden?: boolean | undefined;
   componentEditMode?: EditMode | undefined;
 }
-const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({
+
+interface IConfigurableFormComponentDesignerInnerProps extends IConfigurableFormComponentDesignerProps {
+  sourceComponentModel: IComponentModelProps;
+  toolboxComponent: IToolboxComponent;
+}
+
+const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerInnerProps> = ({
+  sourceComponentModel,
   componentModel,
   selectedComponentId,
   readOnly,
   settingsPanelElement,
+  toolboxComponent,
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
@@ -142,7 +150,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         onMouseOut={(e) => e.stopPropagation()}
       >
         <ComponentProperties
-          componentModel={componentModel}
+          componentModel={sourceComponentModel}
           readOnly={readOnly ?? false}
           toolboxComponent={component}
         />
@@ -150,7 +158,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     ), settingsPanelElement, "propertiesPanel");
 
     return result;
-  }, [isSelected, settingsPanelElement, componentModel, readOnly, component]);
+  }, [isSelected, settingsPanelElement, sourceComponentModel, readOnly, component]);
 
   // Extract margins from ORIGINAL component styling (both stylingBox and custom styles)
   // Custom style margins take precedence over stylingBox margins
@@ -177,10 +185,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     );
   }, [preserveDimensionsInDesigner, dimensionsStyles, jsStyle]);
 
+  // ToDo: AS - review all style calculations. Remove this commented code after review
+
   // Create the model for rendering - components receive dimensions based on their config
   // and no margins (since wrapper handles margins directly)
   // Note: fullComponentModel already has margins stripped from style property
-  const renderComponentModel = useMemo<IConfigurableFormComponent>(() => {
+  /* const renderComponentModel = useMemo(() => {
     const deviceDimensions = dimensionUtils.getDeviceDimensions();
     // In designer mode, component only gets padding (margins go to wrapper)
     const stylingBoxWithPaddingOnly = stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
@@ -263,7 +273,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         dimensionsStyles: getComponentDimensionsCss(dimensionsStyles),
       },
     } satisfies IConfigurableFormComponent;
-  }, [fullComponentModel, component, preserveDimensionsInDesigner, dimensionsStyles]);
+  }, [fullComponentModel, component, preserveDimensionsInDesigner, dimensionsStyles]);*/
 
   // Create wrapper style - owns dimensions and margins
   const rootContainerStyle = useMemo(() => {
@@ -310,7 +320,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       <div style={designerConstants.WRAPPER_FILL_STYLE}>
         <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
           <div style={designerConstants.WRAPPER_FILL_STYLE}>
-            <FormComponent componentModel={renderComponentModel} />
+            <FormComponentRaw componentModel={componentModel} toolboxComponent={toolboxComponent} />
           </div>
         </DragWrapper>
       </div>
@@ -325,7 +335,19 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const { settingsPanelElement } = useFormDesigner();
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const readOnly = useFormDesignerReadOnly();
-  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelElement }} />;
+  return (
+    <FormComponentPreparer componentModel={props.componentModel}>
+      {(model, toolboxComponent) => (
+        <ConfigurableFormComponentDesignerMemo
+          {...props}
+          {...{ selectedComponentId, readOnly, settingsPanelElement }}
+          componentModel={model}
+          sourceComponentModel={props.componentModel}
+          toolboxComponent={toolboxComponent}
+        />
+      )}
+    </FormComponentPreparer>
+  );
 };
 
 export interface IConfigurableFormComponentProps {

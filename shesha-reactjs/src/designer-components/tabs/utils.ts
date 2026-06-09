@@ -1,12 +1,12 @@
 import { nanoid } from "@/utils/uuid";
 import { ITabPaneProps } from "./models";
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { BorderStyle } from "../_settings/utils/border/interfaces";
 import { TabPlacement } from "antd/es/tabs";
 
 const initialBorder: BorderStyle = { width: '1px', color: '#f0f0f0', style: 'solid' };
 
-export const defaultStyles: IStyleType = {
+export const defaultStyles: IStyleValue = {
   font: {
     size: 14,
     weight: '500',
@@ -31,7 +31,7 @@ export const defaultStyles: IStyleType = {
   stylingBox: "{\"marginBottom\":\"5\",\"paddingLeft\":\"16\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingRight\":\"16\"}",
 };
 
-export const defaultCardStyles: IStyleType = {
+export const defaultCardStyles: IStyleValue = {
   font: {
     size: 14,
     weight: '400',

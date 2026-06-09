@@ -17,6 +17,7 @@ export type SettingsControlChildrenFunc<T = unknown> = (value: T | undefined, on
 export type SettingsControlChildrenType<T = unknown> = SettingsControlChildrenFunc<T> | ReactElement;
 
 export interface ISettingsControlProps<Value = unknown> {
+  enabled?: boolean;
   propertyName: string;
   readOnly?: boolean | undefined;
   value?: Value | IPropertySetting<Value> | null | undefined;
@@ -76,7 +77,7 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
       const newValue = { ...setting, _value: val };
       onInternalChange(newValue);
     };
-  }, [setting]);
+  }, [setting, onInternalChange]);
 
   const onSwitchMode = (): void => {
     const newMode = mode === 'code' ? 'value' : 'code';

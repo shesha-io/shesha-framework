@@ -3,13 +3,14 @@ import { Button, Card, Col, Radio, Row, Slider, Space, Tooltip, Typography } fro
 import React, { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme, SidebarTheme } from '@/providers/theme/contexts';
-import { ComponentDefaultsPanel } from './componentSettingsPanel';
+import { ComponentDefaultsPanel } from './componentSettings/componentSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
 import { FormItemLayout } from 'antd/es/form/Form';
 import { FormLabelAlign } from 'antd/es/form/interface';
+import { useDebouncedCallback } from 'use-debounce';
 
 export interface ThemeParametersProps {
   value: IConfigurableTheme;
@@ -52,8 +53,17 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readOnly })
 };
 
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readOnly: readonly, themeLevel = 1 }) => {
+  // it is necessary to use debounce save because it changes the theme and it results in re-rendering of all components.
+  const debouncedSave = useDebouncedCallback(
+    (values) => {
+      if (onChange) onChange(values);
+    },
+    // delay in ms
+    200,
+  );
+
   const changeThemeInternal = (theme: IConfigurableTheme): void => {
-    onChange(theme);
+    debouncedSave(theme);
   };
 
   const mergeThemeSection = (
@@ -93,7 +103,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
   const infoColor = theme.application?.infoColor;
 
   return (
-    <div style={{ padding: '0 0 24px' }}>
+    <div style={{ padding: '0 0 0px' }}>
       {themeLevel === 1 && (
         <>
           <Typography.Title level={4} style={{ marginBottom: 4 }}>Theme Settings</Typography.Title>
@@ -246,12 +256,12 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       {themeLevel === 2 && (
         <>
           {/* Component Defaults Section */}
-          <div style={{ marginTop: 48 }}>
+          <div style={{ marginTop: 0 }}>
             <Typography.Title level={4} style={{ marginBottom: 4 }}>Component Settings</Typography.Title>
             <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
               Configure default appearance styles for individual components. Select a component from the tree to customize its appearance settings.
             </Typography.Text>
-            <ComponentDefaultsPanel value={theme} onChange={onChange} readOnly={readonly} />
+            <ComponentDefaultsPanel value={theme} onChange={changeThemeInternal} readOnly={readonly} />
           </div>
         </>
       )}

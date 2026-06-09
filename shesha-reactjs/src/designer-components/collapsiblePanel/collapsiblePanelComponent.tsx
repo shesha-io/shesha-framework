@@ -3,7 +3,6 @@ import { CollapsiblePanel } from '@/components/panel';
 import { useStyles } from '@/components/panel/styles/styles';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useFormData } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
@@ -25,10 +24,13 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
-  Factory: ({ model }) => {
-    const { data } = useFormData();
+  useCalculateModel(model, allData) {
+    const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, allData.data) : model.label;
+    const calcModel = useMemo(() => ({ evaluatedLabel }), [evaluatedLabel]);
+    return calcModel;
+  },
+  Factory: ({ model, calculatedModel }) => {
     const {
-      label,
       expandIconPosition,
       collapsedByDefault,
       collapsible,
@@ -42,10 +44,6 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       className,
       hidden,
     } = model;
-
-    const evaluatedLabel = useMemo(() => (
-      typeof label === 'string' ? evaluateString(label, data) : label
-    ), [label, data]);
 
     const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? undefined : model.headerStyles?.border } }).fullStyle;
     const { styles } = useStyles();
@@ -61,9 +59,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
               dynamicComponents={isDynamic ? model.header.components : []}
               className={styles.shaHeaderComponentsContainer}
             />
-          ) : (
-            evaluatedLabel
-          )}
+          ) : calculatedModel.evaluatedLabel}
           {...(!isIconHidden && expandIconPosition ? { expandIconPlacement: expandIconPosition } : {})}
           showArrow={collapsible !== 'disabled' && !isIconHidden}
           collapsedByDefault={collapsedByDefault}

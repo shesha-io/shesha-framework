@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC } from 'react';
 import { IconType, StoredFilesRendererBase } from '@/components/';
-import { IInputStyles, IStyleType, useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers';
+import { LayoutType, ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { FormIdentifier } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
@@ -26,13 +26,13 @@ export interface ICustomFileProps extends IInputStyles {
   maxHeight?: string | undefined;
   isDragger?: boolean | undefined;
   downloadZip?: boolean | undefined;
-  filesLayout?: layoutType | undefined;
-  listType?: listType | undefined;
+  filesLayout?: LayoutType | undefined;
+  listType?: ListType | undefined;
   thumbnailWidth?: string | undefined;
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
-  container?: IStyleType | undefined;
+  container?: IStyleValue | undefined;
   primaryColor?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   downloadedFileStyles?: CSSProperties | undefined;

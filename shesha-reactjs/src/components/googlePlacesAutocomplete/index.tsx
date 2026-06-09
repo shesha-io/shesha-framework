@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useStyles } from './styles/styles';
-import { IStyleType } from '@/interfaces';
+import { IStyleValue } from '@/interfaces';
 import { getElement, isNonEmptyArray } from '@/utils/array';
 import { throwError } from '@/utils/errors';
 import { isDefined } from '@/utils/nullables';

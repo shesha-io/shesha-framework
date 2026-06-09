@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
-import { IStyleType } from '@/providers/form/models';
+import { IStyleValue } from '@/providers/form/models';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 /**
@@ -116,7 +116,7 @@ export const dimensionUtils = {
    * Returns 100% dimensions for components wrapped in the root container.
    * The wrapper handles actual sizing, so components fill 100% of the wrapper.
    */
-  getDeviceDimensions(): IStyleType['dimensions'] {
+  getDeviceDimensions(): IStyleValue['dimensions'] {
     return DESIGNER_DIMENSIONS;
   },
 

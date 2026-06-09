@@ -3,12 +3,13 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import SettingsControl, { SettingsControlChildrenFunc } from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 import { useStyles } from '../styles/styles';
-import { useDefaultModelPropertyUpdateSubscription, useDefaultModelProviderStateOrUndefined } from '../defaultModelProvider/defaultModelProvider';
+import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUndefined } from '../defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
 import { IAnyObject } from '@/interfaces';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
+import PermissionsControl from '../permissionsControl';
 
 type ChildProps = {
   readOnly: boolean | undefined;
@@ -18,7 +19,7 @@ type ChildProps = {
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { styles } = useStyles();
-  const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression } = props;
+  const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression, permissionSettings } = props;
   const [hasCode, setHasCode] = useState(false);
 
   useDefaultModelPropertyUpdateSubscription(name);
@@ -26,7 +27,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { namePrefix } = useFormItem();
   const defaultModelPropName = namePrefix ? namePrefix + '.' + name : name;
 
-  const defaultModel = useDefaultModelProviderStateOrUndefined();
+  const defaultModel = useDefaultModelActionsOrUndefined();
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
   const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultModelPropName);
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
@@ -61,6 +62,8 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
     }
   }
 
+  const permissionPropertyName = name + 'Permissions';
+
   return (
     <ConfigurableFormItem
       model={{
@@ -80,21 +83,25 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       {(value, onChange) => {
         const localValue = defaultModel?.getValueInfo(defaultModelPropName).state === 'usedDefault' ? defaultValue : value;
         return !jsSetting ? (
-          childFunc(localValue, onChange, name)
+          <PermissionsControl enabled={permissionSettings} propertyName={permissionPropertyName} readOnly={readOnly}>
+            {childFunc(localValue, onChange, name)}
+          </PermissionsControl>
         ) : (
-          <SettingsControl
-            propertyName={name}
-            mode="value"
-            onChange={onChange}
-            value={localValue}
-            setHasCode={setHasCode}
-            hasCode={hasCode}
-            readOnly={readOnly}
-            lazy={jsSetting === 'lazy'}
-            availableConstantsExpression={availableConstantsExpression}
-          >
-            {(val, onChange) => childFunc(val, onChange, name)}
-          </SettingsControl>
+          <PermissionsControl enabled={permissionSettings} propertyName={permissionPropertyName} readOnly={readOnly}>
+            <SettingsControl
+              propertyName={name}
+              mode="value"
+              onChange={onChange}
+              value={localValue}
+              setHasCode={setHasCode}
+              hasCode={hasCode}
+              readOnly={readOnly}
+              lazy={jsSetting === 'lazy'}
+              availableConstantsExpression={availableConstantsExpression}
+            >
+              {(val1, onChange1) => childFunc(val1, onChange1, name)}
+            </SettingsControl>
+          </PermissionsControl>
         );
       }}
     </ConfigurableFormItem>

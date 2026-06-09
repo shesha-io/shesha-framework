@@ -5,14 +5,14 @@ import { getAddressValue, getSearchOptions, loadGooglePlaces } from './utils';
 import { IAddressCompomentBaseProps } from './models';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
-import { IStyleType } from '@/providers/form/models';
-import { getNumericValue } from '@/utils/string';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { customAddressEventHandler } from '@/components/formDesigner/components/utils';
+import { IStyleValue, UnwrapCodeEvaluators } from '@/providers/form/models';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps /* UnwrapCodeEvaluators<IAddressCompomentProps>*/ {
   value?: string;
   onChange?: (value: string) => void;
-  font?: IStyleType['font'];
+  font?: IStyleValue['font'];
 
   readOnly?: boolean | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;

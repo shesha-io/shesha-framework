@@ -51,6 +51,7 @@ export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelPro
   id?: string | undefined;
   label: string | React.ReactNode;
   propertyName: string;
+  defaultModelPropertyName?: string | undefined;
   readOnly?: ValueOrCodeEvaluator<boolean> | undefined;
   value?: TValue | undefined;
   onChange?: ((value: TValue | null) => void) | undefined;
@@ -470,7 +471,7 @@ export interface ICommonStylingProps {
 
 // Union type of all settings input props
 export type BaseInputProps =
-  | IColorPickerSettingsInputProps |
+  IColorPickerSettingsInputProps |
   IDropdownSettingsInputProps |
   ICustomDropdownSettingsInputProps |
   IRadioSettingsInputProps |
@@ -527,7 +528,10 @@ export type ISettingsInputSettingsInputProps = {
   } & Omit<Extract<BaseInputProps, { type: K }>, 'type'>;
 }[InputTypes];
 
-export type ISettingsInputProps = BaseInputProps | ISettingsInputSettingsInputProps;
+export type ISettingsInputProps = (BaseInputProps | ISettingsInputSettingsInputProps) & {
+  skipInheritance?: boolean;
+  permissionSettings?: boolean;
+};
 
 export const isSettingsInputProps = (value: unknown): value is ISettingsInputSettingsInputProps => isDefined(value) && typeof (value) === 'object' && 'type' in value && value.type === 'settingsInput';
 

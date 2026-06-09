@@ -56,6 +56,7 @@ export type IComponentSettingsFormFactory<TModel extends IConfigurableFormCompon
 
 export type SettingsFormMarkupFactoryArgs = {
   fbf: FormBuilderFactory;
+  removeStyleRouter?: boolean;
 };
 export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
@@ -198,6 +199,10 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Fills the component properties with some default values. Fired when the user drops a component to the form
    */
   initModel?: (model: TModel) => TModel;
+  /**
+   * Returns default component styles
+   */
+  getDefaultStyles?: (model?: TModel) => object;
   /**
    * Link component to a model metadata
    */

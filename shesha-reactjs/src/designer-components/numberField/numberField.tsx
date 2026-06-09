@@ -13,7 +13,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { asPropertiesArray, IDecimalFormatting, INumberFormatting, isDecimalFormatting, isNumberFormatting } from '@/interfaces/metadata';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
+import { migrateStyles } from '../_common-migrations/migrateStyles';
 import { addContextData } from '@/components/formDesigner/components/utils';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
@@ -69,18 +69,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const { styles } = useStyles({
-      fontFamily: model.font?.type,
-      fontWeight: model.font?.weight,
-      textAlign: model.font?.align,
-      color: model.font?.color,
-      fontSize: model.font?.size,
-      padding: {
-        paddingLeft: model.allStyles?.fullStyle.paddingLeft,
-      },
-      hasSuffix: !isNullOrWhiteSpace(model.suffix ?? model.suffixIcon),
-      hasPrefix: !isNullOrWhiteSpace(model.prefix ?? model.prefixIcon),
-    });
+    const { styles } = useStyles(model);
 
     const { properties: metaProperties } = useMetadataOrUndefined()?.metadata ?? {};
     const properties = asPropertiesArray(metaProperties ?? [], []);
@@ -143,11 +132,6 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       };
     }
 
-    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles?.fontStyles,
-      ...model.allStyles?.dimensionsStyles,
-    } : model.allStyles?.fullStyle;
-
     return (
       <ConfigurableFormItem<number> model={model}>
         {(value, onChange, _, ctx) => {
@@ -155,17 +139,19 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
             ? (
               <ReadOnlyDisplayFormItem
                 type="number"
-                value={numberToFormattedString(value?.toString() ?? "", model.propertyName ? getDataProperty(properties, model.propertyName, 'dataFormat') : undefined)}
-                style={finalStyle}
+                value={numberToFormattedString(value, getDataProperty(properties, model.propertyName, 'dataFormat'))}
+                enableFullStyle={model.enableStyleOnReadonly}
+                style={model.styleJson}
+                styleValue={model}
               />
             )
             : (
               <InputNumber
                 value={value ?? null}
                 {...inputProps}
-                {...(model.allStyles?.fullStyle ? { style: model.allStyles.fullStyle } : {})}
-                className={styles.numberField}
                 ref={inputRef}
+                style={model.styleJson}
+                className={styles.numberStyles}
 
                 // TODO EVENTS
                 onChange={(val) => {
@@ -204,13 +190,16 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
   initModel: (model) => ({
     ...model,
   }),
+  getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m
       .add<INumberFieldComponentPropsV1>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<INumberFieldComponentPropsV1>(1, (prev) => migrateVisibility(prev))
       .add<INumberFieldComponentPropsV1>(2, (prev) => migrateReadOnly(prev))
       .add<INumberFieldComponentPropsV1>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<INumberFieldComponentPropsV1>(4, (prev) => {
+      .add<INumberFieldComponentPropsV1>(4, (prev, context) => {
+        if (context.isNew) return prev;
+
         const styles: IInputStyles = {
           size: prev.size,
           hideBorder: prev.hideBorder,
@@ -218,9 +207,12 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
           style: prev.style,
         };
 
-        return { ...prev, desktop: { ...styles } }; // , tablet: { ...styles }, mobile: { ...styles } };
+        return { ...prev, desktop: { ...styles } };
       })
-      .add<INumberFieldComponentPropsV1>(5, (prev, context) => context.isNew ? { ...prev, desktop: { ...migrateStyles(prev, defaultStyles(), 'desktop') } } : { ...migratePrevStyles(prev, defaultStyles()) })
+      .add<INumberFieldComponentPropsV1>(5, (prev, context) => context.isNew ? prev : {
+        ...prev,
+        desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: prev.desktop?.enableStyleOnReadonly || false },
+      })
       .add<INumberFieldComponentProps>(6, (prev) => {
         const model = { ...migrateHiddenToVisible(prev) };
         if (prev.min !== undefined || prev.max !== undefined) {
@@ -248,6 +240,18 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       numDecimalPlaces: decimalFormat?.numDecimalPlaces,
       thousandsSeparator: numFormat?.thousandsSeparator,
     };
+  },
+  previewConfiguration: {
+    type: 'numberField',
+    id: 'numberField',
+    propertyName: `numberFieldAppearance`,
+    label: `Number Field Label`,
+    prefix: 'Prefix',
+    prefixIcon: 'DoubleRightOutlined',
+    suffixIcon: 'DoubleLeftOutlined',
+    suffix: 'Suffix',
+    version: 'latest',
+    numberFormat: 'custom',
   },
 };
 
