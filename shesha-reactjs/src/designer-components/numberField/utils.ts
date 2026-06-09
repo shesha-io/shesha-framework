@@ -1,6 +1,6 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
     font: {
@@ -8,6 +8,7 @@ export const defaultStyles = (): IStyleType => {
       size: 14,
       color: '#000',
       type: 'Segoe UI',
+      align: 'left',
     },
     border: {
       border: {
@@ -28,6 +29,24 @@ export const defaultStyles = (): IStyleType => {
       maxHeight: 'auto',
       minWidth: '0px',
       maxWidth: 'auto',
+    },
+    shadow: {
+      spreadRadius: 0,
+      blurRadius: 0,
+      color: '#000',
+      offsetX: 0,
+      offsetY: 0,
+    },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "0",
+      paddingLeft: "0",
+      paddingRight: "0",
+      paddingTop: "0",
     },
   };
 };

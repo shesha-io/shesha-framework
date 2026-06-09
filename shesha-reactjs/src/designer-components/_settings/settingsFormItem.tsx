@@ -20,6 +20,7 @@ export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps,
   name?: string;
   label?: string | React.ReactNode;
   jsSetting?: boolean | 'lazy';
+  permissionSettings?: boolean;
   readOnly?: boolean;
   disabled?: boolean;
   style?: React.CSSProperties;

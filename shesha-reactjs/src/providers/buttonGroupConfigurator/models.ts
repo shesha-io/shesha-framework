@@ -6,7 +6,7 @@ import React from 'react';
 import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { ListItemWithId } from '@/components/listEditor/models';
 import { isDefined } from '@/utils/nullables';
-import { EditMode, IStyleType } from '../form/models';
+import { EditMode, IStyleValue } from '../form/models';
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -26,7 +26,7 @@ export type ButtonActionType =
   'cancelFormEdit' |
   'dispatchAnEvent';
 
-export interface IButtonGroupItemBase extends IStyleType {
+export interface IButtonGroupItemBase extends IStyleValue {
   id: string;
   name?: string | undefined;
   block?: boolean | undefined;

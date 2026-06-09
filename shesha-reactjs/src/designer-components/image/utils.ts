@@ -1,8 +1,8 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { IImageProps } from "./interfaces";
 import { IBorderType } from "../_settings/utils/border/interfaces";
 
-export const defaultStyles = (prev: IImageProps): IStyleType => {
+export const defaultStyles = (prev: IImageProps): IStyleValue => {
   const { borderColor, borderRadius, borderType } = prev;
   const borderWidth = "borderWidth" in prev && typeof (prev.borderWidth) === "string" ? prev.borderWidth : undefined;
   return {

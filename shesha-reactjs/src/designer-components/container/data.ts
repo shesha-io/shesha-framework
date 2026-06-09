@@ -1,6 +1,6 @@
 import { nanoid } from '@/utils/uuid';
 import { ICommonContainerProps, IContainerComponentProps } from './interfaces';
-import { IStyleType } from '@/providers/form/models';
+import { IStyleValue } from '@/providers/form/models';
 
 export const JUSTIFY_ITEMS = [
   { id: nanoid(), label: 'Center', value: 'center' },
@@ -154,7 +154,7 @@ export const ALIGN_SELF = [
 ];
 
 
-export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICommonContainerProps => {
+export const defaultStyles = (prev?: IContainerComponentProps): IStyleValue & ICommonContainerProps => {
   const {
     width = 'auto',
     height = 'auto',

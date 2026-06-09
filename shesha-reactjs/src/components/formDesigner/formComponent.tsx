@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { IConfigurableFormComponent, IPropertyMetadata } from '@/interfaces';
-import { IStyleType, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
+import { IConfigurableFormComponent, IPropertyMetadata, IToolboxComponent } from '@/interfaces';
+import { IStyleValue, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication, useTheme } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { formComponentActualModelPropertyFilter, updateComponentModelFromMetadata } from '@/providers/form/utils';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
-import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { useActualContextExecution, useBackgroundStoredFile, useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { useStyles } from './styles/styles';
@@ -15,107 +15,114 @@ import { FormComponentValidationProvider, useValidationErrorsStateOrDefault } fr
 import { isValidGuid } from './components/utils';
 import { toCamelCase } from '@/utils/string';
 import { useComponentApi } from '@/providers/componentApi/provider';
-import { deepMergeValues, getValueByPropertyName, removeUndefinedProps, setValueByPropertyName } from '@/utils/object';
+import { deepMergeSkipUndefinedFunc, deepMergeValues, getValueByPropertyName, removeUndefinedProps, setValueByPropertyName } from '@/utils/object';
 import { IComponentStyle, InputComponentApi } from '../../componentsApi/componentApi';
 import { IBackgroundValue } from '@/designer-components/_settings/utils';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { ComponentApiProperty, IComponentApiDescription } from '@/providers/componentApi/model';
+import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
 }
 
+interface IFormComponentInnerProps extends IFormComponentProps {
+  toolboxComponent: IToolboxComponent;
+}
+
+
 const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
 };
 
-const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceComponentModel }) => {
+const FormComponentInner: FC<IFormComponentInnerProps> = ({ componentModel, toolboxComponent }) => {
   const { styles } = useStyles();
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
-  const { isComponentFiltered, formMode, modelMetadata } = useForm();
-  const getToolboxComponent = useFormDesignerComponentGetter();
+  const { isComponentFiltered, formMode } = useForm();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
+  const { theme } = useTheme();
+
   const { errors: validationErrors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
 
   const componentApi = useComponentApi();
   const [apiModel, setApiModel] = useState<Partial<IConfigurableFormComponent>>({});
-  const [apiStyles, setApiStyles] = useState<Partial<IStyleType>>({});
-
-  const toolboxComponent = getToolboxComponent(sourceComponentModel.type);
-
-  const [propMetadata, setPropMetadata] = useState<IPropertyMetadata>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (modelMetadata?.properties && sourceComponentModel?.propertyName) {
-      const pName = toCamelCase(sourceComponentModel.propertyName);
-      if (Array.isArray(modelMetadata.properties)) {
-        setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
-      } else {
-        modelMetadata.properties().then((propsMeta) => {
-          if (!cancelled) setPropMetadata(propsMeta.find((p) => toCamelCase(p.path) === pName));
-        }).catch((error) => {
-          if (!cancelled) console.error('Failed to fetch property metadata:', error);
-        });
-      }
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [modelMetadata, sourceComponentModel?.propertyName]);
-
-  const componentModel = useDeepCompareMemo(() => {
-    return toolboxComponent && propMetadata
-      ? updateComponentModelFromMetadata(toolboxComponent, sourceComponentModel, propMetadata)
-      : sourceComponentModel;
-  }, [sourceComponentModel, toolboxComponent, propMetadata]);
+  const [apiStyles, setApiStyles] = useState<Partial<IStyleValue>>({});
 
   // Default to 'desktop' when there's no canvas context (e.g., in datatables)
   const effectiveDevice = activeDevice || 'desktop';
 
+  const effectiveStyle = useMemo((): IStyleValue => {
+    // Default styles + Theme component styles
+    const defStyle = toolboxComponent?.getDefaultStyles?.() ?? {};
+    const themeDefStyle = deepMergeValues(defStyle, theme.components[componentModel.type] as object, deepMergeSkipUndefinedFunc);
+
+    // Default styles + Theme component styles + Desktop component styles
+    const desktopModel = componentModel?.desktop;
+    // ToDo: AS - remove all using stylingBox after migration all components
+    const desktopStylingBox = getStyleBoxValue(desktopModel?.stylingBox);
+    const desktopStylingBoxJson = desktopModel?.stylingBoxJson;
+    const desktopThemeStyle = deepMergeValues(themeDefStyle, { ...desktopModel, stylingBoxJson: desktopStylingBoxJson ? desktopStylingBoxJson : desktopStylingBox }, deepMergeSkipUndefinedFunc);
+
+    if (effectiveDevice === 'desktop') return desktopThemeStyle;
+
+    // Default styles + Theme component styles + Desktop component styles + Effective component styles
+    const effectiveModel = componentModel?.[effectiveDevice] as IStyleValue;
+    const effectiveStylingBox = getStyleBoxValue(effectiveModel?.stylingBox);
+    const effectiveStylingBoxJson = effectiveModel?.stylingBoxJson;
+    const effectiveDesktopStyle = deepMergeValues(desktopThemeStyle, { ...effectiveModel, stylingBoxJson: effectiveStylingBoxJson ? effectiveStylingBoxJson : effectiveStylingBox }, deepMergeSkipUndefinedFunc);
+    return effectiveDesktopStyle;
+  }, [toolboxComponent, theme.components, componentModel, effectiveDevice]);
+
+  const sfBackground = useBackgroundStoredFile(effectiveStyle.background, shaApplication);
+  const sfStyle = useMemo((): IStyleValue => ({ ...effectiveStyle, background: sfBackground }), [effectiveStyle, sfBackground]);
+
   // In designer mode: preserve the padding-only stylingBox, dimensions, and style (margins stripped) from wrapper
   // In preview/live mode: use original device-specific stylingBox (with margins) and dimensions
-  const isDesignerMode = shaForm.formMode === 'designer';
-  const extendedModel = componentModel as IConfigurableFormComponent & IStyleType;
-  const deviceModel = deepMergeValues({
+  // const isDesignerMode = shaForm.formMode === 'designer';
+  // const extendedModel = componentModel as IConfigurableFormComponent & IStyleType;
+  const deviceModel = useMemo(() => deepMergeValues({
     ...componentModel,
-    ...componentModel?.[effectiveDevice],
+    ...sfStyle,
     // In designer: preserve padding-only stylingBox and stripped style (no margins) from wrapper
     // In preview: use original stylingBox with margins from device settings
-    ...(isDesignerMode
+    /* ...(isDesignerMode
       ? {
         stylingBox: extendedModel.stylingBox,
         dimensions: extendedModel.dimensions,
         style: extendedModel.style, // Keep stripped style (no margins)
       }
       : { stylingBox: componentModel?.[effectiveDevice]?.stylingBox }
-    ),
-  }, apiStyles);
+    ),*/
+  }, apiStyles, deepMergeSkipUndefinedFunc), [componentModel, apiStyles, sfStyle]);
 
-  const actualModel = useActualContextData<IConfigurableFormComponent & IStyleType>(
+  const actualModel = useActualContextData<IConfigurableFormComponent & IStyleValue>(
     deviceModel,
     undefined,
     undefined,
     (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
-  ) as UnwrapCodeEvaluators<IConfigurableFormComponent & IStyleType>; // TODO: move type cast to useActualContextData after refactoring
+  ) as UnwrapCodeEvaluators<IConfigurableFormComponent & IStyleValue>; // TODO: move type cast to useActualContextData after refactoring
 
+  actualModel.readOnly = actualModel.readOnly || !anyOfPermissionsGranted(actualModel?.editModePermissions || []);
   actualModel.hidden = shaForm.formMode !== 'designer' &&
     (
-      // ToDo: AS - remove hidden from this check
+      // ToDo: AS - remove hidden from this check after migration
       actualModel.hidden ||
       actualModel.visible === false ||
       !anyOfPermissionsGranted(actualModel?.permissions || []) ||
+      !anyOfPermissionsGranted(actualModel?.visiblePermissions || []) ||
       !isComponentFiltered(actualModel));
 
   if (!toolboxComponent?.isInput && !toolboxComponent?.isOutput)
     actualModel.propertyName = undefined;
 
+  // ToDo: AS - remove afte migrate all components to use IStyleValue
   const allStyles = useFormComponentStyles(actualModel);
+  actualModel.styleJson = useActualContextExecution(actualModel.style, undefined, {}); // use default style if empty or error
 
   // For input components: Strip margins from fullStyle and jsStyle
   // Margins are handled by the FormItem wrapper (via allStyles.margins), not the inner component
@@ -144,7 +151,6 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
       componentModel: actualModel,
       level: 1,
       isInput: toolboxComponent?.isInput,
-      rawComponentModel: sourceComponentModel,
       api: {
         componentName: actualModel.componentName,
         context: actualModel.context,
@@ -333,25 +339,69 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   );
 };
 
-const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
-  return (
-    <FormComponentValidationProvider
-      componentId={componentModel.id}
-      componentName={componentModel.componentName}
-      componentType={componentModel.type}
-    >
-      <FormComponentInner componentModel={componentModel} />
-    </FormComponentValidationProvider>
-  );
-};
-
-const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel }) => {
+const FormComponentErrorWrapper: FC<IFormComponentInnerProps> = ({ componentModel, toolboxComponent }) => {
   return (
     <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} componentId={componentModel.id}>
-      <FormComponent componentModel={componentModel} />
+      <FormComponentValidationProvider
+        componentId={componentModel.id}
+        componentName={componentModel.componentName}
+        componentType={componentModel.type}
+      >
+        <FormComponentInner componentModel={componentModel} toolboxComponent={toolboxComponent} />
+      </FormComponentValidationProvider>
     </CustomErrorBoundary>
   );
 };
 
-const FormComponentMemo = React.memo(FormCompomnentErrorWrapper);
+interface FormComponentPrepareModelProps {
+  componentModel: IConfigurableFormComponent;
+  children: (componentModel: IConfigurableFormComponent, toolboxComponent: IToolboxComponent) => React.JSX.Element;
+}
+
+const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({ componentModel: sourceComponentModel, children }) => {
+  const { modelMetadata } = useForm();
+  const getToolboxComponent = useFormDesignerComponentGetter();
+  const [propMetadata, setPropMetadata] = useState<IPropertyMetadata | null>(null);
+  // Memoize component lookup to prevent unnecessary re-renders
+  const component = useMemo(() => getToolboxComponent(sourceComponentModel?.type), [getToolboxComponent, sourceComponentModel?.type]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (modelMetadata?.properties && sourceComponentModel?.propertyName) {
+      const pName = toCamelCase(sourceComponentModel.propertyName);
+      if (Array.isArray(modelMetadata.properties)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
+      } else {
+        modelMetadata.properties().then((propsMeta) => {
+          if (!cancelled) setPropMetadata(propsMeta.find((p) => toCamelCase(p.path) === pName));
+        }).catch((error) => {
+          if (!cancelled) console.error('Failed to fetch property metadata:', error);
+        });
+      }
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [modelMetadata, sourceComponentModel?.propertyName]);
+
+  const componentModel = useDeepCompareMemo(() => {
+    return component && propMetadata
+      ? updateComponentModelFromMetadata(component, sourceComponentModel, propMetadata)
+      : sourceComponentModel;
+  }, [sourceComponentModel, component, propMetadata]);
+
+  return children ? children(componentModel, component) : null;
+};
+
+const FormComponentPrepared: FC<IFormComponentProps> = ({ componentModel }) => {
+  return (
+    <FormComponentModelPreparer componentModel={componentModel}>
+      {(componentModel, toolboxComponent) => <FormComponentErrorWrapper componentModel={componentModel} toolboxComponent={toolboxComponent} />}
+    </FormComponentModelPreparer>
+  );
+};
+
+const FormComponentMemo = React.memo(FormComponentPrepared);
 export default FormComponentMemo;
+export { FormComponentMemo as FormComponent, FormComponentErrorWrapper as FormComponentRaw, FormComponentModelPreparer as FormComponentPreparer };

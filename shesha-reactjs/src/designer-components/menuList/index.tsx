@@ -11,7 +11,7 @@ import { MenuUnfoldOutlined } from "@ant-design/icons";
 import { useFormComponentStyles } from "@/hooks/formComponentHooks";
 import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 import { ISidebarMenuItem } from "@/interfaces/sidebar";
-import { IConfigurableFormComponent, IStyleType } from "@/providers/form/models";
+import { IConfigurableFormComponent, IStyleValue } from "@/providers/form/models";
 import { getStyle, validateConfigurableComponentSettings } from "@/providers/form/utils";
 import { IToolboxComponent } from "@/interfaces/formDesigner";
 import { useMainMenu } from "@/providers/mainMenu";
@@ -38,7 +38,7 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
 }
 
 // Type for useFormComponentStyles hook
-type MenuListStyleProps = IMenuListProps & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>;
+type MenuListStyleProps = IMenuListProps & IStyleValue & Omit<IConfigurableFormComponent, 'id' | 'type'>;
 
 interface ISideBarMenuProps {
   items: ISidebarMenuItem[];

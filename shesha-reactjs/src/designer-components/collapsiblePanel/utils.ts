@@ -1,7 +1,7 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { ICollapsiblePanelComponentProps } from "./interfaces";
 
-export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType => {
+export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
   const bodyColor = prev.bodyColor || '#fff';
   const { ghost, borderRadius } = prev;
 
@@ -27,7 +27,7 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
   };
 };
 
-export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): IStyleType => {
+export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
   const headerBgColor = prev?.headerColor || '#fff';
   const { isSimpleDesign, borderRadius } = prev;
 

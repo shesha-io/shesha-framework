@@ -4,13 +4,13 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IStyleType, useFormData } from '@/providers';
+import { IStyleValue, useFormData } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
-export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleType {
+export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleValue {
   className?: string;
   borderSize?: string | number;
   borderRadius?: number;

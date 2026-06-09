@@ -94,7 +94,7 @@ export type IConfigurableFormRuntimeProps<TValues extends object = object> = {
   /**
    * Form initial values
    */
-  initialValues?: object | undefined;
+  initialValues?: TValues | undefined;
   /**
    * Parent form values. Note: is used for backward compatibility only
    */

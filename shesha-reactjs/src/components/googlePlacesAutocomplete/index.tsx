@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useStyles } from './styles/styles';
-import { IStyleType } from '@/interfaces';
+import { IStyleValue } from '@/interfaces';
 
 export interface IAddressAndCoords {
   address: string;
@@ -44,7 +44,7 @@ export interface IGooglePlacesAutocompleteProps {
   biasedCoordinates?: LatLngPolygon | PointPolygon;
   style?: CSSProperties;
   size?: SizeType;
-  font?: IStyleType['font'];
+  font?: IStyleValue['font'];
   searchOptions?: PropTypes['searchOptions'];
   onFocus?: (payload: any) => void;
   onBlur?: (payload: string) => void;

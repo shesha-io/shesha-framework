@@ -1,6 +1,6 @@
 import { nanoid } from "@/utils/uuid";
 import { addPx } from '@/utils/style';
-import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
+import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleValue } from "@/interfaces";
 import { IBorderType } from "../_settings/utils/border/interfaces";
 
 type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type' | 'id'> & { block?: boolean; type?: string };
@@ -13,7 +13,7 @@ type BorderCssProps = {
 
 const inputTypes = ['textField', 'numberField', 'passwordCombo', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
 const isInputField = (prev: ExtendedType): boolean => inputTypes.includes(prev.type);
-export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
+export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleValue => {
   const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
 
   const border = (side: string): BorderCssProps => ({

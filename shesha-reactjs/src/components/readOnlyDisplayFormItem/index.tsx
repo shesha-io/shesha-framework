@@ -18,8 +18,6 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     timeFormat = 'hh:mm',
     dropdownDisplayMode = 'raw',
     render,
-    checked,
-    defaultChecked,
     quickviewEnabled,
     quickviewFormPath,
     quickviewDisplayPropertyName,
@@ -30,9 +28,12 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showIcon,
     solidColor,
     showItemName,
+    styleValue,
+    enableFullStyle,
   } = props;
 
-  const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
+  // ToDo: remove `textAlign` after migrate all components to the new styles
+  const { styles } = useStyles({ styleValue, enableFullStyle, textAlign: styleValue?.font?.align || style?.textAlign || 'left' });
 
   const renderValue = useMemo(() => {
     if (render) {
@@ -90,7 +91,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                   label={displayName}
                 />
               )
-              : <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
+              : <InputField className={styles.inputField} style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
           }
         }
         return null;
@@ -100,7 +101,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           const values = (value as AutocompleteType[])?.map(({ label }) => label);
 
           return dropdownDisplayMode === 'raw'
-            ? <InputField style={style} value={values?.join(', ')} />
+            ? <InputField className={styles.inputField} style={style} value={values?.join(', ')} />
             : (
               <div
                 className={styles.wrapper}
@@ -138,32 +139,25 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <InputField style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat, isVisible: true }} />} />;
+        return <InputField className={styles.inputField} style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat, isVisible: true }} />} />;
       }
       case 'datetime': {
-        return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
+        return <InputField className={styles.inputField} style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
       }
       case 'textArea': {
         return <div style={{ ...style, whiteSpace: 'pre-wrap', lineHeight: '1.2' }}>{value}</div>;
       }
 
-      default:
-        break;
+      default: {
+        return <InputField className={styles.inputField} style={style} value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value} />;
+      }
     }
-    return (
-      <InputField
-        style={style}
-        value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
-      />
-    );
   }, [value,
     type,
     dateFormat,
     timeFormat,
     dropdownDisplayMode,
     render,
-    checked,
-    defaultChecked,
     quickviewEnabled,
     quickviewFormPath,
     quickviewDisplayPropertyName,
@@ -175,6 +169,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     tagStyle,
     style,
     styles.wrapper,
+    styles.inputField,
   ]);
 
   // Only apply layout-related styles to outer container, not appearance styles

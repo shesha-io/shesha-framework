@@ -1,4 +1,4 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { CSSProperties } from 'react';
@@ -31,7 +31,7 @@ export interface IDropdownProps {
   hideBorder?: boolean;
   allowClear?: boolean;
   mode?: 'single' | 'multiple' | 'tags';
-  tag?: IStyleType;
+  tag?: IStyleValue;
   ignoredValues?: number[];
   placeholder?: string;
   disabledValues?: number[];

@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import settingsFormJson from './settingsForm.json';
 import { Button, Input } from 'antd';
 import { DataContextSelector } from '@/designer-components/dataContextSelector';
@@ -17,7 +17,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocompleteComponentProps } from './interfaces';
 import { IModelMetadata, isEntityMetadata, isPropertiesArray, IToolboxComponentBase } from '@/interfaces';
 import { toCamelCase, truncateMiddle } from '@/utils/string';
-import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultModelProvider/defaultModelProvider';
+import { useDefaultModelActionsOrUndefined } from '../_settings/defaultModelProvider/defaultModelProvider';
 import { isJsonEntityMetadata } from '@/interfaces/metadata';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { throwError } from '@/utils/errors';
@@ -198,40 +198,46 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
     };
   },
   Factory: ({ model, calculatedModel }) => {
-    const defaultValue = useDefaultModelProviderStateOrUndefined();
+    const defaultValue = useDefaultModelActionsOrUndefined();
     const formComponent = useFormDesignerComponents()[calculatedModel.componentType];
 
     if (!formComponent) throwError(`Component ${calculatedModel.componentType} not found`);
 
     const formSettings = useFormDesignerSettings();
-    const inst = useShaFormInstanceOrUndefined();
+    const formInstance = useShaFormInstanceOrUndefined();
     const designerModelType = formSettings?.modelType;
     const validate = useMemo(() => ({ ...model.validate, required: false }), [model.validate]);
 
-    const [metadata, setMetadata] = useState<IModelMetadata>(undefined);
+    const metadata = useRef<IModelMetadata>(undefined);
+    const metaName = useRef<string>(undefined);
     const metaDispatcher = useMetadataDispatcher();
 
-    const setContextMetadata = useCallback((meta: IModelMetadata, propName: string, component: IToolboxComponentBase): IConfigurableFormComponent | undefined => {
+    const setContextMetadata = useCallback((propName: string, component: IToolboxComponentBase): IConfigurableFormComponent | undefined => {
+      const meta = metadata.current;
+      const metaNameLocal = isEntityMetadata(meta) || isJsonEntityMetadata(meta) ? `${meta.entityType} (${truncateMiddle(meta.entityModule, 25)})` : meta?.name;
       const propertyName = toCamelCase(propName);
       const propertyMetadata = isPropertiesArray(meta?.properties)
         ? meta?.properties?.find((p) => toCamelCase(p.path) === propertyName)
         : null;
-      if (!propertyMetadata) return undefined;
+      if (!propertyMetadata) {
+        defaultValue?.removeDefaultModel(metaName.current);
+        return undefined;
+      }
+      if (metaName.current !== metaNameLocal) defaultValue?.removeDefaultModel(metaName.current);
       const metadataConfig = linkComponentToModelMetadata(component, { id: '', type: '' }, propertyMetadata);
-      const metaName = isEntityMetadata(meta) || isJsonEntityMetadata(meta) ? `${meta.entityType} (${truncateMiddle(meta.entityModule, 25)})` : meta.name;
-      defaultValue?.setDefaultModel(metaName, metadataConfig);
-      inst?.updateData();
+      metaName.current = metaNameLocal;
+      defaultValue?.setDefaultModel(metaNameLocal, metadataConfig);
+      formInstance?.updateData();
       return metadataConfig;
-    }, [defaultValue, inst]);
+    }, [defaultValue, formInstance]);
 
-    // ToDo: AS - review getting metadata and updating default model, merge this actions with PropertyAutocomplete
     useEffectOnce(() => {
       if (formComponent.allowInherit) {
         const modelType = designerModelType ?? calculatedModel.modelType;
         metaDispatcher.getMetadata({ modelType, dataType: 'entity' })
           .then((meta) => {
-            setMetadata(meta);
-            setContextMetadata(meta, calculatedModel.propertyName, formComponent);
+            metadata.current = meta;
+            setContextMetadata(calculatedModel.propertyName, formComponent);
           })
           .catch((error) => {
             console.error(`Failed to fetch metadata for ${calculatedModel.propertyName}: ${modelType} - `, error);
@@ -242,7 +248,7 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
     const onValuesChange = useCallback((values) => {
       if (formComponent.allowInherit) {
         // update default model
-        const metadataConfig = setContextMetadata(metadata, values.propertyName, formComponent);
+        const metadataConfig = setContextMetadata(values.propertyName, formComponent);
         if (!metadataConfig) {
           // Property not found in metadata, just update the values
           calculatedModel.setFieldsValue(values);
@@ -257,7 +263,7 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
       } else
         // update propertyName and componentName (all other values will be updated by nested propertyAutocomplete)
         calculatedModel.setFieldsValue(values);
-    }, [calculatedModel, formComponent, metadata, setContextMetadata]);
+    }, [calculatedModel, formComponent, setContextMetadata]);
 
     return model.hidden
       ? null

@@ -9,7 +9,7 @@ import {
   TypographyFontSize,
   TypographyPaddingSize,
 } from './models';
-import { IStyleType } from '@/interfaces';
+import { IStyleValue } from '@/interfaces';
 import { formatDateStringAndPrefix } from '@/utils/formatting';
 
 export const getFontSizeStyle = (key: TypographyFontSize): FontSizeProps => FONT_SIZES[key];
@@ -39,7 +39,7 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
   }
 };
 
-export const defaultStyles = (textType: string): IStyleType => {
+export const defaultStyles = (textType: string): IStyleValue => {
   return {
     font: {
       color: '#000',

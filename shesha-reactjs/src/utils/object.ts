@@ -10,7 +10,7 @@ import { WritableDraft } from "@reduxjs/toolkit";
 import { StorageArrayProperty, StorageProperty } from "@/providers/dataContextProvider/contexts/storageProxy";
 import { ObservableProxy } from "@/providers/form/observableProxy";
 
-export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T | undefined => {
+export const jsonSafeParse = <T = unknown>(value: string | null | undefined, defaultValue?: T): T | undefined => {
   try {
     return isNullOrWhiteSpace(value)
       ? defaultValue
@@ -54,16 +54,27 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   return isProxy(result) ? unproxyValue<TValue>(result as TValue) : result as TValue;
 };
 
+export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown): unknown => srcValue === undefined ? objValue : undefined;
+
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
   target: TObject,
-  source: TSource,
-  skipProp: ((target: Record<string, unknown>, source: Record<string, unknown>, key: string) => boolean) | undefined = undefined):
-TObject & TSource => {
+  source: TSource | null | undefined,
+  action?: (objValue: unknown, srcValue: unknown, key: string, obj: Record<string, unknown>, src: Record<string, unknown>) => unknown,
+  // skipProp: ((target: Record<string, unknown>, source: Record<string, unknown>, key: string) => boolean) | undefined = undefined
+): TObject & TSource => {
+  if (!source) return target as TObject & TSource;
   return mergeWith({ ...target }, source, (objValue: unknown, srcValue: unknown, key: string, obj: TObject | null) => {
+    /*
     // Check if the property should be skipped
     const skip = skipProp && typeof skipProp === 'function' ? skipProp(target as Record<string, unknown>, source as Record<string, unknown>, key) : false;
     // if skip is true, return original value
     if (skip) return objValue;
+    */
+
+    if (action) {
+      const result = action(objValue, srcValue, key, obj as Record<string, unknown>, source as Record<string, unknown>);
+      if (result !== undefined) return result;
+    }
 
     // handle null
     if (srcValue === null) {
@@ -96,7 +107,7 @@ TObject & TSource => {
     // handle objects
     if (typeof objValue === "object" && typeof srcValue === "object" && objValue !== null) {
       // make a copy of merged objects
-      return deepMergeValues(objValue, srcValue, skipProp);
+      return deepMergeValues(objValue, srcValue, action);
     }
 
     return undefined;

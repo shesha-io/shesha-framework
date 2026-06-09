@@ -32,7 +32,6 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
     modelType,
   } = dataSource;
 
-  // ToDo: AS - need to optimize
   useShaFormDataUpdate();
 
   const { globalState } = useGlobalState();

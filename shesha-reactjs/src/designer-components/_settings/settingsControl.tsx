@@ -16,10 +16,11 @@ import { useDeepCompareMemo } from '@/hooks';
 export type SettingsControlChildrenFunc<T = unknown> = (value: T, onChange: (val: T) => void, propertyName: string) => ReactElement;
 export type SettingsControlChildrenType<T = unknown> = SettingsControlChildrenFunc<T> | ReactNode;
 
-export interface ISettingsControlProps<Value = any> {
+export interface ISettingsControlProps<Value = unknown> {
+  enabled?: boolean;
   propertyName: string;
   readOnly?: boolean;
-  value?: IPropertySetting<Value>;
+  value?: IPropertySetting<Value> | Value;
   setHasCode?: (hasCode: boolean) => void;
   hasCode?: boolean;
   mode: PropertySettingMode;
@@ -74,7 +75,7 @@ export const SettingsControl = <Value extends unknown = unknown>(props: ISetting
       const newValue = { ...setting, _value: val };
       onInternalChange(newValue);
     };
-  }, [setting]);
+  }, [setting, onInternalChange]);
 
   const onSwitchMode = (): void => {
     const newMode = mode === 'code' ? 'value' : 'code';

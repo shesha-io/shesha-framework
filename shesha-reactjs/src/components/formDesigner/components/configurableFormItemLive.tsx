@@ -24,7 +24,6 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
   const getFormData = shaForm.getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
-  const isInDesigner = shaForm.formMode === 'designer';
   const allData = useAvailableConstantsDataNoRefresh();
   const { styles } = useStyles({ autoAlignLabel, labelAlign: model.labelAlign });
 
@@ -39,19 +38,12 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
 
   const { top: defaultMarginTop, left: defaultMarginLeft, right: defaultMarginRight, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 
-  // In designer mode: NEVER apply margins to Form.Item (wrapper handles them)
-  // In live mode: Apply margins from allStyles.margins or use defaults
-  // Note: margins are stored separately so inner components don't get them (prevents double margins)
-  const rawMargins = isInDesigner
-    ? { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }
-    : (model?.allStyles?.margins || {});
-
   const {
     marginTop = defaultMarginTop,
     marginBottom = defaultMarginBottom,
     marginRight = defaultMarginRight,
     marginLeft = defaultMarginLeft,
-  } = rawMargins;
+  } = (model?.stylingBoxJson || {});
 
   const propName = namePrefix && !model.initialContext
     ? namePrefix + '.' + model.propertyName
@@ -61,15 +53,12 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
-    // label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
-    // labelCol: layout?.labelCol,
-    // wrapperCol: hideLabel || isVertical ? { span: 24 } : layout?.wrapperCol,
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     style: {
       marginTop: addPx(marginTop, allData),

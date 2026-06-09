@@ -1,12 +1,16 @@
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { IStyleValue } from '../../../providers/form/models';
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
 import { CSSProperties } from 'react';
 
 interface UseStylesParams {
   textAlign?: CSSProperties['textAlign'];
+  styleValue: IStyleValue;
+  enableFullStyle: boolean;
 }
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: UseStylesParams) => {
-  const { textAlign } = params;
+  const { textAlign, styleValue, enableFullStyle } = params;
 
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
@@ -73,6 +77,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    ${dimensionsStyles(styleValue?.dimensions)}
+    ${fontStyles(styleValue?.font)}
+
+    ${enableFullStyle
+        ? borderStyles(styleValue?.border) +
+        backgroundStyles(styleValue?.background) +
+        shadowStyles(styleValue?.shadow) +
+        paddingStyles(styleValue?.stylingBoxJson)
+        : ''
+    }
+
   `;
 
   const wrapper = css`

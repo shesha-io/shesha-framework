@@ -1,9 +1,9 @@
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { ComponentDefinition, EditMode, IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleType } from '@/interfaces';
+import { ComponentDefinition, EditMode, IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleValue } from '@/interfaces';
 
 export interface ITabPaneProps
-  extends IStyleType, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled' | 'destroyInactiveTabPane'> {
+  extends IStyleValue, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled' | 'destroyInactiveTabPane'> {
   id: string;
   type?: string;
   icon?: string;
@@ -32,7 +32,7 @@ export interface ITabPaneProps
 interface ICardProps {
   card: IInputStyles;
 }
-export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleType {
+export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleValue {
   tabs: ITabPaneProps[];
   size?: SizeType;
   defaultActiveKey?: string;

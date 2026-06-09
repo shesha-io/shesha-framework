@@ -1,5 +1,5 @@
 import { IFormItem, IToolboxComponent } from '@/interfaces';
-import { IStyleType } from '@/providers';
+import { IStyleValue } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { ImageSourceType } from './image';
@@ -20,7 +20,7 @@ export interface IImageStyleProps {
   style?: string;
 }
 
-export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps, IStyleType {
+export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps, IStyleValue {
   url?: string;
   storedFileId?: string;
   base64?: string;

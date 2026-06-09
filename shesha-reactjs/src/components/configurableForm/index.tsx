@@ -7,7 +7,7 @@ import { Form, FormInstance } from 'antd';
 import { useAppConfigurator, useShaRoutingOrUndefined, useSheshaApplication } from '@/providers';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
 import { FormWithFlatMarkup } from './formWithFlatMarkup';
-import { useShaForm } from '@/providers/form/store/shaFormInstance';
+import { IShaFormDataSource, useShaForm } from '@/providers/form/store/shaFormInstance';
 import { MarkupLoadingError } from './markupLoadingError';
 import { configurableItemIdentifierToString } from '@/interfaces';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
@@ -15,18 +15,16 @@ import { IShaFormInstance } from '@/providers/form/store/interfaces';
 import ParentProvider from '@/providers/parentProvider';
 import { ShaSpin } from '..';
 import { DataLoadingError } from './dataLoadingError';
-import { IFormActionsContext, ISetFormDataPayload } from '@/providers/form/contexts';
+import { IFormActionsContext } from '@/providers/form/contexts';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
-  form?: FormInstance<any>;
+  form?: FormInstance<Values>;
   formRef?: MutableRefObject<IFormActionsContext> | undefined;
   // TODO: merge with formRef
   shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
   isSettingsForm?: boolean;
   externalShaForm?: IShaFormInstance<Values> | undefined;
-  formDataGetter?: () => Values;
-  formDataSetter?: (data: Values) => void;
-  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values;
+  dataSource?: IShaFormDataSource<Values>;
 } & SheshaFormProps;
 
 const ConfigurableFormInner = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
@@ -51,9 +49,7 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
     sections,
     isActionsOwner,
     externalShaForm,
-    formDataGetter,
-    formDataSetter,
-    setFormDataNewDataAction,
+    dataSource,
   } = props;
 
   // memoize initial values once to avoid unnecessary form initialization
@@ -71,9 +67,7 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
       instance.setFormMode(props.mode);
       instance.setParentFormValues(parentFormValues);
     },
-    formDataGetter,
-    formDataSetter,
-    setFormDataNewDataAction,
+    dataSource,
   });
   shaForm.setOnMarkupLoaded(onMarkupLoaded);
 

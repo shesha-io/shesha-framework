@@ -1,5 +1,5 @@
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
-import { IStyleType } from '@/providers/form/models';
+import { IStyleValue } from '@/providers/form/models';
 import { MenuProps } from 'antd';
 import React from 'react';
 
@@ -30,7 +30,7 @@ export function getButtonGroupMenuItem(
   } as MenuItem;
 };
 
-export const defaultStyles = (prev: ButtonGroupItemProps): IStyleType => {
+export const defaultStyles = (prev: ButtonGroupItemProps): IStyleValue => {
   return {
     background: { type: 'color', color: prev.backgroundColor },
     font: { color: prev.buttonType === 'primary' ? '#fff' : prev["fontColor"] ?? '', weight: prev.fontWeight ?? '400', size: prev.fontSize ?? 14, type: prev["fontFamily"] ?? 'Segoe UI', align: 'center' },
@@ -59,7 +59,7 @@ export const defaultStyles = (prev: ButtonGroupItemProps): IStyleType => {
   };
 };
 
-export const defaultContainerStyles = (): IStyleType => {
+export const defaultContainerStyles = (): IStyleValue => {
   return {
     background: { type: 'color' },
     border: {

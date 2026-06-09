@@ -3,7 +3,7 @@ import React from 'react';
 import { IconType } from '@/components/shaIcon';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, IToolboxComponent } from '@/interfaces';
-import { IStyleType, useForm, useFormData, useGlobalState } from '@/providers';
+import { IStyleValue, useForm, useFormData, useGlobalState } from '@/providers';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValueAsString,
@@ -27,8 +27,8 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
 
-export type layoutType = 'vertical' | 'horizontal' | 'grid';
-export type listType = 'text' | 'thumbnail';
+export type LayoutType = 'vertical' | 'horizontal' | 'grid';
+export type ListType = 'text' | 'thumbnail';
 
 const DEVICE_TYPES = ['desktop', 'mobile', 'tablet'] as const;
 type DeviceType = typeof DEVICE_TYPES[number];
@@ -72,9 +72,9 @@ const hasLegacyStyleProperties = (props: LegacyStyleProps): boolean => {
 // Helper function to migrate container-related properties
 const migrateContainerProperties = (
   props: LegacyStyleProps,
-  existingContainer: Partial<IStyleType>,
-  defaultContainer: IStyleType,
-): Partial<IStyleType> => {
+  existingContainer: Partial<IStyleValue>,
+  defaultContainer: IStyleValue,
+): Partial<IStyleValue> => {
   return {
     stylingBox: props.stylingBox || existingContainer.stylingBox || defaultContainer.stylingBox,
     style: props.style || props.containerStyle || existingContainer.style || defaultContainer.style,
@@ -93,8 +93,8 @@ const migrateContainerProperties = (
 // Helper function to migrate font properties
 const migrateFontProperties = (
   props: LegacyStyleProps,
-  existingFont: IStyleType['font'],
-): IStyleType['font'] => {
+  existingFont: IStyleValue['font'],
+): IStyleValue['font'] => {
   // Define valid text alignment values based on what AlignSetting accepts
   const validAlignValues = ['left', 'center', 'right'] as const;
   type ValidAlign = typeof validAlignValues[number];
@@ -149,14 +149,14 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   onFileChanged?: string;
   onDownload?: string;
   downloadZip?: boolean;
-  filesLayout?: layoutType;
-  listType: listType;
+  filesLayout?: LayoutType;
+  listType: ListType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  container?: IStyleType;
-  downloadedFileStyles?: IStyleType;
+  container?: IStyleValue;
+  downloadedFileStyles?: IStyleValue;
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
 }

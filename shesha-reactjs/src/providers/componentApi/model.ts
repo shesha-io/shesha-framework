@@ -20,7 +20,6 @@ export interface IComponentApiDescription<T extends object = Record<string, unkn
   componentName: string;
   level: number;
   isInput?: boolean;
-  rawComponentModel?: IConfigurableFormComponent | undefined;
   componentModel?: IConfigurableFormComponent | undefined;
   metadata?: IApiMetadata | undefined;
   typeDefinition?: TypeDefinition | undefined;

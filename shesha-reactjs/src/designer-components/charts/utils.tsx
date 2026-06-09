@@ -5,14 +5,14 @@ import BarChart from "./components/bar";
 import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
-import { IPropertyMetadata, IStyleType } from "@/interfaces";
+import { IPropertyMetadata, IStyleValue } from "@/interfaces";
 import { FetcherOptions } from "@/utils/fetchers";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
 
 export const MAX_TITLE_LINE_LENGTH = 12;
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },

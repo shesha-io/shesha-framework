@@ -20,6 +20,7 @@ export interface IConfigurableTheme {
   labelAlign?: FormLabelAlign;
   layout?: FormItemLayout;
   colon?: boolean;
+  components?: { [key: string]: unknown };
 }
 
 export interface IThemeStateContext {
@@ -36,6 +37,7 @@ export interface IThemeStateContext {
 export interface IThemeActionsContext {
   changeTheme: (theme: IConfigurableTheme, isApplication?: boolean) => void;
   resetToApplicationTheme: () => void;
+  getComponentStyle: (componentName: string) => unknown;
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }

@@ -10,4 +10,4 @@ const ConfigurableFormItemInner: FCUnwrapped<IConfigurableFormItemProps> = (prop
     : <ConfigurableFormItemLive {...props} />;
 };
 
-export const ConfigurableFormItem = React.memo(ConfigurableFormItemInner);
+export const ConfigurableFormItem: FCUnwrapped<IConfigurableFormItemProps> = React.memo(ConfigurableFormItemInner);

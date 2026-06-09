@@ -9,7 +9,7 @@ import {
   IFormComponentContainer,
   IFormSettings,
 } from '@/providers/form/models';
-import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
+import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
 import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, IObjectMetadata, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
@@ -57,6 +57,7 @@ export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISett
 
 export type SettingsFormMarkupFactoryArgs = {
   fbf: FormBuilderFactory;
+  removeStyleRouter?: boolean;
 };
 export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
@@ -149,6 +150,10 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    */
   initModel?: (model: TModel) => TModel;
   /**
+   * Returns default component styles
+   */
+  getDefaultStyles?: (model?: TModel) => object;
+  /**
    * Link component to a model metadata
    */
   linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
@@ -206,6 +211,8 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    */
   actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
 
+  previewConfiguration?: TModel;
+
   editorAdapter?: IEditorAdapter;
 
   /**
@@ -224,6 +231,8 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * preserveDimensionsInDesigner: ['width', 'height'], // Preserve width and height
    * ```
    */
+  // ToDo: AS - remove after review
+  /** @deprecated Will be removed */
   preserveDimensionsInDesigner?: boolean | Array<'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight'>;
   /**
    * Optional function to customize how component dimensions are calculated in designer mode.
@@ -247,7 +256,7 @@ export type ComponentDefinition<TType extends string = string, TModel extends IC
 export type IToolboxComponentBase = IToolboxComponent;
 
 export interface SettingsMigrationContext {
-  formSettings?: IFormSettings;
+  formSettings?: IFormSettings | undefined;
   flatStructure: IFlatComponentsStructure;
   componentId: string;
   isNew?: boolean;
@@ -256,7 +265,7 @@ export interface SettingsMigrationContext {
 /**
  * Settings migrator
  */
-export type SettingsMigrator<TSettings> = (
+export type SettingsMigrator<TSettings extends IHasVersion> = (
   migrator: Migrator<IConfigurableFormComponent, TSettings, SettingsMigrationContext>,
 ) => MigratorFluent<TSettings, TSettings, SettingsMigrationContext>;
 

@@ -1,4 +1,4 @@
-import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 interface IModelInterface {
@@ -8,7 +8,7 @@ interface IModelInterface {
   isDragger?: boolean;
   isStub?: boolean;
   downloadZip?: boolean;
-  listType?: listType;
+  listType?: ListType;
   fontStyles?: CSSProperties;
   hasFiles?: boolean;
 };

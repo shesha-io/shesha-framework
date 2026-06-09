@@ -48,9 +48,6 @@ import { useComponentApi } from "@/providers/componentApi/provider";
 import { useDataContextManager } from "@/providers/dataContextManager/hooks";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
-  formDataGetter?: (() => Values | undefined) | undefined;
-  formDataSetter?: ((data: Values | undefined) => void) | undefined;
-  setFormDataNewDataAction?: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
   forceRootUpdate: ForceUpdateTrigger;
   formManager: IFormManagerActionsContext;
   metadataDispatcher: IMetadataDispatcher;
@@ -59,6 +56,7 @@ interface ShaFormInstanceArguments<Values extends object = object> {
   antdForm: FormInstance<Values>;
   context: IDataContextDescriptor | undefined;
   componentApi: IComponentApi | undefined;
+  dataSource: IShaFormDataSource<Values> | undefined;
 }
 
 class PublicFormApi<Values extends object = object> implements IFormApi<Values> {
@@ -188,7 +186,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   formDataGetter: (() => (Values | undefined) | undefined) | undefined;
 
-  setFormDataNewDataAction: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
+  getMergedOrValue: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
 
   updateData: (() => void) | undefined;
 
@@ -285,9 +283,9 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.isDataModified = false;
     this.subscriptions = new Map<ShaFormSubscriptionType, Set<ShaFormSubscription<Values>>>();
 
-    this.formDataGetter = args.formDataGetter;
-    this.formDataSetter = args.formDataSetter;
-    this.setFormDataNewDataAction = args.setFormDataNewDataAction;
+    this.formDataGetter = args.dataSource?.dataGetter;
+    this.formDataSetter = args.dataSource?.dataSetter;
+    this.getMergedOrValue = args.dataSource?.getMergedOrValue;
   }
 
   //#region subscriptions
@@ -361,8 +359,8 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     if (isEmpty(values) && mergeValues)
       return;
 
-    const newData = typeof this.setFormDataNewDataAction === "function"
-      ? this.setFormDataNewDataAction(payload, this)
+    const newData = typeof this.getMergedOrValue === "function"
+      ? this.getMergedOrValue(payload, this)
       : payload.mergeValues && this.formData
         ? deepMergeValues(this.formData, values)
         : values;
@@ -822,17 +820,21 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
 type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFormInstance<Values> | undefined };
 
+export interface IShaFormDataSource<Values extends object = object> {
+  dataGetter?: (() => Values | undefined) | undefined;
+  dataSetter?: ((data: Values | undefined) => void) | undefined;
+  getMergedOrValue?: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
+}
+
 type UseShaFormArgsNewForm<Values extends object = object> = {
-  formDataGetter?: (() => Values | undefined) | undefined;
-  formDataSetter?: ((data: Values | undefined) => void) | undefined;
-  setFormDataNewDataAction?: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
   antdForm?: FormInstance<Values>;
   init?: (shaForm: IShaFormInstance<Values>) => void;
+  dataSource?: IShaFormDataSource<Values>;
 };
 type UseShaFormArgs<Values extends object = object> = UseShaFormArgsExistingForm<Values> & UseShaFormArgsNewForm<Values>;
 
 const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>): [IShaFormInstance<Values>] => {
-  const { antdForm, form, init } = args;
+  const { antdForm, form, init, dataSource } = args;
 
   const [, forceUpdate] = React.useState({});
   const formManager = useFormManager();
@@ -854,9 +856,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
       };
 
       const instance = new ShaFormInstance<Values>({
-        formDataGetter: args.formDataGetter,
-        formDataSetter: args.formDataSetter,
-        setFormDataNewDataAction: args.setFormDataNewDataAction,
+        dataSource,
         forceRootUpdate: forceReRender,
         formManager: formManager,
         dataLoaders: dataLoaders,

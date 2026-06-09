@@ -3,6 +3,7 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IStyleBoxComponentProps extends IConfigurableFormComponent {
   noMargin?: boolean;
+  format?: 'string' | 'json';
 }
 
 export interface IInputDirection {

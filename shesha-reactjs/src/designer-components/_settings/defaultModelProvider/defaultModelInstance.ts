@@ -1,5 +1,5 @@
 import { Path } from "@/utils/dotnotation";
-import { deepCopyViaJson, deepMergeValues, getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { isEqual } from "lodash";
 import { ReactElement } from "react";
 
@@ -17,6 +17,7 @@ export interface IDefaultModelInstance<T extends object = object> {
 
   setModel: (model: T) => void;
   setDefaultModel: (name: string, model: T) => void;
+  removeDefaultModel: (name: string) => void;
   getMergedModel: () => T;
   getModel: () => T;
   getDefaultModel: (name?: string) => T | undefined;
@@ -66,9 +67,22 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
 
   private subscriptions: Map<DefaultModelSubscriptionType, Set<DefaultModelSubscription<T>>>;
 
-  constructor() {
+  private valueInfo: Map<string, IDefaultModelValueInfo>;
+
+  private needUpdateInfo: Map<string, boolean>;
+
+  private forceUpdate: () => void;
+
+  constructor(forceUpdate: () => void) {
     this.defaultModels = new Map<string, T>();
     this.subscriptions = new Map<DefaultModelSubscriptionType, Set<DefaultModelSubscription<T>>>();
+    this.valueInfo = new Map<string, IDefaultModelValueInfo>();
+    this.needUpdateInfo = new Map<string, boolean>();
+    this.forceUpdate = forceUpdate;
+  }
+
+  #needUpdateAllInfo(): void {
+    this.needUpdateInfo.forEach((_, name) => this.needUpdateInfo.set(name, true));
   }
 
   subscribePropertyUpdate(propertyName: string, callback: (dfi: DefaultModelInstance<T>) => void): () => void {
@@ -101,24 +115,14 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
   }
 
   #updateMergedModel = (): void => {
-    this.mergedModel = deepMergeValues(deepCopyViaJson(this.model), this.defaultModel, (t, s, key) => {
-      // skip merge
-      // default value is empty
-      return s[key] === undefined ||
-        // model value is not empty (null is also a value) and if model value is object, it has at least one property
-        (t[key] !== undefined && typeof t[key] !== 'object');
-    });
-
+    this.mergedModel = deepMergeValues(this.defaultModel, this.model, deepMergeSkipUndefinedFunc);
     this.notifySubscribers('property-modified');
   };
 
   #updateDefaultModel = (): void => {
     let model = {} as T;
     this.defaultModels.forEach((m) => {
-      model = deepMergeValues(deepCopyViaJson(model), m, (_, s, key) => {
-        // skip merge if default value is empty
-        return s[key] === undefined;
-      });
+      model = deepMergeValues(model, m, deepMergeSkipUndefinedFunc);
     });
 
     this.defaultModel = model;
@@ -128,12 +132,25 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     if (model === undefined) return;
     this.model = deepCopyViaJson(model ?? {} as T);
     this.#updateMergedModel();
+    this.#needUpdateAllInfo();
+    // Don't need to force update because this method is only store value
+    // this.forceUpdate();
   };
 
   setDefaultModel = (name: string, model: T): void => {
     this.defaultModels.set(name, deepCopyViaJson(model ?? {} as T));
     this.#updateDefaultModel();
     this.#updateMergedModel();
+    this.#needUpdateAllInfo();
+    this.forceUpdate();
+  };
+
+  removeDefaultModel = (name: string): void => {
+    this.defaultModels.delete(name);
+    this.#updateDefaultModel();
+    this.#updateMergedModel();
+    this.#needUpdateAllInfo();
+    this.forceUpdate();
   };
 
   getMergedModel = (): T => {
@@ -149,35 +166,45 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
   };
 
   getValueInfo = (propName: string): IDefaultModelValueInfo => {
-    const modelValue = getValueByPropertyName(this.model as Record<string, unknown>, propName);
-    let defaultModelName = '';
-    let defaultModelValue = undefined;
+    if (this.needUpdateInfo.get(propName) !== false) {
+      const modelValue = getValueByPropertyName(this.model as Record<string, unknown>, propName);
+      let defaultModelName = '';
+      let defaultModelValue = undefined;
 
-    this.defaultModels.forEach((model, name) => {
-      const v = getValueByPropertyName(model as Record<string, unknown>, propName);
-      if (v !== undefined) {
-        defaultModelName = name;
-        defaultModelValue = v;
-      }
-    });
+      this.defaultModels.forEach((model, name) => {
+        const v = getValueByPropertyName(model as Record<string, unknown>, propName);
+        if (v !== undefined) {
+          defaultModelName = name;
+          defaultModelValue = v;
+        }
+      });
 
-    return {
-      state: defaultModelValue !== undefined
-        ? modelValue === undefined
-          ? 'usedDefault'
-          : 'usedModel'
-        : 'onlyModel',
-      latestDefaultModelName: defaultModelName,
-    };
+      const info: IDefaultModelValueInfo = {
+        state: defaultModelValue !== undefined
+          ? modelValue === undefined
+            ? 'usedDefault'
+            : 'usedModel'
+          : 'onlyModel',
+        latestDefaultModelName: defaultModelName,
+      };
+      this.valueInfo.set(propName, info);
+      this.needUpdateInfo.set(propName, false);
+      return info;
+    }
+    return this.valueInfo.get(propName) ?? { state: 'onlyModel', latestDefaultModelName: '' };
   };
 
   overrideValue = (propName: string): void => {
     setValueByPropertyName(this.model, propName, getValueByPropertyName(this.defaultModel as Record<string, unknown>, propName));
     this.#updateMergedModel();
+    // ToDo: AS - check if need update all info insted of one property
+    this.#needUpdateAllInfo();
+    this.forceUpdate();
   };
 
   setCurrentValueAdditionalInfo = (propName: string, additionalInfo: () => string | ReactElement): void => {
     this.valuesAdditionalInfo.set(propName, additionalInfo);
+    this.forceUpdate();
   };
 
   getCurrentValueAdditionalInfo = (propName: string): (() => string | ReactElement) | undefined => {

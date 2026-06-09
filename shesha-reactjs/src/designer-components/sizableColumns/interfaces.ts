@@ -1,6 +1,6 @@
-import { IConfigurableFormComponent, IStyleType } from '@/providers';
+import { IConfigurableFormComponent, IStyleValue } from '@/providers';
 
-export interface ISizableColumnInputProps extends IStyleType {
+export interface ISizableColumnInputProps extends IStyleValue {
   borderSize?: string | number;
   borderRadius?: number;
   borderType?: string;

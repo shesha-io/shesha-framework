@@ -12,6 +12,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import Box from './components/box';
 import { IStyleBoxComponentProps, StyleBoxDefinition } from './interfaces';
 import { getSettings } from './settings';
+import { getStyleBoxValue } from './utils';
 
 const StyleBox: StyleBoxDefinition = {
   type: 'styleBox',
@@ -26,7 +27,11 @@ const StyleBox: StyleBoxDefinition = {
 
     return model.hidden ? null : (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => <Box value={value} onChange={onChange} readOnly={model.readOnly} />}
+        {(value, onChange) => {
+          const json = getStyleBoxValue(value);
+          const internalOnChange = (newValue: object): void => onChange(model.format === 'json' ? newValue : JSON.stringify(newValue));
+          return <Box value={json} onChange={internalOnChange} readOnly={model.readOnly} propertyName={model.propertyName} />;
+        }}
       </ConfigurableFormItem>
     );
   },

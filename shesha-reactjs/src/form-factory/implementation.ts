@@ -44,7 +44,7 @@ import { ITextAreaComponentProps } from "@/designer-components/textArea/interfac
 import { ITextFieldComponentProps } from "@/designer-components/textField/interfaces";
 import { ITimePickerComponentProps } from "@/designer-components/timeField/models";
 import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentProps, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
-import { FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardEventHandler } from "./interfaces";
+import { AllComponentsConfig, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardEventHandler, StandardFormBuilderMethods } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
 import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
@@ -82,12 +82,24 @@ const eventConfigs: EventConfig[] = [
     event: 'onClick',
     propertyName: 'onClickCustom',
     label: 'On Click',
-    tooltip: 'Enter the event handling code on click of the component',
+    tooltip: 'Enter the event handling code on click on the component',
+  },
+  {
+    event: 'onHover',
+    propertyName: 'onHoverCustom',
+    label: 'On Hover',
+    tooltip: 'Enter the event handling code on hover of the component',
+  },
+  {
+    event: 'onKeyPress',
+    propertyName: 'onKeyPressCustom',
+    label: 'On Key Press',
+    tooltip: 'Enter the event handling code on key press on the component',
   },
 ];
 
 
-export class FormBuilderImplementation implements FormBuilder {
+export class FormBuilderImplementation implements FormBuilder, StandardFormBuilderMethods<AllComponentsConfig> {
   addKeyInformationBar = (props: FluentSettings<IKeyInformationBarComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'KeyInformationBar', meta);
 
   addEditModeSelector = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'editModeSelector', meta);
@@ -234,8 +246,8 @@ export class FormBuilderImplementation implements FormBuilder {
   stdVisibleEditableInputs = (): FormBuilder => {
     this.addSettingsInputRow({
       inputs: [
-        { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal' },
-        { type: 'editModeSelector', propertyName: 'editMode', label: 'Edit Mode', size: 'small', jsSetting: true },
+        { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true },
+        { type: 'editModeSelector', propertyName: 'editMode', label: 'Edit Mode', size: 'small', jsSetting: true, permissionSettings: true },
       ],
     });
     return this;
@@ -339,40 +351,41 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdBorderPanel = (): FormBuilder => {
+  stdBorderPanel = (isResponsive?: boolean): FormBuilder => {
     const bid = nanoid();
     const cid = nanoid();
     const bfb = (): FormBuilder => new FormBuilderImplementation(this.componentDefinitions, bid);
     const cfb = (): FormBuilder => new FormBuilderImplementation(this.componentDefinitions, cid);
 
     this.stdCollapsiblePanel('Border', (f) => f
-      .addContainer({ id: bid, components: getBorderInputs(bfb) })
-      .addContainer({ id: cid, components: getCornerInputs(cfb) }));
+      .addContainer({ id: bid, components: getBorderInputs(bfb, undefined, isResponsive) })
+      .addContainer({ id: cid, components: getCornerInputs(cfb, undefined, isResponsive) }));
 
     return this;
   };
 
-  stdBackgroundPanel = (): FormBuilder => {
+  stdBackgroundPanel = (isResponsive?: boolean): FormBuilder => {
+    const dataPath = isResponsive ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data';
     this.stdCollapsiblePanel('Background', (f) => f
       .addSettingsInput({ label: 'Type', jsSetting: false, propertyName: 'background.type', inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions })
       .addSettingsInput({ label: 'Color', propertyName: 'background.color', hideLabel: true, jsSetting: false, inputType: 'colorPicker',
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
+        visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "color";`, skipInheritance: true,
       })
       .addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: 'background.gradient.colors', jsSetting: false, hideLabel: true,
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "gradient";',
+        visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "gradient";`, skipInheritance: true,
       })
       .addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: 'background.url', jsSetting: false,
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "url";',
+        visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "url";`,
       })
       .addSettingsInput({ label: 'Image', inputType: 'imageUploader', propertyName: 'background.uploadFile', jsSetting: false,
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "image";',
+        visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "image";`,
       })
       .addSettingsInput({ label: 'File ID', inputType: 'textField', jsSetting: false, propertyName: 'background.storedFile.id',
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "storedFile";',
+        visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "storedFile";`,
       })
       .addSettingsInputRow({
         inline: true,
-        visibleJs: 'return !["color", "gradient"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type));',
+        visibleJs: `return !["color", "gradient"].includes(getSettingValue(${dataPath}?.background?.type));`,
         inputs: [
           { type: 'customDropdown', label: 'Size', hideLabel: true, propertyName: 'background.size', dropdownOptions: sizeOptions,
             customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
@@ -401,8 +414,8 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdMarginPaddingPanel = (propertyName: string = 'stylingBox'): FormBuilder => {
-    this.stdCollapsiblePanel('Margin & Padding', (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName }));
+  stdMarginPaddingPanel = (propertyName: string = 'stylingBoxJson'): FormBuilder => {
+    this.stdCollapsiblePanel('Margin & Padding', (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName, format: 'json' }));
     return this;
   };
 
@@ -415,7 +428,7 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdAppearancePanels = (appearancePanels: StandardAppearancePanel[]): FormBuilder => {
+  stdAppearancePanels = (appearancePanels: StandardAppearancePanel[], removeStyleRouter?: boolean): FormBuilder => {
     const rootId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, rootId);
     fbf.addSettingsInput({
@@ -429,7 +442,7 @@ export class FormBuilderImplementation implements FormBuilder {
     appearancePanels.forEach((panel) => {
       switch (panel) {
         case 'background':
-          fbf.stdBackgroundPanel();
+          fbf.stdBackgroundPanel(!removeStyleRouter);
           break;
         case 'shadow':
           fbf.stdShadowPanel();
@@ -447,19 +460,17 @@ export class FormBuilderImplementation implements FormBuilder {
           fbf.stdDimensionsPanel();
           break;
         case 'border':
-          fbf.stdBorderPanel();
+          fbf.stdBorderPanel(!removeStyleRouter);
           break;
       }
     });
-
     this.addPropertyRouter({
       id: rootId,
       propertyName: 'styleRouter',
       componentName: 'styleRouter',
       label: 'Style router',
       labelAlign: 'right',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-      propertyRouteName: { _code: "return contexts.canvasContext?.designerDevice || 'desktop';", _mode: 'code', _value: '' } as any,
+      propertyRouteName: { _code: `return ${removeStyleRouter ? '' : 'contexts.canvasContext?.designerDevice || "desktop"'};`, _mode: 'code', _value: '' },
       components: [...fbf.toJson()],
     });
 

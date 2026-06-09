@@ -5,7 +5,7 @@ import {
   isDynamicItem,
   isGroup,
 } from '@/providers/buttonGroupConfigurator/models';
-import { IStyleType } from '@/providers/form/models';
+import { IStyleValue } from '@/providers/form/models';
 import { ButtonType } from 'antd/lib/button';
 
 export interface IDynamicItemsEvaluationStore {
@@ -14,7 +14,7 @@ export interface IDynamicItemsEvaluationStore {
   items: ButtonGroupItemProps[];
 }
 
-export interface IResolvedDynamicItem extends IDynamicItem, IStyleType {
+export interface IResolvedDynamicItem extends IDynamicItem, IStyleValue {
   isResolved: boolean;
   resolvedItems: ButtonGroupItemProps[];
 }

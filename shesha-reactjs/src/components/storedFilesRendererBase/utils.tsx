@@ -4,7 +4,7 @@ import { HistoryOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import { FormIdentifier } from '@/providers/form/models';
-import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { buildUrl } from '@/utils/url';
 import { StoredFileModel } from '@/utils/storedFile/models';
 import { ConfigurableForm } from '../configurableForm';
@@ -47,7 +47,7 @@ export const PLACEHOLDER_FILE: StoredFileModel = {
  * @returns The Upload component list type to use
  */
 export const getListTypeAndLayout = (
-  type: listType | undefined, isDragger: boolean,
+  type: ListType | undefined, isDragger: boolean,
 ): 'text' | 'picture' | 'picture-card' => {
   return type === 'text' || !type || isDragger ? 'text' : 'picture-card';
 };

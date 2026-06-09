@@ -1,4 +1,6 @@
-﻿namespace Shesha.Configuration
+﻿using Newtonsoft.Json.Linq;
+
+namespace Shesha.Configuration
 {
     public class ThemeSettings
     {
@@ -35,7 +37,8 @@
                             Grid = "",
                             Standard = "",
                             Inline = "",
-                        }
+                        },
+                        Components = new JObject()
                     };
             }
         }
@@ -71,5 +74,6 @@
         public int? LabelSpan { get; set; }
         public int? ComponentSpan { get; set; }
         public ThemeSettings.MarginPaddingSettings? MarginPadding { get; set; }
+        public JObject Components { get; set; }
     }
 }

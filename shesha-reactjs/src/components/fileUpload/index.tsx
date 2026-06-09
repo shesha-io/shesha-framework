@@ -11,7 +11,7 @@ import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useFileUploadState, useSheshaApplication, useFileUpload, useTheme } from '@/providers';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
@@ -30,7 +30,7 @@ export interface IFileUploadProps {
   isStub?: boolean;
   allowedFileTypes?: string[];
   isDragger?: boolean;
-  listType?: listType;
+  listType?: ListType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;

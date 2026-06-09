@@ -3,7 +3,7 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { getDataProperty } from '@/utils/metadata';
 import { DisabledDateTemplate, IDateFieldProps } from './interfaces';
 import { range } from 'lodash';
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { DatePicker } from '@/components/antd';
 import { DATE_TIME_FORMATS } from '@/constants/formats';
 
@@ -109,7 +109,7 @@ export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[
   }
 };
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },

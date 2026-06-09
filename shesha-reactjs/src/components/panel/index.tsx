@@ -2,12 +2,12 @@ import React, { FC, PropsWithChildren } from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { useStyles } from './styles/styles';
 
 export type headerType = 'parent' | 'child' | 'default';
 
-export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleType, 'style'> {
+export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleValue, 'style'> {
   isActive?: boolean;
   header?: React.ReactNode;
   className?: string;
@@ -27,7 +27,7 @@ export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleType, 
   primaryColor?: string;
   dynamicBorderRadius?: number;
   panelHeadType?: headerType;
-  headerStyles?: IStyleType;
+  headerStyles?: IStyleValue;
   bodyStyle?: React.CSSProperties;
   headerStyle?: React.CSSProperties;
   accentStyle?: boolean;

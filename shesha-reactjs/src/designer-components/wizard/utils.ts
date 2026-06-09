@@ -1,7 +1,7 @@
 import { findLastIndex } from 'lodash';
 import { nanoid } from '@/utils/uuid';
 import { IWizardSequence, IWizardStepProps } from './models';
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { CSSProperties } from 'react';
 
 export const EXPOSED_VARIABLES = [
@@ -127,7 +127,7 @@ export const onAddNewItem = (items: IWizardStepProps[]): IWizardStepProps => {
 };
 
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '' },
     font: { weight: '400', size: 16, color: '#000', type: 'Segoe UI' },

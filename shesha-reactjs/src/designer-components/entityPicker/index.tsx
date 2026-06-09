@@ -5,7 +5,7 @@ import { ValidationErrors } from '@/components/validationErrors';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IStoredFilter, IToolboxComponent } from '@/interfaces';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps, IStyleType, useMetadataDispatcher } from '@/providers';
+import { ButtonGroupItemProps, IStyleValue, useMetadataDispatcher } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -26,7 +26,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
 
-export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
+export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleValue {
   placeholder?: string;
   items: IConfigurableColumnsProps[];
   hideBorder?: boolean;

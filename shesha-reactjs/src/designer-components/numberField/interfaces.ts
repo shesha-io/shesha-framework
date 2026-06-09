@@ -1,8 +1,8 @@
 import { IconType } from '@/components/shaIcon';
 import { ComponentDefinition } from '@/interfaces';
-import { IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles, IPropertySetting } from '@/providers/form/models';
 
-export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent, IInputStyles, IStyleType {
+export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent, IInputStyles {
   hideBorder?: boolean;
   min?: number;
   max?: number;
@@ -18,7 +18,7 @@ export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent
 
 export type NumberFieldFormat = 'integer' | 'decimal' | 'percent' | 'currency' | 'custom';
 
-export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles, IStyleType {
+export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
   numberFormat?: NumberFieldFormat;
   hideBorder?: boolean;
   highPrecision?: boolean;

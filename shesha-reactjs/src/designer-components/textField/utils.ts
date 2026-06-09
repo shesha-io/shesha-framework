@@ -1,9 +1,9 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { useSettingValue } from '@/providers/settings';
 import { ISettingIdentifier } from '@/providers/settings/models';
 import { useMemo } from 'react';
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },

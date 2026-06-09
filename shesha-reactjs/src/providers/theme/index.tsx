@@ -46,6 +46,8 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       setState((prev) => ({ ...prev, theme: applicationTheme.current }));
   }, []);
 
+  const getComponentStyle = useCallback((componentName: string) => state.theme?.components?.[componentName] ?? {}, [state.theme?.components]);
+
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme?.application;
     const themeDefaults: ThemeConfig['token'] = {};
@@ -80,6 +82,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
         value={{
           changeTheme,
           resetToApplicationTheme,
+          getComponentStyle,
         }}
       >
         <ConfigProvider

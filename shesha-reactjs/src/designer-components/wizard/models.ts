@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent, IStyleType } from '@/interfaces';
+import { IConfigurableFormComponent, IStyleValue } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { FormInstance } from 'antd';
 import { Steps } from 'antd';
@@ -13,7 +13,7 @@ export interface IStepFooterContainer {
   components?: IConfigurableFormComponent[];
 }
 
-export interface IWizardStepProps extends IStyleType {
+export interface IWizardStepProps extends IStyleValue {
   id: string;
   icon?: string;
   key: string;
@@ -79,7 +79,7 @@ export interface IStepProps extends StepProps {
   bodyContent?: React.JSX.Element;
 }
 
-export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Omit<IStyleType, 'size'> {
+export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Omit<IStyleValue, 'size'> {
   status?: StepStatus;
   steps: IWizardStepProps[];
   wizardType?: 'default' | 'navigation';

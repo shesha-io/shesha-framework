@@ -126,7 +126,7 @@ type CustomOmit<T, K extends keyof T> = {
 /** Extract settings from component definition */
 export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T, "id" | "type" | "hidden" | "readOnly"> & {
   id?: string;
-  // ToDo: AS - remove hidden from this check
+  // ToDo: AS - remove hidden after migration all components
   /** @deprecated Use `visible` instead (inversion of `hidden`) */
   hidden?: boolean | IPropertySetting<boolean> | undefined;
   readOnly?: boolean | IPropertySetting<boolean> | undefined;
@@ -142,27 +142,10 @@ export type AllComponentsConfig<T extends AllComponentDefinitions = AllComponent
   [K in T["type"]]: Extract<T, { type: K }> extends ComponentDefinition<infer _TType, infer TSettings> ? FluentSettings<TSettings> : never;
 };
 
-export type StandardEventHandler = 'onChange' | 'onBlur' | 'onFocus' | 'onClick';
+export type StandardEventHandler = 'onChange' | 'onBlur' | 'onFocus' | 'onClick' | 'onHover' | 'onKeyPress';
 export type StandardAppearancePanel = 'font' | 'dimensions' | 'border' | 'shadow' | 'background' | 'customStyle' | 'marginPadding';
 
-/** Fluent form builder */
-export type FluentFormBuilder<
-  TConfig extends Record<ComponentTypes, object>,
-> = {
-  [K in keyof TConfig as `add${ToPascalCase<K>}`]: K extends string
-    ? (props: TConfig[K], metadata?: IPropertyMetadata) => FluentFormBuilder<TConfig>
-    : never;
-} & {
-  // build actions
-  build(): string;
-  toJson(): IConfigurableFormComponent[];
-  /**
-   * Add a component by its toolbox type string. Use when the type is known dynamically (e.g. from `IPropertyMetadata.formatting.defaultEditor`).
-   * Falls back gracefully when the type isn't a registered toolbox component.
-   */
-  addByType<TProps extends FluentSettings<IConfigurableFormComponent>>(type: string, props: TProps, metadata?: IPropertyMetadata): FluentFormBuilder<TConfig>;
-} & {
-  // standart components and component groups
+export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, object> = Record<ComponentTypes, object>> = {
   stdPrefixSuffixInputs(visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
   stdVisibleEditableInputs(): FluentFormBuilder<TConfig>;
   stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
@@ -177,8 +160,26 @@ export type FluentFormBuilder<
   stdShadowPanel(): FluentFormBuilder<TConfig>;
   stdMarginPaddingPanel(propertyName?: string): FluentFormBuilder<TConfig>;
   stdCustomStylePanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdAppearancePanels(appearancePanels: StandardAppearancePanel[]): FluentFormBuilder<TConfig>;
+  stdAppearancePanels(appearancePanels: StandardAppearancePanel[], removeStyleRouter?: boolean): FluentFormBuilder<TConfig>;
 };
+
+/** Fluent form builder */
+export type FluentFormBuilder<TConfig extends Record<ComponentTypes, object>> = {
+  [K in keyof TConfig as `add${ToPascalCase<K>}`]: K extends string
+    ? (props: TConfig[K], metadata?: IPropertyMetadata) => FluentFormBuilder<TConfig>
+    : never;
+} & {
+  // build actions
+  build(): string;
+  toJson(): IConfigurableFormComponent[];
+  /**
+   * Add a component by its toolbox type string. Use when the type is known dynamically (e.g. from `IPropertyMetadata.formatting.defaultEditor`).
+   * Falls back gracefully when the type isn't a registered toolbox component.
+   */
+  addByType<TProps extends FluentSettings<IConfigurableFormComponent>>(type: string, props: TProps, metadata?: IPropertyMetadata): FluentFormBuilder<TConfig>;
+} &
+// standart components and component groups
+StandardFormBuilderMethods<TConfig>;
 
 /** Fluent form builder */
 export type FormBuilder = FluentFormBuilder<AllComponentsConfig>;

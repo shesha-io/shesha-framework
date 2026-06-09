@@ -1,10 +1,9 @@
 import { ComponentDefinition } from '@/interfaces';
-import { IStyleType } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { listType } from '../attachmentsEditor/attachmentsEditor';
+import { ListType } from '../attachmentsEditor/attachmentsEditor';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
-export interface IFileUploadProps extends IConfigurableFormComponent, IStyleType {
+export interface IFileUploadProps extends IConfigurableFormComponent {
   ownerId: string;
   ownerType: string | IEntityTypeIdentifier;
   allowUpload?: boolean;
@@ -13,7 +12,7 @@ export interface IFileUploadProps extends IConfigurableFormComponent, IStyleType
   useSync?: boolean;
   allowedFileTypes?: string[];
   isDragger?: boolean;
-  listType?: listType;
+  listType?: ListType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;

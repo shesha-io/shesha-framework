@@ -1,11 +1,11 @@
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
-import { IStyleType } from '@/providers/form/models';
+import { IStyleValue } from '@/providers/form/models';
 import { CSSProperties } from 'react';
 
-type DefaultStyles = Omit<IStyleType, 'style'> & {
+type DefaultStyles = Omit<IStyleValue, 'style'> & {
   titleFont: IFontValue;
   valueFont: IFontValue;
-  style: IStyleType['style'] | CSSProperties;
+  style: IStyleValue['style'] | CSSProperties;
 };
 
 export const defaultStyles = (): DefaultStyles => {

@@ -6,13 +6,13 @@ import { IAddressCompomentProps } from './models';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
 import { customAddressEventHandler } from '@/components/formDesigner/components/utils';
-import { IStyleType, UnwrapCodeEvaluators } from '@/providers/form/models';
+import { IStyleValue, UnwrapCodeEvaluators } from '@/providers/form/models';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 
 interface IAutoCompletePlacesFieldProps extends UnwrapCodeEvaluators<IAddressCompomentProps> {
   value?: any;
   onChange?: (...args) => void;
-  font?: IStyleType['font'];
+  font?: IStyleValue['font'];
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {

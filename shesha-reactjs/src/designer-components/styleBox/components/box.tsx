@@ -1,18 +1,31 @@
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, { FC, useRef } from 'react';
 import BoxInput from './input';
 import { useStyles } from '../styles/styles';
+import { StyleBoxValue } from '../../../providers/form/models';
+import { getStyleBoxValue } from '../utils';
 
 interface IProps {
   className?: string;
-  onChange?: Function;
+  onChange?: (value: StyleBoxValue) => void;
   readOnly?: boolean;
-  value?: string;
+  value?: StyleBoxValue;
+  propertyName?: string;
 }
 
-const Box: FC<IProps> = ({ className, onChange, readOnly, value }) => {
-  const commonProps = { onChange, readOnly, value };
+const Box: FC<IProps> = ({ className, onChange, readOnly, value, propertyName }) => {
   const { styles } = useStyles();
+
+  // need to store the value locally because internal components may not be rendered and will use the old value
+  const localValue = useRef(value);
+  localValue.current = value;
+
+  const onChangeInternal = (val: Partial<StyleBoxValue>): void => {
+    // ensure the value is a valid style box
+    onChange?.(getStyleBoxValue({ ...localValue.current, ...val }));
+  };
+
+  const commonProps = { onChange: onChangeInternal, readOnly, value, propertyName };
 
   return (
     <div className={classNames(styles.shaStyleBox, className)}>

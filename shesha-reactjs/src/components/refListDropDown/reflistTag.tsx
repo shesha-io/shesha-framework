@@ -5,16 +5,16 @@ import React, { CSSProperties } from 'react';
 import { ShaIcon, IconType } from '../shaIcon';
 
 interface IReflistTagProps {
-  value?: string | number;
-  description?: string;
-  color?: string;
-  icon?: string;
-  showIcon?: boolean;
-  tagStyle?: CSSProperties;
-  solidColor?: boolean;
-  showItemName?: boolean;
-  label?: string | React.ReactNode;
-  placement?: TooltipProps['placement'];
+  value?: string | number | undefined;
+  description?: string | undefined;
+  color?: string | undefined;
+  icon?: string | undefined;
+  showIcon?: boolean | undefined;
+  tagStyle?: CSSProperties | undefined;
+  solidColor?: boolean | undefined;
+  showItemName?: boolean | undefined;
+  label?: string | React.ReactNode | undefined;
+  placement?: TooltipProps['placement'] | undefined;
 }
 function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps): React.JSX.Element {
   const memoizedColor = !solidColor

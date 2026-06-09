@@ -5,7 +5,7 @@ import { IModelMetadata, IPropertyMetadata, isPropertiesArray, isPropertiesLoade
 import { camelcaseDotNotation, toCamelCase, humanizeString } from '@/utils/string';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
-import { IStyleType } from '@/providers/form/models';
+import { IStyleValue } from '@/providers/form/models';
 import { isNonEmptyArray } from '@/utils/array';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
@@ -98,7 +98,7 @@ export const filterVisibility =
         : true;
     };
 
-export const defaultStyles = (): Required<Pick<IStyleType, 'background' | 'font' | 'border' | 'dimensions' | 'shadow'>> => {
+export const defaultStyles = (): Required<Pick<IStyleValue, 'background' | 'font' | 'border' | 'dimensions' | 'shadow'>> => {
   return {
     background: { type: 'color', color: '#fff' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },
