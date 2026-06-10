@@ -7,6 +7,7 @@ using Abp.Localization;
 using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using Shesha.Utilities;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,7 +45,9 @@ namespace Shesha.Authorization
             string method,
             string objectType,
             bool IsAuthenticated,
-            RefListPermissionedAccess? replaceInherited = null)
+            RefListPermissionedAccess? defaultAccess = null,
+            List<string>? defaultPermissions = null
+            )
         {
             if (!_authConfiguration.IsEnabled)
             {
@@ -56,9 +59,12 @@ namespace Shesha.Authorization
 
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(permissionName, objectType);
 
-            var actualAccess = replaceInherited != null && permission?.ActualAccess == RefListPermissionedAccess.Inherited
-                ? replaceInherited
+            var actualAccess = defaultAccess != null && permission?.ActualAccess == RefListPermissionedAccess.Inherited
+                ? defaultAccess
                 : permission?.ActualAccess;
+            var actualPermissions = defaultPermissions != null && defaultAccess == RefListPermissionedAccess.RequiresPermissions
+                ? defaultPermissions
+                : permission?.ActualPermissions;
 
             if (permission == null
                 || actualAccess == RefListPermissionedAccess.AllowAnonymous
@@ -79,7 +85,7 @@ namespace Shesha.Authorization
                 );
             }
             if (actualAccess == RefListPermissionedAccess.RequiresPermissions
-                && (permission.ActualPermissions == null || !permission.ActualPermissions.Any())
+                && (actualPermissions == null || !actualPermissions.Any())
             )
             {
                 throw new AbpAuthorizationException(
@@ -89,7 +95,7 @@ namespace Shesha.Authorization
 
             var ty = _permissionChecker.GetType();// (_permissionChecker as IProxyTargetAccessor).DynProxyGetTarget().GetType();
             // ToDo: add RequireAll flag
-            await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions?.ToArray());
+            await _permissionChecker.AuthorizeAsync(false, actualPermissions?.ToArray());
         }
     }
 }
