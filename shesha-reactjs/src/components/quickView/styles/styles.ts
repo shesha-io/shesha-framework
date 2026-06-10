@@ -53,19 +53,16 @@ export const useStyles = createStyles(({ css }) => {
     }
 
     .ant-form-item-control-input-content {
-      > .read-only-display-form-item {
+      .read-only-display-form-item {
         width: 100%;
         max-width: 100%;
-        height: auto !important;
-        overflow: visible !important;
-        white-space: normal !important;
-        word-break: break-word;
-        overflow-wrap: anywhere;
+        height: auto;
+        overflow: visible;
       }
 
-      .read-only-display-form-item * {
-        overflow: visible !important;
-        text-overflow: clip !important;
+      .read-only-display-form-item > *:not(.ant-tag):not([data-tag-wrapper="true"]) {
+        overflow: visible;
+        text-overflow: clip;
         white-space: normal !important;
         word-break: break-word;
         overflow-wrap: anywhere;
