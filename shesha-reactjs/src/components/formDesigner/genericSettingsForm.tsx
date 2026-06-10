@@ -58,6 +58,14 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     currentDevice.current = designerDevice;
   }, [designerDevice, defaultModel, toolboxComponent.allowInherit]);
 
+  // Keep the Ant Design form store in sync when the component model changes externally.
+  // initialValues is applied once on mount, so without this sync any field managed outside
+  // the settings panel (e.g. a canvas-side onChange) remains stale in allValues and gets
+  // written back through onValuesChange → auto-save.
+  useEffect(() => {
+    form.setFieldsValue(model);
+  }, [model]);
+
   const isMounted = useRef(true);
   useEffect(() => {
     return () => {

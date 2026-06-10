@@ -13,6 +13,7 @@ import GuidType from './types/guid';
 import { expressionFunc } from './funcs/expression';
 import { JavaScriptWidget } from './widgets/javascript/index';
 import { FieldWidget } from './widgets/field';
+import { ExpressionEditorWidget } from './widgets/mustacheExpression';
 
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
@@ -145,6 +146,8 @@ const widgets = {
   date: custonDateWidget,
   specification: SpecificationWidget,
   javascript: JavaScriptWidget,
+  mustacheExpression: ExpressionEditorWidget,
+  expressionEditor: ExpressionEditorWidget,
   field: FieldWidget,
 };
 
