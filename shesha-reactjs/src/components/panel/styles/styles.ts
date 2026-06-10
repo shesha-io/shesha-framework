@@ -99,7 +99,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
   const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
-    &.${hideWhenEmpty}:not(:has(.ant-collapse-body .sha-component)):not(:has(.${prefixCls}-collapse-content-box .sha-component)) {
+    &.${hideWhenEmpty}:not(:has(.ant-collapse-body .sha-component)):not(:has(.${prefixCls}-collapse-content-box .sha-component)):not(:has(.ant-collapse-body .ant-form-item)) {
       display: none;
     }
     --primary-color: ${token.colorPrimary};
