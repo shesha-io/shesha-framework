@@ -27,6 +27,7 @@ export const APPEARANCE_EXTRA_PROPERTIES: Record<string, string[]> = {
   // the component's appearance, so allow theming/previewing it from the appearance panel.
   fileUpload: ['listType'],
   attachmentsEditor: ['listType'],
+  link: ['hasChildren'],
 };
 
 /** A markup node that carries child inputs (e.g. settingsInputRow). */

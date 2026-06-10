@@ -28,6 +28,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
       return allData.form?.formMode === 'designer' ? null : executeScript(model.initialDataCode, allData);
     }, [model.initialDataCode]);
 
+    
     return (
       <DataContextProvider
         {...model}

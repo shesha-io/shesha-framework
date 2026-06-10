@@ -4,35 +4,11 @@ import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from './styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from './toolboxComponents';
 import { ConfigurableForm } from '@/components/configurableForm';
-import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
-import {
-  IConfigurableFormComponent,
-  isConfigurableFormComponent,
-  isRawComponentsContainer,
-} from '@/providers/form/models';
-import { ITabPaneProps } from '@/designer-components/propertiesTabs/models';
-import { makeFormBuliderFactory } from '@/form-factory/implementation';
+import { FormMarkup } from '@/providers/form/models';
 import { ItemType } from 'antd/es/menu/interface';
 import { deepCopyViaJson, deepMergeValues } from '@/utils/object';
-import {
-  getPreviewComponentProps,
-  getPreviewFormData,
-  isInputComponent,
-  PREVIEW_PROPERTY_NAME,
-} from './previewData';
-import { getExtraAppearanceComponents } from './appearanceAdapter';
-
-/** Markup node that wraps designer settings tabs (e.g. Appearance). */
-export interface SearchableTabsMarkup extends IConfigurableFormComponent {
-  type: 'propertiesTabs' | 'searchableTabs';
-  tabs: ITabPaneProps[];
-}
-
-function isSearchableTabsMarkup(c: unknown): c is SearchableTabsMarkup {
-  if (!isConfigurableFormComponent(c)) return false;
-  if (c.type !== 'propertiesTabs' && c.type !== 'searchableTabs') return false;
-  return Array.isArray((c as { tabs?: unknown }).tabs);
-}
+import { buildPreviewComponents, getPreviewFormData, previewNeedsDesignerMode } from './previewData';
+import { getAppearanceMarkup } from './appearanceMarkup';
 
 export interface IComponentDefaultsPanelProps {
   value?: IConfigurableTheme;
@@ -45,10 +21,6 @@ export interface IComponentDefaultsPanelProps {
  */
 export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readonly }) => {
   const { styles } = useStyles();
-  const [selectedKey, setSelectedKey] = useState<string>('button');
-
-  const selectedNode = useMemo(() => findComponentNode(selectedKey), [selectedKey]);
-  const componentType = selectedNode?.type;
 
   // Convert tree data to Ant Design Menu format with groups
   const menuData = useMemo(() => {
@@ -61,80 +33,40 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     return getMenuItems().map(convertComponent);
   }, []);
 
-  // Get component definition and extract appearance tab components
-  const appearanceMarkup = useMemo(() => {
-    if (!componentType) return null;
-
-    const componentDefinitions = getComponentDefinitions();
-    const componentDef = componentDefinitions.get(componentType);
-
-    if (!componentDef?.settingsFormMarkup) return null;
-
-    // Get the settings form markup (could be a function or object)
-    let settingsFormMarkup = componentDef.settingsFormMarkup;
-
-    // If it's a function (SettingsFormMarkupFactory), execute it to get the markup
-    if (typeof settingsFormMarkup === 'function') {
-      const formBuilderFactory = makeFormBuliderFactory();
-      settingsFormMarkup = settingsFormMarkup({ fbf: formBuilderFactory });
-    }
-
-    // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)
-    const components: IConfigurableFormComponent[] | undefined = Array.isArray(settingsFormMarkup)
-      ? settingsFormMarkup
-      : settingsFormMarkup?.components;
-    const formSettings = Array.isArray(settingsFormMarkup) ? undefined : settingsFormMarkup?.formSettings;
-
-    if (!components) return null;
-
-    const searchableTabs = components.find(isSearchableTabsMarkup);
-    if (!searchableTabs) return null;
-
-    const appearanceTab = searchableTabs.tabs.find(
-      (tab) => tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance',
-    );
-
-    const tabComponents: unknown = appearanceTab?.components;
-    const appearanceMarkupComponents: IConfigurableFormComponent[] | undefined = Array.isArray(tabComponents)
-      ? tabComponents
-      : isRawComponentsContainer(tabComponents)
-        ? tabComponents.components
-        : undefined;
-
-    if (!appearanceMarkupComponents) return null;
-
-    // Surface configured properties that live on other tabs (e.g. fileUpload's `listType`) so they
-    // can be themed/previewed from the appearance panel. See ./appearanceAdapter.
-    const extraComponents = getExtraAppearanceComponents(componentType, components);
-
-    return {
-      components: [...extraComponents, ...appearanceMarkupComponents],
-      formSettings: formSettings ?? undefined,
+  // Default to the first styleable component in the (filtered) menu so the panel never starts on a
+  // component that was filtered out.
+  const defaultKey = useMemo(() => {
+    const firstLeaf = (items: IMenuItem[]): IMenuItem | undefined => {
+      for (const item of items) {
+        if (item.type) return item;
+        const found = item.children && firstLeaf(item.children);
+        if (found) return found;
+      }
+      return undefined;
     };
-  }, [componentType]);
+    return firstLeaf(getMenuItems())?.key ?? 'button';
+  }, []);
+
+  const [selectedKey, setSelectedKey] = useState<string>(defaultKey);
+
+  const selectedNode = useMemo(() => findComponentNode(selectedKey), [selectedKey]);
+  const componentType = selectedNode?.type;
+
+  // Extract the appearance tab components for the selected component (shared with the menu filter).
+  const appearanceMarkup = useMemo(() => getAppearanceMarkup(componentType), [componentType]);
 
   // Build the preview markup + data once per selected component. Dummy content/children/values are
-  // injected so the component renders something visible (see ./previewData). Memoised because the
-  // dummy children use generated ids that should stay stable across re-renders.
+  // injected so the component renders something visible (see ./previewData). Data-bound components
+  // (table / datalist) are wrapped in a Data Context bound to the seeded `Shesha.Core.DummyTable`,
+  // exactly as the designer does, so they render the same sample rows. Memoised because the dummy
+  // children use generated ids that should stay stable across re-renders.
   const previewConfig = useMemo(() => {
     if (!selectedNode?.type) return null;
 
     const type = selectedNode.type;
-    // Input components bind to a known property name so their dummy value is displayed.
-    const propertyName = isInputComponent(type) ? PREVIEW_PROPERTY_NAME : `${type}Appearance`;
-
-    const previewComponent: IConfigurableFormComponent = {
-      type,
-      id: selectedNode.key,
-      propertyName,
-      label: selectedNode.title,
-      parentId: 'root',
-      hidden: false,
-      ...getPreviewComponentProps(type),
-    } as IConfigurableFormComponent;
 
     const markup = {
-      components: [previewComponent],
+      components: buildPreviewComponents(type, selectedNode.key, selectedNode.title),
       formSettings: {
         colon: theme?.colon,
         layout: theme?.layout,
@@ -143,7 +75,11 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       },
     };
 
-    return { markup, data: getPreviewFormData(type, theme ?? {}) };
+    // Some components (e.g. DataList) only render their sample rows in designer mode — see
+    // previewNeedsDesignerMode. Others preview correctly in plain edit mode.
+    const mode: 'designer' | 'edit' = previewNeedsDesignerMode(type) ? 'designer' : 'edit';
+
+    return { markup, data: getPreviewFormData(type, theme ?? {}), mode };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNode?.key, selectedNode?.type, theme]);
 
@@ -198,7 +134,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
           {appearanceMarkup && componentType ? (
             <ConfigurableForm
               mode={readonly ? 'readonly' : 'edit'}
-              markup={appearanceMarkup}
+              markup={appearanceMarkup as FormMarkup}
               initialValues={theme ?? {}}
               onValuesChange={handleFormDataChange}
               className={styles.appearanceForm}
@@ -221,8 +157,11 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
               <span style={{ color: '#999', fontSize: '12px' }}>
                 Preview of {selectedNode?.title?.toLowerCase() || 'the component'} with sample data
               </span>
+              {/* The preview markup itself carries any required context (e.g. a Data Context bound to
+                  Shesha.Core.DummyTable for tables/datalists — see buildPreviewComponents), so the
+                  component renders exactly as it does on the designer canvas. */}
               <ConfigurableForm
-                mode="edit"
+                mode={previewConfig.mode}
                 markup={previewConfig.markup}
                 initialValues={previewConfig.data}
                 className={styles.appearanceForm}
