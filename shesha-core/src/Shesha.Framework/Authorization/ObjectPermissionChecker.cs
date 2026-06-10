@@ -62,9 +62,6 @@ namespace Shesha.Authorization
             var actualAccess = defaultAccess != null && permission?.ActualAccess == RefListPermissionedAccess.Inherited
                 ? defaultAccess
                 : permission?.ActualAccess;
-            var actualPermissions = defaultPermissions != null && defaultAccess == RefListPermissionedAccess.RequiresPermissions
-                ? defaultPermissions
-                : permission?.ActualPermissions;
 
             if (permission == null
                 || actualAccess == RefListPermissionedAccess.AllowAnonymous
@@ -84,6 +81,11 @@ namespace Shesha.Authorization
                     _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "NotFound") ?? "Not found"
                 );
             }
+
+            var actualPermissions = permission?.ActualAccess == RefListPermissionedAccess.Inherited && defaultAccess == RefListPermissionedAccess.RequiresPermissions
+                ? defaultPermissions
+                : permission?.ActualPermissions;
+
             if (actualAccess == RefListPermissionedAccess.RequiresPermissions
                 && (actualPermissions == null || !actualPermissions.Any())
             )
