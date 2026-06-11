@@ -15,6 +15,7 @@ import { listType } from '@/designer-components/attachmentsEditor/attachmentsEdi
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useFileUploadState, useSheshaApplication, useFileUpload, useTheme } from '@/providers';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
+import { StoredFileModel } from '@/utils/storedFile/models';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
@@ -76,12 +77,44 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [imageUrl, setImageUrl] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
+  // Cache blob URL created from uploaded File object to avoid immediate server round-trip
+  const uploadedFileBlobUrl = useRef<string | null>(null);
 
-  const isUploading = false; // TODO: replace with status of file
+  const isUploading = fileInfo?.status === 'uploading';
 
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
+
+  // Clean up blob URL on unmount
   useEffect(() => {
-    if (fileInfo && url) {
+    return () => {
+      if (uploadedFileBlobUrl.current) {
+        URL.revokeObjectURL(uploadedFileBlobUrl.current);
+        uploadedFileBlobUrl.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!fileInfo) {
+      // Clear image URL if no file
+      setImageUrl('');
+      if (uploadedFileBlobUrl.current) {
+        URL.revokeObjectURL(uploadedFileBlobUrl.current);
+        uploadedFileBlobUrl.current = null;
+      }
+      return;
+    }
+
+    // For newly uploaded files, use the blob URL if available
+    // Keep using it even when status becomes 'done' to avoid fetching from server
+    if (uploadedFileBlobUrl.current) {
+      setImageUrl(uploadedFileBlobUrl.current);
+      return;
+    }
+
+    // For persisted files with done status, fetch from server
+    // Only fetch if we don't have a local blob URL (i.e., file was loaded from backend, not just uploaded)
+    if (fileInfo.status === 'done' && url) {
       fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
         .then((response) => response.blob())
         .then((blob) => URL.createObjectURL(blob))
@@ -91,13 +124,29 @@ export const FileUpload: FC<IFileUploadProps> = ({
           throw error;
         });
     }
-  }, [fileInfo]);
+  }, [fileInfo, url]);
 
   const onCustomRequest: UploadProps['customRequest'] = ({ file }): void => {
     if (file instanceof File) {
+      // For image files, create a blob URL directly from the File object to avoid
+      // an immediate server round-trip for the thumbnail right after upload
+      const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+      if (isImageType(fileExt)) {
+        // Clean up any previous blob URL
+        if (uploadedFileBlobUrl.current) {
+          URL.revokeObjectURL(uploadedFileBlobUrl.current);
+        }
+        uploadedFileBlobUrl.current = URL.createObjectURL(file);
+      }
+
       uploadFile({ file }).then(() => {
         callback?.();
       }).catch((error) => {
+        // Clean up blob URL if upload failed
+        if (uploadedFileBlobUrl.current) {
+          URL.revokeObjectURL(uploadedFileBlobUrl.current);
+          uploadedFileBlobUrl.current = null;
+        }
         console.error('Failed to upload file', error);
         throw error;
       });
@@ -142,11 +191,12 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const onPreview = (): void => {
     if (fileInfo) {
-      if (!url) {
+      const previewUrl = imageUrl || url;
+      if (!previewUrl) {
         message.error('Preview URL not available');
         return;
       }
-      setPreviewImage({ url, uid: fileInfo?.id, name: fileInfo?.name });
+      setPreviewImage({ url: previewUrl, uid: fileInfo?.id, name: fileInfo?.name });
       setPreviewOpen(true);
     }
   };
@@ -184,14 +234,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </Space>
   );
 
-  const iconRender = (fileInfo): React.JSX.Element => {
+  const iconRender = (fileInfo: StoredFileModel): React.JSX.Element => {
     const { type, name } = fileInfo;
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
         return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls} />;
       }
     }
-    return getFileIcon(type);
+    return getFileIcon(type, {});
   };
 
   const styledfileControls = (): React.JSX.Element =>
@@ -219,7 +269,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
                   style={{ marginRight: '5px' }}
                   onClick={isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })}
                 >
-                  {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file?.size || 0)})`}
+                  {listType !== 'thumbnail' && getFileIcon(file?.type, {})} {`${file.name} (${filesize(file?.size || 0)})`}
                 </a>
               )}
               {showTextControls && fileControls(theme.application.primaryColor)}
@@ -235,8 +285,8 @@ export const FileUpload: FC<IFileUploadProps> = ({
     disabled: !allowUpload,
     accept: allowedFileTypes?.join(','),
     multiple: false,
+    fileList: fileInfo && fileInfo.status !== 'error' ? [fileInfo] : [],
     maxCount: 1,
-    fileList: fileInfo ? [fileInfo] : [],
     style: !isDragger && listType !== 'thumbnail' ? stylesProp : undefined,
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
@@ -261,7 +311,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const uploadButton = (
     allowUpload && (
       <Button
-        icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
+        icon={!fileInfo || fileInfo.status === 'error' ? <UploadOutlined /> : <PictureOutlined />}
         type="link"
         disabled={!showUploadButton}
       >
@@ -293,6 +343,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const renderUploader = (): React.JSX.Element => {
     const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';
+    const showUpload = !fileInfo || fileInfo.status === 'error';
 
     if (isDragger && allowUpload) {
       return (
@@ -307,7 +358,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       <div>
         {!isUploading && (
           <Upload {...fileProps} listType={antListType}>
-            {!fileInfo && uploadButton}
+            {showUpload && uploadButton}
           </Upload>
         )}
       </div>
@@ -353,7 +404,23 @@ export const FileUpload: FC<IFileUploadProps> = ({
               e.target.value = '';
               return;
             }
+
+            // For image files, create a blob URL for immediate display
+            const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+            if (isImageType(fileExt)) {
+              // Clean up any previous blob URL
+              if (uploadedFileBlobUrl.current) {
+                URL.revokeObjectURL(uploadedFileBlobUrl.current);
+              }
+              uploadedFileBlobUrl.current = URL.createObjectURL(file);
+            }
+
             uploadFile({ file }).then(() => callback?.()).catch((error) => {
+              // Clean up blob URL if upload failed
+              if (uploadedFileBlobUrl.current) {
+                URL.revokeObjectURL(uploadedFileBlobUrl.current);
+                uploadedFileBlobUrl.current = null;
+              }
               console.error('Failed to upload file', error);
               throw error;
             });

@@ -5,6 +5,7 @@ import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { IFormComponentStyles, IInputStyles, IStyleType } from '@/providers/form/models';
 import { addPx } from '@/utils/style';
 import { useAvailableConstantsData } from '@/providers/form/utils';
+import { STORED_FILE_URLS } from '@/utils/storedFile/models';
 import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
@@ -35,6 +36,7 @@ import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel, UploadFileAsAttachmentArgs } from '@/utils/storedFile/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { ValidationErrors } from '../validationErrors';
+import { buildUrl } from '@/utils';
 
 interface IUploaderFileTypes {
   name: string;
@@ -86,7 +88,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  gap?: string | number | undefined;
   container?: IStyleType;
   allStyles?: IFormComponentStyles;
   enableStyleOnReadonly?: boolean;
@@ -139,7 +140,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   ...rest
 }) => {
   const { message, notification } = App.useApp();
-  const { httpHeaders } = useSheshaApplication();
+  const { backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
@@ -147,7 +148,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const [fileToReplace, setFileToReplace] = useState<{ uid: string; id: string } | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
-  // Track blob URLs and their revoke functions to prevent memory leaks
+  // Cache blob URLs created from uploaded File objects to avoid immediate server round-trip
+  const uploadedFileBlobUrls = useRef<Map<string, string>>(new Map());
   const model = rest;
 
   // Handler for replacing a file
@@ -262,8 +264,44 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       const newImageUrls: { [key: string]: string } = {};
       for (const file of fileList) {
         if (isImageType(file.type)) {
+          // Preserve existing URL to avoid unnecessary re-fetches
+          if (imageUrlsRef.current[file.uid]) {
+            newImageUrls[file.uid] = imageUrlsRef.current[file.uid];
+            continue;
+          }
+
+          // Check for blob URL from recent upload (avoids server round-trip immediately after upload).
+          // Keep the cache entry while the file is still uploading: the instance will replace the
+          // temp uid (nanoid) with the server-assigned GUID on completion, triggering a second
+          // fetchImages run with a different uid but the same name/size key.
+          const tempKey = `${file.name}_${file.size}`;
+          const blobUrl = uploadedFileBlobUrls.current.get(tempKey);
+          if (blobUrl) {
+            newImageUrls[file.uid] = blobUrl;
+            if (file.status !== 'uploading') {
+              uploadedFileBlobUrls.current.delete(tempKey);
+            }
+            continue;
+          }
+
           try {
-            const { url: imageUrl, revoke } = await fetchStoredFile(file.url, httpHeaders);
+            if (!file.id) {
+              continue;
+            }
+            const queryParams = {
+              id: file?.id,
+              width: model?.dimensions?.width ? parseFloat(`${model.dimensions.width}`) : undefined,
+              height: model?.dimensions?.height ? parseFloat(`${model.dimensions.height}`) : undefined,
+            };
+
+            // Filter out undefined/NaN values
+            const cleanedParams = Object.fromEntries(
+              Object.entries(queryParams).filter(([_, v]) => v !== undefined && !Number.isNaN(v)),
+            );
+
+            const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}`, cleanedParams);
+
+            const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
             if (isCancelled) {
               // Cleanup if cancelled after fetch completes
               revoke();
@@ -303,6 +341,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     };
   }, [fileList, httpHeaders]);
 
+  // Clean up uploaded blob URLs on component unmount to prevent memory leaks
+  useEffect(() => {
+    const blobUrls = uploadedFileBlobUrls.current;
+    return () => {
+      blobUrls.forEach((url) => {
+        URL.revokeObjectURL(url);
+      });
+      blobUrls.clear();
+    };
+  }, []);
 
   const handlePreview = (file: UploadFile): void => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
@@ -324,7 +372,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
 
 
-    return getFileIcon(type, model.allStyles?.fontStyles?.fontSize);
+    return getFileIcon(type, { fontSize: model.allStyles?.fontStyles?.fontSize });
   };
 
   // Helper function to get or create cached file context data
@@ -370,13 +418,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               }}
             />
           )}
-          {allowDelete && !disabled && (
+          {allowDelete && !disabled && persistedFileId && (
             <Popconfirm
               title="Delete Attachment"
               onConfirm={(e) => {
                 e?.preventDefault();
                 e?.stopPropagation();
-                deleteFile(file.uid).catch((error) => {
+                deleteFile(persistedFileId).catch((error) => {
                   console.error('Failed to delete file', error);
                   throw error;
                 });
@@ -402,18 +450,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               }}
             />
           )}
-          <Button
-            size="small"
-            icon={<DownloadOutlined />}
-            title="Download file"
-            onClick={(e) => {
-              e.stopPropagation();
-              downloadFile({ fileId: file.uid, fileName: file.name }).catch((error) => {
-                console.error('Failed to download file', error);
-                throw error;
-              });
-            }}
-          />
+          {persistedFileId && (
+            <Button
+              size="small"
+              icon={<DownloadOutlined />}
+              title="Download file"
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadFile({ fileId: persistedFileId, fileName: file.name }).catch((error) => {
+                  console.error('Failed to download file', error);
+                  throw error;
+                });
+              }}
+            />
+          )}
           {/* Custom Actions Button Group */}
           {customActions && customActions.length > 0 && (
             <div onClick={(e) => e.stopPropagation()}>
@@ -440,13 +490,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     );
 
     const handleItemClick = (e: React.MouseEvent): void => {
+      // Only allow interaction with persisted files (those with a GUID)
+      if (!persistedFileId) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       // If it's an image, trigger preview instead of download
       if (isImageType(file.type)) {
         e.preventDefault();
         e.stopPropagation();
         handlePreview(file);
       } else {
-        downloadFile({ fileId: file.uid, fileName: file.name }).catch((error) => {
+        downloadFile({ fileId: persistedFileId, fileName: file.name }).catch((error) => {
           console.error('Failed to download file', error);
           throw error;
         });
@@ -521,7 +578,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     name: '',
     accept: allowedFileTypes?.join(','),
     multiple,
-    fileList,
+    fileList: fileList.filter((f) => f.status !== 'error'),
     disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
@@ -533,8 +590,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
+      const file = options.file;
+      const tempKey = `${file.name}_${file.size}`;
+      let blobUrl: string | null = null;
 
-      uploadFile({ file: options.file, ownerId, ownerType }).catch((error) => {
+      // For image files, create a blob URL directly from the File object to avoid
+      // an immediate server round-trip for the thumbnail right after upload.
+      // file.type is the browser MIME type (e.g. 'image/jpeg'), but isImageType expects
+      // the extension format (e.g. '.jpg'), so derive the extension from the file name.
+      const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+      if (isImageType(fileExt)) {
+        blobUrl = URL.createObjectURL(file);
+        uploadedFileBlobUrls.current.set(tempKey, blobUrl);
+      }
+
+      uploadFile({ file, ownerId, ownerType }).catch((error) => {
+        // Clean up blob URL if upload failed
+        if (blobUrl) {
+          URL.revokeObjectURL(blobUrl);
+          uploadedFileBlobUrls.current.delete(tempKey);
+        }
         console.error('Failed to upload file', error);
         throw error;
       });

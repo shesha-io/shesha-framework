@@ -111,7 +111,18 @@ export class StoredFileHelper implements IStoredFileHelper {
         formData.append('ownerType.name', ownerType.name);
         formData.append('ownerType.module', ownerType.module ?? "");
       } else {
-        formData.append('ownerType.entityType', ownerType);
+        // Parse string format "Module.Name" into separate parts
+        const lastDotIndex = ownerType.lastIndexOf('.');
+        if (lastDotIndex > 0) {
+          const module = ownerType.substring(0, lastDotIndex);
+          const name = ownerType.substring(lastDotIndex + 1);
+          formData.append('ownerType.name', name);
+          formData.append('ownerType.module', module);
+        } else {
+          // No module, just name
+          formData.append('ownerType.name', ownerType);
+          formData.append('ownerType.module', "");
+        }
       }
     }
     if (!isNullOrWhiteSpace(ownerName))

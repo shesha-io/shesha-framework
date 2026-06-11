@@ -190,19 +190,32 @@ export class FileUploadInstance implements IFileUpload {
     this.uploadMode = args.uploadMode;
 
     // TODO: check current state and sync if required
-    if (this.uploadMode === 'async')
+
+    // Only fetch file info if we need it and don't already have it
+    // This avoids unnecessary fetch after upload (which already returns file info)
+    const shouldFetch = this.uploadMode === 'async' &&
+      (this.fileId || this.getValidFileReference()) &&
+      (!this.fileInfo || this.fileInfo.id !== this.fileId);
+
+    if (shouldFetch) {
       void this.fetchFileInfo();
+    } else if (this.uploadMode === 'async' && !this.fileId && !this.getValidFileReference()) {
+      // Clear stale fileInfo when there's no valid target to prevent showing old data
+      this.clearFileInfo();
+    }
   };
 
   fetchFileInfo = async (): Promise<void> => {
     if (this.fileId) {
-      await this.#fileHelper.fetchFileInfoByIdAsync(this.fileId);
+      const fileDto = await this.#fileHelper.fetchFileInfoByIdAsync(this.fileId);
+      this.updateFileInfo(() => storedFileDtoToModel(fileDto));
       return;
     }
 
     const filereference = this.getValidFileReference();
     if (filereference) {
-      await this.#fileHelper.fetchFileInfoByReferenceAsync(filereference);
+      const fileDto = await this.#fileHelper.fetchFileInfoByReferenceAsync(filereference);
+      this.updateFileInfo(() => storedFileDtoToModel(fileDto));
       return;
     }
   };

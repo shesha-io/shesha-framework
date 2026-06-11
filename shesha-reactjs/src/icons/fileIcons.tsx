@@ -29,12 +29,12 @@ export const fileIcons = {
   "default": { color: '#848588', icon: PaperClipOutlined },
 };
 
-export const getFileIcon = (type: string, fontSize?: string | number): React.JSX.Element => {
+export const getFileIcon = (type: string, style: React.CSSProperties): React.JSX.Element => {
   const fileIcon = fileIcons[type] || fileIcons.default;
   const Icon = fileIcon.icon;
-  const style = { color: fileIcon.color, fontSize };
+  const iconsStyle = { color: fileIcon.color, ...style };
 
   return fileIcon.fill
-    ? <Icon fill={fileIcon.color} style={style} />
-    : <Icon style={style} />;
+    ? <Icon fill={style.color ?? fileIcon.color} style={iconsStyle} />
+    : <Icon style={iconsStyle} />;
 };

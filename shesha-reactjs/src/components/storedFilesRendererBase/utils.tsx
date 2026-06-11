@@ -5,7 +5,6 @@ import filesize from 'filesize';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import { FormIdentifier } from '@/providers/form/models';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import { buildUrl } from '@/utils/url';
 import { StoredFileModel } from '@/utils/storedFile/models';
 import { ConfigurableForm } from '../configurableForm';
 import DateDisplay from '../dateDisplay';
@@ -91,8 +90,7 @@ export const fetchStoredFile = async (
   url: string,
   httpHeaders: Record<string, string> = {},
 ): Promise<IFetchStoredFileResult> => {
-  const fetchUrl = buildUrl(url, { skipMarkDownload: 'true' });
-  const response = await fetch(fetchUrl, {
+  const response = await fetch(url, {
     headers: { ...httpHeaders },
   });
 

@@ -11,6 +11,7 @@ export const STORED_FILE_URLS = {
   DELETE_FILE_BY_REFERENCE: "/api/StoredFile/Delete",
   FILES_LIST: "/api/StoredFile/FilesList",
   DOWNLOAD_FILE: "/api/StoredFile/Download",
+  DOWNLOAD_THUMBNAIL: "/api/StoredFile/DownloadThumbnail",
   DOWNLOAD_FILE_BASE64: "/api/StoredFile/Base64String",
   DOWNLOAD_ZIP: "/api/StoredFile/DownloadZip",
 };

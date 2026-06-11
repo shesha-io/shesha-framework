@@ -6,7 +6,7 @@ import { DataTypes, IToolboxComponent } from '@/interfaces';
 import { IStyleType, useForm, useFormData, useGlobalState } from '@/providers';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
-  evaluateValueAsString,
+  evaluateString,
   executeScriptSync,
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
@@ -150,6 +150,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   onDownload?: string;
   downloadZip?: boolean;
   filesLayout?: layoutType;
+  gap?: number;
   listType: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
@@ -173,7 +174,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const executionContext = useAvailableConstantsData();
-    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
+    const ownerId = evaluateString(model.ownerId, { data: data, globalState });
     const enabled = !model.readOnly;
 
     const {
@@ -257,6 +258,11 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   linkToModelMetadata: (model, metadata) => ({
     ...model,
     filesCategory: metadata.path,
+  }),
+  initModel: (model) => ({
+    ...model,
+    gap: 8,
+    filesLayout: 'horizontal',
   }),
   // remove field from the payload even if propertyName is provided
   getFieldsToFetch: () => [],
@@ -357,7 +363,25 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
       return result;
     })
-    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ? false : prev.downloadZip })),
+    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ? false : prev.downloadZip }))
+    .add<IAttachmentsEditorProps>(15, (prev) => ({
+      ...prev,
+      desktop: {
+        ...prev.desktop,
+        filesLayout: prev.desktop?.filesLayout ?? prev.filesLayout ?? 'horizontal',
+        gap: prev.desktop?.gap ?? prev.gap ?? 8,
+      },
+      mobile: {
+        ...prev.mobile,
+        filesLayout: prev.mobile?.filesLayout ?? prev.filesLayout ?? 'horizontal',
+        gap: prev.mobile?.gap ?? prev.gap ?? 8,
+      },
+      tablet: {
+        ...prev.tablet,
+        filesLayout: prev.tablet?.filesLayout ?? prev.filesLayout ?? 'horizontal',
+        gap: prev.tablet?.gap ?? prev.gap ?? 8,
+      },
+    })),
 };
 
 export default AttachmentsEditor;
