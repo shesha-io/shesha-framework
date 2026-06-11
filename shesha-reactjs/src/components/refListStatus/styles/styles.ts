@@ -1,6 +1,17 @@
 import { createStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
 
-export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyles }) => {
+type StylesArgs = {
+  dimensionsStyles: CSSObject;
+  fontStyles: CSSObject;
+};
+
+type StylesResponse = {
+  shaStatusTagContainer: string;
+  shaStatusTag: string;
+};
+
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, { dimensionsStyles, fontStyles }) => {
   const shaStatusTag = 'sha-status-tag';
   const shaStatusTagContainer = cx(
     'sha-status-tag-container',

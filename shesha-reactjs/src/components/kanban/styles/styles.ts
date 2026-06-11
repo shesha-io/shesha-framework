@@ -1,7 +1,14 @@
 import { addPx } from '@/utils/style';
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, dimensionsStyles, fontStyles }) => {
+type StylesArgs = {
+  isCollapsed?: boolean;
+  dimensionsStyles?: CSSProperties;
+  fontStyles?: CSSProperties;
+};
+
+export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, dimensionsStyles, fontStyles }: StylesArgs) => {
   const combinedColumnStyle = cx(
     `${prefixCls}-combined-Column-style`,
     css`

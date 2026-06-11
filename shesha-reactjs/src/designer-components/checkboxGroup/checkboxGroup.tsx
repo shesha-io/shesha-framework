@@ -2,12 +2,12 @@ import { ProfileOutlined } from '@ant-design/icons';
 import React from 'react';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { evaluateValue, executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
-import { ICheckboxGroupProps } from './utils';
+import { CHECKBOX_GROUP_MODE, CheckboxGroupComponentProps, CheckboxGroupMode, DIRECTION_TYPE, DirectionType } from './interfaces';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -16,17 +16,18 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { DATA_SOURCE_TYPES, DataSourceType } from '../dropdown/model';
+import { getStringEnumOrDefault } from '@/utils/object';
 
-interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
+interface IEnhancedICheckboxGroupProps extends Omit<CheckboxGroupComponentProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
 
 interface ICheckboxGoupComopnentCalulatedValues {
-  eventHandlers: IEventHandlers;
-  dataSourceUrl?: string;
+  dataSourceUrl?: string | undefined;
 }
 
-const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICheckboxGoupComopnentCalulatedValues> = {
+const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, ICheckboxGoupComopnentCalulatedValues> = {
   type: 'checkboxGroup',
   isInput: true,
   isOutput: true,
@@ -37,31 +38,24 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   calculateModel: (model, allData) => ({
-    eventHandlers: getAllEventHandlers(model, allData),
     dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
-    defaultValue: evaluateValue(model.defaultValue, allData.data),
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
-      <ConfigurableFormItem model={model} autoAlignLabel={false}>
-        {(value, onChange) => {
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (e: any): void => {
-            if (e.target)
-              customEvents.onChange({ value: e.target.value }, e);
-            else
-              customEvents.onChange({ value: e }, null);
-            if (typeof onChange === 'function') onChange(e);
-          };
-
+      <ConfigurableFormItem<string | string[]> model={model} autoAlignLabel={false}>
+        {(value, onChange, _, ctx) => {
           return (
             <RefListCheckboxGroup
               {...model}
-              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
+              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles?.fullStyle}
               dataSourceUrl={calculatedModel.dataSourceUrl}
-              value={value}
-              {...calculatedModel.eventHandlers}
-              onChange={onChangeInternal}
+              value={value ?? undefined}
+              onChange={(newValue) => {
+                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                onChange(newValue ?? null);
+              }}
+              onFocus={(event) => ctx?.handleEvent(event, value/* event.currentTarget.value*/, model.onFocusCustom)}
+              onBlur={(event) => ctx?.handleEvent(event, value/* event.currentTarget.value*/, model.onBlurCustom)}
             />
           );
         }}
@@ -71,7 +65,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
-    const customProps: IEnhancedICheckboxGoupProps = {
+    const customProps: IEnhancedICheckboxGroupProps = {
       ...model,
       dataSourceType: 'values',
       direction: 'horizontal',
@@ -81,26 +75,26 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
   },
   migrator: (m) =>
     m
-      .add<IEnhancedICheckboxGoupProps>(0, (prev) => ({
+      .add<IEnhancedICheckboxGroupProps>(0, (prev) => ({
         ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'values',
-        direction: prev['direction'] ?? 'horizontal',
-        mode: prev['mode'] ?? 'single',
+        dataSourceType: getStringEnumOrDefault<DataSourceType>(prev, "dataSourceType", DATA_SOURCE_TYPES) ?? "values",
+        direction: getStringEnumOrDefault<DirectionType>(prev, "direction", DIRECTION_TYPE) ?? "horizontal",
+        mode: getStringEnumOrDefault<CheckboxGroupMode>(prev, "direction", CHECKBOX_GROUP_MODE) ?? "single",
       }))
-      .add<IEnhancedICheckboxGoupProps>(1, (prev) => {
+      .add<IEnhancedICheckboxGroupProps>(1, (prev) => {
         return {
           ...prev,
-          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName) ?? undefined,
         };
       })
-      .add<IEnhancedICheckboxGoupProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<IEnhancedICheckboxGoupProps>(3, (prev) => migrateVisibility(prev))
-      .add<IEnhancedICheckboxGoupProps>(4, (prev) => migrateReadOnly(prev))
-      .add<IEnhancedICheckboxGoupProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
-  linkToModelMetadata: (model, metadata): IEnhancedICheckboxGoupProps => {
-    const refListId: IReferenceListIdentifier = metadata.referenceListName
+      .add<IEnhancedICheckboxGroupProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IEnhancedICheckboxGroupProps>(3, (prev) => migrateVisibility(prev))
+      .add<IEnhancedICheckboxGroupProps>(4, (prev) => migrateReadOnly(prev))
+      .add<IEnhancedICheckboxGroupProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
+  linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
+    const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }
-      : null;
+      : undefined;
     return {
       ...model,
       dataSourceType: metadata.dataType === DataTypes.referenceListItem ? 'referenceList' : 'values',

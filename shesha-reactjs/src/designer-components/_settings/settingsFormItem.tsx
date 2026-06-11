@@ -1,44 +1,54 @@
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { IConfigurableFormItemProps } from '@/components/formDesigner/components/model';
+import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
+import { getFieldNameFromExpression } from '@/providers/form/utils';
+import { isChangeEvent } from '@/utils/events';
+import { isDefined } from '@/utils/nullables';
+import { getBooleanPropertyOrUndefined } from '@/utils/object';
+import { Form, FormItemProps } from 'antd';
 import React, {
   cloneElement,
-  FC,
-  ReactElement,
+  FC, ReactNode,
   useEffect,
 } from 'react';
-import SettingsControl, { SettingsControlChildrenFunc, SettingsControlChildrenType } from './settingsControl';
-import { Form, FormItemProps } from 'antd';
-import { getPropertySettingsFromData } from './utils/utils';
-import { useSettingsForm } from './settingsForm';
+import { IPropertySetting } from '../..';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
-import { getFieldNameFromExpression } from '@/providers/form/utils';
-import { IConfigurableFormItemProps } from '@/components/formDesigner/components/model';
-import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
+import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
+import { useSettingsForm } from './settingsForm';
+import { getPropertySettingsFromData } from './utils/utils';
 
 export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model' | 'children'> {
-  readonly children?: SettingsControlChildrenType;
-  id?: string;
-  name?: string;
+  readonly children?: SettingsControlChildrenType | undefined;
+  id?: string | undefined;
+  name: string;
   label?: string | React.ReactNode;
-  jsSetting?: boolean | 'lazy';
-  readOnly?: boolean;
-  disabled?: boolean;
-  style?: React.CSSProperties;
-  required?: boolean;
-  tooltip?: string;
-  hidden?: boolean;
-  layout?: 'horizontal' | 'vertical';
-  hideLabel?: boolean;
-  type?: string;
-  availableConstantsExpression?: string | GetAvailableConstantsFunc;
+  jsSetting?: boolean | 'lazy' | undefined;
+  readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
+  style?: React.CSSProperties | undefined;
+  required?: boolean | undefined;
+  tooltip?: string | undefined;
+  hidden?: boolean | undefined;
+  layout?: 'horizontal' | 'vertical' | undefined;
+  hideLabel?: boolean | undefined;
+  type?: string | undefined;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
 }
 
-const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
-  const { model } = useSettingsForm<any>();
+type WrappedComponentProps = {
+  readOnly: boolean;
+  disabled: boolean;
+  onChange: (event: React.ChangeEvent<HTMLInputElement> | unknown) => void;
+};
 
-  if (!props.name)
+const SettingsFormComponent = <Value = unknown>(props: ISettingsFormItemProps): ReactNode => {
+  const { model } = useSettingsForm();
+  const { children } = props;
+
+  if (!props.name || !children)
     return null;
 
-  const { _mode: mode } = getPropertySettingsFromData(model, props.name?.toString());
+  const { _mode: mode = "value" } = getPropertySettingsFromData(model, props.name.toString());
 
   const formProps: FormItemProps = {
     name: getFieldNameFromExpression(props.name),
@@ -47,11 +57,10 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     required: props.required,
     tooltip: props.tooltip,
     hidden: props.hidden,
-    valuePropName: props.valuePropName,
+    ...(props.valuePropName ? { valuePropName: props.valuePropName } : {}),
   };
 
-  if (typeof props.children === 'function') {
-    const children = props.children as SettingsControlChildrenFunc;
+  if (typeof children === 'function') {
     if (!props.jsSetting) {
       return (
         <ConfigurableFormItem
@@ -81,15 +90,20 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
   }
 
   if (!props.jsSetting) {
-    return <Form.Item {...formProps}>{props.children}</Form.Item>;
+    return <Form.Item {...formProps}>{children}</Form.Item>;
   }
 
   const valuePropName = props.valuePropName ?? 'value';
-  const children = props.children as ReactElement;
-  const readOnly = props.readOnly || children.props.readOnly || children.props.disabled;
+  const childrenProps = typeof (children.props) === "object" && isDefined(children.props)
+    ? children.props
+    : {};
+  const readOnly = props.readOnly ??
+    (typeof (childrenProps) === "object" && isDefined(childrenProps)
+      ? getBooleanPropertyOrUndefined(childrenProps, "readOnly") ?? getBooleanPropertyOrUndefined(childrenProps, "disabled")
+      : false) ?? false;
 
   return (
-    <ConfigurableFormItem
+    <ConfigurableFormItem<Value | IPropertySetting<Value>>
       model={{
         propertyName: props.name,
         label: props.label,
@@ -103,31 +117,32 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     >
       {(value, onChange) => {
         return (
-          <SettingsControl
+          <SettingsControl<Value>
             propertyName={props.name}
             mode="value"
             onChange={onChange}
-            value={value}
+            value={value ?? undefined}
             readOnly={readOnly}
             lazy={props.jsSetting === 'lazy'}
             availableConstantsExpression={props.availableConstantsExpression}
           >
             {(value, onChange) => {
+              const wrappedChildProps: WrappedComponentProps = {
+                ...childrenProps,
+                readOnly: readOnly,
+                disabled: readOnly,
+
+                onChange: (event) => {
+                  const data = isChangeEvent(event) && typeof (event.target) === "object" && valuePropName in event.target
+                    ? event.target[valuePropName as keyof typeof event.target]
+                    : event;
+                  onChange(data as Value);
+                },
+                [valuePropName]: value,
+              };
               return cloneElement(
                 children,
-                {
-                  ...children?.props,
-                  readOnly: readOnly,
-                  disabled: readOnly,
-                  onChange: (...args: any[]) => {
-                    const event = args[0];
-                    const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
-                      ? (event.target as HTMLInputElement)[valuePropName]
-                      : event;
-                    onChange(data);
-                  },
-                  [valuePropName]: value,
-                });
+                wrappedChildProps);
             }}
           </SettingsControl>
         );
@@ -145,8 +160,8 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
     }
   }, [settingsPanel, props.name]);
 
-  const { propertyFilter } = useSettingsForm<any>();
-  return !Boolean(propertyFilter) || (typeof propertyFilter === 'function' && propertyFilter(props.name?.toString()))
+  const { propertyFilter } = useSettingsForm();
+  return !Boolean(propertyFilter) || (typeof propertyFilter === 'function' && propertyFilter(props.name.toString()))
     ? <SettingsFormComponent {...props} />
     : null;
 };

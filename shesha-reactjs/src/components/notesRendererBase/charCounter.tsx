@@ -3,7 +3,7 @@ import { useStyles } from './styles/index.style';
 
 export interface ICharCounterProps {
   count: number;
-  maxLength?: number;
+  maxLength?: number | undefined;
   error: string | undefined;
 }
 

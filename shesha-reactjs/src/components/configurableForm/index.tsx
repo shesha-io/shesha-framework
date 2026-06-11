@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import React, { MutableRefObject, ReactElement, useEffect, useLayoutEffect, useState } from 'react';
+import React, { RefObject, ReactElement, useEffect, useLayoutEffect, useState } from 'react';
 import { IConfigurableFormProps, SheshaFormProps } from './models';
 import { Form, FormInstance } from 'antd';
 import { useAppConfigurator, useShaRoutingOrUndefined, useSheshaApplication } from '@/providers';
@@ -18,15 +18,15 @@ import { DataLoadingError } from './dataLoadingError';
 import { IFormActionsContext, ISetFormDataPayload } from '@/providers/form/contexts';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
-  form?: FormInstance<any>;
-  formRef?: MutableRefObject<IFormActionsContext> | undefined;
+  form?: FormInstance<Values>;
+  formRef?: RefObject<IFormActionsContext<Values> | undefined> | undefined;
   // TODO: merge with formRef
-  shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
-  isSettingsForm?: boolean;
+  shaFormRef?: RefObject<IShaFormInstance<Values> | undefined> | undefined;
+  isSettingsForm?: boolean | undefined;
   externalShaForm?: IShaFormInstance<Values> | undefined;
-  formDataGetter?: () => Values;
-  formDataSetter?: (data: Values) => void;
-  setFormDataNewDataAction?: (payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values;
+  formDataGetter?: (() => Values) | undefined;
+  formDataSetter?: ((data: Values | undefined) => void) | undefined;
+  setFormDataNewDataAction?: ((payload: ISetFormDataPayload<Values>, instance: IShaFormInstance<Values>) => Values) | undefined;
 } & SheshaFormProps;
 
 export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
@@ -63,7 +63,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
   const app = useSheshaApplication();
 
   const [form] = Form.useForm(props.form);
-  const [shaForm] = useShaForm({
+  const [shaForm] = useShaForm<Values>({
     // form: undefined,
     form: externalShaForm,
     antdForm: form,
@@ -160,37 +160,40 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
                 formMode={shaForm.formMode}
                 formFlatMarkup={shaForm.flatStructure}
                 formApi={shaForm.getPublicFormApi()}
-                name={ConfigurableItemIdentifierToString(formId)}
+                name={formId ? ConfigurableItemIdentifierToString(formId) : undefined}
                 isScope
               >
                 {markupLoadingState.status === 'ready' && (
                   <>
                     {dataLoadingState.status === 'failed'
                       ? (
-                        <DataLoadingError formId={formId} dataLoadingState={dataLoadingState} />
+                        <DataLoadingError dataLoadingState={dataLoadingState} />
                       )
-                      : (
-                        <FormWithFlatMarkup<Values>
-                          {...props}
-                          mode={dataLoadingState.status !== 'ready' ? 'readonly' : props.mode}
-                          isActionsOwner={isActionsOwner}
-                          form={form}
-                          initialValues={shaForm.initialValues}
-                          formFlatMarkup={shaForm.flatStructure}
-                          formSettings={shaForm.settings}
-                          persistedFormProps={shaForm.form}
-                          onMarkupUpdated={() => {
-                            shaForm.reloadMarkup().catch((error) => {
-                              console.error('Failed to reload markup', error);
-                              throw error;
-                            });
-                          }}
-                          shaForm={shaForm}
-                          actions={actions}
-                          sections={sections}
-                        />
-                      )}
-
+                      : shaForm.flatStructure && shaForm.settings
+                        ? (
+                          <FormWithFlatMarkup<Values>
+                            {...props}
+                            mode={dataLoadingState.status !== 'ready' ? 'readonly' : props.mode}
+                            isActionsOwner={isActionsOwner}
+                            form={form}
+                            initialValues={shaForm.initialValues}
+                            formFlatMarkup={shaForm.flatStructure}
+                            formSettings={shaForm.settings}
+                            persistedFormProps={shaForm.form}
+                            onMarkupUpdated={() => {
+                              shaForm.reloadMarkup().catch((error) => {
+                                console.error('Failed to reload markup', error);
+                                throw error;
+                              });
+                            }}
+                            shaForm={shaForm}
+                            actions={actions}
+                            sections={sections}
+                          />
+                        )
+                        : (
+                          <DataLoadingError dataLoadingState={{ status: "failed", error: { code: null, message: 'Failed to load form markup and settings' } }} />
+                        )}
                   </>
                 )}
                 {markupLoadingState.status === 'failed' && (

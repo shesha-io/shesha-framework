@@ -4,6 +4,7 @@ import { migrateFunctionToProp } from '@/designer-components/_common-migrations/
 import { IConfigurableActionConfiguration } from '@/providers/configurableActionsDispatcher/index';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ButtonGroupItemType, IToolbarButton, IToolbarProps, ToolbarItemSubType } from './models';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface ToolbarButtonGroupProps extends IConfigurableFormComponent {
   items: IButtonGroupButton[];
@@ -18,23 +19,23 @@ interface IButtonGroupButton {
   id: string;
   name: string;
   label?: string | React.ReactNode;
-  tooltip?: string;
+  tooltip?: string | undefined;
   sortOrder: number;
-  danger?: boolean;
-  hidden?: boolean;
-  disabled?: boolean;
-  isDynamic?: boolean;
+  danger?: boolean | undefined;
+  hidden?: boolean | undefined;
+  disabled?: boolean | undefined;
+  isDynamic?: boolean | undefined;
   itemType: ButtonGroupItemType;
-  icon?: string;
-  buttonType?: ButtonType;
-  customVisibility?: string;
-  customEnabled?: string;
-  permissions?: string[];
-  style?: string;
-  size?: SizeType;
+  icon?: string | undefined;
+  buttonType?: ButtonType | undefined;
+  customVisibility?: string | undefined;
+  customEnabled?: string | undefined;
+  permissions?: string[] | undefined;
+  style?: string | undefined;
+  size?: SizeType | undefined;
   itemSubType: ToolbarItemSubType;
-  actionConfiguration?: IConfigurableActionConfiguration;
-  isInline?: boolean;
+  actionConfiguration?: IConfigurableActionConfiguration | undefined;
+  isInline?: boolean | undefined;
 }
 
 export const migrateToButtonGroup = (model: IToolbarProps): ToolbarButtonGroupProps => {
@@ -45,7 +46,7 @@ export const migrateToButtonGroup = (model: IToolbarProps): ToolbarButtonGroupPr
     propertyName: model.propertyName,
     type: 'buttonGroup',
     isInline: true,
-    items: model.items.filter((item) => item && item.itemType === 'item')
+    items: model.items.filter((item) => item.itemType === 'item')
       .map<IButtonGroupButton>((item) => {
         const button = item as IToolbarButton;
         let newItem: IButtonGroupButton = {
@@ -65,9 +66,9 @@ export const migrateToButtonGroup = (model: IToolbarProps): ToolbarButtonGroupPr
           customVisibility: item.customVisibility,
           customEnabled: item.customEnabled,
         };
-        const removeContext = (s: string): string | undefined => s?.replace('context.', '')?.replace('context?.', '');
+        const removeContext = (s: string): string => !isNullOrWhiteSpace(s) ? s.replace('context.', '').replace('context?.', '') : "";
         const result = migrateFunctionToProp(
-          migrateFunctionToProp(newItem as any, 'hidden', 'customVisibility', removeContext, true),
+          migrateFunctionToProp(newItem, 'hidden', 'customVisibility', removeContext, true),
           'disabled',
           'customEnabled',
           removeContext,

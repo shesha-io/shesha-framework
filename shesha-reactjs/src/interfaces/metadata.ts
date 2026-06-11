@@ -65,19 +65,22 @@ export interface ITypeDefinitionLoadingContext {
 }
 
 export type TypeDefinitionLoader = (context: ITypeDefinitionLoadingContext) => Promise<TypeDefinition>;
+export interface IMayHaveTypeDefinition {
+  typeDefinitionLoader: TypeDefinitionLoader | undefined;
+}
 export interface IHasTypeDefinition {
   typeDefinitionLoader: TypeDefinitionLoader;
 }
 
 export const hasTypeDefinition = (value: object): value is IHasTypeDefinition => isDefined(value) && "typeDefinitionLoader" in value && typeof value.typeDefinitionLoader === 'function';
 
-export interface IMetadata extends Partial<IHasTypeDefinition> {
+export interface IMetadata extends Partial<IMayHaveTypeDefinition> {
   dataType: string;
-  name?: string | undefined;
-  description?: string | undefined;
+  name?: string | null | undefined;
+  description?: string | null | undefined;
 }
 
-export interface IMemberMetadata extends IPublicMemberMetadata, Partial<IHasTypeDefinition> {
+export interface IMemberMetadata extends IPublicMemberMetadata, Partial<IMayHaveTypeDefinition> {
 
 }
 
@@ -132,10 +135,10 @@ export const isIHasInheritedFromEntityType = (value: unknown): value is IHasInhe
   return isDefined(value) && "inheritedFromEntityType" in value && typeof value.inheritedFromEntityType === 'string';
 };
 
-export interface IObjectProperty extends IPropertyMetadata, IHasTypeDefinition {
+export interface IObjectProperty extends IPropertyMetadata, IMayHaveTypeDefinition {
 }
 
-export interface IFunctionProperty extends IPropertyMetadata, IHasTypeDefinition {
+export interface IFunctionProperty extends IPropertyMetadata, IMayHaveTypeDefinition {
 }
 
 export interface IEntityProperty extends IPropertyMetadata, IHasEntityType {
@@ -167,8 +170,8 @@ export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): pr
 };
 
 export interface IRefListPropertyMetadata extends IMemberMetadata {
-  referenceListName?: string | null;
-  referenceListModule?: string | null;
+  referenceListName: string;
+  referenceListModule: string;
 }
 
 export const isRefListPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IRefListPropertyMetadata => {
@@ -213,10 +216,10 @@ export const isDecimalFormatting = (value: object | null | undefined): value is 
   isDefined(value) && ("numDecimalPlaces" in value || "showAsPercentage" in value);
 
 export interface IPropertyMetadata extends IPublicPropertyMetadata {
-  containerType?: string;
+  containerType?: string | undefined;
   functions?: IFunctionMetadata[] | null;
   itemsType?: IPropertyMetadata | undefined;
-  isItemsType?: boolean;
+  isItemsType?: boolean | undefined;
 }
 
 export interface IArrayMetadata extends IMetadata {
@@ -231,7 +234,7 @@ export const isPropertiesLoader = (value: NestedProperties | undefined): value i
   return isDefined(value) && typeof value === 'function';
 };
 
-export const asPropertiesArray = (value: NestedProperties, fallback: IPropertyMetadata[]): IPropertyMetadata[] => {
+export const asPropertiesArray = (value: NestedProperties | undefined, fallback: IPropertyMetadata[]): IPropertyMetadata[] => {
   return isPropertiesArray(value) ? value : fallback;
 };
 
@@ -305,7 +308,7 @@ export interface IJsonEntityMetadata extends ConfigurationDto, Omit<IObjectMetad
   aliases?: string[];
 }
 
-export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType, IHasInheritedFromEntityType {
+export interface IEntityMetadata extends Omit<IObjectMetadata, 'name' | 'description'>, ConfigurationDto, IHasFullEntityType, IHasInheritedFromEntityType {
   md5?: string;
   changeTime?: Date;
   aliases?: string[];
@@ -319,14 +322,14 @@ export interface IContextMetadata extends IMetadata, IContainerWithNestedPropert
 
 export type IModelMetadata = IEntityMetadata | IObjectMetadata | IContextMetadata | IJsonEntityMetadata;
 
-export const isEntityMetadata = (value: IModelMetadata): value is IEntityMetadata => {
-  return Boolean(value) && value.dataType === DataTypes.entityReference;
+export const isEntityMetadata = (value: IModelMetadata | null | undefined): value is IEntityMetadata => {
+  return isDefined(value) && value.dataType === DataTypes.entityReference;
 };
 export const isJsonEntityMetadata = (value: IModelMetadata | undefined): value is IJsonEntityMetadata => {
   // If module exists then it's json entity
   return isDefined(value) && value.dataType === DataTypes.object && "module" in value && typeof value.module === 'string' && !isNullOrWhiteSpace(value.module);
 };
-export const isObjectMetadata = (value: IModelMetadata | undefined): value is IObjectMetadata => {
+export const isObjectMetadata = (value: IMetadata | IModelMetadata | undefined): value is IObjectMetadata => {
   // If module doesn't exist then it's object
   return isDefined(value) && value.dataType === DataTypes.object && "module" in value && typeof value.module === 'string' && isNullOrWhiteSpace(value.module);
 };

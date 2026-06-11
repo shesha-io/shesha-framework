@@ -4,7 +4,7 @@ import { FCUnwrapped } from '@/providers/form/models';
 import KeyInformationBarColumnsList from '../../keyInformationBar/columnsList';
 
 export const KeyInformationBarColumnsWrapper: FCUnwrapped<IKeyInformationBarColumnsInputProps> = (props) => {
-  const { value, onChange, readOnly, size } = props;
+  const { value, onChange, readOnly = false, size } = props;
   return (
     <KeyInformationBarColumnsList
       {...props}

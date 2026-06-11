@@ -10,10 +10,11 @@ import { getSettings } from './settings';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { jsonSafeParse } from '@/utils/object';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, IConfigurableFormComponent {
-  mappings?: string;
-  valueSource?: 'form' | 'manual';
+  mappings?: string | undefined;
+  valueSource?: 'form' | 'manual' | undefined;
 }
 
 const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
@@ -28,15 +29,8 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
 
     const { override, value, color, valueSource } = model;
 
-
-    // TODO: AS - review code from Luke and remove
-    /** Used to inject table row in the status tag if rendered on databale. Uses data if not applicable **/
-    // func(model?.injectedTableRow || data, formMode);
-
     const getValueByExpression = (expression: string = ''): string => {
-      return typeof expression === 'string'
-        ? expression?.includes('{{') ? evaluateString(expression, data) : expression
-        : '';
+      return expression.includes('{{') ? evaluateString(expression, data) : expression;
     };
 
     const evaluatedOverrideByExpression = getValueByExpression(override);
@@ -48,13 +42,13 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
         evaluatedOverrideByExpression,
         localValueByExpression,
         localColorByExpression,
-      ].filter(Boolean)?.length === 0;
+      ].every((item) => isNullOrWhiteSpace(item));
 
-    const getParsedMappings = (): IStatusMappings | null => {
+    const getParsedMappings = (): IStatusMappings | undefined => {
       try {
-        return jsonSafeParse(model?.mappings);
+        return !isNullOrWhiteSpace(model.mappings) ? jsonSafeParse(model.mappings) : undefined;
       } catch {
-        return null;
+        return undefined;
       }
     };
 
@@ -66,11 +60,11 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     };
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<string | number> model={model}>
         {(value) => (
           <StatusTag
             {...props}
-            style={getStyle(model?.style, data, globalState)}
+            style={getStyle(model.style, data, globalState)}
             value={valueSource === 'form' ? value : props.value}
           />
         )}
@@ -80,12 +74,15 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
-    .add<IStatusTagProps>(0, (prev) => ({
-      ...prev,
-      valueSource: prev['valueSource'] ?? 'manual',
-      value: prev['value'],
-      color: prev['color'],
-    }))
+    .add<IStatusTagProps>(0, (prev) => {
+      const prevTyped = prev as Partial<IStatusTagProps>;
+      return {
+        ...prev,
+        valueSource: prevTyped.valueSource ?? 'manual',
+        value: prevTyped.value,
+        color: prevTyped.color ?? "",
+      } satisfies IStatusTagProps;
+    })
     .add<IStatusTagProps>(1, (prev) =>
       migratePropertyName(
         migrateCustomFunctions(
@@ -97,7 +94,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
         )))
     .add<IStatusTagProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) })),
   initModel: (model) => ({
-    mappings: JSON.stringify(DEFAULT_STATUS_TAG_MAPPINGS, null, 2) as any,
+    mappings: JSON.stringify(DEFAULT_STATUS_TAG_MAPPINGS, null, 2),
     ...model,
   }),
 };

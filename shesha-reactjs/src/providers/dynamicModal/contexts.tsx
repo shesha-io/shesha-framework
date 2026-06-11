@@ -28,12 +28,12 @@ export const DynamicModalActionsContext = createNamedContext<IDynamicModalAction
 //#region modal instance
 
 export interface IDynamicModalInstanceContext {
-  instance?: IModalInstance;
+  instance?: IModalInstance | undefined;
   close: () => void;
 }
 
 export const DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE: IDynamicModalInstanceContext = {
-  instance: null,
+  instance: undefined,
   close: () => {
     /* nop*/
   },

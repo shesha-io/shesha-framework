@@ -21,7 +21,7 @@ export interface FormDataSubmitPayload<Values extends object = object> extends R
   formFlatStructure: IFlatComponentsStructure;
   expressionExecuter: ExpressionExecuter;
   antdForm: FormInstance;
-  getDelayedUpdates: () => IDelayedUpdateGroup[];
+  getDelayedUpdates: () => IDelayedUpdateGroup[] | undefined;
   customSubmitCaller?: SubmitCaller | undefined;
 }
 
@@ -32,10 +32,10 @@ export interface IFormDataSubmitter<Values extends object = object> {
 export type SubmitterEndpointType = 'default' | 'static' | 'dynamic';
 
 export interface GqlSubmitterSettings {
-  excludeFormFields?: string;
+  excludeFormFields?: string | undefined;
   endpointType: SubmitterEndpointType;
-  staticEndpoint?: IApiEndpoint;
-  dynamicEndpoint?: string;
+  staticEndpoint?: IApiEndpoint | undefined;
+  dynamicEndpoint?: string | undefined;
 }
 
 export const isGqlSubmitterSettings = (s: unknown): s is GqlSubmitterSettings => {

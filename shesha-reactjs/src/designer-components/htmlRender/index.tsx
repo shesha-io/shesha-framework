@@ -10,7 +10,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { addContextData } from '@/components/formDesigner/components/utils';
 
 interface IHtmlComponentCalulatedModel {
-  getContent: (value: any) => string;
+  getContent: (value: string | undefined) => string;
 }
 
 const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalulatedModel> = {
@@ -20,15 +20,15 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
   isInput: false,
   isOutput: true,
   calculateModel: (model, allData) => ({
-    getContent: (value: any) => model.renderer
+    getContent: (value: string | undefined) => model.renderer
       ? executeScriptSync(model.renderer, addContextData(allData, { value })) || '<div><div/>'
       : '<div><div/>',
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
-      <div style={model.allStyles.fullStyle}>
-        <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-          {(value) => parse(calculatedModel.getContent(value))}
+      <div style={model.allStyles?.fullStyle}>
+        <ConfigurableFormItem<string> model={{ ...model, hideLabel: true }}>
+          {(value) => parse(calculatedModel.getContent(value ?? undefined) ?? "")}
         </ConfigurableFormItem>
       </div>
     );

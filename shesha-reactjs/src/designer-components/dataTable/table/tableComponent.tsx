@@ -25,13 +25,13 @@ import { useDataTableStoreOrUndefined } from '@/providers/dataTable';
 import { collectMetadataPropertyPaths, defaultStyles, flattenConfiguredColumns, getDataColumnAccessor, getTableDefaults, getTableSettingsDefaults } from './utils';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { parseFetchError } from '../utils';
-import { useMetadata } from '@/providers/metadata';
+import { useMetadataOrUndefined } from '@/providers/metadata';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { isNonEmptyArray } from '@/utils/array';
 import { safeGetProperty } from '@/utils/object';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IConfigurableActionConfiguration } from '@/providers';
 
 const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.';
@@ -39,7 +39,7 @@ const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStoreOrUndefined();
-  const metadata = useMetadata(false);
+  const metadata = useMetadataOrUndefined();
   const repositoryType = store?.getRepository().repositoryType;
   const isEntitySource = repositoryType === BackendRepositoryType;
   const configuredColumns = useMemo(
@@ -69,7 +69,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
       // For nested properties (e.g., "module.name"), check if the root property exists
       if (candidate.includes('.')) {
         const firstSegment = candidate.split('.')[0];
-        if (metadataPropertyNameSet.has(firstSegment)) return false; // Valid - filter out
+        if (!isNullOrWhiteSpace(firstSegment) && metadataPropertyNameSet.has(firstSegment)) return false; // Valid - filter out
       }
 
       return true; // Invalid - keep in the list
@@ -165,12 +165,12 @@ const TableComponent: TableComponentDefinition = {
     };
 
     return {
-      items: [],
       rowDimensions: defaultRowDimensions,
       ...defaults,
       ...tableDefaults,
       ...tableSettingsDefaults,
       ...model,
+      items: [],
       // Ensure device-specific rowDimensions are also defaulted to auto
       mobile: {
         ...model.mobile,

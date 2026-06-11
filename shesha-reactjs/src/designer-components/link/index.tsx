@@ -11,6 +11,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { ILinkComponentProps, LinkComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
 
 const LinkComponent: LinkComponentDefinition = {
   type: 'link',
@@ -19,8 +20,8 @@ const LinkComponent: LinkComponentDefinition = {
   preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,
   calculateModel: (model, allData) => ({
-    isDesignerMode: allData.form.formMode === 'designer',
-    href: evaluateString(model.href, allData.data),
+    isDesignerMode: allData.form?.formMode === 'designer',
+    href: evaluateString(model.href, allData.data ?? {}),
   }),
   Factory: ({ model, calculatedModel }) => {
     const {
@@ -51,7 +52,7 @@ const LinkComponent: LinkComponentDefinition = {
           if (!hasChildren) {
             return (
               <div style={{ ...linkStyle, alignItems: 'center', display: 'flex', height: '100%' }}>
-                <a href={calculatedModel.href} target={target} className="sha-link" style={{ ...model.allStyles.fullStyle, height: 'unset' }}>
+                <a href={calculatedModel.href} target={target} className="sha-link" style={{ ...model.allStyles?.fullStyle, height: 'unset' }}>
                   {content}
                 </a>
               </div>
@@ -64,15 +65,15 @@ const LinkComponent: LinkComponentDefinition = {
               model={model}
             >
               <ComponentsContainer
-                style={{ ...linkStyle, ...model.allStyles.fullStyle }}
+                style={{ ...linkStyle, ...model.allStyles?.fullStyle }}
                 containerId={id}
                 direction={direction}
-                justifyContent={model.direction === 'horizontal' ? model.justifyContent : null}
-                alignItems={model.direction === 'horizontal' ? model.alignItems : null}
-                justifyItems={model.direction === 'horizontal' ? model.justifyItems : null}
+                justifyContent={model.direction === 'horizontal' ? model.justifyContent : undefined}
+                alignItems={model.direction === 'horizontal' ? model.alignItems : undefined}
+                justifyItems={model.direction === 'horizontal' ? model.justifyItems : undefined}
                 className={model.className}
                 itemsLimit={1}
-                dynamicComponents={model?.isDynamic ? model.components : []}
+                dynamicComponents={model.isDynamic ? model.components : []}
               />
             </ParentProvider>
           );
@@ -107,9 +108,9 @@ const LinkComponent: LinkComponentDefinition = {
       .add<ILinkComponentProps>(1, (prev) => {
         return {
           ...prev,
-          label: prev.label ?? prev['name'],
+          label: getFirstNonEmptyStringPropertyOrUndefined(prev, ["label", "name"]),
           href: prev.content,
-          content: prev['name'],
+          content: getStringPropertyOrUndefined(prev, "content"),
         };
       })
       .add<ILinkComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

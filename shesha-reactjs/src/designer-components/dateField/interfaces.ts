@@ -1,3 +1,4 @@
+import { DatePickerFocusEventHandler } from '@/components/antd/datepicker';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { CSSProperties } from 'react';
@@ -8,38 +9,44 @@ export interface IRangeInfo {
   range: RangeType;
 }
 
+export type NoUndefinedRangeValueType<DateType> = [start: DateType | null, end: DateType | null];
 export type RangeValue = [moment.Moment, moment.Moment];
 
-export type TimePickerChangeEvent = (value: any | null, dateString: string) => void;
-export type RangePickerChangeEvent = (values: any, formatString: [string, string]) => void;
+export type TimePickerChangeEvent = (value: string | null, dateString: string | null) => void;
+export type RangePickerChangeEvent = (values: NoUndefinedRangeValueType<string> | null, formatString: [string, string]) => void;
 
 export type DisabledDateTemplate = 'disabledPastTime' | 'disableFutureTime';
 
+export type DateFieldValueType = string | NoUndefinedRangeValueType<string> | null;
+
 export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyles {
-  dateFormat?: string;
-  value?: any;
-  hideBorder?: boolean;
-  showTime?: boolean;
-  showNow?: boolean;
-  defaultToMidnight?: boolean;
-  showToday?: boolean;
-  timeFormat?: string;
-  yearFormat?: string;
-  quarterFormat?: string;
-  monthFormat?: string;
-  weekFormat?: string;
-  range?: boolean;
-  resolveToUTC?: boolean;
-  picker?: 'time' | 'date' | 'week' | 'month' | 'quarter' | 'year';
-  disablePastDates?: boolean;
-  onChange?: TimePickerChangeEvent | RangePickerChangeEvent;
-  disabledDateMode?: 'none' | 'functionTemplate' | 'customFunction';
-  disabledDateTemplate?: string;
-  disabledDateFunc?: string;
-  disabledTimeMode?: 'none' | 'timeFunctionTemplate' | 'customTimeFunction';
-  disabledTimeTemplate?: DisabledDateTemplate;
-  disabledTimeFunc?: string;
-  additionalStyles?: CSSProperties;
+  dateFormat?: string | undefined;
+  value?: DateFieldValueType | undefined;
+  hideBorder?: boolean | undefined;
+  showTime?: boolean | undefined;
+  showNow?: boolean | undefined;
+  defaultToMidnight?: boolean | undefined;
+  showToday?: boolean | undefined;
+  timeFormat?: string | undefined;
+  yearFormat?: string | undefined;
+  quarterFormat?: string | undefined;
+  monthFormat?: string | undefined;
+  weekFormat?: string | undefined;
+  range?: boolean | undefined;
+  resolveToUTC?: boolean | undefined;
+  picker?: 'time' | 'date' | 'week' | 'month' | 'quarter' | 'year' | undefined;
+  disablePastDates?: boolean | undefined;
+  onChange?: TimePickerChangeEvent | RangePickerChangeEvent | undefined;
+  disabledDateMode?: 'none' | 'functionTemplate' | 'customFunction' | undefined;
+  disabledDateTemplate?: string | undefined;
+  disabledDateFunc?: string | undefined;
+  disabledTimeMode?: 'none' | 'timeFunctionTemplate' | 'customTimeFunction' | undefined;
+  disabledTimeTemplate?: DisabledDateTemplate | undefined;
+  disabledTimeFunc?: string | undefined;
+  additionalStyles?: CSSProperties | undefined;
+
+  onFocus?: DatePickerFocusEventHandler | undefined;
+  onBlur?: DatePickerFocusEventHandler | undefined;
 }
 
 export type DateFieldDefinition = ComponentDefinition<"dateField", IDateFieldProps>;

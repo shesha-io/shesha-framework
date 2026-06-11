@@ -93,7 +93,7 @@ import { SortingEditorComponent } from '@/designer-components/sortingEditor/inde
 import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
-import { IToolboxComponent, IToolboxComponentGroup } from '@/interfaces/formDesigner';
+import { IToolboxComponent, IToolboxComponentBase, IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
 import EditModeToggler from '@/designer-components/editModeToggler';
 import ProfileDropdown from '@/designer-components/profileDropdown';
@@ -120,12 +120,15 @@ import { DividerComponent } from '@/designer-components/_legacyComponents/divide
 import EntityTypeAutocompleteComponent from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
 import CalendarComponent from '@/designer-components/calendar';
 import TableContextComponentLegacy from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
+import { isDefined } from '@/utils/nullables';
+
+type IToolboxComponentGroupRelaxed = Omit<IToolboxComponentGroup, 'components'> & { components: IToolboxComponentBase[] };
 
 export const getToolboxComponents = (
   devMode: boolean,
   formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'> | undefined,
 ): IToolboxComponentGroup[] => {
-  return [
+  const groups: IToolboxComponentGroupRelaxed[] = [
     {
       name: 'Data entry',
       visible: true,
@@ -285,19 +288,21 @@ export const getToolboxComponents = (
     },
     {
       name: 'Header Components',
-      visible: formMetadata?.formProps && getToolboxComponentsVisibility(formMetadata.formProps, [
+      visible: isDefined(formMetadata?.formProps) && getToolboxComponentsVisibility(formMetadata.formProps, [
         HEADER_CONFIGURATION,
         HEADER_PUB_PORTAL_CONFIGURATION,
       ]),
       components: [EditModeToggler, ProfileDropdown],
     },
   ];
+
+  return groups.map<IToolboxComponentGroup>((group) => ({ ...group, components: group.components.map<IToolboxComponent>((c) => c as IToolboxComponent) }));
 };
 
 export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
   const result = new Map<string, IToolboxComponent>();
 
-  for (const toolboxComponentGroup of getToolboxComponents(false, { formId: null, formProps: null })) {
+  for (const toolboxComponentGroup of getToolboxComponents(false, { formId: "", formProps: null })) {
     for (const toolboxComponent of toolboxComponentGroup.components) {
       result.set(toolboxComponent.type, toolboxComponent);
     }

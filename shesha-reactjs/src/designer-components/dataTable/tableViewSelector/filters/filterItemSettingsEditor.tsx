@@ -2,13 +2,13 @@ import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ListEditorRenderer } from '@/components/listEditorRenderer';
 import QueryBuilderExpressionViewer from '@/designer-components/queryBuilder/queryBuilderExpressionViewer';
 import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/queryBuilderFieldPlain';
-import { QueryBuilderProvider, useMetadata } from '@/providers';
+import { QueryBuilderProvider, useMetadataOrUndefined } from '@/providers';
 import { Tabs } from 'antd';
 import React, { FC, useMemo } from 'react';
 import { BaseFilterProperties, FilterItemProperties } from './filterItemProperties';
 import { IStoredFilter } from '@/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { FilterExpression } from '@/publicJsApis/dataTableContextApi';
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 
 export interface IFilterItemSettingsEditorProps {
   value: IStoredFilter;
@@ -18,21 +18,21 @@ export interface IFilterItemSettingsEditorProps {
 
 
 export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ value, onChange, readOnly }) => {
-  const metadataContext = useMetadata(false);
+  const metadataContext = useMetadataOrUndefined();
   const metadata = metadataContext?.metadata;
 
   const { expression, ...filterProps } = value;
-  const expressionObject = useMemo<object | undefined>(() => {
+  const expressionObject = useMemo<JsonLogicFilter | undefined>(() => {
     if (!isDefined(expression) || (typeof (expression) === 'string' && isNullOrWhiteSpace(expression)))
       return undefined;
 
-    return typeof (expression) === 'string'
+    return (typeof (expression) === 'string'
       ? JSON.parse(expression)
-      : expression;
+      : expression) as JsonLogicFilter;
   }, [expression]);
 
-  const onChangeExpression = (newValue: FilterExpression): void => {
-    onChange({ ...value, expression: newValue });
+  const onChangeExpression = (newValue: JsonLogicFilter | null): void => {
+    onChange({ ...value, expression: newValue ?? undefined });
   };
   const onChangeProps = (newValue: BaseFilterProperties): void => {
     onChange({ ...value, ...newValue });

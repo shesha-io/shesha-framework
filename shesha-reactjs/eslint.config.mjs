@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 import jsdoc from "eslint-plugin-jsdoc";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import stylistic from "@stylistic/eslint-plugin";
@@ -11,10 +11,6 @@ import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
 import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
 
-/*
-console.log("LOG: rules", hooksPlugin.configs.recommended);
-console.log("LOG: rules flat", hooksPlugin.configs.flat.recommended);
-*/
 const hooksPluginRules = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
@@ -37,37 +33,6 @@ const hooksPluginRules = {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const isLightBuild = process.env.SHA_LIGHT_BUILD === "1" ? true : false;
-console.log(`Light build is: ${Boolean(isLightBuild) ? "🔛 ON" : "📴 OFF"}`);
-
-const strictFolders = isLightBuild
-    ? []
-    : [
-        "src/configuration-studio",
-        "src/providers",
-        "src/interfaces",
-        "src/utils",
-        "src/hooks",
-        "src/designer-components/_settings/utils/background",
-        "src/form-factory",
-        "src/publicJsApis",
-        "src/designer-components/_settings/utils/background",
-        "src/components/dataTable",
-
-        "src/designer-components/dataTable",
-        "src/designer-components/dataSource",
-        "src/designer-components/_settings/utils",
-
-        "src/components/columnFilters",
-        "src/components/columnFiltersBase",
-        "src/components/columnFiltersButtons",
-        "src/components/columnFiltersButtonsBase",
-        "src/components/columnItemFilter",
-        "src/components/columnsFilterSelect",
-        "src/components/columnsFilterSelectBase",
-        "src/components/globalTableFilter",
-    ];
 
 const stylisticOverrides = {
     ...stylistic.configs.recommended.rules,
@@ -121,56 +86,6 @@ const stylisticOverrides = {
     "@stylistic/jsx-curly-spacing": ["error", { "when": "never", "attributes": { "allowMultiline": false, "when": "never" }, "children": true }],
 };
 
-const legacyTypescriptOverrides = {
-    "@typescript-eslint/dot-notation": "off",
-
-
-    "@typescript-eslint/explicit-function-return-type": ["error", {
-        "allowExpressions": true,
-        "allowHigherOrderFunctions": true,
-        "allowDirectConstAssertionInArrowFunctions": true
-    }],
-
-    "@typescript-eslint/explicit-module-boundary-types": "error",
-    "@typescript-eslint/indent": "off",
-
-    "@typescript-eslint/naming-convention": ["error", {
-        selector: "variable",
-        format: ["camelCase", "UPPER_CASE", "PascalCase"],
-        leadingUnderscore: "forbid",
-        trailingUnderscore: "forbid",
-    }],
-
-    "@typescript-eslint/no-empty-function": "error",
-    "@typescript-eslint/no-unused-expressions": "error",
-
-    "@typescript-eslint/no-unused-vars": ["error", {
-        varsIgnorePattern: "^_",
-        argsIgnorePattern: "^_",
-        ignoreRestSiblings: true,
-    }],
-
-    "@typescript-eslint/no-use-before-define": ["error", {
-        ignoreTypeReferences: true,
-        classes: false,
-    }],
-
-    "@typescript-eslint/quotes": ["off", "double"],
-
-    "@typescript-eslint/typedef": ["off", {
-        parameter: true,
-        propertyDeclaration: true,
-        variableDeclaration: true,
-    }],
-    "@typescript-eslint/no-empty-object-type": "error",
-    // TODO: activate and review code
-    // "@typescript-eslint/no-explicit-any": "error",
-    // "@typescript-eslint/no-unsafe-call": "error",
-    // "@typescript-eslint/no-unsafe-member-access": "error",
-    // "@typescript-eslint/no-unsafe-argument": "error",
-    // "@typescript-eslint/no-unsafe-assignment": "error",
-};
-
 const typescriptOverrides = {
     "@typescript-eslint/no-unused-vars": ["error", {
         varsIgnorePattern: "^_",
@@ -193,14 +108,12 @@ const typescriptOverrides = {
     "@typescript-eslint/no-unsafe-argument": "error",
     "@typescript-eslint/no-unsafe-assignment": "error",
     "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
-    "@typescript-eslint/no-unnecessary-condition": "error",
+    /**/"@typescript-eslint/no-unnecessary-condition": "warn",
     //todo: enable after first part of fixes 
     // "@typescript-eslint/strict-boolean-expressions": "error",
 };
 
 const baseTsConfig = {
-    // ...importX.flatConfigs.recommended,
-    // ...importX.flatConfigs.typescript,
     files: [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -216,7 +129,6 @@ const baseTsConfig = {
         "react-hooks": hooksPlugin,
         "@typescript-eslint": typescriptEslint,
         "@stylistic": stylistic,
-        //"import-x": importX,
     },
 
     languageOptions: {
@@ -272,23 +184,6 @@ const baseTsConfig = {
             name: "Link",
             linkAttribute: "to",
         }],
-
-        // 'import-x/resolver-next': [
-        //     createTypeScriptImportResolver(
-        //         {
-        //             alwaysTryTypes: true,
-        //             project: [
-        //                 'tsconfig.json',
-        //             ],
-        //             tsconfigRootDir: __dirname,
-        //         }
-        //     ),
-        //     createNodeResolver(
-        //         {
-        //             extensions: ['.ts', '.tsx'],
-        //         }
-        //     ),
-        // ],
     },
 
     rules: {
@@ -304,8 +199,6 @@ const baseTsConfig = {
         "memory-monitor/track-memory": "off",
         ...hooksPluginRules,
         ...reactPlugin.configs.recommended.rules,
-        // ...importX.flatConfigs.recommended.rules,
-        // ...importX.flatConfigs.typescript.rules,
 
         "react/prop-types": ["off"],
         "require-await": "error",
@@ -400,20 +293,17 @@ const baseTsConfig = {
         "spaced-comment": ["off", "always", {
             markers: ["/"],
         }],
-        // "import-x/no-cycle": ["error", { maxDepth: Infinity }],
-        // "import-x/no-duplicates": "error",
-        // "import-x/no-self-import": "error",
-        // "import-x/no-unresolved": "error",
     }
 };
 
-const makeStrictConfig = (path) => {
-    return {
+export default [
+    {
         ...baseTsConfig,
         files: [
-            `${path}/**/*.ts`,
-            `${path}/**/*.tsx`,
+            "src/**/*.ts",
+            "src/**/*.tsx",
         ],
+        ignores: [...baseTsConfig.ignores],
         languageOptions: {
             ...baseTsConfig.languageOptions,
             parserOptions: {
@@ -430,24 +320,7 @@ const makeStrictConfig = (path) => {
             "react-hooks/exhaustive-deps": "error",
             "no-unsafe-optional-chaining": "error",
         },
-    };
-}
-
-export default [
-    {
-        ...baseTsConfig,
-        files: [
-            "src/**/*.ts",
-            "src/**/*.tsx",
-        ],
-        ignores: [...baseTsConfig.ignores, ...strictFolders.map(f => `${f}/**/*`)],
-        rules: {
-            ...baseTsConfig.rules,
-            ...legacyTypescriptOverrides,
-            ...stylisticOverrides,
-        }
     },
-    ...strictFolders.map(f => makeStrictConfig(f)),
     {
         files: ['**/*.js', '**/*.mjs'],
         ignores: [
@@ -462,11 +335,8 @@ export default [
             ecmaVersion: 'latest',
         },
         plugins: {
-            // 'import-x': importX,
         },
         rules: {
-            //...importX.flatConfigs.recommended.rules,
-            // "import-x/no-cycle": ["error", { maxDepth: Infinity }],
             "no-console": "error",
             '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
         }

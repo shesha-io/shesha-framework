@@ -1,18 +1,19 @@
-import { FileSearchOutlined } from '@ant-design/icons';
-import { Alert } from 'antd';
-import React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { RefListStatus } from '@/components/refListStatus/index';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles, useForm } from '@/providers';
+import { isDefined } from '@/utils/nullables';
+import { FileSearchOutlined } from '@ant-design/icons';
+import { Alert } from 'antd';
+import React from 'react';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { IRefListStatusProps } from './models';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { RefListStatus } from '@/components/refListStatus/index';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
@@ -27,26 +28,28 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     const { formMode } = useForm();
     const { solidBackground = true, referenceListId, showReflistName = true } = model;
 
-    if (model?.hidden && formMode !== 'designer') return null;
+    if (model.hidden && formMode !== 'designer') return null;
 
-    if (formMode === 'designer' && !referenceListId) {
-      return (
-        <Alert
-          showIcon
-          title="ReflistStatus configuration is incomplete"
-          description="Please make sure that you've select a reference list."
-          type="warning"
-        />
-      );
+    if (!isDefined(referenceListId)) {
+      return formMode === 'designer'
+        ? (
+          <Alert
+            showIcon
+            title="ReflistStatus configuration is incomplete"
+            description="Please make sure that you've select a reference list."
+            type="warning"
+          />
+        )
+        : undefined;
     }
 
     return (
-      <ConfigurableFormItem model={{ ...model }}>
+      <ConfigurableFormItem<number> model={{ ...model }}>
         {(value) => {
           return (
             <RefListStatus
-              value={value}
-              referenceListId={model.referenceListId}
+              value={value ?? undefined}
+              referenceListId={referenceListId}
               showIcon={model.showIcon}
               showReflistName={showReflistName}
               solidBackground={solidBackground}
@@ -70,7 +73,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     .add<IRefListStatusPropsV0>(0, (prev) => {
       const result: IRefListStatusPropsV0 = {
         ...prev,
-        name: prev['name'],
+        name: 'name' in prev && typeof (prev.name) === "string" ? prev.name : "",
         module: '',
         nameSpace: '',
       };
@@ -82,7 +85,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
         ...restProps,
         referenceListId: nameSpace
           ? { module: module, name: nameSpace /* note the property was named wrong initially */ }
-          : null,
+          : undefined,
       };
       return result;
     })
@@ -111,10 +114,12 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   linkToModelMetadata: (model, metadata): IRefListStatusProps => {
     return {
       ...model,
-      referenceListId: {
-        module: metadata.referenceListModule,
-        name: metadata.referenceListName,
-      },
+      referenceListId: metadata.referenceListName
+        ? {
+          module: metadata.referenceListModule ?? null,
+          name: metadata.referenceListName,
+        }
+        : undefined,
     };
   },
 };

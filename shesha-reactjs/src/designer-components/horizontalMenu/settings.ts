@@ -96,7 +96,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
                     .addCollapsiblePanel({
@@ -399,7 +399,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style',
                                   mode: 'dialog',
                                   description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInput({
                                   id: nanoid(),
@@ -408,7 +408,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style On Hover',
                                   mode: 'dialog',
                                   description: 'A script that returns the hover style of the element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInput({
                                   id: nanoid(),
@@ -417,7 +417,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style On Selected',
                                   mode: 'dialog',
                                   description: 'A script that returns the selected style of the element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInput({
                                   id: nanoid(),
@@ -426,7 +426,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style On Sub Menu',
                                   mode: 'dialog',
                                   description: 'A script that returns the sub menu style of the element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .toJson(),
                               ],
@@ -588,7 +588,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       hideLabel: true,
                                       jsSetting: false,
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                                   })
                                   .addSettingsInputRow({
                                     id: nanoid(),
@@ -600,7 +600,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       label: "Colors",
                                       jsSetting: false,
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                                     hideLabel: true,
                                   })
                                   .addSettingsInputRow({
@@ -613,7 +613,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       jsSetting: false,
                                       label: "URL",
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                                   })
                                   .addSettingsInputRow({
                                     id: nanoid(),
@@ -625,12 +625,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       label: "Image",
                                       jsSetting: false,
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                                   })
                                   .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: backgroundStylePnlId,
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                                     inputs: [
                                       {
                                         type: 'textField',
@@ -645,7 +645,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     id: nanoid(),
                                     parentId: backgroundStylePnlId,
                                     inline: true,
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                     inputs: [
                                       {
                                         type: 'customDropdown',
@@ -655,7 +655,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         propertyName: "background.size",
                                         customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                         dropdownOptions: sizeOptions,
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                       },
                                       {
                                         type: 'customDropdown',
@@ -679,7 +679,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       propertyName: 'background.repeat',
                                       buttonGroupOptions: repeatOptions,
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                   })
                                   .toJson(),
                               ],
@@ -793,7 +793,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style',
                                   mode: 'dialog',
                                   description: 'A script that returns the style of the container element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .toJson(),
                               ],

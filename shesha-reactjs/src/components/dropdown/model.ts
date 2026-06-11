@@ -5,7 +5,7 @@ import { CSSProperties } from 'react';
 
 export type DataSourceType = 'values' | 'referenceList' | 'url';
 
-export interface ILabelValue<TValue = any> {
+export interface ILabelValue<TValue = unknown> {
   id: string;
   label: string;
   value: TValue;
@@ -13,6 +13,8 @@ export interface ILabelValue<TValue = any> {
   icon?: string;
   description?: string;
 }
+
+export type DropdownValueFormat = 'simple' | 'listItem' | 'custom';
 
 export interface IDropdownProps {
   dataSourceType: DataSourceType;
@@ -24,31 +26,29 @@ export interface IDropdownProps {
   /**
    * @deprecated - use referenceListId instead
    */
-  referenceListName?: string;
-  referenceListId?: IReferenceListIdentifier;
-  value?: any;
-  onChange?: any;
-  hideBorder?: boolean;
-  allowClear?: boolean;
-  mode?: 'single' | 'multiple' | 'tags';
-  tag?: IStyleType;
-  ignoredValues?: number[];
-  placeholder?: string;
-  disabledValues?: number[];
-  disableItemValue?: boolean;
-  valueFormat?: 'simple' | 'listItem' | 'custom';
-  incomeCustomJs?: string;
-  outcomeCustomJs?: string;
-  labelCustomJs?: string;
-
-  defaultValue?: any;
-  size?: SizeType;
-  style?: React.CSSProperties;
-  tagStyle?: CSSProperties;
-  readOnly?: boolean;
-  displayStyle?: 'text' | 'tags';
-  showItemName?: boolean;
-  showIcon?: boolean;
-  solidColor?: boolean;
-  enableStyleOnReadonly?: boolean;
+  referenceListName?: string | undefined;
+  referenceListId?: IReferenceListIdentifier | undefined;
+  value?: number | number[] | undefined;
+  onChange?: ((value: number | number[] | undefined) => void) | undefined;
+  hideBorder?: boolean | undefined;
+  allowClear?: boolean | undefined;
+  mode?: 'single' | 'multiple' | 'tags' | undefined;
+  tag?: IStyleType | undefined;
+  ignoredValues?: number[] | undefined;
+  placeholder?: string | undefined;
+  disabledValues?: number[] | undefined;
+  disableItemValue?: boolean | undefined;
+  valueFormat?: DropdownValueFormat | undefined;
+  incomeCustomJs?: string | undefined;
+  outcomeCustomJs?: string | undefined;
+  labelCustomJs?: string | undefined;
+  size?: SizeType | undefined;
+  style?: React.CSSProperties | undefined;
+  tagStyle?: CSSProperties | undefined;
+  readOnly?: boolean | undefined;
+  displayStyle?: 'text' | 'tags' | undefined;
+  showItemName?: boolean | undefined;
+  showIcon?: boolean | undefined;
+  solidColor?: boolean | undefined;
+  enableStyleOnReadonly?: boolean | undefined;
 }

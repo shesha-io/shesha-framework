@@ -1,9 +1,8 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
+import { Input, InputRef } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -19,9 +18,9 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
-
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
@@ -38,14 +37,13 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
-  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const componentApi = useComponentApi();
-    const inputRef = React.useRef(null);
+    const inputRef = React.useRef<InputRef>(null);
     componentApi?.updateApi<TextFieldApi>(
       {
         id: model.id,
-        componentName: model.componentName,
+        componentName: model.componentName ?? "",
         typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         api: { focus: () => inputRef.current?.focus() },
       },
@@ -56,9 +54,9 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
     const regExpObj = useMemo(() => {
       if (!model.regExp) return null;
@@ -77,42 +75,61 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model.border?.hideBorder ? 'borderless' : undefined,
       size: model.size,
-      disabled: model.readOnly,
+      disabled: model.readOnly === true,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
-      style: model.allStyles.fullStyle,
+      style: model.allStyles?.fullStyle,
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
       minLength: model.validate?.minLength,
     };
+    if (model.border?.hideBorder)
+      inputProps.variant = 'borderless';
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]): void => {
-            const rawValue = args[0]?.currentTarget ? args[0]?.currentTarget?.value : args[0];
-            const inputValue: string | undefined = rawValue == null ? undefined : String(rawValue);
-            const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
-            const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
-            if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
-              const changedValue = customEvents.onChange({ value: inputValue }, args[0]);
-              if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : inputValue);
-            } else {
-              // Workaround because if the value is undefined, input component leave the inputed value
-              // Rendering of the component is not called
-              // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
-              if (Boolean(regExpObj) && value === undefined && typeof onChange === 'function') {
-                onChange('');
-              }
-            }
-          };
-
+      <ConfigurableFormItem<string> model={model}>
+        {(value, onChange, _, ctx) => {
           return inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} style={finalStyle} />
-            : <InputComponentType ref={inputRef} {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+            ? (
+              <ReadOnlyDisplayFormItem
+                value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : value}
+                style={finalStyle}
+              />
+            )
+            : (
+              <InputComponentType
+                ref={inputRef}
+                {...inputProps}
+                value={value ?? ""}
+
+                // TODO EVENTS
+                onChange={(event) => {
+                  const inputValue = event.currentTarget.value;
+                  const isEmpty = isNullOrWhiteSpace(inputValue);
+                  const isRegExpMatch = regExpObj && Boolean(inputValue.match(regExpObj));
+                  if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
+                    // const changedValue = customEvents?.onChange({ value: inputValue }, event);
+                    const changedValue = ctx?.handleEvent(event, inputValue, model.onChangeCustom);
+
+                    onChange(changedValue !== undefined ? changedValue : inputValue);
+                  } else {
+                    // Workaround because if the value is undefined, input component leave the inputed value
+                    // Rendering of the component is not called
+                    // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
+                    if (isDefined(regExpObj) && value === undefined) {
+                      onChange('');
+                    }
+                  }
+                }}
+                onFocus={(event) => {
+                  ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom);
+                }}
+                onBlur={(event) => {
+                  ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom);
+                }}
+              />
+            );
         }}
       </ConfigurableFormItem>
     );

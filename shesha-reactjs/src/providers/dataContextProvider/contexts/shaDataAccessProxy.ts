@@ -179,5 +179,5 @@ export class ShaDataAccessor<TData extends object = object> implements IShaDataA
 }
 
 export const GetShaFormDataAccessor = <TValues extends object = object>(shaInstance: IFormApi<TValues>): IShaDataAccessor<TValues> => {
-  return CreateDataAccessor(() => shaInstance.getFormData(), shaInstance.setFieldsValue, shaInstance.setFieldValue) as IShaDataAccessor<TValues>;
+  return CreateDataAccessor(() => shaInstance.getFormData?.() ?? {} as TValues, shaInstance.setFieldsValue, shaInstance.setFieldValue) as IShaDataAccessor<TValues>;
 };

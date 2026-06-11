@@ -6,7 +6,7 @@ import { SizableColumns } from '../sizableColumns';
 import classNames from 'classnames';
 
 
-export interface IListEditorRendererProps extends PropsWithChildren<any> {
+export interface IListEditorRendererProps extends PropsWithChildren {
   /**
    * Sidebar props
    */

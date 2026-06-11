@@ -1,6 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import React, { FC, useRef } from 'react';
+import React, { FC, ReactNode, useRef } from 'react';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from '@/providers/crudContext';
@@ -8,35 +8,36 @@ import { InlineSaveMode } from './interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import { useDataTableStore } from '@/providers/index';
 import { useStyles } from './styles/styles';
+import { ITableRowData } from '@/providers/dataTable/interfaces';
 
 export type RowEditMode = 'read' | 'edit';
 
-export interface ISortableRowProps {
-  prepareRow: (row: Row<any>) => void;
-  onClick: (row: Row<any>) => void;
-  onDoubleClick: (row: Row<any>, index: number) => void;
-  onRowClick?: () => void;
-  onRowHover?: () => void;
-  row: Row<any>;
+export interface ISortableRowProps<TData extends ITableRowData = ITableRowData> {
+  prepareRow: (row: Row<TData>) => void;
+  onClick: (row: Row<TData>) => void;
+  onDoubleClick: (row: Row<TData>, index: number) => void;
+  onRowClick?: (() => void) | undefined;
+  onRowHover?: (() => void) | undefined;
+  row: Row<TData>;
   index: number;
-  selectedRowIndex?: number;
+  selectedRowIndex?: number | undefined;
   allowEdit: boolean;
-  updater?: (data: any) => Promise<any>;
+  updater?: ((data: TData) => Promise<TData>) | undefined;
   allowDelete: boolean;
-  deleter?: () => Promise<any>;
-  editMode?: RowEditMode;
+  deleter?: (() => Promise<void>) | undefined;
+  editMode?: RowEditMode | undefined;
   allowChangeEditMode: boolean;
-  inlineSaveMode?: InlineSaveMode;
-  inlineEditorComponents?: IFlatComponentsStructure;
-  inlineDisplayComponents?: IFlatComponentsStructure;
-  onMouseOver?: (cellRef?: any, isContentOverflowing?: boolean) => void;
+  inlineSaveMode?: InlineSaveMode | undefined;
+  inlineEditorComponents?: IFlatComponentsStructure | undefined;
+  inlineDisplayComponents?: IFlatComponentsStructure | undefined;
+  onMouseOver?: (cellRef: React.RefObject<HTMLDivElement | null> | undefined, isContentOverflowing?: boolean) => void;
   onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
-  showExpandedView?: boolean;
-  striped?: boolean;
+  showExpandedView?: boolean | undefined;
+  striped?: boolean | undefined;
 }
 
-interface RowDragHandleProps {
-  row: Row<any>;
+interface RowDragHandleProps<T extends ITableRowData = ITableRowData> {
+  row: Row<T>;
 }
 export const RowDragHandle: FC<RowDragHandleProps> = () => {
   const { setDragState } = useDataTableStore();
@@ -53,7 +54,7 @@ export const RowDragHandle: FC<RowDragHandleProps> = () => {
   );
 };
 
-export const TableRow: FC<ISortableRowProps> = (props) => {
+export const TableRow = <TData extends ITableRowData = ITableRowData>(props: ISortableRowProps<TData>): ReactNode => {
   const {
     row,
     prepareRow,
@@ -73,7 +74,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineEditorComponents,
     inlineDisplayComponents,
     onMouseOver,
-    showExpandedView,
+    showExpandedView = false,
     striped,
   } = props;
 
@@ -172,7 +173,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const rowId = row.original.id ?? row.id;
 
   return (
-    <CrudProvider
+    <CrudProvider<TData>
       isNewObject={false}
       data={row.original}
       allowEdit={allowEdit}
@@ -205,7 +206,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
               showExpandedView={showExpandedView}
               cell={cell}
               getCellRef={(cellRef, isContentOverflowing) => {
-                onMouseOver(cellRef, isContentOverflowing);
+                onMouseOver?.(cellRef, isContentOverflowing);
               }}
               key={cellIndex}
               row={row.cells}
@@ -218,6 +219,6 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   );
 };
 
-export const SortableRow: FC<ISortableRowProps> = (props) => {
-  return <TableRow {...props} />;
+export const SortableRow = <TData extends ITableRowData = ITableRowData>(props: ISortableRowProps<TData>): ReactNode => {
+  return <TableRow<TData> {...props} />;
 };

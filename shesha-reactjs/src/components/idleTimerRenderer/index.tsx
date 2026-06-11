@@ -33,7 +33,7 @@ export interface ISecuritySettings {
 }
 
 export interface IIdleTimerRendererProps {
-  securitySettings?: ISecuritySettings;
+  securitySettings?: ISecuritySettings | undefined;
 }
 
 interface IIdleTimerState {
@@ -72,7 +72,7 @@ const isWarningState = (value: unknown): value is IWarningState => {
     typeof value === 'object' &&
     value !== null &&
     'isVisible' in value &&
-    typeof (value as Record<string, unknown>).isVisible === 'boolean'
+    typeof value.isVisible === 'boolean'
   );
 };
 
@@ -81,7 +81,7 @@ const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
     typeof value === 'object' &&
     value !== null &&
     'timestamp' in value &&
-    typeof (value as Record<string, unknown>).timestamp === 'number'
+    typeof value.timestamp === 'number'
   );
 };
 

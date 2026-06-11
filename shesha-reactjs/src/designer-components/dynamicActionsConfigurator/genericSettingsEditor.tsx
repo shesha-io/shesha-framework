@@ -8,7 +8,7 @@ export interface IProps<TModel extends object = object> {
   markup: FormMarkup;
   onSave: (model: TModel) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
+  onValuesChange?: ((changedValues: Partial<TModel>, values: TModel) => void) | undefined;
   readOnly?: boolean;
 }
 
@@ -19,10 +19,10 @@ export function GenericSettingsEditor<TModel extends object = object>({
   onValuesChange,
   readOnly = false,
 }: IProps<TModel>): React.JSX.Element {
-  const formRef = useShaFormRef();
+  const formRef = useShaFormRef<TModel>();
 
   return (
-    <ConfigurableForm
+    <ConfigurableForm<TModel>
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}

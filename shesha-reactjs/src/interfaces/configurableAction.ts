@@ -140,12 +140,12 @@ export interface IMayHaveType {
 export interface IConfigurableActionConfiguration<TArguments extends ActionParametersDictionary = ActionParametersDictionary> extends IMayHaveType {
   actionOwner: string;
   actionName: string;
-  version?: number;
-  actionArguments?: TArguments;
+  version?: number | undefined;
+  actionArguments?: TArguments | undefined;
   handleSuccess: boolean;
-  onSuccess?: IConfigurableActionConfiguration;
+  onSuccess?: IConfigurableActionConfiguration | undefined;
   handleFail: boolean;
-  onFail?: IConfigurableActionConfiguration;
+  onFail?: IConfigurableActionConfiguration | undefined;
 }
 
 export const isConfigurableActionConfiguration = (actionConfig: unknown): actionConfig is IConfigurableActionConfiguration => {

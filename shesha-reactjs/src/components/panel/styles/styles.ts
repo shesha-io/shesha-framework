@@ -1,15 +1,26 @@
 import { createStyles, sheshaStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
 import { CSSProperties } from 'react';
 
+type StylesArgs = {
+  headerStyle?: CSSProperties | undefined;
+  bodyStyle?: CSSProperties | undefined;
+  hideCollapseContent?: boolean | undefined;
+  isSimpleDesign?: boolean | undefined;
+  ghost?: boolean | undefined;
+  accentStyle?: boolean | undefined;
+  overflow?: CSSProperties | undefined;
+};
+
 export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
-  headerStyle = {} as CSSProperties,
-  bodyStyle = {} as CSSProperties,
-  hideCollapseContent,
+  headerStyle = {},
+  bodyStyle = {},
+  hideCollapseContent = false,
   isSimpleDesign,
   ghost,
   accentStyle,
   overflow,
-}) => {
+}: StylesArgs) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
@@ -159,7 +170,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     }
 
     > .ant-collapse-item > .ant-collapse-header {
-      ${headerRest}
+      ${headerRest as CSSObject}
       position: relative;
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};

@@ -13,7 +13,7 @@ export interface IHasComponentGroups {
 }
 
 export interface IFormStateContext<TData extends object = object> {
-  name?: string;
+  name?: string | undefined;
   formSettings: IFormSettings | undefined;
   formMode: FormMode;
   form?: FormInstance<TData> | undefined;
@@ -60,7 +60,7 @@ export interface IFormDataActionsContext {
 export const FormDataStateContext = createNamedContext<IFormDataStateContext | undefined>(undefined, "FormDataStateContext");
 export const FormDataActionsContext = createNamedContext<IFormDataActionsContext | undefined>(undefined, "FormDataActionsContext");
 
-export interface ConfigurableFormInstance<TValue extends object = object> extends IFormActionsContext, IFormStateContext<TValue> { }
+export interface ConfigurableFormInstance<TValue extends object = object> extends IFormActionsContext<TValue>, IFormStateContext<TValue> { }
 
 export const FormStateContext = createNamedContext<IFormStateContext | undefined>(undefined, "FormStateContext");
 

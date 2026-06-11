@@ -15,7 +15,7 @@ import { isNonEmptyArray } from "@/utils/array";
 import { getIdOrUndefined } from "@/utils/entity";
 import { extractErrorInfo } from "@/utils/errors";
 import { callApiEndpoint } from "@/utils/fetchers";
-import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { camelcaseDotNotation, getNumberOrUndefined } from "@/utils/string";
 import FileSaver from "file-saver";
 import React, { FC, PropsWithChildren, useMemo } from "react";
@@ -185,10 +185,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
   const performUpdate = async <TData extends object = object>(_rowIndex: number, data: TData, options?: IUpdateOptions): Promise<TData> => {
-    const endpoint: IApiEndpoint = options?.customUrl
+    const endpoint: IApiEndpoint | undefined = options?.customUrl
       ? { httpVerb: 'PUT', url: options.customUrl }
       : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.update });
 
+    if (!isDefined(endpoint))
+      throw new Error('Failed to determine update endpoint');
     try {
       return await mutate(endpoint, data);
     } catch (error) {
@@ -201,9 +203,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     if (!id)
       return Promise.reject('Failed to determine `Id` of the object');
 
-    const endpoint: IApiEndpoint = options?.customUrl
+    const endpoint: IApiEndpoint | undefined = options?.customUrl
       ? { httpVerb: 'DELETE', url: options.customUrl }
       : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.delete });
+
+    if (!isDefined(endpoint))
+      throw new Error('Failed to determine delete endpoint');
 
     try {
       return await mutate(endpoint, { id });
@@ -213,9 +218,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
   const performCreate = async <TData extends object = object>(_rowIndex: number, data: TData, options?: ICreateOptions): Promise<TData> => {
-    const endpoint: IApiEndpoint = options?.customUrl
+    const endpoint: IApiEndpoint | undefined = options?.customUrl
       ? { httpVerb: 'POST', url: options.customUrl }
       : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.create });
+
+    if (!isDefined(endpoint))
+      throw new Error('Failed to determine create endpoint');
 
     try {
       return await mutate(endpoint, data);

@@ -1,4 +1,6 @@
-export const defaultStyles = (): any => {
+import { IStyleType } from "@/interfaces";
+
+export const defaultStyles = (): IStyleType => {
   return {
     background: { type: 'color', color: '#fff', position: 'center', size: 'cover', repeat: 'no-repeat' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },

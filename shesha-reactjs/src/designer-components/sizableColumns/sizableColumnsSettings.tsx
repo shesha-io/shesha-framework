@@ -11,7 +11,7 @@ import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCo
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnComponentProps>): ReactElement => {
-  const { readOnly } = props;
+  const { readOnly = false } = props;
 
   return (
     <>

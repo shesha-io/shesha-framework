@@ -30,8 +30,8 @@ export type IExpressionExecuterFailedHandler<TResult> = (error: unknown) => TRes
 export function executeExpression<TResult>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments,
-  defaultValue: TResult,
-  onFail: IExpressionExecuterFailedHandler<TResult>,
+  defaultValue: TResult | null,
+  onFail?: IExpressionExecuterFailedHandler<TResult> | undefined,
 ): TResult | null {
   if (expression) {
     try {

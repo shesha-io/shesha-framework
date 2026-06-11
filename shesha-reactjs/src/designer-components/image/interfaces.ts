@@ -1,44 +1,35 @@
 import { IFormItem, IToolboxComponent } from '@/interfaces';
-import { IStyleType } from '@/providers';
+import { IInputStyles, IPropertySetting, IStyleType } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { ImageSourceType } from './image';
 
-export interface IImageStyleProps {
-  height?: number | string;
-  width?: number | string;
-  objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none';
-  objectPosition?: string;
-  filter?: string;
-  filterIntensity?: number;
-  borderSize?: number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  stylingBox?: string;
-  opacity?: number;
-  style?: string;
+export interface IImageStyleProps extends IInputStyles {
+  objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none' | undefined;
+  objectPosition?: string | undefined;
+  filter?: string | undefined;
+  filterIntensity?: number | undefined;
 }
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps, IStyleType {
-  url?: string;
-  storedFileId?: string;
-  base64?: string;
-  dataSource?: ImageSourceType;
-  ownerType?: string | IEntityTypeIdentifier;
-  ownerId?: string;
-  allowPreview?: boolean;
-  allowedFileTypes?: string[];
-  alt?: string;
-  opacity?: number;
-  sepia?: number;
-  grayscale?: number;
-  blur?: number;
-  brightness?: number;
-  contrast?: number;
-  saturate?: number;
-  hueRotate?: number;
-  invert?: number;
+  url?: string | IPropertySetting<string> | undefined;
+  storedFileId?: string | IPropertySetting<string> | undefined;
+  base64?: string | undefined;
+  dataSource?: ImageSourceType | undefined;
+  ownerType?: string | IEntityTypeIdentifier | undefined;
+  ownerId?: string | undefined;
+  allowPreview?: boolean | undefined;
+  allowedFileTypes?: string[] | undefined;
+  alt?: string | undefined;
+  opacity?: number | undefined;
+  sepia?: number | undefined;
+  grayscale?: number | undefined;
+  blur?: number | undefined;
+  brightness?: number | undefined;
+  contrast?: number | undefined;
+  saturate?: number | undefined;
+  hueRotate?: number | undefined;
+  invert?: number | undefined;
 }
 
 export type ImageComponentDefinition = IToolboxComponent<IImageProps>;

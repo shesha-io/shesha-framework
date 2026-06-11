@@ -5,6 +5,7 @@ import { TypesBuilder } from "@/utils/metadata/typesBuilder";
 import { isEmptyString, trimSuffix } from "@/utils/string";
 import { DTS_EXTENSION, TypesImporter } from "@/utils/metadata/typesImporter";
 import { Environment } from "@/publicJsApis/metadataBuilder";
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface ISourceCodeFile {
   content: string;
@@ -15,15 +16,15 @@ export type BuildSourceCodeFilesArgs = {
   wrapInTemplate: boolean;
   fileName: string;
   directory: string;
-  availableConstants?: IObjectMetadata;
-  resultType?: ResultType;
-  metadataFetcher: (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata>;
+  availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined;
+  resultType?: ResultType | undefined;
+  metadataFetcher: (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata | null>;
   environment: Environment;
-  useAsyncDeclaration?: boolean;
-  functionName?: string;
+  useAsyncDeclaration?: boolean | undefined;
+  functionName?: string | undefined;
 };
 export type BuildSourceCodeFilesResponse = {
-  template: (code: string) => TextTemplate;
+  template: ((code: string) => TextTemplate) | undefined;
   sourceFiles: ISourceCodeFile[];
 };
 
@@ -38,8 +39,11 @@ const fetchProperties = (properties: NestedProperties): PropertiesPromise => {
       : Promise.resolve([]);
 };
 
-const getVariablesImportBlock = (constantsMetadata: IObjectMetadata, variablesFileName: string): string => {
-  const constants = asPropertiesArray(constantsMetadata?.properties, []);
+const getVariablesImportBlock = async (constantsMetadata: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined, variablesFileName: string): Promise<string> => {
+  const meta = typeof (constantsMetadata) === "function"
+    ? await constantsMetadata()
+    : constantsMetadata;
+  const constants = asPropertiesArray(meta?.properties, []);
   if (constants.length > 0) {
     const constantsNames = constants.map((p) => p.path).sort().join(",\r\n    ");
     return `//#region Exposed variables
@@ -51,10 +55,10 @@ import {
   return "";
 };
 
-const getResultTypeName = (typeName: string, isAsync: boolean): string => {
+const getResultTypeName = (typeName: string, isAsync: boolean): string | undefined => {
   return isAsync
     ? `Promise<${typeName ?? 'void'}>`
-    : Boolean(typeName)
+    : !isNullOrWhiteSpace(typeName)
       ? typeName
       : undefined;
 };
@@ -72,7 +76,10 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
     response.sourceFiles.push({ filePath: fileName, content });
   };
 
-  const properties = await fetchProperties(availableConstants?.properties ?? []); ;
+  const constantsMeta = typeof (availableConstants) === 'function'
+    ? await availableConstants()
+    : availableConstants;
+  const properties = await fetchProperties(constantsMeta?.properties ?? []);
 
   const variablesFileName = getVariablesFileName(fileName);
 
@@ -89,19 +96,23 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
   }
 
   // build result type
-  let resultTypeName: string = null;
+  let resultTypeName: string = "";
   let localDeclarationsBlock = "";
   if (resultType) {
     if (isObjectType(resultType)) {
       const resultTypeDeclaration = await tsBuilder.buildType(resultType);
       const responseFileName = getResponseFileName(fileName);
       registerFile(`/${directory}/${responseFileName}`, resultTypeDeclaration.content);
-      resultTypeName = resultType.name;
+      resultTypeName = resultType.name ?? "";
 
       localDeclarationsBlock = `import { ${resultType.name} } from './${trimSuffix(responseFileName, DTS_EXTENSION)}';\r\n`;
     } else
       if (isEntityType(resultType)) {
-        const entityType = await tsBuilder.getEntityType({ module: resultType.entityModule, name: resultType.entityType });
+        const typeId: ModelTypeIdentifier = { module: resultType.entityModule ?? null, name: resultType.entityType };
+        const entityType = await tsBuilder.getEntityType(typeId);
+        if (!isDefined(entityType))
+          throw new Error(`Failed to get entity type: '${typeId.module}:${typeId.name}'`);
+
         resultTypeName = `Partial<${entityType.typeName}>`;
 
         const typesImporter = new TypesImporter();
@@ -122,25 +133,24 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
           const importSection = typesImporter.generateImports();
           localDeclarationsBlock = importSection
             ? `${importSection}\r\n`
-            : undefined;
+            : "";
 
           resultTypeName = resultTypeDeclaration.typeName;
         } else
           resultTypeName = resultType.dataType;
   }
 
-  if (wrapInTemplate) {
-    const { useAsyncDeclaration, functionName } = args;
-
-    const variablesImportBlock = getVariablesImportBlock(availableConstants, trimSuffix(variablesFileName, DTS_EXTENSION));
+  const { useAsyncDeclaration = false, functionName } = args;
+  if (wrapInTemplate && !isNullOrWhiteSpace(functionName)) {
+    const variablesImportBlock = await getVariablesImportBlock(availableConstants, trimSuffix(variablesFileName, DTS_EXTENSION));
     const finalResultTypeName = getResultTypeName(resultTypeName, useAsyncDeclaration);
     const resultTypeClause = finalResultTypeName ? `: ${finalResultTypeName}` : "";
 
-    let header = [variablesImportBlock, localDeclarationsBlock].filter((b) => b && !isEmptyString(b)).join("\r\n");
+    let header = [variablesImportBlock, localDeclarationsBlock].filter(isNotNullOrWhiteSpace).join("\r\n");
     if (!isEmptyString(header))
       header += "\r\n";
 
-    const result = (code): TextTemplate => makeCodeTemplate`${header}const ${functionName} = ${useAsyncDeclaration ? "async " : ""}()${resultTypeClause} => {
+    const result = (code: string): TextTemplate => makeCodeTemplate`${header}const ${functionName} = ${useAsyncDeclaration ? "async " : ""}()${resultTypeClause} => {
 ${(c) => c.editable(code)}
 };`;
     response.template = result;

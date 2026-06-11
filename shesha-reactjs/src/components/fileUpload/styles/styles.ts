@@ -1,25 +1,39 @@
 import { createStyles } from '@/styles';
 import { CSSObject } from '@emotion/serialize';
 
-interface StyleProps extends CSSObject {
+export interface FileUploadStyleProps extends CSSObject {
   jsStyle?: CSSObject;
 }
 
 interface ModelProps {
-  layout?: boolean;
-  isDragger?: boolean;
-  hideFileName?: boolean;
-  listType?: 'text' | 'picture' | 'picture-card' | 'thumbnail';
+  layout?: boolean | undefined;
+  isDragger?: boolean | undefined;
+  hideFileName?: boolean | undefined;
+  listType?: 'text' | 'picture' | 'picture-card' | 'thumbnail' | undefined;
 }
 
-interface UseStylesParams {
-  style?: StyleProps;
+interface FileUploadStylesParams {
+  style?: FileUploadStyleProps | undefined;
   model: ModelProps;
 }
 
 type TextAlignType = 'left' | 'right' | 'center' | 'justify';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }: UseStylesParams) => {
+export type FileUploadStylesResponse = {
+  shaStoredFilesRenderer?: string;
+  storedFilesRendererBtnContainer?: string;
+  storedFilesRendererNoFiles?: string;
+  antUploadDragIcon?: string;
+  antPreviewDownloadIcon?: string;
+  thumbnailControls?: string;
+  overlayThumbnailControls?: string;
+  antUploadText?: string;
+  antUploadHint?: string;
+  styledFileControls?: string;
+  thumbnailReadOnly?: string;
+};
+
+export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesResponse>(({ token, css, cx, prefixCls }, { style, model }) => {
   const {
     background = 'transparent',
     backgroundImage,

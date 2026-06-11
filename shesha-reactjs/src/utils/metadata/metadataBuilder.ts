@@ -142,7 +142,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
           ...p,
           fullClassName: response.fullClassName,
           entityType: response.entityType,
-          entityModule: response.entityModule ?? null,
+          entityModule: response.entityModule ?? undefined,
 
           // ToDo: AS - remove after implementation of module + name
           typeAccessor: response.typeAccessor,
@@ -181,7 +181,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
 
   addRefList(path: string, refListId: IReferenceListIdentifier, label: string): this {
     const property = this._createProperty(DataTypes.referenceListItem, path, label);
-    property.referenceListModule = refListId.module;
+    property.referenceListModule = refListId.module ?? undefined;
     property.referenceListName = refListId.name;
     return this;
   }
@@ -251,7 +251,7 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
     throw new Error("Method not implemented.");
   }
 
-  entity(entityType: string): Promise<IObjectMetadata> {
+  entity(entityType: string): Promise<IObjectMetadata | null> {
     return this.metadataFetcher({ name: entityType, module: null });
   }
 

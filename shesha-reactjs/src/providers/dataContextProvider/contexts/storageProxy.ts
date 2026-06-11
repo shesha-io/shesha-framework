@@ -136,7 +136,7 @@ export class StorageProxyAccessor<TData extends object = object> implements ISto
 
   setData(data: TData, update: boolean = true): void {
     this._data = data;
-    this._data['setFieldValue'] = this.setFieldValue.bind(this);
+    (this._data as Record<string, unknown>)['setFieldValue'] = this.setFieldValue.bind(this);
     if (update && isDefined(this._onChange))
       this._onChange();
   };

@@ -2,14 +2,16 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import React, { FC } from "react";
 
 interface IProps {
-  styles: { [key in string]: any };
+  scrollButtonClassName: string;
+  scrollButtonsClassName: string;
   scrollLeft: () => void;
   scrollRight: () => void;
-  containerStyle?: React.CSSProperties;
+  containerStyle?: React.CSSProperties | undefined;
 }
 
 export const ScrollControls: FC<IProps> = ({
-  styles,
+  scrollButtonsClassName,
+  scrollButtonClassName,
   scrollLeft,
   scrollRight,
   containerStyle,
@@ -19,11 +21,11 @@ export const ScrollControls: FC<IProps> = ({
     : undefined;
 
   return (
-    <div className={styles.scrollButtons} style={bgStyle}>
-      <div className={styles.scrollButton} onClick={scrollLeft} style={bgStyle}>
+    <div className={scrollButtonsClassName} style={bgStyle}>
+      <div className={scrollButtonClassName} onClick={scrollLeft} style={bgStyle}>
         <LeftOutlined />
       </div>
-      <div className={styles.scrollButton} onClick={scrollRight} style={bgStyle}>
+      <div className={scrollButtonClassName} onClick={scrollRight} style={bgStyle}>
         <RightOutlined />
       </div>
     </div>

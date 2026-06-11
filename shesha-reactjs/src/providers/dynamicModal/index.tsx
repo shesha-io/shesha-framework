@@ -19,7 +19,7 @@ import {
   IDynamicModalInstanceContext,
   IDynamicModalStateContext,
 } from './contexts';
-import { IModalProps } from './models';
+import { ICommonModalProps, IModalProps } from './models';
 import { reducer } from './reducer';
 import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
@@ -28,6 +28,7 @@ import { showDialogArgumentsFormFactory } from './configurable-actions/show-dial
 import { throwError } from '@/utils/errors';
 import { getLatestInstance } from './utils';
 import { createModalApi, IModalApi, createFallbackModalApi } from './modalApi';
+import { isDefined } from '@/utils/nullables';
 
 type IDynamicModalActionExecutionContext = IActionExecutionContext & {
   configurableActionsDispatcherProxy?: FC<PropsWithChildren>;
@@ -77,8 +78,8 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
     dispatch(removeModalAction(id));
   }, []);
 
-  const createModal = useCallback((modalProps: IModalProps): void => {
-    dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
+  const createModal = useCallback(<TValue extends object = object>(modalProps: ICommonModalProps<TValue>): void => {
+    dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } as ICommonModalProps }));
   }, []);
 
   useConfigurableAction<IShowModalActionArguments, unknown, IDynamicModalActionExecutionContext>(
@@ -91,7 +92,9 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
       executer: (actionArgs, context) => {
         const modalId = nanoid();
 
-        const { formMode, ...restArguments } = actionArgs;
+        const { formMode, formId, ...restArguments } = actionArgs;
+        if (!formId)
+          throw new Error("Form Id is required");
 
         const argumentsExpression = actionArgs.formArguments?.trim();
         const argumentsPromise = argumentsExpression
@@ -106,6 +109,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
           return new Promise((resolve, reject) => {
             const modalProps: IModalProps = {
               ...restArguments,
+              formId: formId,
               mode: formMode === "edit" ? "edit" : "readonly",
               id: modalId,
               title: actionArgs.modalTitle,
@@ -183,8 +187,8 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   );
   //#endregion
 
-  const open = (modalProps: IModalProps): void => {
-    dispatch(openAction(modalProps));
+  const open = <TValue extends object = object>(modalProps: ICommonModalProps<TValue>): void => {
+    dispatch(openAction(modalProps as ICommonModalProps));
   };
 
   const modalExists = (id: string): boolean => {
@@ -231,25 +235,30 @@ interface SimpleModal {
   open: () => void;
   close: () => void;
 }
-const useModal = (modalProps: IModalProps): SimpleModal => {
+
+const useModal = <Values extends object = object>(modalProps: IModalProps<Values> | undefined): SimpleModal => {
   const context = useDynamicModals();
 
-  const instance: SimpleModal = {
+  const instance = useMemo<SimpleModal>(() => ({
     open: () => {
-      if (!context.modalExists(modalProps.id)) context.createModal({ ...modalProps, isVisible: true });
+      if (!isDefined(modalProps))
+        throw new Error('Modal props are not defined');
+
+      if (!context.modalExists(modalProps.id))
+        context.createModal({ ...modalProps, isVisible: true });
     },
     close: () => {
+      if (!isDefined(modalProps))
+        throw new Error('Modal props are not defined');
+
       context.removeModal(modalProps.id);
     },
-  };
+  }), [modalProps, context]);
 
   return instance;
 };
 
-function useClosestModal(): IDynamicModalInstanceContext {
-  const context = useContext(DynamicModalInstanceContext);
-  return context;
-}
+const useClosestModal = (): IDynamicModalInstanceContext | undefined => useContext(DynamicModalInstanceContext);
 
 /**
  * Hook to get the modal API for use in scripts and code

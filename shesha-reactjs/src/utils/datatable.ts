@@ -1,14 +1,13 @@
 import { Cell, ColumnInstance } from 'react-table';
-import { IAnchoredDirection, IStoredFilter } from '@/providers/dataTable/interfaces';
+import { IAnchoredDirection, IStoredFilter, JsonLogicFilter } from '@/providers/dataTable/interfaces';
 import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
 import { IArgumentEvaluationResult, convertJsonLogicNode, convertJsonLogicNodeSync } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
 import { isPropertiesArray, NestedProperties } from '@/interfaces/metadata';
 import { executeFunction } from '.';
-import { isDefined } from './nullables';
+import { isDefined, isNullOrWhiteSpace } from './nullables';
 import { extractErrorMessage } from './errors';
 import { getNestedPropertyValue } from './dotnotation';
-import { DataTableColumn } from '@/components/dataTable/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 
 export interface IAnchoredColumn {
@@ -39,11 +38,11 @@ export const getColumnAnchored = (anchored: string | undefined): IAnchoredColumn
   }
 };
 
-export const calculateTotalColumnsOnFixed = <D extends object = object>(row: Cell<D>[], direction: IAnchoredDirection): number => {
-  return row.filter(({ column }) => getColumnAnchored((column as DataTableColumn).anchored).direction === direction).length;
+export const calculateTotalColumnsOnFixed = <D extends object = object>(row: Pick<Cell<D>, 'column'>[], direction: IAnchoredDirection): number => {
+  return row.filter(({ column }) => getColumnAnchored(column.anchored).direction === direction).length;
 };
 
-export const calculatePositionShift = <D extends object = object>(row: Cell<D>[], start: number, end: number): Array<number> => {
+export const calculatePositionShift = <D extends object = object>(row: Pick<Cell<D>, 'column'>[], start: number, end: number): Array<number> => {
   return row.slice(start, end).map((col) => {
     // TODO: check type of `col.column.width` and remove string or handle it here
     return isDefined(col.column.minWidth) && isDefined(col.column.width) && typeof (col.column.width) === 'number' && col.column.width < col.column.minWidth
@@ -137,7 +136,7 @@ export const evaluateDynamicFilters = async (
 export const evaluateDynamicFiltersSync = (
   filters: IStoredFilter[],
   mappings: IMatchData[],
-  propertyMetadata: NestedProperties,
+  propertyMetadata: NestedProperties | undefined,
 ): IStoredFilter[] => {
   if (!isDefined(filters) || !isDefined(mappings)) return EMPTY_ARRAY;
   if (filters.length === 0 || mappings.length === 0) return EMPTY_ARRAY;
@@ -146,9 +145,11 @@ export const evaluateDynamicFiltersSync = (
     // Handle string expressions by parsing them to objects
     if (typeof filter.expression === 'string') {
       try {
-        const parsed = JSON.parse(filter.expression) as unknown;
+        const parsed = !isNullOrWhiteSpace(filter.expression)
+          ? JSON.parse(filter.expression) as JsonLogicFilter
+          : undefined;
         // Validate the parsed expression has expected structure
-        if (typeof parsed !== 'object' || parsed === null) {
+        if (!isDefined(parsed) || typeof parsed !== 'object') {
           throw new Error('Parsed expression must be an object');
         }
         filter.expression = parsed;

@@ -74,7 +74,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.chartType) !== `pie`',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       jsSetting: true,
                     },
                     {
@@ -90,7 +90,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           'return getSettingValue(data?.chartType) !== `bar` || getSettingValue(data?.simpleOrPivot) !== `pivot` || getSettingValue(data?.dataMode) === `url`',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       jsSetting: true,
                     },
                   ],
@@ -145,7 +145,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 _code: 'return getSettingValue(data?.dataMode) === `url`',
                                 _mode: 'code',
                                 _value: false,
-                              } as any,
+                              },
                               jsSetting: true,
                             },
                           ],
@@ -160,7 +160,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.dataMode) !== `url`',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           components: [
                             ...fbf()
                               .addSettingsInput({
@@ -177,7 +177,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     _code: "return getSettingValue(data.dataMode) === 'url';",
                                     _mode: 'code',
                                     _value: false,
-                                  } as any,
+                                  },
                                 },
                                 settingsValidationErrors: [],
                                 jsSetting: true,
@@ -213,7 +213,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.dataMode) === `url`',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           components: [
                             ...fbf()
                               .addSettingsInputRow({
@@ -254,7 +254,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   _code: 'return getSettingValue(data?.dataMode) === `url`',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     id: nanoid(),
@@ -269,8 +269,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     modelType: {
                                       _code: 'return getSettingValue(data?.entityType);',
                                       _mode: 'code',
-                                      _value: false,
-                                    } as any,
+                                    },
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
                                     jsSetting: true,
@@ -284,7 +283,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   _code: 'return !getSettingValue(data?.axisProperty)',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     id: nanoid(),
@@ -317,7 +316,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       _code: 'return !!!getSettingValue(data?.isAxisTimeSeries)',
                                       _mode: 'code',
                                       _value: true,
-                                    } as any,
+                                    },
                                   },
                                 ],
                               })
@@ -328,7 +327,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   _code: 'return getSettingValue(data?.dataMode) === `url`',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     id: nanoid(),
@@ -343,8 +342,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     modelType: {
                                       _code: 'return getSettingValue(data?.entityType);',
                                       _mode: 'code',
-                                      _value: false,
-                                    } as any,
+                                    },
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
                                     jsSetting: true,
@@ -358,7 +356,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     id: nanoid(),
@@ -374,8 +372,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     modelType: {
                                       _code: 'return getSettingValue(data?.entityType);',
                                       _mode: 'code',
-                                      _value: false,
-                                    } as any,
+                                    },
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
                                     jsSetting: true,
@@ -389,7 +386,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     id: nanoid(),
@@ -422,7 +419,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       _code: 'return !!!getSettingValue(data?.isGroupingTimeSeries)',
                                       _mode: 'code',
                                       _value: true,
-                                    } as any,
+                                    },
                                   },
                                 ],
                               })
@@ -473,7 +470,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 _code: 'return getSettingValue(data?.showTitle) !== true',
                                 _mode: 'code',
                                 _value: true,
-                              } as any,
+                              },
                             },
                           ],
                         })
@@ -484,7 +481,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return !(getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea` || getSettingValue(data?.simpleOrPivot) === `pivot`)',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),
@@ -504,7 +501,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 _code: 'return getSettingValue(data?.showLegend) !== true',
                                 _mode: 'code',
                                 _value: true,
-                              } as any,
+                              },
                               label: 'Legend Position',
                               type: 'dropdown',
                               allowClear: true,
@@ -526,7 +523,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),
@@ -546,7 +543,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 _code: 'return getSettingValue(data?.showXAxisScale) !== true',
                                 _mode: 'code',
                                 _value: true,
-                              } as any,
+                              },
                               jsSetting: true,
                             },
                           ],
@@ -558,7 +555,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.showXAxisTitle) !== true',
                             _mode: 'code',
                             _value: true,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),
@@ -579,7 +576,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),
@@ -599,7 +596,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 _code: 'return getSettingValue(data?.showYAxisScale) !== true',
                                 _mode: 'code',
                                 _value: true,
-                              } as any,
+                              },
                               jsSetting: true,
                             },
                           ],
@@ -611,7 +608,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.showYAxisTitle) !== true',
                             _mode: 'code',
                             _value: true,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),
@@ -684,7 +681,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return getSettingValue(data?.dataMode) !== `url`',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addSettingsInput({
@@ -700,7 +697,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: "return getSettingValue(data.dataMode) === 'url';",
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                         },
                         settingsValidationErrors: [],
                         jsSetting: true,
@@ -737,7 +734,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return getSettingValue(data?.dataMode) === `url`',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addSettingsInputRow({
@@ -788,8 +785,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            },
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -803,7 +799,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return !getSettingValue(data?.axisProperty)',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -836,7 +832,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _code: 'return !!!getSettingValue(data?.isAxisTimeSeries)',
                               _mode: 'code',
                               _value: true,
-                            } as any,
+                            },
                           },
                         ],
                       })
@@ -857,8 +853,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            },
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -872,7 +867,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -888,8 +883,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            },
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -903,7 +897,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -937,7 +931,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _code: 'return !!!getSettingValue(data?.isGroupingTimeSeries)',
                               _mode: 'code',
                               _value: true,
-                            } as any,
+                            },
                           },
                         ],
                       })
@@ -948,7 +942,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -964,8 +958,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            },
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -992,7 +985,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _code: 'return !(getSettingValue(data?.orderBy))',
                               _mode: 'code',
                               _value: false,
-                            } as any,
+                            },
                             jsSetting: true,
                             width: '100%',
                           },
@@ -1022,7 +1015,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return getSettingValue(data?.dataMode) === `url` || !getSettingValue(data?.entityType)',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -1038,8 +1031,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            },
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             jsSetting: false,
                           },
@@ -1176,7 +1168,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return ["polarArea", "pie"].includes(getSettingValue(data?.chartType));',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                 })
                 .addCollapsiblePanel({
                   id: nanoid(),
@@ -1190,7 +1182,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return ["line", "bar"].includes(getSettingValue(data?.chartType)) && getSettingValue(data?.simpleOrPivot) === "simple";',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   content: {
                     id: nanoid(),
                     components: [...fbf()
@@ -1302,7 +1294,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return ["polarArea", "pie"].includes(getSettingValue(data?.chartType));',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                 })
                 .addPropertyRouter({
                   id: styleRouterId,
@@ -1316,7 +1308,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addCollapsiblePanel({
@@ -1409,7 +1401,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         label: 'Border',
                         labelAlign: 'right',
                         ghost: true,
-                        hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false },
                         parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
@@ -1437,7 +1429,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         ghost: true,
                         parentId: styleRouterId,
                         collapsible: 'header',
-                        hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false },
                         content: {
                           id: nanoid(),
                           components: [
@@ -1463,7 +1455,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   jsSetting: false,
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -1476,7 +1468,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   jsSetting: false,
                                 },
                                 ],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                                 hideLabel: true,
                               })
                               .addSettingsInputRow({
@@ -1489,7 +1481,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   jsSetting: false,
                                   label: "URL",
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -1501,12 +1493,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: "Image",
                                   jsSetting: false,
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -1520,7 +1512,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -1553,7 +1545,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'background.repeat',
                                   buttonGroupOptions: repeatOptions,
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               })
                               .toJson(),
                           ],
@@ -1565,7 +1557,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         label: 'Shadow',
                         labelAlign: 'right',
                         ghost: true,
-                        hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false },
                         parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
@@ -1717,7 +1709,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.chartType) !== `line`',
                         _mode: 'code',
                         _value: true,
-                      } as any,
+                      },
                       jsSetting: true,
                     },
                   ],

@@ -1,9 +1,7 @@
 import { createStyles, SerializedStyles } from 'antd-style';
-import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { IDimensionsValue } from '@/designer-components/_settings/utils/index';
+import { TableStyleProps } from '../interfaces';
 
 const tableClassNames = {
   shaTable: 'sha-table',
@@ -39,6 +37,10 @@ const tableStyles = {
 
 export const useStyles = (): typeof tableStyles => {
   return tableStyles;
+};
+
+type StylesArgs = TableStyleProps & {
+  freezeHeaders?: boolean | undefined;
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {
@@ -77,44 +79,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   freezeHeaders,
   actionIconSize,
   actionIconColor,
-}: {
-  rowBackgroundColor?: string;
-  rowAlternateBackgroundColor?: string;
-  rowHoverBackgroundColor?: string;
-  rowSelectedBackgroundColor?: string;
-  border?: IBorderValue;
-  backgroundColor?: string;
-  headerFontFamily?: string;
-  headerFontSize?: string;
-  headerFontWeight?: string;
-  headerBackgroundColor?: string;
-  headerTextColor?: string;
-  headerTextAlign?: string;
-  bodyTextAlign?: string;
-  rowHeight?: string;
-  rowPadding?: string;
-  rowBorder?: string;
-  rowBorderStyle?: IBorderValue;
-  boxShadow?: string;
-  dimensions?: IDimensionsValue;
-  sortableIndicatorColor?: string;
-  striped?: boolean;
-  cellBorderColor?: string;
-  cellBorders?: boolean;
-  cellPadding?: string;
-  headerBorder?: IBorderValue;
-  cellBorder?: IBorderValue;
-  headerShadow?: IShadowValue;
-  rowShadow?: IShadowValue;
-  rowDividers?: boolean;
-  bodyFontFamily?: string;
-  bodyFontSize?: string;
-  bodyFontWeight?: number & {} | string;
-  bodyFontColor?: string;
-  freezeHeaders?: boolean;
-  actionIconSize?: string | number;
-  actionIconColor?: string;
-}) => {
+}: StylesArgs) => {
   const {
     shaTable,
     thead,

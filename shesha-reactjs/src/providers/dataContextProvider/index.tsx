@@ -73,7 +73,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
 
   const initialDataRef = useRef<Promise<TData>>(undefined);
 
-  const onChangeData = useRef<ContextOnChangeData>();
+  const onChangeData = useRef<ContextOnChangeData>(undefined);
   if (props.onChangeData) {
     onChangeData.current = props.onChangeData;
   }

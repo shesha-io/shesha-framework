@@ -7,17 +7,18 @@ import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface FormInfoProps {
   /**
    * Persisted form props
    */
-  formProps: IPersistedFormProps;
-  visible?: boolean;
+  formProps: IPersistedFormProps | undefined;
+  visible?: boolean | undefined;
   /**
    * Is used for update of the form markup. If value of this handler is not defined - the form is read-only
    */
-  onMarkupUpdated?: () => void;
+  onMarkupUpdated?: (() => void) | undefined;
   /**
    * The form component (or any component) that this will wrap
    */
@@ -25,7 +26,6 @@ export interface FormInfoProps {
 }
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
-  const { id, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
 
@@ -33,7 +33,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
 
   const [open, setOpen] = useState(false);
   const [panelShowing, setPanelShowing] = useState<boolean>(formInfoBlockVisible);
-  const displayEditMode = formInfoBlockVisible && formProps?.id;
+  const displayEditMode = formInfoBlockVisible && isDefined(formProps) && !isNullOrWhiteSpace(formProps.id);
 
   const onModalOpen = (): void => setOpen(true);
   const onUpdated = (): void => {
@@ -46,15 +46,23 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
   useEffect(() => {
     if (displayEditMode)
       setPanelShowing(softInfoBlock);
+    // TODO: V1: review visibility and change dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [softInfoBlock]);
 
-  if (!formProps?.id) {
+  if (!isDefined(formProps) || !formProps.id) {
     return <>{children}</>;
   }
 
-  if (auth?.state?.status !== 'ready') {
+  if (auth?.state.status !== 'ready') {
     return <>{children}</>;
   }
+
+  const { id, name, module } = formProps;
+
+  const formFullName = !isNullOrWhiteSpace(name)
+    ? getFormFullName(module ?? null, name)
+    : undefined;
 
   return (
     <div
@@ -101,10 +109,10 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
 
             <p
               onClick={() => onModalOpen()}
-              title={getFormFullName(module, name)}
+              title={formFullName}
               className={styles.shaFormInfoCardTitle}
             >
-              {getFormFullName(module, name)}
+              {formFullName}
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', paddingRight: 5 }}>

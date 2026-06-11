@@ -12,6 +12,8 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { isConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { isDefined } from '@/utils/nullables';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -30,10 +32,14 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     // In designer mode, if no data source is configured and none is available from context, show error
     if (model.hidden) return null;
 
+    // TODO: review validation
+    if (!isDefined(dataSource))
+      throw new Error('No data source is available for this list');
+
     return (
       <DataListControl
         {...model}
-        dataSourceInstance={dataSource ?? null}
+        dataSourceInstance={dataSource}
       />
     );
   },
@@ -58,7 +64,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         canDeleteInline: 'no',
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
-        dblClickActionConfiguration: prev['actionConfiguration'],
+        dblClickActionConfiguration: "actionConfiguration" in prev && isConfigurableActionConfiguration(prev.actionConfiguration) ? prev.actionConfiguration : undefined,
         showEditIcons: true,
       };
     })

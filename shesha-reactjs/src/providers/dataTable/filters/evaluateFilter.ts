@@ -12,9 +12,9 @@ interface IMatchDataWithPreparation extends IMatchData {
 }
 
 export interface UseEvaluatedFilterArgs {
-  filter?: FilterExpression;
+  filter?: FilterExpression | undefined;
   mappings: IMatchDataWithPreparation[];
-  metadataAccessor?: NestedPropertyMetadatAccessor;
+  metadataAccessor?: NestedPropertyMetadatAccessor | undefined;
 };
 
 export interface UseFormEvaluatedFilterArgs {
@@ -25,7 +25,7 @@ export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additio
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
-  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current) {
     contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
   } else {

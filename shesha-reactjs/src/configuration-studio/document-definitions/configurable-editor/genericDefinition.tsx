@@ -1,11 +1,11 @@
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
-import { DocumentDefinition, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
+import { DocumentDefinition, IDocumentInstance, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
 import { ConfigurableItemIdentifierToString, FormFullName } from "@/interfaces";
 import { ShaFormProvider } from "@/providers/form/providers/shaFormProvider";
 import { useShaForm } from "@/providers/form/store/shaFormInstance";
 import ParentProvider from "@/providers/parentProvider";
 import { Form, Result } from "antd";
-import React, { FC, PropsWithChildren, ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { ConfigurableEditor } from ".";
 import { GenericToolbar } from "./toolbar";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
@@ -16,8 +16,9 @@ export interface DummyEditorProps {
   formId?: FormFullName;
 }
 
-const EmptyProvider: FC<PropsWithChildren> = ({ children }) => (<>{children}</>);
-const EditorNotAvailable: FC = () => {
+const EmptyProvider = <TDoc extends IDocumentInstance = IDocumentInstance>({ children }: ProviderRendererProps<TDoc>): ReactNode => (<>{children}</>);
+
+const EditorNotAvailable = (): ReactNode => {
   return (
     <Result
       status="404"
@@ -26,7 +27,7 @@ const EditorNotAvailable: FC = () => {
     />
   );
 };
-const EmptyComponent: FC = () => null;
+const EmptyComponent = (): ReactNode => null;
 
 
 export const getUnknownDocumentDefinition = (itemType: string): DocumentDefinition => {

@@ -1,10 +1,17 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { autoAlignLabel = true }) => {
+type StylesArgs = {
+  autoAlignLabel?: boolean;
+};
+type StylesResponse = {
+  formItem: string;
+  settingsFormItem: string;
+};
+
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, token }, { autoAlignLabel = true }) => {
   const settingsFormItem = cx(css`
         margin: 0px !important;
   `);
-
 
   const formItem = cx(css`
 

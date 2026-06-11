@@ -416,7 +416,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: 'code',
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addSettingsInput({
@@ -472,7 +472,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -496,7 +496,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeX);',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                   },
                                   {
                                     type: 'textField',
@@ -511,7 +511,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeX);',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                   },
                                 ],
                               })
@@ -524,7 +524,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -548,7 +548,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeY);',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                   },
                                   {
                                     type: 'textField',
@@ -563,7 +563,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeY);',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                   },
                                 ],
                               })
@@ -582,7 +582,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                   },
                                   {
                                     type: 'switch',
@@ -595,7 +595,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                   },
                                 ],
                               })

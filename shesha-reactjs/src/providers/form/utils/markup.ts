@@ -1,4 +1,4 @@
-import { IToolboxComponentBase, IToolboxComponentGroup } from "@/interfaces";
+import { IToolboxComponent, IToolboxComponentGroup } from "@/interfaces";
 import { isDefined } from "@/utils/nullables";
 
 /**
@@ -10,8 +10,8 @@ import { isDefined } from "@/utils/nullables";
  */
 export const findToolboxComponent = (
   availableComponents: IToolboxComponentGroup[],
-  predicate: (component: IToolboxComponentBase) => boolean,
-): IToolboxComponentBase | undefined => {
+  predicate: (component: IToolboxComponent) => boolean,
+): IToolboxComponent | undefined => {
   for (const group of availableComponents) {
     for (const component of group.components) {
       if (predicate(component)) return component;
@@ -32,8 +32,8 @@ export const findToolboxComponent = (
  */
 export const getToolboxComponent = (
   availableComponents: IToolboxComponentGroup[],
-  predicate: (component: IToolboxComponentBase) => boolean,
-): IToolboxComponentBase => {
+  predicate: (component: IToolboxComponent) => boolean,
+): IToolboxComponent => {
   const component = findToolboxComponent(availableComponents, predicate);
   if (!isDefined(component))
     throw new Error('Component not found');

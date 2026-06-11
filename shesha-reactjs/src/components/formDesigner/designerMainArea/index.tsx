@@ -1,10 +1,9 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider, useShaFormInstance } from '@/providers';
-import { useFormDesigner, useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerMarkup, useFormDesignerReadOnly, useFormDesignerSelectedComponent, useFormDesignerSettings } from '@/providers/formDesigner';
+import { ConditionalMetadataProvider, EMPTY_FLAT_COMPONENTS_STRUCTURE, useShaFormInstance } from '@/providers';
+import { useFormDesigner, useFormDesignerFormMode, useFormDesignerReadOnly, useFormDesignerSelectedComponent, useFormDesignerSettings } from '@/providers/formDesigner';
 import React, { FC, useMemo, useEffect, useCallback } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
-import { DebugPanel } from '../debugPanel';
 import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { IViewType } from '@/providers/canvas/contexts';
@@ -18,7 +17,6 @@ const rightSidebarProps = {
 };
 
 export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'configStudio' }) => {
-  const isDebug = useFormDesignerIsDebug();
   const readOnly = useFormDesignerReadOnly();
   const formSettings = useFormDesignerSettings();
   const formMode = useFormDesignerFormMode();
@@ -28,15 +26,12 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const { deleteComponent, settingsPanelElement } = useFormDesigner();
   const component = useFormDesignerSelectedComponent();
 
-  const showMarkup = false;
-  const markup = useFormDesignerMarkup();
-
   const selectedComponentId = component?.id;
 
   useEffect(() => {
     if (shaForm) {
       shaForm.applyMarkupAsync({
-        formFlatMarkup: shaForm.flatStructure,
+        formFlatMarkup: shaForm.flatStructure ?? EMPTY_FLAT_COMPONENTS_STRUCTURE,
         formSettings: formSettings,
       });
     }
@@ -78,7 +73,9 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   }, [handleKeyDown]);
 
   const leftSidebarProps = useMemo(() =>
-    readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' },
+    readOnly
+      ? undefined
+      : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' },
   [readOnly]);
 
   return (
@@ -105,17 +102,10 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
           </SidebarContainer>
         )}
       >
-        <ConditionalWrap
-          condition={Boolean(formSettings?.modelType)}
-          wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
-        >
-          {showMarkup && <textarea readOnly value={JSON.stringify(markup, null, 2)} /> /* ToDo: AS - remove after inheritance implementation */}
+        <ConditionalMetadataProvider modelType={formSettings.modelType}>
           <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
-            {isDebug && (
-              <DebugPanel />
-            )}
           </ConfigurableFormRenderer>
-        </ConditionalWrap>
+        </ConditionalMetadataProvider>
       </ConditionalWrap>
     </div>
   );

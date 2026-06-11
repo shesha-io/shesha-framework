@@ -1,59 +1,40 @@
-import { Col, Row, Alert, Typography } from 'antd';
-import React, { FC } from 'react';
+import { Col, Radio } from 'antd';
+import React, { FC, useState } from 'react';
 import { CollapsiblePanel } from '@/components/panel';
-import { SectionSeparator } from '@/components/sectionSeparator';
-import AlertsExample from './alertsExamples';
-import FormExample from './form';
 import ThemeParameters from './parameters';
-import TextsExample from './textsExample';
 import { useStyles } from './styles/styles';
-import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { IConfigurableTheme } from '@/providers/theme';
 
 export interface IConfigurableThemePageProps {
-  value?: IConfigurableTheme;
-  onChange?: (theme: IConfigurableTheme) => void;
-  readonly?: boolean;
+  value: IConfigurableTheme;
+  onChange: ((theme: IConfigurableTheme) => void);
+  readOnly: boolean;
 }
 
-export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ value, onChange, readonly }) => {
+export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ value, onChange, readOnly }) => {
   const { styles } = useStyles();
+  const [themeLevel, setThemeLevel] = useState<1 | 2>(1);
 
   return (
-    <Row gutter={16}>
-      <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
-        <CollapsiblePanel
-          collapsible="disabled"
-          header={(
-            <Typography.Text type="secondary" className={styles.themeHeader}>
-              Theme Parameters
-            </Typography.Text>
-          )}
-          className={styles.themeParameters}
-        >
-          <Alert type="info" title="You can modify the values by selecting the colour block" showIcon />
-          <ThemeParameters value={value} onChange={onChange} readonly={readonly} />
-        </CollapsiblePanel>
-      </Col>
-
-      <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
-        <CollapsiblePanel
-          className={styles.themeParameters}
-          header={(
-            <Typography.Text type="secondary" className={styles.themeHeader}>
-              Results
-            </Typography.Text>
-          )}
-        >
-          <SectionSeparator title="Alerts" />
-          <AlertsExample />
-
-          <SectionSeparator title="Forms" containerStyle={{ marginTop: '8px' }} />
-          <FormExample />
-
-          <SectionSeparator title="Texts" containerStyle={{ marginTop: '8px' }} />
-          <TextsExample />
-        </CollapsiblePanel>
-      </Col>
-    </Row>
+    <Col span={24} className={styles.contentColumn}>
+      <CollapsiblePanel
+        collapsible="disabled"
+        header={(
+          <Radio.Group
+            value={themeLevel}
+            onChange={(e) => setThemeLevel(e.target.value as 1 | 2)}
+            disabled={readOnly}
+            optionType="button"
+            buttonStyle="solid"
+          >
+            <Radio.Button value={1}>Theme</Radio.Button>
+            <Radio.Button value={2}>Components</Radio.Button>
+          </Radio.Group>
+        )}
+        className={styles.themeParameters}
+      >
+        <ThemeParameters value={value} onChange={onChange} readOnly={readOnly} themeLevel={themeLevel} />
+      </CollapsiblePanel>
+    </Col>
   );
 };

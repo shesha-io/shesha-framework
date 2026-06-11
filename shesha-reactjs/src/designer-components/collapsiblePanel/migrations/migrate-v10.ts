@@ -4,6 +4,7 @@ import { IConfigurableFormComponent } from "@/providers/form/models";
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
 import { ITextComponentProps } from "@/designer-components/text/models";
 import { ICollapsiblePanelComponentProps } from "../interfaces";
+import { isNonEmptyArray } from "@/utils/array";
 
 export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: SettingsMigrationContext): ICollapsiblePanelComponentProps => {
   const model = { ...prev };
@@ -11,7 +12,7 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
   const customHeader = model.customHeader;
   const label = model.label;
   const header = model.header;
-  const textContent = typeof label === 'string' ? label : undefined;
+  const textContent = typeof label === 'string' ? label : "";
 
 
   // Skip if already migrated to the new structure
@@ -45,7 +46,7 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
     model.header = customHeader;
 
     // Recursively register customHeader components in flat structure
-    if (customHeader.components?.length > 0) {
+    if (isNonEmptyArray(customHeader.components)) {
       const registerComponents = (components: IConfigurableFormComponent[], parentId: string): void => {
         context.flatStructure.componentRelations[parentId] = components.map((c) => c.id);
         components.forEach((component) => {

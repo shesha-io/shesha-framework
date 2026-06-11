@@ -1,26 +1,29 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
-import { IConfigurableFormComponent, IPropertyMetadata } from '@/interfaces';
-import { IStyleType, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
-import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
-import { formComponentActualModelPropertyFilter, updateComponentModelFromMetadata } from '@/providers/form/utils';
-import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
-import { CustomErrorBoundary } from '..';
-import ErrorIconPopover from '../componentErrors/errorIconPopover';
-import AttributeDecorator from '../attributeDecorator';
-import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
-import { useStyles } from './styles/styles';
-import { FormComponentValidationProvider, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
-import { isValidGuid } from './components/utils';
-import { toCamelCase } from '@/utils/string';
+import { IBackgroundValue, IBorderValue, IFontValue } from '@/designer-components/_settings/utils';
+import { useActualContextData, useDeepCompareMemo } from '@/hooks';
+import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { IConfigurableFormComponent, IPropertyMetadata, ValidateErrorEntity } from '@/interfaces';
+import { DEVICE_TYPES, DeviceType, IStyleType, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useComponentApi } from '@/providers/componentApi/provider';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { formComponentActualModelPropertyFilter, isFormFullName, updateComponentModelFromMetadata } from '@/providers/form/utils';
+import { FormComponentValidationProvider, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
+import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { deepMergeValues, removeUndefinedProps } from '@/utils/object';
+import { toCamelCase } from '@/utils/string';
+import React, { FC, useEffect, useMemo, useState } from 'react';
+import { CustomErrorBoundary } from '..';
 import { CommonComponentApi, IComponentStyle, InputComponentApi } from '../../componentsApi/componentApi';
-import { IBackgroundValue } from '@/designer-components/_settings/utils';
-
-import apiCode from "../../componentsApi/componentApi.ts?raw";
+import AttributeDecorator from '../attributeDecorator';
+import ErrorIconPopover from '../componentErrors/errorIconPopover';
+import { isValidGuid } from './components/utils';
+import { useStyles } from './styles/styles';
+import { isSubFormComponent } from '@/designer-components/subForm';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { isNonEmptyArray } from '@/utils/array';
+import { getNestedPropertyValue } from '@/utils/dotnotation';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -28,6 +31,16 @@ export interface IFormComponentProps {
 
 const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
+};
+
+type CustomHtmlAttributes = {
+  "data-sha-c-id"?: string | undefined;
+  "data-sha-c-name"?: string | undefined;
+  "data-sha-c-property-name"?: string | undefined;
+  "data-sha-c-type"?: string | undefined;
+  "data-sha-c-form-name"?: string | undefined;
+  "data-sha-parent-form-id"?: string | undefined;
+  "data-sha-parent-form-name"?: string | undefined;
 };
 
 const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceComponentModel }) => {
@@ -46,11 +59,11 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
 
   const toolboxComponent = getToolboxComponent(sourceComponentModel.type);
 
-  const [propMetadata, setPropMetadata] = useState<IPropertyMetadata>(null);
+  const [propMetadata, setPropMetadata] = useState<IPropertyMetadata | undefined>(undefined);
 
   useEffect(() => {
     let cancelled = false;
-    if (modelMetadata?.properties && sourceComponentModel?.propertyName) {
+    if (modelMetadata?.properties && sourceComponentModel.propertyName) {
       const pName = toCamelCase(sourceComponentModel.propertyName);
       if (Array.isArray(modelMetadata.properties)) {
         setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
@@ -65,7 +78,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     return () => {
       cancelled = true;
     };
-  }, [modelMetadata, sourceComponentModel?.propertyName]);
+  }, [modelMetadata, sourceComponentModel.propertyName]);
 
   const componentModel = useDeepCompareMemo(() => {
     return toolboxComponent && propMetadata
@@ -75,6 +88,9 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
 
   // Default to 'desktop' when there's no canvas context (e.g., in datatables)
   const effectiveDevice = activeDevice || 'desktop';
+  const deviceModelConfig = DEVICE_TYPES.includes(effectiveDevice as DeviceType)
+    ? componentModel[effectiveDevice as DeviceType]
+    : undefined;
 
   // In designer mode: preserve the padding-only stylingBox, dimensions, and style (margins stripped) from wrapper
   // In preview/live mode: use original device-specific stylingBox (with margins) and dimensions
@@ -82,7 +98,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   const extendedModel = componentModel as IConfigurableFormComponent & IStyleType;
   const deviceModel = deepMergeValues({
     ...componentModel,
-    ...componentModel?.[effectiveDevice],
+    ...deviceModelConfig,
     // In designer: preserve padding-only stylingBox and stripped style (no margins) from wrapper
     // In preview: use original stylingBox with margins from device settings
     ...(isDesignerMode
@@ -91,7 +107,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
         dimensions: extendedModel.dimensions,
         style: extendedModel.style, // Keep stripped style (no margins)
       }
-      : { stylingBox: componentModel?.[effectiveDevice]?.stylingBox }
+      : { stylingBox: deviceModelConfig?.stylingBox }
     ),
   }, apiStyles);
 
@@ -99,7 +115,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     deviceModel,
     undefined,
     undefined,
-    (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
+    (name, value) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
   ) as UnwrapCodeEvaluators<IConfigurableFormComponent & IStyleType>; // TODO: move type cast to useActualContextData after refactoring
 
@@ -108,7 +124,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
       // ToDo: AS - remove hidden from this check
       actualModel.hidden ||
       actualModel.visible === false ||
-      !anyOfPermissionsGranted(actualModel?.permissions || []) ||
+      !anyOfPermissionsGranted(actualModel.permissions || []) ||
       !isComponentFiltered(actualModel));
 
   if (!toolboxComponent?.isInput && !toolboxComponent?.isOutput)
@@ -134,7 +150,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
 
   const actualApiModel = useDeepCompareMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
 
-  if (componentApi !== undefined) {
+  if (componentApi !== undefined && !isNullOrWhiteSpace(actualModel.componentName)) {
     // common Api
     componentApi.updateApi<CommonComponentApi>(
       {
@@ -145,25 +161,32 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
         api: {
           componentName: actualModel.componentName,
           context: actualModel.context,
-          propertyName: actualModel.propertyName,
+          propertyName: actualModel.propertyName ?? "",
         },
         typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
       },
       [
         // component properties
         // use actualModel.hidden because it's already filtered by some other means (eg permissions)
-        { name: 'visible', getter: () => actualApiModel.visible, setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden || !value }) },
-        { name: 'editable', getter: () => actualApiModel.editMode, setter: (value) => setApiModel((prev) => {
-          const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
-          return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };
-        }) },
+        { name: 'visible',
+          getter: () => actualApiModel.visible ?? false,
+          setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden || !value }),
+        },
+        { name: 'editable',
+          getter: () => actualApiModel.editMode,
+          setter: (value) => setApiModel((prev) => {
+            const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
+            return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };
+          }),
+        },
         // component styles
         {
           name: 'style', getter: () => {
             const style = {} as IComponentStyle;
-            componentApi.createApiProperty(style, { name: 'font', getter: () => actualApiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value }) });
+            // TODO: implement generic methods and avoid type casts
+            componentApi.createApiProperty(style, { name: 'font', getter: () => actualApiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value as IFontValue }) });
             componentApi.createApiProperty(style, { name: 'background', getter: () => actualApiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
-            componentApi.createApiProperty(style, { name: 'border', getter: () => actualApiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value }) });
+            componentApi.createApiProperty(style, { name: 'border', getter: () => actualApiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value as IBorderValue }) });
             return style;
           },
         },
@@ -183,7 +206,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
               : Promise.resolve(true),
             getErrors: () => actualModel.propertyName
               ? shaForm.antdForm.validateFields([actualModel.propertyName], { validateOnly: true })
-                .then(() => []).catch((e) => e.errorFields?.length ? e.errorFields[0].errors : [])
+                .then(() => []).catch((e: ValidateErrorEntity) => isNonEmptyArray(e.errorFields) ? e.errorFields[0].errors : [])
               : Promise.resolve([]),
             reset: () => actualModel.propertyName
               ? shaForm.antdForm.resetFields([actualModel.propertyName])
@@ -192,9 +215,9 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
           typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         },
         [
-          { name: 'required', getter: () => actualApiModel.validate?.required, setter: (value) => updateApiModel(setApiModel, { validate: { required: value } }) },
+          { name: 'required', getter: () => actualApiModel.validate?.required ?? false, setter: (value) => updateApiModel(setApiModel, { validate: { required: value } }) },
           { name: 'value', getter: () => {
-            return actualModel.propertyName ? shaForm.formData[actualModel.propertyName] : undefined;
+            return actualModel.propertyName && shaForm.formData ? getNestedPropertyValue(shaForm.formData, actualModel.propertyName) : undefined;
           }, setter: (value) => {
             if (actualModel.propertyName)
               shaForm.setFormData({ values: { [actualModel.propertyName]: value }, mergeValues: true });
@@ -228,7 +251,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     const errors: Array<{ propertyName?: string; error: string }> = [];
     let validationType: ISheshaErrorTypes | undefined;
 
-    if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
+    if (actualModel.background?.type === 'storedFile' && actualModel.background.storedFile?.id && !isValidGuid(actualModel.background.storedFile.id)) {
       errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
     }
 
@@ -307,36 +330,40 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     );
   }
 
-  if (shaForm.form.settings.isSettingsForm)
+  if (shaForm.form && shaForm.form.settings.isSettingsForm)
     return control;
 
-  const attributes = {
+  const attributes: CustomHtmlAttributes = {
     'data-sha-c-id': `${componentModel.id}`,
     'data-sha-c-name': `${componentModel.componentName}`,
     'data-sha-c-property-name': `${componentModel.propertyName}`,
     'data-sha-c-type': `${componentModel.type}`,
   };
 
-  if (componentModel.type === 'subForm') {
-    if ((componentModel as any)?.formSelectionMode !== 'dynamic') {
-      attributes['data-sha-c-form-name'] = `${(componentModel as any)?.formId?.module}/${(componentModel as any)?.formId?.name}`;
+  if (isSubFormComponent(componentModel)) {
+    if (componentModel.formSelectionMode !== 'dynamic' && isFormFullName(componentModel.formId)) {
+      attributes['data-sha-c-form-name'] = `${componentModel.formId.module}/${componentModel.formId.name}`;
     }
-    attributes['data-sha-parent-form-id'] = `${shaForm.form.id}`;
-    attributes['data-sha-parent-form-name'] = `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}`;
+    if (!isNullOrWhiteSpace(shaForm.form?.id))
+      attributes['data-sha-parent-form-id'] = `${shaForm.form.id}`;
+    if (isFormFullName(shaForm.formId))
+      attributes['data-sha-parent-form-name'] = `${shaForm.formId.module}/${shaForm.formId.name}`;
   }
 
-  return (
-    <AttributeDecorator attributes={attributes}>
-      {wrappedControl}
-    </AttributeDecorator>
-  );
+  return isDefined(wrappedControl)
+    ? (
+      <AttributeDecorator attributes={attributes as Record<string, string>}>
+        {wrappedControl}
+      </AttributeDecorator>
+    )
+    : undefined;
 };
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   return (
     <FormComponentValidationProvider
       componentId={componentModel.id}
-      componentName={componentModel.componentName}
+      componentName={componentModel.componentName ?? ""}
       componentType={componentModel.type}
     >
       <FormComponentInner componentModel={componentModel} />

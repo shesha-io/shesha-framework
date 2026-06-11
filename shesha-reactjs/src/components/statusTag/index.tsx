@@ -2,6 +2,7 @@ import React, { CSSProperties, FC, useMemo } from 'react';
 import { Tag } from 'antd';
 import { isNumeric } from '@/utils/string';
 import { useStyles } from './styles/styles';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IStatusMap {
   code?: number;
@@ -26,11 +27,11 @@ export const DEFAULT_STATUS_TAG_MAPPINGS: IStatusMappings = {
 };
 
 export interface IStatusTagProps {
-  override?: string;
-  value: number | string;
+  override?: string | undefined;
+  value: number | string | null | undefined;
   color: string;
-  mappings?: IStatusMappings;
-  style?: CSSProperties;
+  mappings?: IStatusMappings | undefined;
+  style?: CSSProperties | undefined;
 }
 
 export const StatusTag: FC<IStatusTagProps> = ({
@@ -46,17 +47,17 @@ export const StatusTag: FC<IStatusTagProps> = ({
       return {};
     }
 
-    let result = mappings?.mapping?.find((item) => {
+    let result = mappings.mapping?.find((item) => {
       const { code, text } = item;
 
-      if (typeof value === 'number' || isNumeric(value)) {
+      if (typeof value === 'number' || (typeof (value) === "string" && isNumeric(value))) {
         const computed = Number(value);
 
         if (computed === code) {
           return item;
         }
       } else if (typeof value === 'string') {
-        if (value.match(text)) {
+        if (!isNullOrWhiteSpace(text) && value.match(text)) {
           return item;
         }
       }
@@ -65,7 +66,7 @@ export const StatusTag: FC<IStatusTagProps> = ({
     });
 
     if (!result) {
-      result = mappings?.default;
+      result = { ...mappings.default };
     }
 
     if (override) {
@@ -79,13 +80,17 @@ export const StatusTag: FC<IStatusTagProps> = ({
     return result;
   }, [override, value, color, mappings]);
 
-  if (!memoized?.color) {
+  if (!memoized.color) {
     return null;
   }
 
   return (
-    <Tag className={styles.shaStatusTag} color={memoized?.color} style={style}>
-      {memoized?.text}
+    <Tag
+      className={styles.shaStatusTag}
+      color={memoized.color}
+      {...(style ? { style } : {})}
+    >
+      {memoized.text}
     </Tag>
   );
 };

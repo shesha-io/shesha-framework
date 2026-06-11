@@ -6,24 +6,24 @@ export type ListItemProps = {
 
 export interface IListViewProps {
   data: LogLine[];
-  autoScroll?: boolean;
+  autoScroll?: boolean | undefined;
 }
 
 
 // Types
 export interface LogLine {
   id: string | number;
-  raw?: string;
-  message: string;
+  raw?: string | undefined;
+  message: string | null;
   level: LogLevel;
-  timeStamp?: moment.Moment;
-  isTimeline?: boolean;
-  duration?: number;
-  taskName?: string;
-  hasChildren?: boolean;
-  collapsed?: boolean;
-  displayIndex?: number;
-  originalIndex?: number;
+  timeStamp?: moment.Moment | undefined;
+  isTimeline?: boolean | undefined;
+  duration?: number | undefined;
+  taskName?: string | undefined;
+  hasChildren?: boolean | undefined;
+  collapsed?: boolean | undefined;
+  displayIndex?: number | undefined;
+  originalIndex?: number | undefined;
 }
 
 export interface SearchMatch {

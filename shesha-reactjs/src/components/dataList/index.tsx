@@ -2,24 +2,23 @@
 import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
-import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import React, { FC, useEffect, useState, useRef, RefObject, CSSProperties, ReactElement, useMemo, ReactNode } from 'react';
+import { usePrevious } from 'react-use';
+import { DEFAULT_FORM_SETTINGS, FormFullName, FormIdentifier, HttpClientApi, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
 import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
-import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, Row, RowOrGroup, RowsGroup } from './models';
-import { useAvailableConstantsData, executeScriptSync, getStyle, isFormFullName } from '@/providers/form/utils';
+import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, GrouppedRow, RowOrGroup, RowsGroup } from './models';
+import { useAvailableConstantsData, executeScriptSync, getStyle, isFormFullName, formDtop2PersistedFormProps } from '@/providers/form/utils';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import { toCamelCase } from '@/utils/string';
 import { DataListItemRenderer } from './itemRenderer';
 import DataListItemCreateModal from './createModal';
-
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
@@ -29,17 +28,32 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
 import { ConfigurationLoadingError } from '@/providers/configurationItemsLoader/errors';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { ITableRowData, RowSelection } from '@/providers/dataTable/interfaces';
+import { IFormApi } from '@/providers/form/formApi';
+import { IDataContextsData } from '@/providers/dataContextManager/models';
+import { IAnyObject } from '@/interfaces';
+import { getClassNameOrUndefined } from '@/utils/entity';
+import { getNestedPropertyValueByPath } from '@/utils/dotnotation';
+import { jsonSafeParse } from '@/utils/object';
 
 interface EntityForm {
   entityType: string | IEntityTypeIdentifier;
   isFetchingFormId?: boolean;
-  formId: FormIdentifier;
-  formType?: string;
-  isFetchingFormConfiguration?: boolean;
-  formConfiguration: IFormDto;
+  formId: FormIdentifier | undefined;
+  formType?: string | undefined;
+  isFetchingFormConfiguration?: boolean | undefined;
+  formConfiguration: IFormDto | undefined | null;
 }
 
-export const DataList: FC<Partial<IDataListProps>> = ({
+const EMPTY_SELECTED_ROWS: ITableRowData[] = [];
+const EMPTY_SELDECTED_IDS: string[] = [];
+const EMPTY_RECORDS: ITableRowData[] = [];
+
+type EntityFormAttributeNames = 'data-sha-datalist-item-type' | 'data-sha-parent-form-id' | 'data-sha-parent-form-name' | 'data-sha-form-id' | 'data-sha-form-name';
+type EntityFormAttribute = Partial<Record<EntityFormAttributeNames, string>>;
+
+export const DataList: FC<IDataListProps> = ({
   id,
   formId,
   formType,
@@ -49,14 +63,15 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   formIdExpression,
   selectionMode,
   selectedRow,
-  selectedRows,
+  selectedRows = EMPTY_SELECTED_ROWS,
   onSelectRow,
+  onClearSelectedRow,
   onMultiSelectRows,
   onSelectedIdsChanged,
-  records,
+  records = EMPTY_RECORDS,
   isFetchingTableData,
   entityType,
-  selectedIds,
+  selectedIds = EMPTY_SELDECTED_IDS,
   changeSelectedIds,
   orientation = 'vertical',
   grouping,
@@ -64,9 +79,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   collapsible,
   collapseByDefault,
   groupStyle,
-  canAddInline,
-  canEditInline,
-  canDeleteInline,
+  canAddInline = false,
+  canEditInline = false,
+  canDeleteInline = false,
   createAction,
   updateAction,
   deleteAction,
@@ -97,16 +112,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     [key: string]: Promise<FormFullName>;
   }
 
+  const stylesAsCSS = isDefined(style) ? jsonSafeParse<CSSProperties>(style) ?? {} : {};
+
   const loadedFormId = useRef<IFormIdDictionary>({});
   if (skipCache)
     loadedFormId.current = {};
 
   const entityForms = useRef<EntityForm[]>([]);
-  const entityFormInfo = useRef<EntityForm>();
-  const createFormInfo = useRef<EntityForm>();
+  const entityFormInfo = useRef<EntityForm>(undefined);
+  const createFormInfo = useRef<EntityForm>(undefined);
 
-  const [content, setContent] = useState<React.JSX.Element[]>(null);
-  const rows = useRef<React.JSX.Element[]>(null);
+  const [content, setContent] = useState<React.JSX.Element[]>([]);
+  const rows = useRef<ReactNode[]>([]);
 
   const shaForm = useShaFormInstance();
 
@@ -129,36 +146,36 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
 
-  const onSelectRowLocal = (index: number, row: any): void => {
+  const onSelectRowLocal = (index: number, row: ITableRowData): void => {
     if (selectionMode === 'none') return;
 
     if (selectionMode === 'multiple') {
       let selected = [...selectedIds];
-      const wasSelected = selectedIds.find((x) => x === row?.id);
+      const wasSelected = selectedIds.find((x) => x === row.id);
 
       if (wasSelected) {
         // Deselecting - don't trigger onListItemSelect
-        selected = selected.filter((x) => x !== row?.id);
+        selected = selected.filter((x) => x !== row.id);
       } else {
         // Selecting - trigger onListItemSelect event
         if (onListItemSelect) {
           onListItemSelect(index, row);
         }
-        selected = [...selected, row?.id];
+        selected = [...selected, row.id];
       }
 
       changeSelectedIds(selected);
 
-      const updatedSelection = records?.map((item: any, index) => {
-        return { isSelected: Boolean(selected.find((x) => x === item?.id)), index, id: item?.id, original: item };
+      const updatedSelection = records.map<RowSelection<ITableRowData>>((item, index) => {
+        return { isSelected: Boolean(selected.find((x) => x === item.id)), index, id: item.id, original: item };
       });
 
       onMultiSelectRows(updatedSelection);
 
       // Trigger onSelectionChange event
       if (onSelectionChange) {
-        const selectedItems = records?.filter((item) => selected.includes(item?.id)) || [];
-        const selectedIndices = records?.map((item, idx) => selected.includes(item?.id) ? idx : -1).filter((idx) => idx !== -1) || [];
+        const selectedItems = records.filter((item) => selected.includes(item.id));
+        const selectedIndices = records.map((item, idx) => selected.includes(item.id) ? idx : -1).filter((idx) => idx !== -1);
         onSelectionChange(selectedItems, selectedIndices);
       }
     } else {
@@ -167,7 +184,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
       if (isCurrentlySelected) {
         // Deselecting - don't trigger onListItemSelect
-        if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(null, null);
+        if (onClearSelectedRow) onClearSelectedRow();
 
         // Trigger onSelectionChange event for deselection
         if (onSelectionChange) {
@@ -189,25 +206,25 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     }
   };
 
-  const onSelectAllRowsLocal = (val: Boolean): void => {
+  const onSelectAllRowsLocal = (val: boolean): void => {
     const newSelectedIds = val
-      ? records?.map((item: any) => {
-        return item?.id;
+      ? records.map((item) => {
+        return item.id;
       })
       : [];
 
     changeSelectedIds(newSelectedIds);
 
-    const updatedSelection = records?.map((item: any, index) => {
-      return { isSelected: val, index, id: item?.id, original: item };
+    const updatedSelection = records.map((item, index) => {
+      return { isSelected: val, index, id: item.id, original: item };
     });
 
     onMultiSelectRows(updatedSelection);
 
     // Trigger onSelectionChange event
     if (onSelectionChange) {
-      const selectedItems = val ? records || [] : [];
-      const selectedIndices = val ? records?.map((_, index) => index) || [] : [];
+      const selectedItems = val ? records : [];
+      const selectedIndices = val ? records.map((_, index) => index) : [];
       onSelectionChange(selectedItems, selectedIndices);
     }
   };
@@ -215,19 +232,23 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const previousIds = usePrevious(selectedIds);
 
   useEffect(() => {
-    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
+    if (!(previousIds?.length === 0 && selectedIds.length === 0) && typeof onSelectedIdsChanged === 'function') {
       onSelectedIdsChanged(selectedIds);
     }
+    // TODO V1: move to events
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIds]);
 
   useEffect(() => {
-    if (!isFetchingTableData && records?.length && props.onFetchDataSuccess) props.onFetchDataSuccess();
+    if (!isFetchingTableData && records.length && props.onFetchDataSuccess) props.onFetchDataSuccess();
+    // TODO V1: move to events
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetchingTableData]);
 
   const { getEntityFormIdAsync, getFormAsync } = useConfigurationItemsLoader();
 
-  const getFormIdFromExpression = (item): FormFullName => {
-    if (!formIdExpression) return null;
+  const getFormIdFromExpression = (item: ITableRowData): FormFullName | undefined => {
+    if (!formIdExpression) return undefined;
 
     return executeScriptSync(formIdExpression, { ...allData, item });
   };
@@ -237,8 +258,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const persistedFormProps = entityFormInfo.current?.formConfiguration;
 
   const persistedCreateFormProps = createFormInfo.current?.formConfiguration;
-
-  const [measuredRef] = useMeasure();
 
   const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
 
@@ -268,8 +287,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     // If it's an object (FormFullName), it should have both name and module
     if (typeof formId === 'object') {
-      const hasName = formId.name && typeof formId.name === 'string' && formId.name.trim().length > 0;
-      const hasModule = formId.module && typeof formId.module === 'string' && formId.module.trim().length > 0;
+      const hasName = !isNullOrWhiteSpace(formId.name);
+      const hasModule = !isNullOrWhiteSpace(formId.module);
       const isValid = hasName && hasModule;
 
       if (!isValid) {
@@ -287,7 +306,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return false;
   };
 
-  const getEntityForm = (entityType: string | IEntityTypeIdentifier, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
+  const getEntityForm = (entityType: string | IEntityTypeIdentifier, fId: FormIdentifier | undefined, fType: string | undefined, entityFormInfo: RefObject<EntityForm | undefined>): boolean => {
     let entityForm = entityForms.current.find((x) => x.formType === fType && isEntityTypeIdEqual(x.entityType, entityType));
     if (!entityForm) {
       entityForm = {
@@ -297,12 +316,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         formType: fType,
       };
       entityForms.current.push(entityForm);
-      if (!entityFormInfo?.current)
+      if (!entityFormInfo.current)
         entityFormInfo.current = entityForm;
     } else
       return entityForm.formConfiguration !== undefined; // Return true if already processed (either loaded or failed)
 
-    if (!!entityForm.formId && isValidFormId(entityForm.formId)) {
+    if (isDefined(entityForm.formId) && isValidFormId(entityForm.formId)) {
       getFormAsync({ formId: entityForm.formId, skipCache })
         .then((response) => {
           entityForm.formConfiguration = response;
@@ -318,7 +337,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           entityForm.formConfiguration = null;
           isReady(entityForms.current);
         });
-    } else if (!!entityForm.formId && !isValidFormId(entityForm.formId)) {
+    } else if (isDefined(entityForm.formId) && !isValidFormId(entityForm.formId)) {
       // FormId exists but is invalid - don't attempt to fetch
       console.warn('Invalid formId provided to DataList:', entityForm.formId);
       entityForm.formConfiguration = null;
@@ -326,7 +345,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     } else {
       const entityTypeKey = getEntityTypeName(entityForm.entityType) ?? '';
       const cacheKey = `${entityTypeKey}_${fType ?? ''}`;
-      const f = loadedFormId.current[cacheKey] ?? getEntityFormIdAsync(entityForm.entityType, fType);
+      const f = loadedFormId.current[cacheKey] ?? getEntityFormIdAsync(entityForm.entityType, fType ?? "");
 
       f.then((e) =>
         getFormAsync({ formId: e, skipCache })
@@ -366,33 +385,33 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let fId = createFormId;
     let formEntityType: string | IEntityTypeIdentifier = '$createFormName$';
-    let fType = null;
+    let fType: string | undefined = undefined;
     if (formSelectionMode === 'view') {
-      fId = null;
+      fId = undefined;
       formEntityType = entityType ?? '$createFormName$';
-      fType = !!createFormType ? createFormType : null;
+      fType = !!createFormType ? createFormType : undefined;
     }
-    if (!!fId || !!fType)
+    if (isDefined(fId) || isDefined(fType))
       isReady = getEntityForm(formEntityType, fId, fType, createFormInfo) && isReady;
 
     records.forEach((item) => {
-      let fId = null;
-      let formEntityType = null;
-      let fType = null;
+      let fId: FormIdentifier | undefined = undefined;
+      let formEntityType: string | IEntityTypeIdentifier | undefined = undefined;
+      let fType: string | undefined = undefined;
       if (formSelectionMode === 'name') {
         formEntityType = '$formName$';
         fId = formId;
       }
       if (formSelectionMode === 'view') {
-        fType = !!formType ? formType : null;
-        formEntityType = entityType ?? item?._className;
+        fType = !!formType ? formType : undefined;
+        formEntityType = entityType ?? getClassNameOrUndefined(item);
       }
       if (formSelectionMode === 'expression') {
         fId = getFormIdFromExpression(item);
         // Use the form ID itself as the entity type to ensure unique caching per form
         formEntityType = fId ? ConfigurableItemIdentifierToString(fId) : '$expressionForm$';
       }
-      if (!!fId || !!fType)
+      if (isDefined(formEntityType) && (isDefined(fId) || isDefined(fType)))
         isReady = getEntityForm(formEntityType, fId, fType, entityFormInfo) && isReady;
     });
 
@@ -403,14 +422,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     }
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
-  const renderSubForm = (item: any, index: number): React.JSX.Element => {
+  const renderSubForm = (item: ITableRowData, index: number): ReactNode => {
     let formEntityType = null;
     let fType = null;
     if (formSelectionMode === 'name') {
       formEntityType = '$formName$';
     }
     if (formSelectionMode === 'view') {
-      formEntityType = entityType ?? item?._className;
+      formEntityType = entityType ?? getClassNameOrUndefined(item);
       fType = formType;
     }
     if (formSelectionMode === 'expression') {
@@ -418,9 +437,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       formEntityType = expressionFormId ? ConfigurableItemIdentifierToString(expressionFormId) : '$expressionForm$';
     }
 
-    let entityForm = entityForms.current.find((x) => isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
+    const entityForm = entityForms.current.find((x) => isDefined(formEntityType) && isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup) {
+    if (!isDefined(entityForm) || !isDefined(entityForm.formConfiguration?.markup)) {
       const isDesignMode = allData.form?.formMode === 'designer';
 
       // In runtime mode, don't render anything if form is not configured
@@ -501,23 +520,23 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return false;
     };
 
-    const attributes = {
+    const attributes: EntityFormAttribute = {
       'data-sha-datalist-item-type': 'subForm',
-      'data-sha-parent-form-id': `${shaForm?.form?.id}`,
-      'data-sha-parent-form-name': `${shaForm?.form?.module}/${shaForm?.form?.name}`,
-      'data-sha-form-id': `${entityForm?.formConfiguration?.id}`,
+      'data-sha-parent-form-id': `${shaForm.form?.id}`,
+      'data-sha-parent-form-name': `${shaForm.form?.module}/${shaForm.form?.name}`,
+      'data-sha-form-id': `${entityForm.formConfiguration.id}`,
     };
 
-    if (isFormFullName(entityForm?.formId))
-      attributes['data-sha-form-name'] = `${entityForm?.formId.module}/${entityForm?.formId.name}`;
+    if (isFormFullName(entityForm.formId))
+      attributes['data-sha-form-name'] = `${entityForm.formId.module}/${entityForm.formId.name}`;
 
     return (
       <AttributeDecorator attributes={attributes}>
         <div onDoubleClick={dblClick}>
           <DataListItemRenderer
             isNewObject={false}
-            markup={entityForm?.formConfiguration?.markup}
-            formSettings={entityForm?.formConfiguration?.settings}
+            markup={entityForm.formConfiguration.markup}
+            formSettings={entityForm.formConfiguration.settings ?? DEFAULT_FORM_SETTINGS}
             data={item}
             listId={id}
             listName="Data List"
@@ -525,8 +544,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             itemId={item['id']}
             allowEdit={showEditIcons && canEditInline}
             allowDelete={canDeleteInline}
-            updater={(rowData) => updateAction(index, rowData)}
-            deleter={() => deleteAction(index, item)}
+            updater={updateAction ? (rowData) => updateAction(index, rowData) : undefined}
+            deleter={deleteAction ? () => deleteAction(index, item) : undefined}
             allowChangeEditMode={inlineEditMode === 'one-by-one'}
             editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
             autoSave={inlineSaveMode === 'auto'}
@@ -537,28 +556,24 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const isGroup = (item: RowOrGroup): item is RowsGroup => {
-    return item && Array.isArray((item as RowsGroup).$childs);
+    return isDefined(item) && Array.isArray((item as RowsGroup).$childs);
   };
 
   const groups = useDeepCompareMemo(() => {
-    if (grouping?.length > 0) {
+    if (isDefined(grouping) && grouping.length > 0) {
       const groupLevels: GroupLevels = grouping.map<GroupLevelInfo>((g, index) => ({
-        currentGroup: null,
+        currentGroup: undefined,
         propertyName: g.propertyName,
         index: index,
         propertyPath: g.propertyName.split('.'),
       }));
-
-      const getValue = (container: object, path: string[]): any => {
-        return path.reduce((prev, part) => prev ? prev[part] : undefined, container);
-      };
 
       const result: RowsGroup[] = [];
       records.forEach((row, rowIndex) => {
         let parent: RowOrGroup[] = result;
         let differenceFound = false;
         groupLevels.forEach((g, index) => {
-          const groupValue = getValue(row, g.propertyPath);
+          const groupValue = getNestedPropertyValueByPath(row, g.propertyPath);
 
           if (!g.currentGroup || !isEqual(g.currentGroup.value, groupValue) || differenceFound) {
             g.currentGroup = {
@@ -571,7 +586,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           }
           parent = g.currentGroup.$childs;
         });
-        parent.push({ index: rowIndex, row } as Row);
+        parent.push({ index: rowIndex, row } as GrouppedRow);
       });
       return result;
     }
@@ -579,9 +594,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return null;
   }, [records, grouping, groupingMetadata]);
 
-  const renderGroupTitle = (value: any, propertyName: string, style: React.CSSProperties): ReactElement => {
+  const renderGroupTitle = (value: unknown, propertyName: string, style: React.CSSProperties): ReactElement => {
     if (!Boolean(value) && value !== false) {
-      if (!!style)
+      if (isDefined(style))
         return <Typography.Text style={style}>(empty)</Typography.Text>;
       else
         return <Typography.Text type="secondary">(empty)</Typography.Text>;
@@ -591,21 +606,27 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const renderGroup = (group: RowsGroup, key: number): React.ReactElement => {
-    const title = renderGroupTitle(group.value, grouping[group.index].propertyName, computedGroupStyle);
+    if (!isDefined(grouping))
+      throw new Error('Grouping is not defined');
+
+    const groupInfo = grouping[group.index];
+    const title = isDefined(groupInfo)
+      ? renderGroupTitle(group.value, groupInfo.propertyName, computedGroupStyle)
+      : "unknown group";
     return (
       <Collapse
         key={key}
         defaultActiveKey={collapseByDefault ? [] : ['1']}
         expandIconPlacement="start"
         className={`sha-group-level-${group.index}`}
-        collapsible={collapsible ? undefined : 'disabled'}
+        {...(collapsible ? {} : { collapsible: 'disabled' })}
         style={computedGroupStyle}
       >
         <Collapse.Panel header={<span style={computedGroupStyle}>{title}</span>} key="1" style={computedGroupStyle}>
           {group.$childs.map((child, index, records) => {
             return isGroup(child)
               ? renderGroup(child, index)
-              : renderRow(child.row, child.index, records?.length - 1 === index);
+              : renderRow(child.row, child.index, records.length - 1 === index);
           })}
         </Collapse.Panel>
       </Collapse>
@@ -613,23 +634,23 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
 
-  const renderRow = (item: any, index: number, isLastItem: Boolean): ReactElement => {
-    const stylesAsCSS = style as CSSProperties;
-
+  const renderRow = (item: ITableRowData, index: number, isLastItem: boolean): ReactElement => {
     const hasBorder = (): boolean => {
-      const borderProps = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
+      const borderProps: (keyof CSSProperties)[] = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
       return borderProps.some((prop) => {
-        const value = stylesAsCSS?.[prop];
+        const value = stylesAsCSS[prop];
         return value && value !== 'none' && value !== '0' && value !== '0px';
       });
     };
 
-    const selected =
-      (selectedRow?.index === index && !(selectedRows?.length > 0)) ||
-      (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
+    const selected = isDefined(selectedRow) && (
+      (selectedRow.index === index && !(selectedRows.length > 0)) ||
+      (selectedRows.length > 0 && selectedRows.some(({ id }) => id === item?.id))
+    );
+
 
     const itemStyles: CSSProperties = {
-      ...(stylesAsCSS || {}),
+      ...(stylesAsCSS),
       ...(orientation === 'horizontal' && { flexShrink: 0 }),
       ...(orientation === 'wrap' && showBorder && {
         border: '1px solid #d3d3d3',
@@ -679,7 +700,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             }}
             style={{ ...itemStyles, width: orientation === 'wrap' ? 'unset' : itemStyles.width, overflow: 'auto' }}
           >
-            {rows.current?.length > index ? rows.current[index] : null}
+            {rows.current.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>
         {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
@@ -699,28 +720,30 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   if (actionRef?.current)
     actionRef.current.addNewItem = onCreateClick;
 
-  const onNewListItemInitializeExecuter = useMemo<Function>(() => {
+  type MomentType = typeof moment;
+  type NewListItemInitExecuter = (form: IFormApi | undefined, contexts: IDataContextsData | object, globalState: IAnyObject | undefined, http: HttpClientApi, moment: MomentType) => ITableRowData;
+  const onNewListItemInitializeExecuter = useMemo<NewListItemInitExecuter | undefined>(() => {
     return props.onNewListItemInitialize
-      ? new Function('form, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize)
-      : null;
+      ? new Function('form, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize) as NewListItemInitExecuter
+      : undefined;
   }, [props.onNewListItemInitialize]);
 
-  const onNewListItemInitialize = useMemo<NewItemInitializer>(() => {
+  const onNewListItemInitialize = useMemo<NewItemInitializer<ITableRowData>>(() => {
     return () => Promise.resolve(
-      props.onNewListItemInitialize
-        ? onNewListItemInitializeExecuter(allData.form, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
-        : {},
+      onNewListItemInitializeExecuter
+        ? onNewListItemInitializeExecuter(allData.form, allData.contexts ?? {}, allData.globalState, allData.http, moment)
+        : {} as ITableRowData,
     );
-  }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
+  }, [onNewListItemInitializeExecuter, allData.form, allData.contexts, allData.globalState, allData.http]);
 
   const updateRows = (): void => {
-    rows.current = records?.map((item: any, index) => renderSubForm(item, index));
+    rows.current = records.map((item, index) => renderSubForm(item, index));
   };
 
   const updateContent = (): void => {
     setContent(groups
-      ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
-      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index)),
+      ? groups.map((item, index) => renderGroup(item, index))
+      : records.map((item, index) => renderRow(item, index, records.length - 1 === index)),
     );
   };
 
@@ -734,7 +757,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     };
 
     const rawItemWidth =
-      (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
+      stylesAsCSS.width ?? props.container?.dimensions?.width;
     const itemWidth =
       rawItemWidth !== undefined
         ? typeof rawItemWidth === 'number'
@@ -774,12 +797,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   return (
     <>
-      {createModalOpen && createFormInfo?.current?.formConfiguration && (
-        <DataListItemCreateModal
-          id={id}
-          formInfo={persistedCreateFormProps}
-          markup={createFormInfo?.current?.formConfiguration.markup}
-          formSettings={createFormInfo?.current?.formConfiguration.settings}
+      {createModalOpen && isDefined(persistedCreateFormProps) && (
+        <DataListItemCreateModal<ITableRowData>
+          formInfo={formDtop2PersistedFormProps(persistedCreateFormProps)}
+          markup={persistedCreateFormProps.markup ?? []}
+          formSettings={persistedCreateFormProps.settings ?? DEFAULT_FORM_SETTINGS}
           creater={createAction}
           onToggle={(isOpen) => setCreateModalOpen(isOpen)}
           data={onNewListItemInitialize}
@@ -792,8 +814,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             onChange={(e) => {
               onSelectAllRowsLocal(e.target.checked);
             }}
-            checked={selectedRows?.length === records?.length && records?.length > 0}
-            indeterminate={selectedRows?.length !== records?.length && selectedRows?.length > 0}
+            checked={selectedRows.length === records.length && records.length > 0}
+            indeterminate={selectedRows.length !== records.length && selectedRows.length > 0}
           >
             Select All
           </Checkbox>
@@ -814,16 +836,15 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
           <div
             key="spin_key"
-            ref={measuredRef}
             style={getContainerStyles()}
             className={classNames(styles.shaDatalistComponentBody, {
-              loading: isFetchingTableData && records?.length === 0,
+              loading: isFetchingTableData && records.length === 0,
               horizontal: orientation === 'horizontal',
               wrap: orientation === 'wrap',
               vertical: orientation === 'vertical',
             })}
           >
-            <Show when={records?.length === 0}>
+            <Show when={records.length === 0}>
               <EmptyState
                 noDataIcon={noDataIcon}
                 noDataSecondaryText={noDataSecondaryText}
@@ -831,12 +852,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               />
             </Show>
 
-            <Show when={records?.length > 0}>
+            <Show when={records.length > 0}>
               {React.Children.map(content, (child, index) => {
+                const childProps: object = isDefined(child.props) && typeof (child.props) === "object"
+                  ? child.props as object
+                  : {};
+                const childStyle = "style" in childProps && isDefined(childProps.style) && typeof (childProps.style) === "object"
+                  ? childProps.style as CSSProperties
+                  : {};
                 return React.cloneElement(child, {
                   key: child.key || index,
                   style: {
-                    ...child.props.style,
+                    ...childStyle,
                     overflow: 'visible',
                     flex: '0 0 100%',
                   },

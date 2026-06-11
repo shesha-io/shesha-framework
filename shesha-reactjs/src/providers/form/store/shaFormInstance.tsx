@@ -45,7 +45,7 @@ import { extractErrorInfo, throwError } from "@/utils/errors";
 interface ShaFormInstanceArguments<Values extends object = object> {
   formDataGetter?: (() => Values | undefined) | undefined;
   formDataSetter?: ((data: Values | undefined) => void) | undefined;
-  setFormDataNewDataAction?: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
+  setFormDataNewDataAction?: ((payload: ISetFormDataPayload<Values>, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
   forceRootUpdate: ForceUpdateTrigger;
   formManager: IFormManagerActionsContext;
   metadataDispatcher: IMetadataDispatcher;
@@ -88,8 +88,8 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     this.#form.setFormData(payload);
   };
 
-  getFormData = (): Values | undefined => {
-    return this.#form.formData;
+  getFormData = (): Values => {
+    return this.#form.formData ?? {} as Values;
   };
 
   setValidationErrors = (payload: IFormValidationErrors): void => {
@@ -129,7 +129,7 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
   }
 
   get initialValues(): Values | undefined {
-    return this.#form.initialValues;
+    return this.#form.initialValues as Values;
   }
 };
 
@@ -160,7 +160,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   formDataGetter: (() => (Values | undefined) | undefined) | undefined;
 
-  setFormDataNewDataAction: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
+  setFormDataNewDataAction: ((payload: ISetFormDataPayload<Values>, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
 
   updateData: (() => void) | undefined;
 
@@ -187,7 +187,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   validationErrors?: IFormValidationErrors | undefined;
 
-  initialValues: Values | undefined;
+  initialValues: Partial<Values> | undefined;
 
   parentFormValues: object | undefined;
 
@@ -197,9 +197,9 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   onAfterSubmit: AfterSubmitHandler<Values> | undefined;
 
-  onValuesChange?: OnValuesChangeHandler<Values>;
+  onValuesChange?: OnValuesChangeHandler<Values> | undefined;
 
-  onMarkupLoaded?: OnMarkupLoadedHandler<Values>;
+  onMarkupLoaded?: OnMarkupLoadedHandler<Values> | undefined;
 
   useDataLoader: boolean;
 
@@ -287,7 +287,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   //#endregion
 
   getDelayedUpdates = (): IDelayedUpdateGroup[] => {
-    return this.dataSubmitContext?.getDelayedUpdates() || [];
+    return this.dataSubmitContext?.getDelayedUpdates?.() || [];
   };
 
   setDataSubmitContext = (context: IDataSubmitContext): void => {
@@ -349,7 +349,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.updateData?.();
   };
 
-  setParentFormValues = (values: object): void => {
+  setParentFormValues = (values: object | undefined): void => {
     this.parentFormValues = values;
   };
 
@@ -407,26 +407,26 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     // noop
   };
 
-  setInitialValues = (values: Values): void => {
+  setInitialValues = (values: Partial<Values>): void => {
     this.log('LOG: setInitialValues', values);
     this.initialValues = values;
     this.useDataLoader = !Boolean(values);
   };
 
-  setSubmitHandler = (handler: SubmitHandler<Values>): void => {
+  setSubmitHandler = (handler: SubmitHandler<Values> | undefined): void => {
     this.onFinish = handler;
     this.useDataSubmitter = !Boolean(handler);
   };
 
-  setAfterSubmitHandler = (handler: AfterSubmitHandler<Values>): void => {
+  setAfterSubmitHandler = (handler: AfterSubmitHandler<Values> | undefined): void => {
     this.onAfterSubmit = handler;
   };
 
-  setOnValuesChange = (handler: OnValuesChangeHandler<Values>): void => {
+  setOnValuesChange = (handler: OnValuesChangeHandler<Values> | undefined): void => {
     this.onValuesChange = handler;
   };
 
-  setOnMarkupLoaded = (handler: OnMarkupLoadedHandler<Values>): void => {
+  setOnMarkupLoaded = (handler: OnMarkupLoadedHandler<Values> | undefined): void => {
     this.onMarkupLoaded = handler;
   };
 
@@ -528,10 +528,10 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
       this.log('LOG: initialValues', initialValues);
       this.initialValues = initialValues;
-      this.formData = initialValues;
+      this.formData = initialValues as Values;
       if (initialValues) {
         this.antdForm.resetFields();
-        this.antdForm.setFieldsValue(initialValues);
+        this.antdForm.setFieldsValue(initialValues as Values);
       }
 
       this.markupLoadingState = { status: 'ready' };
@@ -583,13 +583,13 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.isSettingsForm = isSettingsForm ?? false;
 
     this.initialValues = initialValues;
-    this.formData = initialValues;
+    this.formData = initialValues as Values;
 
     await this.loadFormByRawMarkupAsync();
 
     this.antdForm.resetFields();
     if (initialValues)
-      this.antdForm.setFieldsValue(initialValues);
+      this.antdForm.setFieldsValue(initialValues as RecursivePartial<Values>);
 
     this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
     this.#setIsDataModified(false);
@@ -704,7 +704,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   private get dataSubmitter(): IFormDataSubmitter<Values> | undefined {
     return this.settings?.dataSubmitterType
-      ? this.dataSubmitters.getFormDataSubmitter<Values>(this.settings.dataSubmitterType)
+      ? this.dataSubmitters.getFormDataSubmitter(this.settings.dataSubmitterType) as unknown as IFormDataSubmitter<Values>
       : undefined;
   }
 
@@ -781,7 +781,7 @@ type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFo
 type UseShaFormArgsNewForm<Values extends object = object> = {
   formDataGetter?: (() => Values | undefined) | undefined;
   formDataSetter?: ((data: Values | undefined) => void) | undefined;
-  setFormDataNewDataAction?: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
+  setFormDataNewDataAction?: ((payload: ISetFormDataPayload<Values>, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
   antdForm?: FormInstance<Values>;
   init?: (shaForm: IShaFormInstance<Values>) => void;
 };

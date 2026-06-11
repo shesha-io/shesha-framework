@@ -6,7 +6,7 @@ import { FormFullName, IDictionary, IPropertySetting } from '@/interfaces';
 import { CSSProperties, ReactNode } from 'react';
 import { IGenericGetAllPayload, IHasEntityTypeIdPayload } from '@/interfaces/gql';
 import { isDefined } from '@/utils/nullables';
-import { SortingRule } from 'react-table';
+import { Row, SortingRule } from 'react-table';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean | null | undefined;
 
@@ -50,7 +50,6 @@ export interface ITableColumn {
   width?: number | undefined;
 
   filterOption?: IndexColumnFilterOption | undefined;
-  // filter?: unknown | undefined; // TODO V1: review and remove if unused
 
   name?: string | undefined;
   allowShowHide?: boolean | undefined;
@@ -191,31 +190,32 @@ export interface IQuickFilter {
   readonly selected?: boolean;
 }
 
-export type FilterExpression = string | object;
+export type JsonLogicFilter = { [key: string]: unknown };
+export type FilterExpression = string | JsonLogicFilter;
 
 export interface IStoredFilter {
   id: string;
 
   name: string;
 
-  tooltip?: string;
+  tooltip?: string | undefined;
 
   expression?: FilterExpression | undefined;
 
-  selected?: boolean;
+  selected?: boolean | undefined;
 
-  defaultSelected?: boolean;
+  defaultSelected?: boolean | undefined;
 
-  sortOrder?: number; // TODO V1: review and remove
+  sortOrder?: number | undefined; // TODO V1: review and remove
 
   permissions?: string[] | undefined;
 
   //#region dynamic expressions
-  hasDynamicExpression?: boolean;
+  hasDynamicExpression?: boolean | undefined;
 
-  allFieldsEvaluatedSuccessfully?: boolean;
+  allFieldsEvaluatedSuccessfully?: boolean | undefined;
 
-  unevaluatedExpressions?: string[];
+  unevaluatedExpressions?: string[] | undefined;
   //#endregion
 }
 
@@ -302,10 +302,10 @@ export interface DataFetchDependencyStateSwitcher {
 }
 
 /** Represents the shape of a table row with at minimum an id property */
-export interface ITableRowData {
+export type ITableRowData = {
   id: string;
   [key: string]: unknown;
-}
+};
 
 export interface IColumnWidth {
   id: string;
@@ -326,3 +326,5 @@ export const isTableRowData = (obj: unknown): obj is ITableRowData => {
 };
 
 export type DatasetEvents = 'data';
+
+export type RowSelection<D extends Record<string, unknown> = Record<string, unknown>> = Pick<Row<D>, 'id' | 'original' | 'isSelected'>;

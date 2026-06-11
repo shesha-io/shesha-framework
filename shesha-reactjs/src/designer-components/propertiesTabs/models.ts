@@ -1,6 +1,6 @@
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { EditMode, IConfigurableFormComponent } from '@/interfaces';
+import { EditMode, IConfigurableFormComponent, IPropertySetting } from '@/interfaces';
 
 export interface ITabPaneProps
   extends Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
@@ -8,7 +8,7 @@ export interface ITabPaneProps
   icon?: string;
   key: string;
   title: string;
-  hidden?: boolean;
+  hidden?: boolean | IPropertySetting<boolean> | undefined;
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: ITabPaneProps[];

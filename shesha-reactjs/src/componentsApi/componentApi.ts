@@ -244,7 +244,7 @@ export interface CommonComponentApi {
   /** Whether the component is visible in the UI. */
   visible: boolean;
   /** Current edit mode of the component. */
-  editable: EditMode;
+  editable: EditMode | undefined;
 }
 
 export interface InputComponentApi<T = unknown> extends CommonComponentApi {

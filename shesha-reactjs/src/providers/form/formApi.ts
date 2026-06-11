@@ -66,7 +66,7 @@ export interface IFormApi<Values extends object = object> {
   setFormData: (payload: ISetFormDataPayload<Values>) => void;
 
   /** Get form data. Need for getting actual form data (using in scripts) */
-  getFormData: () => Values | undefined;
+  getFormData: (() => Values) | undefined;
 
   /** Set validation errors. Need for display validation errors in the ValidationErrors component */
   setValidationErrors: (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error) => void;
@@ -109,7 +109,7 @@ class PublicFormApiWrapper<TValues extends object = object> implements IFormApi<
 
   setFieldValue: FieldValueSetter<TValues> = (name, value) => {
     this.#form.setFormData({
-      values: setValueByPropertyName(this.#form.formData ?? {}, name.toString(), value, true),
+      values: setValueByPropertyName(this.#form.formData ?? {} as TValues, name.toString(), value, true),
       mergeValues: true,
     });
   };
@@ -119,19 +119,19 @@ class PublicFormApiWrapper<TValues extends object = object> implements IFormApi<
   };
 
   clearFieldsValue = (): void => {
-    this.#form.setFormData({ values: {}, mergeValues: false });
+    this.#form.setFormData({ values: {} as TValues, mergeValues: false });
   };
 
   submit = (): void => {
     this.#form.form?.submit();
   };
 
-  setFormData = (payload: ISetFormDataPayload): void => {
+  setFormData = (payload: ISetFormDataPayload<TValues>): void => {
     this.#form.setFormData(payload);
   };
 
-  getFormData = (): TValues | undefined => {
-    return this.#form.formData;
+  getFormData = (): TValues => {
+    return this.#form.formData ?? {} as TValues;
   };
 
   setValidationErrors = (payload: IFormValidationErrors): void => {

@@ -10,6 +10,9 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { useFormStateOrUndefined, useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
+import { isDefined } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
+import { tabPosition2TabPlacement } from '../tabs/utils';
 
 interface SearchableTabsProps {
   model: IPropertiesTabsComponentProps;
@@ -34,12 +37,12 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   };
 
   const renderSearchInput = (options?: {
-    ref?: React.RefObject<InputRef>;
+    ref?: React.RefObject<InputRef | null>;
     className?: string;
     style?: React.CSSProperties;
     autoFocus?: boolean;
     wrapperStyle?: React.CSSProperties;
-  }): JSX.Element => {
+  }): React.JSX.Element => {
     const input = (
       <Input
         type="search"
@@ -85,7 +88,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         return visibleInputs.length > 0;
       }
 
-      return formActions?.isComponentFiltered(component);
+      return isDefined(formActions) && formActions.isComponentFiltered(component);
     } else {
       return true;
     }
@@ -129,7 +132,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     .filter((tab) => !tab.hidden);
 
   const effectiveActiveKey = useMemo(() => {
-    if (newFilteredTabs.length === 0) {
+    if (!isNonEmptyArray(newFilteredTabs)) {
       return undefined;
     }
 
@@ -157,11 +160,11 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const localTabs = useMemo(() => (
     <Tabs
       key="searchable-tabs"
-      activeKey={effectiveActiveKey}
+      {...(effectiveActiveKey ? { defaultActiveKey: effectiveActiveKey } : {})}
       onChange={handleTabChange}
       size={model.size}
       type={model.tabType || 'card'}
-      tabPosition={model.position || 'top'}
+      tabPlacement={tabPosition2TabPlacement(model.position) ?? 'top'}
       items={newFilteredTabs}
       className={styles.content}
     />

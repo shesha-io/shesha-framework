@@ -8,13 +8,14 @@ import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
-import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IBorderType, IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { isDefined } from '@/utils/nullables';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
+import { StringSubtype } from '@/interfaces/utilityTypes';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -39,7 +40,7 @@ export type LabelAlign = 'left' | 'right';
 export type PropertySettingMode = 'value' | 'code';
 
 export interface IPropertySetting<Value = unknown> {
-  _mode?: PropertySettingMode | undefined;
+  _mode: PropertySettingMode | undefined;
   _value?: Value | undefined;
   _code?: string | undefined;
   _lazy?: boolean | undefined;
@@ -50,21 +51,48 @@ export type ValueOrCodeEvaluator<Value = unknown> = Value | IPropertySetting<Val
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type SafeFunctionType = Function;
 
-export type UnwrapCodeEvaluators<T> = T extends SafeFunctionType
-  ? T
-  : T extends React.HTMLAttributes<infer _>
-    ? T
-    : {
-      [Key in keyof T]: T[Key] extends React.ReactNode | SafeFunctionType
-        ? T[Key]
-        : T[Key] extends ValueOrCodeEvaluator<infer Value>
-          ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
-          : T[Key] extends Record<string, unknown> // Check if it's a plain object
-            ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
-            : T[Key]; // Leave everything else
-    };
+type IsUnknown<T> = unknown extends T ? (T extends object ? false : true) : false;
 
-export type FCUnwrapped<T> = React.FC<UnwrapCodeEvaluators<T>>;
+/*
+export type UnwrapCodeEvaluators<T, PropsToSkip extends keyof T = never> = IsUnknown<T> extends true
+  ? T
+  : T extends SafeFunctionType
+    ? T
+    : T extends (infer U)[]
+      ? UnwrapCodeEvaluators<U>[]
+      : {
+        [Key in keyof T]: Key extends PropsToSkip
+          ? T[Key]
+          : T[Key] extends React.ReactNode | SafeFunctionType
+            ? T[Key]
+            : T[Key] extends ValueOrCodeEvaluator<infer Value>
+              ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
+              : T[Key] extends Record<string, unknown> // Check if it's a plain object
+                ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
+                : T[Key]; // Leave everything else
+      };
+      */
+export type UnwrapCodeEvaluators<T, PropsToSkip extends keyof T = never> = IsUnknown<T> extends true
+  ? T
+  : T extends SafeFunctionType
+    ? T
+    : T extends (infer U)[]
+      ? UnwrapCodeEvaluators<U>[]
+      : T extends object
+        ? {
+          [Key in keyof T]: Key extends PropsToSkip | `_${string}`
+            ? T[Key]
+            : T[Key] extends React.ReactNode | SafeFunctionType
+              ? T[Key]
+              : T[Key] extends ValueOrCodeEvaluator<infer Value>
+                ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
+                : T[Key] extends Record<string, unknown> // Check if it's a plain object
+                  ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
+                  : T[Key]; // Leave everything else
+        }
+        : T;
+
+export type FCUnwrapped<T, PropsToSkip extends keyof T = never> = React.FC<UnwrapCodeEvaluators<T, PropsToSkip>>;
 
 /**
  * Component container
@@ -102,17 +130,17 @@ export interface IStyleType {
   primaryBgColor?: string | undefined;
   secondaryBgColor?: string | undefined;
   secondaryTextColor?: string | undefined;
-  overflow?: boolean | "dropdown" | "menu" | "scroll" | "auto"; // TODO V1: check and fix values, it look slike a mix of css and component specific values
-  hideScrollBar?: boolean;
-  autoWidth?: boolean;
-  autoHeight?: boolean;
+  overflow?: boolean | "dropdown" | "menu" | "scroll" | "auto" | undefined; // TODO V1: check and fix values, it look slike a mix of css and component specific values
+  hideScrollBar?: boolean | undefined;
+  autoWidth?: boolean | undefined;
+  autoHeight?: boolean | undefined;
 }
 
 export interface IInputStyles extends IStyleType {
   borderSize?: string | number | undefined;
   borderRadius?: string | number | undefined;
-  borderType?: string | undefined;
-  borderStyle?: string | undefined;
+  borderType?: IBorderType | undefined;
+  borderStyle?: IBorderType | undefined;
   borderWidth?: string | number | undefined;
   borderColor?: string | undefined;
   fontColor?: string | undefined;
@@ -162,10 +190,10 @@ export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
   label?: string | React.ReactNode;
   /** Hide label of the field */
-  hideLabel?: boolean;
+  hideLabel?: boolean | undefined;
 
   /** Position of the label */
-  labelAlign?: LabelAlign;
+  labelAlign?: LabelAlign | undefined;
 }
 
 export interface IComponentRuntimeProps {
@@ -179,7 +207,7 @@ export interface IComponentRuntimeProps {
   onChangeCustom?: string | undefined;
 
   /** Custom onClick handler */
-  onClickCustom?: string;
+  onClickCustom?: string | undefined;
 
   /** Custom onFocus handler */
   onFocusCustom?: string | undefined;
@@ -199,7 +227,7 @@ export interface IComponentBindingProps {
   context?: string | undefined;
 
   /** initial data context ID, empty for from data */
-  initialContext?: string;
+  initialContext?: string | undefined;
 }
 
 export interface IComponentVisibilityProps {
@@ -235,6 +263,9 @@ export interface IFormComponentStyles {
   margins: CSSProperties;
 }
 
+export const DEVICE_TYPES = ['mobile', 'tablet', 'desktop'] as const;
+export type DeviceType = StringSubtype<typeof DEVICE_TYPES>;
+
 /**
  * Base model of the configurable component
  */
@@ -259,7 +290,7 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   readOnly?: boolean | IPropertySetting<boolean> | undefined;
 
   /** Component edit/action mode */
-  editMode?: EditMode | undefined;
+  editMode?: EditMode | IPropertySetting<EditMode> | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */
@@ -315,6 +346,9 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   enableStyleOnReadonly?: boolean | undefined;
 
   listType?: 'text' | 'thumbnail' | undefined;
+
+  // TODO: V1: review usages and remove if not used
+  jsStyle?: CSSProperties | undefined;
 }
 
 export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
@@ -456,13 +490,12 @@ export type HasFormFlatMarkup = {
 };
 export type HasFormRawMarkup = {
   markup: FormMarkup;
-  cacheKey?: string;
+  cacheKey?: string | undefined;
 };
 
 export type HasFormIdOrMarkup = ExclusifyUnion<HasFormId | HasFormFlatMarkup | HasFormRawMarkup>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type FormAction = (...args: any[]) => any;
+export type FormAction = (...args: unknown[]) => unknown;
 
 export type FormSection = (data?: object) => ReactNode;
 
@@ -519,8 +552,8 @@ export interface IFormDto extends Omit<FormDto, 'markup'> {
 }
 
 export interface IFormValidationRulesOptions<TData extends object = object> {
-  formData?: TData;
-  getFormData?: () => TData;
+  formData?: TData | undefined;
+  getFormData?: (() => TData) | undefined;
 }
 
 /** Default form settings */
@@ -543,10 +576,10 @@ export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];
 export type StyleBoxValue = Pick<CSSProperties, StyleBoxCssProperties>;
 
 export interface IContainerConfig {
-  dimensions?: IDimensionsValue;
-  stylingBox?: string;
-  style?: string;
+  dimensions?: IDimensionsValue | undefined;
+  stylingBox?: string | undefined;
+  style?: string | undefined;
 }
 export interface IComponentModelProps extends IConfigurableFormComponent {
-  container?: IContainerConfig;
+  container?: IContainerConfig | undefined;
 }

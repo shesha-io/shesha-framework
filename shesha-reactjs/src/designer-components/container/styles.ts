@@ -1,5 +1,6 @@
 import { createStyles } from '@/styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
+import { CSSObject } from 'antd-style';
 
 export const useStyles = createStyles(({ css, cx }) => {
   const overflow = getOverflowStyle(true, false);
@@ -10,7 +11,7 @@ export const useStyles = createStyles(({ css, cx }) => {
   const container = cx("sha-container-component", css`
         overflow: hidden;
         .sha-components-container-inner {
-         ${overflowStyles}
+         ${overflowStyles as CSSObject}
         }
     `);
 

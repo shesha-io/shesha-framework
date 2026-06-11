@@ -55,7 +55,7 @@ export const useShaDataContextAccessor = <TData extends object = object>(
   webStorageType?: WebStorageType,
   getShaDataContextAccessor?: GetShaDataContextAccessor<TData>,
 ): IShaDataWrapper<TData> => {
-  const storage = useRef<IShaDataWrapper<TData>>();
+  const storage = useRef<IShaDataWrapper<TData>>(undefined);
 
   const shaRouter = useShaRouting();
   const path = shaRouter.router.path;
