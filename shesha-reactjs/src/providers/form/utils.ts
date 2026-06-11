@@ -761,18 +761,23 @@ export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object
   seen.set(input, result);
   for (const key of Object.keys(input))
     (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
-  Object.defineProperty(result, 'toString', {
-    value: () => {
-      try {
-        return JSON.stringify(result);
-      } catch {
-        return '';
-      }
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true,
-  });
+  // Only override toString on objects — arrays must stay as real arrays so their values are
+  // submitted correctly to the API. Attaching JSON.stringify-based toString to arrays caused
+  // array fields (e.g. multi-select) to be sent as "[32,128,64]" strings instead of [32,128,64].
+  if (!isArray) {
+    Object.defineProperty(result, 'toString', {
+      value: () => {
+        try {
+          return JSON.stringify(result);
+        } catch {
+          return '';
+        }
+      },
+      configurable: true,
+      enumerable: false,
+      writable: true,
+    });
+  }
   return result;
 };
 
