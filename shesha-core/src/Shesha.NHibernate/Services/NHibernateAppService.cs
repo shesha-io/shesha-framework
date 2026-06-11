@@ -17,7 +17,6 @@ using Shesha.NHibernate.Session;
 using Shesha.Reflection;
 using Shesha.Authorization;
 using Shesha.Domain.Enums;
-using Shesha.Services.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

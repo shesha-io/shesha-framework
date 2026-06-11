@@ -37,7 +37,7 @@ namespace Shesha.Exceptions
                 && context.HttpContext.Response.StatusCode != (int)HttpStatusCode.Forbidden
                 )
             {
-                context.HttpContext.Response.StatusCode = context.HttpContext.User.Identity.IsAuthenticated
+                context.HttpContext.Response.StatusCode = context.HttpContext.User.Identity?.IsAuthenticated ?? false
                     ? (int)HttpStatusCode.Forbidden
                     : (int)HttpStatusCode.Unauthorized;
                 context.ExceptionHandled = true;
