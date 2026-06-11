@@ -24,6 +24,97 @@ export const useStyles = createStyles(({ css, cx }) => {
         }
       }
 
+      /*
+       * Panels that nest *several* other panels/containers (e.g. FileList's "Container Styles" with its
+       * Dimensions / Margin & Padding / Custom Styles sub-panels) need the full width of the preview
+       * card: let them span every grid column and lay their sub-groups out in their own grid so they tile
+       * horizontally instead of stacking in one column.
+       *
+       * The threshold is 3+ nested sub-groups — :has(> X ~ X ~ X) means "a third X exists". Panels with
+       * only one or two compact sub-groups (e.g. a "Border" panel = Border Type + Radius Type) stay in a
+       * normal grid cell and are NOT forced full width.
+       */
+      [data-sha-c-type="propertyRouter"]
+        > .sha-components-container-inner
+        > [data-sha-c-type="collapsiblePanel"]:has(
+          .sha-components-container-inner
+            > [data-sha-c-type="container"]
+            ~ [data-sha-c-type="container"]
+            ~ [data-sha-c-type="container"]
+        ),
+      [data-sha-c-type="propertyRouter"]
+        > .sha-components-container-inner
+        > [data-sha-c-type="collapsiblePanel"]:has(
+          .sha-components-container-inner
+            > [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+        ) {
+        grid-column: 1 / -1;
+      }
+
+      /*
+       * The content container of a panel that holds 3+ nested panels/containers becomes a grid so the
+       * sub-groups tile. Scoped to inners inside a collapsiblePanel so the top-level propertyRouter grid
+       * keeps its own column sizing defined above.
+       */
+      [data-sha-c-type="collapsiblePanel"]
+        .sha-components-container-inner:has(
+          > [data-sha-c-type="container"]
+            ~ [data-sha-c-type="container"]
+            ~ [data-sha-c-type="container"]
+        ),
+      [data-sha-c-type="collapsiblePanel"]
+        .sha-components-container-inner:has(
+          > [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+        ) {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      /* Each nested sub-group (panel or container) in such a grid should fill its grid cell. */
+      [data-sha-c-type="collapsiblePanel"]
+        .sha-components-container-inner:has(
+          > [data-sha-c-type="container"]
+            ~ [data-sha-c-type="container"]
+            ~ [data-sha-c-type="container"]
+        )
+        > [data-sha-c-type="container"],
+      [data-sha-c-type="collapsiblePanel"]
+        .sha-components-container-inner:has(
+          > [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+        )
+        > [data-sha-c-type="collapsiblePanel"] {
+        width: 100%;
+      }
+
+      /*
+       * When such a grid mixes plain inputs/rows with sub-panels, the full-width inputs/rows should span
+       * every column rather than sit in a single grid cell beside the panels.
+       */
+      [data-sha-c-type="collapsiblePanel"]
+        .sha-components-container-inner:has(
+          > [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+        )
+        > [data-sha-c-type="settingsInputRow"],
+      [data-sha-c-type="collapsiblePanel"]
+        .sha-components-container-inner:has(
+          > [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+            ~ [data-sha-c-type="collapsiblePanel"]
+        )
+        > [data-sha-c-type="settingsInput"] {
+        grid-column: 1 / -1;
+      }
+
       /* Adjust form items within the grid panels */
       .ant-collapse {
         .sha-components-container-inner {

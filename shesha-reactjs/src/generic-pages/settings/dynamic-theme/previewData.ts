@@ -61,6 +61,24 @@ const choiceComponentProps = (): Partial<IConfigurableFormComponent> =>
   }) as unknown as Partial<IConfigurableFormComponent>;
 
 /**
+ * Build a single column object (used by `columns`, `sizableColumns`, `keyInformationBar`) carrying its
+ * own child components so the column renders something visible to style.
+ */
+const sampleColumnChildren = (label: string): IConfigurableFormComponent[] => [
+  childComponent('text', { content: label, contentDisplay: 'content', textType: 'span' } as Partial<IConfigurableFormComponent>),
+];
+
+/**
+ * Dummy "step" items for the chevron / kanban (both render a reference-list-like list of items with a
+ * numeric `itemValue` and a display `item` label). Self-contained so no reference list is needed.
+ */
+const sampleStepItems = (): Array<{ id: string; itemValue: number; item: string }> => [
+  { id: nanoid(), itemValue: 1, item: 'To do' },
+  { id: nanoid(), itemValue: 2, item: 'In progress' },
+  { id: nanoid(), itemValue: 3, item: 'Done' },
+];
+
+/**
  * Returns extra model props to merge into the previewed component so it renders with dummy content.
  *
  * For container/layout components this includes child `components` that demonstrate the configured
@@ -84,11 +102,68 @@ export const getPreviewComponentProps = (type: string | undefined): Partial<ICon
     case 'columns':
       return {
         columns: [
-          { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [childComponent('text', { content: 'Left column' } as Partial<IConfigurableFormComponent>)] },
-          { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [childComponent('text', { content: 'Right column' } as Partial<IConfigurableFormComponent>)] },
+          { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: sampleColumnChildren('Left column') },
+          { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: sampleColumnChildren('Right column') },
         ],
         gutterX: 8,
         gutterY: 8,
+      } as unknown as Partial<IConfigurableFormComponent>;
+
+    case 'sizableColumns':
+      // Two resizable columns (sizes are percentages that sum to 100) each with visible content.
+      return {
+        columns: [
+          { id: nanoid(), size: 50, components: sampleColumnChildren('Left pane') },
+          { id: nanoid(), size: 50, components: sampleColumnChildren('Right pane') },
+        ],
+      } as unknown as Partial<IConfigurableFormComponent>;
+
+    case 'KeyInformationBar':
+      // A horizontal bar of "key information" cells, each a column with sample content.
+      return {
+        orientation: 'horizontal',
+        columns: [
+          { id: nanoid(), width: 200, textAlign: 'center', flexDirection: 'column', padding: '8px', components: sampleColumnChildren('Total: 1,234') },
+          { id: nanoid(), width: 200, textAlign: 'center', flexDirection: 'column', padding: '8px', components: sampleColumnChildren('Active: 567') },
+          { id: nanoid(), width: 200, textAlign: 'center', flexDirection: 'column', padding: '8px', components: sampleColumnChildren('Pending: 89') },
+        ],
+      } as unknown as Partial<IConfigurableFormComponent>;
+
+    case 'chevron':
+      // Pipeline-style steps; dataSourceType 'values' keeps it self-contained (no reference list).
+      return {
+        dataSourceType: 'values',
+        items: sampleStepItems(),
+      } as unknown as Partial<IConfigurableFormComponent>;
+
+    case 'kanban':
+      // Kanban renders one column per item (the styled columns are what users style); it must live in a
+      // Data Table context (handled by buildPreviewComponents). Tasks stay empty without matching data,
+      // but the columns render. `groupingProperty` points at a DummyTable field so the board initialises.
+      return {
+        items: sampleStepItems(),
+        groupingProperty: 'area',
+      } as unknown as Partial<IConfigurableFormComponent>;
+
+    // ----- Entity-reference inputs: bind to the seeded core Person entity (same default the designer
+    // uses) so the control renders and validates instead of showing a configuration-error icon.
+    case 'entityPicker':
+      return {
+        entityType: 'Shesha.Core.Person',
+        placeholder: 'Select an item…',
+        title: 'Select an item',
+      } as unknown as Partial<IConfigurableFormComponent>;
+
+    case 'entityReference':
+      // The entityReference renders a styleable link/button. Its migrator forces
+      // `formSelectionMode: 'name'` + `entityReferenceType: 'Quickview'`, and the control needs a target
+      // form to fully resolve — without one it renders an immediate, styleable button (font / colour /
+      // border / background all apply), which is enough for a default-appearance preview. We avoid
+      // supplying a dummy formIdentifier on purpose, since that makes it hang on a never-resolving fetch.
+      return {
+        entityType: 'Shesha.Core.Person',
+        displayType: 'textTitle',
+        textTitle: 'Sample reference',
       } as unknown as Partial<IConfigurableFormComponent>;
 
     case 'collapsiblePanel':
@@ -174,24 +249,25 @@ export const getPreviewInitialValue = (type: string | undefined): unknown => {
     case 'password':
     case 'passwordCombo':
       return 'P@ssw0rd';
+    case 'chevron':
+      // Highlight the second step (matches an itemValue from sampleStepItems).
+      return 2;
+    case 'entityReference':
+      // A value object carrying both an id and a display name satisfies the control's "has value" check
+      // without triggering a backend fetch (the display name is already present), so the styleable link
+      // button renders with sample text.
+      return { id: '00000000-0000-0000-0000-000000000001', _displayName: 'Sample reference', _className: 'Shesha.Core.Person' };
+    case 'entityPicker':
+    case 'kanban':
+      // These show their dummy structure via component props (placeholder / columns), not a bound value;
+      // keep them empty so no backend lookup is attempted for a fake id.
+      return undefined;
     default:
       // Generic fallback: any bound input gets a sample string.
       return isInputComponent(type) ? 'Sample value' : undefined;
   }
 };
 
-/**
- * Builds the data object passed to the preview form so the previewed component shows dummy data.
- * Merges the supplied theme (used for layout/appearance) with the dummy bound value.
- */
-export const getPreviewFormData = (type: string | undefined, theme: object | undefined): object => {
-  const base = { ...(theme ?? {}) };
-  const value = getPreviewInitialValue(type);
-  if (value !== undefined) {
-    (base as Record<string, unknown>)[PREVIEW_PROPERTY_NAME] = value;
-  }
-  return base;
-};
 
 /**
  * Component types that only render data when they live inside a Data Context bound to a data source.
@@ -199,7 +275,13 @@ export const getPreviewFormData = (type: string | undefined, theme: object | und
  * seeded `Shesha.Core.DummyTable` entity; we reproduce that exact tree here so the preview shows the
  * same sample rows the designer does.
  */
-const DATA_BOUND_COMPONENT_TYPES = new Set(['datatable', 'datalist', 'quickSearch', '']);
+const DATA_BOUND_COMPONENT_TYPES = new Set(['datatable', 'datalist', 'kanban', 'datatable.pager', 'datatable.quickSearch', 'datatable.filter']);
+
+/**
+ * Data-bound components that don't register columns themselves and therefore need a hidden sibling
+ * "driver" table to trigger the shared context's data fetch (see buildPreviewComponents).
+ */
+const NEEDS_DRIVER_TABLE = new Set(['datalist', 'kanban']);
 
 /**
  * Whether a component must render in designer mode for its preview to show sample content the way the
@@ -258,6 +340,89 @@ const applyInitModel = (type: string, model: IConfigurableFormComponent): IConfi
   }
 };
 
+/** A single preview variation: a human label plus the model prop-overrides that produce it. */
+interface IPreviewVariation {
+  label: string;
+  props: Partial<IConfigurableFormComponent>;
+  /** Optional bound value for this variation (input components only) when it differs per variation. */
+  value?: unknown;
+}
+
+/**
+ * Components that have meaningful visual variations (driven by a single model prop) which the user can
+ * style. The preview renders one instance per variation — each labelled — mirroring how the Theme tab
+ * shows every alert/button kind at once, so the user can see all states they are styling.
+ *
+ * To add a variation: add the component `type` here with the list of label + prop overrides. The
+ * overrides are layered on top of the component's default dummy props (see getPreviewComponentProps).
+ */
+const COMPONENT_VARIATIONS: Record<string, IPreviewVariation[]> = {
+  button: [
+    { label: 'Primary', props: { buttonType: 'primary' } as Partial<IConfigurableFormComponent> },
+    { label: 'Default', props: { buttonType: 'default' } as Partial<IConfigurableFormComponent> },
+    { label: 'Dashed', props: { buttonType: 'dashed' } as Partial<IConfigurableFormComponent> },
+    { label: 'Link', props: { buttonType: 'link' } as Partial<IConfigurableFormComponent> },
+    { label: 'Text', props: { buttonType: 'text' } as Partial<IConfigurableFormComponent> },
+    { label: 'Ghost', props: { buttonType: 'ghost' } as Partial<IConfigurableFormComponent> },
+  ],
+  // File Upload / Attachments: file-name list vs thumbnail grid.
+  fileUpload: [
+    { label: 'File name', props: { listType: 'text' } as unknown as Partial<IConfigurableFormComponent> },
+    { label: 'Thumbnail', props: { listType: 'thumbnail' } as unknown as Partial<IConfigurableFormComponent> },
+  ],
+  attachmentsEditor: [
+    { label: 'File name', props: { listType: 'text' } as unknown as Partial<IConfigurableFormComponent> },
+    { label: 'Thumbnail', props: { listType: 'thumbnail' } as unknown as Partial<IConfigurableFormComponent> },
+  ],
+  // Choice components: single vs multiple selection (each variation binds an appropriate sample value).
+  checkboxGroup: [
+    { label: 'Single', props: { mode: 'single' } as unknown as Partial<IConfigurableFormComponent>, value: ['1'] },
+    { label: 'Multiple', props: { mode: 'multiple' } as unknown as Partial<IConfigurableFormComponent>, value: ['1', '2'] },
+  ],
+  dropdown: [
+    { label: 'Single', props: { mode: 'single' } as unknown as Partial<IConfigurableFormComponent>, value: '1' },
+    { label: 'Multiple', props: { mode: 'multiple' } as unknown as Partial<IConfigurableFormComponent>, value: ['1', '2'] },
+  ],
+  // Text: span vs paragraph vs heading.
+  text: [
+    { label: 'Span', props: { textType: 'span', content: 'The quick brown fox jumps over the lazy dog' } as unknown as Partial<IConfigurableFormComponent> },
+    { label: 'Paragraph', props: { textType: 'paragraph', content: 'The quick brown fox jumps over the lazy dog' } as unknown as Partial<IConfigurableFormComponent> },
+    { label: 'Title', props: { textType: 'title', content: 'Sample title' } as unknown as Partial<IConfigurableFormComponent> },
+  ],
+  // Progress: line vs circle vs dashboard.
+  progress: [
+    { label: 'Line', props: { progressType: 'line' } as unknown as Partial<IConfigurableFormComponent> },
+    { label: 'Circle', props: { progressType: 'circle' } as unknown as Partial<IConfigurableFormComponent> },
+    { label: 'Dashboard', props: { progressType: 'dashboard' } as unknown as Partial<IConfigurableFormComponent> },
+  ],
+};
+
+/** Deterministic property name for the Nth input variation, so each binds its own sample value. */
+const variationPropertyName = (index: number): string => `${PREVIEW_PROPERTY_NAME}V${index}`;
+
+/**
+ * Builds the data object passed to the preview form so the previewed component shows dummy data.
+ * Merges the supplied theme (used for layout/appearance) with the dummy bound value. When the component
+ * is rendered as multiple input variations, each variation's value is keyed by its own property name
+ * (see variationPropertyName) so they don't collide.
+ */
+export const getPreviewFormData = (type: string | undefined, theme: object | undefined): object => {
+  const base = { ...(theme ?? {}) } as Record<string, unknown>;
+  const value = getPreviewInitialValue(type);
+  if (value !== undefined) {
+    base[PREVIEW_PROPERTY_NAME] = value;
+  }
+
+  // Per-variation values for input components rendered as multiple variations.
+  if (type && isInputComponent(type)) {
+    COMPONENT_VARIATIONS[type]?.forEach((v, index) => {
+      if (v.value !== undefined) base[variationPropertyName(index)] = v.value;
+    });
+  }
+
+  return base;
+};
+
 /**
  * Builds the root preview component(s) for the selected component type.
  *
@@ -297,15 +462,23 @@ export const buildPreviewComponents = (
         ? ({ items: dummyTableColumns() } as unknown as Partial<IConfigurableFormComponent>)
         : {};
 
-    const child = applyInitModel(type, {
+    // Apply initModel first, then layer preview props on top so they win (see note in the non-data-bound
+    // branch below) — e.g. kanban's column `items` must survive its initModel.
+    const childBase = applyInitModel(type, {
       type,
       id: childId,
       propertyName: `${type}_${childId}`,
       label,
       parentId: contextId,
       hidden: false,
-      ...extraChildProps,
     } as IConfigurableFormComponent);
+
+    const child = {
+      ...childBase,
+      // Component-specific dummy props (e.g. kanban's column items) so it renders its styled structure.
+      ...getPreviewComponentProps(type),
+      ...extraChildProps,
+    } as IConfigurableFormComponent;
 
     const children: IConfigurableFormComponent[] = [child];
 
@@ -317,7 +490,7 @@ export const buildPreviewComponents = (
     // return `null` when hidden, which would stop the fetch). Instead we wrap it in a container whose
     // wrapper is styled `display: none` — the table still mounts, registers columns and fetches, but is
     // not visible, so only the DataList shows in the preview.
-    if (type === 'datalist') {
+    if (NEEDS_DRIVER_TABLE.has(type)) {
       const driverContainerId = nanoid();
       const driverId = nanoid();
 
@@ -363,15 +536,36 @@ export const buildPreviewComponents = (
     return [context];
   }
 
-  const component = applyInitModel(type, {
-    type,
-    id: baseId,
-    propertyName,
-    label,
-    parentId: 'root',
-    hidden: false,
-    ...getPreviewComponentProps(type),
-  } as IConfigurableFormComponent);
+  // Apply initModel first (designer defaults), then layer the preview props on top so they win — some
+  // components' initModel resets the very props we want to demo (e.g. `columns` initModel replaces the
+  // columns with empty ones), which would otherwise blank out our dummy content.
+  const buildOne = (id: string, instanceLabel: string | undefined, extraProps: Partial<IConfigurableFormComponent>): IConfigurableFormComponent => {
+    const base = applyInitModel(type, {
+      type,
+      id,
+      propertyName,
+      label: instanceLabel,
+      parentId: 'root',
+      hidden: false,
+    } as IConfigurableFormComponent);
 
-  return [component];
+    return { ...base, ...getPreviewComponentProps(type), ...extraProps } as IConfigurableFormComponent;
+  };
+
+  // Components with variations (e.g. button types, file list/thumbnail) render one labelled instance per
+  // variation so the user can see every state they are styling — mirroring the Theme tab. Each input
+  // variation gets a deterministic propertyName (variationPropertyName) so its bound value (supplied by
+  // getPreviewFormData) doesn't collide with the other variations.
+  const variations = COMPONENT_VARIATIONS[type];
+  if (variations?.length) {
+    return variations.map((v, index) => {
+      const component = buildOne(nanoid(), v.label, v.props);
+      if (isInputComponent(type) && v.value !== undefined) {
+        component.propertyName = variationPropertyName(index);
+      }
+      return component;
+    });
+  }
+
+  return [buildOne(baseId, label, {})];
 };
