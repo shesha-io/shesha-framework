@@ -6,6 +6,7 @@ import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties
 import { useMeasure, usePrevious } from 'react-use';
 import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
 import { configurableItemIdentifierToString } from '@/interfaces/configurableItems';
+import { IAnyObject } from '@/interfaces';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -259,7 +260,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const { getEntityFormIdAsync, getFormAsync } = useConfigurationItemsLoader();
 
-  const getFormIdFromExpression = (item): FormFullName => {
+  const getFormIdFromExpression = (item: IAnyObject): FormFullName => {
     if (!formIdExpression) return null;
 
     return executeScriptSync(formIdExpression, { ...allData, item });
@@ -636,10 +637,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         style={computedGroupStyle}
       >
         <Collapse.Panel header={<span style={computedGroupStyle}>{title}</span>} key="1" style={computedGroupStyle}>
-          {group.$childs.map((child, index, records) => {
+          {group.$childs.map((child, index) => {
             return isGroup(child)
               ? renderGroup(child, index)
-              : renderRow(child.row, child.index, records?.length - 1 === index);
+              : renderRow(child.row, child.index);
           })}
         </Collapse.Panel>
       </Collapse>
@@ -647,7 +648,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
 
-  const renderRow = (item: any, index: number, isLastItem: Boolean): ReactElement => {
+  const renderRow = (item: IAnyObject, index: number): ReactElement => {
     const stylesAsCSS = style as CSSProperties;
 
     const hasBorder = (): boolean => {
@@ -665,7 +666,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     const itemStyles: CSSProperties = {
       ...(stylesAsCSS || {}),
       ...(orientation === 'horizontal' && { flexShrink: 0 }),
-      ...(orientation === 'wrap' && showBorder && {
+      ...(orientation === 'wrap' && showBorder && !hasBorder() && {
         border: '1px solid #d3d3d3',
         borderRadius: '8px',
       }),
@@ -734,12 +735,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>
-        {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
-          <Divider
-            style={{ width: itemStyles.width }}
-            className={classNames(styles.shaDatalistComponentDivider, { selected })}
-          />
-        ))}
       </div>
     );
   };
@@ -772,7 +767,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const updateContent = (): void => {
     setContent(groups
       ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
-      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index)),
+      : records?.map((item: any, index) => renderRow(item, index)),
     );
   };
 
