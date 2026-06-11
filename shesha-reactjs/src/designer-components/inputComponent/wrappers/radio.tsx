@@ -10,11 +10,8 @@ export const RadioWrapper: FCUnwrapped<IRadioSettingsInputProps> = (props) => {
   const { styles } = useStyles();
   const { value, onChange, readOnly = false, buttonGroupOptions, size, allowDeselect } = props;
   const defaultModel = useDefaultModelActionsOrUndefined();
-  const currentValueAdditionalInfo = defaultModel
-    ? (info: string): void => {
-      defaultModel?.setCurrentValueAdditionalInfo(props.defaultModelPropertyName, () => info);
-    }
-    : undefined;
+  const onlyModel = defaultModel?.getValueInfo(props.defaultModelPropertyName).state === 'onlyModel';
+  const currentValueAdditionalInfo = (info: string): void => defaultModel?.setCurrentValueAdditionalInfo(props.defaultModelPropertyName, info);
 
   const handleClick = (clickedValue: string | number): void => {
     if (allowDeselect && value === clickedValue) {
@@ -40,9 +37,9 @@ export const RadioWrapper: FCUnwrapped<IRadioSettingsInputProps> = (props) => {
               key={optionValue}
               value={optionValue}
               onClick={() => handleClick(optionValue)}
-              onMouseEnter={defaultModel ? () => currentValueAdditionalInfo(title) : undefined}
+              onMouseEnter={onlyModel ? undefined : () => currentValueAdditionalInfo(title)}
             >
-              {icon ? <Icon icon={icon || title} hint={defaultModel ? undefined : title} className={styles.icon} /> : title}
+              {icon ? <Icon icon={icon || title} hint={onlyModel ? title : undefined} className={styles.icon} /> : title}
             </Radio.Button>
           );
         })

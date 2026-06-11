@@ -9,8 +9,10 @@ export const EditModeSelectorWrapper: FCUnwrapped<IEditModeSelectorSettingsInput
   const { styles } = useStyles();
   const { value, onChange, readOnly, size } = props;
   const defaultModel = useDefaultModelActionsOrUndefined();
-  const currentValueAdditionalInfo = useMemo(() => (info: string) => defaultModel?.setCurrentValueAdditionalInfo(props.propertyName, () => info),
-    [defaultModel, props.propertyName]);
+  const onlyModel = defaultModel?.getValueInfo(props.defaultModelPropertyName).state === 'onlyModel';
+
+  const currentValueAdditionalInfo = useMemo(() => onlyModel ? undefined : (info: string) => defaultModel?.setCurrentValueAdditionalInfo(props.propertyName, info),
+    [onlyModel, defaultModel, props.propertyName]);
 
   return (
     <EditModeSelector

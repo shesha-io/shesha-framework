@@ -23,8 +23,8 @@ export interface IDefaultModelInstance<T extends object = object> {
   getDefaultModel: (name?: string) => T | undefined;
   getValueInfo: (propName: string) => IDefaultModelValueInfo;
   overrideValue: (propName: string) => void;
-  setCurrentValueAdditionalInfo: (propName: string, additionalInfo: () => string | ReactElement) => void;
-  getCurrentValueAdditionalInfo: (propName: string) => (() => string | ReactElement) | undefined;
+  setCurrentValueAdditionalInfo: (propName: string, additionalInfo: string | ReactElement) => void;
+  getCurrentValueAdditionalInfo: (propName: string) => string | ReactElement | undefined;
 }
 
 export type DefaultModelSubscription<Values extends object = object> = {
@@ -43,7 +43,8 @@ interface IPropertyUpdateSubscriptionData {
 const getDataForPropertyUpdateSubscription = <T extends object = object>(dfi: IDefaultModelInstance<T>, propertyName: string): IPropertyUpdateSubscriptionData => {
   const value = getValueByPropertyName(dfi.getMergedModel(), propertyName as Path<object>);
   const valueInfo = dfi.getValueInfo(propertyName);
-  return deepCopyViaJson({ propertyName, value, valueInfo });
+  const additionalInfo = dfi.getCurrentValueAdditionalInfo(propertyName);
+  return deepCopyViaJson({ propertyName, value, valueInfo, additionalInfo });
 };
 
 const defaultModelSubscriptionFuncs = new Map<DefaultModelSubscriptionType, (subscr: DefaultModelSubscription, dfi: IDefaultModelInstance) => Record<string, unknown> | undefined>([
@@ -67,7 +68,7 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
 
   private mergedModel: T = {} as T;
 
-  private valuesAdditionalInfo: Map<string, () => string | ReactElement> = new Map<string, () => string | ReactElement>();
+  private valuesAdditionalInfo: Map<string, string | ReactElement> = new Map<string, string | ReactElement>();
 
   private subscriptions: Map<DefaultModelSubscriptionType, Set<DefaultModelSubscription<T>>>;
 
@@ -83,6 +84,11 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     this.valueInfo = new Map<string, IDefaultModelValueInfo>();
     this.needUpdateInfo = new Map<string, boolean>();
     this.forceUpdate = forceUpdate;
+  }
+
+  #forceUpdate(): void {
+    this.notifySubscribers('property-modified');
+    this.forceUpdate();
   }
 
   #needUpdateAllInfo(): void {
@@ -148,7 +154,7 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     this.#updateDefaultModel();
     this.#updateMergedModel();
     this.#needUpdateAllInfo();
-    this.forceUpdate();
+    this.#forceUpdate();
   };
 
   removeDefaultModel = (name: string): void => {
@@ -156,7 +162,7 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     this.#updateDefaultModel();
     this.#updateMergedModel();
     this.#needUpdateAllInfo();
-    this.forceUpdate();
+    this.#forceUpdate();
   };
 
   getMergedModel = (): T => {
@@ -205,15 +211,15 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     this.#updateMergedModel();
     // ToDo: AS - check if need update all info insted of one property
     this.#needUpdateAllInfo();
-    this.forceUpdate();
+    this.#forceUpdate();
   };
 
-  setCurrentValueAdditionalInfo = (propName: string, additionalInfo: () => string | ReactElement): void => {
+  setCurrentValueAdditionalInfo = (propName: string, additionalInfo: string | ReactElement): void => {
     this.valuesAdditionalInfo.set(propName, additionalInfo);
-    this.forceUpdate();
+    this.#forceUpdate();
   };
 
-  getCurrentValueAdditionalInfo = (propName: string): (() => string | ReactElement) | undefined => {
+  getCurrentValueAdditionalInfo = (propName: string): string | ReactElement | undefined => {
     return this.valuesAdditionalInfo.get(propName);
   };
 }

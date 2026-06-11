@@ -13,11 +13,11 @@ export const useDefaultModelActionsOrUndefined = (): IDefaultModelInstance<objec
 
 export const useDefaultModelPropertyUpdateSubscription = (propertyName: string): object => {
   const defaultModel = useDefaultModelActionsOrUndefined();
-  const [dummy, forceUpdate] = useState({});
+  const [dummy, updateProperty] = useState({});
   useEffect(() => {
     if (!defaultModel) return undefined;
     // Subscribe to changes
-    const unsubscribe = defaultModel.subscribePropertyUpdate(propertyName, () => forceUpdate({}));
+    const unsubscribe = defaultModel.subscribePropertyUpdate(propertyName, () => updateProperty({}));
     return unsubscribe; // Cleanup on unmount
   }, [defaultModel, propertyName]);
 
@@ -26,11 +26,11 @@ export const useDefaultModelPropertyUpdateSubscription = (propertyName: string):
 
 export const useDefaultModelSubscription = (subscriptionType: DefaultModelSubscriptionType): object => {
   const defaultModel = useDefaultModelActionsOrUndefined();
-  const [dummy, forceUpdate] = useState({});
+  const [dummy, updateModel] = useState({});
   useEffect(() => {
     if (!defaultModel) return undefined;
     // Subscribe to changes
-    const unsubscribe = defaultModel.subscribe(subscriptionType, () => forceUpdate({}));
+    const unsubscribe = defaultModel.subscribe(subscriptionType, () => updateModel({}));
     return unsubscribe; // Cleanup on unmount
   }, [defaultModel, subscriptionType]);
 

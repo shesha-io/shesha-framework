@@ -24,9 +24,9 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
   const defaultModel = useDefaultModelActionsOrUndefined();
   const { namePrefix } = useFormItem();
 
-  useDefaultModelPropertyUpdateSubscription(propertyName);
-
   const defaultModelPropertyName = Boolean(namePrefix) ? namePrefix + '.' + props.propertyName : props.propertyName;
+
+  useDefaultModelPropertyUpdateSubscription(defaultModelPropertyName);
 
   // do not memoize because default model can be not initialized
   const defaultValue = defaultModel
@@ -58,10 +58,10 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
 
   // ToDo: AS - review memoize
   const content = useMemo(() => {
-    const addInfo = typeof additionalInfo === 'function' ? (<div>{additionalInfo()}</div>) : null;
+    const addInfo = additionalInfo ? (<div>{additionalInfo}</div>) : null;
     const inheritanceInfo1 = isInherited ? `This value inherits from ${valueInfo.latestDefaultModelName}` : isOverridden ? `This value is overridden.` : null;
     const inheritanceInfo2 = isOverridden ? `Inherited value: ${convertValueToFriendlyString(defaultValue)}` : null;
-    return Boolean(props.tooltip) || addInfo || Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2) ? (
+    return Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2) ? (
       <div style={{ width: '100%' }}>
         {Boolean(props.tooltip) && <div>{props.tooltip}</div>}
         {(Boolean(props.tooltip) && (Boolean(addInfo) || Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2))) && <Divider size="small" />}
