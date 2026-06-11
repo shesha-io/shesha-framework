@@ -78,7 +78,8 @@ export const useStyles = createStyles(
     const menuWrapperScroll = isScrolling
       ? css`
         display: flex;
-        width: calc(${width} - 80px);
+        flex: 1 1 auto;
+        min-width: 0;
         overflow-x: scroll;
         overflow-y: visible !important;
       `
@@ -89,7 +90,7 @@ export const useStyles = createStyles(
       css`
         border: none;
         width: ${isScrolling ? 'auto' : width};
-        min-width: ${isScrolling ? width : 'auto'};
+        min-width: ${isScrolling ? '100%' : 'auto'};
         ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
         font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
         font-weight: ${fontStyles?.fontWeight};
@@ -213,12 +214,12 @@ export const useStyles = createStyles(
 
         /* Apply hover styles to regular menu items */
         .${prefixCls}-menu-item:hover {
-          color: ${colors?.hoverItemColor || BLACK_CLR};
+          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
           background: ${colors?.hoverItemBackground || 'white'} !important;
           ${styleOnHover || ''}
 
           .anticon {
-            ${!styleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR};` : ''}
+            ${!styleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
           }
         }
 
@@ -288,9 +289,25 @@ export const useStyles = createStyles(
       }
     `;
 
-    // Ant Design horizontal menu items have a base height of 40px + padding
-    // Adjusted to 48px to match actual rendered height
-    const menuItemHeight = `calc(48px + ${padding?.y ? `${padding.y * 2}px` : '0px'})`;
+    // The scroll buttons share the row with antd's `.ant-menu-item` elements and must match
+    // their rendered height exactly, otherwise the buttons sit higher/lower than the items.
+    //
+    // Antd's horizontal menu items don't expose a usable height value at design time — the
+    // final height comes from (in order of contribution):
+    //   - 48px content box from antd's `--ant-menu-item-height` token + line-height,
+    //   - 2× vertical padding from our own `.ant-menu-item` rule above,
+    //   - a sub-pixel rounding adjustment antd applies via its internal line-height calc
+    //     (≈ -0.5px when itemStyle is set, because the base padding also gets `padding.y - 1`
+    //     instead of `padding.y` — see the menu-item rule earlier in this file).
+    //
+    // Without runtime DOM measurement (which we can't do here — styles are computed at render
+    // time before the menu mounts), the empirically-measured constant `9.5` is what lines up
+    // pixel-perfectly with menu items for the standard configuration (padding.y = 5 and
+    // itemStyle set). If a future change alters the menu-item padding rule or antd's base
+    // height, re-measure the rendered `.ant-menu-item` height in DevTools and update this
+    // constant to match.
+    const menuItemExtraHeight = 9.5;
+    const menuItemHeight = `calc(48px + ${menuItemExtraHeight}px)`;
 
     const scrollButtons = css`
       width: 80px;
@@ -312,13 +329,15 @@ export const useStyles = createStyles(
       padding: 0 5px;
       margin: 0;
       transition: background 0.3s;
-      width: 45%;
+      width: 40px;
+      flex: 0 0 40px;
+      height: ${menuItemHeight};
+      align-self: center;
       align-items: center;
-      height: 100%;
       justify-content: center;
       display: flex;
       color: ${itemStyle ? 'inherit' : `${colors?.itemColor || BLACK_CLR}`};
-      ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
+      background: ${colors?.itemBackground || 'transparent'};
       ${menuItemStyle || ''}
       ${itemStyle || ''}
 
@@ -689,6 +708,59 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   /* Override Ant Design's default grey background on inline submenus */
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub.${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-inline {
     background: ${(p: GlobalMenuType) => p?.colors?.subItemBackground || 'white'} !important;
+  }
+
+  /* Hover styles for drawer leaf menu items (overflow=menu) */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item:hover {
+    color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
+    background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'white'} !important;
+    ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+
+    .anticon {
+      ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
+    }
+  }
+
+  /* Anchors inside drawer items don't inherit color by default. Force inherit so the
+     <a>/.nav-links-renderer always picks up whatever color is set on the parent .ant-menu-item
+     — including base color, :hover color, and any custom styleOnHover overrides. */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item a,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item .nav-links-renderer {
+    color: inherit !important;
+  }
+
+  /* Explicit higher-specificity hover for drawer SUB items (inside .ant-menu-sub).
+     The base rule for sub items uses !important on color, and the nested &:hover that
+     was meant to override it isn't winning the cascade in some configurations. */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item:hover,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title:hover {
+    color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
+    background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'white'} !important;
+    ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+  }
+
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-item:hover .anticon,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title:hover .anticon,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-sub .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title:hover .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
+    ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
+  }
+
+  /* Hover styles for drawer submenu titles (overflow=menu) */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu > .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title:hover {
+    color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
+    background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'white'} !important;
+    ${(p: GlobalMenuType) => p?.styleOnHover || ''}
+
+    .${(p) => p?.theme.prefixCls}-menu-submenu-arrow,
+    .anticon {
+      ${(p: GlobalMenuType) => !p?.styleOnHover ? `color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;` : ''}
+    }
+  }
+
+  /* Same inherit treatment for anchors inside drawer submenu titles. */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title a,
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu-submenu-title .nav-links-renderer {
+    color: inherit !important;
   }
 
   /* Submenu container styles for horizontal menu dropdowns */

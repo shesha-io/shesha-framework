@@ -11,8 +11,9 @@ const isComponentsContainer = (component: IConfigurableFormComponent): component
 export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string): IConfigurableFormComponent[] => {
   if (!components || !Array.isArray(components)) return [];
 
+  if (!query || !query.trim()) return components;
 
-  const lowerCaseQuery = query.toLowerCase();
+  const lowerCaseQuery = query.toLowerCase().trim();
 
   // Helper function to evaluate hidden property
   const evaluateHidden = (hidden: boolean, directMatch: boolean, hasVisibleChildren: boolean): boolean => {
@@ -22,8 +23,8 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
   // Helper function to check if text
   // matches query
 
-  const matchesQuery = (text): boolean => {
-    return text?.toLowerCase().includes(lowerCaseQuery);
+  const matchesQuery = (text: unknown): boolean => {
+    return typeof text === 'string' && text.toLowerCase().includes(lowerCaseQuery);
   };
 
   const filterResult = components.map<IConfigurableFormComponent>((component) => {
@@ -73,10 +74,13 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
         (input.propertyName && matchesQuery(input.propertyName.split('.').join(' '))),
       ) || [];
 
+      // A row is only meaningful when it has at least one matching input.
+      // The row's own label/propertyName must not surface an empty row, so
+      // visibility depends solely on the presence of matching inputs.
       return {
         ...c,
         inputs: filteredInputs,
-        hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0),
+        hidden: c.hidden === true || filteredInputs.length === 0,
       } satisfies ISettingsInputRowProps;
     }
 

@@ -11,6 +11,7 @@ using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
 using Shesha.Extensions;
@@ -90,7 +91,7 @@ namespace Shesha.DynamicEntities
                 if (method == null)
                     throw new NotSupportedException($"{methodName} is missing in the {typeName}");
 
-                await CheckPermissionAsync(entityConfig, methodName);
+                await CheckPermissionAsync(entityConfig, "Get");
 
                 // invoke query
                 var convertedInputType = typeof(GetDynamicEntityInput<>).MakeGenericType(entityConfig.IdType) ?? throw new Exception($"Failed to create generic type '{typeof(GetDynamicEntityInput<>).FullName}', id type: '{entityConfig.IdType.FullName}'");
@@ -132,7 +133,7 @@ namespace Shesha.DynamicEntities
                 if (appService == null)
                     throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.ApplicationServiceType.FullName}");
 
-                await CheckPermissionAsync(entityConfig, nameof(IEntityAppService<Entity<Int64>, Int64>.QueryAllAsync));
+                await CheckPermissionAsync(entityConfig, "Get");
 
                 return await appService.QueryAllAsync(input);
             }
@@ -176,6 +177,8 @@ namespace Shesha.DynamicEntities
             try
             {
                 var entityConfig = GetConfig(input.EntityTypeId);
+                await CheckPermissionAsync(entityConfig, "Get");
+
                 var typeName = entityConfig.EntityType.FullName;
                 var appServiceType = entityConfig.ApplicationServiceType;
 
@@ -237,6 +240,7 @@ namespace Shesha.DynamicEntities
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
         public Task<List<SpecificationDto>> SpecificationsAsync(EntityTypeIdInput entityTypeId) 
         {
             var entityConfig = GetConfig(entityTypeId);
@@ -265,6 +269,8 @@ namespace Shesha.DynamicEntities
             var entityConfig = _entityConfigStore.Get(input.EntityType);
             if (entityConfig == null)
                 throw new EntityTypeNotFoundException(input.EntityType);
+
+            await CheckPermissionAsync(entityConfig, "Update");
 
             var property = ReflectionHelper.GetProperty(entityConfig.EntityType, input.PropertyName, true);
             if (property == null)

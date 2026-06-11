@@ -1,4 +1,19 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
+export {
+  ExpressionEditor,
+  buildExpressionContextFromPaths,
+  type ExpressionContext,
+  type ExpressionContextValue,
+  type ExpressionEditorProps,
+  type ExpressionFunctionDefinition,
+  type BuildExpressionContextFromPathsOptions,
+} from './expressionEditor';
+export {
+  buildExpressionContextFromMetadata,
+  buildExpressionContextFromProperties,
+  mergeExpressionContexts,
+  type ExpressionContextTree,
+} from './expressionEditor/contextMetadata';
 export { default as FileUpload, type IFileUploadProps } from './fileUpload';
 export { ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
 export { default as MultiCheckBoxRefList, type IMultiCheckBoxRefListProps } from './multiCheckBoxRefList';
