@@ -23,12 +23,12 @@ namespace Shesha.Tests.Security
     /// </summary>
     public class ServiceAuthorizationAttribute_Tests
     {
-        private static SheshaAuthorizeAttribute GetClassSheshaAuthorize(Type type)
+        private static SheshaAuthorizeAttribute? GetClassSheshaAuthorize(Type type)
         {
             return type.GetCustomAttribute<SheshaAuthorizeAttribute>();
         }
 
-        private static AllowAnonymousAttribute GetMethodAllowAnonymous(Type type, string methodName)
+        private static AllowAnonymousAttribute? GetMethodAllowAnonymous(Type type, string methodName)
         {
             var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
             return method?.GetCustomAttribute<AllowAnonymousAttribute>();
