@@ -34,8 +34,19 @@ export interface IRequestBody {
   rawSubType?: RawBodySubType;
 }
 
+/**
+ * Optional transformation applied to the API response before it is displayed/consumed.
+ * The original response is left unchanged; only the value handed downstream is transformed.
+ */
+export interface IResponseTransformationConfiguration {
+  enabled: boolean;
+  /** JavaScript body that receives `input` (the response) and returns the transformed value. */
+  script: string;
+}
+
 export interface IRequestConfig {
   params: IRequestParam[];
   headers: IRequestHeader[];
   body: IRequestBody;
+  responseTransformation?: IResponseTransformationConfiguration;
 }

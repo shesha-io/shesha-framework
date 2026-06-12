@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Dropdown, Input, MenuProps, Tooltip } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import { IPropertySetting } from '@/providers/form/models';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 
 const { TextArea } = Input;
 

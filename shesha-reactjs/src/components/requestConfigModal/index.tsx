@@ -88,6 +88,8 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
                 <BodyTab
                   body={localConfig.body || { type: 'none', content: '' }}
                   onChange={(body) => updateConfig({ body })}
+                  transformation={localConfig.responseTransformation}
+                  onTransformationChange={(responseTransformation) => updateConfig({ responseTransformation })}
                 />
               ),
             },
@@ -99,3 +101,4 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
 };
 
 export * from './models';
+export * from './transformationRunner';

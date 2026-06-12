@@ -1,5 +1,7 @@
+import { useRef } from 'react';
 import { nanoid } from '@/utils/uuid';
 import { useSheshaApplication } from "@/providers";
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import axios, { Method } from 'axios';
 import { IKeyValue } from "@/interfaces/keyValue";
@@ -10,8 +12,8 @@ import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { getQueryParams } from "@/utils/url";
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
-import { IRequestParam, IRequestHeader, IRequestBody, RequestValue } from '@/components/requestConfigModal';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { IRequestParam, IRequestHeader, IRequestBody, IResponseTransformationConfiguration, RequestValue, executeResponseTransformation } from '@/components/requestConfigModal';
+import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 
 // The action arguments evaluator already runs Mustache on every string in the arguments tree,
 // including `_value` and `_code` inside our IPropertySetting wrapper. So by the time the
@@ -37,6 +39,7 @@ export interface IApiCallArguments {
     params?: IRequestParam[];
     headers?: IRequestHeader[];
     body?: IRequestBody;
+    responseTransformation?: IResponseTransformationConfiguration;
   };
 }
 
@@ -89,12 +92,43 @@ const getApiCallArgumentsForm: FormMarkupFactory = ({ fbf }) => {
     .toJson();
 };
 
+// Applies the optional response transformation. The original response is never mutated; when the
+// transformation is disabled or fails, the original response is returned unchanged so a bad script
+// can never break the action. `context` is the standard Shesha constants object (globalState,
+// pageContext, http, form, data, …) with `response` layered in — the same scope every other code
+// editor exposes.
+const applyResponseTransformation = async (
+  original: unknown,
+  context: object,
+  transformation?: IResponseTransformationConfiguration,
+): Promise<unknown> => {
+  if (!transformation?.enabled || !transformation.script?.trim()) {
+    return original;
+  }
+
+  const result = await executeResponseTransformation(transformation.script, context);
+  if (result.success) {
+    return result.output;
+  }
+
+  console.error('Response transformation failed, returning original response:', result.error);
+  return original;
+};
+
 const isGlobalUrl = (url: string): boolean => {
   return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|ftp|https):\/\//gi));
 };
 
 export const useApiCallAction = (): void => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  // The response transformation runs as a standard Shesha script, so it needs the same constants
+  // (globalState, pageContext, http, form, data, …) as every other code editor. `responseHolder`
+  // is a stable object whose `response` key is registered as an available constant; we write the
+  // actual response into it just before executing the transformation. The accessor reads it lazily,
+  // so the live value is picked up without rebuilding the constants on every API response.
+  const responseHolder = useRef<{ response: unknown }>({ response: undefined });
+  const allData = useAvailableConstantsData({}, responseHolder.current);
 
   useConfigurableAction<IApiCallArguments>({
     isPermament: true,
@@ -267,7 +301,12 @@ export const useApiCallAction = (): void => {
         method: verb as Method,
         headers: allHeaders,
         ...(baseUrl && { baseURL: baseUrl }),
-      }).then((response) => unwrapAbpResponse(response.data));
+      }).then((response) => {
+        const original = unwrapAbpResponse(response.data);
+        // Expose the freshly-received response to the transformation script as `response`.
+        responseHolder.current.response = original;
+        return applyResponseTransformation(original, allData, requestConfig?.responseTransformation);
+      });
     },
-  }, [backendUrl, httpHeaders]);
+  }, [backendUrl, httpHeaders, allData]);
 };

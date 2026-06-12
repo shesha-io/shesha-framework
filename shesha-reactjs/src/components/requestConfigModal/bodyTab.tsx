@@ -1,8 +1,9 @@
 import React, { FC, useState } from 'react';
 import { Button, Input, Radio, Select, Space, Table, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { BodyType, IFormDataField, IRequestBody, RawBodySubType, RequestValue } from './models';
+import { BodyType, IFormDataField, IRequestBody, IResponseTransformationConfiguration, RawBodySubType, RequestValue } from './models';
 import { RequestValueEditor } from './requestValueEditor';
+import { TransformationTab } from './transformationTab';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { useStyles } from './styles';
@@ -20,11 +21,28 @@ const { Text } = Typography;
 export interface IBodyTabProps {
   body: IRequestBody;
   onChange: (body: IRequestBody) => void;
+  /** Response transformation config — persisted alongside the request, edited under the "Transformation" body option. */
+  transformation?: IResponseTransformationConfiguration;
+  onTransformationChange?: (transformation: IResponseTransformationConfiguration) => void;
 }
 
-export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
+// "transformation" is a view-only selection in the body type bar — it edits the response
+// transformation (a sibling of the request body) rather than a real request body type, so it
+// is tracked in local state and never written to body.type.
+type BodyView = BodyType | 'transformation';
+
+export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onTransformationChange }) => {
   const { styles } = useStyles();
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [view, setView] = useState<BodyView>(body.type);
+
+  const handleViewChange = (next: BodyView): void => {
+    setView(next);
+    // Only real body types mutate the request body; "transformation" leaves the body untouched.
+    if (next !== 'transformation') {
+      handleTypeChange(next);
+    }
+  };
 
   const handleTypeChange = (type: BodyType): void => {
     let content: IRequestBody['content'] = '';
@@ -174,6 +192,15 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
   };
 
   const renderBodyContent = (): JSX.Element | null => {
+    if (view === 'transformation') {
+      return (
+        <TransformationTab
+          value={transformation}
+          onChange={(t) => onTransformationChange?.(t)}
+        />
+      );
+    }
+
     switch (body.type) {
       case 'none':
         return <Text type="secondary">This request does not have a body.</Text>;
@@ -252,12 +279,13 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
   return (
     <div className={styles.bodyEditor}>
       <div className={styles.bodyTypeSelector}>
-        <Radio.Group value={body.type} onChange={(e) => handleTypeChange(e.target.value)}>
+        <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value)}>
           <Radio.Button value="none">none</Radio.Button>
           <Radio.Button value="json">JSON</Radio.Button>
           <Radio.Button value="form-data">form-data</Radio.Button>
           <Radio.Button value="x-www-form-urlencoded">x-www-form-urlencoded</Radio.Button>
           <Radio.Button value="raw">raw</Radio.Button>
+          <Radio.Button value="transformation">Transformation</Radio.Button>
         </Radio.Group>
       </div>
       {renderBodyContent()}
