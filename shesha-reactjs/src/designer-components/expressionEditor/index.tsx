@@ -31,6 +31,8 @@ import { getSettings } from './settingsForm';
 
 const EMPTY_CONTEXT: ExpressionContext = {};
 
+const STANDARD_CONSTANTS = [SheshaConstants.application, SheshaConstants.form];
+
 const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
   type: 'expressionEditor',
   name: 'Expression Editor',
@@ -45,18 +47,14 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
     const isDesignMode = formMode === 'designer';
 
     const availableConstants = useAvailableConstantsMetadata({
-      standardConstants: [
-        SheshaConstants.globalState,
-        SheshaConstants.pageContext,
-        SheshaConstants.contexts,
-      ],
+      standardConstants: STANDARD_CONSTANTS,
     });
     const formMetadata = useMetadata(false)?.metadata;
 
     const dataPathContext = React.useMemo(() => {
       const properties = asPropertiesArray(formMetadata?.properties, []);
       const paths = properties.map((property) => property.path).filter(Boolean);
-      return buildExpressionContextFromPaths(paths);
+      return buildExpressionContextFromPaths(paths, { additionalRoots: [] });
     }, [formMetadata]);
 
     const constantsContext = useAsyncMemo<ExpressionContextTree>(
