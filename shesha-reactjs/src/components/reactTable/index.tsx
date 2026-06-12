@@ -9,6 +9,7 @@ import {
   Row,
   useTable,
   Column,
+  CellProps,
 } from 'react-table';
 import { LoadingOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { App, Spin, Tooltip } from 'antd';
@@ -265,7 +266,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
     const localColumns = [...allColumns];
 
     if (multiSelect) {
-      const checkboxColumn: Column<ITableRowData> = {
+      const checkboxColumn: Column<TData> = {
         id: 'selection',
         // isVisible: true,
         disableResizing: true,
@@ -284,11 +285,11 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
             </span>
           );
         },
-        Cell: ({ row }) => (
+        Cell: ({ row }: CellProps<TData>): ReactNode => (
           <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
-              onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row as unknown as Row<TData>[] | Row<TData>)} // TODO: review types generic TData doesn't work
+              onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
             />
           </span>
         ),
@@ -297,7 +298,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
     }
 
     if (allowReordering) {
-      const dragHandleColumn: Column<ITableRowData> = {
+      const dragHandleColumn: Column<TData> = {
         accessor: nanoid(),
         Header: '',
         width: 35,
@@ -305,7 +306,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
         maxWidth: 35,
         disableSortBy: true,
         disableResizing: true,
-        Cell: ({ row }) => <RowDragHandle row={row} />,
+        Cell: ({ row: _ }: CellProps<TData>): ReactNode => <RowDragHandle />,
       };
       localColumns.unshift(dragHandleColumn as Column<TData>);
     }

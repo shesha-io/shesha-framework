@@ -36,10 +36,7 @@ export interface ISortableRowProps<TData extends ITableRowData = ITableRowData> 
   striped?: boolean | undefined;
 }
 
-interface RowDragHandleProps<T extends ITableRowData = ITableRowData> {
-  row: Row<T>;
-}
-export const RowDragHandle: FC<RowDragHandleProps> = () => {
+export const RowDragHandle: FC = () => {
   const { setDragState } = useDataTableStore();
   const handleMouseDown = (): void => {
     setDragState('started');

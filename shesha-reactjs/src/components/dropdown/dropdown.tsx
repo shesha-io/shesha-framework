@@ -124,7 +124,7 @@ export const Dropdown: FC<IDropdownProps> = ({
           referenceListId={referenceListId}
           value={value}
           variant="borderless"
-          mode={selectedMode}
+          {...(selectedMode ? { mode: selectedMode } : {})}
           disabledValues={disableItemValue ? disabledValues : []}
           filters={ignoredValues}
           placeholder={placeholder}

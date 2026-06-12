@@ -29,9 +29,9 @@ export const ConfigurableFormItemSetting = <TValue = unknown>({
   const formProps: FormItemProps = {
     name: getFieldNameFromExpression(model.propertyName),
     label: model.label,
-    required: model.validate?.required,
+    required: model.validate?.required ?? false,
     tooltip: model.description || undefined,
-    hidden: model.hidden,
+    hidden: model.hidden ?? false,
   };
 
   if (typeof children === 'function') {

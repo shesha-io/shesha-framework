@@ -14,15 +14,18 @@ export const confirmPasswordValidations = (
 
   const hasFeedback = confirmPaswordDirty;
 
-  const validateStatus = confirmPaswordDirty ? 'success' : !confirmPassword ? undefined : 'error';
+  const validateStatus = confirmPaswordDirty ? 'success' : !confirmPassword ? "" : 'error';
 
   const help = validateStatus === 'error' ? errorMessage : null;
 
   const rules = help ? [{ required: true, validator: () => Promise.reject(errorMessage || ERROR_MSG) }] : undefined;
 
-  if (rules) return { hasFeedback, validateStatus, help, rules };
-
-  return { hasFeedback, validateStatus, help };
+  const result: FormItemProps = {
+    hasFeedback, validateStatus, help,
+  };
+  if (rules)
+    result.rules = rules;
+  return result;
 };
 
 export const getPasswordValidations = (password: string, passwordLength: number = 4): IPasswordValidation => {

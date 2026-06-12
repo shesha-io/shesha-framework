@@ -61,7 +61,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
-    hidden: model.hidden,
+    hidden: model.hidden ?? false,
     ...(valuePropName ? { valuePropName: valuePropName } : {}),
     initialValue: initialValue,
     tooltip: model.description || undefined,

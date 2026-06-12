@@ -53,10 +53,10 @@ const SettingsFormComponent = <Value = unknown>(props: ISettingsFormItemProps): 
   const formProps: FormItemProps = {
     name: getFieldNameFromExpression(props.name),
     label: props.label,
-    style: props.style,
-    required: props.required,
+    ...(props.style ? { style: props.style } : {}),
+    required: props.required ?? false,
     tooltip: props.tooltip,
-    hidden: props.hidden,
+    hidden: props.hidden ?? false,
     ...(props.valuePropName ? { valuePropName: props.valuePropName } : {}),
   };
 
