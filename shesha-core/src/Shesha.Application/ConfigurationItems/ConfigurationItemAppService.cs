@@ -13,6 +13,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Common Configuration Item application service
     /// </summary>
+    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class ConfigurationItemAppService: SheshaAppServiceBase
     {
         private readonly IConfigurationItemClientSideCache _clientSideCache;
@@ -27,6 +28,7 @@ namespace Shesha.ConfigurationItems
             _ciHelper = ciHelper;
         }
 
+        [AbpAllowAnonymous]
         public async Task<GetCurrentResponse> GetCurrentAsync(GetCurrentRequest input)
         {
             var manager = _ciHelper.GetManagerByDiscriminator(input.ItemType);
@@ -67,6 +69,7 @@ namespace Shesha.ConfigurationItems
             };
         }
 
+        [AbpAllowAnonymous]
         public async Task<GetCurrentResponse> GetAsync(GetConfigurationRequest input) 
         {
             if (!string.IsNullOrWhiteSpace(input.Md5))

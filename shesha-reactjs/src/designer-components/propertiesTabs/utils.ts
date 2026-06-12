@@ -14,7 +14,10 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
   if (!isDefined(components) || !Array.isArray(components))
     return [];
 
-  const lowerCaseQuery = query.toLowerCase();
+  if (isNullOrWhiteSpace(query))
+    return components;
+
+  const lowerCaseQuery = query.toLowerCase().trim();
 
   // Helper function to evaluate hidden property
   const evaluateHidden = (hidden: boolean | undefined, directMatch: boolean, hasVisibleChildren: boolean): boolean => {
@@ -81,10 +84,13 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
         (input.propertyName && matchesQuery(input.propertyName.split('.').join(' '))),
       ) || [];
 
+      // A row is only meaningful when it has at least one matching input.
+      // The row's own label/propertyName must not surface an empty row, so
+      // visibility depends solely on the presence of matching inputs.
       return {
         ...c,
         inputs: filteredInputs,
-        hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0),
+        hidden: c.hidden === true || filteredInputs.length === 0,
       } satisfies ISettingsInputRowProps;
     }
 

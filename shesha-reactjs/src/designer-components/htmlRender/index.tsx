@@ -2,6 +2,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { HighlightOutlined } from '@ant-design/icons';
 import parse from 'html-react-parser';
+import DOMPurify from 'dompurify';
 import React from 'react';
 import { IHtmlComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
@@ -28,7 +29,7 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
     return (
       <div style={model.allStyles?.fullStyle}>
         <ConfigurableFormItem<string> model={{ ...model, hideLabel: true }}>
-          {(value) => parse(calculatedModel.getContent(value ?? undefined) ?? "")}
+          {(value) => parse(DOMPurify.sanitize(calculatedModel.getContent(value ?? undefined) ?? "", { USE_PROFILES: { html: true } }))}
         </ConfigurableFormItem>
       </div>
     );

@@ -28,8 +28,8 @@ import { isEmptyString, toCamelCase } from "../string";
 import { StringBuilder } from "./stringBuilder";
 import { TypesImporter } from "./typesImporter";
 import { MetadataFetcher } from "./metadataBuilder";
-import { CODE, entitiesCode } from "@/publicJsApis";
-import { Environment } from "@/publicJsApis/metadataBuilder";
+import { CODE, entitiesCode } from "@/publicJsApis/apis";
+import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 import { EOL } from "./models";
 import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { isDefined, isNullOrWhiteSpace } from "../nullables";
@@ -171,7 +171,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             : dataType.typeName;
 
           this.#appendCommentBlock(sb, [prop.label, prop.description]);
-          sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${typeName};`);
+          sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${typeName}${prop.isNullable ? ' | undefined' : ''};`);
         }
       } catch (e) {
         // skip errors with logging to not break the build
@@ -400,7 +400,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         const dataType = await this.#getTypescriptType(prop);
         if (dataType) {
           typesImporter.import(dataType);
-          sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
+          sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName}${prop.isNullable ? ' | undefined' : ''};`);
         }
       });
       sb.decIndent();
@@ -539,7 +539,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
       if (dataType) {
         typesImporter.import(dataType);
         this.#appendCommentBlock(sb, [prop.label, prop.description]);
-        sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
+        sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName}${prop.isNullable ? ' | undefined' : ''};`);
       }
     });
     sb.decIndent();

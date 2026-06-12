@@ -82,9 +82,10 @@ export const disabledTime = (props: IDateFieldProps, data: object = {}, globalSt
   }
 
   if (!isNullOrWhiteSpace(disabledTimeFunc)) {
-    const disabledFunc = new Function('moment', 'data', 'globalState', 'range', disabledTimeFunc) as DisabledTimeFuncFactory;
+    const disabledFunc = new Function('current', 'moment', 'data', 'globalState', 'range', disabledTimeFunc) as DisabledTimeFuncFactory;
 
-    return disabledFunc(moment, data, globalState, range);
+    type DisabledTimeCurrent = Parameters<NonNullable<DisabledTimeFunc>>[0];
+    return (current: DisabledTimeCurrent) => disabledFunc(current, moment, data, globalState, range);
   }
 
   return emptyDisabledTime;

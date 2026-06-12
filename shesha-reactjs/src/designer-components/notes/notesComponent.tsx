@@ -3,8 +3,8 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components/notesRenderer';
-import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
-import { evaluateValueAsString, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useFormData, useGlobalState } from '@/providers';
+import { evaluateValueAsString, executeScript, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import { NotesEditorProvider, OnNoteCreatedFunc, OnNoteDeletedFunc, OnNoteUpdatedFunc } from '@/providers/notes';
 import {
@@ -15,9 +15,6 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getFormApi } from '@/providers/form/formApi';
-import { App } from 'antd';
-import moment from 'moment';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
@@ -46,11 +43,10 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   icon: <FormOutlined />,
   dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === AdvancedFormats.notes,
   Factory: ({ model }) => {
-    const httpClient = useHttpClient();
-    const form = useForm();
     const { data } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const { message } = App.useApp();
+    const { globalState } = useGlobalState();
+    const executionContext = useAvailableConstantsData();
+
 
     if (model.hidden) return null;
 
@@ -61,13 +57,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
       executeScript<void>(model.onCreateAction, {
         createdNotes: [note],
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState,
+        ...executionContext,
       }).catch((error) => {
         console.error('Failed to execute onCreateAction', error);
         throw error;
@@ -78,13 +68,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
       executeScript<void>(model.onDeleteAction, {
         note,
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState,
+        ...executionContext,
       }).catch((error) => {
         console.error('Failed to execute onDeleteAction', error);
         throw error;
@@ -95,13 +79,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
       executeScript<void>(model.onUpdateAction, {
         note,
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState,
+        ...executionContext,
       }).catch((error) => {
         console.error('Failed to execute onUpdateAction', error);
         throw error;

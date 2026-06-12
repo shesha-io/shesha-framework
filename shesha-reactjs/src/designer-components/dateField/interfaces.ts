@@ -20,6 +20,7 @@ export type DisabledDateTemplate = 'disabledPastTime' | 'disableFutureTime';
 export type DateFieldValueType = string | NoUndefinedRangeValueType<string> | null;
 
 export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyles {
+  placeholder?: string | undefined;
   dateFormat?: string | undefined;
   value?: DateFieldValueType | undefined;
   hideBorder?: boolean | undefined;

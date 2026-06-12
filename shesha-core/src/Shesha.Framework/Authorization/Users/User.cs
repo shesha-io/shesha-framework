@@ -72,6 +72,19 @@ namespace Shesha.Authorization.Users
         public virtual RefListSecurityQuestionStatus? SecurityQuestionStatus { get; set; }
 
         /// <summary>
+        /// Number of consecutive failed security-question verification attempts.
+        /// Reset to zero on a successful verification or when a lockout window starts.
+        /// </summary>
+        [Display(Name = "Security Question Failed Attempts")]
+        public virtual int? SecurityQuestionFailedAttempts { get; set; }
+
+        /// <summary>
+        /// UTC time until which security-question verification is blocked after too many failed attempts.
+        /// </summary>
+        [Display(Name = "Security Question Lockout End")]
+        public virtual DateTime? SecurityQuestionLockoutEnd { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         [Display(Name = "Require password change on next login")]

@@ -1,5 +1,5 @@
 import qs from "qs";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { FormsManager } from "./manager";
 import { IAbpWrappedGetEntityResponse } from "@/interfaces/gql";
 import { FormConfigurationDto } from "@/providers/form/api";

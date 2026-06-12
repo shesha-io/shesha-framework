@@ -2,8 +2,7 @@ import { TypeDefinition } from '@/interfaces/metadata';
 import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
 import { modalApiDefinition } from "@/providers/sourceFileManager/api-utils/modal";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
-import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
-import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode } from '@/publicJsApis';
+import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, pageCode, formCode, webStorageCode, canvasContextCode } from '@/publicJsApis/apis';
 
 export const SheshaConstants = {
   http: "shesha:http",
@@ -16,6 +15,7 @@ export const SheshaConstants = {
   selectedRow: "shesha:selectedRow",
   contexts: "shesha:contexts",
   components: "shesha:components",
+  page: "shesha:page",
   pageContext: "shesha:pageContext",
   form: "shesha:form",
   formData: "shesha:formData",
@@ -23,6 +23,7 @@ export const SheshaConstants = {
   query: "shesha:query",
   metadataBuilder: "shesha:metadataBuilder",
   constantsBuilder: "shesha:constantsBuilder",
+  webStorage: "shesha:webStorage",
 };
 
 export const registerHttpAction: MetadataBuilderAction = (builder, name = "http") => {
@@ -91,7 +92,7 @@ export const registerMomentAction: MetadataBuilderAction = (builder, name = "mom
 };
 
 export const registerGlobalStateAction: MetadataBuilderAction = (builder, name = "globalState") => {
-  builder.addCustom(name, "The global state of the application", () => {
+  builder.addCustom(name, "The global state of the application @deprecated use (application.context, page.context or form.context) instead. This item is outdated and will be removed in further versions.", () => {
     const definition: TypeDefinition = {
       typeName: 'GlobalStateType',
       files: [{ content: globalStateCode, fileName: 'apis/globalState.ts' }],
@@ -101,7 +102,7 @@ export const registerGlobalStateAction: MetadataBuilderAction = (builder, name =
 };
 
 export const registerSetGlobalStateAction: MetadataBuilderAction = (builder, name = "setGlobalState") => {
-  builder.addCustom(name, "Setting the global state of the application", () => {
+  builder.addCustom(name, "Setting the global state of the application @deprecated use (application.context, page.context or form.context) instead. This item is outdated and will be removed in further versions.", () => {
     const definition: TypeDefinition = {
       typeName: 'SetGlobalStateType',
       files: [{ content: globalStateCode, fileName: 'apis/globalState.ts' }],
@@ -121,10 +122,33 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder, name =
 };
 
 export const registerPageContextAction: MetadataBuilderAction = (builder, name = "pageContext") => {
-  builder.addCustom(name, "Contexts data of current page", () => {
+  builder.addCustom(name, "Contexts data of current page @deprecated use page.context instead. This item is outdated and will be removed in further versions.", () => {
     const definition: TypeDefinition = {
-      typeName: 'IPageContext',
-      files: [{ content: 'export interface IPageContext { [key: string]: unknown }', fileName: 'apis/pageContext.ts' }],
+      typeName: 'PageContext',
+      files: [{ content: 'export interface PageContext { [key: string]: unknown }', fileName: 'apis/pageContext.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerPageAction: MetadataBuilderAction = (builder, name = "page") => {
+  builder.addCustom(name, "Api of current page", () => {
+    const definition: TypeDefinition = {
+      typeName: 'PageApi',
+      files: [
+        { content: pageCode, fileName: 'apis/page.ts' },
+        { content: canvasContextCode, fileName: 'apis/canvasContextApi.ts' },
+      ],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerWebStorageAction: MetadataBuilderAction = (builder, name = "webStorage") => {
+  builder.addCustom(name, "Api of Web Storage", () => {
+    const definition: TypeDefinition = {
+      typeName: 'WebStorage',
+      files: [{ content: webStorageCode, fileName: 'apis/webStorageApi.ts' }],
     };
     return Promise.resolve(definition);
   });
@@ -134,7 +158,7 @@ export const registerFormAction: MetadataBuilderAction = (builder, name = "form"
   builder.addCustom(name, "Form instance API", () => {
     const definition: TypeDefinition = {
       typeName: 'FormApi',
-      files: [{ content: formApiDefinition, fileName: 'apis/form.ts' }],
+      files: [{ content: formCode, fileName: 'apis/form.ts' }],
     };
     return Promise.resolve(definition);
   });

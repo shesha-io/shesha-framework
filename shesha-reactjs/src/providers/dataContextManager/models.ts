@@ -26,6 +26,7 @@ export const SHESHA_ROOT_DATA_CONTEXT_MANAGER = 'SHESHA_ROOT_DATA_CONTEXT_MANAGE
 export enum SheshaCommonContexts {
   ApplicationContext = 'application',
   WebStorageContext = 'webStorage',
+  CanvasContext = 'canvasContext',
   AppContext = 'appContext',
   PageContext = 'pageContext',
   FormContext = 'formContext',
@@ -53,6 +54,7 @@ export interface IDataContextsData {
 }
 
 export interface IDataContextManagerActions {
+  updateForceUpdate: (forceUpdate: ((data?: unknown) => void) | undefined) => void;
   registerDataManagerOnce: (payload: IDataContextManagerFullInstance) => void;
   unregisterDataManager: (payload: IDataContextManagerFullInstance) => void;
   registerDataContextOnce: (payload: IRegisterDataContextPayload) => void;
@@ -64,7 +66,7 @@ export interface IDataContextManagerActions {
   getNearestDataContext: (topId: string, type: DataContextType) => IDataContextDescriptor | undefined;
   getDataContextData: (contextId: string) => unknown;
   onChangeContext: (dataContext: IDataContextDescriptor) => void;
-  onChangeContextData: () => void;
+  onChangeContextData: (data?: unknown) => void;
   updatePageFormInstance: (form: ConfigurableFormInstance) => void;
   getPageFormInstance: () => ConfigurableFormInstance | undefined;
   getPageContext: () => IDataContextDescriptor | undefined;

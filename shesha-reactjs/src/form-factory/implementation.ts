@@ -44,7 +44,7 @@ import { ITextAreaComponentProps } from "@/designer-components/textArea/interfac
 import { ITextFieldComponentProps } from "@/designer-components/textField/interfaces";
 import { ITimePickerComponentProps } from "@/designer-components/timeField/models";
 import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentProps, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
-import { ComponentTypes, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardEventHandler } from "./interfaces";
+import { FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardEventHandler } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
 import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
@@ -88,9 +88,6 @@ const eventConfigs: EventConfig[] = [
 
 
 export class FormBuilderImplementation implements FormBuilder {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: `add${Capitalize<string>}`]: (props: any, metadata?: IPropertyMetadata) => FormBuilder;
-
   addKeyInformationBar = (props: FluentSettings<IKeyInformationBarComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'KeyInformationBar', meta);
 
   addEditModeSelector = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'editModeSelector', meta);
@@ -484,7 +481,7 @@ export class FormBuilderImplementation implements FormBuilder {
     this.rootId = rootId ?? nanoid();
   }
 
-  private _addProperty(props: FluentSettings<IConfigurableFormComponent>, type: ComponentTypes, meta?: IPropertyMetadata): FormBuilder {
+  private _addProperty(props: FluentSettings<IConfigurableFormComponent>, type: string, meta?: IPropertyMetadata): FormBuilder {
     const { id, hidden, visible, visibleJs, version, parentId, ...restProps } = props;
 
     const componentDefinition = this.getComponentDefinition(type);
@@ -527,6 +524,10 @@ export class FormBuilderImplementation implements FormBuilder {
 
     return this;
   }
+
+  addByType = <TProps extends FluentSettings<IConfigurableFormComponent>>(type: string, props: TProps, meta?: IPropertyMetadata): FormBuilder => {
+    return this._addProperty(props, type, meta);
+  };
 
   toJson(): IConfigurableFormComponent[] {
     return this.form;

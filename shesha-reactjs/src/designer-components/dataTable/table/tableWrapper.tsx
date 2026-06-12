@@ -385,7 +385,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
       };
     }
 
-    if (!isNonEmptyArray(configuredColumns) || !isDefined(metadata)) {
+    if (isNonEmptyArray(configuredColumns) || !isDefined(metadata)) {
       return () => {
         cancelled = true;
       };

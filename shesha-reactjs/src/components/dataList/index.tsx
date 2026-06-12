@@ -1,41 +1,73 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import classNames from 'classnames';
-import React, { FC, useEffect, useState, useRef, RefObject, CSSProperties, ReactElement, useMemo, ReactNode } from 'react';
-import { usePrevious } from 'react-use';
-import { DEFAULT_FORM_SETTINGS, FormFullName, FormIdentifier, HttpClientApi, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
-import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
-import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
-import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, GrouppedRow, RowOrGroup, RowsGroup } from './models';
-import { useAvailableConstantsData, executeScriptSync, getStyle, isFormFullName, formDtop2PersistedFormProps } from '@/providers/form/utils';
-import { isEqual } from 'lodash';
-import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
-import { toCamelCase } from '@/utils/string';
-import { DataListItemRenderer } from './itemRenderer';
-import DataListItemCreateModal from './createModal';
-import moment from 'moment';
-import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { useStyles } from './styles/styles';
-import { EmptyState } from "..";
-import AttributeDecorator from '../attributeDecorator';
+import { useDeepCompareMemo } from '@/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { IAnyObject } from '@/interfaces';
+import { configurableItemIdentifierToString } from '@/interfaces/configurableItems';
+import { DEFAULT_FORM_SETTINGS, FormFullName, FormIdentifier, HttpClientApi, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { ConfigurationLoadingError } from '@/providers/configurationItemsLoader/errors';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { IDataContextsData } from '@/providers/dataContextManager/models';
 import { ITableRowData, RowSelection } from '@/providers/dataTable/interfaces';
 import { IFormApi } from '@/providers/form/formApi';
-import { IDataContextsData } from '@/providers/dataContextManager/models';
-import { IAnyObject } from '@/interfaces';
-import { getClassNameOrUndefined } from '@/utils/entity';
+import { executeScriptSync, formDtop2PersistedFormProps, getStyle, isFormFullName, useAvailableConstantsData } from '@/providers/form/utils';
+import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getNestedPropertyValueByPath } from '@/utils/dotnotation';
-import { jsonSafeParse } from '@/utils/object';
+import { getClassNameOrUndefined } from '@/utils/entity';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { toCamelCase } from '@/utils/string';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import classNames from 'classnames';
+import { isEqual } from 'lodash';
+import moment from 'moment';
+import React, { CSSProperties, FC, ReactElement, ReactNode, RefObject, useEffect, useMemo, useRef, useState } from 'react';
+import { usePrevious } from 'react-use';
+import { EmptyState } from "..";
+import AttributeDecorator from '../attributeDecorator';
+import FormInfo from '../configurableForm/formInfo';
+import DataListItemCreateModal from './createModal';
+import { DataListItemRenderer } from './itemRenderer';
+import { GroupLevelInfo, GroupLevels, GrouppedRow, IDataListProps, NewItemInitializer, RowOrGroup, RowsGroup } from './models';
+import { useStyles } from './styles/styles';
+
+const isInteractiveTarget = (target: EventTarget | null): boolean => {
+  if (!(target instanceof Element)) return false;
+
+  const isInPortal =
+    target.closest('.ant-select-dropdown') ||
+    target.closest('.ant-picker-dropdown') ||
+    target.closest('.ant-dropdown') ||
+    target.closest('.ant-drawer') ||
+    target.closest('.ant-tooltip') ||
+    target.closest('.ant-modal');
+
+  if (isInPortal) return true;
+
+  const tag = target.tagName;
+  return (
+    tag === 'INPUT' ||
+    tag === 'TEXTAREA' ||
+    tag === 'SELECT' ||
+    tag === 'BUTTON' ||
+    !!target.closest('.ant-select') ||
+    !!target.closest('.ant-picker') ||
+    !!target.closest('.ant-input-number') ||
+    !!target.closest('.ant-checkbox') ||
+    !!target.closest('.ant-radio') ||
+    !!target.closest('.ant-switch') ||
+    !!target.closest('.ant-slider') ||
+    !!target.closest('.ant-rate') ||
+    !!target.closest('.ant-upload') ||
+    !!target.closest('.sha-form-cell') ||
+    !!target.closest('[contenteditable="true"]')
+  );
+};
 
 interface EntityForm {
   entityType: string | IEntityTypeIdentifier;
@@ -111,8 +143,6 @@ export const DataList: FC<IDataListProps> = ({
   interface IFormIdDictionary {
     [key: string]: Promise<FormFullName>;
   }
-
-  const stylesAsCSS = isDefined(style) ? jsonSafeParse<CSSProperties>(style) ?? {} : {};
 
   const loadedFormId = useRef<IFormIdDictionary>({});
   if (skipCache)
@@ -409,7 +439,7 @@ export const DataList: FC<IDataListProps> = ({
       if (formSelectionMode === 'expression') {
         fId = getFormIdFromExpression(item);
         // Use the form ID itself as the entity type to ensure unique caching per form
-        formEntityType = fId ? ConfigurableItemIdentifierToString(fId) : '$expressionForm$';
+        formEntityType = fId ? configurableItemIdentifierToString(fId) : '$expressionForm$';
       }
       if (isDefined(formEntityType) && (isDefined(fId) || isDefined(fType)))
         isReady = getEntityForm(formEntityType, fId, fType, entityFormInfo) && isReady;
@@ -434,7 +464,7 @@ export const DataList: FC<IDataListProps> = ({
     }
     if (formSelectionMode === 'expression') {
       const expressionFormId = getFormIdFromExpression(item);
-      formEntityType = expressionFormId ? ConfigurableItemIdentifierToString(expressionFormId) : '$expressionForm$';
+      formEntityType = expressionFormId ? configurableItemIdentifierToString(expressionFormId) : '$expressionForm$';
     }
 
     const entityForm = entityForms.current.find((x) => isDefined(formEntityType) && isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
@@ -504,7 +534,8 @@ export const DataList: FC<IDataListProps> = ({
       );
     }
 
-    const dblClick = (): boolean => {
+    const dblClick = (e: React.MouseEvent<HTMLDivElement>): boolean => {
+      if (isInteractiveTarget(e.target)) return false;
       if (props.dblClickActionConfiguration) {
         // TODO: implement generic context collector
         const evaluationContext = {
@@ -532,7 +563,7 @@ export const DataList: FC<IDataListProps> = ({
 
     return (
       <AttributeDecorator attributes={attributes}>
-        <div onDoubleClick={dblClick}>
+        <div onDoubleClick={dblClick} style={{ width: '100%' }}>
           <DataListItemRenderer
             isNewObject={false}
             markup={entityForm.formConfiguration.markup}
@@ -623,10 +654,10 @@ export const DataList: FC<IDataListProps> = ({
         style={computedGroupStyle}
       >
         <Collapse.Panel header={<span style={computedGroupStyle}>{title}</span>} key="1" style={computedGroupStyle}>
-          {group.$childs.map((child, index, records) => {
+          {group.$childs.map((child, index) => {
             return isGroup(child)
               ? renderGroup(child, index)
-              : renderRow(child.row, child.index, records.length - 1 === index);
+              : renderRow(child.row, child.index);
           })}
         </Collapse.Panel>
       </Collapse>
@@ -634,7 +665,9 @@ export const DataList: FC<IDataListProps> = ({
   };
 
 
-  const renderRow = (item: ITableRowData, index: number, isLastItem: boolean): ReactElement => {
+  const renderRow = (item: ITableRowData, index: number): ReactElement => {
+    const stylesAsCSS = style as CSSProperties;
+
     const hasBorder = (): boolean => {
       const borderProps: (keyof CSSProperties)[] = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
       return borderProps.some((prop) => {
@@ -652,7 +685,7 @@ export const DataList: FC<IDataListProps> = ({
     const itemStyles: CSSProperties = {
       ...(stylesAsCSS),
       ...(orientation === 'horizontal' && { flexShrink: 0 }),
-      ...(orientation === 'wrap' && showBorder && {
+      ...(orientation === 'wrap' && showBorder && !hasBorder() && {
         border: '1px solid #d3d3d3',
         borderRadius: '8px',
       }),
@@ -661,8 +694,15 @@ export const DataList: FC<IDataListProps> = ({
       }),
     };
 
+    const wrapperStyle: CSSProperties =
+      orientation === 'horizontal'
+        ? { flex: '0 0 auto', width: itemWidth, overflow: 'visible' }
+        : orientation === 'wrap'
+          ? { flex: `0 0 ${itemWidth}`, width: itemWidth, overflow: 'visible' }
+          : { flex: '0 0 100%', overflow: 'visible' };
+
     return (
-      <div key={`row-${index}`}>
+      <div key={`row-${index}`} style={wrapperStyle}>
         <ConditionalWrap
           condition={selectionMode === 'multiple'}
           wrap={(children) => (
@@ -682,14 +722,25 @@ export const DataList: FC<IDataListProps> = ({
               orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem,
               { selected },
             )}
-            onClick={() => {
-              // For single and multiple selection modes, trigger selection when clicking on row
-              if (selectionMode === 'single' || selectionMode === 'multiple') {
+            onClick={(e) => {
+              // Skip selection/click events when interacting with form fields (dropdown, picker, etc.)
+              // or content rendered in portals — otherwise inline-editing clicks toggle row selection
+              // and, in multiple-select mode, double-toggle via the wrapping Checkbox label.
+              if (isInteractiveTarget(e.target)) {
+                e.stopPropagation();
+                return;
+              }
+              // In multiple mode the wrapping Checkbox handles selection via onChange
+              if (selectionMode === 'single') {
                 onSelectRowLocal(index, item);
               }
-              // Trigger onListItemClick event
               if (onListItemClick) {
                 onListItemClick(index, item);
+              }
+            }}
+            onDoubleClick={(e) => {
+              if (isInteractiveTarget(e.target)) {
+                e.stopPropagation();
               }
             }}
             onMouseEnter={() => {
@@ -698,17 +749,11 @@ export const DataList: FC<IDataListProps> = ({
                 onListItemHover(index, item);
               }
             }}
-            style={{ ...itemStyles, width: orientation === 'wrap' ? 'unset' : itemStyles.width, overflow: 'auto' }}
+            style={{ ...itemStyles, width: orientation === 'wrap' ? '100%' : itemStyles.width, overflow: 'auto' }}
           >
             {rows.current.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>
-        {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
-          <Divider
-            style={{ margin: '10px', width: itemStyles.width }}
-            className={classNames(styles.shaDatalistComponentDivider, { selected })}
-          />
-        ))}
       </div>
     );
   };
@@ -743,10 +788,22 @@ export const DataList: FC<IDataListProps> = ({
   const updateContent = (): void => {
     setContent(groups
       ? groups.map((item, index) => renderGroup(item, index))
-      : records.map((item, index) => renderRow(item, index, records.length - 1 === index)),
+      : records.map((item, index) => renderRow(item, index)),
     );
   };
 
+
+  const rawItemWidth =
+    (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
+  const isFixedWidth = (val: unknown): boolean => {
+    if (val === undefined || val === null || val === '') return false;
+    if (typeof val === 'number') return true;
+    const s = String(val).trim().toLowerCase();
+    return s !== 'auto' && s !== 'unset' && s !== 'inherit' && s !== 'initial' && s !== 'none';
+  };
+  const itemWidth = isFixedWidth(rawItemWidth)
+    ? (typeof rawItemWidth === 'number' ? `${rawItemWidth}px` : rawItemWidth)
+    : '300px';
 
   const getContainerStyles = (): CSSProperties => {
     const containerStyles: CSSProperties = {
@@ -755,15 +812,6 @@ export const DataList: FC<IDataListProps> = ({
       ...fcContainerStyles.stylingBoxAsCSS,
       ...fcContainerStyles.dimensionsStyles,
     };
-
-    const rawItemWidth =
-      stylesAsCSS.width ?? props.container?.dimensions?.width;
-    const itemWidth =
-      rawItemWidth !== undefined
-        ? typeof rawItemWidth === 'number'
-          ? `${rawItemWidth}px`
-          : rawItemWidth
-        : '300px';
 
     switch (orientation) {
       case 'horizontal':
@@ -778,9 +826,10 @@ export const DataList: FC<IDataListProps> = ({
       case 'wrap':
         return {
           ...containerStyles,
-          display: 'grid',
-          gridTemplateColumns: `repeat(auto-fill, ${itemWidth})`,
-          alignItems: 'start',
+          width: '100%',
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'flex-start',
         };
 
       case 'vertical':
@@ -853,22 +902,7 @@ export const DataList: FC<IDataListProps> = ({
             </Show>
 
             <Show when={records.length > 0}>
-              {React.Children.map(content, (child, index) => {
-                const childProps: object = isDefined(child.props) && typeof (child.props) === "object"
-                  ? child.props as object
-                  : {};
-                const childStyle = "style" in childProps && isDefined(childProps.style) && typeof (childProps.style) === "object"
-                  ? childProps.style as CSSProperties
-                  : {};
-                return React.cloneElement(child, {
-                  key: child.key || index,
-                  style: {
-                    ...childStyle,
-                    overflow: 'visible',
-                    flex: '0 0 100%',
-                  },
-                });
-              })}
+              {content}
             </Show>
           </div>
         </ShaSpin>

@@ -32,6 +32,7 @@ export interface IStatusTagProps {
   color: string;
   mappings?: IStatusMappings | undefined;
   style?: CSSProperties | undefined;
+  readOnly?: boolean;
 }
 
 export const StatusTag: FC<IStatusTagProps> = ({
@@ -40,8 +41,9 @@ export const StatusTag: FC<IStatusTagProps> = ({
   color,
   mappings = DEFAULT_STATUS_TAG_MAPPINGS,
   style,
+  readOnly,
 }) => {
-  const { styles } = useStyles();
+  const { styles } = useStyles({ readOnly });
   const memoized = useMemo(() => {
     if (!override && (typeof value === 'undefined' || value === null) && !color) {
       return {};

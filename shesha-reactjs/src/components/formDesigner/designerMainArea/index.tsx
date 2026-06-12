@@ -1,5 +1,5 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { ConditionalMetadataProvider, EMPTY_FLAT_COMPONENTS_STRUCTURE, useShaFormInstance } from '@/providers';
+import { ConditionalMetadataProvider, useShaFormInstance } from '@/providers';
 import { useFormDesigner, useFormDesignerFormMode, useFormDesignerReadOnly, useFormDesignerSelectedComponent, useFormDesignerSettings } from '@/providers/formDesigner';
 import React, { FC, useMemo, useEffect, useCallback } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
@@ -20,44 +20,28 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const readOnly = useFormDesignerReadOnly();
   const formSettings = useFormDesignerSettings();
   const formMode = useFormDesignerFormMode();
-  const shaForm = useShaFormInstance();
-  const { antdForm: form } = shaForm;
+  const { antdForm } = useShaFormInstance();
   const { styles } = useStyles();
   const { deleteComponent, settingsPanelElement } = useFormDesigner();
   const component = useFormDesignerSelectedComponent();
 
   const selectedComponentId = component?.id;
 
-  useEffect(() => {
-    if (shaForm) {
-      shaForm.applyMarkupAsync({
-        formFlatMarkup: shaForm.flatStructure ?? EMPTY_FLAT_COMPONENTS_STRUCTURE,
-        formSettings: formSettings,
-      });
-    }
-  }, [formSettings, shaForm]);
-
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (readOnly || formMode !== 'designer' || event.repeat) return;
 
     const isDelete = event.key === 'Delete';
     const isBackspace = event.key === 'Backspace';
-
     if (!isDelete && !isBackspace) return;
 
     // Ignore if user is typing in an input, textarea, or contenteditable element
     const target = event.target as HTMLElement;
-    const isEditing =
-      target.tagName === 'INPUT' ||
-      target.tagName === 'TEXTAREA' ||
-      target.isContentEditable;
-
+    const isEditing = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
     if (isEditing) return;
 
     // Ignore if focus is inside the properties/settings panel
-    if (settingsPanelElement && settingsPanelElement.contains(target)) {
+    if (settingsPanelElement && settingsPanelElement.contains(target))
       return;
-    }
 
     if (selectedComponentId) {
       event.preventDefault();
@@ -103,7 +87,7 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
         )}
       >
         <ConditionalMetadataProvider modelType={formSettings.modelType}>
-          <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
+          <ConfigurableFormRenderer form={antdForm} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
           </ConfigurableFormRenderer>
         </ConditionalMetadataProvider>
       </ConditionalWrap>

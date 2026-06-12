@@ -1,52 +1,32 @@
 import { toCamelCase } from "@/utils/string";
-import { IComponentApiActions, IComponentApiDescription, ComponentApiProperty } from "./model";
+import { IComponentApi, IComponentApiDescription, ComponentApiProperty } from "./model";
 
-export class ComponentApiInstance implements IComponentApiActions {
-  private parent?: IComponentApiActions | undefined;
+export class ComponentApiInstance implements IComponentApi {
+  private parent?: IComponentApi | undefined;
+
+  private nestedApis: Map<string, IComponentApi>;
 
   private componentApis: Map<string, IComponentApiDescription>;
 
-  id: string;
+  private _components: Record<string, Record<string, unknown>> = {};
 
-  constructor(id: string, parent?: IComponentApiActions) {
-    this.id = id;
-    this.parent = parent;
-    this.componentApis = new Map<string, IComponentApiDescription>();
+  public get components(): Record<string, Record<string, unknown>> {
+    return this._components;
   }
 
-  // ToDo: AS - review component naming rules, there are can be duplicates and incorrect names
-  updateApi<T extends object = Record<string, unknown>>(api: IComponentApiDescription<T>, properties?: ComponentApiProperty<T>[]): void {
-    const componentName = toCamelCase(api.componentName, { keepLeadingSeparators: false });
-    if (!componentName || !api.id) return;
-    const localApi = (this.componentApis.get(api.id) ?? { id: api.id }) as IComponentApiDescription<T>;
-    if (localApi.api === undefined) localApi.api = { } as T;
-    localApi.componentName = componentName;
-    if (api.typeDefinition)
-      localApi.typeDefinition = api.typeDefinition;
-    if (api.componentModel)
-      localApi.componentModel = api.componentModel;
-    if (api.rawComponentModel)
-      localApi.rawComponentModel = api.rawComponentModel;
-    if (api.metadata)
-      localApi.metadata = api.metadata;
-    for (const key in api.api) {
-      if (Object.prototype.hasOwnProperty.call(api.api, key)) {
-        // update api values and properties
-        delete localApi.api[key];
-        localApi.api[key] = api.api[key];
-      }
-    }
-    properties?.forEach((property) => this.createApiProperty(localApi.api as T, { name: property.name, getter: property.getter, setter: property.setter }));
-    this.componentApis.set(api.id, localApi);
-  };
+  id: string;
 
-  removeApi(id: string): void {
-    this.componentApis.delete(id);
-  };
+  constructor(id: string, parent?: IComponentApi) {
+    this.id = id;
+    this.parent = parent;
+    this.nestedApis = new Map<string, IComponentApi>();
+    this.componentApis = new Map<string, IComponentApiDescription>();
+    if (this.parent) this.parent.registerNestedApi(this);
+  }
 
-  getApi<PT extends Record<string, unknown>>(componentNameOrId: string): IComponentApiDescription<PT> | undefined {
-    return (Array.from(this.componentApis.values()).find((x) => x.componentName === componentNameOrId) ?? this.componentApis.get(componentNameOrId)) as IComponentApiDescription<PT> | undefined;
-  };
+  registerNestedApi(api: IComponentApi): void {
+    this.nestedApis.set(api.id, api);
+  }
 
   getComponents(): IComponentApiDescription[] {
     const parentList = this.parent?.getComponents();
@@ -60,17 +40,78 @@ export class ComponentApiInstance implements IComponentApiActions {
     return list;
   };
 
-  createApiProperty<PT extends object = Record<string, unknown>>(data: PT, property: ComponentApiProperty<PT>): void {
+  refreshComponents(): void {
+    this._components = {};
+    const components = this.getComponents();
+    components.forEach((component) => {
+      if (component.api === undefined || !component.componentName) return;
+      if (this._components[component.componentName]) {
+        console.warn(`Duplicate componentName "${component.componentName}" detected. The earlier component's API will be overwritten.`);
+      }
+      this._components[component.componentName] = component.api;
+    });
+
+    this.nestedApis.forEach((api) => api.refreshComponents());
+  };
+
+  // ToDo: AS - review component naming rules, there are can be duplicates and incorrect names
+  updateApi<T extends object = Record<string, unknown>>(api: IComponentApiDescription<T>): void {
+    const componentName = toCamelCase(api.componentName, { keepLeadingSeparators: false });
+    if (!componentName || !api.id) return;
+    const existsApi = this.componentApis.get(api.id);
+    const localApi = (existsApi ?? { id: api.id }) as IComponentApiDescription<T>;
+    if (localApi.api === undefined) localApi.api = { } as T;
+    localApi.componentName = componentName;
+    if (api.typeDefinition && (localApi.typeDefinition === undefined || !api.skipUpdateTypeDefinitionIfExists))
+      // Component APIs are always nullable because they may not have been initialized yet at some point in the lifecycle.
+      localApi.typeDefinition = { ...api.typeDefinition };
+    if (api.componentModel)
+      localApi.componentModel = api.componentModel;
+    if (api.rawComponentModel)
+      localApi.rawComponentModel = api.rawComponentModel;
+    if (api.metadata)
+      localApi.metadata = api.metadata;
+    if (api.isInput)
+      localApi.isInput = api.isInput;
+    if (localApi.propertiesLevel === undefined) localApi.propertiesLevel = {};
+    for (const key in api.api) {
+      if (Object.prototype.hasOwnProperty.call(api.api, key) && (localApi.propertiesLevel[key] ?? 0) <= api.level) {
+        // update api values and properties
+        // Remove any existing property descriptor before reassignment
+        // to ensure clean override of getters/setters
+        delete localApi.api[key];
+        localApi.api[key] = api.api[key];
+        localApi.propertiesLevel[key] = api.level;
+      }
+    }
+    api.properties?.forEach((property) => {
+      if (localApi.propertiesLevel === undefined) localApi.propertiesLevel = {};
+      if (localApi.api && (localApi.propertiesLevel[String(property.name)] ?? 0) <= api.level && (!(property.name in localApi.api) || !property.skipIfExists)) {
+        this.createOrUpdateApiProperty(localApi.api as T, { name: property.name, getter: property.getter, setter: property.setter });
+        localApi.propertiesLevel[String(property.name)] = api.level;
+      }
+    });
+    this.componentApis.set(api.id, localApi as IComponentApiDescription);
+
+    if (!existsApi)
+      this.refreshComponents();
+  };
+
+  removeApi(id: string): void {
+    this.componentApis.delete(id);
+    this.refreshComponents();
+  };
+
+  getApi<PT extends Record<string, unknown>>(componentNameOrId: string): IComponentApiDescription<PT> | undefined {
+    return (Array.from(this.componentApis.values()).find((x) => x.componentName === componentNameOrId) ?? this.componentApis.get(componentNameOrId)) as IComponentApiDescription<PT> | undefined;
+  };
+
+  createOrUpdateApiProperty<PT extends object = Record<string, unknown>>(data: PT, property: ComponentApiProperty<PT>): void {
+    const oldSetter = Object.getOwnPropertyDescriptor(data, property.name)?.set;
+    const oldGetter = Object.getOwnPropertyDescriptor(data, property.name)?.get;
     Object.defineProperty(data, property.name, {
-      get() {
-        return property.getter();
-      },
-      set(value: PT[keyof PT]) {
-        if (property.setter)
-          property.setter(value);
-        else
-          console.warn(`Property "${String(property.name)}" is read-only`);
-      },
+      get: property.getter ?? oldGetter ?? (() => console.warn(`Getter is not configured for ${String(property.name)}`)),
+      set: property.setter ?? oldSetter ?? (() => console.warn(`Setter is not configured for ${String(property.name)}`)),
       enumerable: true,
       configurable: true,
     });

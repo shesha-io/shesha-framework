@@ -16,6 +16,7 @@ export const useDatasetInstance = (repository: IRepository): IDatasetInstance =>
       storage: asyncStorage,
     });
   });
+  instance.updateRepository(repository);
 
   return instance;
 };

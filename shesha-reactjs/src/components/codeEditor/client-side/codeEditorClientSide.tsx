@@ -17,7 +17,7 @@ import { FileTree } from "./fileTree/fileTree";
 import { buildCodeEditorEnvironmentAsync } from "./codeFiles";
 import { useAsyncMemo } from "@/hooks/useAsyncMemo";
 import { CodeEditorLoadingProgressor } from "../loadingProgressor";
-import { Environment } from "@/publicJsApis/metadataBuilder";
+import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 import { useIsDevMode } from "@/hooks/useIsDevMode";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
 
@@ -211,6 +211,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
       allowNonTsExtensions: true,
       baseUrl: './',
       allowSyntheticDefaultImports: true,
+      strictNullChecks: true,
     });
   };
 
@@ -294,6 +295,32 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const { template } = codeEditorEnvironment;
     if (template && availableConstants && typeof (availableConstants) !== "function" && asPropertiesArray(availableConstants.properties, []).length > 0)
       editor.trigger(null, 'editor.fold', { selectionLines: [0] });
+
+    const model = editor.getModel();
+    const applyDeprecatedDecorations = (): void => {
+      const markers = monaco.editor.getModelMarkers({ resource: model.uri });
+      const deprecatedMarkers = markers.filter((m) => (
+        (
+          (typeof m.code === 'string' && m.code === '6385') ||
+          (typeof m.code === 'object' && m.code.value === '6385') ||
+          m.message.includes('deprecated')
+        ) &&
+        m.severity !== Number(monaco.MarkerSeverity.Warning)
+      ));
+      let changedMarkers = false;
+      deprecatedMarkers.forEach((marker) => {
+        marker.severity = monaco.MarkerSeverity.Warning;
+        changedMarkers = true;
+      });
+      if (changedMarkers) {
+        monaco.editor.removeAllMarkers('typescript');
+        monaco.editor.setModelMarkers(model, 'typescript', markers);
+      }
+    };
+
+    monaco.editor.onDidChangeMarkers(() => applyDeprecatedDecorations());
+    model.onDidChangeContent(() => setTimeout(applyDeprecatedDecorations, 100));
+    setTimeout(applyDeprecatedDecorations, 500);
   };
 
   const onExplorerClick = (): void => {

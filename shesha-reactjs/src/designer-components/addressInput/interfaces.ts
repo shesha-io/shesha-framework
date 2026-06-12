@@ -8,4 +8,5 @@ export interface IAddressInputComponentProps extends IConfigurableFormComponent 
   longitudePropertyName?: string;
   defaultZoom?: number;
   mapHeight?: number;
+  mapWidth?: number;
 }

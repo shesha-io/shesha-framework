@@ -8,6 +8,7 @@ import { evaluateString } from '@/providers/form/utils';
 import { getUrlKeyParam } from '@/utils';
 import { getDisplayNameOrUndefined, getStringPropertyOrUndefined, getValueByPropertyName, unsafeGetValueByPropertyName } from '@/utils/object';
 import { Select, Spin, Typography, type GetRef } from 'antd';
+import DOMPurify from 'dompurify';
 import { isEqual, uniqWith } from 'lodash';
 import QueryString from 'qs';
 import React, { ReactNode, useEffect, useId, useMemo, useRef, useState } from 'react';
@@ -272,7 +273,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
     const label = isNullOrWhiteSpace(rawLabel) || typeof rawLabel === 'object' ? '' : String(rawLabel);
     return (
       <Select.Option value={key} key={index} data={row} title={label}>
-        <span dangerouslySetInnerHTML={{ __html: label }} />
+        <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(label) }} />
       </Select.Option>
     );
   };

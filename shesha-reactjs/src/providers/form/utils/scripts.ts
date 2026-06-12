@@ -87,26 +87,12 @@ export const executeScript = async <TResult, TArgs extends object = object>(
     throw new Error('Expression must be defined');
 
   const functionBody = `
-    with(context) {
+    with(argsDefinition) {
       ${expression}
     }
   `;
-  const argsDefinition = 'context';
 
-  /*
-  let argsDefinition = '';
-  const argList: unknown[] = [];
-  for (const argumentName in expressionArgs) {
-    if (expressionArgs.hasOwnProperty(argumentName)) {
-      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-      argList.push(expressionArgs[argumentName]);
-    }
-  }
-  */
-
-  const asyncFn = new AsyncFunction(argsDefinition, functionBody) as AsyncFunctionWithArgs<TArgs, TResult>;
-
+  const asyncFn = new AsyncFunction('argsDefinition', functionBody) as AsyncFunctionWithArgs<TArgs, TResult>;
   const awaiter = asyncFn.apply(null, [expressionArgs]) as Promise<TResult>;
-
   return await awaiter;
 };

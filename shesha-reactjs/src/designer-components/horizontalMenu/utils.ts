@@ -1,4 +1,4 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleType } from '@/providers/form/models';
 
 export const defaultStyles = (): IStyleType => {
   return {
@@ -17,13 +17,6 @@ export const defaultStyles = (): IStyleType => {
       radiusType: 'all',
     },
     shadow: {
-      color: '#000000',
-      offsetX: 0,
-      offsetY: 0,
-      blurRadius: 0,
-      spreadRadius: 0,
-    },
-    menuItemShadow: {
       color: '#000000',
       offsetX: 0,
       offsetY: 0,

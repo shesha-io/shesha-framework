@@ -47,6 +47,14 @@ namespace Shesha.Configuration.Security
         public int MobileLoginPinLifetime { get; set; }
 
         /// <summary>
+        /// Minimum seconds that must elapse between consecutive OTP send requests for the same
+        /// user. Mitigates SMS-flooding / toll-fraud abuse against the SMS gateway. Set to 0 to disable.
+        /// </summary>
+        [Range(0, int.MaxValue)]
+        [Display(Name = "OTP send cooldown (sec)")]
+        public int OtpCooldownSeconds { get; set; }
+
+        /// <summary>
         /// Use reset password via security questions
         /// </summary>
         public bool UseResetPasswordViaSecurityQuestions { get; set; }
@@ -61,6 +69,12 @@ namespace Shesha.Configuration.Security
         /// </summary>
         [Display(Name = "Default endpoint access", Description = "Used for 'Inherited' endpoint access")]
         public RefListPermissionedAccess DefaultEndpointAccess { get; set; }
+
+        /// <summary>
+        /// Default endpoint permissons
+        /// </summary>
+        [Display(Name = "Default endpoint permissions", Description = "Used for 'Inherited' endpoint access")]
+        public List<string> DefaultEndpointPermissions{ get; set; }
 
     }
 }

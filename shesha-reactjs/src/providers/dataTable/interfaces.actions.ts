@@ -59,6 +59,7 @@ interface _DataActions {
    * Get current repository of the datatable
    */
   getRepository: () => IRepository;
+  updateRepository: (repository: IRepository) => void;
   registerDataFetchDependency: (ownerId: string, dependency: DataFetchDependency) => void;
   unregisterDataFetchDependency: (ownerId: string) => void;
   /**

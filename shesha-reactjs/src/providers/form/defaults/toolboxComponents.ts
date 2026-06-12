@@ -17,6 +17,7 @@ import DynamicView from '@/designer-components/dynamicView';
 import EditableTagGroup from '@/designer-components/editableTagGroup';
 import EndpointsAutocompleteComponent from '@/designer-components/endpointsAutocomplete/endpointsAutocomplete';
 import EntityPickerComponent from '@/designer-components/entityPicker';
+import ExpressionEditorComponent from '@/designer-components/expressionEditor';
 import FormAutocompleteComponent from '@/designer-components/formAutocomplete';
 import NotificationAutocompleteComponent from '@/designer-components/notificationAutocomplete';
 import IconPicker from '@/designer-components/iconPicker';
@@ -139,6 +140,7 @@ export const getToolboxComponents = (
         NumberFieldComponent,
         TextFieldComponent,
         TextAreaComponent,
+        ExpressionEditorComponent,
         Checkbox,
         CheckboxGroup,
         RadioComponent,
@@ -167,7 +169,6 @@ export const getToolboxComponents = (
         Image,
         RichTextEditor,
         Markdown,
-        PasswordCombo,
         Progress,
         RefListStatusComponent,
         StatusTag,
@@ -236,6 +237,7 @@ export const getToolboxComponents = (
         Toolbar,
         List,
         EditableTagGroup,
+        PasswordCombo,
         FormAutocompleteComponent,
         ReferenceListAutocompleteComponent,
         NotificationAutocompleteComponent,

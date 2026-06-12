@@ -317,7 +317,7 @@ const DataListCrudProvider = <TValue extends object = object>(props: PropsWithCh
     antdForm: form,
     form: undefined,
     init: (form) => {
-      form.initByMarkup({
+      form.initFormByMarkup({
         formFlatMarkup: formFlatMarkup,
         formSettings: formSettings,
       }).catch((error) => {
@@ -325,6 +325,12 @@ const DataListCrudProvider = <TValue extends object = object>(props: PropsWithCh
       });
     },
   });
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
+      void shaForm.triggerEvents();
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status]);
 
   return (
     <ShaFormProvider shaForm={shaForm}>

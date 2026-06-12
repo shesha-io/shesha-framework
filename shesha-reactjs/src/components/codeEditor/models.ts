@@ -4,7 +4,7 @@ import { CodeLanguages } from "@/designer-components/codeEditor/types";
 import { IObjectMetadata } from "@/interfaces";
 import { CSSProperties } from "react";
 import { IArrayMetadata, IEntityMetadata, IMetadata } from "@/interfaces/metadata";
-import { Environment } from "@/publicJsApis/metadataBuilder";
+import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 import { isDefined } from "@/utils/nullables";
 
 export interface IHasCodeTemplate {

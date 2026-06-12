@@ -3,7 +3,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
 import React from 'react';
-import { IFullAuditedEntity } from '@/publicJsApis/entities';
+import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { ListItemWithId } from '@/components/listEditor/models';
 import { isDefined } from '@/utils/nullables';
 import { EditMode, IStyleType } from '../form/models';

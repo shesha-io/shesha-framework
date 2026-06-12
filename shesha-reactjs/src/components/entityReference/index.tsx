@@ -7,18 +7,14 @@ import {
   ButtonGroupItemProps,
   FormIdentifier,
   useConfigurableActionDispatcher,
-  useFormOrUndefined,
-  useGlobalState,
   useHttpClient,
   useMetadataDispatcher,
   useSheshaApplication,
 } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { getFormApi } from '@/providers/form/formApi';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { App, Button, Spin } from 'antd';
-import moment from 'moment';
 import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { addPx, capPercentageWidth } from '@/utils/style';
@@ -97,12 +93,7 @@ export interface IEntityReferenceProps {
 
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
-  const { globalState } = useGlobalState();
-  const { notification, message } = App.useApp();
-
-  const localForm = useFormOrUndefined();
-  const formData = localForm?.formData;
-  const formMode = localForm?.formMode;
+  const { notification } = App.useApp();
 
   const { getEntityFormIdAsync } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -281,13 +272,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     const evaluationContext = {
       ...executionContext,
       entityReference: { id: entityId, entity: props.value },
-      data: formData,
-      moment: moment,
-      form: localForm ? getFormApi(localForm) : undefined,
-      formMode: formMode,
-      http: httpClient,
-      message: message,
-      globalState: globalState,
     };
 
     void executeAction({
@@ -299,12 +283,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     executionContext,
     entityId,
     props.value,
-    formData,
-    formMode,
-    localForm,
-    httpClient,
-    message,
-    globalState,
     formIdentifier,
     props.handleSuccess,
     props.handleFail,

@@ -37,7 +37,6 @@ export const useHorizontalMenuDropdownStyles = ({
       existingStyle.remove();
     }
 
-    const customItemStyle = convertJsonToCss(itemStyle);
     const customStyleOnHover = convertJsonToCssWithImportant(styleOnHover);
     const customStyleOnSelected = convertJsonToCssWithImportant(styleOnSelected);
     const customStyleOnSubMenu = convertJsonToCss(styleOnSubMenu);
@@ -65,13 +64,13 @@ export const useHorizontalMenuDropdownStyles = ({
         color: ${colors?.subItemColor || BLACK_CLR};
         ${colors?.subItemBackground ? `background: ${colors?.subItemBackground};` : ''}
         ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : 'currentColor'};
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover,
@@ -79,6 +78,17 @@ export const useHorizontalMenuDropdownStyles = ({
         color: ${colors?.hoverItemColor || BLACK_CLR} !important;
         background: ${colors?.hoverItemBackground || 'white'} !important;
         ${customStyleOnHover || ''}
+      }
+
+      /* Menu labels are wrapped in <Link>/<a> with class .nav-links-renderer.
+         Anchors don't inherit color by default — force inherit so the visible text always
+         picks up whatever color is on the parent .ant-menu-item (base, hover, or custom
+         styleOnHover overrides). */
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item a,
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item .nav-links-renderer,
+      .horizontal-menu-${menuId}-dropdown .ant-menu-item a,
+      .horizontal-menu-${menuId}-dropdown .ant-menu-item .nav-links-renderer {
+        color: inherit !important;
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover .anticon,
@@ -99,23 +109,28 @@ export const useHorizontalMenuDropdownStyles = ({
         color: ${colors?.subItemColor || BLACK_CLR};
         ${colors?.subItemBackground ? `background: ${colors?.subItemBackground};` : ''}
         ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : 'currentColor'};
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .ant-menu-submenu-arrow {
-        color: ${colors?.subItemColor || BLACK_CLR} !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : `${colors?.subItemColor || BLACK_CLR}`} !important;
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
         color: ${colors?.hoverItemColor || BLACK_CLR} !important;
         background: ${colors?.hoverItemBackground || 'white'} !important;
         ${customStyleOnHover || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title a,
+      .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title .nav-links-renderer {
+        color: inherit !important;
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover .anticon {
@@ -176,19 +191,24 @@ export const useHorizontalMenuDropdownStyles = ({
       /* Leaf items (without children) in submenu popups */
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item {
         ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : 'currentColor'};
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item:hover {
         color: ${colors?.hoverItemColor || BLACK_CLR} !important;
         background: ${colors?.hoverItemBackground || 'white'} !important;
         ${customStyleOnHover || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item a,
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item .nav-links-renderer {
+        color: inherit !important;
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-item:hover .anticon {
@@ -198,23 +218,28 @@ export const useHorizontalMenuDropdownStyles = ({
       /* Submenu items (with children) in submenu popups */
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title {
         ${customMenuItemStyle || ''}
-        ${customItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .anticon {
         margin-right: 10px !important;
         margin-left: 0 !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : 'currentColor'};
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .ant-menu-submenu-arrow {
-        color: ${colors?.subItemColor || BLACK_CLR} !important;
+        color: ${customStyleOnSubMenu ? 'inherit' : `${colors?.subItemColor || BLACK_CLR}`} !important;
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover {
         ${!customStyleOnHover ? `color: ${colors?.hoverItemColor || BLACK_CLR} !important;` : `color: ${colors?.hoverItemColor || BLACK_CLR};`}
         ${!customStyleOnHover ? `background: ${colors?.hoverItemBackground || 'white'} !important;` : ''}
         ${customStyleOnHover || ''}
+      }
+
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title a,
+      .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title .nav-links-renderer {
+        color: inherit !important;
       }
 
       .horizontal-menu-${menuId}-dropdown.ant-menu-submenu-popup .ant-menu-submenu .ant-menu-submenu-title:hover .anticon {

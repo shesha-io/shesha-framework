@@ -3,11 +3,7 @@ import { Form, FormItemProps } from "antd";
 import { IConfigurableFormItemChildFunc } from "./model";
 import { DataBinder } from "@/hocs/dataBinder";
 import { useDataContextManager } from "@/providers/dataContextManager/hooks";
-import { InputComponentApi } from "@/componentsApi/componentApi";
-import { useComponentApi } from "@/providers/componentApi/provider";
-
-import apiCode from "../../../componentsApi/componentApi.ts?raw";
-import { useEffectOnce } from "@/hooks/useEffectOnce";
+import { ComponentApiValueProcessor } from "./componentApiValueProcessor";
 import { isDefined } from "@/utils/nullables";
 
 interface IConfigurableFormItem_ContextProps<TValue = unknown> {
@@ -35,12 +31,10 @@ const isSyntheticEvent = (event: unknown): event is SyntheticEvent => {
 
 export const ConfigurableFormItemContext = <TValue = unknown>(props: IConfigurableFormItem_ContextProps<TValue>): ReactNode => {
   const { componentId, formItemProps, valuePropName, componentName, propertyName, contextName, children } = props;
-  const componentApi = useComponentApi();
   const { getDataContext } = useDataContextManager();
   const { getFieldValue, setFieldValue } = getDataContext(contextName) ?? {};
 
   const value = getFieldValue?.(propertyName) as TValue;
-
   const onChange = (val: unknown): void => {
     if (isSyntheticEvent(val)) {
       const { target } = val;
@@ -55,23 +49,17 @@ export const ConfigurableFormItemContext = <TValue = unknown>(props: IConfigurab
     }
   };
 
-  componentApi?.updateApi<InputComponentApi>(
-    {
-      id: componentId,
-      componentName: componentName,
-      typeDefinition: { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-    },
-    [{ name: 'value', getter: () => value, setter: onChange }],
-  );
-  useEffectOnce(() => () => componentApi?.removeApi(componentId));
-
   return (
     <Form.Item {...formItemProps}>
       <DataBinder<TValue>
         onChange={onChange}
         value={value}
       >
-        {children}
+        {(value, onChange, propertyName) => (
+          <ComponentApiValueProcessor value={value} onChange={onChange} componentName={componentName} propertyName={propertyName} componentId={componentId}>
+            {children}
+          </ComponentApiValueProcessor>
+        )}
       </DataBinder>
     </Form.Item>
   );

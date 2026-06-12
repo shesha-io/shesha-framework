@@ -1,6 +1,6 @@
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { DocumentDefinition, IDocumentInstance, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
-import { ConfigurableItemIdentifierToString, FormFullName } from "@/interfaces";
+import { configurableItemIdentifierToString, FormFullName } from "@/interfaces";
 import { ShaFormProvider } from "@/providers/form/providers/shaFormProvider";
 import { useShaForm } from "@/providers/form/store/shaFormInstance";
 import ParentProvider from "@/providers/parentProvider";
@@ -87,7 +87,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
             formMode={shaForm.formMode}
             formFlatMarkup={shaForm.flatStructure}
             formApi={shaForm.getPublicFormApi()}
-            name={ConfigurableItemIdentifierToString(formId)}
+            name={configurableItemIdentifierToString(formId)}
             isScope
           >
             {children}

@@ -1,22 +1,20 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import { App } from 'antd';
-import moment from 'moment';
 import React from 'react';
 import { IconType } from '@/components/shaIcon';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, IToolboxComponent } from '@/interfaces';
-import { IStyleType, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
+import { IStyleType, useForm, useFormData, useGlobalState } from '@/providers';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValueAsString,
   executeScriptSync,
+  useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { AttachmentsEditorProvider } from '@/providers/storedFiles';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
@@ -28,7 +26,6 @@ import { AdvancedFormats } from '@/interfaces/dataTypes';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
-import { useDataContextManagerActions } from '@/providers/dataContextManager/hooks';
 import { OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
 import { StoredFileModel } from '@/utils/storedFile/models';
 
@@ -174,13 +171,11 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.advanced && dataFormat === AdvancedFormats.fileList,
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
-    const httpClient = useHttpClient();
     const form = useForm();
     const { data } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const { message } = App.useApp();
-    const pageContext = useDataContextManagerActions().getPageContext();
-    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState }) ?? "";
+    const { globalState } = useGlobalState();
+    const executionContext = useAvailableConstantsData();
+    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
     const enabled = !model.readOnly;
 
     const {
@@ -190,14 +185,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const executeScript = (script: string, value: unknown): void => {
       executeScriptSync(script, {
         value,
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState,
-        pageContext,
+        ...executionContext,
       });
     };
 

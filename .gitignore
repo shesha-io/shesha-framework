@@ -314,3 +314,4 @@ storybook-static
 
 /shesha-reactjs/next-env.d.ts
 **/.github/copilot-instructions.md
+*.lscache

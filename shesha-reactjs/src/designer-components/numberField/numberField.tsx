@@ -1,5 +1,5 @@
 import { NumberOutlined } from '@ant-design/icons';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
@@ -22,9 +22,9 @@ import { ShaIcon } from '@/components/shaIcon';
 import { isPropertySettings } from '../_settings/utils/utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { NumberFieldApi } from '../../componentsApi/componentApi';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
@@ -58,14 +58,15 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
 
     const componentApi = useComponentApi();
     const inputRef = useRef<InputNumberRef>(null);
-    componentApi?.updateApi<NumberFieldApi>(
-      {
+    useEffect(() => {
+      componentApi?.updateApi<NumberFieldApi>({
         id: model.id,
         componentName: model.componentName ?? "",
+        level: 3,
         typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         api: { focus: () => inputRef.current?.focus() },
-      },
-    );
+      });
+    }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles({

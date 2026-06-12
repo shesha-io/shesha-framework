@@ -1,6 +1,6 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useGlobalState, useFormData } from '@/providers';
+import { useGlobalState, useFormData, useForm } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { getStyle } from '@/providers/form/utils';
@@ -12,7 +12,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { jsonSafeParse } from '@/utils/object';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, IConfigurableFormComponent {
+export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style' | 'readOnly'>, IConfigurableFormComponent {
   mappings?: string | undefined;
   valueSource?: 'form' | 'manual' | undefined;
 }
@@ -24,6 +24,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   isOutput: true,
   icon: <ArrowsAltOutlined />,
   Factory: ({ model }) => {
+    const { formMode } = useForm();
     const { globalState } = useGlobalState();
     const { data } = useFormData();
 
@@ -66,6 +67,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
             {...props}
             style={getStyle(model.style, data, globalState)}
             value={valueSource === 'form' ? value : props.value}
+            readOnly={formMode === 'readonly'}
           />
         )}
       </ConfigurableFormItem>

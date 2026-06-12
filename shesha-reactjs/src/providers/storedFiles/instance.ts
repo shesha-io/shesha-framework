@@ -1,5 +1,5 @@
 import { DownloadFileArgs, FileListReference, ReplaceFilePayload, StoredFileModel, UploadFileAsAttachmentArgs } from "../../utils/storedFile/models";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { IStoredFileHelper, StoredFileHelper } from "../../utils/storedFile/storedFileHelper";
 import { extractErrorMessage } from "@/utils/errors";
 import { MessageInstance } from 'antd/es/message/interface';
@@ -60,11 +60,6 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
     const files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
     this.#fileList = files.map((file) => storedFileDtoToModel(file));
-    try {
-      this.#onChange?.(this.#fileList);
-    } catch (error) {
-      console.error('AttachmentsEditorInstance.onChange callback failed', error);
-    }
     try {
       this.notifySubscribers(['fileList']);
     } catch (error) {

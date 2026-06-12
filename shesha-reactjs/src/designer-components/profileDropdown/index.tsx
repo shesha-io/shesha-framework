@@ -1,6 +1,6 @@
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { IFullAuditedEntity } from '@/publicJsApis/entities';
+import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import {
   ButtonGroupItemProps,
   IButtonGroup,

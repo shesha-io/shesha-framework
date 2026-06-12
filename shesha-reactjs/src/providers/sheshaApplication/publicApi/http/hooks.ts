@@ -1,7 +1,7 @@
 "use client";
 
 import { useAxiosRequestConfig } from "@/hooks/useAxiosRequestConfig";
-import { HttpClientApi, HttpRequestConfig, HttpResponse } from "@/publicJsApis/httpClient";
+import { HttpClientApi, HttpRequestConfig, HttpResponse } from "@/publicJsApis/apis/httpClient";
 import { useEffect, useState } from "react";
 import axios, { AxiosRequestConfig } from "axios";
 import { isDefined } from "@/utils/nullables";

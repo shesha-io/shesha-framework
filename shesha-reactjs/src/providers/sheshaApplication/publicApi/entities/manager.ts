@@ -1,5 +1,5 @@
 import { IApiEndpoint, StandardEntityActions } from "@/interfaces/metadata";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { EntityConfigurationDto, IEntity, IEntityTypeIdentifier } from "./models";
 import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
 import { ICacheProvider, IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";

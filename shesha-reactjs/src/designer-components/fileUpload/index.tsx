@@ -36,7 +36,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
-    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
+    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) ? {
       ...model.allStyles?.fontStyles,
       ...model.allStyles?.dimensionsStyles,
     } : model.allStyles?.fullStyle;

@@ -1,16 +1,12 @@
-import { setValueByPropertyName } from "@/utils/object";
-import { ConfigurableFormInstance, ISetFormDataPayload } from "./contexts";
-import { FormMode } from "@/generic-pages/dynamic/interfaces";
+import { ISetFormDataPayload } from "./contexts";
 import { FormInstance } from "antd";
-import { IAjaxResponseBase, IErrorInfo, IFormValidationErrors, isEntityMetadata } from "@/interfaces";
+import { FormMode, IAjaxResponseBase, IErrorInfo } from "@/interfaces";
 import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
 import { AxiosResponse } from "axios";
 import { FieldValueSetter } from "@/utils/dotnotation";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
-import { addDelayedUpdateProperty } from "../delayedUpdateProvider";
-import { isDefined } from "@/utils/nullables";
 
 export interface IFormSettings {
   modelType?: string | IEntityTypeIdentifier | undefined;
@@ -86,98 +82,7 @@ export interface IFormApi<Values extends object = object> {
   formArguments?: object | undefined;
   readonly initialValues?: Partial<Values> | undefined;
   readonly parentFormValues?: object | undefined;
-};
-
-export type ConfigurableFormPublicApi<TValues extends object = object> = Pick<ConfigurableFormInstance<TValues>, 'setFormData' | 'form' | 'formSettings' | 'formMode' | 'formData' | 'modelMetadata'> & {
-  shaForm?: IShaFormInstance<TValues>;
-};
-
-class PublicFormApiWrapper<TValues extends object = object> implements IFormApi<TValues> {
-  readonly #form: ConfigurableFormPublicApi<TValues>;
-
-  constructor(form: ConfigurableFormPublicApi<TValues>) {
-    this.#form = form;
-  }
-
-  addDelayedUpdateData = (data: TValues): IDelayedUpdateGroup[] => {
-    const delayedUpdateData = this.#form.shaForm?.getDelayedUpdates() ?? [];
-    if (delayedUpdateData.length > 0)
-      addDelayedUpdateProperty(data, delayedUpdateData);
-
-    return delayedUpdateData;
-  };
-
-  setFieldValue: FieldValueSetter<TValues> = (name, value) => {
-    this.#form.setFormData({
-      values: setValueByPropertyName(this.#form.formData ?? {} as TValues, name.toString(), value, true),
-      mergeValues: true,
-    });
-  };
-
-  setFieldsValue = (values: TValues): void => {
-    this.#form.setFormData({ values, mergeValues: true });
-  };
-
-  clearFieldsValue = (): void => {
-    this.#form.setFormData({ values: {} as TValues, mergeValues: false });
-  };
-
-  submit = (): void => {
-    this.#form.form?.submit();
-  };
-
-  setFormData = (payload: ISetFormDataPayload<TValues>): void => {
-    this.#form.setFormData(payload);
-  };
-
-  getFormData = (): TValues => {
-    return this.#form.formData ?? {} as TValues;
-  };
-
-  setValidationErrors = (payload: IFormValidationErrors): void => {
-    this.#form.shaForm?.setValidationErrors(payload);
-  };
-
-  get formInstance(): FormInstance<TValues> | undefined {
-    // antd form
-    return this.#form.form;
-  }
-
-  get shaForm(): IShaFormInstance<TValues> | undefined {
-    return this.#form.shaForm;
-  }
-
-  get formSettings(): PublicFormSettings {
-    return this.#form.formSettings ? { modelType: this.#form.formSettings.modelType } : {};
-  }
-
-  get formMode(): FormMode {
-    return this.#form.formMode;
-  }
-
-  get data(): TValues | undefined {
-    return this.#form.formData;
-  }
-
-  get defaultApiEndpoints(): IEntityEndpoints {
-    return isDefined(this.#form.modelMetadata) && isEntityMetadata(this.#form.modelMetadata)
-      ? this.#form.modelMetadata.apiEndpoints
-      : {};
-  }
-
-  get initialValues(): object | undefined {
-    return this.#form.shaForm?.initialValues;
-  }
-
-  get parentFormValues(): object | undefined {
-    return this.#form.shaForm?.parentFormValues;
-  }
-
-  get formArguments(): object | undefined {
-    return this.#form.shaForm?.formArguments;
-  }
-}
-
-export const getFormApi = (form: ConfigurableFormPublicApi): IFormApi => {
-  return new PublicFormApiWrapper(form);
+  context: Record<string, unknown> | undefined;
+  /** Form components API */
+  components: Record<string, Record<string, unknown>>;
 };

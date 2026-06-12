@@ -7,7 +7,10 @@ type StylesArgs = {
   color: string | undefined;
   fontSize: number | undefined;
 };
-type StylesResponse = { textField: string };
+type StylesResponse = {
+  textField: string;
+  passwordFieldWrapper: string;
+};
 
 export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, token }, { fontWeight, fontFamily, textAlign, color, fontSize }) => {
   const textField = cx("sha-textField", css`
@@ -22,9 +25,25 @@ export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, to
         :hover {
             border-color: ${token.colorPrimary} !important;
         }
-
   `);
+
+  const passwordFieldWrapper = cx("sha-password-field-wrapper", css`
+    .ant-form-item-explain,
+    .ant-form-item-explain-connected {
+      max-width: var(--sha-password-input-width, 100%);
+      overflow: hidden;
+    }
+
+    .ant-form-item-explain-error {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: default;
+    }
+  `);
+
   return {
     textField,
+    passwordFieldWrapper,
   };
 });

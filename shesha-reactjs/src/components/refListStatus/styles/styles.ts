@@ -1,9 +1,10 @@
-import { createStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 import { CSSObject } from 'antd-style';
 
 type StylesArgs = {
   dimensionsStyles: CSSObject;
   fontStyles: CSSObject;
+  readOnly?: boolean;
 };
 
 type StylesResponse = {
@@ -11,7 +12,7 @@ type StylesResponse = {
   shaStatusTag: string;
 };
 
-export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, { dimensionsStyles, fontStyles }) => {
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, { dimensionsStyles, fontStyles, readOnly }) => {
   const shaStatusTag = 'sha-status-tag';
   const shaStatusTagContainer = cx(
     'sha-status-tag-container',
@@ -19,6 +20,7 @@ export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, 
       display: flex;
       align-items: center;
       width: fit-content;
+      margin: ${readOnly ? `0 ${sheshaStyles.paddingLG}px` : '0'} !important;
       ${dimensionsStyles};
 
       > span {

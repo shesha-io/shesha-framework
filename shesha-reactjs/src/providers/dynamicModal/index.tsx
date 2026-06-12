@@ -4,7 +4,7 @@ import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/p
 import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
-import { createModalAction, openAction, removeModalAction } from './actions';
+import { createModalAction, openAction, removeAllModalsAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
   getShowConfirmationArgumentsForm,
@@ -77,6 +77,19 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const removeModal = useCallback((id: string): void => {
     dispatch(removeModalAction(id));
   }, []);
+
+  const removeAllModals = useCallback((): void => {
+    // Settle any pending Show Dialog promises by invoking each instance's onClose(false)
+    // before clearing state, so awaiting callers reject instead of hanging forever.
+    Object.values(state.instances).forEach((instance) => {
+      try {
+        instance.onClose?.(false);
+      } catch (err) {
+        console.error('Failed to settle modal onClose during removeAllModals', err);
+      }
+    });
+    dispatch(removeAllModalsAction());
+  }, [state]);
 
   const createModal = useCallback(<TValue extends object = object>(modalProps: ICommonModalProps<TValue>): void => {
     dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } as ICommonModalProps }));
@@ -197,7 +210,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <DynamicModalStateContext.Provider value={state}>
-      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }}>
+      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, removeAllModals, modalExists }}>
         <DynamicModalRenderer id="root">
           {children}
         </DynamicModalRenderer>

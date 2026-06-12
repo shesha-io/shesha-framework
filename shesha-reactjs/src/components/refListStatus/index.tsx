@@ -18,6 +18,7 @@ export interface IRefListStatusProps {
   style?: CSSProperties | undefined;
   value?: number | undefined;
   isDesigner?: boolean | undefined;
+  readOnly?: boolean;
 }
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
@@ -29,12 +30,13 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     showReflistName = false,
     style = {},
     isDesigner = false,
+    readOnly,
   } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
   const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };
   const { fontSize, fontWeight, textAlign, color, backgroundColor, backgroundImage, ...rest } = style;
   const fontStyles = { fontSize, fontWeight, textAlign };
-  const { styles } = useStyles({ dimensionsStyles, fontStyles: fontStyles as CSSObject });
+  const { styles } = useStyles({ dimensionsStyles, fontStyles: fontStyles as CSSObject, readOnly });
   const listItem = useReferenceListItem(referenceListId.module, referenceListId.name, value);
 
   if (listItem.error && !listItem.loading) {

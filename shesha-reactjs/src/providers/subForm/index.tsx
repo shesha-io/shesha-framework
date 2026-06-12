@@ -43,7 +43,7 @@ import { IFormApi } from '../form/formApi';
 import { ISetFormDataPayload } from '../form/contexts';
 import { deepMergeValues, setValueByPropertyName } from '@/utils/object';
 import { AxiosResponse } from 'axios';
-import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
+import { configurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { extractAjaxResponse, IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from '../metadataDispatcher/entities/utils';
@@ -540,6 +540,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       ? (parentFormApi.data as Record<string, unknown>)[props.propertyName] as object
       : {},
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
+    context: {},
+    components: {},
   };
 
   return (
@@ -579,7 +581,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             model={props}
             context={contextId}
             isScope
-            name={`SubForm ${componentName || (formId ? ConfigurableItemIdentifierToString(formId) : "")}`}
+            name={`SubForm ${componentName || (formId ? configurableItemIdentifierToString(formId) : "")}`}
             formApi={subFormApi}
             formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
           >

@@ -1,5 +1,4 @@
 import { MetadataProvider } from '@/providers';
-import ComponentApiProvider from '@/providers/componentApi/provider';
 import { FormProvider, ShaForm } from '@/providers/form';
 import { FormIdentifier } from '@/providers/form/models';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
@@ -14,7 +13,7 @@ import {
   Skeleton,
 } from 'antd';
 import { ResultStatusType } from 'antd/lib/result';
-import React, { FC, PropsWithChildren } from 'react';
+import React, { FC, PropsWithChildren, useEffect } from 'react';
 
 export interface IFormProviderWrapperProps {
   formId: FormIdentifier;
@@ -29,7 +28,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
     antdForm: form,
     init: (shaForm) => {
       shaForm.setFormMode("designer");
-      shaForm.initByMarkup({
+      shaForm.initFormByMarkup({
         formSettings,
         formFlatMarkup,
         formArguments: undefined,
@@ -39,6 +38,12 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
       });
     },
   });
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
+      void shaForm.triggerEvents();
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status]);
 
   return (
     <ShaFormProvider shaForm={shaForm}>
@@ -51,15 +56,13 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
           form={form}
           shaForm={shaForm}
         >
-          <ComponentApiProvider id="formDesigner">
-            {formSettings.modelType ? (
-              <MetadataProvider id="designer" modelType={formSettings.modelType}>
-                {children}
-              </MetadataProvider>
-            ) : (
-              <>{children}</>
-            )}
-          </ComponentApiProvider>
+          {formSettings.modelType ? (
+            <MetadataProvider id="designer" modelType={formSettings.modelType}>
+              {children}
+            </MetadataProvider>
+          ) : (
+            <>{children}</>
+          )}
         </FormProvider>
       </ShaForm.MarkupProvider>
     </ShaFormProvider>

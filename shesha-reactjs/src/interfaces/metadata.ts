@@ -7,7 +7,7 @@ import { ConfigurationDto } from "@/providers/configurationItemsLoader/models";
 import { IPropertyMetadata as IPublicPropertyMetadata,
   IMemberType as IPublicMemberType,
   IMemberMetadata as IPublicMemberMetadata,
-} from "@/publicJsApis/metadata";
+} from "@/publicJsApis/apis/metadata";
 
 export interface IEntityTypeIdentifierQueryParams {
   name?: string | undefined;
@@ -28,6 +28,7 @@ export interface SourceFile {
 
 export interface TypeDefinition {
   typeName: string;
+  isNullable?: boolean;
   files: SourceFile[];
 }
 

@@ -60,6 +60,15 @@ export const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto, r
     }
     result.settings.access = normalizedAccess;
     result.settings.permissions = result.settings.permissions ?? dto.permissions;
+    // fall back to the DTO's modelType for forms created with an entity selected
+    // but no template, where the markup's formSettings.modelType is empty (#4986)
+    const hasSettingsModelType =
+      typeof result.settings.modelType === 'string'
+        ? result.settings.modelType.trim().length > 0
+        : result.settings.modelType != null;
+    result.settings.modelType = hasSettingsModelType
+      ? result.settings.modelType
+      : dto.modelType ?? undefined;
   }
 
   return result;

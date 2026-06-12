@@ -3,7 +3,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { CodeLanguages } from './types';
 import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
 import { CodeTemplateSettings } from '@/components/codeEditor/models';
-import { Environment, IMetadataBuilder } from '@/publicJsApis/metadataBuilder';
+import { Environment, IMetadataBuilder } from '@/publicJsApis/apis/metadataBuilder';
 import { IObjectMetadataBuilder as IInternalObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 
 export interface IExecutableCodeEditor {

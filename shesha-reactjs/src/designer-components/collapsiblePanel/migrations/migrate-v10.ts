@@ -4,6 +4,7 @@ import { IConfigurableFormComponent } from "@/providers/form/models";
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
 import { ITextComponentProps } from "@/designer-components/text/models";
 import { ICollapsiblePanelComponentProps } from "../interfaces";
+import { defaultStyles as containerDefaultStyles } from "@/designer-components/container/data";
 import { isNonEmptyArray } from "@/utils/array";
 
 export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: SettingsMigrationContext): ICollapsiblePanelComponentProps => {
@@ -13,14 +14,36 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
   const label = model.label;
   const header = model.header;
   const textContent = typeof label === 'string' ? label : "";
+  // Get default styles for extraArea container
+  const defaultStyles = containerDefaultStyles({
+    direction: "horizontal",
+    flexWrap: "nowrap",
+    display: "flex",
+    alignItems: 'center',
+    flexDirection: "row",
+    gap: "8",
+  } as IContainerComponentProps);
 
+  const defaultHeaderStyles = containerDefaultStyles({
+    ...defaultStyles,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  } as IContainerComponentProps);
 
   // Skip if already migrated to the new structure
   const alreadyMigrated = header?.components?.some(
-    (c: IConfigurableFormComponent) => c.type === "container" && c.componentName === "headerLayout",
+    (c: IContainerComponentProps) => c.type === "container" && c.componentName === "headerLayout",
   );
 
   if (alreadyMigrated) {
+    const headerLayout = header?.components?.find(
+      (c: IContainerComponentProps) => c.type === "container" && c.componentName === "headerLayout",
+    );
+    if (headerLayout && !headerLayout.desktop?.display) {
+      headerLayout.desktop = { ...defaultHeaderStyles, ...headerLayout.desktop };
+      headerLayout.tablet = { ...defaultHeaderStyles, ...headerLayout.tablet };
+      headerLayout.mobile = { ...defaultHeaderStyles, ...headerLayout.mobile };
+    }
     delete model.customHeader;
     delete model.hasCustomHeader;
     return model;
@@ -95,6 +118,10 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
       mark: false,
       italic: false,
       underline: false,
+      dimensions: {
+        width: 'max-content',
+        height: '100%',
+      },
       level: 1,
     } satisfies ITextComponentProps;
 
@@ -108,8 +135,10 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
       parentId: headerLayoutId,
       hidden: false,
       isDynamic: false,
-      direction: "horizontal",
       components: clonedComponents,
+      desktop: { ...defaultStyles },
+      tablet: { ...defaultStyles },
+      mobile: { ...defaultStyles },
     } satisfies IContainerComponentProps;
 
     const headerLayout = {
@@ -122,10 +151,11 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
       parentId: headerId,
       hidden: false,
       isDynamic: false,
-      direction: "horizontal",
-      justifyContent: "space-between",
-      alignItems: "center",
       components: [labelText, extraArea],
+      desktop: { ...defaultHeaderStyles },
+      tablet: { ...defaultHeaderStyles },
+      mobile: { ...defaultHeaderStyles },
+      version: 8,
     } satisfies IContainerComponentProps;
 
     model.header = {

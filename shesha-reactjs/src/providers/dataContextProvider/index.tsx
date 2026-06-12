@@ -4,7 +4,7 @@ import React, { PropsWithChildren, useRef } from "react";
 import { DataContextType, ContextOnChangeData, ContextSetFieldValue, RefreshContext } from "./contexts";
 import DataContextBinder from "./dataContextBinder";
 import { setValueByPropertyName } from "@/utils/object";
-import { IApplicationContext, useAvailableConstantsDataNoRefresh } from "../form/utils";
+import { useAvailableConstantsDataNoRefresh } from "../form/utils";
 import { IShaDataWrapper } from "./contexts/shaDataAccessProxy";
 import { Path } from "@/utils/dotnotation";
 import { GetShaDataContextAccessor, useShaDataContextAccessor } from "./contexts/contextDataAccessor";
@@ -35,48 +35,51 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
     webStorageType,
     initialData,
     metadata,
+    onChangeData,
     getShaDataContextAccessor,
   } = props;
 
   const { onChangeContextData } = useDataContextManagerActions();
   const { executeAction } = useConfigurableActionDispatcher();
-  const allData = useRef<IApplicationContext>(undefined);
-  allData.current = useAvailableConstantsDataNoRefresh({ topContextId: id });
+  const allData = useAvailableConstantsDataNoRefresh({ topContextId: id });
+  const initialDataRef = useRef<Promise<TData> | undefined>(undefined);
+
+  const onChangeAction = (changedData?: Partial<TData>): void => {
+    if (props.onChangeAction?.actionName) {
+      void executeAction({
+        actionConfiguration: props.onChangeAction,
+        argumentsEvaluationContext: { ...allData, changedData },
+      });
+    }
+  };
 
   const onChange: RefreshContext<TData> = (data?: Partial<TData>): void => {
-    if (onChangeData.current)
-      onChangeData.current(data as object, data as object);
+    if (onChangeData)
+      onChangeData(data as TData, data as TData);
     onChangeAction(data);
-    onChangeContextData();
+    onChangeContextData(data);
   };
+
+  const storage = useShaDataContextAccessor<TData>(id, onChange, webStorageType, getShaDataContextAccessor);
 
   const setFieldValue: ContextSetFieldValue<TData> = (name, value): void => {
     storage.setFieldValue(name, value, () => {
       const partial = setValueByPropertyName({} as TData, name.toString(), value, false) as Partial<TData>;
-      if (onChangeData.current)
-        onChangeData.current(partial, partial);
+      if (onChangeData)
+        onChangeData(partial, partial);
       onChangeAction(partial);
-      onChangeContextData();
+      onChangeContextData(partial);
     });
   };
 
   const setData = (changedData: TData): void => {
     storage.setData(changedData, () => {
-      if (onChangeData.current)
-        onChangeData.current(storage.getData(), changedData);
+      if (onChangeData)
+        onChangeData(storage.getData(), changedData);
       onChangeAction(changedData);
-      onChangeContextData();
+      onChangeContextData(changedData);
     });
   };
-
-  const storage = useShaDataContextAccessor<TData>(id, onChange, webStorageType, getShaDataContextAccessor);
-
-  const initialDataRef = useRef<Promise<TData>>(undefined);
-
-  const onChangeData = useRef<ContextOnChangeData>(undefined);
-  if (props.onChangeData) {
-    onChangeData.current = props.onChangeData;
-  }
 
   const getFieldValue = (name: string): unknown => {
     return storage.getFieldValue(name as Path<TData>);
@@ -86,30 +89,22 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
     return storage as IShaDataWrapper<TData>;
   };
 
-  const onChangeAction = (changedData?: Partial<TData>): void => {
-    if (props.onChangeAction?.actionName) {
-      void executeAction({
-        actionConfiguration: props.onChangeAction,
-        argumentsEvaluationContext: { ...allData.current, changedData },
-      });
-    }
-  };
-
   if (initialData && initialDataRef.current === undefined) {
     initialDataRef.current = initialData;
-    initialData.then((data) => {
-      storage.setData(data, () => {
-        if (onChangeData.current)
-          onChangeData.current(data, data);
-        onChangeContextData();
-      });
-      if (props.onInitAction) {
-        void executeAction({
-          actionConfiguration: props.onInitAction,
-          argumentsEvaluationContext: { ...allData.current },
+    initialData
+      .then((data) => {
+        storage.setData(data, () => {
+          if (onChangeData)
+            onChangeData(data, data);
+          onChangeContextData(data);
         });
-      }
-    })
+        if (props.onInitAction) {
+          void executeAction({
+            actionConfiguration: props.onInitAction,
+            argumentsEvaluationContext: { ...allData },
+          });
+        }
+      })
       .catch((error) => {
         console.error('Failed to fetch initial data', error);
       });

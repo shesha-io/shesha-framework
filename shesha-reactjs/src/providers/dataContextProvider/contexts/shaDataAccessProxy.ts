@@ -82,7 +82,7 @@ export const CreateDataAccessor = <TData extends object = object>(
       const propertyName = prop.toString();
       const data = target.getAccessorValue();
       if (isDefined(data) && propertyName in data)
-        return { enumerable: true, configurable: true, writable: true };
+        return Reflect.getOwnPropertyDescriptor(data, propertyName); // { enumerable: true, configurable: true, writable: true };
       return undefined;
     },
   });

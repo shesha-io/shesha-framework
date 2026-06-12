@@ -3,11 +3,12 @@ import { reducer } from './reducer';
 import { setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction, setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, DeviceTypes, IViewType } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
-import { canvasContextCode } from '@/publicJsApis';
+import { canvasContextCode } from '@/publicJsApis/apis';
 import { isDefined } from '@/utils/nullables';
 import { throwError } from '@/utils/errors';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
+import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
@@ -92,8 +93,8 @@ const CanvasProvider: FC<PropsWithChildren> = ({
 
   return (
     <DataContextBinder<ICanvasStateContext>
-      id="canvasContext"
-      name="canvasContext"
+      id={SheshaCommonContexts.CanvasContext}
+      name={SheshaCommonContexts.CanvasContext}
       description="Canvas context"
       type="appLayer"
       data={state}

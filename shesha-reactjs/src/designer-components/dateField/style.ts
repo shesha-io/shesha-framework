@@ -12,6 +12,7 @@ export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles
 
       
           .ant-picker-input input {
+            font-size: var(--ant-font-size) !important;
             font-weight: var(--ant-font-weight) !important;
             text-align: var(--ant-text-align) !important;
           }

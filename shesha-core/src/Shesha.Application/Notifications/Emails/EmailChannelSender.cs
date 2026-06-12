@@ -73,7 +73,7 @@ namespace Shesha.Notifications
                     Logger.Error("Failed to send email", e);
                     return SendStatus.Failed(e.Message);
                 }
-            };
+            }
         }
 
         #region private methods
@@ -139,7 +139,7 @@ namespace Shesha.Notifications
                 IsBodyHtml = true,
             };
 
-            if (string.IsNullOrWhiteSpace(fromAddress))
+            if (string.IsNullOrWhiteSpace(fromAddress) || !smtpSettings.UseSmtpRelay)
             {
                 if (!StringHelper.IsValidEmail(smtpSettings.DefaultFromAddress))
                 {

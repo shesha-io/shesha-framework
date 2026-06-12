@@ -10,6 +10,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import Marquee from 'react-fast-marquee';
 import parse from 'html-react-parser';
+import DOMPurify from 'dompurify';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 
@@ -85,7 +86,8 @@ const AlertComponent: AlertComponentDefinition = {
       const hasHtmlTags = contentStr.match(/<\/?[a-z][\s\S]*>/i);
 
       if (hasHtmlTags) {
-        const parsedContent = parse(contentStr);
+        const sanitizedContent = DOMPurify.sanitize(contentStr, { USE_PROFILES: { html: true } });
+        const parsedContent = parse(sanitizedContent);
         // If parsed content is a React element, apply our styles
         if (React.isValidElement<PropsWithStyle>(parsedContent)) {
           return setElementStyle(parsedContent, {

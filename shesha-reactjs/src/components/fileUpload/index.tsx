@@ -251,6 +251,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     disabled: !allowUpload,
     accept: allowedFileTypes.join(','),
     multiple: false,
+    maxCount: 1,
     fileList: isDefined(uploadFileModel) ? [uploadFileModel] : [],
     ...(!isDragger && isDefined(stylesProp) ? { style: stylesProp } : {}),
     customRequest: onCustomRequest,

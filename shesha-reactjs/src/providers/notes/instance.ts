@@ -1,4 +1,4 @@
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { CreateNoteArgs, DeleteNoteArgs, NoteModel, NotesReference, UpdateNoteArgs } from "./models";
 import { isOwnerReferenceValid } from "@/utils/entity";
 import { buildUrl } from "@/utils";

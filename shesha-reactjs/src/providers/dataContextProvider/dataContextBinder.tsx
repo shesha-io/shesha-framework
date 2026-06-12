@@ -82,7 +82,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     name,
     description,
     type,
-    parentDataContext: parentContext,
+    parent: parentContext,
     metadata: props.metadata ?? Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name, properties: [] } as IModelMetadata), // set default metadata if empty
   }));
 

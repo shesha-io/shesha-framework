@@ -49,7 +49,7 @@ export const CreateStorageProperty = <TData extends object = object>(onChange: (
     },
     getOwnPropertyDescriptor(target, prop) {
       if (target.accessor.getKeys().indexOf(prop.toString()) >= 0)
-        return { enumerable: true, configurable: true, writable: true };
+        return Reflect.getOwnPropertyDescriptor(target.accessor.getData(), prop.toString());
       return undefined;
     },
   });
@@ -136,7 +136,7 @@ export class StorageProxyAccessor<TData extends object = object> implements ISto
 
   setData(data: TData, update: boolean = true): void {
     this._data = data;
-    (this._data as Record<string, unknown>)['setFieldValue'] = this.setFieldValue.bind(this);
+    (this._data as { setFieldValue: (name: string, value: unknown) => void })['setFieldValue'] = this.setFieldValue.bind(this);
     if (update && isDefined(this._onChange))
       this._onChange();
   };

@@ -78,6 +78,8 @@ export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
 export interface ITableDataFetchColumn extends ITableColumn {
   propertiesToFetch?: string | string[] | undefined;
   isEnitty?: boolean;
+  dataType?: ProperyDataType | undefined;
+  dataFormat?: string | undefined;
 }
 
 export interface ITableDataColumn extends ITableColumn, ITableDataFetchColumn, IEditableColumnProps {

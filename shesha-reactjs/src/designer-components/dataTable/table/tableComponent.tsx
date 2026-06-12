@@ -190,7 +190,7 @@ const TableComponent: TableComponentDefinition = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   validateModel: (model, addModelError) => {
     // CRITICAL: Validate that table has columns configured
-    const hasColumns = !isNonEmptyArray(model.items);
+    const hasColumns = isNonEmptyArray(model.items);
     if (!hasColumns) {
       addModelError('items', 'Configure at least one column in the settings panel');
     }

@@ -48,7 +48,6 @@ import Mustache from 'mustache';
 import { CSSProperties, useRef } from 'react';
 import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
 import { IDataContextManagerActions, IDataContextManagerFullInstance, IDataContextsData, SheshaCommonContexts } from '../dataContextManager/models';
-import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
 import { IAnyObject } from './../../interfaces/anyObject';
@@ -90,8 +89,7 @@ import {
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
-import { IComponentApiActions } from '../componentApi/model';
-import { useComponentApi } from '../componentApi/provider';
+import { ICanvasContextApi } from '@/publicJsApis/apis/canvasContextApi';
 
 export {
   executeExpression, executeScript,
@@ -106,17 +104,28 @@ export {
 
 type MomentType = typeof moment;
 
+export interface IPageApi {
+  readonly context: IDataContextFull | undefined;
+  readonly canvas: ICanvasContextApi | undefined;
+}
+
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value extends object = object> {
-  components: Record<string, Record<string, unknown>>;
-
-  application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   metadataDispatcher?: IMetadataDispatcher;
+
+  /** Application Api */
+  readonly application?: IApplicationApi;
+  /** Page Api */
+  readonly page?: IPageApi;
+  /** Form Api */
+  readonly form?: IFormApi<Value> | undefined;
+
+  readonly webStorage?: IDataContextFull;
+
   /** Form data */
   data?: Value | undefined;
 
-  form?: IFormApi<Value> | undefined;
   /** Contexts datas */
   contexts: IDataContextsData | undefined;
   /** Global state */
@@ -138,6 +147,7 @@ export interface IApplicationContext<Value extends object = object> {
   lastUpdated?: Date;
 
   pageContext?: IDataContextFull;
+
   setGlobalState: (payload: ISetStatePayload) => void;
   /**
    * Query string values. Is used for backward compatibility only
@@ -167,7 +177,6 @@ export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
 };
 
 export type AvailableConstantsContext = {
-  componentApi?: IComponentApiActions | undefined;
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
   dcm: IDataContextManagerActions | undefined;
@@ -197,10 +206,8 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
-  const componentApi = useComponentApi();
 
   const result: AvailableConstantsContext = {
-    componentApi: componentApi,
     closestShaFormApi: undefined,
     selectedRow,
     dcm: undefined,
@@ -224,10 +231,7 @@ export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsCont
   const metadataDispatcher = useMetadataDispatcher();
   const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
-  baseContext.closestShaFormApi = closestShaFormApi;
-  baseContext.dcm = dcm;
-  baseContext.metadataDispatcher = metadataDispatcher;
-  return baseContext;
+  return { ...baseContext, closestShaFormApi, dcm, metadataDispatcher };
 };
 
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
@@ -242,10 +246,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const parent = useParentOrUndefined();
   const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
-  baseContext.closestShaFormApi = closestShaFormApi;
-  baseContext.dcm = dcm;
-  baseContext.metadataDispatcher = metadataDispatcher;
-  return baseContext;
+  return { ...baseContext, closestShaFormApi, dcm, metadataDispatcher };
 };
 
 export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailableConstantsDataArgs<TValues> & {
@@ -287,27 +288,14 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message,
     metadataDispatcher,
     modal,
-
-    componentApi,
   } = fullContext;
-  const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
+  const shaFormApi = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
+
+  const pageContext = dcm?.getPageContext()?.getFull();
+  const canvasContext = dcm?.getNearestDataContext(SheshaCommonContexts.CanvasContext, 'appLayer')?.getFull();
+  const webStorageContext = dcm?.getNearestDataContext(SheshaCommonContexts.WebStorageContext, 'storage')?.getFull();
 
   const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
-    components: () => {
-      const api: Record<string, Record<string, unknown>> = {};
-      if (componentApi) {
-        const components = componentApi.getComponents();
-        components.forEach((component) => {
-          if (component.api === undefined || !component.componentName) return;
-          if (api[component.componentName]) {
-            console.warn(`Duplicate componentName "${component.componentName}" detected. The earlier component's API will be overwritten.`);
-          }
-          api[component.componentName] = component.api;
-        });
-      }
-      return api;
-    },
-
     application: () => {
       // get application context
       const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
@@ -321,13 +309,12 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
         ? { ...dcm.getDataContextsData(tcId) }
         : undefined;
     },
-    pageContext: () => {
+    page: () => {
       // get page context
-      const pc = dcm?.getPageContext();
-      // get full page context data
-      const pageContext = pc?.getFull();
-      return pageContext;
+      return { context: pageContext, canvas: canvasContext } as IPageApi;
     },
+    pageContext: () => pageContext,
+    webStorage: () => webStorageContext,
     selectedRow: () => selectedRow,
     globalState: () => globalState,
     setGlobalState: () => setGlobalState,
@@ -336,11 +323,11 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message: () => message,
     modal: () => modal,
     fileSaver: () => FileSaver,
-    data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
-    form: () => shaFormInstance,
+    data: () => (shaFormApi?.data ?? EMPTY_DATA) as TValues,
+    form: () => shaFormApi,
     query: () => queryStringGetter?.() ?? {},
-    initialValues: () => shaFormInstance?.initialValues,
-    parentFormValues: () => shaFormInstance?.parentFormValues,
+    initialValues: () => shaFormApi?.initialValues,
+    parentFormValues: () => shaFormApi?.parentFormValues,
     // don't delete this as is used for debug the proxied data from the form scripts
     test: () => ({ getArguments }),
   };
@@ -725,6 +712,78 @@ type MomentProto = {
 };
 
 /**
+ * Deep-clones data into plain objects/arrays and attaches a JSON-producing `toString` so
+ * Mustache's `{{path}}` interpolation yields JSON instead of "[object Object]" / "1,2,3".
+ *
+ * Why this is needed:
+ *  - Shesha data-access proxies (ShaArrayAccessProxy / ShaObjectAccessProxy) route every
+ *    property read through their `get` trap, including `toString`. We unwrap them via
+ *    `getAccessorValue()` to recover the underlying data.
+ *  - Plain arrays/objects produce useless default string forms when Mustache stringifies them.
+ *
+ * Exported separately so it can be unit-tested without going through the full evaluator.
+ *
+ * Note on circular references: the `seen` WeakMap preserves cycles in the cloned structure,
+ * which means the custom `toString` will catch the JSON.stringify error and return ''.
+ * That's intentional — better than throwing during template rendering.
+ */
+export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object, unknown> = new WeakMap()): unknown => {
+  if (input == null || typeof input !== 'object') return input;
+  if (input instanceof Date || moment.isMoment(input)) return input;
+
+  // Shesha data-access proxies are terminal: never iterate them via Object.keys (each
+  // property access re-triggers the proxy's `get` trap and may expose internal accessor
+  // properties or cause side effects). Whatever `getAccessorValue` returns is the answer.
+  const accessor = (input as { getAccessorValue?: () => unknown }).getAccessorValue;
+  if (typeof accessor === 'function') {
+    try {
+      const unwrapped = accessor.call(input);
+      return unwrapped === input ? undefined : cloneAndDecorateForMustache(unwrapped, seen);
+    } catch {
+      return undefined;
+    }
+  }
+
+  // Preserve known special types that carry internal state which would break under a generic
+  // clone (Map, Set, RegExp, Error, URL, typed arrays, etc.). We detect them via the
+  // [[Class]] tag — anything that's not `[object Object]` or `[object Array]` is returned by
+  // reference. Class instances (which have `[object Object]` tag) ARE walked so their
+  // enumerable fields are cloned and any nested Shesha proxies inside get unwrapped.
+  const tag = Object.prototype.toString.call(input);
+  if (tag !== '[object Object]' && tag !== '[object Array]') return input;
+
+  const cached = seen.get(input);
+  if (cached) return cached;
+
+  const isArray = Array.isArray(input);
+  // Preserve the prototype for class instances so prototype methods/getters remain reachable.
+  const result: Record<string, unknown> | unknown[] = isArray
+    ? []
+    : Object.create(Object.getPrototypeOf(input) as object | null) as Record<string, unknown>;
+  seen.set(input, result);
+  for (const key of Object.keys(input))
+    (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
+  // Only override toString on objects — arrays must stay as real arrays so their values are
+  // submitted correctly to the API. Attaching JSON.stringify-based toString to arrays caused
+  // array fields (e.g. multi-select) to be sent as "[32,128,64]" strings instead of [32,128,64].
+  if (!isArray) {
+    Object.defineProperty(result, 'toString', {
+      value: () => {
+        try {
+          return JSON.stringify(result);
+        } catch {
+          return '';
+        }
+      },
+      configurable: true,
+      enumerable: false,
+      writable: true,
+    });
+  }
+  return result;
+};
+
+/**
  * Evaluates the string using Mustache template.
  *
  * Given a the below expression
@@ -755,8 +814,11 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
 
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
+      // Clone per call: caching the decorated structure is unsafe because long-lived proxies
+      // (e.g. the constants context) refresh in place, and skipUnknownTags mutates the view's
+      // nested nodes — both would leak shared state across evaluations.
       const view: IAnyObject = {
-        ...data,
+        ...(cloneAndDecorateForMustache(data) as IAnyObject),
         // adding a function to the data object that will format datetime
         dateFormat: function () {
           return function (timestamp: unknown, render: (renderArgs: unknown) => string) {
@@ -1573,7 +1635,8 @@ export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSett
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version
-  upgradeComponents(designerComponents, formSettings, newFlatComponents);
+  if (formSettings)
+    upgradeComponents(designerComponents, formSettings, newFlatComponents);
 
   return newFlatComponents;
 };

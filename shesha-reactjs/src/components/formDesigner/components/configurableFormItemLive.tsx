@@ -98,6 +98,8 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
         <ConfigurableFormItemForm<TValue>
           formItemProps={formItemProps}
           valuePropName={valuePropName}
+          componentName={model.componentName}
+          componentId={model.id}
         >
           {children}
         </ConfigurableFormItemForm>

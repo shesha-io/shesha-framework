@@ -4,7 +4,7 @@ const DEFAULT_FONT_FAMILY = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 export const calcTextWidth = (str: string, fontFamily: string = DEFAULT_FONT_FAMILY, fontSize: string = DEFAULT_FONT_SIZE): number => {
   let div = document.createElement("div");
-  div.innerHTML = str;
+  div.textContent = str;
   div.style.fontSize = fontSize;
   div.style.fontFamily = fontFamily;
   div.style.position = "absolute";

@@ -8,7 +8,7 @@ import { getQueryParams, getUrlWithoutQueryParams } from "@/utils/url";
 import qs from "qs";
 import { unwrapAxiosCall } from "@/providers/sheshaApplication/publicApi/http/httpUtils";
 import { unwrapAbpResponse } from "@/utils/fetchers";
-import { HttpResponse } from "@/publicJsApis/httpClient";
+import { HttpResponse } from "@/publicJsApis/apis/httpClient";
 import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from "@/utils/form";
 import { useFormDesignerComponents } from "../hooks";
 import { addDelayedUpdateProperty } from "@/providers/delayedUpdateProvider";

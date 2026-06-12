@@ -13,7 +13,7 @@ import React, {
 import ShaMenuDrawer from "../menuDrawer";
 import { ILayoutColor } from "./model";
 import OverflowedIndicator, { getMutatedMenuItem } from "./overflowedIndicator";
-import { ScrollControls } from "./scrolls";
+import { ScrollButton } from "./scrolls";
 import { GlobalMenuStyles, ScopedMenuStyles, useStyles } from "./styles";
 import { useHorizontalMenuDropdownStyles } from "./useHorizontalMenuDropdownStyles";
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from "@/providers/configurableActionsDispatcher";
@@ -298,15 +298,19 @@ export const LayoutMenu: FC<IProps> = ({
           style={{ background: 'none' }}
         />
       </div>
-
       {isScrolling && hasOverflow && (
-        <ScrollControls
-          scrollButtonClassName={styles.scrollButton}
-          scrollButtonsClassName={styles.scrollButtons}
-          scrollLeft={scrollLeft}
-          scrollRight={scrollRight}
-          containerStyle={style}
-        />
+        <>
+          <ScrollButton
+            styles={styles}
+            onClick={scrollLeft}
+            direction="left"
+          />
+          <ScrollButton
+            styles={styles}
+            onClick={scrollRight}
+            direction="right"
+          />
+        </>
       )}
     </div>
   );

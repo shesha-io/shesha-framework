@@ -106,12 +106,12 @@ export interface IFormComponentContainer {
 
 export interface IComponentValidationRules {
   required?: boolean | IPropertySetting<boolean> | undefined;
-  minValue?: number;
-  maxValue?: number;
-  minLength?: number;
-  maxLength?: number;
-  message?: string;
-  validator?: string;
+  minValue?: number | undefined;
+  maxValue?: number | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
+  message?: string | undefined;
+  validator?: string | undefined;
 }
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
@@ -121,7 +121,6 @@ export interface IStyleType {
   background?: IBackgroundValue | undefined;
   font?: IFontValue | undefined;
   shadow?: IShadowValue | undefined;
-  menuItemShadow?: IShadowValue | undefined;
   dimensions?: IDimensionsValue | undefined;
   size?: SizeType | undefined;
   style?: string | undefined;
@@ -165,6 +164,7 @@ export interface IInputStyles extends IStyleType {
   style?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleType | undefined;
+  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
 };
 
 export type ConfigurableFormComponentTypes =
