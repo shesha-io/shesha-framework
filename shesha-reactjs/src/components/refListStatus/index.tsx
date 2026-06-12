@@ -30,7 +30,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     showReflistName = false,
     style = {},
     isDesigner = false,
-    readOnly,
+    readOnly = false,
   } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
   const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };

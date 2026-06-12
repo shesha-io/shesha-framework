@@ -214,7 +214,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           return (
             <AttachmentsEditorProvider
               name={model.componentName}
-              ownerId={!isNullOrWhiteSpace(model.ownerId) ? ownerId : getIdOrUndefined(data) ?? ""}
+              ownerId={!isNullOrWhiteSpace(model.ownerId) ? ownerId ?? "" : getIdOrUndefined(data) ?? ""}
               ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(form.formSettings?.modelType) ? form.formSettings?.modelType : ''}
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}

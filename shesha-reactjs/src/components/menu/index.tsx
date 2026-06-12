@@ -301,12 +301,12 @@ export const LayoutMenu: FC<IProps> = ({
       {isScrolling && hasOverflow && (
         <>
           <ScrollButton
-            styles={styles}
+            className={styles.scrollButton}
             onClick={scrollLeft}
             direction="left"
           />
           <ScrollButton
-            styles={styles}
+            className={styles.scrollButton}
             onClick={scrollRight}
             direction="right"
           />

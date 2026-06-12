@@ -20,6 +20,7 @@ import { CodeEditorLoadingProgressor } from "../loadingProgressor";
 import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 import { useIsDevMode } from "@/hooks/useIsDevMode";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
+import { isNonEmptyArray } from "@/utils/array";
 
 // you can change the source of the monaco files
 loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs' } });
@@ -298,6 +299,8 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
 
     const model = editor.getModel();
     const applyDeprecatedDecorations = (): void => {
+      if (!model)
+        return;
       const markers = monaco.editor.getModelMarkers({ resource: model.uri });
       const deprecatedMarkers = markers.filter((m) => (
         (
@@ -307,19 +310,18 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         ) &&
         m.severity !== Number(monaco.MarkerSeverity.Warning)
       ));
-      let changedMarkers = false;
-      deprecatedMarkers.forEach((marker) => {
-        marker.severity = monaco.MarkerSeverity.Warning;
-        changedMarkers = true;
-      });
-      if (changedMarkers) {
+      if (isNonEmptyArray(deprecatedMarkers)) {
+        deprecatedMarkers.forEach((marker) => {
+          marker.severity = monaco.MarkerSeverity.Warning;
+        });
         monaco.editor.removeAllMarkers('typescript');
         monaco.editor.setModelMarkers(model, 'typescript', markers);
       }
     };
 
     monaco.editor.onDidChangeMarkers(() => applyDeprecatedDecorations());
-    model.onDidChangeContent(() => setTimeout(applyDeprecatedDecorations, 100));
+    if (model)
+      model.onDidChangeContent(() => setTimeout(applyDeprecatedDecorations, 100));
     setTimeout(applyDeprecatedDecorations, 500);
   };
 

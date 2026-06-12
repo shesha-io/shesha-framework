@@ -20,7 +20,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   ghost,
   accentStyle,
   overflow,
-}: StylesArgs) => {
+}: StylesArgs = {}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
   const shaHeaderComponentsContainer = "sha-header-components-container";

@@ -32,12 +32,12 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
 
   // Skip if already migrated to the new structure
   const alreadyMigrated = header?.components?.some(
-    (c: IContainerComponentProps) => c.type === "container" && c.componentName === "headerLayout",
+    (c) => c.type === "container" && c.componentName === "headerLayout",
   );
 
   if (alreadyMigrated) {
     const headerLayout = header?.components?.find(
-      (c: IContainerComponentProps) => c.type === "container" && c.componentName === "headerLayout",
+      (c) => c.type === "container" && c.componentName === "headerLayout",
     );
     if (headerLayout && !headerLayout.desktop?.display) {
       headerLayout.desktop = { ...defaultHeaderStyles, ...headerLayout.desktop };

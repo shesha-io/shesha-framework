@@ -41,7 +41,7 @@ export const StatusTag: FC<IStatusTagProps> = ({
   color,
   mappings = DEFAULT_STATUS_TAG_MAPPINGS,
   style,
-  readOnly,
+  readOnly = false,
 }) => {
   const { styles } = useStyles({ readOnly });
   const memoized = useMemo(() => {

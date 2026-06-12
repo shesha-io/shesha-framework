@@ -640,7 +640,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       return await new Promise<void>((resolve) => {
         this.antdForm.resetFields();
         if (this.initialValues)
-          this.antdForm.setFieldsValue(this.initialValues);
+          this.antdForm.setFieldsValue(this.initialValues as RecursivePartial<Values>);
 
         this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
         this.#setIsDataModified(false);

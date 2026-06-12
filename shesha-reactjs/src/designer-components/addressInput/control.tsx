@@ -18,7 +18,7 @@ export interface IAddressInputControlProps {
   longitudePropertyName?: string | undefined;
   defaultZoom?: number | undefined;
   mapHeight?: number | undefined;
-  mapWidth?: number;
+  mapWidth?: number | undefined;
 }
 
 // ─── Google Maps type contracts ───────────────────────────────────────────────
@@ -225,7 +225,7 @@ interface IMapModalProps {
   initialAddress: string;
   defaultZoom: number;
   mapHeight: number;
-  mapWidth?: number;
+  mapWidth?: number | undefined;
   geocoder: unknown;
   onOk: (address: string, lat: number, lng: number) => void;
   onCancel: () => void;
@@ -350,8 +350,8 @@ const MapModal: FC<IMapModalProps> = ({
     if (!match || !isGeocoder(geocoder)) return;
 
     e.preventDefault();
-    const lat = parseFloat(match[1]);
-    const lng = parseFloat(match[2]);
+    const lat = parseFloat(match[1] ?? "");
+    const lng = parseFloat(match[2] ?? "");
 
     try {
       const addr = await geocodeLatLng(geocoder, lat, lng);

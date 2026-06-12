@@ -181,7 +181,9 @@ const useQueryBuilder = (): IQueryBuilderStateContext & IQueryBuilderActionsCont
 
 export {
   QueryBuilderProvider,
+  useQueryBuilderStateOrUndefined,
   useQueryBuilderState,
+  useQueryBuilderActionsOrUndefined,
   useQueryBuilderActions,
   useQueryBuilder,
   useQueryBuilderOrUndefined,

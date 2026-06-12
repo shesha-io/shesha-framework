@@ -11,7 +11,6 @@ import { useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { isNonEmptyArray } from '@/utils/array';
-import { tabPosition2TabPlacement } from '../tabs/utils';
 
 interface SearchableTabsProps {
   model: IPropertiesTabsComponentProps;
@@ -170,7 +169,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       onChange={handleTabChange}
       size={model.size}
       type={model.tabType || 'card'}
-      tabPlacement={tabPosition2TabPlacement(model.position) ?? 'top'}
+      tabPlacement={model.position ?? 'top'}
       items={newFilteredTabs}
       className={styles.content}
     />

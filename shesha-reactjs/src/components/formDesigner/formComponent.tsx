@@ -158,7 +158,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
       componentName: actualModel.componentName,
       componentModel: actualModel,
       level: 1,
-      isInput: toolboxComponent?.isInput,
+      isInput: isDefined(toolboxComponent) && toolboxComponent.isInput,
       rawComponentModel: sourceComponentModel,
       api: {
         componentName: actualModel.componentName,

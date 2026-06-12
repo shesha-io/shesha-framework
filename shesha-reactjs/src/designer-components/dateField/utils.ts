@@ -66,8 +66,9 @@ const disabledTimeTemplateFunc = (disabledTimeTemplate: DisabledDateTemplate | u
 
 type DatePickerProps = React.ComponentProps<typeof DatePicker>;
 type DisabledTimeFunc = Required<DatePickerProps>['disabledTime'];
+type DisabledTimes = ReturnType<DisabledTimeFunc>;
 
-type DisabledTimeFuncFactory = (momentFunc: typeof moment, data: object | undefined, globalState: object, rangeFunc: typeof range) => DisabledTimeFunc;
+type DisabledTimeFuncFactory = (current: Moment, momentFunc: typeof moment, data: object | undefined, globalState: object, rangeFunc: typeof range) => DisabledTimes;
 
 const emptyDisabledTime: DisabledTimeFunc = () => ({ disabledHours: () => [], disabledMinutes: () => [], disabledSeconds: () => [] });
 
