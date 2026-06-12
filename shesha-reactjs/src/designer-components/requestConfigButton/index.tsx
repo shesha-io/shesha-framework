@@ -22,22 +22,22 @@ export const RequestConfigButton: FC<IRequestConfigButtonProps> = ({
     body: { type: 'none', content: '' },
   };
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (): void => {
     setModalVisible(true);
   };
 
-  const handleModalChange = (config: IRequestConfig) => {
-    console.log('🔍 RequestConfigButton - Modal changed:', config);
+  const handleModalChange = (config: IRequestConfig): void => {
+    console.warn('🔍 RequestConfigButton - Modal changed:', config);
     onChange?.(config);
   };
 
-  const handleModalClose = () => {
+  const handleModalClose = (): void => {
     setModalVisible(false);
   };
 
-  const getConfigSummary = () => {
-    const paramsCount = currentConfig.params?.filter(p => p.enabled).length || 0;
-    const headersCount = currentConfig.headers?.filter(h => h.enabled).length || 0;
+  const getConfigSummary = (): string => {
+    const paramsCount = currentConfig.params?.filter((p) => p.enabled).length || 0;
+    const headersCount = currentConfig.headers?.filter((h) => h.enabled).length || 0;
     const hasBody = currentConfig.body?.type !== 'none';
 
     const parts = [];

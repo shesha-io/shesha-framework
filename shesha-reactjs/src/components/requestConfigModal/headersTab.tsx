@@ -12,17 +12,17 @@ export interface IHeadersTabProps {
 
 export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange }) => {
   const { styles } = useStyles();
-  const handleAdd = () => {
+  const handleAdd = (): void => {
     onChange([...headers, { key: '', value: '', enabled: true }]);
   };
 
-  const handleUpdate = (index: number, field: keyof IRequestHeader, value: any) => {
+  const handleUpdate = (index: number, field: keyof IRequestHeader, value: any): void => {
     const updated = [...headers];
     updated[index] = { ...updated[index], [field]: value };
     onChange(updated);
   };
 
-  const handleDelete = (index: number) => {
+  const handleDelete = (index: number): void => {
     onChange(headers.filter((_, i) => i !== index));
   };
 

@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Button, Input, Radio, Select, Table, Typography, Tabs } from 'antd';
+import { Button, Input, Radio, Table, Typography, Tabs } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { BodyType, IRequestBody, IGraphQLBody } from './models';
 import { useStyles } from './styles';
@@ -22,7 +22,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
   const { styles } = useStyles();
   const [jsonError, setJsonError] = useState<string | null>(null);
 
-  const handleTypeChange = (type: BodyType) => {
+  const handleTypeChange = (type: BodyType): void => {
     let content: string | Record<string, any> | IGraphQLBody = '';
 
     if (type === 'json') {
@@ -41,7 +41,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
     setJsonError(null);
   };
 
-  const handleJsonChange = (value: string) => {
+  const handleJsonChange = (value: string): void => {
     onChange({ ...body, content: value });
 
     if (!value.trim()) {
@@ -57,7 +57,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
     }
   };
 
-  const handleRawChange = (value: string) => {
+  const handleRawChange = (value: string): void => {
     onChange({ ...body, content: value });
   };
 
@@ -68,12 +68,12 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
     return { query: '', variables: '{}', operationName: '' };
   };
 
-  const handleGraphQLQueryChange = (value: string) => {
+  const handleGraphQLQueryChange = (value: string): void => {
     const graphqlBody = getGraphQLBody();
     onChange({ ...body, content: { ...graphqlBody, query: value } });
   };
 
-  const handleGraphQLVariablesChange = (value: string) => {
+  const handleGraphQLVariablesChange = (value: string): void => {
     const graphqlBody = getGraphQLBody();
     onChange({ ...body, content: { ...graphqlBody, variables: value } });
 
@@ -90,7 +90,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
     }
   };
 
-  const handleGraphQLOperationNameChange = (value: string) => {
+  const handleGraphQLOperationNameChange = (value: string): void => {
     const graphqlBody = getGraphQLBody();
     onChange({ ...body, content: { ...graphqlBody, operationName: value } });
   };
@@ -104,27 +104,27 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
     }
   };
 
-  const updateFormData = (rows: IFormDataRow[]) => {
+  const updateFormData = (rows: IFormDataRow[]): void => {
     onChange({ ...body, content: JSON.stringify(rows) });
   };
 
-  const handleFormDataAdd = () => {
+  const handleFormDataAdd = (): void => {
     const rows = parseFormData();
     updateFormData([...rows, { key: '', value: '', enabled: true }]);
   };
 
-  const handleFormDataUpdate = (index: number, field: keyof IFormDataRow, value: any) => {
+  const handleFormDataUpdate = (index: number, field: keyof IFormDataRow, value: any): void => {
     const rows = parseFormData();
     rows[index] = { ...rows[index], [field]: value };
     updateFormData(rows);
   };
 
-  const handleFormDataDelete = (index: number) => {
+  const handleFormDataDelete = (index: number): void => {
     const rows = parseFormData();
     updateFormData(rows.filter((_, i) => i !== index));
   };
 
-  const renderFormDataTable = () => {
+  const renderFormDataTable = (): JSX.Element => {
     const rows = parseFormData();
 
     const columns = [
@@ -192,7 +192,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
     );
   };
 
-  const renderBodyContent = () => {
+  const renderBodyContent = (): JSX.Element | null => {
     switch (body.type) {
       case 'none':
         return <Text type="secondary">This request does not have a body.</Text>;

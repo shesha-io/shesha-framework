@@ -120,7 +120,7 @@ export const useApiCallAction = (): void => {
 
       // Debug logging (can be removed in production)
       if (process.env.NODE_ENV === 'development') {
-        console.log('🔍 API Call Debug:', {
+        console.warn('🔍 API Call Debug:', {
           hasRequestConfig: !!requestConfig,
           requestConfigParams: requestConfig?.params,
           verb,
@@ -129,7 +129,7 @@ export const useApiCallAction = (): void => {
 
       if (requestConfig) {
         // New structure: use requestConfig
-        const enabledParams = requestConfig.params?.filter(p => p.enabled) || [];
+        const enabledParams = requestConfig.params?.filter((p) => p.enabled) || [];
         finalParams = enabledParams.reduce((acc, param) => {
           if (param.key) {
             let value: any = resolveRequestValue(param.value);
@@ -138,10 +138,10 @@ export const useApiCallAction = (): void => {
             // Convert multi-line format to single line with spaces
             if (param.key.toLowerCase() === 'properties' && typeof value === 'string') {
               value = value
-                .split('\n')           // Split by newlines
-                .map(line => line.trim())  // Trim each line
-                .filter(line => line)      // Remove empty lines
-                .join(' ');                // Join with spaces
+                .split('\n') // Split by newlines
+                .map((line) => line.trim()) // Trim each line
+                .filter((line) => line) // Remove empty lines
+                .join(' '); // Join with spaces
             }
 
             acc[param.key] = value;
@@ -149,7 +149,7 @@ export const useApiCallAction = (): void => {
           return acc;
         }, {} as Record<string, any>);
 
-        const enabledHeaders = requestConfig.headers?.filter(h => h.enabled) || [];
+        const enabledHeaders = requestConfig.headers?.filter((h) => h.enabled) || [];
         finalHeaders = enabledHeaders.reduce((acc, header) => {
           if (header.key) acc[header.key] = resolveRequestValue(header.value);
           return acc;
@@ -255,7 +255,7 @@ export const useApiCallAction = (): void => {
 
         // Debug logging
         if (process.env.NODE_ENV === 'development') {
-          console.log('🔍 Query String Debug:', {
+          console.warn('🔍 Query String Debug:', {
             finalParams,
             queryStringData,
             queryString,

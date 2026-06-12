@@ -12,17 +12,17 @@ export interface IParamsTabProps {
 
 export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange }) => {
   const { styles } = useStyles();
-  const handleAdd = () => {
+  const handleAdd = (): void => {
     onChange([...params, { key: '', value: '', description: '', enabled: true }]);
   };
 
-  const handleUpdate = (index: number, field: keyof IRequestParam, value: any) => {
+  const handleUpdate = (index: number, field: keyof IRequestParam, value: any): void => {
     const updated = [...params];
     updated[index] = { ...updated[index], [field]: value };
     onChange(updated);
   };
 
-  const handleDelete = (index: number) => {
+  const handleDelete = (index: number): void => {
     onChange(params.filter((_, i) => i !== index));
   };
 

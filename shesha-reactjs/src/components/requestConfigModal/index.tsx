@@ -30,19 +30,19 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
     }
   }, [visible, config]);
 
-  const handleOk = () => {
-    console.log('🔍 RequestConfigModal - Saving config:', localConfig);
+  const handleOk = (): void => {
+    console.warn('🔍 RequestConfigModal - Saving config:', localConfig);
     onChange(localConfig);
     onClose();
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setLocalConfig(config);
     onClose();
   };
 
-  const updateConfig = (updates: Partial<IRequestConfig>) => {
-    setLocalConfig(prev => ({ ...prev, ...updates }));
+  const updateConfig = (updates: Partial<IRequestConfig>): void => {
+    setLocalConfig((prev) => ({ ...prev, ...updates }));
   };
 
   return (
@@ -67,7 +67,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
               children: (
                 <ParamsTab
                   params={localConfig.params || []}
-                  onChange={params => updateConfig({ params })}
+                  onChange={(params) => updateConfig({ params })}
                 />
               ),
             },
@@ -77,7 +77,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
               children: (
                 <HeadersTab
                   headers={localConfig.headers || []}
-                  onChange={headers => updateConfig({ headers })}
+                  onChange={(headers) => updateConfig({ headers })}
                 />
               ),
             },
@@ -87,7 +87,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
               children: (
                 <BodyTab
                   body={localConfig.body || { type: 'none', content: '' }}
-                  onChange={body => updateConfig({ body })}
+                  onChange={(body) => updateConfig({ body })}
                 />
               ),
             },
