@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { nanoid } from '@/utils/uuid';
 import { useSheshaApplication } from "@/providers";
-import { useAvailableConstantsData, evaluateString, genericActionArgumentsEvaluator } from '@/providers/form/utils';
+import { useAvailableConstantsData, evaluateString, executeScript, genericActionArgumentsEvaluator } from '@/providers/form/utils';
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import axios, { Method } from 'axios';
 import { IKeyValue } from "@/interfaces/keyValue";
@@ -153,7 +153,7 @@ export const useApiCallAction = (): void => {
       }
       return evaluated;
     },
-    executer: (actionArgs, context) => {
+    executer: async (actionArgs, context) => {
       const {
         url,
         verb,
@@ -245,20 +245,36 @@ export const useApiCallAction = (): void => {
               }
               break;
             case 'raw': {
-              // Resolve Mustache in the raw body against the live execution context.
-              requestBody = typeof requestConfig.body.content === 'string'
-                ? evaluateString(requestConfig.body.content, context as object)
-                : requestConfig.body.content;
               const rawSubType = requestConfig.body.rawSubType ?? 'text';
-              const rawContentTypeMap: Record<string, string> = {
-                text: 'text/plain',
-                json: 'application/json',
-                xml: 'application/xml',
-                html: 'text/html',
-                javascript: 'application/javascript',
-              };
-              if (!finalHeaders['Content-Type']) {
-                finalHeaders['Content-Type'] = rawContentTypeMap[rawSubType] ?? 'text/plain';
+              if (rawSubType === 'javascript') {
+                // Executable JS body: run the script against the live execution context (data,
+                // globalState, http, …); its returned value becomes the payload.
+                try {
+                  requestBody = typeof requestConfig.body.content === 'string' && requestConfig.body.content.trim()
+                    ? await executeScript<unknown>(requestConfig.body.content, context as object)
+                    : undefined;
+                } catch (e) {
+                  console.error('API Call: JavaScript body execution failed:', e);
+                  requestBody = undefined;
+                }
+                // Object results are sent as JSON; strings/primitives are sent as-is.
+                if (!finalHeaders['Content-Type'] && requestBody !== null && typeof requestBody === 'object') {
+                  finalHeaders['Content-Type'] = 'application/json';
+                }
+              } else {
+                // Other raw sub-types are sent as text, with Mustache resolved against the context.
+                requestBody = typeof requestConfig.body.content === 'string'
+                  ? evaluateString(requestConfig.body.content, context as object)
+                  : requestConfig.body.content;
+                const rawContentTypeMap: Record<string, string> = {
+                  text: 'text/plain',
+                  json: 'application/json',
+                  xml: 'application/xml',
+                  html: 'text/html',
+                };
+                if (!finalHeaders['Content-Type']) {
+                  finalHeaders['Content-Type'] = rawContentTypeMap[rawSubType] ?? 'text/plain';
+                }
               }
               break;
             }

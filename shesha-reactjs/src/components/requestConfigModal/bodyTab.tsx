@@ -6,7 +6,13 @@ import { RequestValueEditor } from './requestValueEditor';
 import { TransformationTab } from './transformationTab';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeLanguages } from '@/designer-components/codeEditor/types';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
+import { DataTypes } from '@/interfaces';
 import { useStyles } from './styles';
+
+// The raw JavaScript body is executed as a script that returns the payload, so its wrapper reads
+// `async (): Promise<any>` (returning any value, not void). Stable reference avoids editor rebuilds.
+const JS_BODY_RESULT_TYPE = { dataType: DataTypes.any };
 
 const RAW_SUB_TYPES: { value: RawBodySubType; label: string; language: CodeLanguages }[] = [
   { value: 'text', label: 'Text', language: 'plain_text' },
@@ -49,6 +55,11 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
   const defaultContentFor = (type: BodyType): IRequestBody['content'] =>
     type === 'form-data' || type === 'x-www-form-urlencoded' ? ([] as IFormDataField[]) : '';
+
+  // Standard constants exposed to the executable JavaScript body (data, globalState, http, form,
+  // pageContext, selectedRow, …). `response` is intentionally excluded — it doesn't exist yet when
+  // the request body is being built. Mirrors what the executer provides at runtime.
+  const jsBodyConstants = useAvailableConstantsMetadata({ addGlobalConstants: true });
 
   const handleViewChange = (next: BodyView): void => {
     setView(next);
@@ -281,6 +292,9 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       case 'raw': {
         const activeSubType = body.rawSubType ?? 'text';
         const subTypeMeta = RAW_SUB_TYPES.find((s) => s.value === activeSubType) ?? RAW_SUB_TYPES[0];
+        // The JavaScript sub-type is executed at request time, so it gets the templated editor with
+        // exposed constants (like the Transformation tab). Other sub-types are sent as plain text.
+        const isExecutableJs = activeSubType === 'javascript';
         return (
           <>
             <Space style={{ marginBottom: 8 }} size="small">
@@ -293,14 +307,22 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
                 size="small"
               />
             </Space>
+            {isExecutableJs && (
+              <Text type="secondary" style={{ display: 'block', marginBottom: 4 }}>
+                This script runs at request time and must <Text code>return</Text> the value to send as the body.
+              </Text>
+            )}
             <div className={styles.codeEditorWrapper}>
               <BaseCodeEditor
                 value={typeof body.content === 'string' ? body.content : ''}
                 onChange={(v) => handleRawChange(v ?? '')}
-                language={subTypeMeta.language}
-                placeholder="Enter raw request body"
-                fileName={`api-call-body.${activeSubType}`}
-                wrapInTemplate={false}
+                language={isExecutableJs ? 'javascript' : subTypeMeta.language}
+                placeholder={isExecutableJs ? 'return { /* payload */ };' : 'Enter raw request body'}
+                fileName={isExecutableJs ? 'expression' : `api-call-body.${activeSubType}`}
+                wrapInTemplate={isExecutableJs}
+                templateSettings={isExecutableJs ? { useAsyncDeclaration: true, functionName: 'getRequestBody' } : undefined}
+                availableConstants={isExecutableJs ? jsBodyConstants : undefined}
+                resultType={isExecutableJs ? JS_BODY_RESULT_TYPE : undefined}
                 style={{ height: 300 }}
               />
             </div>
