@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Button, Input, Radio, Select, Space, Table, Typography } from 'antd';
+import { Button, Checkbox, Input, Radio, Select, Space, Table, Tooltip, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { BodyType, IFormDataField, IRequestBody, IResponseTransformationConfiguration, RawBodySubType, RequestValue } from './models';
 import { RequestValueEditor } from './requestValueEditor';
@@ -152,10 +152,22 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
     const columns = [
       {
+        title: <Tooltip title="Include this field in the payload">Include</Tooltip>,
+        key: 'enabled',
+        width: '12%',
+        align: 'center' as const,
+        render: (_: any, row: IFormDataField, index: number) => (
+          <Checkbox
+            checked={row.enabled !== false}
+            onChange={(e) => handleFormDataUpdate(index, 'enabled', e.target.checked)}
+          />
+        ),
+      },
+      {
         title: 'Key',
         dataIndex: 'key',
         key: 'key',
-        width: '35%',
+        width: '30%',
         render: (text: string, _: IFormDataField, index: number) => (
           <Input
             value={text}
@@ -168,7 +180,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         title: 'Value',
         dataIndex: 'value',
         key: 'value',
-        width: '45%',
+        width: '43%',
         render: (value: RequestValue, _: IFormDataField, index: number) => (
           <RequestValueEditor
             value={value}
@@ -180,7 +192,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       {
         title: '',
         key: 'action',
-        width: '20%',
+        width: '15%',
         render: (_: any, __: IFormDataField, index: number) => (
           <Button
             type="text"
@@ -201,6 +213,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
           size="small"
           className={styles.requestTable}
           rowKey="rowKey"
+          rowClassName={(record: IFormDataField) => (record.enabled === false ? styles.disabledRow : '')}
         />
         <Button
           type="dashed"
