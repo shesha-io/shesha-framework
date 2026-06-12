@@ -1,10 +1,20 @@
 import React, { FC, useState } from 'react';
-import { Button, Input, Radio, Table, Typography, Tabs } from 'antd';
+import { Button, Input, Radio, Select, Space, Table, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { BodyType, IRequestBody, IGraphQLBody } from './models';
+import { BodyType, IFormDataField, IRequestBody, RawBodySubType, RequestValue } from './models';
+import { RequestValueEditor } from './requestValueEditor';
+import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
+import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { useStyles } from './styles';
 
-const { TextArea } = Input;
+const RAW_SUB_TYPES: { value: RawBodySubType; label: string; language: CodeLanguages }[] = [
+  { value: 'text', label: 'Text', language: 'plain_text' },
+  { value: 'json', label: 'JSON', language: 'json' },
+  { value: 'xml', label: 'XML', language: 'xml' },
+  { value: 'html', label: 'HTML', language: 'html' },
+  { value: 'javascript', label: 'JavaScript', language: 'javascript' },
+];
+
 const { Text } = Typography;
 
 export interface IBodyTabProps {
@@ -12,33 +22,28 @@ export interface IBodyTabProps {
   onChange: (body: IRequestBody) => void;
 }
 
-interface IFormDataRow {
-  key: string;
-  value: string;
-  enabled: boolean;
-}
-
 export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
   const { styles } = useStyles();
   const [jsonError, setJsonError] = useState<string | null>(null);
 
   const handleTypeChange = (type: BodyType): void => {
-    let content: string | Record<string, any> | IGraphQLBody = '';
+    let content: IRequestBody['content'] = '';
+    let rawSubType: RawBodySubType | undefined;
 
     if (type === 'json') {
-      content = {};
+      content = '';
     } else if (type === 'form-data' || type === 'x-www-form-urlencoded') {
-      content = JSON.stringify([]);
-    } else if (type === 'graphql') {
-      content = {
-        query: '',
-        variables: '{}',
-        operationName: '',
-      };
+      content = [] as IFormDataField[];
+    } else if (type === 'raw') {
+      rawSubType = body.rawSubType ?? 'text';
     }
 
-    onChange({ type, content });
+    onChange({ type, content, rawSubType });
     setJsonError(null);
+  };
+
+  const handleRawSubTypeChange = (rawSubType: RawBodySubType): void => {
+    onChange({ ...body, rawSubType });
   };
 
   const handleJsonChange = (value: string): void => {
@@ -61,51 +66,23 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
     onChange({ ...body, content: value });
   };
 
-  const getGraphQLBody = (): IGraphQLBody => {
-    if (typeof body.content === 'object' && body.content !== null && 'query' in body.content) {
-      return body.content as IGraphQLBody;
+  const parseFormData = (): IFormDataField[] => {
+    const raw = body.content;
+    if (Array.isArray(raw)) return raw as IFormDataField[];
+    if (typeof raw === 'string') {
+      // Legacy storage: JSON-stringified array
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
     }
-    return { query: '', variables: '{}', operationName: '' };
+    return [];
   };
 
-  const handleGraphQLQueryChange = (value: string): void => {
-    const graphqlBody = getGraphQLBody();
-    onChange({ ...body, content: { ...graphqlBody, query: value } });
-  };
-
-  const handleGraphQLVariablesChange = (value: string): void => {
-    const graphqlBody = getGraphQLBody();
-    onChange({ ...body, content: { ...graphqlBody, variables: value } });
-
-    if (!value.trim()) {
-      setJsonError(null);
-      return;
-    }
-
-    try {
-      JSON.parse(value);
-      setJsonError(null);
-    } catch (err) {
-      setJsonError('Invalid JSON in variables: ' + err.message);
-    }
-  };
-
-  const handleGraphQLOperationNameChange = (value: string): void => {
-    const graphqlBody = getGraphQLBody();
-    onChange({ ...body, content: { ...graphqlBody, operationName: value } });
-  };
-
-  const parseFormData = (): IFormDataRow[] => {
-    try {
-      const parsed = JSON.parse(body.content as string);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  };
-
-  const updateFormData = (rows: IFormDataRow[]): void => {
-    onChange({ ...body, content: JSON.stringify(rows) });
+  const updateFormData = (rows: IFormDataField[]): void => {
+    onChange({ ...body, content: rows });
   };
 
   const handleFormDataAdd = (): void => {
@@ -113,7 +90,11 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
     updateFormData([...rows, { key: '', value: '', enabled: true }]);
   };
 
-  const handleFormDataUpdate = (index: number, field: keyof IFormDataRow, value: any): void => {
+  const handleFormDataUpdate = <K extends keyof IFormDataField>(
+    index: number,
+    field: K,
+    value: IFormDataField[K],
+  ): void => {
     const rows = parseFormData();
     rows[index] = { ...rows[index], [field]: value };
     updateFormData(rows);
@@ -133,7 +114,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
         dataIndex: 'key',
         key: 'key',
         width: '35%',
-        render: (text: string, _: IFormDataRow, index: number) => (
+        render: (text: string, _: IFormDataField, index: number) => (
           <Input
             value={text}
             placeholder="Field name"
@@ -146,11 +127,11 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
         dataIndex: 'value',
         key: 'value',
         width: '45%',
-        render: (text: string, _: IFormDataRow, index: number) => (
-          <Input
-            value={text}
+        render: (value: RequestValue, _: IFormDataField, index: number) => (
+          <RequestValueEditor
+            value={value}
+            onChange={(v) => handleFormDataUpdate(index, 'value', v)}
             placeholder="Field value"
-            onChange={(e) => handleFormDataUpdate(index, 'value', e.target.value)}
           />
         ),
       },
@@ -158,7 +139,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
         title: '',
         key: 'action',
         width: '20%',
-        render: (_: any, __: IFormDataRow, index: number) => (
+        render: (_: any, __: IFormDataField, index: number) => (
           <Button
             type="text"
             danger
@@ -197,21 +178,27 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
       case 'none':
         return <Text type="secondary">This request does not have a body.</Text>;
 
-      case 'json':
+      case 'json': {
+        const jsonValue = typeof body.content === 'string'
+          ? body.content
+          : JSON.stringify(body.content, null, 2);
         return (
           <>
-            <div className="code-editor">
-              <TextArea
-                value={typeof body.content === 'string' ? body.content : JSON.stringify(body.content, null, 2)}
-                onChange={(e) => handleJsonChange(e.target.value)}
+            <div className={styles.codeEditorWrapper}>
+              <BaseCodeEditor
+                value={jsonValue}
+                onChange={(v) => handleJsonChange(v ?? '')}
+                language="json"
                 placeholder='{\n  "key": "value"\n}'
-                rows={12}
-                style={{ fontFamily: 'monospace' }}
+                fileName="api-call-body.json"
+                wrapInTemplate={false}
+                style={{ height: 300 }}
               />
             </div>
             {jsonError && <div className={styles.jsonError}>{jsonError}</div>}
           </>
         );
+      }
 
       case 'form-data':
         return (
@@ -227,73 +214,33 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
           </div>
         );
 
-      case 'raw':
+      case 'raw': {
+        const activeSubType = body.rawSubType ?? 'text';
+        const subTypeMeta = RAW_SUB_TYPES.find((s) => s.value === activeSubType) ?? RAW_SUB_TYPES[0];
         return (
-          <div className="code-editor">
-            <TextArea
-              value={body.content as string}
-              onChange={(e) => handleRawChange(e.target.value)}
-              placeholder="Enter raw request body"
-              rows={12}
-              style={{ fontFamily: 'monospace' }}
-            />
-          </div>
-        );
-
-      case 'graphql': {
-        const graphqlBody = getGraphQLBody();
-        return (
-          <div className="graphql-editor">
-            <Tabs
-              defaultActiveKey="query"
-              items={[
-                {
-                  key: 'query',
-                  label: 'Query',
-                  children: (
-                    <div className="code-editor">
-                      <TextArea
-                        value={graphqlBody.query}
-                        onChange={(e) => handleGraphQLQueryChange(e.target.value)}
-                        placeholder={'query {\n  users {\n    id\n    name\n  }\n}'}
-                        rows={14}
-                        style={{ fontFamily: 'monospace' }}
-                      />
-                    </div>
-                  ),
-                },
-                {
-                  key: 'variables',
-                  label: 'Variables',
-                  children: (
-                    <>
-                      <div className="code-editor">
-                        <TextArea
-                          value={graphqlBody.variables || '{}'}
-                          onChange={(e) => handleGraphQLVariablesChange(e.target.value)}
-                          placeholder={'{\n  "id": "123"\n}'}
-                          rows={14}
-                          style={{ fontFamily: 'monospace' }}
-                        />
-                      </div>
-                      {jsonError && <div className={styles.jsonError}>{jsonError}</div>}
-                    </>
-                  ),
-                },
-                {
-                  key: 'operation',
-                  label: 'Operation Name',
-                  children: (
-                    <Input
-                      value={graphqlBody.operationName}
-                      onChange={(e) => handleGraphQLOperationNameChange(e.target.value)}
-                      placeholder="Optional operation name"
-                    />
-                  ),
-                },
-              ]}
-            />
-          </div>
+          <>
+            <Space style={{ marginBottom: 8 }} size="small">
+              <Text type="secondary">Content type:</Text>
+              <Select<RawBodySubType>
+                value={activeSubType}
+                onChange={handleRawSubTypeChange}
+                options={RAW_SUB_TYPES.map((s) => ({ value: s.value, label: s.label }))}
+                style={{ width: 140 }}
+                size="small"
+              />
+            </Space>
+            <div className={styles.codeEditorWrapper}>
+              <BaseCodeEditor
+                value={typeof body.content === 'string' ? body.content : ''}
+                onChange={(v) => handleRawChange(v ?? '')}
+                language={subTypeMeta.language}
+                placeholder="Enter raw request body"
+                fileName={`api-call-body.${activeSubType}`}
+                wrapInTemplate={false}
+                style={{ height: 300 }}
+              />
+            </div>
+          </>
         );
       }
 
@@ -311,7 +258,6 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange }) => {
           <Radio.Button value="form-data">form-data</Radio.Button>
           <Radio.Button value="x-www-form-urlencoded">x-www-form-urlencoded</Radio.Button>
           <Radio.Button value="raw">raw</Radio.Button>
-          <Radio.Button value="graphql">GraphQL</Radio.Button>
         </Radio.Group>
       </div>
       {renderBodyContent()}

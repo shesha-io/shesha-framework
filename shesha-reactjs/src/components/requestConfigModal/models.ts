@@ -15,17 +15,23 @@ export interface IRequestHeader {
   enabled: boolean;
 }
 
-export type BodyType = 'none' | 'json' | 'form-data' | 'x-www-form-urlencoded' | 'raw' | 'graphql';
+export type BodyType = 'none' | 'json' | 'form-data' | 'x-www-form-urlencoded' | 'raw';
 
-export interface IGraphQLBody {
-  query: string;
-  variables?: string;
-  operationName?: string;
+export interface IFormDataField {
+  key: string;
+  value: RequestValue;
+  enabled: boolean;
 }
+
+export type RawBodySubType = 'text' | 'json' | 'xml' | 'html' | 'javascript';
 
 export interface IRequestBody {
   type: BodyType;
-  content: string | Record<string, any> | IGraphQLBody;
+  // form-data / x-www-form-urlencoded use IFormDataField[]; json/raw use string.
+  // Legacy storage of JSON-stringified form-data is still readable for back-compat.
+  content: string | Record<string, any> | IFormDataField[];
+  // Only used when type === 'raw'. Drives the request Content-Type header and the editor's syntax highlighting.
+  rawSubType?: RawBodySubType;
 }
 
 export interface IRequestConfig {

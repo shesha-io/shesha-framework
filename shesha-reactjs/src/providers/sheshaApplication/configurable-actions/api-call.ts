@@ -173,9 +173,15 @@ export const useApiCallAction = (): void => {
             case 'form-data':
             case 'x-www-form-urlencoded':
               try {
-                const formFields = JSON.parse(requestConfig.body.content as string);
-                requestBody = formFields.reduce((acc: any, field: any) => {
-                  if (field.key) acc[field.key] = field.value;
+                // New storage: typed array of fields. Legacy storage: JSON-stringified array.
+                const rawContent = requestConfig.body.content;
+                const formFields: Array<{ key: string; value: RequestValue; enabled?: boolean }> = Array.isArray(rawContent)
+                  ? rawContent
+                  : JSON.parse(rawContent as string);
+                requestBody = formFields.reduce((acc: any, field) => {
+                  if (field.key && field.enabled !== false) {
+                    acc[field.key] = resolveRequestValue(field.value);
+                  }
                   return acc;
                 }, {});
                 if (requestConfig.body.type === 'x-www-form-urlencoded' && !finalHeaders['Content-Type']) {
@@ -185,45 +191,21 @@ export const useApiCallAction = (): void => {
                 requestBody = requestConfig.body.content;
               }
               break;
-            case 'raw':
+            case 'raw': {
               requestBody = requestConfig.body.content;
-              break;
-            case 'graphql':
-              try {
-                const graphqlBody = requestConfig.body.content as any;
-                const payload: any = {
-                  query: graphqlBody.query,
-                };
-
-                // Parse and add variables if provided
-                if (graphqlBody.variables) {
-                  try {
-                    const parsedVariables = typeof graphqlBody.variables === 'string'
-                      ? JSON.parse(graphqlBody.variables)
-                      : graphqlBody.variables;
-                    if (parsedVariables && Object.keys(parsedVariables).length > 0) {
-                      payload.variables = parsedVariables;
-                    }
-                  } catch {
-                    // If variables parsing fails, skip them
-                  }
-                }
-
-                // Add operation name if provided
-                if (graphqlBody.operationName) {
-                  payload.operationName = graphqlBody.operationName;
-                }
-
-                requestBody = payload;
-
-                // Set Content-Type for GraphQL
-                if (!finalHeaders['Content-Type']) {
-                  finalHeaders['Content-Type'] = 'application/json';
-                }
-              } catch {
-                requestBody = requestConfig.body.content;
+              const rawSubType = requestConfig.body.rawSubType ?? 'text';
+              const rawContentTypeMap: Record<string, string> = {
+                text: 'text/plain',
+                json: 'application/json',
+                xml: 'application/xml',
+                html: 'text/html',
+                javascript: 'application/javascript',
+              };
+              if (!finalHeaders['Content-Type']) {
+                finalHeaders['Content-Type'] = rawContentTypeMap[rawSubType] ?? 'text/plain';
               }
               break;
+            }
           }
         }
       } else {

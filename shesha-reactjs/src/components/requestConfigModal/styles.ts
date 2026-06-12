@@ -89,6 +89,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     font-size: 12px;
   `);
 
+  const codeEditorWrapper = cx(`${prefixCls}-code-editor-wrapper`, css`
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+    overflow: hidden;
+  `);
+
   return {
     requestConfigModal,
     modalContent,
@@ -98,5 +104,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     bodyTypeSelector,
     bodyEditor,
     jsonError,
+    codeEditorWrapper,
   };
 });
