@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Button, Checkbox, Input, Radio, Select, Space, Table, Tooltip, Typography } from 'antd';
+import { AutoComplete, Button, Checkbox, Radio, Select, Space, Table, Tooltip, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { BodyType, IFormDataField, IRequestBody, IResponseTransformationConfiguration, RawBodySubType, RequestValue } from './models';
 import { RequestValueEditor } from './requestValueEditor';
@@ -8,6 +8,8 @@ import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor
 import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { DataTypes } from '@/interfaces';
+import { asPropertiesArray } from '@/interfaces/metadata';
+import { useMetadata } from '@/providers';
 import { useStyles } from './styles';
 
 // The raw JavaScript body is executed as a script that returns the payload, so its wrapper reads
@@ -60,6 +62,14 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   // pageContext, selectedRow, …). `response` is intentionally excluded — it doesn't exist yet when
   // the request body is being built. Mirrors what the executer provides at runtime.
   const jsBodyConstants = useAvailableConstantsMetadata({ addGlobalConstants: true });
+
+  // Properties of the model the host form is bound to (if any) — offered as autocomplete suggestions
+  // for form-data field keys. Undefined when there's no metadata context; free typing always works.
+  const metadataCtx = useMetadata(false);
+  const keyOptions = asPropertiesArray(metadataCtx?.metadata?.properties, []).map((p) => ({
+    value: p.path,
+    label: p.path,
+  }));
 
   const handleViewChange = (next: BodyView): void => {
     setView(next);
@@ -180,10 +190,16 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         key: 'key',
         width: '30%',
         render: (text: string, _: IFormDataField, index: number) => (
-          <Input
+          <AutoComplete
             value={text}
+            options={keyOptions}
             placeholder="Field name"
-            onChange={(e) => handleFormDataUpdate(index, 'key', e.target.value)}
+            style={{ width: '100%' }}
+            // Suggest model properties but let the user type any key (free text).
+            filterOption={(input, option) =>
+              String(option?.value ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            onChange={(value) => handleFormDataUpdate(index, 'key', value ?? '')}
           />
         ),
       },
