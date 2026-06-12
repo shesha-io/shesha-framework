@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { nanoid } from '@/utils/uuid';
 import { useSheshaApplication } from "@/providers";
-import { useAvailableConstantsData } from '@/providers/form/utils';
+import { useAvailableConstantsData, evaluateString, genericActionArgumentsEvaluator } from '@/providers/form/utils';
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import axios, { Method } from 'axios';
 import { IKeyValue } from "@/interfaces/keyValue";
@@ -139,7 +139,21 @@ export const useApiCallAction = (): void => {
     sortOrder: 5,
     hasArguments: true,
     argumentsFormMarkup: getApiCallArgumentsForm,
-    executer: (actionArgs, _context) => {
+    // Evaluate arguments normally (params/headers/url get their Mustache resolved), but keep the
+    // JSON/raw body template raw. A JSON body is one big string, and letting the generic pass run
+    // Mustache over it can blank tags before the body data is available; instead the executer
+    // evaluates it against the live execution context (same data params use). form-data field
+    // values stay evaluated here and are read via resolveRequestValue.
+    evaluateArguments: async (args, context) => {
+      const evaluated = await genericActionArgumentsEvaluator<IApiCallArguments>(args, context);
+      const srcBody = args?.requestConfig?.body;
+      const dstBody = evaluated?.requestConfig?.body;
+      if (dstBody && srcBody && (srcBody.type === 'json' || srcBody.type === 'raw') && typeof srcBody.content === 'string') {
+        dstBody.content = srcBody.content;
+      }
+      return evaluated;
+    },
+    executer: (actionArgs, context) => {
       const {
         url,
         verb,
@@ -194,9 +208,14 @@ export const useApiCallAction = (): void => {
           switch (requestConfig.body.type) {
             case 'json':
               try {
-                requestBody = typeof requestConfig.body.content === 'string'
-                  ? JSON.parse(requestConfig.body.content)
+                // Resolve Mustache in the JSON body against the live execution context (data,
+                // globalState, etc.) before parsing, so e.g. {"name":"{{data.firstName}}"} works.
+                const evaluatedJson = typeof requestConfig.body.content === 'string'
+                  ? evaluateString(requestConfig.body.content, context as object)
                   : requestConfig.body.content;
+                requestBody = typeof evaluatedJson === 'string'
+                  ? JSON.parse(evaluatedJson)
+                  : evaluatedJson;
               } catch {
                 requestBody = requestConfig.body.content;
               }
@@ -226,7 +245,10 @@ export const useApiCallAction = (): void => {
               }
               break;
             case 'raw': {
-              requestBody = requestConfig.body.content;
+              // Resolve Mustache in the raw body against the live execution context.
+              requestBody = typeof requestConfig.body.content === 'string'
+                ? evaluateString(requestConfig.body.content, context as object)
+                : requestConfig.body.content;
               const rawSubType = requestConfig.body.rawSubType ?? 'text';
               const rawContentTypeMap: Record<string, string> = {
                 text: 'text/plain',

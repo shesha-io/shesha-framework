@@ -36,6 +36,20 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [view, setView] = useState<BodyView>(body.type);
 
+  // Remembers each body type's content while the user toggles between formats, so switching tabs
+  // never wipes what was entered. Seeded from the incoming body; entries are only emptied by the
+  // explicit Clear button. The persisted request still carries a single `content` (the active type).
+  const [contentByType, setContentByType] = useState<Partial<Record<BodyType, IRequestBody['content']>>>(
+    () => ({ [body.type]: body.content }),
+  );
+
+  // Remember the raw sub-type (Text/JSON/XML/…) so leaving and returning to the "raw" tab keeps the
+  // last choice instead of resetting to "text".
+  const [lastRawSubType, setLastRawSubType] = useState<RawBodySubType>(body.rawSubType ?? 'text');
+
+  const defaultContentFor = (type: BodyType): IRequestBody['content'] =>
+    type === 'form-data' || type === 'x-www-form-urlencoded' ? ([] as IFormDataField[]) : '';
+
   const handleViewChange = (next: BodyView): void => {
     setView(next);
     // Only real body types mutate the request body; "transformation" leaves the body untouched.
@@ -45,26 +59,34 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   };
 
   const handleTypeChange = (type: BodyType): void => {
-    let content: IRequestBody['content'] = '';
-    let rawSubType: RawBodySubType | undefined;
-
-    if (type === 'json') {
-      content = '';
-    } else if (type === 'form-data' || type === 'x-www-form-urlencoded') {
-      content = [] as IFormDataField[];
-    } else if (type === 'raw') {
-      rawSubType = body.rawSubType ?? 'text';
-    }
+    // Restore the previously-entered content for this type instead of resetting it.
+    const stashed = contentByType[type];
+    const content = stashed !== undefined ? stashed : defaultContentFor(type);
+    const rawSubType = type === 'raw' ? lastRawSubType : undefined;
 
     onChange({ type, content, rawSubType });
     setJsonError(null);
   };
 
+  const handleClear = (): void => {
+    if (view === 'transformation') {
+      onTransformationChange?.({ enabled: false, script: '' });
+      return;
+    }
+    const type = view as BodyType;
+    const cleared = defaultContentFor(type);
+    setContentByType((prev) => ({ ...prev, [type]: cleared }));
+    onChange({ ...body, content: cleared });
+    setJsonError(null);
+  };
+
   const handleRawSubTypeChange = (rawSubType: RawBodySubType): void => {
+    setLastRawSubType(rawSubType);
     onChange({ ...body, rawSubType });
   };
 
   const handleJsonChange = (value: string): void => {
+    setContentByType((prev) => ({ ...prev, json: value }));
     onChange({ ...body, content: value });
 
     if (!value.trim()) {
@@ -81,6 +103,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   };
 
   const handleRawChange = (value: string): void => {
+    setContentByType((prev) => ({ ...prev, raw: value }));
     onChange({ ...body, content: value });
   };
 
@@ -100,6 +123,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   };
 
   const updateFormData = (rows: IFormDataField[]): void => {
+    setContentByType((prev) => ({ ...prev, [body.type]: rows }));
     onChange({ ...body, content: rows });
   };
 
@@ -276,9 +300,16 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     }
   };
 
+  // Whether the current view has anything worth clearing (drives the Clear button's enabled state).
+  const hasContent = view === 'transformation'
+    ? Boolean(transformation?.enabled || transformation?.script?.trim())
+    : typeof body.content === 'string'
+      ? Boolean(body.content.trim())
+      : Array.isArray(body.content) && body.content.length > 0;
+
   return (
     <div className={styles.bodyEditor}>
-      <div className={styles.bodyTypeSelector}>
+      <div className={styles.bodyTypeSelector} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value)}>
           <Radio.Button value="none">none</Radio.Button>
           <Radio.Button value="json">JSON</Radio.Button>
@@ -287,6 +318,14 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
           <Radio.Button value="raw">raw</Radio.Button>
           <Radio.Button value="transformation">Transformation</Radio.Button>
         </Radio.Group>
+        <Button
+          size="small"
+          icon={<DeleteOutlined />}
+          onClick={handleClear}
+          disabled={view === 'none' || !hasContent}
+        >
+          Clear
+        </Button>
       </div>
       {renderBodyContent()}
     </div>
