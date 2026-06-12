@@ -12,7 +12,7 @@ export const getConfigurationNotFoundMessage = (configurationType: string, confi
 };
 
 export const getFormNotFoundMessage = (formId: FormIdentifier | undefined): string => getConfigurationNotFoundMessage("Form", formId);
-export const getReferenceListNotFoundMessage = (refListId?: IReferenceListIdentifier): string => getConfigurationNotFoundMessage("Reference list", refListId);
+export const getReferenceListNotFoundMessage = (refListId: IReferenceListIdentifier): string => getConfigurationNotFoundMessage("Reference list", refListId);
 
 export const getConfigurationForbiddenMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
   if (configurationId && isConfigurableItemRawId(configurationId)) return `You are not authorized to access the ${configurationType} with id='${configurationId}'`;
@@ -40,7 +40,13 @@ export const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto, r
     description: dto.description,
     modelType: dto.modelType,
     markup: markupWithSettings?.components ?? null,
-    settings: markupWithSettings?.formSettings ?? null,
+    settings: markupWithSettings?.formSettings ?? {
+      layout: 'horizontal',
+      labelCol: { span: 6 },
+      wrapperCol: { span: 18 },
+      colon: true,
+      modelType: dto.modelType ?? undefined,
+    },
     access: dto.access,
     permissions: dto.permissions,
     readOnly: readOnly,
@@ -60,15 +66,6 @@ export const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto, r
     }
     result.settings.access = normalizedAccess;
     result.settings.permissions = result.settings.permissions ?? dto.permissions;
-    // fall back to the DTO's modelType for forms created with an entity selected
-    // but no template, where the markup's formSettings.modelType is empty (#4986)
-    const hasSettingsModelType =
-      typeof result.settings.modelType === 'string'
-        ? result.settings.modelType.trim().length > 0
-        : result.settings.modelType != null;
-    result.settings.modelType = hasSettingsModelType
-      ? result.settings.modelType
-      : dto.modelType ?? undefined;
   }
 
   return result;
