@@ -145,6 +145,9 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
 
   const url = getUrlFromValue(props.value);
 
+  // AutoComplete clones its single child to wire up the input, so the child must be a
+  // plain <Input>. Prefix/suffix are rendered as Space.Addon siblings (antd v6 replacement
+  // for the deprecated Input addonBefore/addonAfter), not nested inside the AutoComplete.
   const autocomplete = (
     <AutoComplete
       disabled={readOnly}
@@ -152,24 +155,34 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       options={options}
       onSelect={onChangeUrl}
       onChange={onChangeUrl}
-      showSearch={{ onSearch: handleSearch }}
+      onSearch={handleSearch}
       notFoundContent={null}
-      // size={props.size}
+      style={{ width: "100%" }}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
     >
-      <Input addonBefore={props.prefix} addonAfter={props.suffix} size={props.size} />
+      <Input size={props.size} />
     </AutoComplete>
   );
+
+  const autocompleteWithAddons = props.prefix || props.suffix
+    ? (
+      <Space.Compact style={{ width: "100%" }}>
+        {props.prefix && <Space.Addon>{props.prefix}</Space.Addon>}
+        {autocomplete}
+        {props.suffix && <Space.Addon>{props.suffix}</Space.Addon>}
+      </Space.Compact>
+    )
+    : autocomplete;
 
   return mode === 'endpoint'
     ? (
       <Space.Compact style={{ width: "100%" }}>
         <VerbSelector verbs={props.availableHttpVerbs} onChange={onVerbChange} value={isApiEndpoint(props.value) ? props.value.httpVerb : null} size={props.size} />
-        {autocomplete}
+        {autocompleteWithAddons}
       </Space.Compact>
     )
     : (
-      <>{autocomplete}</>
+      <>{autocompleteWithAddons}</>
     );
 };
