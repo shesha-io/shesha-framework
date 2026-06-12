@@ -45,6 +45,7 @@ import { LayerSelectorSettingsModalWrapper } from "./layerSelectorSettingsModal"
 import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
 import { SectionSeparatorWrapper } from "./sectionSeparator";
 import { UnwrapCodeEvaluators } from "@/providers/form/models";
+import { RequestConfigButtonWrapper } from "./requestConfigButton";
 
 
 type InputType = ISettingsInputProps['type'];
@@ -93,6 +94,7 @@ export const editorRegistry: EditorDictionary = {
   Password: PasswordWrapper,
   date: DateWrapper,
   layerSelectorSettingsModal: LayerSelectorSettingsModalWrapper,
+  requestConfigButton: RequestConfigButtonWrapper,
   // TODO: check usages and remove or implement wrapper
   settingsInput: undefined,
   endpointsAutocomplete: EndpointsAutocompleteWrapper,

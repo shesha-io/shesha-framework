@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphQL API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea {
+            font-family: 'Monaco', 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        button {
+            background: #1890ff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #40a9ff;
+        }
+
+        button:disabled {
+            background: #d9d9d9;
+            cursor: not-allowed;
+        }
+
+        .response {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .response.show {
+            display: block;
+        }
+
+        .response h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .response pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #1890ff;
+            border-bottom-color: #1890ff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .examples {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            border-radius: 4px;
+        }
+
+        .examples h4 {
+            margin-bottom: 10px;
+            color: #0050b3;
+        }
+
+        .example-btn {
+            background: white;
+            color: #1890ff;
+            border: 1px solid #1890ff;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .example-btn:hover {
+            background: #e6f7ff;
+        }
+
+        .error {
+            background: #fff2f0;
+            border-left-color: #ff4d4f;
+        }
+
+        .success {
+            background: #f6ffed;
+            border-left-color: #52c41a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GraphQL API Tester</h1>
+        <p class="subtitle">Test your GraphQL queries before using them in Shesha</p>
+
+        <div class="form-group">
+            <label>GraphQL Endpoint</label>
+            <input type="text" id="endpoint" value="https://countries.trevorblades.com/" placeholder="https://api.example.com/graphql">
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('query')">Query</button>
+            <button class="tab" onclick="switchTab('variables')">Variables</button>
+            <button class="tab" onclick="switchTab('headers')">Headers</button>
+        </div>
+
+        <div id="query-tab" class="tab-content active">
+            <div class="form-group">
+                <label>GraphQL Query</label>
+                <textarea id="query" rows="10" placeholder="query { ... }">query {
+  countries {
+    code
+    name
+    capital
+    emoji
+  }
+}</textarea>
+            </div>
+        </div>
+
+        <div id="variables-tab" class="tab-content">
+            <div class="form-group">
+                <label>Variables (JSON)</label>
+                <textarea id="variables" rows="10" placeholder='{ "key": "value" }'>{}</textarea>
+            </div>
+        </div>
+
+        <div id="headers-tab" class="tab-content">
+            <div class="form-group">
+                <label>Custom Headers (JSON)</label>
+                <textarea id="headers" rows="10" placeholder='{ "Authorization": "Bearer token" }'>{}</textarea>
+            </div>
+        </div>
+
+        <button onclick="executeQuery()" id="executeBtn">Execute Query</button>
+
+        <div class="examples">
+            <h4>Quick Examples:</h4>
+            <button class="example-btn" onclick="loadExample('countries')">Countries API</button>
+            <button class="example-btn" onclick="loadExample('countriesWithVar')">Countries with Variables</button>
+            <button class="example-btn" onclick="loadExample('spacex')">SpaceX API</button>
+            <button class="example-btn" onclick="loadExample('rickmorty')">Rick & Morty</button>
+        </div>
+
+        <div id="response" class="response">
+            <h3 id="responseTitle">Response</h3>
+            <pre id="responseBody"></pre>
+        </div>
+    </div>
+
+    <script>
+        const examples = {
+            countries: {
+                endpoint: 'https://countries.trevorblades.com/',
+                query: `query {
+  countries {
+    code
+    name
+    capital
+    emoji
+  }
+}`,
+                variables: '{}',
+                headers: '{}'
+            },
+            countriesWithVar: {
+                endpoint: 'https://countries.trevorblades.com/',
+                query: `query GetCountry($code: ID!) {
+  country(code: $code) {
+    name
+    native
+    capital
+    emoji
+    currency
+    languages {
+      code
+      name
+    }
+  }
+}`,
+                variables: '{\n  "code": "ZA"\n}',
+                headers: '{}'
+            },
+            spacex: {
+                endpoint: 'https://spacex-production.up.railway.app/',
+                query: `query {
+  launchLatest {
+    mission_name
+    launch_date_local
+    launch_success
+    rocket {
+      rocket_name
+    }
+  }
+}`,
+                variables: '{}',
+                headers: '{}'
+            },
+            rickmorty: {
+                endpoint: 'https://rickandmortyapi.com/graphql',
+                query: `query {
+  characters(page: 1) {
+    results {
+      id
+      name
+      status
+      species
+    }
+  }
+}`,
+                variables: '{}',
+                headers: '{}'
+            }
+        };
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        function loadExample(exampleName) {
+            const example = examples[exampleName];
+            document.getElementById('endpoint').value = example.endpoint;
+            document.getElementById('query').value = example.query;
+            document.getElementById('variables').value = example.variables;
+            document.getElementById('headers').value = example.headers;
+
+            // Switch to query tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('query-tab').classList.add('active');
+        }
+
+        async function executeQuery() {
+            const endpoint = document.getElementById('endpoint').value;
+            const query = document.getElementById('query').value;
+            const variablesText = document.getElementById('variables').value;
+            const headersText = document.getElementById('headers').value;
+
+            const responseDiv = document.getElementById('response');
+            const responseTitle = document.getElementById('responseTitle');
+            const responseBody = document.getElementById('responseBody');
+            const executeBtn = document.getElementById('executeBtn');
+
+            // Validate
+            if (!endpoint || !query) {
+                alert('Please provide endpoint and query');
+                return;
+            }
+
+            // Parse variables and headers
+            let variables = {};
+            let customHeaders = {};
+
+            try {
+                variables = JSON.parse(variablesText || '{}');
+            } catch (e) {
+                alert('Invalid JSON in variables: ' + e.message);
+                return;
+            }
+
+            try {
+                customHeaders = JSON.parse(headersText || '{}');
+            } catch (e) {
+                alert('Invalid JSON in headers: ' + e.message);
+                return;
+            }
+
+            // Prepare request
+            const body = {
+                query: query
+            };
+
+            if (Object.keys(variables).length > 0) {
+                body.variables = variables;
+            }
+
+            // Show loading
+            executeBtn.disabled = true;
+            executeBtn.textContent = 'Executing...';
+            responseDiv.classList.remove('success', 'error');
+            responseDiv.classList.add('show');
+            responseTitle.textContent = 'Loading...';
+            responseBody.textContent = 'Sending request...';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...customHeaders
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    responseDiv.classList.add('success');
+                    responseTitle.textContent = `✓ Response (${response.status} ${response.statusText})`;
+                    responseBody.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    responseDiv.classList.add('error');
+                    responseTitle.textContent = `✗ Error (${response.status} ${response.statusText})`;
+                    responseBody.textContent = JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                responseDiv.classList.add('error');
+                responseTitle.textContent = '✗ Network Error';
+                responseBody.textContent = error.message + '\n\nThis might be a CORS issue. The API might not allow requests from this domain.';
+            } finally {
+                executeBtn.disabled = false;
+                executeBtn.textContent = 'Execute Query';
+            }
+        }
+
+        // Allow Enter to execute in single-line inputs
+        document.getElementById('endpoint').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') executeQuery();
+        });
+    </script>
+</body>
+</html>
