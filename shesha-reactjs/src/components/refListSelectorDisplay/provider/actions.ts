@@ -1,5 +1,6 @@
-import { createAction } from 'redux-actions';
+import { createAction } from '@reduxjs/toolkit';
 import { ISettingsUpdatePayload, IUpdateChildItemsPayload, IUpdateItemSettingsPayload } from './contexts';
+import { IReferenceListItem } from '@/interfaces/referenceList';
 
 export enum RefListItemGroupActionEnums {
   UpdateItem = 'UPDATE_ITEM',
@@ -9,20 +10,12 @@ export enum RefListItemGroupActionEnums {
   StoreSettings = 'STORE_SETTINGS',
 }
 
-export const setItems = createAction<any[], any[]>(RefListItemGroupActionEnums.SetItems, (p) => p);
+export const setItems = createAction<IReferenceListItem[]>(RefListItemGroupActionEnums.SetItems);
 
-export const selectItemAction = createAction<string, string>(RefListItemGroupActionEnums.SelectItem, (p) => p);
+export const selectItemAction = createAction<string>(RefListItemGroupActionEnums.SelectItem);
 
-export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
-  RefListItemGroupActionEnums.UpdateItem,
-  (p) => p,
-);
+export const updateItemAction = createAction<IUpdateItemSettingsPayload>(RefListItemGroupActionEnums.UpdateItem);
 
-export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
-  RefListItemGroupActionEnums.UpdateChildItems,
-  (p) => p,
-);
+export const updateChildItemsAction = createAction<IUpdateChildItemsPayload>(RefListItemGroupActionEnums.UpdateChildItems);
 
-export const storeSettingsAction = createAction<ISettingsUpdatePayload>(
-  RefListItemGroupActionEnums.StoreSettings,
-);
+export const storeSettingsAction = createAction<ISettingsUpdatePayload>(RefListItemGroupActionEnums.StoreSettings);

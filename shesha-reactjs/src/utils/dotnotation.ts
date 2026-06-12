@@ -1,3 +1,5 @@
+import { isDefined, isNullOrWhiteSpace } from "./nullables";
+
 // Helper type to increment the depth counter
 type AddOne<N extends number> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10][N];
 
@@ -58,7 +60,27 @@ export const splitDotNotation = (path: string): [string, string] => {
  * @param {string} propertyPath - The dot notation path to the property value to retrieve.
  * @returns {unknown} The retrieved property value or undefined if the path does not exist or the container is undefined.
  */
-export const getNestedPropertyValue = (container: unknown | undefined, propertyPath: string): unknown => {
+export const getNestedPropertyValue = (container: unknown | undefined, propertyPath: string): unknown | undefined => {
+  if (!isDefined(container) || isNullOrWhiteSpace(propertyPath))
+    return undefined;
   const path = propertyPath.split('.');
-  return path.reduce((prev, part) => (prev && typeof (prev) === 'object' && part in prev ? (prev as Record<string, unknown>)[part] : undefined), container);
+  return path.reduce((prev, part) => (prev && typeof (prev) === 'object' && part in prev ? (prev as Record<string, unknown>)[part] : undefined), container as unknown);
+};
+
+/**
+ * Retrieves a nested property value from an object container using an array path.
+ *
+ * @example
+ * const container = { a: { b: { c: 1 } } };
+ * const value = getNestedPropertyValue(container, ['a', 'b', 'c']);
+ * console.log(value); // prints 1
+ *
+ * @param {unknown | undefined} container - The object container to retrieve the property value from.
+ * @param {string[]} path - Array that represents path to property value to retrieve.
+ * @returns {unknown} The retrieved property value or undefined if the path does not exist or the container is undefined.
+ */
+export const getNestedPropertyValueByPath = (container: unknown | undefined, path: string[]): unknown | undefined => {
+  if (!isDefined(container) || path.length === 0)
+    return undefined;
+  return path.reduce((prev, part) => (prev && typeof (prev) === 'object' && part in prev ? (prev as Record<string, unknown>)[part] : undefined), container as unknown);
 };

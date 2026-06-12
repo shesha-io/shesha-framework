@@ -1,11 +1,11 @@
-import React, { FC } from "react";
+import React, { ReactNode } from "react";
 import { ListEditorSectionRenderingArgs } from "@/components/listEditor";
 import { ISidebarGroup, ISidebarMenuItem, isSidebarGroup } from "@/interfaces/sidebar";
 import { nanoid } from "@/utils/uuid";
 import { Button, Divider } from "antd";
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
-export const ItemGroupHeader: FC<ListEditorSectionRenderingArgs<ISidebarMenuItem>> = ({ contextAccessor, level, parentItem }) => {
+export const ItemGroupHeader = ({ contextAccessor, level, parentItem }: ListEditorSectionRenderingArgs<ISidebarMenuItem>): ReactNode => {
   const { addItem, readOnly } = contextAccessor();
   const { styles } = useStyles();
 
@@ -15,7 +15,7 @@ export const ItemGroupHeader: FC<ListEditorSectionRenderingArgs<ISidebarMenuItem
 
   const onAddGroupClick = (): void => {
     addItem((items) => {
-      const itemsCount = (items ?? []).length;
+      const itemsCount = items.length;
       const itemNo = itemsCount + 1;
 
       const group: ISidebarGroup = {
@@ -40,7 +40,7 @@ export const ItemGroupHeader: FC<ListEditorSectionRenderingArgs<ISidebarMenuItem
           <Button onClick={onAddItemClick} type="primary">Add New Item</Button>
         </div>
       )
-      : !(parent.childItems?.length)
+      : parent && !(parent.childItems?.length)
         ? (
           <Divider style={{ marginTop: 0, marginBottom: 0 }}>
             <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>

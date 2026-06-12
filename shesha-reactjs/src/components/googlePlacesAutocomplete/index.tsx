@@ -7,6 +7,8 @@ import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useStyles } from './styles/styles';
 import { IStyleType } from '@/interfaces';
+import { getElement, isNonEmptyArray } from '@/utils/array';
+import { throwError } from '@/utils/errors';
 
 export interface IAddressAndCoords {
   address: string;
@@ -26,28 +28,27 @@ interface ISuggestion {
 }
 
 export interface IGooglePlacesAutocompleteProps {
-  disableGoogleEvent?: (value: string) => boolean;
-  debounce?: number;
-  externalLoader?: boolean;
-  isInvalid?: boolean;
-  onGeocodeChange?: (payload?: IAddressAndCoords) => void;
-  onChange?: (payload?: string) => void;
-  value?: string;
-  selectedValue?: string;
-  help?: string;
-  placeholder?: string;
-  prefix?: string;
-  label?: string;
-  disabled?: boolean;
-  ignoreText?: string;
-  tabIndex?: number;
-  biasedCoordinates?: LatLngPolygon | PointPolygon;
-  style?: CSSProperties;
-  size?: SizeType;
-  font?: IStyleType['font'];
-  searchOptions?: PropTypes['searchOptions'];
-  onFocus?: (payload: any) => void;
-  onBlur?: (payload: string) => void;
+  disableGoogleEvent?: ((value: string) => boolean) | undefined;
+  debounce?: number | undefined;
+  externalLoader?: boolean | undefined;
+  isInvalid?: boolean | undefined;
+  onGeocodeChange?: ((payload: IAddressAndCoords) => Promise<void>) | undefined;
+  onChange?: ((payload: string) => void) | undefined;
+  value?: string | undefined;
+  selectedValue?: string | undefined;
+  help?: string | undefined;
+  placeholder?: string | undefined;
+  prefix?: string | undefined;
+  label?: string | undefined;
+  disabled?: boolean | undefined;
+  ignoreText?: string | undefined;
+  tabIndex?: number | undefined;
+  biasedCoordinates?: LatLngPolygon | PointPolygon | undefined;
+  style?: CSSProperties | undefined;
+  size?: SizeType | undefined;
+  font?: IStyleType['font'] | undefined;
+  searchOptions?: PropTypes['searchOptions'] | undefined;
+  onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
 }
 
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
@@ -85,7 +86,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
         if (localAddress) {
           onChange(localAddress);
         } else {
-          onChange(null);
+          onChange("");
         }
       }
     } catch {
@@ -99,11 +100,13 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
         onChange(localAddress);
       }
       geocodeByAddress(localAddress)
-        .then((results) => getLatLng(results[0]))
+        .then((results) => {
+          return isNonEmptyArray(results) ? getLatLng(results[0]) : throwError("Failed to get coords");
+        })
         .then(({ lat, lng }) => {
           if (biasedCoordinates) {
             if (pointsInPolygon([lat, lng], biasedCoordinates)) {
-              onGeocodeChange({
+              void onGeocodeChange?.({
                 address: localAddress,
                 lat,
                 lng,
@@ -116,7 +119,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
               });
             }
           } else {
-            onGeocodeChange({
+            void onGeocodeChange?.({
               address: localAddress,
               lat,
               lng,
@@ -135,29 +138,29 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const inputPrefix = externalLoader ? <LoadingOutlined /> : <SearchOutlined />;
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
-    if (!suggestionRef.current || suggestionRef?.current?.length === 0) return;
+    if (!isNonEmptyArray(suggestionRef.current)) return;
 
     const suggestions = suggestionRef.current;
 
     const foundIndex = highlightedPlaceId
-      ? suggestions?.map(({ placeId }) => placeId)?.indexOf(highlightedPlaceId)
+      ? suggestions.map(({ placeId }) => placeId).indexOf(highlightedPlaceId)
       : -1;
 
     const firstIndex = 0;
 
-    const lastIndex = suggestions?.length - 1;
+    const lastIndex = suggestions.length - 1;
 
     if (event.key === Keys.ArrowUp || event.key === Keys.ArrowDown) {
-      let suggestion: ISuggestion;
+      let suggestion: ISuggestion | undefined = undefined;
 
       if (event.key === Keys.ArrowUp) {
         if (!highlightedPlaceId) {
-          suggestion = suggestions[lastIndex]; // Return the last one if the highlighted is empty
+          suggestion = getElement(suggestions, lastIndex); // Return the last one if the highlighted is empty
         } else {
           if (foundIndex === firstIndex) {
-            suggestion = suggestions[lastIndex]; // It's the first one, go to the last one
+            suggestion = getElement(suggestions, lastIndex); // It's the first one, go to the last one
           } else {
-            suggestion = suggestions[foundIndex - 1]; // Go to the previous one
+            suggestion = getElement(suggestions, foundIndex - 1); // Go to the previous one
           }
         }
       } else if (event.key === Keys.ArrowDown) {
@@ -167,18 +170,18 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
           if (foundIndex === lastIndex) {
             suggestion = suggestions[firstIndex]; // It's the last element, so select the first one
           } else {
-            suggestion = suggestions[foundIndex + 1]; // Go to the next one
+            suggestion = getElement(suggestions, foundIndex + 1); // Go to the next one
           }
         }
       }
 
-      setHighlightedPlaceId(suggestion.placeId);
+      setHighlightedPlaceId(suggestion?.placeId ?? "");
     } else if (event.key === Keys.Enter) {
       if (highlightedPlaceId) {
-        const foundDescription = suggestions?.find(({ placeId }) => placeId === highlightedPlaceId)?.description;
+        const foundDescription = suggestions.find(({ placeId }) => placeId === highlightedPlaceId)?.description;
 
         if (foundDescription) {
-          handleSelect(ignoreText ? foundDescription?.replace(ignoreText, '') : foundDescription);
+          handleSelect(ignoreText ? foundDescription.replace(ignoreText, '') : foundDescription);
           setShowSuggestionsDropdownContainer(false);
         }
       }
@@ -189,9 +192,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
 
   const onBlur = (): void => setShowSuggestionsDropdownContainer(false);
 
-  const handleFocus = (event): void => onFocus(event);
   return (
-    // @ts-ignore
     <PlacesAutocomplete
       value={(prefix ? `${prefix} ${displayValue}` : displayValue) ?? ''}
       onChange={handleChange}
@@ -220,7 +221,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                       target: { value: realValue },
                     } = e;
                     handleChange(realValue);
-                    if (!disableGoogleEvent?.(value)) {
+                    if (!disableGoogleEvent?.(value ?? "")) {
                       inputProps.onChange(e);
                     }
                   }
@@ -228,11 +229,11 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                 allowClear
                 placeholder={placeholder}
                 prefix={inputPrefix}
-                disabled={disabled}
+                disabled={disabled ?? false}
                 tabIndex={tabIndex}
                 onKeyDown={onKeyDown}
                 onBlur={onBlur}
-                onFocus={handleFocus}
+                onFocus={onFocus}
                 style={style}
                 size={size}
               />
@@ -253,11 +254,11 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                 <div
                   {...getSuggestionItemProps(localSuggestion)}
                   className={classNames(styles.suggestionContainer, {
-                    highlighted: highlightedPlaceId === localSuggestion?.placeId,
+                    highlighted: highlightedPlaceId === localSuggestion.placeId,
                   })}
-                  key={localSuggestion?.placeId}
+                  key={localSuggestion.placeId}
                 >
-                  <div className={styles.suggestion}>{localSuggestion?.description}</div>
+                  <div className={styles.suggestion}>{localSuggestion.description}</div>
                 </div>
               );
             })}

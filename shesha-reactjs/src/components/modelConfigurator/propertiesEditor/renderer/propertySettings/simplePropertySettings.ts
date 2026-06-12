@@ -36,12 +36,12 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
 
   return fbf(dataTabId)
     .addSettingsInput({ inputType: 'dropdown', propertyName: `${propName}dataType`, label: 'Data Type', validate: { required: true },
-      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
+      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' },
       dropdownOptions: type === 'full' ? typesFullList : typesArrayList,
       allowClear: true, tooltip: 'Select the data type for this property.',
       onChangeSetting: (_value, _data, setFormData) => {
         const newData = { formatting: { defaultEditor: null } };
-        setFormData({ values: newData, mergeValues: true });
+        setFormData?.({ values: newData, mergeValues: true });
       },
     })
 
@@ -72,10 +72,10 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
           ],
         })
         .addSettingsInput({ inputType: 'numberField', propertyName: `${propName}minLength`, label: 'Min Length',
-          editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false } as any,
+          editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false },
         })
         .addSettingsInput({ inputType: 'numberField', propertyName: `${propName}maxLength`, label: 'Max Length',
-          editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false } as any,
+          editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false },
         })
         .toJson(),
       ],
@@ -87,7 +87,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
       components: [...fbf(numberFormatId)
         .addSettingsInput({ inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'Number Format',
           validate: { required: true },
-          editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
+          editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' },
           dropdownOptions: [
             { label: 'Integer', value: 'int64' },
             { label: 'Float', value: 'float' },
@@ -96,7 +96,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
         })
         .addSettingsInputRow({ inputs: [
           { type: 'numberField', propertyName: `${propName}formatting.numDecimalPlaces`, label: 'Num decimal places',
-            editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
+            editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' },
           },
           { type: 'switch', propertyName: `${propName}formatting.showAsPercentage`, label: 'Show as percentage' },
         ], visibleJs: `return data?.${codePropName}dataFormat === \'decimal\';` })
@@ -106,8 +106,8 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
         ],
         })
         .addSettingsInputRow({ inputs: [
-          { type: 'numberField', propertyName: `${propName}min`, label: 'Min', editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false } as any },
-          { type: 'numberField', propertyName: `${propName}max`, label: 'Max', editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false } as any },
+          { type: 'numberField', propertyName: `${propName}min`, label: 'Min', editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code' } },
+          { type: 'numberField', propertyName: `${propName}max`, label: 'Max', editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code' } },
         ],
         })
         .toJson(),

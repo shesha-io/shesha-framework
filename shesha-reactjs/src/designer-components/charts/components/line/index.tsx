@@ -1,6 +1,8 @@
 import {
   CategoryScale,
+  ChartData,
   Chart as ChartJS,
+  ChartOptions,
   Legend,
   LinearScale,
   LineController,
@@ -16,6 +18,8 @@ import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks/hooks';
 import { splitTitleIntoLines, getPredictableColor, createFontConfig } from '../../utils';
+import { getNumberOrUndefined } from '@/utils/string';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface ILineChartProps extends IChartDataProps {
   data: IChartData;
@@ -25,10 +29,10 @@ ChartJS.register(CategoryScale, LineController, LineElement, PointElement, Linea
 
 const LineChart: React.FC<ILineChartProps> = ({ data }) => {
   const {
-    axisProperty: xProperty,
-    valueProperty: yProperty,
-    axisPropertyLabel,
-    valuePropertyLabel,
+    axisProperty: xProperty = "",
+    valueProperty: yProperty = "",
+    axisPropertyLabel = "",
+    valuePropertyLabel = "",
     aggregationMethod,
     showLegend,
     showTitle,
@@ -55,10 +59,10 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
 
   useEffect(() => {
     if (dataMode === 'url') {
-      data?.datasets?.map((dataset: any) => {
+      data.datasets.map((dataset) => {
         dataset.borderColor = strokeColor || 'black';
         dataset.pointRadius = isSmallScreen ? 3 : 5; // Smaller points on mobile
-        dataset.borderWidth = typeof strokeWidth === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+        dataset.borderWidth = isDefined(strokeWidth) && strokeWidth > 1 ? strokeWidth : 1;
         dataset.tension = tension;
         return dataset;
       });
@@ -66,7 +70,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       // For entity mode, use different colors for each dataset in pivot mode
       const isPivotMode = simpleOrPivot === 'pivot';
 
-      data?.datasets?.map((dataset: any, index: number) => {
+      data.datasets.map((dataset, index) => {
         dataset.tension = tension;
         dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
         dataset.pointRadius = isSmallScreen ? 3 : 5; // Smaller points on mobile
@@ -85,11 +89,11 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         return dataset;
       });
     }
-  }, [dataMode, data?.datasets, strokeColor, strokeWidth, tension, isSmallScreen]);
+  }, [dataMode, data.datasets, strokeColor, strokeWidth, tension, isSmallScreen, simpleOrPivot]);
 
-  const yTitle = (valuePropertyLabel?.trim().length > 0) ? `${valuePropertyLabel}` : `${yProperty} (${aggregationMethod})`;
+  const yTitle = (valuePropertyLabel.trim().length > 0) ? `${valuePropertyLabel}` : `${yProperty} (${aggregationMethod})`;
 
-  const options: any = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
     aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
@@ -120,7 +124,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         labels: {
           boxWidth: isSmallScreen ? 12 : 40,
           padding: isSmallScreen ? 8 : 10,
-          font: createFontConfig(legendFont, isSmallScreen ? 10 : 12, '400'),
+          font: createFontConfig(legendFont, isSmallScreen ? 10 : 12, 400),
           color: legendFont?.color || '#000000',
         },
       },
@@ -138,9 +142,9 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     scales: {
       x: {
         title: {
-          display: !!(showXAxisTitle && xProperty?.trim().length > 0),
-          text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
+          display: showXAxisTitle && !isNullOrWhiteSpace(xProperty),
+          text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines(!isNullOrWhiteSpace(axisPropertyLabel) ? axisPropertyLabel : xProperty, 12, 1),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, getNumberOrUndefined(axisLabelFont?.weight) ?? 400),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
@@ -155,7 +159,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         ticks: {
           maxRotation: 45, // Allow rotation up to 45 degrees
           minRotation: 0,
-          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
+          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, 400),
           color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
           autoSkip: false, // Show all labels
@@ -167,9 +171,9 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       },
       y: {
         title: {
-          display: !!(showYAxisTitle && yProperty?.trim().length > 0),
+          display: showYAxisTitle && !isNullOrWhiteSpace(yProperty),
           text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, getNumberOrUndefined(axisLabelFont?.weight) ?? 400),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
@@ -179,12 +183,12 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         display: !!showYAxisScale,
         beginAtZero: true,
         ticks: {
-          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
+          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, 400),
           color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
           callback: function (value) {
             // Format large numbers on mobile
-            if (isSmallScreen && value >= 1000) {
+            if (isSmallScreen && typeof (value) === "number" && value >= 1000) {
               return (value / 1000).toFixed(1) + 'k';
             }
             return value.toLocaleString();
@@ -197,7 +201,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     },
   };
 
-  return <Line data={data as any} options={options} />;
+  return <Line data={data as ChartData<"line">} options={options} />;
 };
 
 export default LineChart;

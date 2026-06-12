@@ -1,20 +1,16 @@
 import React from 'react';
-import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
+import { BasicConfig, SelectFieldSettings, TextWidget } from '@react-awesome-query-builder/antd';
 import { Autocomplete } from '@/components/autocomplete';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';
-import { getValueByPropertyName } from '@/utils/object';
+import { getIdOrUndefined } from '@/utils/entity';
 
-export type EntityAutocompleteWidgetType = BaseWidget & SelectFieldSettings;
+export type EntityAutocompleteWidgetType = TextWidget & SelectFieldSettings<string>;
 const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
   ...BasicConfig.widgets.select,
   type: 'entityReference',
   factory: (props) => {
     const { fieldDefinition, value, setValue } = props;
     const customSettings = fieldDefinition.fieldSettings as CustomFieldSettings;
-
-    const onChange = (v): void => {
-      setValue(v);
-    };
 
     return (
       <Autocomplete
@@ -25,7 +21,9 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
         mode="single"
         allowInherited={customSettings.allowInherited}
         value={value}
-        onChange={onChange}
+        onChange={(newValue) => {
+          setValue(typeof (newValue) === "string" ? newValue : undefined);
+        }}
         style={{
           minWidth: '150px',
           overflow: 'hidden',
@@ -36,7 +34,7 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
           borderRadius: '4px',
         }}
         size="small"
-        outcomeValueFunc={(value: any) => getValueByPropertyName(value, 'id') ?? value}
+        outcomeValueFunc={(value) => typeof (value) === "object" ? getIdOrUndefined(value) : value}
       />
     );
   },

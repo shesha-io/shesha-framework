@@ -1,9 +1,9 @@
-import { MutableRefObject } from "react";
+import { RefObject } from "react";
 
-export interface ManualMutableRefObject<T> extends MutableRefObject<T> {
+export interface ManualRefObject<T> extends RefObject<T> {
   current: T;
 }
 
-export const createManualRef = <T>(initialValue: T): ManualMutableRefObject<T> => {
+export const createManualRef = <T>(initialValue: T): ManualRefObject<T> => {
   return { current: initialValue };
 };

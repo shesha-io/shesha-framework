@@ -9,6 +9,7 @@ import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { DataTypes } from '@/interfaces';
 import { NumberFormats } from '@/interfaces/dataTypes';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const SliderComponent: SliderComponentDefinition = {
   type: 'slider',
@@ -18,23 +19,24 @@ const SliderComponent: SliderComponentDefinition = {
   isOutput: true,
   canBeJsSetting: true,
   preserveDimensionsInDesigner: true,
-  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.number && [NumberFormats.int64, NumberFormats.int32].includes(dataFormat),
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.number && !isNullOrWhiteSpace(dataFormat) && [NumberFormats.int64, NumberFormats.int32].includes(dataFormat),
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { styles } = useStyles();
 
     return (
       <div className={styles.sliderWrapper}>
-        <ConfigurableFormItem model={model}>
+        <ConfigurableFormItem<number> model={model}>
           {(value, onChange) => (
             <Slider
+              range={false}
               className="sha-slider"
-              min={model.min}
-              max={model.max}
-              onChange={onChange}
-              value={value}
+              {...(isDefined(model.min) ? { min: model.min } : {})}
+              {...(isDefined(model.max) ? { min: model.max } : {})}
+              onChange={(newValue) => onChange(newValue)}
+              {...(isDefined(value) ? { value } : {})}
               style={{ ...(!model.enableStyleOnReadonly && model.readOnly
-                ? {} : getStyle(model?.style, formData)), ...(model.readOnly
+                ? {} : getStyle(model.style, formData)), ...(model.readOnly
                 ? { pointerEvents: 'none' } : {}) }}
             />
           )}
@@ -49,14 +51,14 @@ const SliderComponent: SliderComponentDefinition = {
     };
   },
   settingsFormMarkup: getSettings,
-  linkToModelMetadata: (model, propMetadata) => ({ ...model, min: propMetadata.min, max: propMetadata.max }),
+  linkToModelMetadata: (model, propMetadata) => ({ ...model, min: propMetadata.min ?? undefined, max: propMetadata.max ?? undefined }),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m.add<ISliderComponentPropsV0>(0, (prev) => ({ ...prev }))
       .add<ISliderComponentProps>(1, (prev) => ({
         ...prev,
-        min: prev?.min && prev.min !== '' ? parseInt(prev.min, 10) : undefined,
-        max: prev?.max && prev.max !== '' ? parseInt(prev.max, 10) : undefined,
+        min: prev.min && prev.min !== '' ? parseInt(prev.min, 10) : undefined,
+        max: prev.max && prev.max !== '' ? parseInt(prev.max, 10) : undefined,
       })),
 };
 

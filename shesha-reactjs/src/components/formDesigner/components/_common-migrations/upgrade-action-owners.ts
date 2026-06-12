@@ -1,5 +1,6 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { SettingsMigrationContext } from '@/interfaces';
+import { isDefined } from '@/utils/nullables';
 
 const actionOwnerTypes = ['datatableContext', 'dataContext', 'subForm', 'list', 'wizard'];
 const getActionOwner = (value: string, context: SettingsMigrationContext): string => {
@@ -18,10 +19,12 @@ const getActionOwner = (value: string, context: SettingsMigrationContext): strin
   for (const id in allComponents) {
     if (allComponents.hasOwnProperty(id)) {
       const component = allComponents[id];
-      const uniqueStateId = component['uniqueStateId'];
-      if (uniqueStateId === value && "type" in component) {
-        if (actionOwnerTypes.includes(component.type)) {
-          return component.id;
+      if (isDefined(component)) {
+        const uniqueStateId = "uniqueStateId" in component ? component.uniqueStateId : undefined;
+        if (uniqueStateId === value && "type" in component) {
+          if (actionOwnerTypes.includes(component.type)) {
+            return component.id;
+          }
         }
       }
     }
@@ -30,7 +33,7 @@ const getActionOwner = (value: string, context: SettingsMigrationContext): strin
   return value;
 };
 
-export const upgradeActionConfig = (config: IConfigurableActionConfiguration, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
+export const upgradeActionConfig = (config: IConfigurableActionConfiguration | undefined, context: SettingsMigrationContext): IConfigurableActionConfiguration | undefined => {
   if (!config)
     return config;
 

@@ -2,6 +2,7 @@ import { CSSProperties } from 'react';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { IStyleType } from '@/providers/form/models';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 /**
  * Dimension keys that can be selectively preserved in designer mode.
@@ -236,6 +237,17 @@ export const dimensionUtils = {
     return (baseStyle: CSSProperties, preserveDimensions: IToolboxComponent['preserveDimensionsInDesigner'] = false): CSSProperties => {
       return dimensionUtils.mergeWithDesignerDimensions(baseStyle, isDesignerMode, preserveDimensions);
     };
+  },
+
+  dimensions2CssProperties(dimensions: IDimensionsValue): CSSProperties {
+    return {
+      width: dimensions.width,
+      height: dimensions.height,
+      minWidth: dimensions.minWidth,
+      maxWidth: dimensions.maxWidth,
+      minHeight: dimensions.minHeight,
+      maxHeight: dimensions.maxHeight,
+    } satisfies CSSProperties;
   },
 };
 

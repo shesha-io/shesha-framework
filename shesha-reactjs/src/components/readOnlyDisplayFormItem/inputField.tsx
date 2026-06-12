@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { useStyles } from './styles/styles';
 
 interface IInputFieldProps {
   value?: string | number | React.ReactNode;
-  style?: React.CSSProperties;
+  style?: React.CSSProperties | undefined;
   children?: React.ReactNode;
 }
 
-function InputField({ value, style, children }: IInputFieldProps): React.JSX.Element {
+function InputField({ value, style, children }: IInputFieldProps): ReactNode {
   const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
 
   const { height } = style || {};

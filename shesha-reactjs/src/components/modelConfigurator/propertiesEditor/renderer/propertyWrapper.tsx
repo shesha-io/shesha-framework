@@ -13,7 +13,7 @@ import { useModelConfigurator } from '@/providers/modelConfigurator';
 
 export interface IProps extends IModelItem {
   index: number[];
-  parent?: IModelItem;
+  parent?: IModelItem | undefined;
 }
 
 export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
@@ -25,20 +25,21 @@ export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
     deleteItem(props.id);
   };
 
-  const hasInputError = errors
+  const hasInputError = (errors ?? [])
     .filter((x) => typeof x !== 'string' && x.propertyName === props.name)
     .map((x) => typeof x === 'string' ? x : x.errors)
     .join('; ');
 
+  // isDefined(props.initStatus) &&
   const needRestart =
     props.source !== 1 &&
-    Boolean(props.initStatus & (EntityInitFlags.DbActionRequired | EntityInitFlags.InitializationRequired)) && // eslint-disable-line no-bitwise
+    Boolean((props.initStatus ?? 0) & (EntityInitFlags.DbActionRequired | EntityInitFlags.InitializationRequired)) && // eslint-disable-line no-bitwise
     !props.inheritedFromId &&
     !props.parent;
 
   const hasError =
     props.source !== 1 &&
-    Boolean(props.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) && // eslint-disable-line no-bitwise
+    Boolean((props.initStatus ?? 0) & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) && // eslint-disable-line no-bitwise
     !props.inheritedFromId &&
     !props.parent &&
     !(props.dataType === DataTypes.array && props.dataFormat === ArrayFormats.entityReference);

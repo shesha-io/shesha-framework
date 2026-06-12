@@ -217,7 +217,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         collapsed={collapsed}
         onCollapse={onCollapse}
         trigger={<MenuTrigger collapsed={collapsed} />}
-        theme={sideMenuTheme}
+        {...(sideMenuTheme ? { theme: sideMenuTheme } : {})}
       >
         <ConfigurableSidebarMenu
           theme={sideMenuTheme}
@@ -233,7 +233,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         </Header>
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <NodeOrFuncRenderer>
-            {breadcrumb}
+            <NodeOrFuncRenderer>{breadcrumb}</NodeOrFuncRenderer>
             <div className={classNames(styles.shaLayoutHeading, headingClass)}>
               {renderPageTitle()} {renderPageControls()}
             </div>

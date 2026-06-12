@@ -5,7 +5,7 @@ export const mapKeyValueToDictionary = (value: IKeyValue[] | undefined): IDictio
   if (!value)
     return undefined;
 
-  const result = {};
+  const result: IDictionary<string> = {};
   value.forEach((item) => {
     if (item.key)
       result[item.key] = item.value;

@@ -1,4 +1,4 @@
-import { IPersistedFormProps } from '@/providers';
+import { FormFullName, IPersistedFormProps } from '@/providers';
 import { CSSProperties } from 'react';
 import { ISidebarMenuItem, isSidebarButton, isSidebarGroup } from '@/interfaces/sidebar';
 import { normalizeUrl } from './url';
@@ -163,25 +163,25 @@ export const getUrlKeyParam = (url: string = ''): '?' | '&' => (url.includes('?'
 export const removeEmptyArrayValues = <TItem = unknown>(list: TItem[]): TItem[] =>
   Array.isArray(list) && list.length ? list.filter((item) => !!item) : [];
 
-export const getToolboxComponentsVisibility = (props: IPersistedFormProps, configs: IPersistedFormProps[]): boolean =>
+export const getToolboxComponentsVisibility = (props: IPersistedFormProps, configs: FormFullName[]): boolean =>
   configs.some(({ name: n, module: m }) => props.module === m && props.name === n);
 
-export const convertJsonToCss = (style: CSSProperties | undefined): string | null => {
+export const convertJsonToCss = (style: CSSProperties | undefined): string | undefined => {
   const css = Object.entries(style || {})
     .map(([k, v]) => [k.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`), v])
     .map(([k, v]) => `${k}:${v}`)
     .join(';');
 
-  return !!css ? `${css};` : null;
+  return !!css ? `${css};` : undefined;
 };
 
-export const convertJsonToCssWithImportant = (style: CSSProperties | undefined): string | null => {
+export const convertJsonToCssWithImportant = (style: CSSProperties | undefined): string | undefined => {
   const css = Object.entries(style || {})
     .map(([k, v]) => [k.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`), v])
     .map(([k, v]) => `${k}:${v} !important`)
     .join(';');
 
-  return !!css ? `${css};` : null;
+  return !!css ? `${css};` : undefined;
 };
 
 export { unwrapAbpResponse } from './fetchers';

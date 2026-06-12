@@ -1,11 +1,29 @@
 import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize, hasSuffix, hasPrefix, padding }) => {
+type StylesArgs = {
+  fontWeight: string | undefined;
+  fontFamily: string | undefined;
+  textAlign: string | undefined;
+  color: string | undefined;
+  fontSize: number | undefined;
+  hasSuffix: boolean;
+  hasPrefix: boolean;
+  padding: {
+    paddingLeft: CSSProperties['paddingLeft'];
+  };
+};
+
+type StylesResponse = {
+  numberField: string;
+};
+// ${textAlign ? `` : ""}
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize, hasSuffix, hasPrefix, padding }) => {
   const numberField = cx(
     'sha-input-number-input',
     css`
-      padding-inline-start: ${padding?.paddingLeft || '0px'} !important;
+      padding-inline-start: ${padding.paddingLeft || '0px'} !important;
       overflow: hidden;
 
       .ant-input-number-input-wrap {
@@ -14,12 +32,12 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       }
 
       .ant-input-number-input {
-        --ant-color-text: ${color} !important;
-        --ant-font-size: ${fontSize} !important;
+        ${color ? `--ant-color-text: ${color} !important;` : ""}
+        ${fontSize ? `--ant-font-size: ${fontSize} !important;` : ""}       
         font-size: ${addPx(fontSize) ?? 'inherit'} !important;
-        font-weight: ${fontWeight} !important;
-        font-family: ${fontFamily};
-        text-align: ${textAlign};
+        ${fontWeight ? `font-weight: ${fontWeight} !important;` : ""}        
+        ${fontFamily ? `font-family: ${fontFamily};` : ""}
+        ${textAlign ? `text-align: ${textAlign};` : ""}        
         height: 100% !important;
         padding-left: ${hasPrefix ? '4px' : '8px'} !important;
         padding-right: ${hasSuffix ? '4px' : '8px'} !important;
@@ -66,7 +84,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
 
         .anticon {
           margin-left: 4px !important;
-          color: ${color} !important;
+          ${color ? `color: ${color} !important;` : ""}          
         }
       }
 

@@ -5,14 +5,15 @@ import { ShaForm, useForm } from '@/providers/form';
 import { createComponentModelForDataProperty, upgradeComponent } from '@/providers/form/utils';
 import { camelcaseDotNotation } from '@/utils/string';
 import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
-import { useMetadata } from '@/providers/metadata';
+import { useMetadataOrUndefined } from '@/providers/metadata';
 import DynamicContainer from './dynamicContainer';
 import { isConfigurableFormComponent } from '@/providers/form/models';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type DynamicViewProps = IConfigurableFormComponent;
 
 export const DynamicView: FC<DynamicViewProps> = (model) => {
-  const currentMeta = useMetadata(false)?.metadata;
+  const currentMeta = useMetadataOrUndefined()?.metadata;
 
   const { formSettings } = useForm();
   const { allComponents, componentRelations } = ShaForm.useMarkup();
@@ -29,7 +30,11 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
   }, [allComponents]);
 
   const staticComponentBindings = useMemo(() => {
-    const names = staticComponents.filter((c) => Boolean(c.propertyName)).map((component) => camelcaseDotNotation(component.propertyName));
+    const names: string[] = [];
+    staticComponents.forEach((c) => {
+      if (!isNullOrWhiteSpace(c.propertyName))
+        names.push(camelcaseDotNotation(c.propertyName));
+    });
     return names;
   }, [staticComponents]);
 
@@ -38,7 +43,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
       return [];
     const propertiesToMap = (isPropertiesArray(currentMeta.properties) ? currentMeta.properties : []).filter((property) => property.isVisible && !property.isFrameworkRelated && !staticComponentBindings.includes(camelcaseDotNotation(property.path)));
     return propertiesToMap;
-  }, [staticComponents, currentMeta]);
+  }, [currentMeta, staticComponentBindings]);
 
   const dynamicComponents = useMemo(() => {
     const components = propsToRender.map((prop) => {
@@ -54,9 +59,9 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
       if (component)
         component.isDynamic = true;
       return component;
-    }).filter((c) => Boolean(c));
+    }).filter(isDefined);
     return components;
-  }, [propsToRender, toolboxComponentGroups]);
+  }, [allComponents, componentRelations, formSettings, propsToRender, toolboxComponentGroups]);
 
   if (model.hidden) return null;
 

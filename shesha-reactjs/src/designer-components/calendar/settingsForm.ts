@@ -168,7 +168,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: "code",
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addSettingsInput({

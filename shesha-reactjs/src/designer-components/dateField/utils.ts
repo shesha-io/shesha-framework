@@ -6,18 +6,23 @@ import { range } from 'lodash';
 import { IStyleType } from "@/providers/form/models";
 import { DatePicker } from '@/components/antd';
 import { DATE_TIME_FORMATS } from '@/constants/formats';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-export function disabledDate(props: IDateFieldProps, current: Moment, data: object, globalState: object): boolean {
+type DisabledDateFunc = (current: Moment, momentFunc: typeof moment, data: object | undefined, globalState: object) => boolean;
+
+export function disabledDate(props: IDateFieldProps, current: Moment, data: object | undefined, globalState: object): boolean {
   const { disabledDateMode, disabledDateTemplate, disabledDateFunc } = props;
 
   if (disabledDateMode === 'none') return false;
 
   const disabledTimeExpression = disabledDateMode === 'functionTemplate' ? disabledDateTemplate : disabledDateFunc;
 
-  // tslint:disable-next-line:function-constructor
-  const disabledFunc = new Function('current', 'moment', 'data', 'globalState', disabledTimeExpression);
+  if (!isNullOrWhiteSpace(disabledTimeExpression)) {
+    const disabledFunc = new Function('current', 'moment', 'data', 'globalState', disabledTimeExpression) as DisabledDateFunc;
 
-  return disabledFunc(current, moment, data, globalState);
+    return disabledFunc(current, moment, data ?? {}, globalState);
+  } else
+    return false;
 }
 
 
@@ -42,7 +47,7 @@ export const timeObject = (): { hours: number; minutes: number; seconds: number 
   };
 };
 
-const disabledTimeTemplateFunc = (disabledTimeTemplate: DisabledDateTemplate) => {
+const disabledTimeTemplateFunc = (disabledTimeTemplate: DisabledDateTemplate | undefined) => {
   if (disabledTimeTemplate === 'disabledPastTime') {
     return () => ({
       disabledHours: () => range(0, timeObject().hours),
@@ -61,30 +66,36 @@ const disabledTimeTemplateFunc = (disabledTimeTemplate: DisabledDateTemplate) =>
 
 type DatePickerProps = React.ComponentProps<typeof DatePicker>;
 type DisabledTimeFunc = Required<DatePickerProps>['disabledTime'];
+type DisabledTimes = ReturnType<DisabledTimeFunc>;
 
-export const disabledTime = (props: IDateFieldProps, data: object, globalState: object): DisabledTimeFunc | undefined => {
+type DisabledTimeFuncFactory = (current: Moment, momentFunc: typeof moment, data: object | undefined, globalState: object, rangeFunc: typeof range) => DisabledTimes;
+
+const emptyDisabledTime: DisabledTimeFunc = () => ({ disabledHours: () => [], disabledMinutes: () => [], disabledSeconds: () => [] });
+
+export const disabledTime = (props: IDateFieldProps, data: object = {}, globalState: object): DisabledTimeFunc => {
   const { disabledTimeMode, disabledTimeTemplate, disabledTimeFunc } = props;
 
-  if (disabledTimeMode === 'none') return undefined;
+  if (disabledTimeMode === 'none')
+    return emptyDisabledTime;
 
-  const disabledTimeExpressionFunc =
-    disabledTimeMode === 'timeFunctionTemplate' ? disabledTimeTemplateFunc(disabledTimeTemplate) : disabledTimeFunc;
+  if (disabledTimeMode === 'timeFunctionTemplate') {
+    return disabledTimeTemplateFunc(disabledTimeTemplate);
+  }
 
-  if (typeof disabledTimeExpressionFunc === 'string') {
-    // tslint:disable-next-line:function-constructor
-    const disabledFunc = new Function('current', 'moment', 'data', 'globalState', 'range', disabledTimeExpressionFunc);
+  if (!isNullOrWhiteSpace(disabledTimeFunc)) {
+    const disabledFunc = new Function('current', 'moment', 'data', 'globalState', 'range', disabledTimeFunc) as DisabledTimeFuncFactory;
 
     type DisabledTimeCurrent = Parameters<NonNullable<DisabledTimeFunc>>[0];
     return (current: DisabledTimeCurrent) => disabledFunc(current, moment, data, globalState, range);
   }
 
-  return disabledTimeExpressionFunc;
+  return emptyDisabledTime;
 };
 
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]): string => {
-  const { propertyName, picker, showTime } = props || {};
+  const { propertyName, picker, showTime } = props;
 
-  const dateFormat = props.dateFormat || getDataProperty(properties, propertyName, 'dataFormat') || DATE_TIME_FORMATS.date;
+  const dateFormat = props.dateFormat || (!isNullOrWhiteSpace(propertyName) ? getDataProperty(properties, propertyName, 'dataFormat') : undefined) || DATE_TIME_FORMATS.date;
   const timeFormat = props.timeFormat || DATE_TIME_FORMATS.time;
   const yearFormat = props.yearFormat || DATE_TIME_FORMATS.year;
   const quarterFormat = props.quarterFormat || DATE_TIME_FORMATS.quarter;

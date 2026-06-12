@@ -1,15 +1,16 @@
-import React, { forwardRef, useEffect, useRef } from 'react';
+import { isDefined } from '@/utils/nullables';
+import React, { FC, useEffect } from 'react';
+import { TableToggleRowsSelectedProps } from 'react-table';
 
-export const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }: any, ref) => {
-  const defaultRef = useRef();
-  const resolvedRef = ref || defaultRef;
+type CheckBoxProps = Partial<TableToggleRowsSelectedProps> & { ref?: React.RefObject<HTMLInputElement> };
 
+export const IndeterminateCheckbox: FC<CheckBoxProps> = ({ indeterminate, ref, ...rest }) => {
   useEffect(() => {
-    // @ts-ignore
-    resolvedRef.current.indeterminate = indeterminate;
-  }, [resolvedRef, indeterminate]);
+    if (ref && ref.current && isDefined(indeterminate))
+      ref.current.indeterminate = indeterminate;
+  }, [ref, indeterminate]);
 
-  return <input type="checkbox" ref={resolvedRef} {...rest} />;
-});
+  return <input type="checkbox" ref={ref} {...rest} />;
+};
 
 IndeterminateCheckbox.displayName = "IndeterminateCheckbox";

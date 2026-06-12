@@ -6,7 +6,7 @@ const ERROR_MSG = 'Passwords do not match';
 export const confirmPasswordValidations = (
   password: string,
   confirmPassword: string,
-  errorMessage: string = null,
+  errorMessage: string | null = null,
 ): FormItemProps => {
   const passwordsMatch = password === confirmPassword;
 
@@ -55,7 +55,7 @@ export const isSamePassword = (initialPassword: string, confirmPassword: string,
 
 export const passwordValidations = (
   password: string,
-  errorMessage: string = null,
+  errorMessage: string | null = null,
   length: number = 4,
 ): FormItemProps => {
   const passwordIsBad = !isStrongPassword(password, length);

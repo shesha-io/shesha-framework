@@ -4,6 +4,7 @@ import { Popover } from 'antd';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { useStyles } from './styles/errorIconPopoverStyles';
 import componentDocs from './component-docs.json';
+import { isNonEmptyArray } from '@/utils/array';
 
 interface IErrorIconPopoverBaseProps extends PropsWithChildren {
   type?: ISheshaErrorTypes;
@@ -92,14 +93,15 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
       : undefined;
 
     const getPopoverContent = (): React.ReactElement => {
-      if (validationResult.hasErrors && validationResult.errors?.length > 0) {
+      const { errors } = validationResult;
+      if (validationResult.hasErrors && isNonEmptyArray(errors)) {
         return (
           <>
-            {validationResult.errors.map((error, index) => {
+            {errors.map((error, index) => {
               // Split error message by newlines to support multiline messages
               const errorParts = error.error?.split('\n') || [];
               return (
-                <p key={index} style={{ margin: 0, marginBottom: index < validationResult.errors.length - 1 ? '4px' : 0 }}>
+                <p key={index} style={{ margin: 0, marginBottom: index < errors.length - 1 ? '4px' : 0 }}>
                   {error.propertyName && <strong>{error.propertyName}: </strong>}
                   {errorParts.map((part, partIndex) => (
                     <React.Fragment key={partIndex}>

@@ -3,7 +3,7 @@ import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 
 interface JavaScriptEditorProps {
   value?: string;
-  onChange: (newValue?: string) => void;
+  onChange: (newValue: string | null) => void;
 }
 export const JavaScriptEditor: FC<JavaScriptEditorProps> = ({ value, onChange }) => {
   useEffect(() => {

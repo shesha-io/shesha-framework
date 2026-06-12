@@ -1,15 +1,15 @@
 import React, { CSSProperties, FC } from 'react';
 import classNames from 'classnames';
-import { JoditEditorWrapper } from './joditEditor';
+import { JoditConfig, JoditEditorWrapper } from './joditEditor';
 import { useStyles } from './styles/styles';
 
 export interface IRichTextEditorProps {
-  value?: string;
-  onChange?: (value: string) => void;
-  onBlur?: (value: string) => void;
-  config?: any;
-  className?: string;
-  style?: CSSProperties;
+  value?: string | undefined;
+  onChange?: ((value: string) => void) | undefined;
+  onBlur?: ((value: string) => void) | undefined;
+  config?: JoditConfig | undefined;
+  className?: string | undefined;
+  style?: CSSProperties | undefined;
 }
 
 export const RichTextEditor: FC<IRichTextEditorProps> = ({ value, onChange, config, style, className }) => {

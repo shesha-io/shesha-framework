@@ -8,16 +8,16 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IToolbarSettingsModal {
   readOnly: boolean;
-  value?: ButtonGroupItemProps[];
-  onChange?: (newValue: ButtonGroupItemProps[]) => void;
-  title?: ReactNode | string;
-  size?: SizeType;
-  buttonText?: string;
-  buttonTextReadOnly?: string;
+  value?: ButtonGroupItemProps[] | undefined;
+  onChange?: ((newValue: ButtonGroupItemProps[]) => void) | undefined;
+  title?: ReactNode | string | undefined;
+  size?: SizeType | undefined;
+  buttonText?: string | undefined;
+  buttonTextReadOnly?: string | undefined;
 }
 
 interface IButtonGroupConfiguratorProps extends IToolbarSettingsModal {
-  size?: SizeType;
+  size?: SizeType | undefined;
 }
 
 export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
@@ -32,10 +32,10 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   const isSmall = useMedia('(max-width: 480px)');
   const [showModal, setShowModal] = useState(false);
 
-  const [localValue, setLocalValue] = useState<ButtonGroupItemProps[]>(deepCopyViaJson(value));
+  const [localValue, setLocalValue] = useState<ButtonGroupItemProps[]>(value ? deepCopyViaJson(value) : []);
 
   const openModal = (): void => {
-    setLocalValue(deepCopyViaJson(value));
+    setLocalValue(value ? deepCopyViaJson(value) : []);
     setShowModal(true);
   };
 

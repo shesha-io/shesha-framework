@@ -1,11 +1,12 @@
-import { ArcElement, Chart as ChartJS, ChartOptions, Legend, RadialLinearScale, Title, Tooltip } from 'chart.js';
+import { ArcElement, Chart, ChartData, Chart as ChartJS, ChartOptions, Color, Legend, LegendItem, RadialLinearScale, Title, Tooltip } from 'chart.js';
 import React, { ReactElement } from 'react';
 import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks/hooks';
 import { splitTitleIntoLines, createFontConfig } from '../../utils';
-
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined } from '@/utils/nullables';
 interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
 }
@@ -17,20 +18,19 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps): ReactElement => {
 
   const chartTitle: string = useGeneratedTitle();
 
-  data.datasets.forEach((dataset: { data: any[] }) => {
-    dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
+  data.datasets.forEach((dataset) => {
+    dataset.data = dataset.data?.map((item) => isDefined(item) ? item : 'undefined');
   });
 
   if (dataMode === 'url') {
-    data?.datasets?.map((dataset: any) => {
+    data.datasets.forEach((dataset) => {
       dataset.borderColor = strokeColor || 'black';
-      dataset.borderWidth = typeof strokeWidth === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+      dataset.borderWidth = typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1;
       dataset.strokeColor = strokeColor || 'black';
-      return dataset;
     });
   }
 
-  const options: ChartOptions<any> = {
+  const options: ChartOptions<"polarArea"> = {
     responsive: true,
     maintainAspectRatio: false, // Allow the chart to fill available space
     aspectRatio: 1, // Square aspect ratio for polar area charts
@@ -54,19 +54,19 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps): ReactElement => {
         },
       },
     },
-    plugins: {
-      scales: {
-        r: {
-          ticks: {
-            color: tickFont?.color || '#000000',
-            font: createFontConfig(tickFont, 14, '400'),
-            backdropColor: 'rgba(255, 255, 255, 0)', // Remove the tick's backdrop
-          },
-          grid: {
-            color: 'rgba(0, 0, 0, 0.2)', // Make grid lines more transparent
-          },
+    scales: {
+      r: {
+        ticks: {
+          color: tickFont?.color || '#000000',
+          font: createFontConfig(tickFont, 14, 400),
+          backdropColor: 'rgba(255, 255, 255, 0)', // Remove the tick's backdrop
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.2)', // Make grid lines more transparent
         },
       },
+    },
+    plugins: {
       legend: {
         display: !!showLegend,
         position: legendPosition ?? 'top',
@@ -75,28 +75,27 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps): ReactElement => {
         labels: {
           boxWidth: 20,
           padding: 10,
-          font: createFontConfig(legendFont, 12, '400'),
+          // font: createFontConfig(legendFont, 12, '400'),
           color: legendFont?.color || '#000000',
           usePointStyle: true, // Use point style for better visual consistency
-          generateLabels: function (chart) {
+          // generateLabels(chart: Chart): LegendItem[];
+          generateLabels: function (chart: Chart): LegendItem[] {
             const data = chart.data;
-            if (data.labels.length && data.datasets.length) {
-              return data.labels.map((label, i) => {
-                const dataset = data.datasets[0];
+            if (data.labels && data.labels.length && isNonEmptyArray(data.datasets)) {
+              const dataset = data.datasets[0];
+              return data.labels.map<LegendItem>((label, i) => {
                 // backgroundColor can be an array or a single value
-                const bgColor = Array.isArray(dataset.backgroundColor)
-                  ? dataset.backgroundColor[i]
-                  : dataset.backgroundColor;
+                const bgColor = dataset.backgroundColor;
                 return {
                   text: String(label), // Ensure label is a string
-                  fillStyle: bgColor || dataset.borderColor || '#000000',
-                  strokeStyle: dataset.borderColor || '#000000',
-                  lineWidth: dataset.borderWidth || 1,
+                  fillStyle: (bgColor || dataset.borderColor || '#000000') as Color,
+                  strokeStyle: (dataset.borderColor || '#000000') as Color,
+                  lineWidth: (dataset.borderWidth ?? 1) as number,
                   pointStyle: 'circle',
                   hidden: false,
                   index: i,
                   fontColor: legendFont?.color || '#000000',
-                };
+                } satisfies LegendItem;
               });
             }
             return [];
@@ -104,7 +103,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps): ReactElement => {
         },
       },
       title: {
-        display: !!(showTitle && chartTitle?.length > 0),
+        display: !!(showTitle && chartTitle.length > 0),
         text: splitTitleIntoLines(chartTitle),
         font: createFontConfig(titleFont, 16, 'bold'),
         color: titleFont?.color || '#000000',
@@ -114,7 +113,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps): ReactElement => {
     },
   };
 
-  return <PolarArea data={data as any} options={options} />;
+  return <PolarArea data={data as ChartData<"polarArea">} options={options} />;
 };
 
 export default PolarAreaChart;

@@ -3,6 +3,7 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { getStringPropertyOrUndefined } from '@/utils/object';
 
 interface IProcessMonitorProps extends IConfigurableFormComponent {
   processId: string;
@@ -27,7 +28,7 @@ const ScheduledJobExecutionLog: IToolboxComponent<IConfigurableFormComponent> = 
       return {
         ...prev,
         type: 'processMonitor',
-        processId: prev['processId'] ?? '',
+        processId: getStringPropertyOrUndefined(prev, "processId") ?? '',
         components: [
           { id: `${prev.id}log`, type: 'logViewer', propertyName: 'logViewer' },
         ],

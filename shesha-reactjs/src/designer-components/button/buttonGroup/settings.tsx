@@ -6,10 +6,10 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { ButtonGroupConfigurator } from '../../../components/buttonGroupConfigurator';
 import { Checkbox, Input, Select } from 'antd';
 import { IButtonGroupComponentProps } from './models';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { IComponentSettingsFormFactoryArgs } from '@/interfaces';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
+const ButtonGroupSettings: FC<IComponentSettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
   const { readOnly } = props;
 
   return (
@@ -75,7 +75,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
   );
 };
 
-export const ButtonGroupSettingsForm: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
+export const ButtonGroupSettingsForm: FC<IComponentSettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
   return (
     SettingsForm<IButtonGroupComponentProps>({ ...props, children: <ButtonGroupSettings {...props} /> })
   );

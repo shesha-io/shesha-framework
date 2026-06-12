@@ -1,14 +1,18 @@
 import React, { CSSProperties } from "react";
-import { IChartData, IChartsProps, TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import { IChartData, IChartsProps, TAggregationMethod, TDataMode, TOrderDirection, TTimeSeriesFormat } from "./model";
 import LineChart from "./components/line";
 import BarChart from "./components/bar";
 import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
-import { IPropertyMetadata, IStyleType } from "@/interfaces";
+import { EntityData, IAnyObject, IPropertyMetadata, IStyleType } from "@/interfaces";
 import { FetcherOptions } from "@/utils/fetchers";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
+import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
+import { getDatePropertyOrUndefined } from "@/utils/object";
+import { isNonEmptyArray } from "@/utils/array";
+import { getNestedPropertyValue } from "@/utils/dotnotation";
 
 export const MAX_TITLE_LINE_LENGTH = 12;
 
@@ -42,25 +46,25 @@ export const defaultStyles = (): IStyleType => {
 export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null, groupingProperty: string | null): string[] => {
   const faultyProperties: string[] = [];
 
-  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
+  if (!metaData.some((property: IPropertyMetadata) => property.path.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
     faultyProperties.push(`'axisProperty'`);
   }
-  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
+  if (!metaData.some((property: IPropertyMetadata) => property.path.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
     faultyProperties.push(`'valueProperty'`);
   }
-  if (groupingProperty && !metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === groupingProperty?.split('.')[0]?.toLowerCase())) {
+  if (groupingProperty && !metaData.some((property: IPropertyMetadata) => property.path.toLowerCase() === groupingProperty.split('.')[0]?.toLowerCase())) {
     faultyProperties.push(`'groupingProperty'`);
   }
   return faultyProperties;
 };
 
 // Optimized data processing function
-export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>): any[] => {
-  const processedItems = new Array(items.length);
+export const processItems = (items: EntityData[], refListMap: Map<string, Map<number, string>>): EntityData[] => {
+  const processedItems: EntityData[] = new Array<EntityData>(items.length);
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
-    const processedItem: any = {};
+    const processedItem: EntityData = { id: "" };
 
     // Process all properties in a single pass
     for (const key in item) {
@@ -73,7 +77,7 @@ export const processItems = (items: any[], refListMap: Map<string, Map<any, stri
         // Apply reference list mapping if available
         if (refListMap.has(key)) {
           const refMap = refListMap.get(key);
-          value = refMap.get(value) || value;
+          value = isDefined(refMap) && typeof value === 'number' ? refMap.get(value) ?? value : value;
         }
 
         processedItem[key] = value;
@@ -86,13 +90,15 @@ export const processItems = (items: any[], refListMap: Map<string, Map<any, stri
   return processedItems;
 };
 
+const MIN_DATE = new Date(-8640000000000000);
+
 // Optimized sorting function
-export const sortItems = (items: any[], isTimeSeries: boolean, property: string): any[] => {
+export const sortItems = (items: EntityData[], isTimeSeries: boolean, property: string): EntityData[] => {
   const itemsCopy = [...items];
   if (isTimeSeries) {
     return itemsCopy.sort((a, b) => {
-      const aTime = new Date(a[property]).getTime();
-      const bTime = new Date(b[property]).getTime();
+      const aTime = (getDatePropertyOrUndefined(a, property) ?? MIN_DATE).getTime();
+      const bTime = (getDatePropertyOrUndefined(b, property) ?? MIN_DATE).getTime();
       return aTime - bTime;
     });
   } else {
@@ -123,7 +129,7 @@ export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_
   const MAX_CHARS_PER_LINE = 30;
 
   // If there's only one word (no spaces), handle character-based splitting
-  if (words.length === 1) {
+  if (isNonEmptyArray(words) && words.length === 1) {
     const singleWord = words[0];
     // Only split if the word is longer than 10 characters
     if (singleWord.length <= 10) {
@@ -264,10 +270,10 @@ export const defaultConfigFiller: {
  * @param data array of objects to stringify values
  * @returns array of objects with stringified values
  */
-export const stringifyValues = (data: object[]): object[] => {
-  return data?.map((item) => {
-    const processValue = (value: any): any => {
-      if (value === null || value === undefined) {
+export const stringifyValues = (data: IAnyObject[]): IAnyObject[] => {
+  return data.map((item) => {
+    const processValue = (value: unknown): unknown => {
+      if (!isDefined(value)) {
         return 'undefined';
       }
       if (typeof value === 'object' && !(value instanceof Date)) {
@@ -284,10 +290,10 @@ export const stringifyValues = (data: object[]): object[] => {
       return value;
     };
 
-    const newItem: any = {};
+    const newItem: IAnyObject = {};
     for (const key in item) {
-      if (Object.prototype.hasOwnProperty.call(item, key)) {
-        newItem[key] = processValue(item[key]);
+      if (item.hasOwnProperty(key)) {
+        newItem[key] = processValue(item[key as keyof typeof item]);
       }
     }
     return newItem;
@@ -315,10 +321,8 @@ function removePropertyDuplicates(str: string): string {
  * @param array array of nested properties
  * @returns the array in object format
  */
-function convertNestedPropertiesToObjectFormat(array?: string[]): string {
-  if (!array) return '';
-
-  return array?.filter((path) => path && path?.trim() !== '')?.map((path) => {
+function convertNestedPropertiesToObjectFormat(array: string[]): string {
+  return array.filter(isNotNullOrWhiteSpace).map((path) => {
     let parts = path.split('.');
     let result = '';
     let indentation = 0;
@@ -356,7 +360,7 @@ export const getChartDataRefetchParams = (entityType: string | IEntityTypeIdenti
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       ...getEntityTypeIdentifierQueryParams(entityType),
-      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty])).replace(/\s/g, '')),
+      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty ?? "", axisProperty ?? ""])).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
       skipCount: skipCount ?? 0,
@@ -379,16 +383,11 @@ export const getURLChartDataRefetchParams = (url: string): FetcherOptions => {
  * @param path the path to the property
  * @returns the value of the property
  */
-export function getPropertyValue(obj: { [key: string]: string | number | object }, path: string): string | number | object | undefined {
-  if (obj === null) return null;
-  if (obj === undefined) return undefined;
-  if (!path || typeof obj !== 'object') return undefined;
-
-  const properties = path.split('.');
-
-  return properties?.reduce((prev: { [key: string]: string | number | object }, curr: string) => {
-    return prev && prev[curr] !== undefined ? prev[curr] : undefined;
-  }, obj);
+export function getPropertyValue(obj: IAnyObject, path: string): string | number | object | undefined {
+  const result = getNestedPropertyValue(obj, path);
+  return result && (typeof (result) === "string" || typeof (result) === "number" || typeof (result) === "object")
+    ? result
+    : undefined;
 }
 
 /**
@@ -398,8 +397,8 @@ export function getPropertyValue(obj: { [key: string]: string | number | object 
  */
 export function getLastPartOfProperty(property: string): string {
   // if there is no dot in the string, return the string
-  if (property.indexOf('.') === -1) return property;
-  return property.split('.').pop();
+  const parts = property.split('.');
+  return parts.length === 1 ? property : parts.pop() ?? "";
 }
 
 /**
@@ -411,7 +410,7 @@ export function getLastPartOfProperty(property: string): string {
  * @param value the value to check
  * @returns true if the value is an ISO string, false otherwise
  */
-function isIsoString(value): boolean {
+function isIsoString(value: unknown): value is string {
   // Check if value is a string and matches the ISO 8601 format (with optional milliseconds)
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?/.test(value);
 }
@@ -423,42 +422,45 @@ function isIsoString(value): boolean {
  * @param properties the properties to format
  * @returns the formatted data
  */
-export function formatDate(data: object[], timeUnit: TTimeSeriesFormat, properties: string[]): object[] {
+export function formatDate(data: EntityData[], timeUnit: TTimeSeriesFormat | undefined, properties: string[]): EntityData[] {
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
-  return data?.map((item) => {
-    let modifiedItem = { ...item };
+  return data.map<EntityData>((item) => {
+    let modifiedItem = { ...item } as EntityData;
 
     properties.forEach((property) => {
-      if (item[property] && isIsoString(item[property])) {
-        const date = new Date(item[property]);
+      if (property in item) {
+        const propertyValue = item[property];
+        if (propertyValue && isIsoString(propertyValue)) {
+          const date = new Date(propertyValue);
 
-        let formattedDate;
-        switch (timeUnit) {
-          case 'day':
-            formattedDate = date.getDate();
-            break;
-          case 'month':
-            formattedDate = monthNames[date.getMonth()]; // Month name
-            break;
-          case 'year':
-            formattedDate = date.getFullYear();
-            break;
-          case 'day-month':
-            formattedDate = `${date.getDate()} ${monthNames[date.getMonth()]}`; // Day + Month name
-            break;
-          case 'day-month-year':
-            formattedDate = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`; // Day + Month name + Year
-            break;
-          case 'month-year':
-            formattedDate = `${monthNames[date.getMonth()]} ${date.getFullYear()}`; // Month name + Year
-            break;
-          default:
-            formattedDate = date.toISOString();
-            break;
+          let formattedDate;
+          switch (timeUnit) {
+            case 'day':
+              formattedDate = date.getDate();
+              break;
+            case 'month':
+              formattedDate = monthNames[date.getMonth()]; // Month name
+              break;
+            case 'year':
+              formattedDate = date.getFullYear();
+              break;
+            case 'day-month':
+              formattedDate = `${date.getDate()} ${monthNames[date.getMonth()]}`; // Day + Month name
+              break;
+            case 'day-month-year':
+              formattedDate = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`; // Day + Month name + Year
+              break;
+            case 'month-year':
+              formattedDate = `${monthNames[date.getMonth()]} ${date.getFullYear()}`; // Month name + Year
+              break;
+            default:
+              formattedDate = date.toISOString();
+              break;
+          }
+          modifiedItem[property] = formattedDate;
         }
-        modifiedItem[property] = formattedDate;
       }
     });
 
@@ -474,8 +476,8 @@ export function formatDate(data: object[], timeUnit: TTimeSeriesFormat, properti
  * @param aggregationMethod - The aggregation method to use (sum, average, count, min, max)
  * @returns Aggregated data
  * */
-export const aggregateData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string): object => {
-  const groupedData = data.reduce((acc: object, item: { [key: string]: string | number | object }) => {
+export const aggregateData = (data: IAnyObject[], xProperty: string, yProperty: string, aggregationMethod: string): object => {
+  const groupedData = data.reduce((acc: Record<string, number[]>, item) => {
     const xValue = getPropertyValue(item, xProperty); // Use getPropertyValue to support nested properties
     let yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
 
@@ -489,15 +491,19 @@ export const aggregateData = (data: object[], xProperty: string, yProperty: stri
       yValue = 0;
     }
 
-    if (!acc[xValue as unknown as string]) {
-      acc[xValue as unknown as string] = [];
+    if (typeof (xValue) === "string") {
+      const arr = acc[xValue] && Array.isArray(acc[xValue])
+        ? acc[xValue]
+        : (acc[xValue] = []);
+
+      arr.push(yValue);
     }
-    acc[xValue as unknown as string].push(yValue);
+
     return acc;
-  }, {});
+  }, {} as Record<string, number[]>);
 
   // Apply aggregation (sum, average, count, min, max)
-  const aggregatedData = Object.entries(groupedData)?.map(([key, values]: any) => {
+  const aggregatedData = Object.entries(groupedData).map(([key, values]) => {
     let aggregatedValue;
     switch (aggregationMethod) {
       case 'sum':
@@ -521,107 +527,6 @@ export const aggregateData = (data: object[], xProperty: string, yProperty: stri
 
   return aggregatedData;
 };
-
-/**
- * Function to filter data based on a property, operator, and value
- * @param preFilteredData pre-filtered data
- * @param property the property to filter by
- * @param operator the operator to use for the filter
- * @param value the value to filter by
- * @returns filtered data
- */
-export function filterData(preFilteredData: object[], property: string, operator: TOperator, value: string | number): object[] {
-  if (!property || !operator || value === undefined) {
-    console.error('filterData, Invalid filter: property, operator, and value are required');
-    return preFilteredData;
-  }
-  if (!Array.isArray(preFilteredData) || preFilteredData?.length === 0) {
-    console.error('filterData, Invalid data: preFilteredData must be a non-empty array');
-    return [];
-  }
-
-  // Filter the data based on the operator
-  return preFilteredData?.filter((item: { [key: string]: string | number | object }) => {
-    const itemValue: string | number = getPropertyValue(item, property) as unknown as string | number;
-    // Convert the item to a string if itemValue is a number and it is not a number
-    if (typeof itemValue === 'number') {
-      try {
-        value = parseInt(value as string, 10);
-      } catch (e) {
-        console.error('filterData, Invalid value: Value must be a number', e);
-        return false;
-      }
-    }
-
-    switch (operator) {
-      case 'equals':
-        return itemValue === value;
-
-      case 'not_equals':
-        return itemValue !== value;
-
-      case 'contains':
-        const result = typeof itemValue === 'string' && (itemValue.toLowerCase()).includes(value.toString().toLowerCase());
-        return result;
-
-      case 'does_not_contain':
-        return typeof itemValue === 'string' && !(itemValue.toLowerCase()).includes(value.toString().toLowerCase());
-
-      case 'is_empty':
-        return typeof itemValue === 'string' && (itemValue === '' || itemValue == null);
-
-      case 'is_not_empty':
-        return typeof itemValue === 'string' && itemValue !== '' && itemValue != null;
-
-      case 'is_greater_than':
-        return typeof itemValue === 'number' && itemValue > (value as number);
-
-      case 'is_less_than':
-        return typeof itemValue === 'number' && itemValue < (value as number);
-
-      case 'is_greater_than_or_equals':
-        return typeof itemValue === 'number' && itemValue >= (value as number);
-
-      case 'is_less_than_or_equals':
-        return typeof itemValue === 'number' && itemValue <= (value as number);
-
-      case 'starts_with':
-        return typeof itemValue === 'string' && itemValue.startsWith(value as unknown as string);
-
-      case 'ends_with':
-        return typeof itemValue === 'string' && itemValue.endsWith(value as unknown as string);
-
-      case 'is':
-        return itemValue === value;
-
-      case 'is_not':
-        return itemValue !== value;
-
-      default:
-        console.error(`filterData, Invalid operator: '${operator}' is not recognized`);
-        return false;
-    }
-  });
-};
-
-/**
- * from that array we need make a list of all the properties of the objects
- * @param data the data to get the properties from
- * @returns a list of all the properties
- */
-export function getAllProperties(data: Array<object>): Array<string> {
-  // Start with an empty array
-  let properties: Array<string> = [];
-
-  // Loop through each object in the data array
-  data?.forEach((item) => {
-    // Get the keys of the object and add them to the properties array
-    properties = [...properties, ...Object.keys(item)];
-  });
-
-  // Return the unique properties
-  return [...new Set(properties)];
-}
 
 /**
  * Function to get a predictable color based on a string or number
@@ -751,8 +656,8 @@ export function getPredictableColorPolarArea(input: string | number): string {
  * @param valueProperty the property to aggregate
  * @returns the aggregated value
  */
-export function aggregateValues(items: object[], aggregationMethod: TAggregationMethod, valueProperty: string): number {
-  const values: number[] = items?.map((item: { [key: string]: any }) => {
+export function aggregateValues(items: IAnyObject[], aggregationMethod: TAggregationMethod, valueProperty: string): number {
+  const values: number[] = items.map((item) => {
     const value = item[valueProperty];
     // Convert string numbers to actual numbers, handle null/undefined/NaN
     if (typeof value === 'string') {
@@ -783,7 +688,9 @@ export function aggregateValues(items: object[], aggregationMethod: TAggregation
   }
 }
 
-type FontConfig = { family: string; size: number; weight: string | number };
+type FontWeight = 'normal' | 'bold' | 'lighter' | 'bolder' | number | null;
+
+type FontConfig = { family: string; size: number; weight: FontWeight };
 
 /**
  * Helper function to create font configuration for Chart.js
@@ -793,13 +700,17 @@ type FontConfig = { family: string; size: number; weight: string | number };
  * @returns Chart.js font configuration object
  */
 export function createFontConfig(
-  fontConfig?: { family?: string; size?: number; weight?: string; color?: string },
+  fontConfig?: {
+    family?: string | undefined;
+    size?: number | undefined;
+    weight?: string | undefined;
+    color?: string | undefined; } | undefined,
   defaultSize: number = 12,
-  defaultWeight: string | number = '400',
+  defaultWeight: FontWeight = 400,
 ): FontConfig {
   return {
     family: fontConfig?.family || 'Segoe UI',
     size: fontConfig?.size || defaultSize,
-    weight: fontConfig?.weight || defaultWeight,
+    weight: isDefined(fontConfig?.weight) ? fontConfig.weight as FontWeight : defaultWeight as FontWeight,
   };
 }

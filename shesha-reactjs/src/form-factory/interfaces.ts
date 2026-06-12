@@ -130,7 +130,7 @@ export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T,
   /** @deprecated Use `visible` instead (inversion of `hidden`) */
   hidden?: boolean | IPropertySetting<boolean> | undefined;
   readOnly?: boolean | IPropertySetting<boolean> | undefined;
-  visible?: boolean;
+  visible?: boolean | undefined;
   visibleJs?: string | undefined;
 };
 
@@ -139,7 +139,7 @@ export type ExtractComponentSettings<TDef extends ComponentDefinition> = TDef ex
 
 /** Extract config for all components */
 export type AllComponentsConfig<T extends AllComponentDefinitions = AllComponentDefinitions> = {
-  [K in T["type"]]: Extract<T, { type: K }> extends ComponentDefinition<infer _TType, infer TSettings> ? FluentSettings<TSettings> : never;
+  [K in T["type"]]: Extract<T, { type: K }> extends ComponentDefinition<infer _TType, infer TSettings, infer _CalcModel> ? FluentSettings<TSettings> : never;
 };
 
 export type StandardEventHandler = 'onChange' | 'onBlur' | 'onFocus' | 'onClick';

@@ -1,5 +1,6 @@
 import {
   IAsyncValidationError,
+  IComponentSettingsFormFactory,
   IFormValidationErrors,
   ISettingsFormFactory,
 } from '@/interfaces';
@@ -120,7 +121,7 @@ export type FormDesignerActions = {
   setFormMode: (value: FormMode) => void;
   setActiveSettingsTabKey: (key: string) => void;
 
-  getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
+  getCachedComponentEditor: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(type: string, evaluator: () => ISettingsFormFactory<TModel> | undefined) => (IComponentSettingsFormFactory<TModel> | undefined);
 
   subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => void;
   loadAsync: () => Promise<void>;

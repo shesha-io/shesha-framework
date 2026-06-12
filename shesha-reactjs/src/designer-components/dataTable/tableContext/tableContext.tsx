@@ -14,6 +14,7 @@ import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';
 import TableContextEmptyState from './tableContextEmptyState';
 import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { ITableRowData } from '@/providers/dataTable/interfaces';
 
 type ITableContextInnerProps = ITableContextComponentProps;
 
@@ -134,8 +135,8 @@ export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) =
 
   const componentContent = sourceType === 'Form'
     ? (
-      <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
-        {(value, onChange) => provider(() => value, onChange)}
+      <ConfigurableFormItem<ITableRowData[]> model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+        {(value, onChange) => provider(() => value ?? [], onChange)}
       </ConfigurableFormItem>
     )
     : provider();

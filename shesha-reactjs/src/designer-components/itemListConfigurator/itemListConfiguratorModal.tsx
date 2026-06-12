@@ -9,20 +9,19 @@ import { ListEditorChildrenFn } from '@/components/listEditor';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface ModalSettings {
-  title?: string;
-  header?: React.ReactNode;
+  title?: string | undefined;
+  header?: React.ReactNode | undefined;
 }
 
 export interface IItemListConfiguratorModalProps<TItem extends ListItemWithId> {
   readOnly: boolean;
-  value?: TItem[];
-  onChange?: (newValue: TItem[]) => void;
+  value?: TItem[] | undefined;
+  onChange?: ((newValue: TItem[]) => void) | undefined;
   initNewItem: (items: TItem[]) => TItem;
   settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
-  size?: SizeType;
-
-  buttonText?: string;
-  modalSettings?: ModalSettings;
+  size?: SizeType | undefined;
+  buttonText?: string | undefined;
+  modalSettings?: ModalSettings | undefined;
   itemRenderer: ListEditorChildrenFn<TItem> | DefaultItemRenderer<TItem>;
 }
 
@@ -44,10 +43,10 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
   const [showModal, setShowModal] = useState(false);
   const isSmall = useMedia('(max-width: 480px)');
 
-  const [localValue, setLocalValue] = useState<TItem[]>(deepCopyViaJson(value));
+  const [localValue, setLocalValue] = useState<TItem[]>(deepCopyViaJson(value) ?? []);
 
   const openModal = (): void => {
-    setLocalValue(deepCopyViaJson(value));
+    setLocalValue(deepCopyViaJson(value) ?? []);
     setShowModal(true);
   };
 

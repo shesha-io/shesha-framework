@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules, useAvailableConstantsDataNoRefresh } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { FCUnwrapped, useFormItem, useShaFormInstance } from '@/providers';
+import { UnwrapCodeEvaluators, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
@@ -10,7 +10,7 @@ import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
 
-export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> = ({
+export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
   model,
   valuePropName,
@@ -19,14 +19,14 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
   labelCol,
   wrapperCol,
   autoAlignLabel = true,
-}) => {
+}: UnwrapCodeEvaluators<IConfigurableFormItemProps<TValue>>): ReactNode => {
   const shaForm = useShaFormInstance();
   const getFormData = shaForm.getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
   const isInDesigner = shaForm.formMode === 'designer';
   const allData = useAvailableConstantsDataNoRefresh();
-  const { styles } = useStyles({ autoAlignLabel, labelAlign: model.labelAlign });
+  const { styles } = useStyles({ autoAlignLabel });
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -44,7 +44,7 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
   // Note: margins are stored separately so inner components don't get them (prevents double margins)
   const rawMargins = isInDesigner
     ? { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }
-    : (model?.allStyles?.margins || {});
+    : (model.allStyles?.margins || {});
 
   const {
     marginTop = defaultMarginTop,
@@ -61,15 +61,11 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
-    // label: hideLabel ? null : model.label,
-    labelAlign: model.labelAlign,
     hidden: model.hidden,
-    valuePropName: valuePropName,
+    ...(valuePropName ? { valuePropName: valuePropName } : {}),
     initialValue: initialValue,
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
-    // labelCol: layout?.labelCol,
-    // wrapperCol: hideLabel || isVertical ? { span: 24 } : layout?.wrapperCol,
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     style: {
       marginTop: addPx(marginTop, allData),
@@ -77,20 +73,21 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
       marginRight: addPx(marginRight, allData),
       marginLeft: addPx(marginLeft, allData),
     },
+    ...(model.labelAlign ? { labelAlign: model.labelAlign } : {}),
     ...(!hideLabel ? { label: model.label } : {}),
-    ...(layout?.labelCol ? { labelCol: layout.labelCol } : {}),
-    ...(hideLabel || isVertical ? { wrapperCol: { span: 24 } } : layout?.wrapperCol ? { wrapperCol: layout.wrapperCol } : {}),
+    ...(layout.labelCol ? { labelCol: layout.labelCol } : {}),
+    ...(hideLabel || isVertical ? { wrapperCol: { span: 24 } } : layout.wrapperCol ? { wrapperCol: layout.wrapperCol } : {}),
   };
 
   if (typeof children === 'function') {
     if (model.context) {
       return (
-        <ConfigurableFormItemContext
+        <ConfigurableFormItemContext<TValue>
           componentId={model.id}
           formItemProps={formItemProps}
           valuePropName={valuePropName}
-          componentName={model.componentName}
-          propertyName={propName}
+          componentName={model.componentName ?? ""}
+          propertyName={propName ?? ""}
           contextName={model.context}
         >
           {children}
@@ -98,10 +95,10 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
       );
     } else {
       return (
-        <ConfigurableFormItemForm
+        <ConfigurableFormItemForm<TValue>
           formItemProps={formItemProps}
           valuePropName={valuePropName}
-          componentName={model.componentName}
+          componentName={model.componentName ?? ""}
           componentId={model.id}
         >
           {children}

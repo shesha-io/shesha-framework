@@ -7,8 +7,8 @@ const InputStatesPreview: FC = () => {
 
   const commonProps: FormItemProps = {
     layout: theme.layout,
-    labelAlign: theme.labelAlign,
-    labelCol: { span: theme.labelSpan },
+    ...(theme.labelAlign ? { labelAlign: theme.labelAlign } : {}),
+    labelCol: theme.labelSpan ? { span: theme.labelSpan } : {},
   };
 
   return (

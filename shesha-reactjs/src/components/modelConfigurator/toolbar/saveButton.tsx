@@ -39,7 +39,7 @@ export const SaveButton: FC<ISaveButtonProps> = (props) => {
     <Button
       icon={<SaveOutlined />}
       onClick={onSaveClick}
-      type={props.type}
+      type={props.type ?? "default"}
       size={props.size}
       disabled={!configurator.isModified || configurator.isSaving || configurator.isLoading}
     />

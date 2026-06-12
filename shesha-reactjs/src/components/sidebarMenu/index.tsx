@@ -10,14 +10,16 @@ import { useDeepCompareMemo, useLocalStorage } from '@/hooks';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 import { useMainMenu } from '@/providers/mainMenu';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 export interface ISidebarMenuProps {
-  isCollapsed?: boolean;
-  theme?: MenuTheme;
+  isCollapsed?: boolean | undefined;
+  theme?: MenuTheme | undefined;
 }
 
 const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
-  const [openedKeys, setOpenedKeys] = useLocalStorage('openedSidebarKeys', null);
+  const [openedKeys, setOpenedKeys] = useLocalStorage<string[]>('openedSidebarKeys', []);
   const { items } = useMainMenu();
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
@@ -25,7 +27,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const { styles } = useStyles();
 
-  const currentUrl = normalizeUrl(router?.fullPath);
+  const currentUrl = normalizeUrl(router.fullPath);
 
   const [selectedKey, setSelectedKey] = useState<string>();
 
@@ -44,10 +46,14 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
       sidebarMenuItemToMenuItem({
         item,
         onButtonClick,
-        getFormUrl: (args) => {
-          const url = getUrlFromNavigationRequest(args?.actionArguments);
-          const href = evaluateString(decodeURIComponent(url), executionContext);
-          return href;
+        getFormUrl: (actionConfiguration) => {
+          const navigationArgs = isNavigationActionConfiguration(actionConfiguration)
+            ? actionConfiguration.actionArguments
+            : undefined;
+          const url = getUrlFromNavigationRequest(navigationArgs);
+          return !isNullOrWhiteSpace(url)
+            ? evaluateString(decodeURIComponent(url), executionContext)
+            : "";
         },
         getUrl: (url) => {
           const href = evaluateString(decodeURIComponent(url), executionContext);
@@ -70,21 +76,17 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   if (menuItems.length === 0) return null;
 
-  const onOpenChange = (openKeys: React.Key[]): void => {
-    setOpenedKeys(openKeys);
-  };
-
-  const keys = openedKeys && openedKeys.length > 0 ? openedKeys : undefined;
+  const keys = isNonEmptyArray(openedKeys) ? openedKeys : undefined;
 
   return (
     <Menu
       mode="inline"
       className={classNames(styles.shaSidebarMenu, "nav-links-renderer")}
-      defaultOpenKeys={keys}
-      selectedKeys={selectedKey ? [selectedKey] : undefined}
-      onOpenChange={onOpenChange}
+      onOpenChange={setOpenedKeys}
       theme={theme}
       items={menuItems}
+      {...(keys ? { defaultOpenKeys: keys } : {})}
+      {...(selectedKey ? { selectedKeys: [selectedKey] } : {})}
     />
   );
 };

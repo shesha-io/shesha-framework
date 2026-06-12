@@ -9,7 +9,7 @@ const reducer = createReducer(METADATA_CONTEXT_INITIAL_STATE, (builder) => {
 
       state.modelType = payload.modelType;
       state.dataType = payload.dataType;
-      state.metadata = { ...payload.metadata };
+      state.metadata = payload.metadata;
     });
 });
 

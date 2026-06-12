@@ -1,16 +1,17 @@
 import { IConfigurableFormComponent, IStyleType } from '@/providers';
+import { IBorderType } from '../_settings/utils/border/interfaces';
 
 export interface ISizableColumnInputProps extends IStyleType {
-  borderSize?: string | number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  stylingBox?: string;
-  height?: string | number;
-  width?: string | number;
-  backgroundColor?: string;
-  hideBorder?: boolean;
-  columns?: ISizableColumnProps[];
+  borderSize?: string | number | undefined;
+  borderRadius?: number | undefined;
+  borderType?: IBorderType | undefined;
+  borderColor?: string | undefined;
+  stylingBox?: string | undefined;
+  height?: string | number | undefined;
+  width?: string | number | undefined;
+  backgroundColor?: string | undefined;
+  hideBorder?: boolean | undefined;
+  columns?: ISizableColumnProps[] | undefined;
 }
 
 export interface ISizableColumnProps {

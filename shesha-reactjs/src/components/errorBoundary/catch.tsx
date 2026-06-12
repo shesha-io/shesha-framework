@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 type ErrorHandler = (error: Error, info: React.ErrorInfo) => void;
 type ErrorHandlingComponent<Props> = (props: Props, error?: Error) => React.ReactNode;
 
-interface ErrorState { error?: Error }
+interface ErrorState { error?: Error | undefined }
 
 export default function Catch<Props>(
   component: ErrorHandlingComponent<Props>,
@@ -15,17 +15,17 @@ export default function Catch<Props>(
       return { error };
     }
 
-    public state: ErrorState = {
+    public override state: ErrorState = {
       error: undefined,
     };
 
-    public componentDidCatch(error: Error, info: React.ErrorInfo): void {
+    public override componentDidCatch(error: Error, info: React.ErrorInfo): void {
       if (errorHandler) {
         errorHandler(error, info);
       }
     }
 
-    public render(): ReactNode {
+    public override render(): ReactNode {
       return component(this.props, this.state.error);
     }
   };

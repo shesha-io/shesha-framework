@@ -5,7 +5,7 @@ import React, {
 } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { Form } from 'antd';
-import { FormMarkup } from '@/providers/form/models';
+import { FormAction, FormMarkup } from '@/providers/form/models';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { useDebouncedCallback } from 'use-debounce';
@@ -14,13 +14,15 @@ import { usePrevious } from 'react-use';
 import { IMetadataContext } from '@/providers/metadata/contexts';
 import { getColumnSettings } from './columnSettings';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
+import { RecursivePartial } from '@/interfaces/entity';
 
 export interface IColumnPropertiesProps {
-  item?: ColumnsItemProps;
-  onChange?: (item: ColumnsItemProps) => void;
+  item?: ColumnsItemProps | undefined;
+  onChange?: ((item: ColumnsItemProps) => void) | undefined;
   readOnly: boolean;
-  parentComponentType?: string;
-  metadata?: IMetadataContext;
+  parentComponentType?: string | undefined;
+  metadata?: IMetadataContext | undefined;
 }
 
 export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, readOnly, parentComponentType }) => {
@@ -44,8 +46,8 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
     }
   }, [columnType, form, prevColumnType]);
 
-  const debouncedSave = useDebouncedCallback(
-    (values: ColumnsItemProps) => {
+  const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<ColumnsItemProps>>(
+    (_, values) => {
       onChange?.({ ...item, ...values });
     },
     // delay in ms
@@ -63,12 +65,12 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       description: metadata.description ?? undefined,
       permissions: values.permissions ?? [],
     };
-    form.setFieldsValue(newValues);
-    debouncedSave(newValues);
+    form.setFieldsValue(newValues as RecursivePartial<ColumnsItemProps>);
+    debouncedSave(newValues, newValues);
   };
 
   return (
-    <ConfigurableForm
+    <ConfigurableForm<ColumnsItemProps>
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
@@ -77,7 +79,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       initialValues={item}
       onValuesChange={debouncedSave}
       actions={{
-        linkToModelMetadata,
+        linkToModelMetadata: linkToModelMetadata as FormAction,
       }}
       className={sheshaStyles.verticalSettingsClass}
     />

@@ -29,31 +29,31 @@ export class AxiosHttpClient implements HttpClientApi {
     return finalConfig;
   };
 
-  get<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+  get<T = unknown>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<T>> {
     return axios.get(url, this.#getRequestConfig(config));
   }
 
-  delete<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+  delete<T = unknown>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<T>> {
     return axios.delete(url, this.#getRequestConfig(config));
   }
 
-  head<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+  head<T = unknown>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<T>> {
     return axios.head(url, this.#getRequestConfig(config));
   }
 
-  options<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+  options<T = unknown>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<T>> {
     return axios.options(url, this.#getRequestConfig(config));
   }
 
-  post<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R> {
+  post<T = unknown, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<HttpResponse<T>> {
     return axios.post(url, data, this.#getRequestConfig(config));
   }
 
-  put<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R> {
+  put<T = unknown, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<HttpResponse<T>> {
     return axios.put(url, data, this.#getRequestConfig(config));
   }
 
-  patch<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R> {
+  patch<T = unknown, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<HttpResponse<T>> {
     return axios.patch(url, data, this.#getRequestConfig(config));
   }
 

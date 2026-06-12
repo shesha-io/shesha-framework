@@ -9,10 +9,10 @@ import { getIconByDataType } from '@/utils/metadata/helpers';
 
 export interface IProps extends IModelItem {
   index: number[];
-  parent?: IModelItem;
+  parent?: IModelItem | undefined;
 }
 
-const getListType = (itemsType: IModelItem): string => {
+const getListType = (itemsType: IModelItem | undefined): string => {
   if (itemsType) {
     switch (itemsType.dataType) {
       case DataTypes.string: return 'string';

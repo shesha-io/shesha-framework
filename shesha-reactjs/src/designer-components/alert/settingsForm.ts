@@ -86,7 +86,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     jsSetting: true,
                   },
                 ],
-                hidden: { _code: 'return getSettingValue(data?.readOnly) || getSettingValue(data?.banner);', _mode: 'code', _value: true } as any,
+                hidden: { _code: 'return getSettingValue(data?.readOnly) || getSettingValue(data?.banner);', _mode: 'code', _value: true },
 
               })
               .addSettingsInputRow({
@@ -110,7 +110,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     jsSetting: true,
                     hidden: {
                       _code: 'return !getSettingValue(data?.showIcon);', _mode: 'code', _value: false,
-                    } as any,
+                    },
                   },
                 ],
               })
