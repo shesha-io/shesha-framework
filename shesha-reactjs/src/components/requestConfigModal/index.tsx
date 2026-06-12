@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import { Modal, Tabs } from 'antd';
 import { ParamsTab } from './paramsTab';
 import { HeadersTab } from './headersTab';
@@ -22,12 +22,16 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
   const { styles } = useStyles();
   const [localConfig, setLocalConfig] = useState<IRequestConfig>(config);
   const [activeTab, setActiveTab] = useState('params');
+  const wasVisible = useRef(false);
 
-  // Update local config when modal opens or config prop changes
+  // Seed local config from the incoming config only when the modal OPENS (false → true). Parents
+  // can hand us a fresh `config` object on any re-render; re-syncing on every change would wipe
+  // in-progress edits (e.g. a form-data row you just added). Edits are committed on Save.
   useEffect(() => {
-    if (visible) {
+    if (visible && !wasVisible.current) {
       setLocalConfig(config);
     }
+    wasVisible.current = visible;
   }, [visible, config]);
 
   const handleOk = (): void => {
