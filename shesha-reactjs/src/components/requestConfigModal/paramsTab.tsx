@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
 import { Button, Input, Switch, Table, Tooltip } from 'antd';
 import { DeleteOutlined, PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { IRequestParam } from './models';
+import { IRequestParam, RequestValue } from './models';
+import { RequestValueEditor } from './requestValueEditor';
 import { useStyles } from './styles';
-
-const { TextArea } = Input;
 
 export interface IParamsTabProps {
   params: IRequestParam[];
@@ -46,27 +45,18 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange }) => {
       dataIndex: 'value',
       key: 'value',
       width: '25%',
-      render: (text: string, record: IRequestParam, index: number) => {
+      render: (value: RequestValue, record: IRequestParam, index: number) => {
         // Special handling for 'properties' parameter (Shesha GraphQL-like syntax)
         const isPropertiesParam = typeof record?.key === 'string' && record.key.toLowerCase() === 'properties';
 
-        if (isPropertiesParam) {
-          return (
-            <TextArea
-              value={text}
-              placeholder="firstName lastName address { addressLine1 city }"
-              onChange={(e) => handleUpdate(index, 'value', e.target.value)}
-              rows={3}
-              style={{ fontFamily: 'monospace', fontSize: '13px' }}
-            />
-          );
-        }
-
         return (
-          <Input
-            value={text}
-            placeholder="Parameter value"
-            onChange={(e) => handleUpdate(index, 'value', e.target.value)}
+          <RequestValueEditor
+            value={value}
+            onChange={(v) => handleUpdate(index, 'value', v)}
+            placeholder={isPropertiesParam ? 'firstName lastName address { addressLine1 city }' : 'Parameter value'}
+            multiline={isPropertiesParam}
+            rows={3}
+            textAreaStyle={isPropertiesParam ? { fontFamily: 'monospace', fontSize: '13px' } : undefined}
           />
         );
       },

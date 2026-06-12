@@ -10,7 +10,21 @@ import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { getQueryParams } from "@/utils/url";
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
-import { IRequestParam, IRequestHeader, IRequestBody } from '@/components/requestConfigModal';
+import { IRequestParam, IRequestHeader, IRequestBody, RequestValue } from '@/components/requestConfigModal';
+import { isPropertySettings } from '@/designer-components/_settings/utils';
+
+// The action arguments evaluator already runs Mustache on every string in the arguments tree,
+// including `_value` and `_code` inside our IPropertySetting wrapper. So by the time the
+// executer runs, those strings are already interpolated — we just need to pick the right one
+// based on the chosen mode and unwrap the setting.
+const resolveRequestValue = (raw: RequestValue): string | undefined => {
+  if (isPropertySettings(raw)) {
+    const wrapped = raw as { _mode?: string; _value?: unknown; _code?: unknown };
+    const picked = wrapped._mode === 'code' ? wrapped._code : wrapped._value;
+    return picked === undefined || picked === null ? '' : String(picked);
+  }
+  return raw as string | undefined;
+};
 
 export interface IApiCallArguments {
   url: string;
@@ -118,7 +132,7 @@ export const useApiCallAction = (): void => {
         const enabledParams = requestConfig.params?.filter(p => p.enabled) || [];
         finalParams = enabledParams.reduce((acc, param) => {
           if (param.key) {
-            let value = param.value;
+            let value: any = resolveRequestValue(param.value);
 
             // Special handling for 'properties' parameter - normalize GraphQL-like syntax
             // Convert multi-line format to single line with spaces
@@ -137,7 +151,7 @@ export const useApiCallAction = (): void => {
 
         const enabledHeaders = requestConfig.headers?.filter(h => h.enabled) || [];
         finalHeaders = enabledHeaders.reduce((acc, header) => {
-          if (header.key) acc[header.key] = header.value;
+          if (header.key) acc[header.key] = resolveRequestValue(header.value);
           return acc;
         }, {} as Record<string, any>);
 

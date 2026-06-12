@@ -1,13 +1,17 @@
+import { IPropertySetting } from '@/providers/form/models';
+
+export type RequestValue = string | IPropertySetting<string>;
+
 export interface IRequestParam {
   key: string;
-  value: string;
+  value: RequestValue;
   description?: string;
   enabled: boolean;
 }
 
 export interface IRequestHeader {
   key: string;
-  value: string;
+  value: RequestValue;
   enabled: boolean;
 }
 

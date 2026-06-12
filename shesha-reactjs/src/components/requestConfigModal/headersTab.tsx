@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
 import { Button, Input, Switch, Table } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { IRequestHeader } from './models';
+import { IRequestHeader, RequestValue } from './models';
+import { RequestValueEditor } from './requestValueEditor';
 import { useStyles } from './styles';
 
 export interface IHeadersTabProps {
@@ -44,11 +45,11 @@ export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange }) => {
       dataIndex: 'value',
       key: 'value',
       width: '45%',
-      render: (text: string, _: IRequestHeader, index: number) => (
-        <Input
-          value={text}
+      render: (value: RequestValue, _record: IRequestHeader, index: number) => (
+        <RequestValueEditor
+          value={value}
+          onChange={(v) => handleUpdate(index, 'value', v)}
           placeholder="Header value"
-          onChange={(e) => handleUpdate(index, 'value', e.target.value)}
         />
       ),
     },
