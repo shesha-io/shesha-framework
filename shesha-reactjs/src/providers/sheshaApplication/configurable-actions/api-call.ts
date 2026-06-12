@@ -102,7 +102,7 @@ const applyResponseTransformation = async (
   context: object,
   transformation?: IResponseTransformationConfiguration,
 ): Promise<unknown> => {
-  if (!transformation?.enabled || !transformation.script?.trim()) {
+  if (!transformation?.enabled || !transformation.script.trim()) {
     return original;
   }
 
@@ -146,7 +146,7 @@ export const useApiCallAction = (): void => {
     // values stay evaluated here and are read via resolveRequestValue.
     evaluateArguments: async (args, context) => {
       const evaluated = await genericActionArgumentsEvaluator<IApiCallArguments>(args, context);
-      const srcBody = args?.requestConfig?.body;
+      const srcBody = args.requestConfig?.body;
       const dstBody = evaluated?.requestConfig?.body;
       if (dstBody && srcBody && (srcBody.type === 'json' || srcBody.type === 'raw') && typeof srcBody.content === 'string') {
         dstBody.content = srcBody.content;
@@ -162,9 +162,9 @@ export const useApiCallAction = (): void => {
       } = actionArgs;
 
       // Backward compatibility: use legacy parameters/headers if requestConfig is not set
-      let finalParams: Record<string, any> = {};
-      let finalHeaders: Record<string, any> = {};
-      let requestBody: any = undefined;
+      let finalParams: Record<string, unknown> = {};
+      let finalHeaders: Record<string, string> = {};
+      let requestBody: unknown = undefined;
 
       // Debug logging (can be removed in production)
       if (process.env.NODE_ENV === 'development') {
@@ -178,9 +178,9 @@ export const useApiCallAction = (): void => {
       if (requestConfig) {
         // New structure: use requestConfig
         const enabledParams = requestConfig.params?.filter((p) => p.enabled) || [];
-        finalParams = enabledParams.reduce((acc, param) => {
+        finalParams = enabledParams.reduce<Record<string, unknown>>((acc, param) => {
           if (param.key) {
-            let value: any = resolveRequestValue(param.value);
+            let value: string | undefined = resolveRequestValue(param.value);
 
             // Special handling for 'properties' parameter - normalize GraphQL-like syntax
             // Convert multi-line format to single line with spaces
@@ -195,13 +195,13 @@ export const useApiCallAction = (): void => {
             acc[param.key] = value;
           }
           return acc;
-        }, {} as Record<string, any>);
+        }, {});
 
         const enabledHeaders = requestConfig.headers?.filter((h) => h.enabled) || [];
-        finalHeaders = enabledHeaders.reduce((acc, header) => {
-          if (header.key) acc[header.key] = resolveRequestValue(header.value);
+        finalHeaders = enabledHeaders.reduce<Record<string, string>>((acc, header) => {
+          if (header.key) acc[header.key] = resolveRequestValue(header.value) ?? '';
           return acc;
-        }, {} as Record<string, any>);
+        }, {});
 
         // Handle request body based on type
         if (requestConfig.body && requestConfig.body.type !== 'none') {
@@ -214,7 +214,7 @@ export const useApiCallAction = (): void => {
                   ? evaluateString(requestConfig.body.content, context as object)
                   : requestConfig.body.content;
                 requestBody = typeof evaluatedJson === 'string'
-                  ? JSON.parse(evaluatedJson)
+                  ? JSON.parse(evaluatedJson) as unknown
                   : evaluatedJson;
               } catch {
                 requestBody = requestConfig.body.content;
@@ -228,10 +228,11 @@ export const useApiCallAction = (): void => {
               try {
                 // New storage: typed array of fields. Legacy storage: JSON-stringified array.
                 const rawContent = requestConfig.body.content;
-                const formFields: Array<{ key: string; value: RequestValue; enabled?: boolean }> = Array.isArray(rawContent)
-                  ? rawContent
-                  : JSON.parse(rawContent as string);
-                requestBody = formFields.reduce((acc: any, field) => {
+                type FormDataField = { key: string; value: RequestValue; enabled?: boolean };
+                const formFields: FormDataField[] = Array.isArray(rawContent)
+                  ? rawContent as FormDataField[]
+                  : JSON.parse(rawContent as string) as FormDataField[];
+                requestBody = formFields.reduce<Record<string, unknown>>((acc, field) => {
                   if (field.key && field.enabled !== false) {
                     acc[field.key] = resolveRequestValue(field.value);
                   }
@@ -301,7 +302,7 @@ export const useApiCallAction = (): void => {
 
       let preparedUrl = url;
       let preparedData = requestBody !== undefined ? requestBody : { ...finalParams };
-      const encodeAsQueryString = ['get', 'delete'].includes(verb?.toLowerCase());
+      const encodeAsQueryString = ['get', 'delete'].includes(verb.toLowerCase());
 
       if (encodeAsQueryString) {
         const queryStringData = { ...getQueryParams(preparedUrl), ...finalParams };
@@ -340,7 +341,7 @@ export const useApiCallAction = (): void => {
         headers: allHeaders,
         ...(baseUrl && { baseURL: baseUrl }),
       }).then((response) => {
-        const original = unwrapAbpResponse(response.data);
+        const original: unknown = unwrapAbpResponse(response.data);
         // Expose the freshly-received response to the transformation script as `response`.
         responseHolder.current.response = original;
         return applyResponseTransformation(original, allData, requestConfig?.responseTransformation);

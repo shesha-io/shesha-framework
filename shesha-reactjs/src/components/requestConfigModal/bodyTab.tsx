@@ -71,14 +71,6 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     label: p.path,
   }));
 
-  const handleViewChange = (next: BodyView): void => {
-    setView(next);
-    // Only real body types mutate the request body; "transformation" leaves the body untouched.
-    if (next !== 'transformation') {
-      handleTypeChange(next);
-    }
-  };
-
   const handleTypeChange = (type: BodyType): void => {
     // Restore the previously-entered content for this type instead of resetting it.
     const stashed = contentByType[type];
@@ -87,6 +79,14 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
     onChange({ type, content, rawSubType });
     setJsonError(null);
+  };
+
+  const handleViewChange = (next: BodyView): void => {
+    setView(next);
+    // Only real body types mutate the request body; "transformation" leaves the body untouched.
+    if (next !== 'transformation') {
+      handleTypeChange(next);
+    }
   };
 
   const handleClear = (): void => {
@@ -197,8 +197,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
             style={{ width: '100%' }}
             // Suggest model properties but let the user type any key (free text).
             filterOption={(input, option) =>
-              String(option?.value ?? '').toLowerCase().includes(input.toLowerCase())
-            }
+              String(option?.value ?? '').toLowerCase().includes(input.toLowerCase())}
             onChange={(value) => handleFormDataUpdate(index, 'key', value ?? '')}
           />
         ),
