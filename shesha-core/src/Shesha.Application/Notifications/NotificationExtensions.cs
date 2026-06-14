@@ -9,6 +9,7 @@ namespace Shesha.Notifications
         /// </summary>
         public static TDestination CopyNotificationSpecificPropsFrom<TDestination>(this TDestination dst, INotificationTypeSpecificProps src) where TDestination: INotificationTypeSpecificProps
         {
+            dst.DefaultPriority = src.DefaultPriority;
             dst.IsTimeSensitive = src.IsTimeSensitive;
             dst.AllowAttachments = src.AllowAttachments;
             dst.Disable = src.Disable;
@@ -16,7 +17,7 @@ namespace Shesha.Notifications
             dst.Category = src.Category;
             dst.OrderIndex = src.OrderIndex;
             dst.OverrideChannels = src.OverrideChannels;
-            
+
             return dst;
         }
 

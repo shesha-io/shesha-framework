@@ -27,10 +27,6 @@ namespace Shesha.Notifications.Distribution.NotificationChannels.Dto
         /// </summary>
         public string SenderTypeName { get; set; }
         /// <summary>
-        /// The default priority of the message unless overridden during the send operation
-        /// </summary>
-        public RefListNotificationPriority? DefaultPriority { get; set; }
-        /// <summary>
         /// Enabled, Disabled, Suppressed - if suppressed will 'pretend' like the notification will be send, but will simply not send the message
         /// </summary>
         public RefListNotificationChannelStatus? Status { get; set; }

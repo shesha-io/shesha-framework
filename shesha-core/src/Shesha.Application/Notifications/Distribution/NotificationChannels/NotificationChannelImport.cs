@@ -100,7 +100,6 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
             dbItem.MaxMessageSize = item.MaxMessageSize;
             dbItem.SupportedMechanism = item.SupportedMechanism;
             dbItem.SenderTypeName = item.SenderTypeName;
-            dbItem.DefaultPriority = item.DefaultPriority;
             dbItem.Status = item.Status;
 
             return dbItem;

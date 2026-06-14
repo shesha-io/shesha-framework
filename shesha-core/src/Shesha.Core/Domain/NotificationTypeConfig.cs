@@ -1,5 +1,6 @@
 ﻿using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.Enums;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -33,7 +34,11 @@ namespace Shesha.Domain
         /// </summary>
         public override string ItemType => ItemTypeName;
         /// <summary>
-        /// 
+        /// The default priority of the message unless overridden during the send operation
+        /// </summary>
+        public virtual RefListNotificationPriority? DefaultPriority { get; set; }
+        /// <summary>
+        ///
         /// </summary>
         public bool AllowAttachments { get; set; }
         /// <summary>

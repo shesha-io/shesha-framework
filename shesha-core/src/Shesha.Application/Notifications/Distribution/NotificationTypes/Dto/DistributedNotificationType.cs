@@ -1,5 +1,6 @@
 ﻿using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,7 +12,11 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
     public class DistributedNotificationType: DistributedConfigurableItemBase, INotificationTypeSpecificProps
     {
         /// <summary>
-        /// 
+        /// The default priority of the message unless overridden during the send operation
+        /// </summary>
+        public RefListNotificationPriority? DefaultPriority { get; set; }
+        /// <summary>
+        ///
         /// </summary>
         public bool AllowAttachments { get; set; }
         /// <summary>
