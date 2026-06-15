@@ -53,7 +53,7 @@ export const executeResponseTransformation = async (script: string, context: obj
     // dependency-free and unit-testable (the test runner doesn't resolve the `@/` alias).
     // eslint-disable-next-line no-new-func
     const fn = new AsyncFunction('context', `with(context) {\n${script}\n}`);
-    output = await fn(context);
+    output = await (fn as (ctx: object) => Promise<unknown>)(context);
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
