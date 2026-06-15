@@ -204,7 +204,6 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
               sb.append(`/** ${prop.description} */`);
             sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
           } else {
-            console.error(`Failed to find entity type '${prop.entityModule}:${prop.entityType}' for (property '${prop.path}')`);
             sb.append(`${prop.path}: any;`);
           }
         } catch (error) {

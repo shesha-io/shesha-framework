@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import {
   NestedPropertyMetadatAccessor,
 } from './contexts';
@@ -27,13 +28,15 @@ const useNestedPropertyMetadatAccessor = (modelType: string | IEntityTypeIdentif
 
 const useMetadataFetcher = (): MetadataFetcher => {
   const { getMetadata } = useMetadataDispatcher();
-  const metadataFetcher = async (typeId: ModelTypeIdentifier): Promise<IObjectMetadata | null> => {
-    const metadata = await getMetadata({ dataType: DataTypes.entityReference, modelType: typeId });
-    return isDefined(metadata) && isObjectMetadata(metadata)
-      ? metadata
-      : null;
-  };
-  return metadataFetcher;
+  return useCallback(
+    async (typeId: ModelTypeIdentifier): Promise<IObjectMetadata | null> => {
+      const metadata = await getMetadata({ dataType: DataTypes.entityReference, modelType: typeId });
+      return isDefined(metadata) && isObjectMetadata(metadata)
+        ? metadata
+        : null;
+    },
+    [getMetadata],
+  );
 };
 
 export {

@@ -556,6 +556,8 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [draftValue, setDraftValue] = useState<string | null>(null);
   const valueBeforeExpandRef = useRef<string>('');
+  const latestValueRef = useRef(value);
+  latestValueRef.current = value;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -644,6 +646,9 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     if (inline) {
       updateInlineEditorPosition();
       updateInlineDropdownPosition();
+    } else {
+      valueBeforeExpandRef.current = latestValueRef.current;
+      setDraftValue(latestValueRef.current);
     }
     requestAnimationFrame(() => {
       const textarea = textareaRef.current;

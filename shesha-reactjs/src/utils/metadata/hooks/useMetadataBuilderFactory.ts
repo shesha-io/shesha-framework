@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useMetadataFetcher } from "@/providers";
 import { IMetadataBuilder, MetadataBuilder } from "../metadataBuilder";
 import {
@@ -30,7 +31,7 @@ export const useMetadataBuilderFactory = (makeComponentsNullable: boolean = fals
   const registerContexts = useContextsRegistration();
   const registerFormAction = useFormRegistration(makeComponentsNullable);
 
-  return () => {
+  return useCallback(() => {
     const builder = new MetadataBuilder(metadataFetcher);
 
     // register standard constants
@@ -55,5 +56,5 @@ export const useMetadataBuilderFactory = (makeComponentsNullable: boolean = fals
     // builder.registerStandardProperty(SheshaConstants.constantsBuilder, registerConstantsBuilderAction);
 
     return builder;
-  };
+  }, [metadataFetcher, registerFormDataAction, registerApplicationAction, registerContexts, registerFormAction]);
 };
