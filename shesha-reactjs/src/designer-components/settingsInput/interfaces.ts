@@ -465,7 +465,6 @@ export interface ILayerSelectorSettingsInputProps extends ISettingsInputBase<ILa
 export interface IRequestConfigButtonSettingsInputProps extends ISettingsInputBase<IRequestConfig> {
   type: 'requestConfigButton';
 }
-export const isRequestConfigButtonProps = (value: ISettingsInputBase): value is IRequestConfigButtonSettingsInputProps => value.type === 'requestConfigButton';
 
 // Common styling props that can be applied to multiple components
 export interface ICommonStylingProps {
