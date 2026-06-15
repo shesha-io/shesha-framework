@@ -134,8 +134,8 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     if (typeof raw === 'string') {
       // Legacy storage: JSON-stringified array
       try {
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
+        const parsed: unknown = JSON.parse(raw) as unknown;
+        return Array.isArray(parsed) ? (parsed as IFormDataField[]) : [];
       } catch {
         return [];
       }
@@ -177,7 +177,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         key: 'enabled',
         width: '12%',
         align: 'center' as const,
-        render: (_: any, row: IFormDataField, index: number) => (
+        render: (_: unknown, row: IFormDataField, index: number) => (
           <Checkbox
             checked={row.enabled !== false}
             onChange={(e) => handleFormDataUpdate(index, 'enabled', e.target.checked)}
@@ -219,7 +219,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         title: '',
         key: 'action',
         width: '15%',
-        render: (_: any, __: IFormDataField, index: number) => (
+        render: (_: unknown, __: IFormDataField, index: number) => (
           <Button
             type="text"
             danger
@@ -360,7 +360,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   return (
     <div className={styles.bodyEditor}>
       <div className={styles.bodyTypeSelector} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value)}>
+        <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value as BodyView)}>
           <Radio.Button value="none">none</Radio.Button>
           <Radio.Button value="json">JSON</Radio.Button>
           <Radio.Button value="form-data">form-data</Radio.Button>
