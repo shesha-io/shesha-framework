@@ -173,6 +173,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     'theme-parameters',
     css`
 
+    padding: 8px;
       &::-webkit-scrollbar {
         display: none;
       }

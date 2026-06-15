@@ -1,7 +1,6 @@
-import { Col, Radio } from 'antd';
-import React, { FC, useState } from 'react';
-import { CollapsiblePanel } from '@/components/panel';
-import ThemeParameters from './parameters';
+import { Col, Tabs } from 'antd';
+import React, { FC } from 'react';
+import ThemeParameters, { ThemeSettingsSection } from './parameters';
 import { useStyles } from './styles/styles';
 import { IConfigurableTheme } from '@/providers/theme';
 
@@ -11,30 +10,35 @@ export interface IConfigurableThemePageProps {
   readonly?: boolean;
 }
 
+/**
+ * Theme settings sections, per the configuration groups of the enhanced theming model:
+ * theme-wide settings, the four component-group tiers (input / in-line / standard / layout),
+ * and per-component settings.
+ */
+const SECTION_TABS: Array<{ key: ThemeSettingsSection; label: string }> = [
+  { key: 'theme', label: 'Theme' },
+  { key: 'input', label: 'Input Components' },
+  { key: 'inline', label: 'Inline Components' },
+  { key: 'standard', label: 'Standard Components' },
+  { key: 'layout', label: 'Layout Components' },
+  { key: 'components', label: 'Components' },
+];
+
 export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ value, onChange, readonly }) => {
   const { styles } = useStyles();
-  const [themeLevel, setThemeLevel] = useState<1 | 2>(1);
 
   return (
     <Col span={24} className={styles.contentColumn}>
-      <CollapsiblePanel
-        collapsible="disabled"
-        header={(
-          <Radio.Group
-            value={themeLevel}
-            onChange={(e) => setThemeLevel(e.target.value as 1 | 2)}
-            disabled={readonly}
-            optionType="button"
-            buttonStyle="solid"
-          >
-            <Radio.Button value={1}>Theme</Radio.Button>
-            <Radio.Button value={2}>Components</Radio.Button>
-          </Radio.Group>
-        )}
+      <Tabs
+        defaultActiveKey="theme"
+        items={SECTION_TABS.map(({ key, label }) => ({
+          key,
+          label,
+          children: <ThemeParameters value={value} onChange={onChange} readonly={readonly} section={key} />,
+        }))}
+        size="small"
         className={styles.themeParameters}
-      >
-        <ThemeParameters value={value} onChange={onChange} readonly={readonly} themeLevel={themeLevel} />
-      </CollapsiblePanel>
+      />
     </Col>
   );
 };

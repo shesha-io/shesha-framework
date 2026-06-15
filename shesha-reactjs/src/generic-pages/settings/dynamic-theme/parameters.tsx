@@ -4,16 +4,20 @@ import React, { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettingsPanel';
+import { ComponentGroupSettings } from './groupSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
 
+/** The sections (tabs) of the theme settings screen. */
+export type ThemeSettingsSection = 'theme' | 'input' | 'inline' | 'standard' | 'layout' | 'components';
+
 export interface ThemeParametersProps {
   value?: IConfigurableTheme;
   onChange?: (theme: IConfigurableTheme) => void;
   readonly?: boolean;
-  themeLevel?: number;
+  section?: ThemeSettingsSection;
 }
 
 const PRESET_COLORS = [
@@ -46,7 +50,7 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readonly })
   );
 };
 
-const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly, themeLevel = 1 }) => {
+const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly, section = 'theme' }) => {
   const changeThemeInternal = (theme: IConfigurableTheme): void => {
     if (onChange) onChange(theme);
   };
@@ -88,8 +92,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
   const infoColor = theme?.application?.infoColor;
 
   return (
-    <div style={{ padding: '0 0 24px' }}>
-      {themeLevel === 1 && (
+    <div style={{ padding: '16px 24px' }}>
+      {section === 'theme' && (
         <>
           <Typography.Title level={4} style={{ marginBottom: 4 }}>Theme Settings</Typography.Title>
           <Typography.Text type="secondary">
@@ -238,10 +242,13 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           </div>
         </>
       )}
-      {themeLevel === 2 && (
+      {(section === 'input' || section === 'inline' || section === 'standard' || section === 'layout') && (
+        <ComponentGroupSettings group={section} value={theme} onChange={onChange} readonly={readonly} />
+      )}
+      {section === 'components' && (
         <>
           {/* Component Defaults Section */}
-          <div style={{ marginTop: 48 }}>
+          <div>
             <Typography.Title level={4} style={{ marginBottom: 4 }}>Component Settings</Typography.Title>
             <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
               Configure default appearance styles for individual components. Select a component from the tree to customize its appearance settings.
