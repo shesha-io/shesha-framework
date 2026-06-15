@@ -16,9 +16,9 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange }) => {
     onChange([...params, { key: '', value: '', description: '', enabled: true }]);
   };
 
-  const handleUpdate = (index: number, field: keyof IRequestParam, value: any): void => {
+  const handleUpdate = (index: number, field: keyof IRequestParam, value: IRequestParam[keyof IRequestParam]): void => {
     const updated = [...params];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], [field]: value } as IRequestParam;
     onChange(updated);
   };
 
@@ -101,7 +101,7 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange }) => {
       title: '',
       key: 'action',
       width: '10%',
-      render: (_: any, __: IRequestParam, index: number) => (
+      render: (_: unknown, __: IRequestParam, index: number) => (
         <Button
           type="text"
           danger
