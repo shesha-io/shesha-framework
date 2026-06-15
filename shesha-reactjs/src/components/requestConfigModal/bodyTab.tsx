@@ -9,6 +9,7 @@ import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { DataTypes } from '@/interfaces';
 import { asPropertiesArray } from '@/interfaces/metadata';
+
 import { useMetadataOrUndefined } from '@/providers';
 import { useStyles } from './styles';
 
@@ -30,8 +31,8 @@ export interface IBodyTabProps {
   body: IRequestBody;
   onChange: (body: IRequestBody) => void;
   /** Response transformation config — persisted alongside the request, edited under the "Transformation" body option. */
-  transformation?: IResponseTransformationConfiguration;
-  onTransformationChange?: (transformation: IResponseTransformationConfiguration) => void;
+  transformation?: IResponseTransformationConfiguration | undefined;
+  onTransformationChange?: ((transformation: IResponseTransformationConfiguration) => void) | undefined;
 }
 
 // "transformation" is a view-only selection in the body type bar — it edits the response
@@ -77,7 +78,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     const content = stashed !== undefined ? stashed : defaultContentFor(type);
     const rawSubType = type === 'raw' ? lastRawSubType : undefined;
 
-    onChange({ type, content, rawSubType });
+    onChange({ type, content, ...(rawSubType !== undefined ? { rawSubType } : {}) });
     setJsonError(null);
   };
 
@@ -119,7 +120,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       JSON.parse(value);
       setJsonError(null);
     } catch (err) {
-      setJsonError('Invalid JSON: ' + err.message);
+      setJsonError('Invalid JSON: ' + (err instanceof Error ? err.message : String(err)));
     }
   };
 
@@ -159,7 +160,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     value: IFormDataField[K],
   ): void => {
     const rows = parseFormData();
-    rows[index] = { ...rows[index], [field]: value };
+    rows[index] = { ...rows[index], [field]: value } as IFormDataField;
     updateFormData(rows);
   };
 
@@ -259,7 +260,9 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       return (
         <TransformationTab
           value={transformation}
-          onChange={(t) => onTransformationChange?.(t)}
+          onChange={(t) => {
+            onTransformationChange?.(t);
+          }}
         />
       );
     }
@@ -306,7 +309,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
       case 'raw': {
         const activeSubType = body.rawSubType ?? 'text';
-        const subTypeMeta = RAW_SUB_TYPES.find((s) => s.value === activeSubType) ?? RAW_SUB_TYPES[0];
+        const subTypeMeta = RAW_SUB_TYPES.find((s) => s.value === activeSubType) ?? RAW_SUB_TYPES[0]!;
         // The JavaScript sub-type is executed at request time, so it gets the templated editor with
         // exposed constants (like the Transformation tab). Other sub-types are sent as plain text.
         const isExecutableJs = activeSubType === 'javascript';
