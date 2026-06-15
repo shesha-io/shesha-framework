@@ -9,7 +9,7 @@ import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { DataTypes } from '@/interfaces';
 import { asPropertiesArray } from '@/interfaces/metadata';
-import { useMetadata } from '@/providers';
+import { useMetadataOrUndefined } from '@/providers';
 import { useStyles } from './styles';
 
 // The raw JavaScript body is executed as a script that returns the payload, so its wrapper reads
@@ -65,7 +65,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
   // Properties of the model the host form is bound to (if any) — offered as autocomplete suggestions
   // for form-data field keys. Undefined when there's no metadata context; free typing always works.
-  const metadataCtx = useMetadata(false);
+  const metadataCtx = useMetadataOrUndefined();
   const keyOptions = asPropertiesArray(metadataCtx?.metadata?.properties, []).map((p) => ({
     value: p.path,
     label: p.path,
