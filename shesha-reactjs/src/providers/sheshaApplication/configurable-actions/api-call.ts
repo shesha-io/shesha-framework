@@ -167,7 +167,7 @@ export const useApiCallAction = (): void => {
       let requestBody: unknown = undefined;
 
       // Debug logging (can be removed in production)
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env['NODE_ENV'] === 'development') {
         console.warn('🔍 API Call Debug:', {
           hasRequestConfig: !!requestConfig,
           requestConfigParams: requestConfig?.params,
@@ -301,7 +301,7 @@ export const useApiCallAction = (): void => {
         : backendUrl;
 
       let preparedUrl = url;
-      let preparedData = requestBody !== undefined ? requestBody : { ...finalParams };
+      let preparedData: unknown = requestBody !== undefined ? requestBody : { ...finalParams };
       const encodeAsQueryString = ['get', 'delete'].includes(verb.toLowerCase());
 
       if (encodeAsQueryString) {
@@ -309,7 +309,7 @@ export const useApiCallAction = (): void => {
         const queryString = qs.stringify(queryStringData, { allowDots: true });
 
         // Debug logging
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env['NODE_ENV'] === 'development') {
           console.warn('🔍 Query String Debug:', {
             finalParams,
             queryStringData,
