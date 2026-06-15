@@ -147,6 +147,22 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 jsSetting: true,
                 parentId: validationTabId,
               })
+              .addSettingsInput({
+                id: nanoid(),
+                propertyName: 'useStandardPasswordValidation',
+                label: 'Use standard password validation',
+                tooltip: 'When enabled, the password validation follows the rules defined in the corresponding authentication configuration. When disabled, no global complexity validation is applied.',
+                inputType: 'switch',
+                size: 'small',
+                layout: 'horizontal',
+                jsSetting: true,
+                parentId: validationTabId,
+                hidden: {
+                  _code: 'return getSettingValue(data?.textType) !== "password";',
+                  _mode: 'code',
+                  _value: false,
+                },
+              })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: validationTabId,
