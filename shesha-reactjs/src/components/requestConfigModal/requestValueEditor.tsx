@@ -3,21 +3,22 @@ import { Dropdown, Input, MenuProps, Tooltip } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import { IPropertySetting } from '@/providers/form/models';
 import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
+import { RequestValue } from './models';
 
 const { TextArea } = Input;
 
-export type RequestValue = string | IPropertySetting<string> | undefined;
+export type { RequestValue };
 
 type ValueMode = 'value' | 'code';
 
 export interface IRequestValueEditorProps {
-  value?: RequestValue;
+  value?: RequestValue | undefined;
   onChange: (value: RequestValue) => void;
-  placeholder?: string;
-  multiline?: boolean;
-  rows?: number;
-  textAreaStyle?: React.CSSProperties;
-  readOnly?: boolean;
+  placeholder?: string | undefined;
+  multiline?: boolean | undefined;
+  rows?: number | undefined;
+  textAreaStyle?: React.CSSProperties | undefined;
+  readOnly?: boolean | undefined;
 }
 
 const toSetting = (value: RequestValue): IPropertySetting<string> => {
@@ -45,7 +46,7 @@ export const RequestValueEditor: FC<IRequestValueEditorProps> = ({
   textAreaStyle,
   readOnly,
 }) => {
-  const setting = useMemo(() => toSetting(value), [value]);
+  const setting = useMemo(() => toSetting(value ?? ''), [value]);
   const mode: ValueMode = setting._mode === 'code' ? 'code' : 'value';
   const displayValue = mode === 'code' ? (setting._code ?? '') : (setting._value ?? '');
 
@@ -77,7 +78,7 @@ export const RequestValueEditor: FC<IRequestValueEditorProps> = ({
   };
 
   const sourceDots = (
-    <Dropdown menu={menu} trigger={['click']} placement="bottomRight" disabled={readOnly}>
+    <Dropdown menu={menu} trigger={['click']} placement="bottomRight" disabled={!!readOnly}>
       <Tooltip title="Select source">
         <MoreOutlined
           style={{ cursor: readOnly ? 'not-allowed' : 'pointer', color: mode === 'code' ? '#1677ff' : undefined }}
@@ -101,7 +102,7 @@ export const RequestValueEditor: FC<IRequestValueEditorProps> = ({
           placeholder={effectivePlaceholder}
           rows={rows}
           style={{ ...inputStyle, paddingRight: 28 }}
-          disabled={readOnly}
+          disabled={!!readOnly}
           onChange={(e) => onInlineChange(e.target.value)}
         />
         <div style={{ position: 'absolute', top: 6, right: 8 }}>
@@ -116,7 +117,7 @@ export const RequestValueEditor: FC<IRequestValueEditorProps> = ({
       value={displayValue}
       placeholder={effectivePlaceholder}
       style={inputStyle}
-      disabled={readOnly}
+      disabled={!!readOnly}
       onChange={(e) => onInlineChange(e.target.value)}
       suffix={sourceDots}
     />
