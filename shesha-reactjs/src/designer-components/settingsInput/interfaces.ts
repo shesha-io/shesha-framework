@@ -19,6 +19,7 @@ import { ListItemWithId } from '@/components/listEditor/models';
 import { ILayerFormModel } from '@/providers/layersProvider/models';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ILabelValueItem } from '@/components/labelValueEditor/labelValueEditor';
+import { IRequestConfig } from '@/components/requestConfigModal';
 
 export interface IRadioOption {
   value: string | number;
@@ -497,7 +498,7 @@ export interface ILayerSelectorSettingsInputProps extends ISettingsInputBase<ILa
 }
 
 // Request Config Button
-export interface IRequestConfigButtonSettingsInputProps extends ISettingsInputBase {
+export interface IRequestConfigButtonSettingsInputProps extends ISettingsInputBase<IRequestConfig> {
   type: 'requestConfigButton';
 }
 export const isRequestConfigButtonProps = (value: ISettingsInputBase): value is IRequestConfigButtonSettingsInputProps => value.type === 'requestConfigButton';

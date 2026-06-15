@@ -1,8 +1,9 @@
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { IRequestConfigButtonSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { RequestConfigButton } from '@/designer-components/requestConfigButton';
 
-export const RequestConfigButtonWrapper: FC<IRequestConfigButtonSettingsInputProps> = (props) => {
+export const RequestConfigButtonWrapper: FCUnwrapped<IRequestConfigButtonSettingsInputProps> = (props) => {
   return (
     <RequestConfigButton
       value={props.value}
