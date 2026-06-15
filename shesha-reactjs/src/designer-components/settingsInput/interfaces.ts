@@ -26,6 +26,7 @@ import { IDynamicActionsConfiguration } from '../dynamicActionsConfigurator/mode
 import { KeyInfomationBarItemProps } from '../keyInformationBar/interfaces';
 import { IRefListItemFormModel } from '@/components/refListSelectorDisplay/provider/models';
 import { ISizableColumnProps } from '../sizableColumns/interfaces';
+import { IRequestConfig } from '@/components/requestConfigModal';
 
 export interface IRadioOption {
   value: string | number;
@@ -459,6 +460,12 @@ export interface ILayerSelectorSettingsInputProps extends ISettingsInputBase<ILa
   type: 'layerSelectorSettingsModal';
   settings?: FormMarkup | undefined;
 }
+
+// Request Config Button
+export interface IRequestConfigButtonSettingsInputProps extends ISettingsInputBase<IRequestConfig> {
+  type: 'requestConfigButton';
+}
+export const isRequestConfigButtonProps = (value: ISettingsInputBase): value is IRequestConfigButtonSettingsInputProps => value.type === 'requestConfigButton';
 
 // Common styling props that can be applied to multiple components
 export interface ICommonStylingProps {
