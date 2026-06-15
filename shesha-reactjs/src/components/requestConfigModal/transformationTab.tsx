@@ -23,7 +23,7 @@ const DEFAULT_SCRIPT = `return {
 };`;
 
 export interface ITransformationTabProps {
-  value?: IResponseTransformationConfiguration;
+  value?: IResponseTransformationConfiguration | undefined;
   onChange: (value: IResponseTransformationConfiguration) => void;
 }
 
