@@ -6,6 +6,8 @@ import { findComponentNode, getMenuItems, IMenuItem } from './toolboxComponents'
 import { ConfigurableForm } from '@/components/configurableForm';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import {
+  DEFAULT_FORM_SETTINGS,
+  FormMarkupWithSettings,
   IConfigurableFormComponent,
   isConfigurableFormComponent,
   isRawComponentsContainer,
@@ -14,6 +16,7 @@ import { ITabPaneProps } from '@/designer-components/propertiesTabs/models';
 import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { ItemType } from 'antd/es/menu/interface';
 import { deepCopyViaJson, deepMergeValues } from '@/utils/object';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
 export interface SearchableTabsMarkup extends IConfigurableFormComponent {
@@ -28,15 +31,15 @@ function isSearchableTabsMarkup(c: unknown): c is SearchableTabsMarkup {
 }
 
 export interface IComponentDefaultsPanelProps {
-  value?: IConfigurableTheme;
-  onChange?: (theme: IConfigurableTheme) => void;
-  readonly?: boolean;
+  value: IConfigurableTheme;
+  onChange: (theme: IConfigurableTheme) => void;
+  readOnly: boolean;
 }
 
 /**
  * Component Defaults Panel - Shows menu of components on left, appearance settings on right
  */
-export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readonly }) => {
+export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readOnly }) => {
   const { styles } = useStyles();
   const [selectedKey, setSelectedKey] = useState<string>('button');
 
@@ -55,7 +58,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   }, []);
 
   // Get component definition and extract appearance tab components
-  const appearanceMarkup = useMemo(() => {
+  const appearanceMarkup = useMemo<FormMarkupWithSettings | null>(() => {
     if (!componentType) return null;
 
     const componentDefinitions = getComponentDefinitions();
@@ -98,14 +101,13 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     return {
       components: appearanceMarkupComponents,
-      formSettings: formSettings ?? undefined,
-    };
+      formSettings: formSettings ?? DEFAULT_FORM_SETTINGS,
+    } satisfies FormMarkupWithSettings;
   }, [componentType]);
 
   // Handle form data change — deep-merge so nested keys (e.g. application) are not replaced wholesale
   const handleFormDataChange = (changedValues: Partial<IConfigurableTheme>): void => {
-    if (!onChange) return;
-    const base = deepCopyViaJson(theme ?? {}) as IConfigurableTheme;
+    const base = deepCopyViaJson(theme) as IConfigurableTheme;
     const merged = deepMergeValues(base, (changedValues ?? {}) as object) as IConfigurableTheme;
     onChange(merged);
   };
@@ -152,9 +154,9 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         >
           {appearanceMarkup && componentType ? (
             <ConfigurableForm
-              mode={readonly ? 'readonly' : 'edit'}
+              mode={readOnly ? 'readonly' : 'edit'}
               markup={appearanceMarkup}
-              initialValues={theme ?? {}}
+              initialValues={theme}
               onValuesChange={handleFormDataChange}
               className={styles.appearanceForm}
             />
@@ -168,33 +170,33 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         </Card>
         {/* Preview Card: renders the component with the current theme to show a live preview */}
         <Card>
-          {componentType && (
+          {isDefined(selectedNode) && !isNullOrWhiteSpace(selectedNode.type) && (
             <div>
-              <h4 style={{ marginBottom: 4 }}>{selectedNode?.title || 'Select a Component'}</h4>
+              <h4 style={{ marginBottom: 4 }}>{selectedNode.title || 'Select a Component'}</h4>
               <span style={{ color: '#999', fontSize: '12px' }}>
-                Configure default appearance for {selectedNode?.title?.toLowerCase() || 'components'}
+                Configure default appearance for {selectedNode.title?.toLowerCase() || 'components'}
               </span>
               <ConfigurableForm
                 mode="edit"
                 markup={{
                   components: [
                     {
-                      type: selectedNode?.type,
+                      type: selectedNode.type,
                       id: selectedNode.key,
-                      propertyName: `${selectedNode?.type}Appearance`,
-                      label: `${selectedNode?.title}`,
+                      propertyName: `${selectedNode.type}Appearance`,
+                      label: `${selectedNode.title}`,
                       parentId: 'root',
                       hidden: false,
                     },
                   ],
                   formSettings: {
-                    colon: theme.colon, // TODO: use theme value
-                    layout: theme.layout,
-                    labelCol: { span: theme.labelSpan },
-                    wrapperCol: { span: theme.componentSpan },
+                    colon: theme.colon ?? false, // TODO: use theme value
+                    layout: theme.layout ?? "horizontal",
+                    labelCol: theme.labelSpan ? { span: theme.labelSpan } : {},
+                    wrapperCol: theme.componentSpan ? { span: theme.componentSpan } : {},
                   },
                 }}
-                initialValues={theme ?? {}}
+                initialValues={theme}
                 className={styles.appearanceForm}
               />
             </div>

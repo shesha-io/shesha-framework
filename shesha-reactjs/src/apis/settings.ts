@@ -59,7 +59,7 @@ export interface UpdateSettingValueInput {
   /**
    * Setting value
    */
-  value?: {} | null;
+  value?: unknown;
   /**
    * Front-end application key, see <seealso cref="P:Shesha.Domain.FrontEndApp.AppKey" />. Is used for client-specific applications only
    */

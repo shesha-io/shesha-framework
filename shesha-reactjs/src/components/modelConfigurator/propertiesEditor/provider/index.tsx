@@ -16,34 +16,34 @@ import {
   selectItemAction,
   updateChildItemsAction,
   updateItemAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import { getItemById } from './utils';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { Action } from 'redux-actions';
 import { nanoid } from '@/utils/uuid';
+import { throwError } from '@/utils/errors';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 export interface IPropertiesEditorProviderProps {
   id?: string;
   items: IModelItem[];
-  onChange?: (items: IModelItem[]) => void;
+  onChange?: ((items: IModelItem[]) => void) | undefined;
 }
 
 const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderProps>> = (props) => {
   const { children } = props;
-  const selRef = useRef(null);
+  const selRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useThunkReducer(modelReducer, {
     ...PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
-    items: props.items?.filter((x) => !x.isFrameworkRelated) || [],
+    items: props.items.filter((x) => !x.isFrameworkRelated),
     onChange: props.onChange,
     selectedItemRef: selRef,
   });
 
-  const dispatchAndFire = (action: Action<any>): void => {
+  const dispatchAndFire = <P = void, T extends string = string>(action: PayloadAction<P, T>): void => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(action);
       if (props.onChange) {
-        const updatedItems = getState()?.items;
+        const updatedItems = getState().items;
         props.onChange(updatedItems);
       }
     });
@@ -75,7 +75,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     dispatchAndFire(updateChildItemsAction(payload));
   };
 
-  const getItem = (uid: string): IModelItem => {
+  const getItem = (uid: string): IModelItem | undefined => {
     return getItemById(state.items, uid);
   };
 
@@ -104,28 +104,12 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
   );
 };
 
-function usePropertiesEditorState(): IPropertiesEditorStateContext {
-  const context = useContext(PropertiesEditorStateContext);
+const usePropertiesEditorState = (): IPropertiesEditorStateContext => useContext(PropertiesEditorStateContext) ?? throwError("usePropertiesEditorState must be used within a PropertiesEditorProvider");
 
-  if (context === undefined) {
-    throw new Error('usePropertiesEditorState must be used within a PropertiesEditorProvider');
-  }
+const usePropertiesEditorActions = (): IPropertiesEditorActionsContext => useContext(PropertiesEditorActionsContext) ?? throwError("usePropertiesEditorActions must be used within a PropertiesEditorProvider");
 
-  return context;
-}
-
-function usePropertiesEditorActions(): IPropertiesEditorActionsContext {
-  const context = useContext(PropertiesEditorActionsContext);
-
-  if (context === undefined) {
-    throw new Error('usePropertiesEditorActions must be used within a PropertiesEditorProvider');
-  }
-
-  return context;
-}
-
-function usePropertiesEditor(): IPropertiesEditorStateContext & IPropertiesEditorActionsContext {
+const usePropertiesEditor = (): IPropertiesEditorStateContext & IPropertiesEditorActionsContext => {
   return { ...usePropertiesEditorState(), ...usePropertiesEditorActions() };
-}
+};
 
 export { PropertiesEditorProvider, usePropertiesEditor };

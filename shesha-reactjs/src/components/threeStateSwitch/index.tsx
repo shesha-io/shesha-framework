@@ -7,13 +7,13 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 export interface IThreeStateSwitchProps {
   value?: boolean | undefined;
   defaultValue?: boolean | undefined;
-  readOnly?: boolean;
-  onChange?: (value: boolean | undefined) => void;
-  size?: SizeType;
-  className?: string;
-  yesDefinition?: Partial<IIconRadioGroupValueDefinition>;
-  noDefinition?: Partial<IIconRadioGroupValueDefinition>;
-  defaultDefinition?: Partial<IIconRadioGroupValueDefinition>;
+  readOnly?: boolean | undefined;
+  onChange?: ((value: boolean | null) => void) | undefined;
+  size?: SizeType | undefined;
+  className?: string | undefined;
+  yesDefinition?: Partial<IIconRadioGroupValueDefinition> | undefined;
+  noDefinition?: Partial<IIconRadioGroupValueDefinition> | undefined;
+  defaultDefinition?: Partial<IIconRadioGroupValueDefinition> | undefined;
 }
 
 const notRecommendedColor = '#F0F0F0';
@@ -24,6 +24,7 @@ const ThreeStateSwitch: FC<IThreeStateSwitchProps> = ({
   defaultDefinition: defaultValueProp,
   defaultValue,
   value,
+  onChange,
   ...rest
 }) => {
   const yes = useDeepCompareMemo(() => {
@@ -54,7 +55,16 @@ const ThreeStateSwitch: FC<IThreeStateSwitchProps> = ({
     return { ...{ value: undefined, icon: <SettingOutlined />, hint: `Default${defaultValue === true ? ' (Yes)' : defaultValue === false ? ' (No)' : ''}` }, ...defaultValueProp };
   }, [defaultValueProp, defaultValue]);
 
-  return <IconRadioGroup {...rest} value={value} valueDefinitions={[yes, no, def]} />;
+  return (
+    <IconRadioGroup
+      {...rest}
+      value={value}
+      onChange={(newValue) => {
+        onChange?.(newValue ?? null);
+      }}
+      valueDefinitions={[yes, no, def]}
+    />
+  );
 };
 
 export default ThreeStateSwitch;

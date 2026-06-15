@@ -1,5 +1,5 @@
 import { IProvidersDictionary } from './models';
-import { IDynamicActionsContext } from '../dynamicActions/contexts';
+import { IDynamicActionsContext, IDynamicActionsContextBase } from '../dynamicActions/contexts';
 import { createNamedContext } from '@/utils/react';
 
 export interface IRegisterProviderPayload<TSettings extends object = object> {
@@ -15,7 +15,7 @@ export interface IDynamicActionsDispatcher {
 
 export interface IDynamicActionsRegistration {
   id: string;
-  contextValue: IDynamicActionsContext;
+  contextValue: IDynamicActionsContextBase;
 }
 
 export const DynamicActionsDispatcherContext = createNamedContext<IDynamicActionsDispatcher | undefined>(undefined, "DynamicActionsDispatcherContext");

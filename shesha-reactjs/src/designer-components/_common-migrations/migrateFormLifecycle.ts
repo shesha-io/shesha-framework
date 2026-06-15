@@ -5,8 +5,9 @@ import { GqlSubmitterSettings } from "@/providers/form/submitters/interfaces";
 import { IFormMigrationContext } from "./models";
 import { setValueByPropertyName } from "@/utils/object";
 import { convertFormMarkupToFlatStructure } from "@/providers/form/utils";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
-const getPrepareSubmitData = (preparedValues: string): string => {
+const getPrepareSubmitData = (preparedValues: string | undefined): string | null => {
   const normalizedPreparedValues = (preparedValues ?? "").trim();
   if (!normalizedPreparedValues)
     return null;
@@ -17,7 +18,7 @@ const getPrepareSubmitData = (preparedValues: string): string => {
     return { ...data, ...preparedValues() };`;
 };
 
-const getBeforeDataLoad = (onInitialized: string): string => {
+const getBeforeDataLoad = (onInitialized: string | undefined): string => {
   let result = `    form.setFieldsValue({...form.formArguments});`;
   const normalizedJs = onInitialized?.trim();
   if (normalizedJs)
@@ -25,7 +26,7 @@ const getBeforeDataLoad = (onInitialized: string): string => {
   return result;
 };
 
-const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): string => {
+const getAfterDataLoad = (onDataLoaded: string | undefined, initialValues?: IKeyValue[] | undefined): string | null => {
   if (!initialValues || initialValues.length === 0)
     return onDataLoaded || null;
 
@@ -69,20 +70,25 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
 };
 
 export const migrateDefaults = (settings: IFormSettings, context: IFormMigrationContext): IFormSettings => {
+  if (!context.form.markup)
+    return settings;
+
   const initialData: IKeyValue[] = [];
   const flatStructure = convertFormMarkupToFlatStructure(context.form.markup, settings, context.designerComponents);
   for (const id in flatStructure.allComponents) {
     if (!flatStructure.allComponents.hasOwnProperty(id)) continue;
     const component = flatStructure.allComponents[id];
 
-    if ('defaultValue' in component && typeof (component.defaultValue) === 'string' && "propertyName" in component)
-      initialData.push({ key: component.propertyName, value: component.defaultValue });
+    if (isDefined(component) && typeof (component) === "object" && "propertyName" in component && !isNullOrWhiteSpace(component.propertyName)) {
+      if ('defaultValue' in component && typeof (component.defaultValue) === 'string')
+        initialData.push({ key: component.propertyName, value: component.defaultValue });
 
-    if (component['initialValue'] !== undefined && "propertyName" in component)
-      initialData.push({ key: component.propertyName, value: component['initialValue'] });
+      if ("initialValue" in component && typeof (component.initialValue) === 'string')
+        initialData.push({ key: component.propertyName, value: component.initialValue });
+    }
   }
   const onAfterDataLoad = getAfterDataLoad(settings.onAfterDataLoad, initialData);
-  return { ...settings, onAfterDataLoad };
+  return { ...settings, onAfterDataLoad: onAfterDataLoad ?? undefined };
 };
 
 export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => {
@@ -107,7 +113,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
   /*
     load/submit settings
     */
-  const normalizeUrl = (value: string): string => {
+  const normalizeUrl = (value: string | undefined): string | undefined => {
     const result = value?.trim();
     return result ? result : undefined;
   };
@@ -119,11 +125,11 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
   const gqlLoaderSettings: GqlLoaderSettings = {
     // url: getUrl,
     fieldsToFetch,
-    endpointType: Boolean(getUrl) ? 'static' : 'default',
-    staticEndpoint: Boolean(getUrl) ? { httpVerb: 'get', url: getUrl } : undefined,
+    endpointType: isNullOrWhiteSpace(getUrl) ? 'static' : 'default',
+    staticEndpoint: !isNullOrWhiteSpace(getUrl) ? { httpVerb: 'get', url: getUrl } : undefined,
   };
 
-  const getDynamicSubmitEndpoint = (createUrl: string, updateUrl: string): string => {
+  const getDynamicSubmitEndpoint = (createUrl: string | undefined, updateUrl: string | undefined): string => {
     const createUrlExpression = createUrl ? `{ httpVerb: 'POST', url: "${createUrl}" }` : 'form.defaultEndpoints.create';
     const updateUrlExpression = updateUrl ? `{ httpVerb: 'PUT', url: "${updateUrl}" }` : 'form.defaultEndpoints.update';
 
@@ -131,7 +137,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
   };
   const gqlSubmitterSettings: GqlSubmitterSettings = {
     excludeFormFields: excludeFormFieldsInPayload,
-    endpointType: !Boolean(urls.create) && !Boolean(urls.update) ? 'default' : 'dynamic',
+    endpointType: isNullOrWhiteSpace(urls.create) && isNullOrWhiteSpace(urls.update) ? 'default' : 'dynamic',
     staticEndpoint: undefined,
     dynamicEndpoint: getDynamicSubmitEndpoint(urls.create, urls.update),
   };
@@ -147,14 +153,14 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
     },
 
     onBeforeDataLoad: getBeforeDataLoad(onInitialized),
-    onAfterDataLoad: onAfterDataLoad || getAfterDataLoad(onDataLoaded, initialValues),
+    onAfterDataLoad: onAfterDataLoad || (getAfterDataLoad(onDataLoaded, initialValues) ?? undefined),
 
     onValuesUpdate: onUpdate,
 
-    onPrepareSubmitData: getPrepareSubmitData(preparedValues),
-    onBeforeSubmit: null,
-    onSubmitSuccess: null,
-    onSubmitFailed: null,
+    onPrepareSubmitData: getPrepareSubmitData(preparedValues) ?? undefined,
+    onBeforeSubmit: undefined,
+    onSubmitSuccess: undefined,
+    onSubmitFailed: undefined,
   };
 
   const result: IFormSettings = {

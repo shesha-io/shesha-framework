@@ -5,14 +5,14 @@ import { IModelItem } from '@/interfaces/modelConfigurator';
 export interface IMetadataEditorCommonProps {
   value: IModelItem[];
   onChange: (value: IModelItem[]) => void;
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
 }
 
 export interface IMetadataEditorProps extends IMetadataEditorCommonProps {
   label?: string | React.ReactNode;
-  baseProperties?: IPropertyMetadata[];
+  baseProperties?: IPropertyMetadata[] | undefined;
 }
 
 export interface IMetadataEditorComponentProps extends IConfigurableFormComponent, Omit<IMetadataEditorCommonProps, 'readOnly'> {
-  baseProperties?: string;
+  baseProperties?: string | undefined;
 }

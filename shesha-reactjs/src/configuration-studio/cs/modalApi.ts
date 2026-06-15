@@ -165,7 +165,7 @@ export const useModalApi = (): IModalApi => {
   const { createModal, removeModal } = useDynamicModals();
   const { modal } = App.useApp();
 
-  const apiRef = useRef<IModalApi>();
+  const apiRef = useRef<IModalApi>(undefined);
   if (!apiRef.current) {
     const instance = new ModalApi({
       createModal,

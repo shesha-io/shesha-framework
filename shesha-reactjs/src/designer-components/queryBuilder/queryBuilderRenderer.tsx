@@ -3,13 +3,13 @@ import QueryBuilderField from './queryBuilderField';
 import React, { FC } from 'react';
 import { Alert, Typography } from 'antd';
 import { IQueryBuilderComponentPropsUnwrapped } from './interfaces';
-import { useForm, useQueryBuilder } from '@/providers';
+import { useForm, useQueryBuilderOrUndefined } from '@/providers';
 
 export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (props) => {
   const { formMode } = useForm();
   const { fieldsUnavailableHint } = props;
 
-  const queryBuilder = useQueryBuilder(false);
+  const queryBuilder = useQueryBuilderOrUndefined();
   const fieldsAvailable = Boolean(queryBuilder);
 
   if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
@@ -26,11 +26,11 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (p
       <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
     </ConfigurableFormItem>
   ) : (
-    <ConfigurableFormItem model={props}>
+    <ConfigurableFormItem<object> model={props}>
       {(value, onChange) => {
         return (
           <QueryBuilderField
-            value={value}
+            value={value ?? undefined}
             onChange={onChange}
             jsonExpanded={props.jsonExpanded}
             readOnly={props.readOnly}

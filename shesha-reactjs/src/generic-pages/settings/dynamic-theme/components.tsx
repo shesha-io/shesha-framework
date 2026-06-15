@@ -7,6 +7,7 @@ import { humanizeString } from '@/utils/string';
 import { useTheme } from '@/providers';
 import Icon from '@/components/icon/Icon';
 import { PRESET_COLORS, SHESHA_COLORS } from './presetColors';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 /**
  * Header component for theme sections
@@ -59,9 +60,7 @@ export const RenderInput: FC<IRenderInputProps> = (props) => {
 
   return (
     <Space>
-      <Show when={Boolean(label)}>
-        <span>{humanizeString(label)} </span>
-      </Show>
+      {!isNullOrWhiteSpace(label) && (<span>{humanizeString(label)} </span>)}
       <Show when={Boolean(hint)}>
         <Tooltip title={hint}>
           <span className="sha-input-tooltip" style={{ cursor: 'pointer' }}>
@@ -97,12 +96,12 @@ export interface IRenderColorProps {
   colorName: string;
   initialColor: string;
   onChange: (color: ColorValueType) => void;
-  presetColors?: string[];
-  hint?: string;
-  label?: string;
-  readonly?: boolean;
-  className?: string;
-  colorPickerClassName?: string;
+  presetColors?: string[] | undefined;
+  hint?: string | undefined;
+  label?: string | undefined;
+  readOnly?: boolean | undefined;
+  className?: string | undefined;
+  colorPickerClassName?: string | undefined;
 }
 
 /**
@@ -115,12 +114,14 @@ export const RenderColor: FC<IRenderColorProps> = ({
   onChange,
   presetColors,
   hint,
-  readonly = false,
+  readOnly = false,
   className,
   colorPickerClassName,
 }) => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-    <Space className={className}>
+    <Space
+      {...(className ? { className } : {})}
+    >
       <Show when={Boolean(colorName)}>
         <span>{label ?? humanizeString(colorName)} </span>
       </Show>
@@ -139,7 +140,7 @@ export const RenderColor: FC<IRenderColorProps> = ({
         ]}
         value={initialColor}
         onChange={onChange}
-        readOnly={readonly}
+        readOnly={readOnly}
         allowClear={true}
         style={{ border: 'none' }}
         className={colorPickerClassName}

@@ -143,7 +143,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "values";',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   inputs: [
                     {
                       id: nanoid(),
@@ -167,7 +167,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "referenceList";',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   inputs: [
                     {
                       type: 'referenceListAutocomplete',
@@ -185,7 +185,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   inputs: [
                     {
                       type: 'codeEditor',
@@ -279,7 +279,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addSettingsInput({

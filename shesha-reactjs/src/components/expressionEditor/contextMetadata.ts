@@ -10,6 +10,8 @@ import {
   isPropertiesArray,
   isPropertiesLoader,
 } from '@/interfaces/metadata';
+import { arrayHasAtLeastNDefined, isNonEmptyArray } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type ExpressionContextValue = string | number | boolean | null | undefined | ExpressionContext;
 
@@ -65,7 +67,7 @@ const ensureBranch = (node: ExpressionContextTree, segment: string): ExpressionC
   return nextNode;
 };
 
-export const mergeExpressionContexts = (target: ExpressionContextTree, source?: ExpressionContextTree): ExpressionContextTree => {
+export const mergeExpressionContexts = (target: ExpressionContextTree, source?: ExpressionContextTree | undefined): ExpressionContextTree => {
   if (!source) return target;
 
   Object.entries(source).forEach(([key, value]) => {
@@ -87,16 +89,16 @@ const splitPath = (path: string): string[] => path
   .map((segment) => segment.trim())
   .filter(Boolean);
 
-const setPropertyPath = (target: ExpressionContextTree, propertyPath: string, value: null | ExpressionContextTree): void => {
+const setPropertyPath = (target: ExpressionContextTree, propertyPath: string, value: undefined | ExpressionContextTree): void => {
   const segments = splitPath(propertyPath);
-  if (segments.length === 0) return;
+  if (!isNonEmptyArray(segments)) return;
 
   let cursor = target;
   segments.slice(0, -1).forEach((segment) => {
     cursor = ensureBranch(cursor, segment);
   });
 
-  const lastSegment = segments[segments.length - 1];
+  const lastSegment = segments[segments.length - 1]!;
   if (value && typeof value === 'object') {
     mergeExpressionContexts(ensureBranch(cursor, lastSegment), value);
     return;
@@ -226,13 +228,14 @@ const parseInterfaceDefinitions = (source: string, definitions: ParsedDefinition
     const bodyEnd = findMatching(source, bodyStart, '{', '}');
     if (bodyEnd < 0) continue;
 
-    definitions.set(name, {
-      kind: 'interface',
-      body: source.slice(bodyStart + 1, bodyEnd),
-      extendsTypes: extendsSource
-        ? splitTopLevel(extendsSource, ',').map((item) => item.trim()).filter(Boolean)
-        : [],
-    });
+    if (!isNullOrWhiteSpace(name))
+      definitions.set(name, {
+        kind: 'interface',
+        body: source.slice(bodyStart + 1, bodyEnd),
+        extendsTypes: extendsSource
+          ? splitTopLevel(extendsSource, ',').map((item) => item.trim()).filter(Boolean)
+          : [],
+      });
 
     interfaceRegex.lastIndex = bodyEnd + 1;
   }
@@ -296,10 +299,11 @@ const parseTypeDefinitions = (source: string, definitions: ParsedDefinitions): v
     const expressionStart = typeRegex.lastIndex;
     const expressionEnd = findTypeExpressionEnd(source, expressionStart);
 
-    definitions.set(name, {
-      kind: 'type',
-      expression: source.slice(expressionStart, expressionEnd).trim(),
-    });
+    if (!isNullOrWhiteSpace(name))
+      definitions.set(name, {
+        kind: 'type',
+        expression: source.slice(expressionStart, expressionEnd).trim(),
+      });
 
     typeRegex.lastIndex = expressionEnd + 1;
   }
@@ -341,14 +345,13 @@ const parseMember = (member: string): { name: string; typeExpression?: string } 
   }
 
   const methodMatch = cleaned.match(/^([A-Za-z_$][\w$]*)\??\s*\([^)]*\)\s*:\s*([\s\S]+)$/);
-  if (methodMatch) {
+  if (methodMatch && !isNullOrWhiteSpace(methodMatch[1])) {
     return { name: methodMatch[1] };
   }
 
   const propertyMatch = cleaned.match(/^([A-Za-z_$][\w$]*)\??\s*:\s*([\s\S]+)$/);
-  if (!propertyMatch) {
+  if (!propertyMatch || !arrayHasAtLeastNDefined(propertyMatch, 3))
     return null;
-  }
 
   return {
     name: propertyMatch[1],
@@ -360,19 +363,19 @@ function buildContextFromTypeExpression(
   typeExpression: string,
   definitions: ParsedDefinitions,
   visited: Set<string>,
-): ExpressionContextTree | null {
+): ExpressionContextTree | undefined {
   const normalized = normalizeTypeExpression(typeExpression);
   if (!normalized || PRIMITIVE_TYPE_NAMES.has(normalized)) {
-    return null;
+    return undefined;
   }
 
   if (isCollectionType(normalized)) {
-    return null;
+    return undefined;
   }
 
   if (isInlineObjectType(normalized)) {
     // Recursive parser helpers intentionally reference each other.
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
     return buildContextFromMembers(normalized.slice(1, -1), definitions, visited);
   }
 
@@ -385,16 +388,15 @@ function buildContextFromTypeExpression(
   );
 
   if (referencedTypes.length === 0) {
-    return null;
+    return undefined;
   }
 
   const result: ExpressionContextTree = {};
   referencedTypes.forEach((typeName) => {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    mergeExpressionContexts(result, buildContextFromDefinition(typeName, definitions, visited));
+    mergeExpressionContexts(result, buildContextFromDefinition(typeName, definitions, visited) ?? undefined);
   });
 
-  return Object.keys(result).length > 0 ? result : null;
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 function buildContextFromMembers(
@@ -424,14 +426,14 @@ function buildContextFromDefinition(
   typeName: string,
   definitions: ParsedDefinitions,
   visited: Set<string>,
-): ExpressionContextTree | null {
+): ExpressionContextTree | undefined {
   if (visited.has(typeName)) {
-    return null;
+    return undefined;
   }
 
   const definition = definitions.get(typeName);
   if (!definition) {
-    return null;
+    return undefined;
   }
 
   const nextVisited = new Set(visited);
@@ -484,20 +486,20 @@ const loadTypeDefinition = async (typeDefinitionLoader: TypeDefinitionLoader): P
   }
 };
 
-const buildContextFromTypeDefinitionLoader = async (typeDefinitionLoader: TypeDefinitionLoader): Promise<ExpressionContextTree | null> => {
+const buildContextFromTypeDefinitionLoader = async (typeDefinitionLoader: TypeDefinitionLoader): Promise<ExpressionContextTree | undefined> => {
   const definition = await loadTypeDefinition(typeDefinitionLoader);
   if (!definition) {
-    return null;
+    return undefined;
   }
 
   const definitions = parseDefinitions(definition.files);
   return buildContextFromDefinition(definition.typeName, definitions, new Set());
 };
 
-async function buildPropertyContext(property: IPropertyMetadata): Promise<ExpressionContextTree | null> {
+async function buildPropertyContext(property: IPropertyMetadata): Promise<ExpressionContextTree | undefined> {
   const nestedContext: ExpressionContextTree = {};
 
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
   mergeExpressionContexts(nestedContext, await buildExpressionContextFromProperties(property.properties));
   if (hasTypeDefinition(property)) {
     mergeExpressionContexts(nestedContext, await buildContextFromTypeDefinitionLoader(property.typeDefinitionLoader));
@@ -511,7 +513,7 @@ async function buildPropertyContext(property: IPropertyMetadata): Promise<Expres
     return {};
   }
 
-  return null;
+  return undefined;
 }
 
 export async function buildExpressionContextFromProperties(properties: NestedProperties | undefined): Promise<ExpressionContextTree> {

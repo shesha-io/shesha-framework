@@ -4,12 +4,12 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider';
 import { SwapOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { IToolboxComponentBase } from '@/interfaces/formDesigner';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
 import ProtectedContent from '@/components/protectedContent';
 import AppEditModeToggler from '@/components/appConfigurator/editModeToggler';
 
-const HeaderAppControl: IToolboxComponentBase = {
+const HeaderAppControl: IToolboxComponent = {
   type: 'headerAppControl',
   name: 'Header App Control',
   isInput: false,

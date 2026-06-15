@@ -2,6 +2,7 @@ import {
   BarController,
   BarElement,
   CategoryScale,
+  ChartData,
   Chart as ChartJS,
   ChartOptions,
   Legend,
@@ -16,6 +17,8 @@ import { useChartDataStateContext } from '../../../../providers/chartData';
 import { useGeneratedTitle, useIsSmallScreen } from '../../hooks/hooks';
 import { IChartData, IChartDataProps } from '../../model';
 import { splitTitleIntoLines, createFontConfig } from '../../utils';
+import { getNumberOrUndefined } from '@/utils/string';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface BarChartProps extends IChartDataProps {
   data: IChartData;
@@ -51,17 +54,17 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
   const isSmallScreen = useIsSmallScreen();
 
   if (dataMode === 'url') {
-    data.datasets = data?.datasets?.map((dataset: any) => ({
+    data.datasets = data.datasets.map((dataset) => ({
       ...dataset,
-      data: dataset?.data?.map((item) => item ?? 'undefined'),
+      data: dataset.data?.map((item) => item ?? 'undefined'),
       borderColor: strokeColor || 'black',
       borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
     }));
   }
 
-  const yTitle = (valuePropertyLabel?.trim().length > 0) ? `${valuePropertyLabel}` : `${yProperty} (${aggregationMethod})`;
+  const yTitle = !isNullOrWhiteSpace(valuePropertyLabel) ? `${valuePropertyLabel}` : `${yProperty} (${aggregationMethod})`;
 
-  const options: ChartOptions<any> = {
+  const options: ChartOptions<"bar"> = {
     responsive: true,
     maintainAspectRatio: false,
     aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
@@ -92,12 +95,12 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         labels: {
           boxWidth: isSmallScreen ? 12 : 40,
           padding: isSmallScreen ? 8 : 10,
-          font: createFontConfig(legendFont, isSmallScreen ? 10 : 12, '400'),
+          font: createFontConfig(legendFont, isSmallScreen ? 10 : 12, 400),
           color: legendFont?.color || '#000000',
         },
       },
       title: {
-        display: !!(showTitle && chartTitle?.length > 0),
+        display: !!(showTitle && chartTitle.length > 0),
         text: splitTitleIntoLines(chartTitle),
         font: createFontConfig(titleFont, isSmallScreen ? 12 : 16, 'bold'),
         color: titleFont?.color || '#000000',
@@ -110,9 +113,13 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     scales: {
       x: {
         title: {
-          display: !!(showXAxisTitle && xProperty?.trim().length > 0),
-          text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
+          display: showXAxisTitle && !isNullOrWhiteSpace(xProperty),
+          text: dataMode === 'url'
+            ? !isNullOrWhiteSpace(axisPropertyLabel)
+              ? splitTitleIntoLines(axisPropertyLabel, 12, 1)
+              : ""
+            : splitTitleIntoLines(!isNullOrWhiteSpace(axisPropertyLabel) ? axisPropertyLabel : xProperty ?? "", 12, 1),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, getNumberOrUndefined(axisLabelFont?.weight) ?? 400),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
@@ -129,7 +136,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         ticks: {
           maxRotation: 45, // Allow rotation up to 45 degrees
           minRotation: 0,
-          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
+          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, 400),
           color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
           autoSkip: false, // Show all labels
@@ -141,9 +148,9 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       },
       y: {
         title: {
-          display: !!(showYAxisTitle && yProperty?.trim().length > 0),
-          text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
+          display: showYAxisTitle && !isNullOrWhiteSpace(yProperty),
+          text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel ?? "", 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, getNumberOrUndefined(axisLabelFont?.weight) ?? 400),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
@@ -153,12 +160,12 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         display: !!showYAxisScale,
         stacked: stacked,
         ticks: {
-          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
+          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, 400),
           color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
           callback: function (value) {
             // Format large numbers on mobile
-            if (isSmallScreen && value >= 1000) {
+            if (isSmallScreen && typeof (value) === "number" && value >= 1000) {
               return (value / 1000).toFixed(1) + 'k';
             }
             return value.toLocaleString();
@@ -171,7 +178,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     },
   };
 
-  return <Bar data={data as any} options={options} />;
+  return <Bar data={data as ChartData<"bar">} options={options} />;
 };
 
 export default BarChart;

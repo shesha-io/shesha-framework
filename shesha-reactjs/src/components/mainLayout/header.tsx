@@ -6,8 +6,8 @@ import { ACTIVE_HEADER } from './constant';
 import { FormFullName } from '@/providers';
 
 interface ILayoutHeaderProps {
-  collapsed?: boolean;
-  headerFormId?: FormFullName;
+  collapsed?: boolean | undefined;
+  headerFormId?: FormFullName | undefined;
 }
 
 const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, headerFormId }) => {

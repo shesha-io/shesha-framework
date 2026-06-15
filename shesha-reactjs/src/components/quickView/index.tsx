@@ -1,6 +1,6 @@
 import { ConfigurableForm, ShaIcon } from '@/components/';
 import ValidationErrors from '@/components/validationErrors';
-import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useHttpClient, useSheshaApplication } from '@/providers';
+import { ConditionalMetadataProvider, DEFAULT_FORM_SETTINGS, FormItemProvider, FormMarkupWithSettings, useHttpClient, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { FormIdentifier } from '@/providers/form/models';
 import ParentProvider from '@/providers/parentProvider';
@@ -14,41 +14,43 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { buildUrl } from '@/utils';
-import { extractAjaxResponse, IAjaxResponse } from '@/interfaces';
+import { extractAjaxResponse, IAjaxResponse, IAnyObject } from '@/interfaces';
+import { isDefined } from '@/utils/nullables';
+import { extractErrorInfo } from '@/utils/errors';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
-  entityId?: string;
+  entityId?: string | undefined;
   /** Identifier of the form to display on the modal */
-  formIdentifier?: FormIdentifier;
+  formIdentifier?: FormIdentifier | undefined;
   /** The Url that details of the entity are retreived */
-  getEntityUrl?: string;
-  /** The property froom the data to use as the label and title for the popover */
+  getEntityUrl?: string | undefined;
+  /** The property from the data to use as the label and title for the popover */
   displayProperty: string;
   /** Metadata properties of value */
-  dataProperties?: IPropertyMetadata[];
+  dataProperties?: IPropertyMetadata[] | undefined;
   /** The width of the quickview */
-  width?: number | string;
+  width?: number | string | undefined;
 
-  entityType?: string | IEntityTypeIdentifier;
+  entityType?: string | IEntityTypeIdentifier | undefined;
 
-  formType?: string;
+  formType?: string | undefined;
 
-  displayName?: string;
+  displayName?: string | undefined;
 
-  initialFormData?: any;
+  initialFormData?: IAnyObject | undefined;
 
   /** Form arguments passed to ConfigurableForm for data loading (e.g., {id: entityId}) */
-  formArguments?: Record<string, unknown>;
+  formArguments?: Record<string, unknown> | undefined;
 
-  popoverProps?: PopoverProps;
+  popoverProps?: PopoverProps | undefined;
 
-  disabled?: boolean;
-  style?: CSSProperties;
-  displayType?: 'textTitle' | 'icon' | 'displayProperty';
-  iconName?: ShaIconTypes;
-  textTitle?: string;
-  emptyText?: string;
+  disabled?: boolean | undefined;
+  style?: CSSProperties | undefined;
+  displayType?: 'textTitle' | 'icon' | 'displayProperty' | undefined;
+  iconName?: ShaIconTypes | undefined;
+  textTitle?: string | undefined;
+  emptyText?: string | undefined;
 }
 
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
@@ -74,9 +76,9 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   // Cap width at 98% if it's a percentage value
   const cappedWidth = useMemo(() => capPercentageWidth(width), [width]);
   const [loadingState, setLoadingState] = useState<'loading' | 'error' | 'success'>('loading');
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState<IAnyObject | undefined>(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
-  const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings>(null);
+  const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings | undefined>(undefined);
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { getFormAsync } = useConfigurationItemsLoader();
   const { notification } = App.useApp();
@@ -99,18 +101,17 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       getFormAsync({ formId: formIdentifier, skipCache: false })
         .then((response) => {
           const form: FormMarkupWithSettings = {
-            formSettings: response.settings,
+            formSettings: response.settings ?? DEFAULT_FORM_SETTINGS,
             components: response.markup ?? [],
           };
-          if (response) setFormMarkup(form);
-          else setLoadingState('error');
+          setFormMarkup(form);
         })
         .catch(() => {
           setLoadingState('error');
         });
       setLoadingState('loading');
     }
-  }, [formIdentifier, formArguments]);
+  }, [formIdentifier, formArguments, getFormAsync]);
 
   // When using formArguments, the form's data loader will handle data fetching
   // Only use manual data fetching logic if formArguments is not provided (backward compatibility)
@@ -119,12 +120,12 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       // When using formArguments, let the form handle loading via its data loader
       // But only after we have the formIdentifier
       setLoadingState('success');
-    } else if (formArguments && formIdentifier === null) {
+    } else if (formArguments && !isDefined(formIdentifier)) {
       // Dynamic form id resolution failed
       setLoadingState('error');
     } else if (!formArguments && !formData && entityId && formMarkup) {
       // Fallback to manual data fetching for backward compatibility
-      const getUrl = getEntityUrl ?? formMarkup?.formSettings?.getUrl;
+      const getUrl = getEntityUrl ?? formMarkup.formSettings.getUrl;
 
       // If no GET URL is available, show form without data
       if (!getUrl) {
@@ -133,23 +134,23 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       }
 
       const url = buildUrl(getUrl, { id: entityId });
-      httpClient.get<IAjaxResponse<object>>(url)
+      httpClient.get<IAjaxResponse<IAnyObject>>(url)
         .then((resp) => {
           const result = extractAjaxResponse(resp.data, 'Error fetching entity data');
           setFormData(result);
           setLoadingState('success');
-          if (result[displayProperty]) setFormTitle(result[displayProperty]);
+          if (result[displayProperty] && typeof (result[displayProperty]) === "string") setFormTitle(result[displayProperty]);
         })
         .catch((reason) => {
           setLoadingState('error');
-          notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
+          notification.error({ message: <ValidationErrors error={extractErrorInfo(reason)} renderMode="raw" /> });
         });
       setLoadingState('loading');
     } else if (!formArguments && formMarkup && !entityId) {
       // Form is loaded but no entityId - show form without data
       setLoadingState('success');
     }
-  }, [entityId, getEntityUrl, formMarkup, formArguments, backendUrl, httpHeaders, entityType, displayProperty, notification, formIdentifier]);
+  }, [entityId, getEntityUrl, formMarkup, formArguments, backendUrl, httpHeaders, entityType, displayProperty, notification, formIdentifier, formData, httpClient]);
 
   const formContent = useMemo(() => {
     // When using formArguments, require formIdentifier (data will be loaded by form's data loader)
@@ -159,26 +160,35 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     return canRenderForm ? (
       <div className={styles.formLabel}>
         <FormItemProvider namePrefix={undefined}>
-          <MetadataProvider id="dynamic" modelType={formArguments ? entityType : formMarkup?.formSettings.modelType}>
+          <ConditionalMetadataProvider id="dynamic" modelType={formArguments ? entityType : formMarkup?.formSettings.modelType}>
             <ParentProvider
               name="QuickView"
               formMode="readonly"
               model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
             >
-              <ConfigurableForm
-                mode="readonly"
-                {...formItemLayout}
-                // Use formId when available to enable proper data loading (same as dialog mode)
-                formId={formArguments ? formIdentifier : undefined}
-                // Fall back to markup when not using formArguments (backward compatibility)
-                markup={formArguments ? undefined : formMarkup}
-                // Use formArguments to enable form's data loader (same as dialog mode)
-                formArguments={formArguments}
-                // Only use initialValues when formArguments is not provided (backward compatibility)
-                initialValues={formArguments ? undefined : getQuickViewInitialValues(formData, dataProperties)}
-              />
+              {formArguments
+                ? formIdentifier && (
+                  <ConfigurableForm
+                    mode="readonly"
+                    {...formItemLayout}
+                    // Use formId when available to enable proper data loading (same as dialog mode)
+                    formId={formIdentifier}
+                    // Use formArguments to enable form's data loader (same as dialog mode)
+                    formArguments={formArguments}
+                  />
+                )
+                : formMarkup && (
+                  <ConfigurableForm
+                    mode="readonly"
+                    {...formItemLayout}
+                    // Fall back to markup when not using formArguments (backward compatibility)
+                    markup={formMarkup}
+                    // Only use initialValues when formArguments is not provided (backward compatibility)
+                    initialValues={getQuickViewInitialValues(formData, dataProperties)}
+                  />
+                )}
             </ParentProvider>
-          </MetadataProvider>
+          </ConditionalMetadataProvider>
         </FormItemProvider>
       </div>
     ) : (
@@ -194,7 +204,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     if (displayType === 'icon') {
       return (
         <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={style}>
-          <ShaIcon iconName={iconName} />
+          {iconName && <ShaIcon iconName={iconName} />}
         </Button>
       );
     }
@@ -246,7 +256,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   return (
     <Popover
       styles={{
-        root: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string) ? { width: cappedWidth } : undefined,
+        root: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string) ? { width: cappedWidth } : {},
         content: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)
           ? { width: '100%', maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
           : { width: cappedWidth, minWidth: cappedWidth, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' },
@@ -273,7 +283,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   const { getEntityFormIdAsync } = useConfigurationItemsLoader();
-  const [formConfig, setFormConfig] = useState<FormIdentifier>(undefined);
+  const [formConfig, setFormConfig] = useState <FormIdentifier | null | undefined> (undefined);
   const { styles } = useStyles();
 
   useEffect(() => {

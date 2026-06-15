@@ -1,36 +1,35 @@
+import { IReferenceListIdentifier } from "@/interfaces";
 import { IButtonGroupItem, IButtonItem, IConfigurableFormComponent } from "@/providers";
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
-export interface IRefListGroupItemBase extends IButtonItem {
-  referenceList?: any;
-  item?: string;
+export interface IRefListGroupItemBase extends Omit<IButtonItem, 'childItems'> {
+  referenceList?: IReferenceListIdentifier | undefined;
+  item?: string | undefined;
 }
 
 export type IRefListItemFormModel = IRefListGroupItemBase;
 
 export interface IRefListItemGroup extends IRefListGroupItemBase {
-  childItems?: RefListGroupItemProps[];
+  childItems?: RefListGroupItemProps[] | undefined;
 }
+
+export const isIRefListItemGroup = (item: IRefListGroupItemBase): item is IRefListItemGroup => (item as IRefListItemGroup).childItems !== undefined;
 
 export interface IChevronProps extends IConfigurableFormComponent {
-  items?: IChevronButton[];
+  items?: IChevronButton[] | undefined;
   description: string;
-  image?: string;
-  imageStyle?: boolean;
-  imageSize?: number;
-  referenceList?: any;
-  activeColor?: string;
-  fontColor?: string;
-  showIcons?: boolean;
-  colorSource?: 'primary' | 'custom' | 'reflist';
-  width?: number;
-  height?: number;
-  fontSize?: number;
-}
-
-export interface IChevronControlProps extends IChevronProps {
-  value?: any;
+  image?: string | undefined;
+  imageStyle?: boolean | undefined;
+  imageSize?: number | undefined;
+  referenceList?: IReferenceListIdentifier | undefined;
+  activeColor?: string | undefined;
+  fontColor?: string | undefined;
+  showIcons?: boolean | undefined;
+  colorSource?: 'primary' | 'custom' | 'reflist' | undefined;
+  width?: number | undefined;
+  height?: number | undefined;
+  fontSize?: number | undefined;
 }
 
 export interface IChevronButton extends IButtonGroupItem {

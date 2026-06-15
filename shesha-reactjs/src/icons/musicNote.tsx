@@ -1,5 +1,6 @@
-import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
+import Icon from '@ant-design/icons/lib/components/Icon';
 import React from 'react';
+import { CustomIconProps } from './interfaces';
 
 const MusicNoteOutlinedSvg = (): React.JSX.Element => (
   <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 -960 960 960" width="1em" fill="currentColor">
@@ -7,6 +8,6 @@ const MusicNoteOutlinedSvg = (): React.JSX.Element => (
   </svg>
 );
 
-export const MusicNoteOutlined = (props: Partial<CustomIconComponentProps>): React.JSX.Element => (
+export const MusicNoteOutlined = (props: CustomIconProps): React.JSX.Element => (
   <Icon component={MusicNoteOutlinedSvg} {...props} />
 );

@@ -6,11 +6,11 @@ import { useRefListItemGroupConfigurator } from '../provider';
 import RefListItem from './refListItem';
 
 export interface IRefListItemsContainerProps {
-  index?: number[];
-  id?: string;
+  index?: number[] | undefined;
+  id?: string | undefined;
   items: RefListGroupItemProps[];
-  onConfigClick?: (selectedItemId: string) => void;
-  readOnly?: boolean;
+  onConfigClick?: ((selectedItemId: string) => void) | undefined;
+  readOnly?: boolean | undefined;
 }
 
 export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) => {
@@ -22,7 +22,7 @@ export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) =>
 
     if (listChanged) {
       const newChilds = newState.map<RefListGroupItemProps>((item) => item as RefListGroupItemProps);
-      updateChildItems({ index: props.index, childs: newChilds });
+      updateChildItems({ index: props.index ?? [], childs: newChilds });
     }
   };
 

@@ -32,7 +32,7 @@ const DynamicPageInternal: FC<AsyncPageProps> = (props) => {
     return notFound();
 
   const formId: FormIdentifier = {
-    module: moduleName,
+    module: moduleName ?? null,
     name: formName,
   };
 

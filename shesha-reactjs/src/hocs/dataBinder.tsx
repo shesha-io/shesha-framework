@@ -1,21 +1,27 @@
-import React, { FC } from 'react';
+import React, { ReactNode } from 'react';
 import { IConfigurableFormItemChildFunc } from '@/components/formDesigner/components/model';
 
-export interface IDataBinderProps {
-  value?: any;
-  onChange?: (...args: any[]) => void;
-  children: IConfigurableFormItemChildFunc;
-  valuePropName?: string;
-}
-
-const DataBinder: FC<IDataBinderProps> = (props) => {
-  const { onChange, valuePropName, value } = props;
-
-  // value may be passed by the Form.Item in a different property
-  const effectiveValue = valuePropName ? props[valuePropName] : value;
-
-  return (<>{props.children(effectiveValue, onChange)}</>);
+export type IDataBinderProps<TValue = unknown> = {
+  value?: TValue | undefined;
+  onChange?: ((newValue: TValue | null) => void) | undefined;
+  children: IConfigurableFormItemChildFunc<TValue>;
+  valuePropName?: string | undefined;
 };
 
-const DataBinderMemoized = React.memo(DataBinder);
-export { DataBinderMemoized as DataBinder };
+const emptyOnChange = (): void => {
+  throw new Error('DataBinder: onChange must be injected by upstream component');
+};
+
+const DataBinder = <TValue = unknown>(props: IDataBinderProps<TValue>): ReactNode => {
+  const { onChange = emptyOnChange, valuePropName } = props;
+
+  if (valuePropName) {
+    const effectiveValue = props[valuePropName as keyof typeof props] as TValue;
+    return (<>{props.children(effectiveValue, onChange)}</>);
+  }
+
+  const { value } = props;
+  return (<>{props.children(value, onChange)}</>);
+};
+
+export { DataBinder };

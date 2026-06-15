@@ -40,7 +40,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .addContainer({
                   id: nanoid(),
                   parentId: commonTabId,
-                  hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false },
                   components: [
                     ...fbf()
                       .addLabelConfigurator({
@@ -66,7 +66,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             propertyName: 'description',
                             label: 'Tooltip',
                             jsSetting: true,
-                            hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false },
                           },
                         ],
                       }).toJson(),
@@ -100,7 +100,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'inline',
                       label: 'Inline',
                       size: 'small',
-                      hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false },
                       jsSetting: true,
                     },
                   ],
@@ -140,7 +140,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addCollapsiblePanel({
@@ -223,7 +223,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   _code: 'return  getSettingValue(data?.orientation) === "vertical";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -244,7 +244,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   _code: 'return  getSettingValue(data?.orientation) === "horizontal";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
 
                                 inputs: [
                                   {

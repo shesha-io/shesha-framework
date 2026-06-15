@@ -5,52 +5,53 @@ import { IObjectMetadata } from "@/interfaces";
 import { CSSProperties } from "react";
 import { IArrayMetadata, IEntityMetadata, IMetadata } from "@/interfaces/metadata";
 import { Environment } from "@/publicJsApis/apis/metadataBuilder";
+import { isDefined } from "@/utils/nullables";
 
 export interface IHasCodeTemplate {
-  template: TemplateEvaluator;
+  template: TemplateEvaluator | undefined;
 }
 
 export interface IMonacoEditorProps extends Omit<EditorProps, "onChange"> {
-  onChange?: (newValue: string) => void;
+  onChange: ((newValue: string | null) => void) | undefined;
 }
 
 export interface IGenericCodeEditorProps extends IMonacoEditorProps, Partial<IHasCodeTemplate> {
 }
 
 export interface CodeTemplateSettings {
-  useAsyncDeclaration?: boolean;
-  functionName?: string;
+  useAsyncDeclaration?: boolean | undefined;
+  functionName?: string | undefined;
 }
 
 export type ResultType = IMetadata | IObjectMetadata;
 
-export const isObjectType = (value: ResultType): value is IObjectMetadata => {
-  return value && value.dataType === "object";
+export const isObjectType = (value: ResultType | undefined): value is IObjectMetadata => {
+  return isDefined(value) && value.dataType === "object";
 };
 
-export const isArrayType = (value: ResultType): value is IArrayMetadata => {
-  return value && value.dataType === "array";
+export const isArrayType = (value: ResultType | undefined): value is IArrayMetadata => {
+  return isDefined(value) && value.dataType === "array";
 };
 
-export const isEntityType = (value: ResultType): value is IEntityMetadata => {
-  return value && value.dataType === "entity";
+export const isEntityType = (value: ResultType | undefined): value is IEntityMetadata => {
+  return isDefined(value) && value.dataType === "entity";
 };
 
 export interface ICodeEditorProps {
-  value?: string;
-  onChange?: (newValue: string) => void;
-  readOnly?: boolean;
-  placeholder?: string;
+  value?: string | null;
+  onChange?: (newValue: string | null) => void;
+  readOnly?: boolean | undefined;
+  placeholder?: string | undefined;
   language: CodeLanguages;
-  style?: CSSProperties;
+  style?: CSSProperties | undefined;
 
-  path?: string;
-  fileName?: string;
-  wrapInTemplate?: boolean;
-  templateSettings?: CodeTemplateSettings;
-  availableConstants?: IObjectMetadata;
-  resultType?: ResultType;
-  environment?: Environment;
+  path?: string | undefined;
+  fileName?: string | undefined;
+  wrapInTemplate?: boolean | undefined;
+  templateSettings?: CodeTemplateSettings | undefined;
+  availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined;
+  resultType?: ResultType | undefined;
+  environment?: Environment | undefined;
 }
 
 export const CODE_TEMPLATE_DEFAULTS: CodeTemplateSettings = {

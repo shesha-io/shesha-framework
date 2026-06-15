@@ -4,8 +4,8 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 
 export interface IDataContextComponentProps extends IConfigurableFormComponent {
   items?: IPropertyMetadata[];
-  initialDataCode?: string | null;
-  onChangeAction?: IConfigurableActionConfiguration;
+  initialDataCode?: string | undefined;
+  onChangeAction?: IConfigurableActionConfiguration | undefined;
 }
 
 export type DataContextComponentDefinition = ComponentDefinition<"dataContext", IDataContextComponentProps>;

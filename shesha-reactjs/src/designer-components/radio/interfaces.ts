@@ -3,39 +3,35 @@ import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { CSSProperties } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { ComponentDefinition, IConfigurableFormComponent } from '@/interfaces';
-import { IEventHandlers } from '@/components/formDesigner/components/utils';
 
 export interface IRadioProps {
-  items?: ILabelValue[];
+  items?: ILabelValue[] | undefined;
   /**
    * @deprecated - use referenceListId instead
    */
-  referenceListNamespace?: string;
+  referenceListNamespace?: string | undefined;
   /**
    * @deprecated - use referenceListId instead
    */
-  referenceListName?: string;
-  referenceListId?: IReferenceListIdentifier;
+  referenceListName?: string | undefined;
+  referenceListId?: IReferenceListIdentifier | undefined;
   dataSourceType: DataSourceType;
-  direction?: SpaceProps['direction'];
-  value?: any;
-  onChange?: (e: RadioChangeEvent) => void;
-  onBlur?: (e: any) => void;
-  onFocus?: (e: any) => void;
-  style?: CSSProperties;
-  dataSourceUrl?: string;
-  reducerFunc?: string; // The function that receives data from the API and returns it in the format { value, label }
-  readOnly?: boolean;
-  defaultValue?: any;
-  enableStyleOnReadonly?: boolean;
+  direction?: SpaceProps['orientation'] | undefined;
+  value?: number | string | undefined;
+  onChange?: ((e: RadioChangeEvent) => void) | undefined;
+  onBlur?: React.FocusEventHandler<HTMLDivElement> | undefined;
+  onFocus?: React.FocusEventHandler<HTMLDivElement> | undefined;
+  style?: CSSProperties | undefined;
+  dataSourceUrl?: string | undefined;
+  reducerFunc?: string | undefined; // The function that receives data from the API and returns it in the format { value, label }
+  readOnly?: boolean | undefined;
+  enableStyleOnReadonly?: boolean | undefined;
 }
 
 export interface IRadioComponentProps extends Omit<IRadioProps, 'style' | "readOnly">, IConfigurableFormComponent { }
 
 interface IRadioComponentCalculatedValues {
-  eventHandlers: IEventHandlers;
-  dataSourceUrl?: string;
-  defaultValue?: any;
+  dataSourceUrl?: string | undefined;
 }
 
 export type RadioComponentDefinition = ComponentDefinition<"radio", IRadioComponentProps, IRadioComponentCalculatedValues>;

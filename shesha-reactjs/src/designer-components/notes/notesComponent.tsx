@@ -4,7 +4,7 @@ import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components/notesRenderer';
 import { useFormData, useGlobalState } from '@/providers';
-import { evaluateString, executeScript, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateValueAsString, executeScript, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import { NotesEditorProvider, OnNoteCreatedFunc, OnNoteDeletedFunc, OnNoteUpdatedFunc } from '@/providers/notes';
 import {
@@ -17,6 +17,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -49,12 +50,12 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
     if (model.hidden) return null;
 
-    const ownerId = evaluateString(`${model.ownerId}`, { data: data, globalState });
+    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState }) ?? "";
 
     const handleCreateAction: OnNoteCreatedFunc = (note) => {
       if (!model.onCreateAction) return;
 
-      executeScript<void>(model?.onCreateAction, {
+      executeScript<void>(model.onCreateAction, {
         createdNotes: [note],
         ...executionContext,
       }).catch((error) => {
@@ -88,8 +89,8 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     return (
       <NotesEditorProvider
         ownerId={ownerId}
-        ownerType={model?.ownerType}
-        category={model?.category}
+        ownerType={model.ownerType}
+        category={model.category}
         onCreatedAction={handleCreateAction}
         onUpdatedAction={handleUpdateAction}
         onDeletedAction={handleDeleteAction}
@@ -99,8 +100,8 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
           allowUpdate={model.allowEdit}
           allowDelete={model.allowDelete}
 
-          buttonPostion={model?.savePlacement}
-          autoSize={model?.autoSize}
+          buttonPostion={model.savePlacement}
+          autoSize={model.autoSize}
           showCharCount={model.showCharCount}
           minLength={model.minLength}
           maxLength={model.maxLength}
@@ -122,7 +123,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   linkToModelMetadata: (model, metadata) => ({
     ...model,
     ownerId: '{data.id}',
-    ownerType: metadata.entityType && { module: metadata.entityModule, name: metadata.entityType },
+    ownerType: !isNullOrWhiteSpace(metadata.entityType) ? { module: metadata.entityModule ?? "", name: metadata.entityType } : "",
     category: metadata.path,
   }),
   getFieldsToFetch: () => [],

@@ -1,17 +1,20 @@
 import { Tag } from 'antd';
 import React, { FC, PropsWithChildren } from 'react';
 interface ITagProps {
-  color: string;
+  color?: string;
   icon?: React.ReactNode;
   style?: React.CSSProperties;
-  styles?: any;
+  className?: string;
 }
 
 const RefTag: FC<PropsWithChildren<ITagProps>> = ({ children, ...props }) => {
-  if (!children && !props?.icon) return null;
+  if (!children && !props.icon) return null;
 
   return (
-    <Tag className={props.styles.shaStatusTag} {...props}>
+    <Tag
+      {...(props.className ? { className: props.className } : {})}
+      {...props}
+    >
       {children}
     </Tag>
   );

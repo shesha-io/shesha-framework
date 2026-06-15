@@ -42,13 +42,13 @@ export const TableEmptyState: React.FC<ITableEmptyStateProps> = ({
       <TableOutlined
         style={{
           fontSize: '64px',
-          color: isSelected ? theme?.application?.primaryColor : '#bfbfbf',
+          color: isSelected ? theme.application?.primaryColor : '#bfbfbf',
         }}
       />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', textAlign: 'center', maxWidth: '400px' }}>
         <div
           style={{
-            color: isSelected ? theme?.application?.primaryColor : '#595959',
+            color: isSelected ? theme.application?.primaryColor : '#595959',
             fontSize: '16px',
             fontWeight: '600',
           }}
@@ -71,10 +71,10 @@ export const TableEmptyState: React.FC<ITableEmptyStateProps> = ({
             gap: '8px',
             marginTop: '8px',
             padding: '12px 20px',
-            backgroundColor: isSelected ? theme?.application?.primaryColor + '15' : '#fff',
-            border: `1px solid ${isSelected ? theme?.application?.primaryColor : '#d9d9d9'}`,
+            backgroundColor: isSelected ? theme.application?.primaryColor + '15' : '#fff',
+            border: `1px solid ${isSelected ? theme.application?.primaryColor : '#d9d9d9'}`,
             borderRadius: '6px',
-            color: isSelected ? theme?.application?.primaryColor : '#595959',
+            color: isSelected ? theme.application?.primaryColor : '#595959',
             fontSize: '14px',
             fontWeight: '500',
           }}

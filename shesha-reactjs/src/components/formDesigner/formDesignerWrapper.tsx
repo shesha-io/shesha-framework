@@ -5,6 +5,7 @@ import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
 import { FormDesignerProvider, useFormDesignerMarkup, useFormDesignerSettings } from '@/providers/formDesigner';
 import { FormPersisterProvider, useFormPersisterState } from '@/providers/formPersisterProvider';
+import { isDefined } from '@/utils/nullables';
 import {
   Form,
   FormInstance,
@@ -75,7 +76,7 @@ const FormPersisterStateConsumer: FC<PropsWithChildren> = ({ children }) => {
   if (formStore.loading)
     return (<Skeleton loading active />);
 
-  if (formStore.loaded) {
+  if (formStore.loaded && isDefined(formStore.formProps)) {
     const { flatStructure, settings, readOnly } = formStore.formProps;
     return (
       <FormDesignerProvider

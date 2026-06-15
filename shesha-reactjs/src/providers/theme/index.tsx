@@ -1,9 +1,8 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
-import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
-import { isDefined } from '@/utils/nullables';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -22,32 +21,29 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     iconPrefixCls: iconPrefixCls,
   });
 
-  const applicationTheme = useRef<IConfigurableTheme>();
-
   const settings = useSettings();
   const application = useSheshaApplication();
   application.registerInitialization('theme', async () => {
     // load theme settings
     const theme = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
-    setState((prev) => ({ ...prev, theme: theme }));
-    applicationTheme.current = theme;
+    setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });
 
   const changeTheme = useCallback((theme: IConfigurableTheme, isApplication: boolean = false) => {
     // save theme to the state
-    setState((prev) => ({ ...prev, theme: theme }));
-    if (isApplication)
-      applicationTheme.current = theme;
-  }, [applicationTheme]);
+    setState((prev) => ({
+      ...prev,
+      theme: theme,
+      initialTheme: isApplication ? { ...theme } : prev.initialTheme,
+    }));
+  }, []);
 
   const resetToApplicationTheme = useCallback(() => {
-    // save theme to the state
-    if (isDefined(applicationTheme.current))
-      setState((prev) => ({ ...prev, theme: applicationTheme.current }));
+    setState((prev) => ({ ...prev, theme: { ...prev.initialTheme } }));
   }, []);
 
   const themeConfig = useMemo<ThemeConfig>(() => {
-    const appTheme = state.theme?.application;
+    const appTheme = state.theme.application;
     const themeDefaults: ThemeConfig['token'] = {};
 
     const theme: Partial<ThemeConfig['token']> = appTheme

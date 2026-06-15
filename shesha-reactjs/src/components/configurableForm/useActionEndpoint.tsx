@@ -18,45 +18,42 @@ export interface GetFormActionUrlPayload {
 }
 
 export interface IEntityEndpointsEvaluator {
-  getDefaultActionUrl: (payload: GetDefaultActionUrlPayload) => Promise<IApiEndpoint>;
-  getFormActionUrl: (payload: GetFormActionUrlPayload) => Promise<IApiEndpoint>;
+  getDefaultActionUrl: (payload: GetDefaultActionUrlPayload) => Promise<IApiEndpoint | undefined>;
+  getFormActionUrl: (payload: GetFormActionUrlPayload) => Promise<IApiEndpoint | undefined>;
 }
-const getActionUrlFromFormSettings = (formSettings: IFormSettings, actionName: string): IApiEndpoint => {
-  if (!formSettings)
-    return null;
-
-  let endpoint: IApiEndpoint;
+const getActionUrlFromFormSettings = (formSettings: IFormSettings, actionName: string): IApiEndpoint | undefined => {
+  let endpoint: IApiEndpoint | undefined = undefined;
   switch (actionName) {
     case StandardEntityActions.create:
-      endpoint = { httpVerb: 'POST', url: formSettings.postUrl };
+      endpoint = { httpVerb: 'POST', url: formSettings.postUrl ?? "" };
       break;
     case StandardEntityActions.read:
-      endpoint = { httpVerb: 'GET', url: formSettings.getUrl };
+      endpoint = { httpVerb: 'GET', url: formSettings.getUrl ?? "" };
       break;
     case StandardEntityActions.update:
-      endpoint = { httpVerb: 'PUT', url: formSettings.putUrl };
+      endpoint = { httpVerb: 'PUT', url: formSettings.putUrl ?? "" };
       break;
     case StandardEntityActions.delete:
-      endpoint = { httpVerb: 'DELETE', url: formSettings.deleteUrl };
+      endpoint = { httpVerb: 'DELETE', url: formSettings.deleteUrl ?? "" };
       break;
   }
 
   if (!endpoint)
-    return null;
+    return undefined;
 
   // cleanup the url
-  endpoint.url = removeZeroWidthCharsFromString(endpoint.url ?? '');
+  endpoint.url = removeZeroWidthCharsFromString(endpoint.url);
   // don't return endpoint with empty url
   return endpoint.url
     ? endpoint
-    : null;
+    : undefined;
 };
 
 
 export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
   const { getMetadata } = useMetadataDispatcher();
 
-  const getDefaultActionUrl = useCallback((payload: GetDefaultActionUrlPayload): Promise<IApiEndpoint> => {
+  const getDefaultActionUrl = useCallback((payload: GetDefaultActionUrlPayload): Promise<IApiEndpoint | undefined> => {
     if (!payload.modelType)
       return Promise.reject('`modelType` is not provided');
     if (!payload.actionName)
@@ -65,13 +62,13 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
     return getMetadata({ dataType: DataTypes.entityReference, modelType: payload.modelType }).then((m) => {
       const endpoint = isEntityMetadata(m)
         ? m.apiEndpoints[payload.actionName]
-        : null;
+        : undefined;
       return endpoint;
     });
   }, [getMetadata]);
 
 
-  const getFormActionUrl = useCallback((payload: GetFormActionUrlPayload): Promise<IApiEndpoint> => {
+  const getFormActionUrl = useCallback((payload: GetFormActionUrlPayload): Promise<IApiEndpoint | undefined> => {
     const { formSettings, actionName, mappings } = payload;
     const customEndpoint = getActionUrlFromFormSettings(formSettings, actionName);
 
@@ -82,9 +79,9 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
       return Promise.resolve({ ...customEndpoint, url: evaluatedrl });
     } else
       // return defualt endpoint from metadata
-      return formSettings?.modelType
+      return formSettings.modelType
         ? getDefaultActionUrl({ modelType: formSettings.modelType, actionName: actionName })
-        : Promise.resolve(null);
+        : Promise.resolve(undefined);
   }, [getDefaultActionUrl]);
 
   const result = useMemo<IEntityEndpointsEvaluator>(() => ({
@@ -100,8 +97,8 @@ export interface UseEntityEndpointArguments {
   mappings: IMatchData[];
 }
 
-export const useModelApiEndpoint = (args: UseEntityEndpointArguments): IApiEndpoint => {
-  const [endpoint, setEndpoint] = useState<IApiEndpoint>(null);
+export const useModelApiEndpoint = (args: UseEntityEndpointArguments): IApiEndpoint | undefined => {
+  const [endpoint, setEndpoint] = useState<IApiEndpoint | undefined>(undefined);
 
   const { actionName, formSettings, mappings } = args;
   const endpointsHelper = useModelApiHelper();
@@ -112,7 +109,7 @@ export const useModelApiEndpoint = (args: UseEntityEndpointArguments): IApiEndpo
         setEndpoint(e);
       })
       .catch((error) => {
-        setEndpoint(null);
+        setEndpoint(undefined);
         console.error('Failed to get endpoint', error);
       });
   }, [args]);

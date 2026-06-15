@@ -10,7 +10,7 @@ import { ShaIcon, IconType } from '@/components/shaIcon';
 
 export interface IRefListGroupItemProps extends IRefListItemFormModel {
   index: number[];
-  onConfigClick?: (selectedItemId: string) => void;
+  onConfigClick?: ((selectedItemId: string) => void) | undefined;
 }
 
 export const RefListItem: FC<IRefListGroupItemProps> = (props) => {

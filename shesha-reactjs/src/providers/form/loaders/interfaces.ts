@@ -1,6 +1,7 @@
 import { IApiEndpoint, IFlatComponentsStructure, IFormSettings, IPropertyMetadata } from "@/interfaces";
 import { IErrorInfo } from "@/interfaces/errorInfo";
 import { ExpressionExecuter } from "../submitters/interfaces";
+import { isDefined } from "@/utils/nullables";
 
 export interface FormDataLoadingPayload {
   formArguments?: object | undefined;
@@ -49,9 +50,9 @@ export interface CustomLoaderSettings {
 }
 
 export const isGqlLoaderSettings = (s: unknown): s is GqlLoaderSettings => {
-  return s && typeof s === 'object' && "endpointType" in s && typeof (s.endpointType) === 'string';
+  return isDefined(s) && typeof s === 'object' && "endpointType" in s && typeof (s.endpointType) === 'string';
 };
 
 export const isCustomLoaderSettings = (s: unknown): s is CustomLoaderSettings => {
-  return s && typeof s === 'object' && "onDataLoad" in s && typeof (s.onDataLoad) === 'string';
+  return isDefined(s) && typeof s === 'object' && "onDataLoad" in s && typeof (s.onDataLoad) === 'string';
 };

@@ -3,15 +3,15 @@ import { ILayoutColor } from './model';
 import { convertJsonToCss, convertJsonToCssWithImportant } from '@/utils';
 
 interface UseHorizontalMenuDropdownStylesProps {
-  menuId?: string;
-  colors?: ILayoutColor;
-  padding?: string;
-  fontStyles?: React.CSSProperties;
-  itemStyle?: React.CSSProperties;
-  styleOnHover?: React.CSSProperties;
-  styleOnSelected?: React.CSSProperties;
-  styleOnSubMenu?: React.CSSProperties;
-  menuItemStyle?: React.CSSProperties;
+  menuId?: string | undefined;
+  colors?: ILayoutColor | undefined;
+  padding?: string | undefined;
+  fontStyles?: React.CSSProperties | undefined;
+  itemStyle?: React.CSSProperties | undefined;
+  styleOnHover?: React.CSSProperties | undefined;
+  styleOnSelected?: React.CSSProperties | undefined;
+  styleOnSubMenu?: React.CSSProperties | undefined;
+  menuItemStyle?: React.CSSProperties | undefined;
 }
 
 const BLACK_CLR = "#000000e0";
@@ -28,7 +28,7 @@ export const useHorizontalMenuDropdownStyles = ({
   menuItemStyle,
 }: UseHorizontalMenuDropdownStylesProps): void => {
   useLayoutEffect(() => {
-    if (!menuId) return undefined;
+    if (!menuId) return;
 
     const styleId = `horizontal-menu-dropdown-styles-${menuId}`;
 

@@ -30,8 +30,8 @@ export const ActionButtonGroup: FC<IActionButtonGroupProps> = ({ items, classNam
         <Fragment>
           <Fragment>
             {items
-              ?.filter(({ hide }) => !hide)
-              ?.map(({ title, icon, onClick, className: localClassName, disabled, tooltip, render }) => {
+              .filter(({ hide }) => !hide)
+              .map(({ title, icon, onClick, className: localClassName, disabled, tooltip, render }) => {
                 if (render && typeof render === 'function') {
                   return render();
                 }
@@ -40,10 +40,10 @@ export const ActionButtonGroup: FC<IActionButtonGroupProps> = ({ items, classNam
                   <Tooltip title={tooltip} placement="right" key={nanoid()}>
                     <Button
                       onClick={(event) => {
-                        event?.stopPropagation();
-                        onClick(event);
+                        event.stopPropagation();
+                        onClick?.(event);
                       }}
-                      disabled={disabled}
+                      disabled={disabled ?? false}
                       className={classNames(styles.toolbarItem, { disabled }, localClassName)}
                       key={nanoid()}
                       type="link"

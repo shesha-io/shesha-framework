@@ -3,17 +3,17 @@ import React, { FC, useState } from 'react';
 import PasswordInputCombo from '@/components/passwordInputCombo';
 
 export interface IProps {
-  readonly confirmPlaceholder: string;
-  readonly errorMessage?: string;
+  readonly confirmPlaceholder: string | undefined;
+  readonly errorMessage?: string | undefined;
   readonly formItemProps: FormItemProps;
-  readonly formItemConfirmProps?: FormItemProps;
-  readonly formProps?: FormProps;
+  readonly formItemConfirmProps?: FormItemProps | undefined;
+  readonly formProps?: FormProps | undefined;
   readonly inputProps: InputProps;
-  readonly passwordLength: number;
-  readonly placeholder: string;
-  readonly style?: React.CSSProperties;
-  readonly className?: string;
-  readonly repeatPropertyName?: string;
+  readonly passwordLength: number | undefined;
+  readonly placeholder?: string | undefined;
+  readonly style?: React.CSSProperties | undefined;
+  readonly className?: string | undefined;
+  readonly repeatPropertyName?: string | undefined;
 }
 
 interface IState {

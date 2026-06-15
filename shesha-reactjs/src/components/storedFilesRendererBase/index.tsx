@@ -18,6 +18,7 @@ import {
   Space,
   Upload,
   UploadFile,
+  UploadProps,
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
@@ -37,6 +38,8 @@ import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel, UploadFileAsAtta
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isFile } from '@/utils/fileValidation';
 
 interface IUploaderFileTypes {
   name: string;
@@ -44,7 +47,7 @@ interface IUploaderFileTypes {
 }
 
 export interface IStoredFilesRendererBaseProps extends IInputStyles {
-  fileList?: StoredFileModel[];
+  fileList?: StoredFileModel[] | undefined;
 
   uploadFile: (args: UploadFileAsAttachmentArgs) => Promise<void>;
   replaceFile: (args: ReplaceFilePayload) => Promise<void>;
@@ -52,57 +55,60 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile: () => Promise<void>;
   downloadFile: (args: DownloadFileArgs) => Promise<void>;
 
-  onChange?: (fileList: StoredFileModel[]) => void;
-  onDownload?: (fileList: StoredFileModel[]) => void;
+  onChange?: ((fileList: StoredFileModel[]) => void) | undefined;
+  onDownload?: ((fileList: StoredFileModel[]) => void) | undefined;
 
-  allowUpload?: boolean;
-  allowDelete?: boolean;
-  allowReplace?: boolean;
-  allowViewHistory?: boolean;
-  customActions?: ButtonGroupItemProps[];
-  hasExtraContent?: boolean;
-  extraFormSelectionMode?: 'name' | 'dynamic';
-  extraFormId?: FormIdentifier;
-  extraFormType?: string;
-  showDragger?: boolean;
-  ownerId?: string;
-  ownerType?: string;
-  multiple?: boolean;
-  isDownloadingFileListZip?: boolean;
-  isDownloadZipSucceeded?: boolean;
-  fetchFilesError?: boolean;
-  downloadZipFileError?: boolean;
-  allowDownloadZip?: boolean;
-  validFileTypes?: IUploaderFileTypes[];
-  maxFileLength?: number;
-  isDragger?: boolean;
-  disabled?: boolean;
-  uploadBtnProps?: ButtonProps;
+  allowUpload?: boolean | undefined;
+  allowDelete?: boolean | undefined;
+  allowReplace?: boolean | undefined;
+  allowViewHistory?: boolean | undefined;
+  customActions?: ButtonGroupItemProps[] | undefined;
+  hasExtraContent?: boolean | undefined;
+  extraFormSelectionMode?: 'name' | 'dynamic' | undefined;
+  extraFormId?: FormIdentifier | undefined;
+  extraFormType?: string | undefined;
+  showDragger?: boolean | undefined;
+  ownerId?: string | undefined;
+  ownerType?: string | undefined;
+  multiple?: boolean | undefined;
+  isDownloadingFileListZip?: boolean | undefined;
+  isDownloadZipSucceeded?: boolean | undefined;
+  fetchFilesError?: boolean | undefined;
+  downloadZipFileError?: boolean | undefined;
+  allowDownloadZip?: boolean | undefined;
+  validFileTypes?: IUploaderFileTypes[] | undefined;
+  maxFileLength?: number | undefined;
+  isDragger?: boolean | undefined;
+  disabled?: boolean | undefined;
+  uploadBtnProps?: ButtonProps | undefined;
   /* isStub is used just to fix strange error when the user is reordering components on the form */
-  isStub?: boolean;
-  allowedFileTypes?: string[];
-  maxHeight?: string;
+  isStub?: boolean | undefined;
+  allowedFileTypes?: string[] | undefined;
+  maxHeight?: string | undefined;
   layout: layoutType;
   listType: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
-  container?: IStyleType;
-  allStyles?: IFormComponentStyles;
-  enableStyleOnReadonly?: boolean;
-  thumbnail?: IStyleType;
-  downloadedFileStyles?: CSSProperties;
-  styleDownloadedFiles?: boolean;
-  downloadedIcon?: IconType;
+  thumbnailWidth?: string | undefined;
+  thumbnailHeight?: string | undefined;
+  borderRadius?: number | undefined;
+  hideFileName?: boolean | undefined;
+  gap?: number | undefined;
+  container?: IStyleType | undefined;
+  allStyles?: IFormComponentStyles | undefined;
+  enableStyleOnReadonly?: boolean | undefined;
+  thumbnail?: IStyleType | undefined;
+  downloadedFileStyles?: CSSProperties | undefined;
+  styleDownloadedFiles?: boolean | undefined;
+  downloadedIcon?: IconType | undefined;
 }
 
-const EMPTY_ARRAY = [];
+const EMPTY_FILES: StoredFileModel[] = [];
+const EMPTY_FILE_TYPES: IUploaderFileTypes[] = [];
+const EMPTY_STRING_ARRAY: string[] = [];
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   multiple = true,
-  fileList = EMPTY_ARRAY as StoredFileModel[],
-  isDownloadingFileListZip,
+  fileList = EMPTY_FILES,
+  isDownloadingFileListZip = false,
   isDownloadZipSucceeded,
   deleteFile,
   uploadFile,
@@ -114,13 +120,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   fetchFilesError,
   downloadZipFileError,
   uploadBtnProps,
-  validFileTypes = EMPTY_ARRAY as StoredFileModel[],
+  validFileTypes = EMPTY_FILE_TYPES,
   maxFileLength = 0,
   isDragger = false,
   disabled,
   isStub = false,
-  allowedFileTypes = [] as string[],
-  allowDownloadZip: downloadZip,
+  allowedFileTypes = EMPTY_STRING_ARRAY,
+  allowDownloadZip: downloadZip = false,
   allowDelete,
   allowReplace = true,
   allowViewHistory = true,
@@ -132,7 +138,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   gap,
-  hideFileName,
+  hideFileName = false,
   enableStyleOnReadonly = true,
   downloadedFileStyles,
   styleDownloadedFiles = false,
@@ -190,11 +196,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
-  const defaultBorder = defaultStyles().border.border.all;
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
+  const defaultBorder = defaultStyles().border?.border?.all ?? {};
 
   const { styles } = useStyles({
-    downloadedFileStyles: downloadedFileStyles,
+    downloadedFileStyles: downloadedFileStyles ?? {},
     containerStyles: {
       ...(containerDimensionsStyles ?? {}),
       width: layout === 'vertical' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles?.width, allData) ?? undefined),
@@ -203,8 +209,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...stylingBoxAsCSS,
     },
     style: !enableStyleOnReadonly && disabled
-      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
-      : { ...(model?.allStyles?.fullStyle ?? {}) },
+      ? { ...(model.allStyles?.dimensionsStyles ?? {}), ...(model.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
+      : { ...(model.allStyles?.fullStyle ?? {}) },
     model: {
       gap: addPx(gap, allData) ?? '0px',
       layout: listType === 'thumbnail' && !isDragger,
@@ -212,7 +218,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isDragger,
       isStub,
       downloadZip,
-      fontStyles: model.allStyles?.fontStyles,
+      fontStyles: model.allStyles?.fontStyles ?? {},
       listType,
       hasFiles: fileList.length > 0,
     },
@@ -221,19 +227,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { width, minWidth, maxWidth } = model.allStyles?.dimensionsStyles ?? {};
   const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
 
-  const openFilesZipNotification = (): void => {
-    notification.success({
-      message: `Download success!`,
-      description: 'Your files have been downloaded successfully. Please check your download folder.',
-      placement: 'topRight',
-    });
-  };
-
   useEffect(() => {
     if (isDownloadZipSucceeded) {
-      openFilesZipNotification();
+      notification.success({
+        message: `Download success!`,
+        description: 'Your files have been downloaded successfully. Please check your download folder.',
+        placement: 'topRight',
+      });
     }
-  }, [isDownloadZipSucceeded]);
+  }, [isDownloadZipSucceeded, notification]);
 
   // Cleanup cache when file list changes to prevent memory leaks
   useEffect(() => {
@@ -263,10 +265,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     const fetchImages = async (): Promise<void> => {
       const newImageUrls: { [key: string]: string } = {};
       for (const file of fileList) {
-        if (isImageType(file.type)) {
+        if (isImageType(file.type ?? "") && !isNullOrWhiteSpace(file.url)) {
           // Preserve existing URL to avoid unnecessary re-fetches
-          if (imageUrlsRef.current[file.uid]) {
-            newImageUrls[file.uid] = imageUrlsRef.current[file.uid];
+          const existingUrl = imageUrlsRef.current[file.uid];
+          if (existingUrl) {
+            newImageUrls[file.uid] = existingUrl;
             continue;
           }
 
@@ -283,6 +286,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             }
             continue;
           }
+
 
           try {
             if (!file.id) {
@@ -352,15 +356,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     };
   }, []);
 
-  const handlePreview = (file: UploadFile): void => {
-    setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
+  const handlePreview = (file: StoredFileModel): void => {
+    setPreviewImage({ url: imageUrls[file.uid] ?? "", uid: file.uid, name: file.name });
     setPreviewOpen(true);
   };
 
-  const iconRender = (file: UploadFile): React.ReactElement => {
+  const iconRender: UploadProps["iconRender"] = (file) => {
     const { type, uid } = file;
 
-    if (isImageType(type)) {
+    if (isImageType(type) && imageUrls[uid]) {
       if (listType === 'thumbnail' && !isDragger) {
         return (
           <>
@@ -371,8 +375,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-
-    return getFileIcon(type, { fontSize: model.allStyles?.fontStyles?.fontSize });
+    return getFileIcon(type ?? "", model.allStyles?.fontStyles?.fontSize);
   };
 
   // Helper function to get or create cached file context data
@@ -386,7 +389,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           file: file,
           fileId: fileId,
           fileName: file.name,
-          fileType: file.type,
+          fileType: file.type ?? "",
         }),
       );
     }
@@ -394,14 +397,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return fileContextCache.current.get(cacheKey)!;
   }, []);
 
-  if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+  if (model.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
-  const itemRenderFunction = (originNode: React.ReactElement, file: StoredFileModel): React.ReactElement => {
-    const isDownloaded = file.userHasDownloaded === true;
-    const fileId = file.id || file.uid;
-    const persistedFileId = file.id; // Only persisted files have .id
+  const itemRenderFunction = (originNode: React.ReactElement, antdFile: UploadFile): React.ReactElement => {
+    const shaFile = antdFile as StoredFileModel;
+
+    const isDownloaded = shaFile.userHasDownloaded === true;
+    const fileId = shaFile.id || shaFile.uid;
+    const persistedFileId = shaFile.id; // Only persisted files have .id
 
     const actions = (
       <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
@@ -414,7 +419,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onReplaceClick(file);
+                onReplaceClick(shaFile);
               }}
             />
           )}
@@ -424,7 +429,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               onConfirm={(e) => {
                 e?.preventDefault();
                 e?.stopPropagation();
-                deleteFile(persistedFileId).catch((error) => {
+                deleteFile(shaFile.uid).catch((error) => {
                   console.error('Failed to delete file', error);
                   throw error;
                 });
@@ -450,29 +455,27 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               }}
             />
           )}
-          {persistedFileId && (
-            <Button
-              size="small"
-              icon={<DownloadOutlined />}
-              title="Download file"
-              onClick={(e) => {
-                e.stopPropagation();
-                downloadFile({ fileId: persistedFileId, fileName: file.name }).catch((error) => {
-                  console.error('Failed to download file', error);
-                  throw error;
-                });
-              }}
-            />
-          )}
+          <Button
+            size="small"
+            icon={<DownloadOutlined />}
+            title="Download file"
+            onClick={(e) => {
+              e.stopPropagation();
+              downloadFile({ fileId: shaFile.uid, fileName: shaFile.name }).catch((error) => {
+                console.error('Failed to download file', error);
+                throw error;
+              });
+            }}
+          />
           {/* Custom Actions Button Group */}
-          {customActions && customActions.length > 0 && (
+          {customActions.length > 0 && (
             <div onClick={(e) => e.stopPropagation()}>
               <DataContextProvider
                 id={`file_ctx_${fileId}`}
                 name="fileContext"
                 description="File context for custom actions"
                 type="control"
-                initialData={getFileContextData(file, fileId)}
+                initialData={getFileContextData(antdFile, fileId)}
               >
                 <ButtonGroup
                   id={`file_actions_${fileId}`}
@@ -498,12 +501,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
 
       // If it's an image, trigger preview instead of download
-      if (isImageType(file.type)) {
+      if (isImageType(shaFile.type)) {
         e.preventDefault();
         e.stopPropagation();
-        handlePreview(file);
+        handlePreview(shaFile);
       } else {
-        downloadFile({ fileId: persistedFileId, fileName: file.name }).catch((error) => {
+        downloadFile({ fileId: shaFile.uid, fileName: shaFile.name }).catch((error) => {
           console.error('Failed to download file', error);
           throw error;
         });
@@ -518,8 +521,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
             <div className={styles.fileName}>
               <FileNameDisplay
-                file={file}
-                icon={iconRender(file)}
+                file={shaFile}
+                icon={<>{iconRender(antdFile)}</>}
                 className={styles.fileName}
                 popoverContent={actions}
                 popoverClassName={styles.actionsPopover}
@@ -559,14 +562,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         {listType === 'thumbnail' && !isDragger && !hideFileName && (
           <div className={isDownloaded ? styles.downloadedFile : ''}>
             <FileNameDisplay
-              file={file}
+              file={shaFile}
               className={styles.fileName}
             />
           </div>
         )}
         {hasExtraContent && extraFormId && (
           <ExtraContent
-            file={file}
+            file={shaFile}
             formId={extraFormId}
           />
         )}
@@ -576,10 +579,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const props: DraggerProps = {
     name: '',
-    accept: allowedFileTypes?.join(','),
+    accept: allowedFileTypes.join(','),
     multiple,
-    fileList: fileList.filter((f) => f.status !== 'error'),
-    disabled,
+    fileList: fileList.filter((f) => f.status !== 'error') as UploadFile[],
+    disabled: disabled ?? false,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
       if (status === 'done') {
@@ -588,25 +591,28 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    customRequest(options: any) {
+    customRequest(options) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
       const file = options.file;
-      const tempKey = `${file.name}_${file.size}`;
       let blobUrl: string | null = null;
+      let tempKey: string | null = null;
 
       // For image files, create a blob URL directly from the File object to avoid
       // an immediate server round-trip for the thumbnail right after upload.
       // file.type is the browser MIME type (e.g. 'image/jpeg'), but isImageType expects
       // the extension format (e.g. '.jpg'), so derive the extension from the file name.
-      const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
-      if (isImageType(fileExt)) {
-        blobUrl = URL.createObjectURL(file);
-        uploadedFileBlobUrls.current.set(tempKey, blobUrl);
+      if (isFile(file)) {
+        tempKey = `${file.name}_${file.size}`;
+        const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+        if (isImageType(fileExt)) {
+          blobUrl = URL.createObjectURL(file);
+          uploadedFileBlobUrls.current.set(tempKey, blobUrl);
+        }
       }
 
       uploadFile({ file, ownerId, ownerType }).catch((error) => {
         // Clean up blob URL if upload failed
-        if (blobUrl) {
+        if (blobUrl && tempKey) {
           URL.revokeObjectURL(blobUrl);
           uploadedFileBlobUrls.current.delete(tempKey);
         }
@@ -637,7 +643,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
       return isValidFileType && isAcceptableFileSize;
     },
-    iconRender,
+    iconRender: iconRender,
     itemRender: itemRenderFunction,
     showUploadList: isDragger && !disabled ? false : {
       showRemoveIcon: false,
@@ -652,7 +658,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         <Button
           type="link"
           icon={<UploadOutlined />}
-          disabled={disabled}
+          disabled={disabled ?? false}
           {...uploadBtnProps}
           onDrop={(e) => {
             e.preventDefault();
@@ -682,10 +688,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   <Button
                     type="link"
                     icon={<PictureOutlined />}
-                    disabled={disabled}
+                    disabled={disabled ?? false}
                     {...uploadBtnProps}
                     className={classNames(styles.uploadButton, uploadBtnProps?.className)}
-                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model?.allStyles?.fontStyles }}
+                    style={listType === 'thumbnail' ? { ...model.allStyles?.fullStyle } : { ...model.allStyles?.fontStyles }}
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
@@ -708,7 +714,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             : (props.disabled && fileList.length === 0
               ? null
               : props.disabled
-                ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+                ? (
+                  <Upload
+                    {...props}
+                    {...(model.allStyles?.fullStyle ? { style: model.allStyles.fullStyle } : {})}
+                    listType={listTypeAndLayout}
+                  />
+                )
                 : isDragger
                   ? (
                     <Dragger {...props} openFileDialogOnClick={true}>
@@ -719,7 +731,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                           {renderUploadContent()}
                           {fileList.map((file) => (
                             <div key={file.uid}>
-                              {itemRenderFunction(<></>, file)}
+                              {itemRenderFunction(<></>, file as UploadFile)}
                             </div>
                           ))}
                         </div>
@@ -747,7 +759,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             <Alert title="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
           )}
 
-          {downloadZip && hasFiles && !!downloadZipFile && (
+          {downloadZip && hasFiles && isDefined(downloadZipFile) && (
             <div className={styles.storedFilesRendererBtnContainer}>
               <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
                 {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
@@ -760,7 +772,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             type="file"
             ref={hiddenUploadInputRef}
             className={styles.hiddenElement}
-            accept={allowedFileTypes?.join(',')}
+            accept={allowedFileTypes.join(',')}
             onChange={handleReplaceFileChange}
           />
 

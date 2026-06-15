@@ -17,12 +17,12 @@ import { StoredFileModel } from '../../utils/storedFile/models';
 import { FileUploadEvents } from './instance';
 
 export interface IFileUploadProviderProps {
-  ownerId?: string;
-  ownerType?: string | IEntityTypeIdentifier;
-  propertyName?: string;
-  uploadMode?: FileUploadMode;
-  value?: FileUploadValue;
-  onChange?: (value: FileUploadValue) => void;
+  ownerId?: string | undefined;
+  ownerType?: string | IEntityTypeIdentifier | undefined;
+  propertyName?: string | undefined;
+  uploadMode?: FileUploadMode | undefined;
+  value?: FileUploadValue | undefined;
+  onChange?: ((value: FileUploadValue | null) => void) | undefined;
 }
 
 const FileUploadProvider: FC<PropsWithChildren<IFileUploadProviderProps>> = (props) => {

@@ -1,19 +1,22 @@
-import { IStoredFilter } from '@/providers/dataTable/interfaces';
+
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
+import { FilterExpression, IStoredFilter } from '@/providers/dataTable/interfaces';
+import { getBooleanPropertyOrUndefined } from '@/utils/object';
 
 interface IArgumentEvaluationResult {
   handled: boolean;
-  value?: any;
+  value?: JsonLogicFilter | undefined;
 }
 type JsonLogicContainerProcessingCallback = (
   operator: string,
-  args: object[],
+  args: JsonLogicFilter[],
   argIndex: number,
 ) => IArgumentEvaluationResult;
 
-const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonLogicContainerProcessingCallback): object => {
-  if (!jsonLogic) return null;
+const convertJsonLogicNode = (jsonLogic: JsonLogicFilter | undefined, argumentEvaluator: JsonLogicContainerProcessingCallback): JsonLogicFilter | undefined => {
+  if (!jsonLogic) return undefined;
 
-  const result = {};
+  const result: JsonLogicFilter = {};
   for (const operator in jsonLogic) {
     if (!jsonLogic.hasOwnProperty(operator)) continue;
 
@@ -22,18 +25,18 @@ const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonLogicCon
     let convertedArgs = null;
 
     if (Array.isArray(args)) {
-      convertedArgs = args.map((arg, argIdx) => {
+      convertedArgs = args.map((arg: JsonLogicFilter, argIdx) => {
         if (typeof arg === 'object') return convertJsonLogicNode(arg, argumentEvaluator);
 
-        const evaluationResult = argumentEvaluator(operator, args, argIdx);
+        const evaluationResult = argumentEvaluator(operator, args as JsonLogicFilter[], argIdx);
         return evaluationResult.handled ? evaluationResult.value : arg;
       });
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object') {
-        convertedArgs = convertJsonLogicNode(args, argumentEvaluator);
+        convertedArgs = convertJsonLogicNode(args as JsonLogicFilter, argumentEvaluator);
       } else {
-        const evaluationResult = argumentEvaluator(operator, [args], 0);
+        const evaluationResult = argumentEvaluator(operator, [args as JsonLogicFilter], 0);
         convertedArgs = evaluationResult.handled ? evaluationResult.value : args;
       }
     }
@@ -42,9 +45,9 @@ const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonLogicCon
   return result;
 };
 
-export const migrateDynamicExpression = (expression: string | object): object => {
+export const migrateDynamicExpression = (expression: FilterExpression | undefined): FilterExpression | undefined => {
   try {
-    const parsedExpression = typeof expression === 'string' ? JSON.parse(expression) : expression;
+    const parsedExpression = typeof expression === 'string' ? JSON.parse(expression) as JsonLogicFilter : expression;
 
     const convertedExpression = convertJsonLogicNode(
       parsedExpression,
@@ -69,12 +72,13 @@ export const migrateDynamicExpression = (expression: string | object): object =>
 };
 
 export const migrateFilterMustacheExpressions = (filter: IStoredFilter): IStoredFilter => {
-  const useExpression = Boolean(filter['useExpression']);
+  const useExpression = getBooleanPropertyOrUndefined(filter, 'useExpression') ?? false;
   if (!useExpression) return filter;
 
-  delete filter['useExpression'];
+  if ("useExpression" in filter)
+    delete filter['useExpression'];
   const { expression } = filter;
 
   const convertedExpression = migrateDynamicExpression(expression);
-  return { ...filter, expression: convertedExpression };
+  return { ...filter, expression: convertedExpression ?? undefined };
 };

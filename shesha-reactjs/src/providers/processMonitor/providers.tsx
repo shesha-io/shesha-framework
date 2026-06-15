@@ -7,7 +7,7 @@ import { useSheshaApplication } from "../sheshaApplication";
 import { ProcessMonitorContextBinder } from "./processMonitorContextBinder";
 
 export type ProcessMonitorProviderProps = {
-  componentName?: string;
+  componentName?: string | undefined;
   processType: string;
   processId: string;
 };

@@ -8,9 +8,9 @@ export interface IProps<TModel extends object = object> {
   markup: FormMarkup;
   onSave: (model: TModel) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
-  readOnly?: boolean;
-  cacheKey?: string;
+  onValuesChange?: ((changedValues: Partial<TModel>, values: TModel) => void) | undefined;
+  readOnly?: boolean | undefined;
+  cacheKey?: string | undefined;
 }
 
 function GenericArgumentsEditor<TModel extends object = object>({
@@ -21,7 +21,7 @@ function GenericArgumentsEditor<TModel extends object = object>({
   readOnly = false,
   cacheKey,
 }: IProps<TModel>): ReactElement {
-  const formRef = useShaFormRef();
+  const formRef = useShaFormRef<TModel>();
 
   return (
     <ConfigurableForm

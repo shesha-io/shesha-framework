@@ -1,8 +1,10 @@
 import { nanoid } from "@/utils/uuid";
 import { ITabPaneProps } from "./models";
 import { IStyleType } from "@/providers/form/models";
+import { BorderStyle } from "../_settings/utils/border/interfaces";
+import { TabPlacement } from "antd/es/tabs";
 
-const initialBorder: IStyleType['border']['border']['all'] = { width: '1px', color: '#f0f0f0', style: 'solid' };
+const initialBorder: BorderStyle = { width: '1px', color: '#f0f0f0', style: 'solid' };
 
 export const defaultStyles: IStyleType = {
   font: {
@@ -15,8 +17,11 @@ export const defaultStyles: IStyleType = {
   dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
   border: {
     border: {
-      all: initialBorder, top: initialBorder, right: initialBorder,
-      bottom: initialBorder, left: initialBorder,
+      all: initialBorder,
+      top: initialBorder,
+      right: initialBorder,
+      bottom: initialBorder,
+      left: initialBorder,
     },
     radius: { all: 8, topLeft: 0, topRight: 0, bottomLeft: 0, bottomRight: 0 },
     radiusType: 'all',
@@ -38,7 +43,7 @@ export const defaultCardStyles: IStyleType = {
 };
 
 export const onAddNewItem = (items: ITabPaneProps[]): ITabPaneProps => {
-  const count = (items ?? []).length;
+  const count = items.length;
   const id = nanoid();
   const buttonProps: ITabPaneProps = {
     id: id,
@@ -51,4 +56,19 @@ export const onAddNewItem = (items: ITabPaneProps[]): ITabPaneProps => {
   };
 
   return buttonProps;
+};
+
+export const tabPosition2TabPlacement = (tabPosition: 'left' | 'right' | 'top' | 'bottom' | undefined): TabPlacement | undefined => {
+  switch (tabPosition) {
+    case 'top':
+      return 'top';
+    case 'bottom':
+      return 'bottom';
+    case 'left':
+      return 'start';
+    case 'right':
+      return 'end';
+    default:
+      return undefined;
+  }
 };
