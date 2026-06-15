@@ -77,7 +77,7 @@ const StringFilter: FC<IStringFilterProps> = (props) => {
 };
 
 interface INumberFilterProps extends ISingleValueFilterProps {
-  onChange: (changeValue: number | number[] | string | undefined) => void;
+  onChange: (changeValue: number | null) => void;
   value: number;
 }
 const NumberFilter: FC<INumberFilterProps> = (props) => {

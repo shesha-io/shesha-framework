@@ -87,6 +87,13 @@ export class FormPersister implements IFormPersisterActionsContext {
         markup: JSON.stringify(payload),
         access: payload.formSettings.access,
         permissions: payload.formSettings.permissions,
+        modelType: payload.formSettings.modelType
+          ? typeof payload.formSettings.modelType === 'string'
+            ? payload.formSettings.modelType
+            : payload.formSettings.modelType.module && payload.formSettings.modelType.name
+              ? `${payload.formSettings.modelType.module}:${payload.formSettings.modelType.name}`
+              : payload.formSettings.modelType.name || undefined
+          : undefined,
       };
       await this.httpClient.put(URLS.SAVE_FORM, dto);
       // TODO: review FormManager and implement single cleanup

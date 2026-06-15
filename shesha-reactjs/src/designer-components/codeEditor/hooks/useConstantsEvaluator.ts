@@ -1,22 +1,22 @@
 import { isEmptyString } from "@/utils/string";
-import { GetAvailableConstantsFunc } from "../interfaces";
+import { GetAvailableConstantsArgs, GetAvailableConstantsFunc } from "../interfaces";
 import { useCallback } from "react";
 import { useMetadataBuilderFactory } from "@/utils";
 import { executeScript } from '@/providers/form/utils';
-import { useFormData, useShaFormInstanceOrUndefined } from '@/providers';
+import { useFormData, useShaFormInstance } from '@/providers';
 import { IObjectMetadata } from "@/interfaces";
 
 export interface UseResultTypeEvaluatorArgs {
-  availableConstantsExpression?: string | GetAvailableConstantsFunc;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
   makeComponentsNullable?: boolean;
 }
 
 export type ConstantsEvaluator = () => Promise<IObjectMetadata>;
 
-export const useConstantsEvaluator = (model: UseResultTypeEvaluatorArgs): ConstantsEvaluator => {
+export const useConstantsEvaluator = (model: UseResultTypeEvaluatorArgs): ConstantsEvaluator | undefined => {
   const metadataBuilderFactory = useMetadataBuilderFactory(model.makeComponentsNullable);
   const { data: formData } = useFormData();
-  const shaFormInstance = useShaFormInstanceOrUndefined();
+  const shaFormInstance = useShaFormInstance();
 
   const availableConstantsExpression = Boolean(model.availableConstantsExpression) && !isEmptyString(model.availableConstantsExpression)
     ? model.availableConstantsExpression
@@ -27,8 +27,8 @@ export const useConstantsEvaluator = (model: UseResultTypeEvaluatorArgs): Consta
       return Promise.reject("AvailableConstantsExpression is mandatory");
 
     const metadataBuilder = metadataBuilderFactory();
-    const getConstantsArgs = {
-      data: formData,
+    const getConstantsArgs: GetAvailableConstantsArgs = {
+      data: formData as Record<string, unknown>,
       metadataBuilder,
       form: shaFormInstance,
     };

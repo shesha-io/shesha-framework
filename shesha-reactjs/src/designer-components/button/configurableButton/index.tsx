@@ -7,17 +7,16 @@ import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
-import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { useStyles } from './style';
 import { getGhostStyleOverrides } from '@/utils/style';
 import { DataContextTopLevels } from '@/providers/dataContextManager';
 import { isNavigationActionConfiguration, useShaRouting } from '@/providers/shaRouting';
 import { useTheme } from '@/providers/theme';
+import { isDefined } from '@/utils/nullables';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
-  style?: CSSProperties;
-  form: FormInstance<any>;
-  dynamicItem?: IFullAuditedEntity;
+  style?: CSSProperties | undefined;
+  form: FormInstance | undefined;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
@@ -84,9 +83,9 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
   return (
     <Button
-      href={navigationUrl}
+      {...(navigationUrl ? { href: navigationUrl } : {})}
       title={props.tooltip}
-      block={props.block}
+      {...(isDefined(props.block) ? { block: props.block } : {})}
       disabled={buttonDisabled}
       aria-disabled={buttonDisabled}
       tabIndex={buttonDisabled ? -1 : undefined}
@@ -94,14 +93,14 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       onClick={onButtonClick}
       type={actualButtonType}
       ghost={isGhostType}
-      danger={props.danger}
+      danger={props.danger ?? false}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
-      iconPlacement={props.iconPosition}
+      {...(props.iconPosition ? { iconPlacement: props.iconPosition } : {})}
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
-      size={props?.size}
+      size={props.size}
       style={{
-        ...props?.style,
-        ...(isSameUrl && !isGhostType && { background: theme.application.primaryColor, color: theme.text.default }),
+        ...props.style,
+        ...(isSameUrl && !isGhostType && { background: theme.application?.primaryColor, color: theme.text?.default }),
         ...ghostOverrides,
         ...(buttonDisabled && { pointerEvents: "none" }),
       }}

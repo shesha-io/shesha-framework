@@ -6,41 +6,42 @@ import {
   SyncOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import { App, Button, Space, Upload } from 'antd';
+import { App, Button, Space, Upload, UploadFile } from 'antd';
 import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useFileUploadState, useSheshaApplication, useFileUpload, useTheme } from '@/providers';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
-import { useStyles } from './styles/styles';
+import { FileUploadStyleProps, useStyles } from './styles/styles';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { StoredFileModel } from '@/utils/storedFile/models';
+import { storedFileModel2UploadFile } from '@/utils/storedFile/utils';
 const { Dragger } = Upload;
 
 export interface IFileUploadProps {
-  allowUpload?: boolean;
-  allowReplace?: boolean;
-  allowDelete?: boolean;
-  callback?: (...args: any) => any;
-  value?: any;
-  onChange?: any;
-  isStub?: boolean;
-  allowedFileTypes?: string[];
-  isDragger?: boolean;
-  listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
-  styles?: any;
-  type?: string;
+  allowUpload?: boolean | undefined;
+  allowReplace?: boolean | undefined;
+  allowDelete?: boolean | undefined;
+  callback?: () => void;
+  isStub?: boolean | undefined;
+  allowedFileTypes?: string[] | undefined;
+  isDragger?: boolean | undefined;
+  listType?: listType | undefined;
+  thumbnailWidth?: string | undefined;
+  thumbnailHeight?: string | undefined;
+  borderRadius?: number | undefined;
+  hideFileName?: boolean | undefined;
+  styles?: CSSProperties | undefined;
+  type?: string | undefined;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
-  type,
+  type = "",
   allowUpload = true,
   allowReplace = true,
   allowDelete = true,
@@ -58,19 +59,20 @@ export const FileUpload: FC<IFileUploadProps> = ({
     uploadFile,
   } = useFileUpload();
   const fileInfo = useFileUploadState();
+  const uploadFileModel = useMemo<UploadFile | undefined>(() => fileInfo ? storedFileModel2UploadFile(fileInfo) : undefined, [fileInfo]);
+
   const { backendUrl, httpHeaders } = useSheshaApplication();
-  const props = {
-    style: stylesProp,
+  const { styles } = useStyles({
+    style: stylesProp as FileUploadStyleProps | undefined, // TODO V1: review types
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
       hideFileName,
       listType,
     },
-  };
-  const { styles } = useStyles(props);
+  });
   const { theme } = useTheme();
-  const uploadDraggerSpanRef = useRef(null);
+  const uploadDraggerSpanRef = useRef<HTMLSpanElement>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const { message, modal } = App.useApp();
   const [imageUrl, setImageUrl] = useState('');
@@ -91,7 +93,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
           throw error;
         });
     }
-  }, [fileInfo]);
+  }, [fileInfo, httpHeaders, url]);
 
   const onCustomRequest: UploadProps['customRequest'] = ({ file }): void => {
     if (file instanceof File) {
@@ -146,55 +148,64 @@ export const FileUpload: FC<IFileUploadProps> = ({
         message.error('Preview URL not available');
         return;
       }
-      setPreviewImage({ url, uid: fileInfo?.id, name: fileInfo?.name });
+      setPreviewImage({ url, uid: fileInfo.uid, name: fileInfo.name });
       setPreviewOpen(true);
     }
   };
 
-  const fileControls = (color: string): React.JSX.Element => (
-    <Space>
-      <a style={{ color: color }}>
-        <FileVersionsPopup fileId={fileInfo?.id} />
-      </a>
-      {allowReplace && (
-        <a onClick={onReplaceClick} style={{ color: color }}>
-          <SyncOutlined title="Replace" />
-        </a>
-      )}
-      {allowDelete && (
-        <a onClick={(e) => onDeleteClick(e)} style={{ color: color }}>
-          <DeleteOutlined title="Remove" />
-        </a>
-      )}
-      {listType === 'thumbnail' &&
-        (isImageType(fileInfo?.type) ? (
-          <a onClick={onPreview} style={{ color: color }}>
-            <EyeOutlined title="Preview" />
-          </a>
-        ) : (
-          hideFileName && (
-            <a
-              onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })}
-              style={{ color: color }}
-            >
-              <DownloadOutlined title="Download" />
+  const fileControls = (color: string | undefined): ReactNode => {
+    return isDefined(fileInfo)
+      ? (
+        <Space>
+          {!isNullOrWhiteSpace(fileInfo.id) && (
+            <a style={{ color: color }}>
+              <FileVersionsPopup fileId={fileInfo.id} />
             </a>
-          )
-        ))}
-    </Space>
-  );
+          )}
+          {allowReplace && (
+            <a onClick={onReplaceClick} style={{ color: color }}>
+              <SyncOutlined title="Replace" />
+            </a>
+          )}
+          {allowDelete && (
+            <a onClick={(e) => onDeleteClick(e)} style={{ color: color }}>
+              <DeleteOutlined title="Remove" />
+            </a>
+          )}
+          {listType === 'thumbnail' &&
+            (isImageType(fileInfo.type ?? "") ? (
+              <a onClick={onPreview} style={{ color: color }}>
+                <EyeOutlined title="Preview" />
+              </a>
+            ) : (
+              hideFileName && !isNullOrWhiteSpace(fileInfo.id) && (
+                <a
+                  onClick={() => {
+                    if (isDefined(fileInfo.id))
+                      void downloadFile({ fileId: fileInfo.id, fileName: fileInfo.name });
+                  }}
+                  style={{ color: color }}
+                >
+                  <DownloadOutlined title="Download" />
+                </a>
+              )
+            ))}
+        </Space>
+      )
+      : undefined;
+  };
 
-  const iconRender = (fileInfo): React.JSX.Element => {
+  const iconRender = (fileInfo: StoredFileModel): React.JSX.Element => {
     const { type, name } = fileInfo;
-    if (isImageType(type)) {
+    if (isImageType(type ?? "")) {
       if (listType === 'thumbnail' && !isDragger) {
         return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls} />;
       }
     }
-    return getFileIcon(type);
+    return getFileIcon(type ?? "");
   };
 
-  const styledfileControls = (): React.JSX.Element =>
+  const styledfileControls = (): ReactNode =>
     fileInfo && (
       <div className={styles.styledFileControls}>
         {iconRender(fileInfo)}
@@ -204,7 +215,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       </div>
     );
 
-  const renderFileItem = (file: any): React.JSX.Element => {
+  const renderFileItem = (file: UploadFile): React.JSX.Element => {
     const showThumbnailControls = !isUploading && listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
@@ -217,12 +228,17 @@ export const FileUpload: FC<IFileUploadProps> = ({
               {(listType === 'text' || !hideFileName) && (
                 <a
                   style={{ marginRight: '5px' }}
-                  onClick={isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })}
+                  onClick={isImageType(file.type ?? "")
+                    ? onPreview
+                    : () => {
+                      if (!isNullOrWhiteSpace(file.id))
+                        void downloadFile({ fileId: file.id, fileName: file.name });
+                    }}
                 >
-                  {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file?.size || 0)})`}
+                  {listType !== 'thumbnail' && getFileIcon(file.type ?? "")} {`${file.name} (${filesize(file.size || 0)})`}
                 </a>
               )}
-              {showTextControls && fileControls(theme.application.primaryColor)}
+              {showTextControls && fileControls(theme.application?.primaryColor)}
             </div>
           </Space>
         </span>
@@ -233,11 +249,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const fileProps: UploadProps = {
     name: 'file',
     disabled: !allowUpload,
-    accept: allowedFileTypes?.join(','),
+    accept: allowedFileTypes.join(','),
     multiple: false,
     maxCount: 1,
-    fileList: fileInfo ? [fileInfo] : [],
-    style: !isDragger && listType !== 'thumbnail' ? stylesProp : undefined,
+    fileList: isDefined(uploadFileModel) ? [uploadFileModel] : [],
+    ...(!isDragger && isDefined(stylesProp) ? { style: stylesProp } : {}),
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
       if (!isFileTypeAllowed(file.name, allowedFileTypes)) {
@@ -316,7 +332,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   return (
     <>
-      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : !isUploading ? renderUploader() : <SyncOutlined spin style={{ color: theme.application.primaryColor }} />}</span>
+      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : !isUploading ? renderUploader() : <SyncOutlined spin style={{ color: theme.application?.primaryColor }} />}</span>
       {previewOpen && (
         <Image
           styles={{
@@ -342,7 +358,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       {/* Hidden file input for replace functionality */}
       <input
         type="file"
-        accept={allowedFileTypes?.join(',')}
+        accept={allowedFileTypes.join(',')}
         style={{ display: 'none' }}
         ref={hiddenUploadInputRef}
         onChange={(e) => {

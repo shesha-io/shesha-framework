@@ -14,7 +14,7 @@ type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree<FileTreeNode>>;
 
 export interface IFileTreeProps {
   monaco: Monaco;
-  defaultSelection?: UriComponents;
+  defaultSelection?: UriComponents | undefined;
   onSelect?: (fileUri?: UriComponents) => void;
 }
 
@@ -33,7 +33,7 @@ export const FileTree: FC<IFileTreeProps> = (props) => {
     if (!node)
       return result;
 
-    const getParentNode = (node: FileTreeNode): FileTreeNode => {
+    const getParentNode = (node: FileTreeNode): FileTreeNode | undefined => {
       return node.parentId
         ? treeNodes.map[node.parentId]
         : undefined;
@@ -50,13 +50,16 @@ export const FileTree: FC<IFileTreeProps> = (props) => {
   return (
     <>
       <DirectoryTree<FileTreeNode>
-        // showLine={{ showLeafIcon: true }}
         switcherIcon={<DownOutlined />}
         blockNode={true}
         onSelect={onSelect}
         treeData={treeNodes.nodes}
-        defaultSelectedKeys={props.defaultSelection ? [props.defaultSelection.toString()] : undefined}
-        defaultExpandedKeys={props.defaultSelection ? getParentNodes(props.defaultSelection) : undefined}
+        {...(props.defaultSelection
+          ? {
+            defaultSelectedKeys: [props.defaultSelection.toString()],
+            defaultExpandedKeys: getParentNodes(props.defaultSelection),
+          }
+          : {})}
         icon={getNodeIcon}
       />
     </>

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { ListEditorSectionRenderingArgs } from "@/components/listEditor";
 import { Button } from "antd";
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { ListItemWithId } from "../listEditor/models";
 
-export const DefaultGroupHeader = <TItem extends ListItemWithId>({ contextAccessor, addItemText }: ListEditorSectionRenderingArgs<TItem>): React.JSX.Element => {
+export const DefaultGroupHeader = <TItem extends ListItemWithId>({ contextAccessor, addItemText }: ListEditorSectionRenderingArgs<TItem>): ReactNode => {
   const { addItem, readOnly } = contextAccessor();
   const { styles } = useStyles();
 
@@ -17,5 +17,5 @@ export const DefaultGroupHeader = <TItem extends ListItemWithId>({ contextAccess
       <div className={styles.customActionButtons}>
         <Button onClick={onAddItemClick} type="primary">{addItemText ?? 'Add New Item'}</Button>
       </div>
-    ) : null;
+    ) : undefined;
 };

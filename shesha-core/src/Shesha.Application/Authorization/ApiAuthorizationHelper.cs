@@ -47,9 +47,8 @@ namespace Shesha.Authorization
                 type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
                 return;
 
-            var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);
-            if (!shaServiceType.IsAssignableFrom(type) && !controllerType.IsAssignableFrom(type))
+            if (type == null || !controllerType.IsAssignableFrom(type) && !type.HasInterface(typeof(IApplicationService)))
                 return;
 
             var typeName = type.GetRequiredFullName();

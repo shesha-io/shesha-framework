@@ -7,7 +7,7 @@ export type MetadataType = 'entity' | 'context';
 export interface IMetadataStateContext {
   id: string | null;
   modelType: IEntityTypeIdentifier | string | null;
-  dataType?: MetadataType;
+  dataType?: MetadataType | undefined;
   metadata: IModelMetadata | null | undefined;
 }
 

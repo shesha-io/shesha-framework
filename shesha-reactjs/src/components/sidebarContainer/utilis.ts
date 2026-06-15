@@ -3,8 +3,8 @@ import _ from 'lodash';
 
 interface PanelSizes {
   sizes: number[];
-  maxSizes: number[];
-  minSizes?: number[];
+  maxSizes: number[] | undefined;
+  minSizes?: number | number[] | undefined;
 }
 
 function getPanelSizes(
@@ -17,8 +17,8 @@ function getPanelSizes(
   if (allowFullCollapse) {
     return {
       sizes: [100],
-      maxSizes: null,
-      minSizes: null,
+      maxSizes: undefined,
+      minSizes: undefined,
     };
   }
 
@@ -27,7 +27,7 @@ function getPanelSizes(
       return {
         sizes: [99, 1],
         maxSizes: [Infinity, 30],
-        minSizes: [null, 30],
+        minSizes: [0, 30],
       };
     }
     return {
@@ -41,7 +41,7 @@ function getPanelSizes(
     return {
       sizes: [2, 96, 2],
       maxSizes: [30, Infinity, 30],
-      minSizes: [30, null, 30],
+      minSizes: [30, 0, 30],
     };
   }
 
@@ -49,21 +49,21 @@ function getPanelSizes(
     return {
       sizes: [20, 78, 2],
       maxSizes: [Infinity, Infinity, 30],
-      minSizes: [200, null, 30],
+      minSizes: [200, 0, 30],
     };
   }
   if (!leftOpen && rightOpen) {
     return {
       sizes: [2, 78, 20],
       maxSizes: [30, Infinity, Infinity],
-      minSizes: [30, null, 200],
+      minSizes: [30, 0, 200],
     };
   }
 
   return {
     sizes: [20, 60, 20],
     maxSizes: [Infinity, Infinity, Infinity],
-    minSizes: [200, null, 200],
+    minSizes: [200, 0, 200],
   };
 }
 

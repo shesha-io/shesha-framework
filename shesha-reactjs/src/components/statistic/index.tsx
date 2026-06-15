@@ -9,7 +9,7 @@ export interface IShaStatisticProps extends StatisticProps {
 }
 
 export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => {
-  const fontSize = (rest.styles as StatisticSemanticStyles)?.content?.fontSize;
+  const fontSize = (rest.styles as StatisticSemanticStyles | undefined)?.content?.fontSize;
   const { styles } = useStyles({
     token: {
       fontSize: fontSize,
@@ -35,10 +35,11 @@ export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => 
     delete restStyle.marginBottom;
   }
 
+  const { onClick } = rest;
   return (
     <div
-      className={classNames(styles['container-div-zero-padding-margin'], styles['content-box'])}
-      onClick={rest.onClick ? (e) => rest.onClick(e) : undefined}
+      className={classNames(styles.containerDivZeroPaddingMargin, styles.contentBox)}
+      {...(onClick ? { onClick } : {})}
       style={{
         ...marginStyles,
       }}

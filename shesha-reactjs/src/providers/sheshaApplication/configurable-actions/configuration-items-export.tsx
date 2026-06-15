@@ -1,7 +1,7 @@
 import ConfigurationItemsExport, { IExportInterface } from '@/components/configurationFramework/itemsExport';
 import React, {
   FC,
-  MutableRefObject,
+  RefObject,
   useRef,
   useState,
 } from 'react';
@@ -20,7 +20,7 @@ const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;
-  exporterRef: MutableRefObject<IExportInterface | undefined>;
+  exporterRef: RefObject<IExportInterface | undefined>;
 }
 
 export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
@@ -57,7 +57,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 export const useConfigurationItemsExportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
-  const exporterRef = useRef<IExportInterface>();
+  const exporterRef = useRef<IExportInterface>(undefined);
 
   useConfigurableAction({
     name: 'Export items',

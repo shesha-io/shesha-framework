@@ -14,7 +14,7 @@ export interface IProps extends ISettingsEditorProps<ISideBarMenuProps> {
 export const ComponentSettingsModal: FC<IProps> = ({ onSave, onCancel, title, settings }) => {
   const isSmall = useMedia('(max-width: 480px)');
 
-  const [localValue, setLocalValue] = useState<ISidebarMenuItem[]>(deepCopyViaJson(settings.items));
+  const [localValue, setLocalValue] = useState<ISidebarMenuItem[]>(settings ? deepCopyViaJson(settings.items) : []);
 
   const onOk = (): void => {
     onSave({ items: localValue });

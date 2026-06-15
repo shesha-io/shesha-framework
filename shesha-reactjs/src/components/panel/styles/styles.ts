@@ -1,17 +1,26 @@
 import { createStyles, sheshaStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
 import { CSSProperties } from 'react';
 
-interface ICollapseStyleProps {
-  headerStyle?: CSSProperties;
-  bodyStyle?: CSSProperties;
-  hideCollapseContent?: boolean;
-  isSimpleDesign?: boolean;
-  ghost?: boolean;
-  accentStyle?: boolean;
-  overflow?: CSSProperties;
-}
+type StylesArgs = {
+  headerStyle?: CSSProperties | undefined;
+  bodyStyle?: CSSProperties | undefined;
+  hideCollapseContent?: boolean | undefined;
+  isSimpleDesign?: boolean | undefined;
+  ghost?: boolean | undefined;
+  accentStyle?: boolean | undefined;
+  overflow?: CSSProperties | undefined;
+};
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyle = {}, bodyStyle = {}, hideCollapseContent, isSimpleDesign, ghost, accentStyle, overflow }: ICollapseStyleProps = {}) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
+  headerStyle = {},
+  bodyStyle = {},
+  hideCollapseContent = false,
+  isSimpleDesign,
+  ghost,
+  accentStyle,
+  overflow,
+}: StylesArgs = {}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
   const shaHeaderComponentsContainer = "sha-header-components-container";
@@ -153,7 +162,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     }
 
     > .ant-collapse-item > .ant-collapse-header {
-      ${headerRest}
+      ${headerRest as CSSObject}
       position: relative;
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};

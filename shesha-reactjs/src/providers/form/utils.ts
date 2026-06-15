@@ -65,8 +65,10 @@ import {
   IComponentsContainer,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
+  IFormDto,
   IFormSettings,
   IFormValidationRulesOptions,
+  IPersistedFormProps,
   ROOT_COMPONENT_KEY,
 } from './models';
 import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
@@ -335,7 +337,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
 const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
   const accessors = wrapConstantsData({ fullContext, ...args });
 
-  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current)
     contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
   else
@@ -501,7 +503,7 @@ export const componentsTreeToFlatStructure = (
 export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
-  formSettings: IFormSettings,
+  formSettings: IFormSettings | undefined,
   flatStructure: IFlatComponentsStructure,
   isNew?: boolean,
 ): IConfigurableFormComponent => {
@@ -521,7 +523,7 @@ export const upgradeComponent = (
 
 export const upgradeComponents = (
   toolboxComponents: IToolboxComponents,
-  formSettings: IFormSettings,
+  formSettings: IFormSettings | undefined,
   flatStructure: IFlatComponentsStructure,
   isNew?: boolean,
 ): void => {
@@ -761,18 +763,23 @@ export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object
   seen.set(input, result);
   for (const key of Object.keys(input))
     (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
-  Object.defineProperty(result, 'toString', {
-    value: () => {
-      try {
-        return JSON.stringify(result);
-      } catch {
-        return '';
-      }
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true,
-  });
+  // Only override toString on objects — arrays must stay as real arrays so their values are
+  // submitted correctly to the API. Attaching JSON.stringify-based toString to arrays caused
+  // array fields (e.g. multi-select) to be sent as "[32,128,64]" strings instead of [32,128,64].
+  if (!isArray) {
+    Object.defineProperty(result, 'toString', {
+      value: () => {
+        try {
+          return JSON.stringify(result);
+        } catch {
+          return '';
+        }
+      },
+      configurable: true,
+      enumerable: false,
+      writable: true,
+    });
+  }
   return result;
 };
 
@@ -1031,7 +1038,7 @@ export const isComponentFiltered = (
  *
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
-export const getFieldNameFromExpression = (expression: string): string | string[] | undefined => {
+export const getFieldNameFromExpression = (expression: string | undefined | null): string | string[] | undefined => {
   if (!expression) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
@@ -1412,7 +1419,7 @@ export interface IMatchData {
   data: unknown;
 }
 
-export const pickStyleFromModel = (model: StyleBoxValue, ...args: unknown[]): CSSProperties => {
+export const pickStyleFromModel = (model: StyleBoxValue | undefined, ...args: unknown[]): CSSProperties => {
   let style = {};
 
   const propsToCopy = !args.length
@@ -1621,7 +1628,7 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
  * @param {IToolboxComponents} designerComponents - The designer components.
  * @return {IFlatComponentsStructure} The flat structure of configurable form components.
  */
-export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | null, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
+export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | undefined, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
   let components = getComponentsFromMarkup(markup);
   if (formSettings?.isSettingsForm)
     components = updateJsSettingsForComponents(designerComponents, components);
@@ -1660,9 +1667,21 @@ export const standardActualModelPropertyFilter = (name: string): boolean => {
  * @param value - The property value
  * @returns true if the property should be included, false otherwise
  */
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent | undefined, name: string, value: unknown): boolean => {
   if (isDefined(component) && component.actualModelPropertyFilter) {
     return component.actualModelPropertyFilter(name, value) && standardActualModelPropertyFilter(name);
   }
   return standardActualModelPropertyFilter(name);
+};
+
+
+export const formDtop2PersistedFormProps = (formDto: IFormDto): IPersistedFormProps => {
+  return {
+    id: formDto.id,
+    module: formDto.module,
+    name: formDto.name,
+    label: formDto.label ?? undefined,
+    description: formDto.description ?? undefined,
+    markup: formDto.markup ?? undefined,
+  };
 };

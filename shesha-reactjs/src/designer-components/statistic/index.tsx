@@ -1,14 +1,11 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { customOnClickEventHandler, getEventHandlers } from '@/components/formDesigner/components/utils';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
-import { IInputStyles, useForm } from '@/providers';
+import { IInputStyles } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
-  getStyle,
-  useAvailableConstantsData,
-  validateConfigurableComponentSettings,
+  getStyle, validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { BarChartOutlined } from '@ant-design/icons';
@@ -21,24 +18,23 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
 interface IStatisticComponentProps extends Omit<IInputStyles, 'font'>, IConfigurableFormComponent {
-  value?: number | string;
-  precision?: number;
-  title?: string | number;
-  placeholder?: string;
-  valueStyle?: string;
-  titleStyle?: string;
-  prefix?: string;
-  suffix?: string;
-  prefixIcon?: string;
-  suffixIcon?: string;
-  titleFont?: IFontValue;
-  valueFont?: IFontValue;
-  onClick?: () => void;
-  onDoubleClick?: () => void;
-  borderSize?: string | number;
-  borderRadius?: string | number;
-  borderType?: string;
-  borderColor?: string;
+  value?: number | string | undefined;
+  precision?: number | undefined;
+  title?: string | number | undefined;
+  placeholder?: string | undefined;
+  valueStyle?: string | undefined;
+  titleStyle?: string | undefined;
+  prefix?: string | undefined;
+  suffix?: string | undefined;
+  prefixIcon?: string | undefined;
+  suffixIcon?: string | undefined;
+  titleFont?: IFontValue | undefined;
+  valueFont?: IFontValue | undefined;
+  onClick?: (() => void) | undefined;
+  onDoubleClick?: (() => void) | undefined;
+  borderSize?: string | number | undefined;
+  borderRadius?: string | number | undefined;
+  borderColor?: string | undefined;
 }
 
 const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
@@ -50,8 +46,6 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   preserveDimensionsInDesigner: ["height"],
   Factory: ({ model: passedModel }) => {
     const { style, valueStyle, titleStyle, prefix, suffix, prefixIcon, suffixIcon, ...model } = passedModel;
-    const allData = useAvailableConstantsData();
-    const { formMode } = useForm();
     const { allStyles } = model;
     const valueFont = model.valueFont;
     const titleFont = model.titleFont;
@@ -60,91 +54,42 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const valueFontStyles = useMemo(() => getFontStyle(valueFont), [valueFont]);
     const titleFontStyles = useMemo(() => getFontStyle(titleFont), [titleFont]);
 
-    const customEvents = getEventHandlers(model, allData);
-
-    if (formMode === 'designer') {
-      return (
-        <ConfigurableFormItem
-          model={{ ...model, hideLabel: true }}
-          valuePropName="checked"
-        >
-          {(value, _) => {
-            const customEvent = customOnClickEventHandler(model, allData);
-            const onClickInternal = (_: any): void => {
-              customEvent.onClick(value);
-            };
-            return (
-              <ShaStatistic
-                value={value || passedModel?.value || passedModel?.placeholder}
-                precision={passedModel?.precision}
-                title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-                prefix={(
-                  <div>
-                    {passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}
-                    <span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span>
-                  </div>
-                )}
-                suffix={(
-                  <div>
-                    <span style={{ marginRight: 5 }}>
-                      {passedModel.suffix && passedModel.suffix}
-                      {passedModel.suffixIcon && <ShaIcon iconName={passedModel.suffixIcon as IconType} />}
-                    </span>
-                  </div>
-                )}
-                style={removeUndefinedProps({ ...allStyles.fullStyle })}
-                styles={{
-                  content: removeUndefinedProps({
-                    ...valueFontStyles,
-                    ...valueStyles,
-                    ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' }),
-                  }),
-                }}
-                {...customEvents}
-                onClick={onClickInternal}
-              />
-            );
-          }}
-        </ConfigurableFormItem>
-      );
-    }
-
     return (
-      <ConfigurableFormItem
+      <ConfigurableFormItem<number | string>
         model={{ ...model, hideLabel: true }}
         valuePropName="checked"
       >
-        {(value) => {
-          const customEvent = customOnClickEventHandler(model, allData);
-          const onClickInternal = (_: any): void => {
-            customEvent.onClick(value);
-          };
+        {(value, _, __, ctx) => {
           return (
             <ShaStatistic
-              value={value || passedModel?.value || passedModel?.placeholder}
-              precision={passedModel?.precision}
-              title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
+              value={(value || passedModel.value || passedModel.placeholder) ?? ""}
+              {...(passedModel.precision ? { precision: passedModel.precision } : {})}
+              title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel.title}</div>}
               prefix={(
                 <div>
-                  {passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}
-                  <span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span>
+                  {passedModel.prefixIcon && <ShaIcon iconName={prefixIcon as IconType} />}
+                  <span style={{ marginLeft: 5 }}>{prefix ? prefix : null}</span>
                 </div>
               )}
               suffix={(
                 <div>
-                  <span style={{ marginRight: 5 }}>{suffix && suffix}</span>
-                  {suffixIcon && <ShaIcon iconName={suffixIcon as IconType} />}
+                  <span style={{ marginRight: 5 }}>
+                    {suffix}
+                    {suffixIcon && <ShaIcon iconName={suffixIcon} />}
+                  </span>
                 </div>
               )}
-              style={removeUndefinedProps({ ...allStyles.fullStyle })}
+              style={removeUndefinedProps({ ...allStyles?.fullStyle })}
               styles={{
                 content: removeUndefinedProps({
                   ...valueFontStyles,
                   ...valueStyles,
-                  ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' }),
-                }) }}
-              {...customEvents}
-              onClick={onClickInternal}
+                  ...(!(value || passedModel.value) && { opacity: 0.5, color: '#999' }),
+                }),
+              }}
+              onClick={(event) => {
+                ctx?.handleEvent(event, undefined, model.onClickCustom);
+              }}
             />
           );
         }}
@@ -158,15 +103,15 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
       .add<IStatisticComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IStatisticComponentProps>(2, (prev) => {
         const styles = {
-          style: prev?.style,
+          style: prev.style,
           valueFont: defaultStyles().valueFont,
-          valueStyle: prev?.valueStyle,
+          valueStyle: prev.valueStyle,
           titleFont: defaultStyles().titleFont,
-          titleStyle: prev?.titleStyle,
-          hideBorder: prev?.hideBorder,
+          titleStyle: prev.titleStyle,
+          hideBorder: prev.hideBorder,
           shadow: defaultStyles().shadow,
           border: {
-            border: defaultStyles().border.border,
+            border: defaultStyles().border?.border,
           },
         };
 

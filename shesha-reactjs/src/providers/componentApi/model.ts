@@ -27,7 +27,7 @@ export interface IComponentApiDescription<T extends object = Record<string, unkn
   skipUpdateTypeDefinitionIfExists?: boolean | undefined;
   api?: Partial<T> | undefined;
   propertiesLevel?: Record<string, number> | undefined;
-  properties?: ComponentApiProperty<T>[];
+  properties?: ComponentApiProperty<T>[] | undefined;
 }
 
 export interface IComponentApi {
@@ -44,7 +44,7 @@ export interface IComponentApi {
 
 export type useComponentApiFunc = () => IComponentApi | undefined;
 
-export interface IComponentApiInputRef<T> {
-  value: T;
-  onChange: (...args: unknown[]) => void;
+export interface IComponentApiInputRef<TValue> {
+  value: TValue | null | undefined;
+  onChange: (newValue: TValue | null) => void;
 }

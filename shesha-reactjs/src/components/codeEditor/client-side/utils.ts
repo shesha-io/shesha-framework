@@ -1,16 +1,5 @@
-import { IPosition, IRange, editor } from "monaco-editor";
-
-export interface ConstrainedInstance {
-  initializeIn(editor: editor.IStandaloneCodeEditor): void;
-  addRestrictionsTo(model: editor.ITextModel, restrictions: any[]): void;
-  removeRestrictionsIn(model: editor.ITextModel): void;
-}
-
-export interface CodeRestriction {
-  // startLine, startColumn, endLine, endColumn
-  range: Array<number>[4];
-  allowMultiline?: boolean;
-}
+import { isDefined } from "@/utils/nullables";
+import { IPosition, IRange } from "monaco-editor";
 
 interface TextPosition {
   line: number;
@@ -38,7 +27,7 @@ const getLastCharPosition = (content: string): TextPosition => {
     return { line: 0, column: 0 };
 
   const lines = content.split('\n');
-  const lastLine = lines[lines.length - 1];
+  const lastLine = lines[lines.length - 1]!;
 
   return { line: lines.length, column: lastLine.length + 1 };
 };
@@ -143,10 +132,10 @@ export const makeCodeTemplate = (strings: TemplateStringsArray, ...expr: (string
 
 export type TemplateEvaluator = (code: string) => TextTemplate;
 
-export const isRange = (value: IRange | IPosition): value is IRange => {
-  return value && (value as IRange).startColumn !== undefined;
+export const isRange = (value: IRange | IPosition | undefined): value is IRange => {
+  return isDefined(value) && "startColumn" in value && typeof (value.startColumn) === "number";
 };
 
-export const isPosition = (value: IRange | IPosition): value is IPosition => {
-  return value && (value as IPosition).column !== undefined;
+export const isPosition = (value: IRange | IPosition | undefined): value is IPosition => {
+  return isDefined(value) && "column" in value && typeof (value.column) === "number";
 };

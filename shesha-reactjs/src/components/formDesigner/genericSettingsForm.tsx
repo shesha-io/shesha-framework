@@ -1,7 +1,7 @@
-import React, { MutableRefObject, useEffect, useRef } from 'react';
+import React, { RefObject, useEffect, useRef } from 'react';
 import { Form } from 'antd';
-import { IConfigurableFormComponent, FormMarkup } from '@/providers/form/models';
-import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponentBase } from '@/interfaces';
+import { IConfigurableFormComponent, FormMarkup, FormAction } from '@/providers/form/models';
+import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IShaFormInstance, IToolboxComponent } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
@@ -12,6 +12,8 @@ import { DeviceTypes } from '@/publicJsApis/apis/canvasContextApi';
 import { useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { useDataContextManager } from '@/providers/dataContextManager/hooks';
+import { OnFormFinishFailedHandler, OnFormValuesChangeHandler } from '../configurableForm/models';
+import { isDefined } from '@/utils/nullables';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -19,12 +21,12 @@ export interface IProps<TModel extends IConfigurableFormComponent> {
   markup: FormMarkup;
   onSave: (model: TModel) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
-  toolboxComponent: IToolboxComponentBase;
-  formRef?: MutableRefObject<ISettingsFormInstance | null>;
-  propertyFilter?: (name: string) => boolean;
-  layoutSettings?: IFormLayoutSettings;
-  isInModal?: boolean;
+  onValuesChange?: OnFormValuesChangeHandler<TModel> | undefined;
+  toolboxComponent: IToolboxComponent<TModel>;
+  formRef?: RefObject<ISettingsFormInstance | null> | undefined;
+  propertyFilter?: ((name: string) => boolean) | undefined;
+  layoutSettings?: IFormLayoutSettings | undefined;
+  isInModal?: boolean | undefined;
 }
 
 function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
@@ -43,13 +45,13 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   const defaultModel = useDefaultModelProviderStateOrUndefined();
   const dcm = useDataContextManager();
-  const designerDevice = (dcm?.getDataContextData('canvasContext') as ICanvasStateContext)?.designerDevice || 'desktop';
+  const designerDevice = (dcm.getDataContextData('canvasContext') as ICanvasStateContext | undefined)?.designerDevice || 'desktop';
   const currentDevice = useRef<DeviceTypes>('desktop');
 
   // inherit mobile and tablet styles from desktop styles
   useEffect(() => {
     if (toolboxComponent.allowInherit && designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
-      const desktopStyles = (defaultModel?.getModel() as Record<string, unknown>)?.desktop;
+      const desktopStyles = (defaultModel?.getModel() as Record<string, unknown> | undefined)?.['desktop'];
       if (desktopStyles) {
         const newStyle = { [designerDevice]: unproxyValue(deepCopyViaJson(desktopStyles)) };
         defaultModel?.setDefaultModel('Desktop style', newStyle);
@@ -64,7 +66,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   // written back through onValuesChange → auto-save.
   useEffect(() => {
     form.setFieldsValue(model);
-  }, [model]);
+  }, [form, model]);
 
   const isMounted = useRef(true);
   useEffect(() => {
@@ -95,11 +97,11 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     }
   };
 
-  const onChange = (changedValues: any, values: TModel): void => {
+  const onChange: OnFormValuesChangeHandler<TModel> = (changedValues, values) => {
     onValuesChange?.(changedValues, values);
   };
 
-  const setFormDataNewDataAction = (payload: ISetFormDataPayload): any => {
+  const setFormDataNewDataAction = (payload: ISetFormDataPayload<TModel>, _instance: IShaFormInstance<TModel>): TModel => {
     const { values, mergeValues } = payload;
     const data = defaultModel?.getModel();
     return mergeValues && data
@@ -107,7 +109,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       : values;
   };
 
-  const onFinishFailed = (errorInfo): void => {
+  const onFinishFailed: OnFormFinishFailedHandler<TModel> = (errorInfo) => {
     console.error('onFinishFailed', errorInfo);
   };
 
@@ -118,11 +120,11 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     };
 
   return (
-    <ConfigurableForm
+    <ConfigurableForm<TModel>
       formName={isInModal ? 'modalSettings' : 'componentSettings'}
-      labelCol={layoutSettings?.labelCol}
-      wrapperCol={layoutSettings?.wrapperCol}
-      layout={layoutSettings?.layout}
+      labelCol={layoutSettings.labelCol}
+      wrapperCol={layoutSettings.wrapperCol}
+      layout={layoutSettings.layout}
       className={sheshaStyles.verticalSettingsClass}
       mode={readOnly ? "readonly" : "edit"}
       form={form}
@@ -132,14 +134,13 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       initialValues={model}
       onValuesChange={onChange}
       actions={{
-        linkToModelMetadata,
+        linkToModelMetadata: linkToModelMetadata as FormAction,
       }}
       onFinishFailed={onFinishFailed}
       propertyFilter={propertyFilter}
       isSettingsForm={true}
-
-      formDataGetter={defaultModel?.getMergedModel}
-      formDataSetter={defaultModel?.setModel}
+      formDataGetter={isDefined(defaultModel) ? () => (defaultModel.getMergedModel() as TModel) : undefined}
+      formDataSetter={isDefined(defaultModel) ? (data) => (defaultModel.setModel(data as object | undefined)) : undefined}
       setFormDataNewDataAction={setFormDataNewDataAction}
     />
   );

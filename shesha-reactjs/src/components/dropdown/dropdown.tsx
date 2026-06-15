@@ -4,11 +4,11 @@ import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
 import { Select } from 'antd';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
-import { CustomLabeledValue, IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
-import { ReferenceListItemDto } from '@/apis/referenceList';
+import { CustomLabeledValue, GetLabeledValueFunc, GetOptionFromFetchedItemFunc, IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { useStyles } from './style';
 import ReflistTag from '../refListDropDown/reflistTag';
-
+import { getNumberOrUndefined } from '@/utils/string';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const Dropdown: FC<IDropdownProps> = ({
   valueFormat,
@@ -21,7 +21,6 @@ export const Dropdown: FC<IDropdownProps> = ({
   value,
   referenceListId,
   mode,
-  defaultValue,
   disableItemValue = false,
   ignoredValues = [],
   disabledValues = [],
@@ -37,127 +36,143 @@ export const Dropdown: FC<IDropdownProps> = ({
   tagStyle,
   enableStyleOnReadonly,
 }) => {
-  const { styles } = useStyles({ style });
+  const { styles } = useStyles({ style: style ?? {} });
 
   const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
 
-  const getOptions = (): ILabelValue[] => {
-    return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
-  };
-
-  const incomeValueFunc: IncomeValueFunc = useCallback((value: any, args?: any) => {
+  // Extracts value from a fetched RefList item. Stored in the value poroperty of the item
+  const incomeValueFunc = useCallback<IncomeValueFunc>((value, args) => {
     if (valueFormat === 'listItem') {
-      return !!value ? value.itemValue : null;
+      return isDefined(value) ? value.itemValue : null; // number
     }
     if (valueFormat === 'custom') {
-      return executeExpression<string>(incomeCustomJs, { ...args, value }, null, null);
+      if (isNullOrWhiteSpace(incomeCustomJs))
+        throw new Error('incomeCustomJs is required for custom value format');
+      return executeExpression<string>(incomeCustomJs, { ...args, value }, null) ?? ""; // string
     }
-    return value;
+    return value; // DTO
   }, [valueFormat, incomeCustomJs]);
 
-  const outcomeValueFunc: OutcomeValueFunc = useCallback((value: ReferenceListItemDto, args?: any) => {
+  // Outcome function converts fetched RefList item to a value that is saved to form on selection
+  // result is stored in the data property of item
+  const outcomeValueFunc = useCallback<OutcomeValueFunc>((value, args) => {
     if (valueFormat === 'listItem') {
-      return !!value
+      return isDefined(value)
         ? { item: value.item, itemValue: value.itemValue }
         : null;
     }
     if (valueFormat === 'custom') {
-      return executeExpression(outcomeCustomJs, { ...args, value }, null, null);
+      if (isNullOrWhiteSpace(outcomeCustomJs))
+        throw new Error('outcomeCustomJs is required for custom value format');
+      return executeExpression(outcomeCustomJs, { ...args, value }, null);
     }
-    return !!value ? value.itemValue : null;
+    return isDefined(value) ? value.itemValue : null;
   }, [valueFormat, outcomeCustomJs]);
 
-  const getLabeledValue = useCallback((value: any, options: ISelectOption<any>[]) => {
-    if (typeof value === 'undefined' || value === null)
-      return value;
-    const itemValue = incomeValueFunc(value, {});
-    const item = options?.find((i) => i.value === itemValue);
-    return {
-      // fix for designer when switch mode
-      value: typeof itemValue === 'object' ? null : itemValue,
-      label: item?.label ?? 'unknown',
-      color: item?.color,
-      icon: item?.icon,
-      data: item?.data,
-      description: item?.description,
-    };
+  // is used for RefLists only
+  const getLabeledValue = useCallback<GetLabeledValueFunc<number>>((value, options) => {
+    if (!isDefined(value))
+      return undefined;
+
+    const itemValue = typeof (value) === "object"
+      ? incomeValueFunc(value, {})
+      : value;
+    const item = options.find((i) => i.value === itemValue);
+    return isDefined(item) && isDefined(itemValue) && typeof (itemValue) !== 'object'
+      ? {
+        value: itemValue,
+        label: !isNullOrWhiteSpace(item.label) ? item.label : 'unknown',
+        // color: item.color,
+        // icon: item.icon,
+        data: item.data,
+        // description: item.description,
+      } satisfies CustomLabeledValue<number>
+      : undefined;
   }, [incomeValueFunc]);
 
-  const getOptionFromFetchedItem = useCallback((fetchedItem: ReferenceListItemDto, args?: any): ISelectOption<any> => {
-    const label = (!!labelCustomJs
-      ? executeExpression<string>(
-        labelCustomJs,
-        { value: fetchedItem },
-        null,
+  const getOptionFromFetchedItem = useCallback<GetOptionFromFetchedItemFunc<number>>((fetchedItem, args) => {
+    // get custom label using JS expression if specified
+    const label = (!isNullOrWhiteSpace(labelCustomJs)
+      ? executeExpression<string>(labelCustomJs, { value: fetchedItem }, null,
         (e) => {
           console.error(e);
           return 'unknown';
         },
       )
-      : fetchedItem.item);
+      : fetchedItem.item) ?? "";
 
-    const value = incomeValueFunc(outcomeValueFunc(fetchedItem, args), {});
+    const itemData = outcomeValueFunc(fetchedItem, args);
+    const value = typeof (itemData) === "object" && isDefined(itemData)
+      ? incomeValueFunc(itemData, {})
+      : itemData;
 
     return {
-      // fix for designer when switch mode
-      value: typeof value === 'object' ? null : value,
+      value: value as unknown as string | number,
       label,
-      data: outcomeValueFunc(fetchedItem, args),
-      color: fetchedItem?.color,
-      icon: fetchedItem?.icon,
-      description: fetchedItem?.description,
-    };
+      data: itemData as unknown as number,
+      color: fetchedItem.color ?? undefined,
+      icon: fetchedItem.icon ?? undefined,
+      description: fetchedItem.description ?? undefined,
+    } satisfies ISelectOption<number>;
   }, [labelCustomJs, outcomeValueFunc, incomeValueFunc]);
 
-  const filterOption = (input, option): boolean => {
-    if (typeof option?.children === 'string' && typeof input === 'string') {
-      return option?.children?.toLowerCase().indexOf(input?.toLowerCase()) >= 0;
-    }
-    return false;
-  };
-
   if (dataSourceType === 'referenceList') {
-    return (
-      <GenericRefListDropDown<any>
-        onChange={onChange}
-        referenceListId={referenceListId}
-        value={value}
-        variant="borderless"
-        defaultValue={defaultValue}
-        mode={selectedMode}
-        disabledValues={disableItemValue ? disabledValues : []}
-        filters={ignoredValues}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        size={size}
-        showIcon={showIcon}
-        solidColor={solidColor}
-        showItemName={showItemName}
-        className={styles.dropdown}
-        style={{ ...style }}
-        tagStyle={tagStyle}
-        allowClear={allowClear}
-        getLabeledValue={getLabeledValue}
-        getOptionFromFetchedItem={getOptionFromFetchedItem}
-        displayStyle={displayStyle}
-        filterOption={filterOption}
-        incomeValueFunc={incomeValueFunc}
-        outcomeValueFunc={outcomeValueFunc}
-        enableStyleOnReadonly={enableStyleOnReadonly}
-      />
-    );
+    return isDefined(referenceListId)
+      ? (
+        <GenericRefListDropDown<number>
+          onChange={onChange}
+          referenceListId={referenceListId}
+          value={value}
+          variant="borderless"
+          {...(selectedMode ? { mode: selectedMode } : {})}
+          disabledValues={disableItemValue ? disabledValues : []}
+          filters={ignoredValues}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          size={size}
+          showIcon={showIcon}
+          solidColor={solidColor}
+          showItemName={showItemName}
+          className={styles.dropdown}
+          style={{ ...style }}
+          tagStyle={tagStyle}
+          allowClear={allowClear}
+          getLabeledValue={getLabeledValue}
+          getOptionFromFetchedItem={getOptionFromFetchedItem}
+          displayStyle={displayStyle}
+          enableStyleOnReadonly={enableStyleOnReadonly}
+        />
+      )
+      : undefined;
   }
 
-  const options = getOptions() || [];
+  const getOptions = (): ILabelValue<number>[] => {
+    const result: ILabelValue<number>[] = [];
+    (values ?? []).forEach((i) => {
+      const itemValue = getNumberOrUndefined(i.value);
+      if (itemValue)
+        result.push({ ...i, value: itemValue });
+    });
 
-  const selectedValue = options.length > 0 ? value ?? defaultValue : null;
+    return result;
+  };
+  const options = getOptions();
+
+  const selectedValue = options.length > 0
+    ? value
+    : null;
 
   const getSelectValue = (): { label: ReactNode }[] => {
     const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
-    return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(({ label }) => ({ label }));
+    return options.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1).map(({ label }) => ({ label }));
   };
 
   if (readOnly) {
+    const displayValue: unknown = mode === 'multiple'
+      ? displayStyle === 'tags'
+        ? (Array.isArray(selectedValue) ? selectedValue : []).map((x) => options.find((o) => o.value === x))
+        : getSelectValue()
+      : options.find((o) => o.value === selectedValue);
     return (
       <ReadOnlyDisplayFormItem
         showIcon={showIcon}
@@ -167,85 +182,82 @@ export const Dropdown: FC<IDropdownProps> = ({
         style={style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
         type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
-        value={mode === 'multiple'
-          ? displayStyle === 'tags'
-            ? selectedValue?.map((x) => options.find((o) => o.value === x))
-            : getSelectValue()
-          : options.find((o) => o.value === selectedValue)}
+        value={displayValue}
       />
     );
   }
 
-  const commonSelectProps = {
-    className: styles.dropdown,
-    allowClear,
-    onChange,
-    value: selectedValue,
-    defaultValue,
-    variant: 'borderless' as 'borderless' | 'filled' | 'outlined',
-    disabled: readOnly,
-    mode: selectedMode,
-    placeholder,
-    size,
-  };
-
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
     return (
-      <Select<CustomLabeledValue | CustomLabeledValue>
-        {...commonSelectProps}
+      <Select
+        className={styles.dropdown}
+        allowClear={allowClear}
+        {...(onChange ? { onChange } : {})}
+        value={selectedValue ?? null}
+        variant="borderless"
+        disabled={readOnly ?? false}
+        {...(selectedMode ? { mode: selectedMode } : {})}
+        placeholder={placeholder}
+        size={size}
         popupMatchSelectWidth={false}
         style={{ width: 'max-content', height: 'max-content' }}
-        placeholder={placeholder}
-        showSearch={{
-          filterOption: filterOption,
-        }}
         labelRender={(props) => {
           const option = options.find((o) => o.value === props.value);
-          return (
-            <ReflistTag
-              key={option?.value}
-              value={option?.value}
-              description={option?.description}
-              color={option?.color}
-              icon={option?.icon}
-              showIcon={showIcon}
-              tagStyle={tagStyle}
-              solidColor={solidColor}
-              showItemName={showItemName}
-              label={option?.label}
-            />
-          );
+          return option
+            ? (
+              <ReflistTag
+                key={option.value}
+                value={option.value}
+                description={option.description}
+                color={option.color}
+                icon={option.icon}
+                showIcon={showIcon}
+                tagStyle={tagStyle}
+                solidColor={solidColor}
+                showItemName={showItemName}
+                label={option.label}
+              />
+            )
+            : undefined;
         }}
-        options={options?.map(({ value: localValue, label }) => ({ value: localValue, label }))}
+        options={options.map(({ value: localValue, label }) => ({ value: localValue, label }))}
       />
     );
   }
 
   return (
     <Select
-      {...commonSelectProps}
-      style={style}
-      showSearch={{ filterOption }}
+      className={styles.dropdown}
+      allowClear={allowClear}
+      {...(onChange ? { onChange } : {})}
+      value={selectedValue ?? null}
+      variant="borderless"
+      disabled={readOnly ?? false}
+      {...(selectedMode ? { mode: selectedMode } : {})}
       placeholder={placeholder}
+      size={size}
+      {...(style ? { style } : {})}
       {...(displayStyle === 'tags' ? {
         labelRender: (props) => {
           const option = options.find((o) => o.value === props.value);
-          return (
-            <ReflistTag
-              value={option?.value}
-              description={option?.description}
-              color={option?.color}
-              icon={option?.icon}
-              showIcon={showIcon}
-              tagStyle={tagStyle}
-              solidColor={solidColor}
-              showItemName={showItemName}
-              label={option?.label}
-            />
-          );
+          return option
+            ? (
+              <ReflistTag
+                value={option.value}
+                description={option.description}
+                color={option.color}
+                icon={option.icon}
+                showIcon={showIcon}
+                tagStyle={tagStyle}
+                solidColor={solidColor}
+                showItemName={showItemName}
+                label={option.label}
+              />
+            )
+            : undefined;
         },
       } : {})}
-      options={options?.map(({ value: localValue, label }) => ({ value: localValue, label }))}
+      options={options.map(({ value: localValue, label }) => ({ value: localValue, label }))}
     />
   );
 };

@@ -29,9 +29,10 @@ export const DividerComponent: IToolboxComponent<IDividerProps> = {
     const { globalState } = useGlobalState();
 
     const props: DividerProps = {
-      orientation: model.dividerType,
-      dashed: model.dashed,
+      dashed: model.dashed ?? false,
     };
+    if (model.dividerType)
+      props.orientation = model.dividerType;
 
     return (
       <Divider style={getLayoutStyle(model, { data, globalState })} {...props} />

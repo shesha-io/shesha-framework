@@ -2,16 +2,16 @@ import SectionSeparator from '@/components/sectionSeparator';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { StyleBoxValue, useFormData } from '@/providers';
 import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getBooleanPropertyOrUndefined, jsonSafeParse } from '@/utils/object';
 import { LineOutlined } from '@ant-design/icons';
 import React, { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { ISectionSeparatorComponentProps, SectionSeparatorComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
-import { jsonSafeParse } from '@/utils/object';
 
 const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
   type: 'sectionSeparator',
@@ -31,7 +31,7 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
 
     const titleAdditionalStyles = {
       ...fontStyles,
-      ...getStyle(model?.titleStyle, formData),
+      ...getStyle(model.titleStyle, formData),
     };
 
     const containerstyling = jsonSafeParse<StyleBoxValue>(model.containerStylingBox || '{}');
@@ -39,7 +39,7 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
 
     const containerAdditionalStyles = {
       ...containerstylingBoxAsCSS,
-      ...getStyle(model?.containerStyle, formData),
+      ...getStyle(model.containerStyle, formData),
     };
 
     const dimensions = getDimensionsStyle(extractedDimensions);
@@ -56,7 +56,7 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
         title={!model.hideLabel && model.label}
         containerStyle={{ ...dimensions, ...containerAdditionalStyles }}
         titleStyle={titleAdditionalStyles}
-        tooltip={model?.description}
+        tooltip={model.description}
       />
     );
   },
@@ -76,7 +76,7 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
       .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ISectionSeparatorComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ISectionSeparatorComponentProps>(2, (prev) => ({ ...prev, labelAlign: 'left' }))
-      .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: prev['noMargin'] ? 0 : null }))
+      .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: getBooleanPropertyOrUndefined(prev, 'noMargin') ? 0 : null }))
       .add<ISectionSeparatorComponentProps>(4, (prev) => {
         const prevStyles = {
           containerStyle: prev.containerStyle,

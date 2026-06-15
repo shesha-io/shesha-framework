@@ -6,6 +6,7 @@ import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/s
 import filesize from 'filesize';
 import { useFileUpload } from '@/providers';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IProps {
   readonly fileId: string;
@@ -23,7 +24,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
 
   const { downloadFile } = useFileUpload();
 
-  if (fileId == null) return null;
+  if (isNullOrWhiteSpace(fileId)) return null;
 
   const handleVisibleChange = (open: boolean): void => {
     if (open && !serverData)
@@ -33,10 +34,10 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
       });
   };
 
-  const uploads = isAjaxSuccessResponse(serverData) ? serverData.result : undefined;
+  const uploads = serverData && isAjaxSuccessResponse(serverData) ? serverData.result : undefined;
 
   const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
-    downloadFile({ fileId, versionNo: fileVersion.versionNo, fileName: fileVersion.fileName }).catch((error) => {
+    downloadFile({ fileId, versionNo: fileVersion.versionNo, fileName: fileVersion.fileName ?? "" }).catch((error) => {
       console.error('Failed to download file', error);
       throw error;
     });
@@ -52,7 +53,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
               by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
-                {item.fileName} ({filesize(item.size)})
+                {item.fileName} {isDefined(item.size) && <>({filesize(item.size)})</>}
               </Button>
             </li>
           ))}

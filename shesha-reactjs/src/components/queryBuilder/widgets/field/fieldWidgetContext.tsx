@@ -1,7 +1,7 @@
 import { WidgetProps } from '@react-awesome-query-builder/antd';
 import React, { createContext, FC, PropsWithChildren } from 'react';
 
-const FieldWidgetContext = createContext<WidgetProps>(null);
+const FieldWidgetContext = createContext<WidgetProps | undefined>(undefined);
 
 export interface FieldWidgetProviderProps {
   widgetProps: WidgetProps;
@@ -14,4 +14,4 @@ export const FieldWidgetProvider: FC<PropsWithChildren<FieldWidgetProviderProps>
   );
 };
 
-export const useFieldWidget = (): WidgetProps => React.useContext(FieldWidgetContext);
+export const useFieldWidget = (): WidgetProps | undefined => React.useContext(FieldWidgetContext);

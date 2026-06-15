@@ -7,7 +7,7 @@ import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/co
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 import { buildUrl } from "@/utils/url";
 import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
-import React, { MutableRefObject, ReactNode } from "react";
+import React, { RefObject, ReactNode } from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
 import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, getRevisionJsonAsync, MoveNodePayload, moveTreeNodeAsync, restoreItemRevisionAsync } from "../apis";
 import { confirmSaveDocumentAsync } from "../components/save-confirmation";
@@ -105,7 +105,7 @@ interface ConfigurationStudioArguments {
   storage: IAsyncStorage;
   modalApi: IModalApi;
   notificationApi: INotificationApi;
-  toolbarRef: MutableRefObject<HTMLDivElement>;
+  toolbarRef: RefObject<HTMLDivElement>;
   shaRouter: IShaRouter;
   logEnabled?: boolean;
 }
@@ -131,7 +131,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   readonly renderedDocs: Map<string, ReactNode>;
 
-  toolbarRef: MutableRefObject<HTMLDivElement>;
+  toolbarRef: RefObject<HTMLDivElement>;
 
   findDoc = (itemId?: string): IDocumentInstance | undefined => {
     return isDefined(itemId)
