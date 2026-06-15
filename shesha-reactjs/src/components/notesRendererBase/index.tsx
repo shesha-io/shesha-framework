@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, CSSProperties, useRef } from 'react';
-import { Skeleton, Card, List, Empty, Input, Button } from 'antd';
+import { Skeleton, Card, List, Empty, Input, Button, GetRef } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import classNames from 'classnames';
@@ -11,30 +11,34 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getNoteValidationError } from './utils';
 
 export interface INotesRendererBaseProps {
-  notes?: NoteModel[];
+  notes?: NoteModel[] | undefined;
 
-  allowEdit?: boolean;
-  allowDelete?: boolean;
+  allowEdit?: boolean | undefined;
+  allowDelete?: boolean | undefined;
 
   createNoteAsync: (args: CreateNoteArgs) => Promise<void>;
   updateNoteAsync: (args: UpdateNoteArgs) => Promise<void>;
   deleteNoteAsync: (args: DeleteNoteArgs) => Promise<void>;
 
-  isFetchingNotes?: boolean;
-  isPostingNotes?: boolean;
+  isFetchingNotes?: boolean | undefined;
+  isPostingNotes?: boolean | undefined;
 
-  showSaveBtn?: boolean;
-  allowCreate?: boolean;
-  commentListStyles?: CSSProperties;
-  className?: string;
-  commentListClassName?: string;
-  style?: CSSProperties;
-  buttonFloatRight?: boolean;
-  autoSize?: boolean;
-  showCharCount?: boolean;
-  minLength?: number;
-  maxLength?: number;
+  showSaveBtn?: boolean | undefined;
+  allowCreate?: boolean | undefined;
+  commentListStyles?: CSSProperties | undefined;
+  className?: string | undefined;
+  commentListClassName?: string | undefined;
+  style?: CSSProperties | undefined;
+  buttonFloatRight?: boolean | undefined;
+  autoSize?: boolean | undefined;
+  showCharCount?: boolean | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
 }
+
+type TextAreaRef = GetRef<typeof Input.TextArea>;
+
+const EMPTY_NOTES: NoteModel[] = [];
 
 export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   notes,
@@ -64,7 +68,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   const [newComment, setNewComment] = useState('');
   const [charCount, setCharCount] = useState(0);
   const [validationError, setValidationError] = useState('');
-  const textRef = useRef(null);
+  const textRef = useRef<TextAreaRef>(null);
   const { styles } = useStyles();
 
   useEffect(() => {
@@ -73,10 +77,11 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
       setCharCount(0);
       setValidationError('');
 
-      if (textRef) {
+      if (textRef.current) {
         textRef.current.focus();
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPostingNotes]);
 
   const handleTextChange = (value: string): void => {
@@ -127,9 +132,9 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
               <Button
                 size="small"
                 type="primary"
-                disabled={!newComment?.trim() || !!validationError}
+                disabled={isNullOrWhiteSpace(newComment) || !isNullOrWhiteSpace(validationError)}
                 onClick={handleSaveNotes}
-                loading={isPostingNotes}
+                loading={isPostingNotes ?? false}
                 icon={<CheckOutlined />}
               >
                 Save
@@ -139,19 +144,19 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
         </div>
       )}
 
-      <Skeleton loading={isFetchingNotes} active>
+      <Skeleton loading={isFetchingNotes ?? false} active>
         <Card className={classNames(styles.commentListCard, commentListClassName)} size="small">
           <List<NoteModel>
             locale={{ emptyText: <Empty description="There are no notes" /> }}
             className={`${styles.commentList} scroll scroll-y`}
             style={{ ...commentListStyles }}
             itemLayout="horizontal"
-            dataSource={notes}
+            dataSource={notes ?? EMPTY_NOTES}
             renderItem={(note) => (
               <NoteRenderer
                 note={note}
                 allowEdit={allowEdit}
-                allowDelete={allowDelete}
+                allowDelete={allowDelete ?? false}
                 updateNoteAsync={updateNoteAsync}
                 deleteNoteAsync={deleteNoteAsync}
                 minLength={minLength}

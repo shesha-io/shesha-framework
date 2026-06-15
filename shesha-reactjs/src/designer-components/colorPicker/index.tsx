@@ -8,7 +8,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ColorPicker } from '@/components/colorPicker';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { ColorValueType } from 'antd/es/color-picker/interface';
 
 const ColorPickerComponent: ColorPickerComponentDefinition = {
   type: 'colorPicker',
@@ -18,20 +18,22 @@ const ColorPickerComponent: ColorPickerComponentDefinition = {
   isOutput: true,
   icon: <FormatPainterOutlined />,
   preserveDimensionsInDesigner: true,
-  calculateModel: (model, allData) => ({
-    eventHandlers: getAllEventHandlers(model, allData),
-  }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (colorValue): void => {
-            customEvents.onChange({ value: colorValue }, null);
-            if (typeof onChange === 'function') onChange(colorValue);
-          };
-
-          return <ColorPicker value={value} onChange={onChangeInternal} {...model} style={model.allStyles.fullStyle} />;
+      <ConfigurableFormItem<ColorValueType> model={model}>
+        {(value, onChange, _, ctx) => {
+          return (
+            <ColorPicker
+              value={value}
+              {...model}
+              readOnly={model.readOnly ?? false}
+              style={model.allStyles?.fullStyle ?? {}}
+              onChange={(newValue) => {
+                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                onChange(newValue);
+              }}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );

@@ -10,7 +10,7 @@ import { ShaIcon, IconType } from '../shaIcon';
 
 export interface ILayerGroupItemProps extends ILayerFormModel {
   index: number[];
-  onConfigClick?: (selectedItemId: string) => void;
+  onConfigClick?: ((selectedItemId: string) => void) | undefined;
 }
 
 export const LayerItem: FC<ILayerGroupItemProps> = (props) => {

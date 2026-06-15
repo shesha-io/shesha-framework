@@ -1,23 +1,24 @@
 import { useGet } from '@/hooks';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { nanoid } from '@/utils/uuid';
-import { Checkbox } from 'antd';
+import { Checkbox, CheckboxOptionType } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { getDataSourceList } from '../radio/utils';
-import { ICheckboxGroupProps } from './utils';
+import { ICheckboxGroupProps } from './interfaces';
 import { executeScriptSync } from '@/providers/form/utils';
 import { IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { ILabelValue } from '../dropdown/model';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
+import { isDefined } from '@/utils/nullables';
 
 type RawOptionsPayload = ILabelValue<unknown>[] | { items: ILabelValue<unknown>[] };
 type FetchResponse = IAjaxResponse<RawOptionsPayload> | RawOptionsPayload;
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
-  const { items, referenceListId, direction, value, onChange } = model;
+  const { items = [], referenceListId, direction, value, onChange } = model;
 
   const { data: refList } = useReferenceList(referenceListId);
-  const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl, lazy: true });
+  const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl ?? "", lazy: true });
 
   useEffect(() => {
     if (model.dataSourceType === 'url' && model.dataSourceUrl) {
@@ -34,7 +35,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
       const response = data as IAjaxResponse<RawOptionsPayload>;
       if (isAjaxSuccessResponse(response)) {
         const result = response.result;
-        if (result && !Array.isArray(result) && typeof result === 'object' && 'configuration' in result) {
+        if (isDefined(result) && !Array.isArray(result) && typeof result === 'object' && 'configuration' in result) {
           const config = (result as { configuration?: { items?: ILabelValue<unknown>[] } }).configuration;
           if (config?.items && Array.isArray(config.items)) return config.items;
         }
@@ -49,7 +50,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   }, [data]);
 
   const reducedData = useMemo<ILabelValue<unknown>[]>(() => {
-    if (!fetchedData) return undefined;
+    if (!fetchedData) return [];
 
     const list = Array.isArray(fetchedData)
       ? fetchedData
@@ -58,15 +59,15 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
         : [];
 
     if (Array.isArray(list) && model.reducerFunc) {
-      return executeScriptSync(model.reducerFunc, { data: list });
+      return executeScriptSync(model.reducerFunc, { data: list }) ?? [];
     }
 
     return list;
   }, [fetchedData, model.reducerFunc]);
 
-  const options = useMemo(() => {
-    const list = getDataSourceList(model.dataSourceType, items, refList?.items, reducedData) || [];
-    return list.map((item) => (item.id ? item : { ...item, id: nanoid() }));
+  const options = useMemo<CheckboxOptionType[]>(() => {
+    const list = getDataSourceList(model.dataSourceType, items, refList?.items, reducedData);
+    return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid() }));
   }, [model.dataSourceType, items, refList?.items, reducedData]);
 
   const checkboxGroupStyle: CSSProperties = {
@@ -80,14 +81,14 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   return (
     <div
       tabIndex={0}
-      onFocus={(e) => model.onFocus?.({ ...e, target: { value: value, ...e.target } })}
-      onBlur={(e) => model.onBlur?.({ ...e, target: { value: value, ...e.target } })}
+      onFocus={(e) => model.onFocus?.({ ...e, target: { ...e.target, value: value } })}
+      onBlur={(e) => model.onBlur?.({ ...e, target: { ...e.target, value: value } })}
       style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
     >
       <Checkbox.Group
         className="sha-multi-checkbox"
-        value={value}
-        onChange={onChange}
+        value={isDefined(value) && Array.isArray(value) ? value : []}
+        {...(onChange ? { onChange } : {})}
         style={checkboxGroupStyle}
         options={options}
       />

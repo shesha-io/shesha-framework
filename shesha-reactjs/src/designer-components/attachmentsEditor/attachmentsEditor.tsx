@@ -26,6 +26,8 @@ import { AdvancedFormats } from '@/interfaces/dataTypes';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
+import { OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
+import { StoredFileModel } from '@/utils/storedFile/models';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -55,7 +57,7 @@ type LegacyStyleProps = Partial<{
 }>;
 
 // Helper function to check if an object has legacy styling properties
-const hasLegacyStyleProperties = (props: LegacyStyleProps): boolean => {
+const hasLegacyStyleProperties = (props: IAttachmentsEditorProps): props is LegacyStyleProps & IAttachmentsEditorProps => {
   const legacyContainerProps = [
     'stylingBox', 'style', 'width', 'height', 'maxWidth', 'maxHeight',
     'minWidth', 'minHeight', 'containerStyle', 'containerClass',
@@ -65,8 +67,8 @@ const hasLegacyStyleProperties = (props: LegacyStyleProps): boolean => {
     'fontSize', 'fontColor', 'fontWeight', 'fontFamily', 'fontAlign',
   ] as const;
 
-  return legacyContainerProps.some((prop) => props[prop] !== undefined) ||
-    legacyFontProps.some((prop) => props[prop] !== undefined);
+  return legacyContainerProps.some((prop) => prop in props && props[prop as keyof IAttachmentsEditorProps] !== undefined) ||
+    legacyFontProps.some((prop) => prop in props && props[prop as keyof IAttachmentsEditorProps] !== undefined);
 };
 
 // Helper function to migrate container-related properties
@@ -132,33 +134,33 @@ const removeLegacyProperties = (result: Record<string, unknown>): void => {
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string | IEntityTypeIdentifier;
-  filesCategory?: string;
-  allowedFileTypes?: string[];
-  ownerName?: string;
+  filesCategory?: string | undefined;
+  allowedFileTypes?: string[] | undefined;
+  ownerName?: string | undefined;
   allowAdd: boolean;
   allowDelete: boolean;
   allowReplace: boolean;
   allowRename: boolean;
   allowViewHistory: boolean;
-  customActions?: ButtonGroupItemProps[];
-  customContent?: boolean;
-  extraFormId?: FormIdentifier;
-  isDynamic?: boolean;
-  isDragger?: boolean;
-  maxHeight?: string;
-  onFileChanged?: string;
-  onDownload?: string;
-  downloadZip?: boolean;
-  filesLayout?: layoutType;
+  customActions?: ButtonGroupItemProps[] | undefined;
+  customContent?: boolean | undefined;
+  extraFormId?: FormIdentifier | undefined;
+  isDynamic?: boolean | undefined;
+  isDragger?: boolean | undefined;
+  maxHeight?: string | undefined;
+  onFileChanged?: string | undefined;
+  onDownload?: string | undefined;
+  downloadZip?: boolean | undefined;
+  filesLayout?: layoutType | undefined;
   listType: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
-  container?: IStyleType;
-  downloadedFileStyles?: IStyleType;
-  styleDownloadedFiles?: boolean;
-  downloadedIcon?: IconType;
+  thumbnailWidth?: string | undefined;
+  thumbnailHeight?: string | undefined;
+  borderRadius?: number | undefined;
+  hideFileName?: boolean | undefined;
+  container?: IStyleType | undefined;
+  downloadedFileStyles?: IStyleType | undefined;
+  styleDownloadedFiles?: boolean | undefined;
+  downloadedIcon?: IconType | undefined;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -180,30 +182,30 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       fullStyle: downloadedFileFullStyle,
     } = useFormComponentStyles(model.downloadedFileStyles ?? downloadedFileDefaultStyles());
 
-    const executeScript = (script, value): void => {
+    const executeScript = (script: string, value: unknown): void => {
       executeScriptSync(script, {
         value,
         ...executionContext,
       });
     };
 
-    const hasExtraContent = Boolean(model?.customContent);
+    const hasExtraContent = Boolean(model.customContent);
 
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem
+      <ConfigurableFormItem<StoredFileModel[]>
         model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}
         autoAlignLabel={false}
       >
         {(value, onChange) => {
-          const onFileListChanged = (fileList, isUserAction = false): void => {
+          const onFileListChanged: OnFileListChanged = (fileList, isUserAction = false): void => {
             onChange(fileList);
             // Only execute custom script if this is a user action (upload/delete)
             if (isUserAction && model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
           };
 
-          const onDownload = (fileList, isUserAction = false): void => {
+          const onDownload: OnFileDownloaded = (fileList, isUserAction = false): void => {
             onChange(fileList);
             // Only execute custom script if this is a user action (download)
             if (isUserAction && model.onDownload) executeScript(model.onDownload, fileList);
@@ -212,34 +214,33 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           return (
             <AttachmentsEditorProvider
               name={model.componentName}
-              ownerId={!isNullOrWhiteSpace(model.ownerId) ? ownerId : getIdOrUndefined(data) ?? ""}
-              ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(form?.formSettings?.modelType) ? form?.formSettings?.modelType : ''}
+              ownerId={!isNullOrWhiteSpace(model.ownerId) ? ownerId ?? "" : getIdOrUndefined(data) ?? ""}
+              ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(form.formSettings?.modelType) ? form.formSettings?.modelType : ''}
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
               // used for requered field validation
               onChange={onFileListChanged}
               onDownload={onDownload}
-              value={value}
+              value={value ?? undefined}
             >
               <CustomFile
-                isStub={form?.formMode === 'designer'}
-                allowAdd={enabled && model.allowAdd}
+                isStub={form.formMode === 'designer'}
                 disabled={model.readOnly}
-                allowDelete={enabled && model.allowDelete}
-                allowReplace={enabled && model.allowReplace}
-                allowRename={enabled && model.allowRename}
-                allowViewHistory={model.allowViewHistory}
                 customActions={model.customActions}
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
-                isDragger={model?.isDragger}
+                isDragger={model.isDragger}
                 downloadZip={model.downloadZip}
                 filesLayout={model.filesLayout}
-                listType={model.listType}
                 hasExtraContent={hasExtraContent}
                 isDynamic={model.isDynamic}
                 extraFormId={model.extraFormId}
                 {...model}
+                allowAdd={enabled && model.allowAdd}
+                allowDelete={enabled && model.allowDelete}
+                allowReplace={enabled && model.allowReplace}
+                allowRename={enabled && model.allowRename}
+                allowViewHistory={model.allowViewHistory}
                 container={model.container}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
@@ -278,7 +279,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         filesLayout: 'horizontal',
         hideFileName: true,
         editMode: 'inherited',
-      };
+      } satisfies IAttachmentsEditorProps;
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAttachmentsEditorProps>(2, (prev) => migrateVisibility(prev))
@@ -286,9 +287,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     .add<IAttachmentsEditorProps>(4, (prev) => ({ ...prev, downloadZip: true }))
     .add<IAttachmentsEditorProps>(5, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
-      onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
+      onFileChanged: migrateFormApi.withoutFormData(prev.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: isNullOrWhiteSpace(prev.listType) ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
     .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
     .add<IAttachmentsEditorProps>(9, (prev) => ({
@@ -319,13 +320,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       },
     }))
     .add<IAttachmentsEditorProps>(10, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '' }))
-    .add<IAttachmentsEditorProps>(11, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev?.onFileChanged }))
+    .add<IAttachmentsEditorProps>(11, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
     .add<IAttachmentsEditorProps>(12, (prev) => ({
       ...prev, desktop: { ...prev.desktop, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
       mobile: { ...prev.mobile, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
       tablet: { ...prev.tablet, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
     }))
-    .add<IAttachmentsEditorProps>(13, (prev: IAttachmentsEditorProps & LegacyStyleProps) => {
+    .add<IAttachmentsEditorProps>(13, (prev: IAttachmentsEditorProps) => {
       // Handle components with root-level styling properties from legacy imports
       // This covers v0.43 imports that have styling properties at root level instead of device-specific structure
       if (!hasLegacyStyleProperties(prev)) return prev;

@@ -123,51 +123,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
-                    // .addCollapsiblePanel({
-                    //   id: nanoid(),
-                    //   propertyName: 'pnlPosition',
-                    //   label: 'Position',
-                    //   labelAlign: 'right',
-                    //   parentId: styleRouterId,
-                    //   ghost: true,
-                    //   collapsible: 'header',
-                    //   content: {
-                    //     id: nanoid(),
-                    //     components: [...fbf()
-                    //       .addSettingsInput({
-                    //         id: nanoid(),
-                    //         propertyName: 'position.value',
-                    //         label: 'Position',
-                    //         parentId: 'positionCollapsiblePanel',
-                    //         inputType: 'dropdown',
-                    //         description: 'The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.',
-                    //         validate: {
-                    //           required: true,
-                    //         },
-                    //         dropdownOptions: [
-                    //           { value: 'relative', label: 'Relative' },
-                    //           { value: 'absolute', label: 'Absolute' }
-                    //         ]
-                    //       })
-                    //       .addSettingsInputRow(
-                    //         getPositionInputs()[0] as any
-                    //       )
-                    //       .addSettingsInputRow(
-                    //         getPositionInputs()[1] as any
-                    //       )
-                    //       .addSettingsInputRow(
-                    //         getPositionInputs()[2] as any
-                    //       )
-                    //       .addSettingsInputRow(
-                    //         getPositionInputs()[3] as any
-                    //       )
-                    //       .toJson()
-                    //     ]
-                    //   }
-                    // })
                     .addCollapsiblePanel({
                       id: displayCollapsiblePanelId,
                       propertyName: 'pnlDisplayStyle',
@@ -203,7 +161,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _code: 'return' + getDisplayType + ' === "block";',
                               _mode: 'code',
                               _value: false,
-                            } as any,
+                            },
                             components: [
                               ...fbf()
                                 .addContainer({
@@ -226,7 +184,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                               _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
                                               _mode: 'code',
                                               _value: false,
-                                            } as any,
+                                            },
                                             buttonGroupOptions: [
                                               {
                                                 title: 'Row',
@@ -251,7 +209,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                                 ` || ${getDisplayType} == "inline-grid"`,
                                               _mode: 'code',
                                               _value: false,
-                                            } as any,
+                                            },
                                             propertyName: 'justifyContent',
                                             buttonGroupOptions: [
                                               {
@@ -281,7 +239,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                               _code: `return ${getDisplayType} == "flex"` + ' && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) == "column"',
                                               _mode: 'code',
                                               _value: false,
-                                            } as any,
+                                            },
                                             buttonGroupOptions: [
                                               {
                                                 title: 'Start',
@@ -309,7 +267,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                               _code: `return ${getDisplayType} !== "flex"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) !== "column"',
                                               _mode: 'code',
                                               _value: false,
-                                            } as any,
+                                            },
                                             propertyName: 'alignItems',
                                             buttonGroupOptions: [
                                               {
@@ -339,7 +297,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                               _code: `return ${getDisplayType} !== "flex"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) !== "column"',
                                               _mode: 'code',
                                               _value: false,
-                                            } as any,
+                                            },
                                             buttonGroupOptions: [
                                               {
                                                 title: 'Start',
@@ -381,7 +339,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
                                     _mode: 'code',
                                     _value: false,
-                                  } as any,
+                                  },
                                   inputs: [{
                                     id: nanoid(),
                                     type: 'textField',
@@ -398,8 +356,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "grid" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "inline-grid";',
                                     _mode: 'code',
                                     _value: false,
-                                  } as any,
-                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  },
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -429,8 +387,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 '|| !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.showAdvanced)',
                               _mode: 'code',
                               _value: false,
-                            } as any,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            },
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                             components: [
                               ...fbf()
                                 .addSettingsInputRow({
@@ -441,8 +399,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
                                     _mode: 'code',
                                     _value: false,
-                                  } as any,
-                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  },
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'dropdown',
@@ -453,7 +411,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
                                         _mode: 'code',
                                         _value: false,
-                                      } as any,
+                                      },
                                       dropdownOptions: FLEX_DIRECTION,
                                       description: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).',
 
@@ -468,7 +426,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
                                         _mode: 'code',
                                         _value: false,
-                                      } as any,
+                                      },
                                       description: 'The flex-wrap CSS property sets whether flex items are forced into multiple lines and the direction of that wrapping.',
                                     },
                                   ],
@@ -477,7 +435,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   parentId: displayCollapsiblePanelId,
                                   inline: false,
-                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'dropdown',
@@ -498,7 +456,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: displayCollapsiblePanelId,
-                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'dropdown',
@@ -517,7 +475,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
                                         _mode: 'code',
                                         _value: false,
-                                      } as any,
+                                      },
                                       dropdownOptions: JUSTIFY_ITEMS,
                                     },
                                   ],
@@ -680,7 +638,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -693,7 +651,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 jsSetting: false,
                               },
                               ],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -706,7 +664,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -718,12 +676,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: backgroundStylePnlId,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -738,7 +696,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               id: nanoid(),
                               parentId: backgroundStylePnlId,
                               inline: true,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'customDropdown',
@@ -771,7 +729,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 propertyName: 'background.repeat',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],

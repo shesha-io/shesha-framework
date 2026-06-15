@@ -4,6 +4,9 @@ import React, { FC } from 'react';
 import { Form } from 'antd';
 import { isEqual } from 'lodash';
 import { PermissionDto } from '@/apis/permission';
+import { FormMarkup } from '@/providers';
+
+const markup = permissionSettingsMarkup as FormMarkup;
 
 interface IPermissionEditorComponentProps {
   name: string;
@@ -21,12 +24,12 @@ const PermissionEditor: FC<IPermissionEditorProps> = (props) => {
       labelCol={{ span: 6 }}
       wrapperCol={{ span: 18 }}
       mode="edit"
-      markup={permissionSettingsMarkup as any} // convert to any for using JS settings
-      initialValues={props?.value}
+      markup={markup} // convert to any for using JS settings
+      initialValues={props.value}
       onValuesChange={(v) => {
-        const d = { ...props?.value, ...v };
-        if (!isEqual(props?.value, d)) {
-          props.onChange(d);
+        const d = { ...props.value, ...v };
+        if (!isEqual(props.value, d)) {
+          props.onChange?.(d);
         }
       }}
     />

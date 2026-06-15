@@ -1,6 +1,14 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { fontFamily, fontWeight, textAlign, color, fontSize }) => {
+type StylesArgs = {
+  fontFamily?: string | undefined;
+  fontWeight?: string | undefined;
+  textAlign?: string | undefined;
+  color?: string | undefined;
+  fontSize?: number | undefined;
+};
+
+export const useStyles = createStyles(({ css, cx, token }, { fontFamily, fontWeight, textAlign, color, fontSize }: StylesArgs) => {
   const dropdownContainer = "dropdown-container";
   const suggestionContainer = "suggestion-container";
   const suggestion = "suggestion";

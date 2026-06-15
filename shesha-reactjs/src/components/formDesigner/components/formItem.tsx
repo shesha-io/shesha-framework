@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemSetting } from './configurableFormItemSetting';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
-import { FCUnwrapped } from '@/providers';
+import { UnwrapCodeEvaluators } from '@/providers';
 
-const ConfigurableFormItemInner: FCUnwrapped<IConfigurableFormItemProps> = (props) => {
+export const ConfigurableFormItem = <TValue = unknown>(props: UnwrapCodeEvaluators<IConfigurableFormItemProps<TValue>>): ReactNode => {
   return props.model.jsSetting
-    ? <ConfigurableFormItemSetting {...props} lazy={props.model.jsSetting === 'lazy'} />
-    : <ConfigurableFormItemLive {...props} />;
+    ? <ConfigurableFormItemSetting<TValue> {...props} lazy={props.model.jsSetting === 'lazy'} />
+    : <ConfigurableFormItemLive<TValue> {...props} />;
 };
-
-export const ConfigurableFormItem = React.memo(ConfigurableFormItemInner);

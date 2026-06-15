@@ -6,6 +6,7 @@ import {
   IFormComponentStyles,
   IStyleType,
   StyleBoxValue,
+  UnwrapCodeEvaluators,
   executeScriptSync,
   getActualModel,
   getParentReadOnly,
@@ -40,12 +41,12 @@ export function useActualContextData<T extends object = object>(
   additionalData?: object,
   propertyFilter?: (name: string, value: unknown) => boolean,
   executor?: (data: T, context: TouchableProxy<IApplicationContext>) => T,
-): T {
+): UnwrapCodeEvaluators<T> {
   const parent = useParentOrUndefined();
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
 
-  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current) {
     contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
   } else {
@@ -59,7 +60,7 @@ export function useActualContextData<T extends object = object>(
   const pReadonly = parentReadonly ?? getParentReadOnly(parent, contextProxyRef.current);
 
   const prevParentReadonly = useRef(pReadonly);
-  const prevModel = useRef<T>();
+  const prevModel = useRef<T>(undefined);
   const actualModelRef = useRef<T>(model);
   const prevActualModelRef = useRef<string>('');
 
@@ -90,18 +91,19 @@ export function useActualContextData<T extends object = object>(
   if (modelChanged)
     prevModel.current = model;
 
-  return actualModelRef.current;
+  // TODO V1: review unwrapping
+  return actualModelRef.current as UnwrapCodeEvaluators<T>;
 }
 
-export function useCalculatedModel<T extends object = object>(
+export function useCalculatedModel<T extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object>(
   model: T,
-  useCalculateModel: (model: T, allData: IApplicationContext) => T = (_model, _allData) => ({} as T),
-  calculateModel?: (model: T, allData: IApplicationContext, useCalculatedModel?: T) => T,
-): T {
+  useCalculateModel: (model: T, allData: IApplicationContext) => TCalculatedModel = (_model, _allData) => ({} as TCalculatedModel),
+  calculateModel?: (model: T, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel,
+): TCalculatedModel {
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
 
-  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current) {
     contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
   } else {
@@ -111,9 +113,9 @@ export function useCalculatedModel<T extends object = object>(
   // TODO: update TouchableProxy<T> to implement T and use without unsafe cast
   const allData = contextProxyRef.current as unknown as IApplicationContext;
 
-  const prevModel = useRef<T>();
-  const calculatedModelRef = useRef<T>();
-  const useCalculatedModelRef = useRef<T>();
+  const prevModel = useRef<T>(undefined);
+  const calculatedModelRef = useRef<TCalculatedModel>(undefined);
+  const useCalculatedModelRef = useRef<TCalculatedModel>(undefined);
 
   const useCalculatedModel = useCalculateModel(model, allData);
 
@@ -131,14 +133,14 @@ export function useCalculatedModel<T extends object = object>(
     prevModel.current = model;
 
   // TODO: Alex, please review this code. calculatedModelRef.current may be undefined
-  return calculatedModelRef.current as T;
+  return calculatedModelRef.current as TCalculatedModel;
 }
 
 export function useActualContextExecution<T = unknown>(code: string | undefined, additionalData: object | undefined, defaultValue: T): T {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
-  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current) {
     contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
   } else {
@@ -149,7 +151,7 @@ export function useActualContextExecution<T = unknown>(code: string | undefined,
 
   contextProxyRef.current.checkChanged();
 
-  const prevCode = useRef<string>();
+  const prevCode = useRef<string>(undefined);
   const actualDataRef = useRef<T>(defaultValue);
 
   if (contextProxyRef.current.changed || !isEqual(prevCode.current, code)) {
@@ -170,7 +172,7 @@ export function useActualContextExecutionExecutor<T = unknown, TAdditionalData e
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext });
 
-  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current) {
     contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
   } else {
@@ -200,8 +202,8 @@ export interface IUseFormComponentStylesOptions {
   useWrapperStyle?: boolean;
 }
 
-export const useFormComponentStyles = <TModel>(
-  model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>,
+export const useFormComponentStyles = <TModel extends IStyleType & Pick<IConfigurableFormComponent, 'style' | 'wrapperStyle'>>(
+  model: TModel/* & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>*/,
   options?: IUseFormComponentStylesOptions,
 ): IFormComponentStyles => {
   const app = useSheshaApplication();

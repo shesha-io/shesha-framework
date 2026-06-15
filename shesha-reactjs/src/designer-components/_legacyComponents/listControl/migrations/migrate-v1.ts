@@ -6,6 +6,7 @@ import { IKeyValue } from '@/interfaces/keyValue';
 import { IListComponentProps } from '../models';
 import { SettingsMigrationContext } from '@/interfaces';
 import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
+import { isDefined } from '@/utils/nullables';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
   return {
@@ -19,9 +20,9 @@ const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' |
   };
 };
 
-const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
-  if (buttonProps['actionConfiguration'])
-    return buttonProps['actionConfiguration'] as IConfigurableActionConfiguration;
+const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration | undefined => {
+  if ("actionConfiguration" in buttonProps && typeof buttonProps['actionConfiguration'] === "object")
+    return buttonProps.actionConfiguration as IConfigurableActionConfiguration;
 
   switch (buttonProps.buttonAction) {
     case "cancelFormEdit": {
@@ -66,7 +67,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
       const modalArguments: IShowModalActionArgumentsV0 = {
-        modalTitle: buttonProps.modalTitle,
+        modalTitle: buttonProps.modalTitle ?? "",
         formId: buttonProps.modalFormId,
 
         showModalFooter: propsWithModal.showModalFooter,
@@ -89,7 +90,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       if (propsWithModal.refreshTableOnSuccess) {
         actionConfig.handleSuccess = true;
         actionConfig.onSuccess = makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Refresh table',
         });
       }
@@ -107,19 +108,21 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
     case "executeFormAction": {
       if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL') {
         return makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Export to Excel',
         });
       }
+      return undefined;
     }
     case "customAction": {
       /* nop*/
+      return undefined;
     }
     case "dispatchAnEvent": {
       return getDispatchEventReplacement(buttonProps);
     }
   }
-  return null;
+  return undefined;
 };
 
 //#region old types
@@ -258,7 +261,7 @@ interface IModalPropsV0 {
   /**
    * A callback to execute when the form has been submitted
    */
-  onSubmitted?: (values?: any) => void;
+  onSubmitted?: (values?: unknown) => void;
 
   /**
    * If passed, the user will be redirected to this url on success
@@ -284,7 +287,7 @@ interface IModalPropsV0 {
 export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigrationContext): IListComponentProps => {
   const { buttons } = props;
 
-  const newButtons = buttons.map((item) => {
+  const newButtons = (buttons ?? []).map((item) => {
     if (item.itemType !== "item")
       return item;
 
@@ -300,9 +303,9 @@ export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigra
     return newItem;
   });
 
-  const formId = props['formPath'] && props['formPath']['id']
+  const formId = "formPath" in props && typeof (props.formPath) === "object" && isDefined(props.formPath) && "id" in props.formPath && typeof (props.formPath.id) === "string"
     ? props['formPath']['id']
-    : null;
+    : undefined;
 
   return {
     ...props,

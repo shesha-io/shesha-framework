@@ -11,10 +11,10 @@ import { ContainerRenderer } from './itemsContainer';
 
 export interface IItemProps {
   itemProps: IModelItem;
-  parent?: IModelItem;
+  parent?: IModelItem | undefined;
   index: number[];
   key: string;
-  onChange?: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
+  onChange?: (newValue: IModelItem, changeDetails?: ItemChangeDetails) => void;
   containerRendering: ContainerRenderer;
 }
 
@@ -39,7 +39,6 @@ export const Item: FC<IItemProps> = ({ itemProps, index, key, parent, containerR
   )) {
     return (
       <ArrayEntityProperty
-        id={index}
         index={index}
         {...itemProps}
         parent={parent}
@@ -49,7 +48,6 @@ export const Item: FC<IItemProps> = ({ itemProps, index, key, parent, containerR
   } else if (itemProps.dataType === DataTypes.array && itemProps.dataFormat) {
     return (
       <ArraySimpleProperty
-        id={index}
         index={index}
         {...itemProps}
         parent={parent}
@@ -71,7 +69,6 @@ export const Item: FC<IItemProps> = ({ itemProps, index, key, parent, containerR
   } else {
     return (
       <SimpleProperty
-        id={index}
         index={index}
         {...itemProps}
         parent={parent}

@@ -6,6 +6,7 @@ import { isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
 import { useFieldWidget } from "../widgets/field/fieldWidgetContext";
 import { CustomFieldSettings } from "@/providers/queryBuilder/models";
 import { DataTypes } from "@/interfaces";
+import { isDefined } from "@/utils/nullables";
 
 type OnPropertySelect = IPropertySelectProps["onSelect"];
 
@@ -18,10 +19,10 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
       props.setField(key);
   };
 
-  const onChange = (key): void => {
+  const onChange = (key: string | null): void => {
     setText(key);
     if (!key)
-      props.setField(null);
+      props.setField("");
   };
 
   const {
@@ -31,20 +32,20 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
 
   const { showSearch } = customProps || {};
 
-  const selectText = text || selectedLabel || placeholder;
+  const selectText = (text || selectedLabel || placeholder) ?? "";
   const selectWidth = calcTextWidth(selectText);
   const isFieldSelected = !!selectedKey;
 
-  const width = isFieldSelected && !showSearch ? null : selectWidth + SELECT_WIDTH_OFFSET_RIGHT;
+  const width = isFieldSelected && !showSearch ? undefined : selectWidth + SELECT_WIDTH_OFFSET_RIGHT;
 
   let tooltipText = selectedAltLabel || selectedFullLabel;
   if (tooltipText === selectedLabel)
     tooltipText = null;
 
-  const readOnly = config.settings.immutableFieldsMode === true;
+  const readOnly = isDefined(config) && config.settings.immutableFieldsMode === true;
 
   const isPropertyVisible = (property: IPropertyItem): boolean => {
-    const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as CustomFieldSettings;
+    const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
     if (!propertyMetadata)
       return true;
 
@@ -53,7 +54,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
   };
 
   const isPropertySelectable = (property: IPropertyItem): boolean => {
-    const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as CustomFieldSettings;
+    const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
     if (!propertyMetadata)
       return true;
 
@@ -66,13 +67,17 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
       property.dataType !== DataTypes.object;
   };
 
+  const size = isDefined(config)
+    ? config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize
+    : undefined;
+
   return (
     <PropertySelect
       readOnly={readOnly}
-      value={text}
+      value={text ?? ""}
       onChange={onChange}
       style={{ width }}
-      size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
+      {...(size ? { size } : {})}
       onSelect={onSelect}
       isPropertyVisible={isPropertyVisible}
       isPropertySelectable={isPropertySelectable}

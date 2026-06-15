@@ -19,21 +19,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
     `;
 
-  /*
-  // Make sure that all the buttons in the popups are styled like links
-  .${prefixCls}-menu-submenu.${prefixCls}-menu-submenu-popup {
-    .sha-button-menu {
-      padding: unset !important;
-      button {
-        color: var(--ant-primary-color) !important;
-        border-color: transparent !important;
-        background: transparent !important;
-        box-shadow: none !important;
-      }
-    }
-  }
-  */
-
   const shaResponsiveButtonGroupContainer = cx("sha-responsive-button-group-container", css`
 
           .${shaResponsiveButtonGroup} {

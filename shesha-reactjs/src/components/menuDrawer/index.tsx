@@ -1,6 +1,6 @@
-import { Menu, MenuProps } from "antd";
+import { DrawerProps, Menu, MenuProps } from "antd";
 import React, { FC } from "react";
-import { ShaMenuDrawerStyledWrapper } from "./styles";
+import { ShaMenuDrawerStyledWrapper } from "./styledDrawer";
 import { ILayoutColor } from "../menu/model";
 import { ScopedMenuStyles } from "../menu/styles";
 import { convertJsonToCss, convertJsonToCssWithImportant } from "@/utils";
@@ -10,18 +10,16 @@ type MenuItem = Required<MenuProps>["items"][number];
 interface IProps {
   items: MenuItem[];
   open: boolean;
-  onClose?: (
-    e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>,
-  ) => void;
-  colors?: ILayoutColor;
-  padding?: { x: number; y: number };
-  fontStyles?: React.CSSProperties;
-  itemStyle?: React.CSSProperties;
-  styleOnHover?: React.CSSProperties;
-  styleOnSelected?: React.CSSProperties;
-  styleOnSubMenu?: React.CSSProperties;
-  menuItemStyle?: React.CSSProperties;
-  menuId?: string;
+  onClose?: DrawerProps["onClose"] | undefined;
+  colors?: ILayoutColor | undefined;
+  padding?: { x: number; y: number } | undefined;
+  fontStyles?: React.CSSProperties | undefined;
+  itemStyle?: React.CSSProperties | undefined;
+  styleOnHover?: React.CSSProperties | undefined;
+  styleOnSelected?: React.CSSProperties | undefined;
+  styleOnSubMenu?: React.CSSProperties | undefined;
+  menuItemStyle?: React.CSSProperties | undefined;
+  menuId?: string | undefined;
 }
 
 const ShaMenuDrawer: FC<IProps> = ({
@@ -46,9 +44,9 @@ const ShaMenuDrawer: FC<IProps> = ({
       title=""
       placement="left"
       closable={false}
-      onClose={onClose}
+      {...(onClose ? { onClose: onClose } : {})}
       open={open}
-      className={menuId ? `horizontal-menu-drawer-${menuId}` : undefined}
+      {...(menuId ? { className: `horizontal-menu-drawer-${menuId}` } : {})}
       styles={{
         body: {
           backgroundColor,

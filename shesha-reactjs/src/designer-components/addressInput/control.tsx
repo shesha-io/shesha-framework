@@ -8,17 +8,17 @@ import { unsafeGetValueByPropertyName, setValueByPropertyName } from '@/utils/ob
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface IAddressInputControlProps {
-  value?: unknown;
-  onChange?: (value: string) => void;
-  placeholder?: string;
-  readOnly?: boolean;
-  googleMapsApiKey?: string;
-  enableMapInterface?: boolean;
-  latitudePropertyName?: string;
-  longitudePropertyName?: string;
-  defaultZoom?: number;
-  mapHeight?: number;
-  mapWidth?: number;
+  value?: unknown | undefined;
+  onChange?: ((value: string) => void) | undefined;
+  placeholder?: string | undefined;
+  readOnly?: boolean | undefined;
+  googleMapsApiKey?: string | undefined;
+  enableMapInterface?: boolean | undefined;
+  latitudePropertyName?: string | undefined;
+  longitudePropertyName?: string | undefined;
+  defaultZoom?: number | undefined;
+  mapHeight?: number | undefined;
+  mapWidth?: number | undefined;
 }
 
 // ─── Google Maps type contracts ───────────────────────────────────────────────
@@ -95,10 +95,10 @@ interface IGoogleMapsApi {
 function getGoogleMaps(): IGoogleMapsApi | null {
   if (typeof window === 'undefined') return null;
   const win = window as unknown as Record<string, unknown>;
-  if (typeof win.google !== 'object' || win.google === null) return null;
-  const google = win.google as Record<string, unknown>;
-  if (typeof google.maps !== 'object' || google.maps === null) return null;
-  return google.maps as IGoogleMapsApi;
+  if (typeof win['google'] !== 'object' || win['google'] === null) return null;
+  const google = win['google'] as Record<string, unknown>;
+  if (typeof google['maps'] !== 'object' || google['maps'] === null) return null;
+  return google['maps'] as IGoogleMapsApi;
 }
 
 function isGeocoder(value: unknown): value is IGeocoder {
@@ -106,7 +106,7 @@ function isGeocoder(value: unknown): value is IGeocoder {
     typeof value === 'object' &&
     value !== null &&
     'geocode' in value &&
-    typeof (value as Record<string, unknown>).geocode === 'function'
+    typeof (value as Record<string, unknown>)['geocode'] === 'function'
   );
 }
 
@@ -128,9 +128,9 @@ const toDisplayString = (value: unknown): string => {
   if (
     typeof value === 'object' &&
     '_displayName' in value &&
-    typeof (value as Record<string, unknown>)._displayName === 'string'
+    typeof (value as Record<string, unknown>)['_displayName'] === 'string'
   ) {
-    return (value as Record<string, unknown>)._displayName as string;
+    return (value as Record<string, unknown>)['_displayName'] as string;
   }
   return '';
 };
@@ -225,7 +225,7 @@ interface IMapModalProps {
   initialAddress: string;
   defaultZoom: number;
   mapHeight: number;
-  mapWidth?: number;
+  mapWidth?: number | undefined;
   geocoder: unknown;
   onOk: (address: string, lat: number, lng: number) => void;
   onCancel: () => void;
@@ -350,8 +350,8 @@ const MapModal: FC<IMapModalProps> = ({
     if (!match || !isGeocoder(geocoder)) return;
 
     e.preventDefault();
-    const lat = parseFloat(match[1]);
-    const lng = parseFloat(match[2]);
+    const lat = parseFloat(match[1] ?? "");
+    const lng = parseFloat(match[2] ?? "");
 
     try {
       const addr = await geocodeLatLng(geocoder, lat, lng);
@@ -542,6 +542,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
       .catch(() => {
         message.error('Failed to load Google Maps. Check your API key.');
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [googleMapsApiKey]);
 
   // ── Sync external value (form reset / programmatic update) ────────────────
@@ -647,8 +648,8 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
     if (!match || !geocoderRef.current) return;
 
     e.preventDefault();
-    const lat = parseFloat(match[1]);
-    const lng = parseFloat(match[2]);
+    const lat = parseFloat(match[1] ?? "");
+    const lng = parseFloat(match[2] ?? "");
 
     try {
       const addr = await geocodeLatLng(geocoderRef.current, lat, lng);

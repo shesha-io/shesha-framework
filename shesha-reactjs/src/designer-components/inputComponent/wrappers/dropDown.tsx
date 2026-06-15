@@ -1,27 +1,23 @@
 import { IDropdownSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
-import { useStyles } from '../styles';
-import Icon from '@/components/icon/Icon';
 import { Select } from 'antd';
 import { isDefined } from '@/utils/nullables';
 
 export const DropDownWrapper: FCUnwrapped<IDropdownSettingsInputProps> = (props) => {
-  const { styles } = useStyles();
-  const { value, onChange, readOnly, size, width, dropdownOptions, dropdownMode, allowClear, variant, className, showSearch, placeholder, tooltip } = props;
-  const resolvedOptions = isDefined(dropdownOptions) ? dropdownOptions : [];
-  const options = resolvedOptions.map((option) => ({ ...option, label: <Icon icon={option.label} size={option.value} className={styles.icon} hint={tooltip} /> }));
+  const { value, onChange, readOnly, size, width, dropdownOptions, dropdownMode, allowClear, variant, className, showSearch, placeholder } = props;
+  const options = isDefined(dropdownOptions) ? dropdownOptions : [];
   return (
     <Select
       value={value}
-      onChange={onChange}
-      disabled={readOnly}
+      {...(onChange ? { onChange } : {})}
+      disabled={readOnly ?? false}
       size={size}
-      mode={dropdownMode}
+      {...(dropdownMode ? { mode: dropdownMode } : {})}
       allowClear={allowClear ?? true}
-      variant={variant}
-      className={className}
-      showSearch={showSearch}
+      {...(variant ? { variant } : {})}
+      {...(className ? { className } : {})}
+      showSearch={showSearch ?? false}
       style={{ width: width ?? "100%" }}
       placeholder={placeholder}
       options={options}

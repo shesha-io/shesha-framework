@@ -1,4 +1,5 @@
-import { createAction } from "redux-actions";
+import { IChartsProps } from '@/designer-components/charts/model';
+import { createAction } from '@reduxjs/toolkit';
 
 export enum ChartDataActionsEnum {
   SetData = "SET_DATA",
@@ -11,16 +12,16 @@ export enum ChartDataActionsEnum {
   SetValuePropertyLabel = "SET_VALUE_LABEL",
 }
 
-export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: object[]) => ({ data, items: data }));
+export const SetDataAction = createAction<object[]>(ChartDataActionsEnum.SetData);
 
-export const SetIsLoadedAction = createAction(ChartDataActionsEnum.SetIsLoaded, (isLoaded: boolean) => ({ isLoaded }));
+export const SetIsLoadedAction = createAction<boolean>(ChartDataActionsEnum.SetIsLoaded);
 
-export const SetControlPropsAction = createAction(ChartDataActionsEnum.SetControlProps, (controlProps: object) => ({ ...controlProps }));
+export const SetControlPropsAction = createAction<IChartsProps>(ChartDataActionsEnum.SetControlProps);
 
-export const SetUrlTypeDataAction = createAction(ChartDataActionsEnum.SetUrlTypeData, (urlTypeData: object) => ({ urlTypeData }));
+export const SetUrlTypeDataAction = createAction<object>(ChartDataActionsEnum.SetUrlTypeData);
 
-export const CleanDataAction = createAction(ChartDataActionsEnum.CleanData, () => ({}));
+export const CleanDataAction = createAction(ChartDataActionsEnum.CleanData);
 
-export const SetAxisPropertyLabelAction = createAction(ChartDataActionsEnum.SetAxisPropertyLabel, (axisPropertyLabel: string) => ({ axisPropertyLabel }));
+export const SetAxisPropertyLabelAction = createAction<string>(ChartDataActionsEnum.SetAxisPropertyLabel);
 
-export const SetValuePropertyLabelAction = createAction(ChartDataActionsEnum.SetValuePropertyLabel, (valuePropertyLabel: string) => ({ valuePropertyLabel }));
+export const SetValuePropertyLabelAction = createAction<string>(ChartDataActionsEnum.SetValuePropertyLabel);

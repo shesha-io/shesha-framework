@@ -6,9 +6,9 @@ import { useStyles } from "./styles";
 // Timeline indicator props
 export interface TimelineIndicatorProps {
   level: LogLevel;
-  isStart?: boolean;
-  isEnd?: boolean;
-  duration?: number;
+  isStart?: boolean | undefined;
+  isEnd?: boolean | undefined;
+  duration?: number | undefined;
 }
 
 // Timeline indicator component

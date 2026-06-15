@@ -12,6 +12,7 @@ import { initialValues } from './utils';
 import { useActualContextData } from '@/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getGhostStyleOverrides } from '@/utils/style';
+import { isDefined } from '@/utils/nullables';
 
 const { Text } = Typography;
 
@@ -19,7 +20,7 @@ const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
   const { getProviders } = useDynamicActionsDispatcher();
 
   const provider = props.dynamicItemsConfiguration?.providerUid
-    ? getProviders()[props.dynamicItemsConfiguration?.providerUid]
+    ? getProviders()[props.dynamicItemsConfiguration.providerUid]
     : null;
 
   return (
@@ -29,7 +30,6 @@ const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
 
 export interface IButtonGroupItemProps {
   item: IButtonGroupItem;
-  actualModelContext?: any;
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
@@ -63,10 +63,10 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
 
   const newStyles = {
     ...buttonStyles.dimensionsStyles,
-    ...(['primary', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.borderStyles),
+    ...(isDefined(item.buttonType) && ['primary', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.borderStyles),
     ...buttonStyles.fontStyles,
-    ...(['dashed', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.backgroundStyles),
-    ...(['primary', 'default', 'dashed', 'ghost'].includes(item.buttonType) && buttonStyles.shadowStyles),
+    ...(isDefined(item.buttonType) && ['dashed', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.backgroundStyles),
+    ...(isDefined(item.buttonType) && ['primary', 'default', 'dashed', 'ghost'].includes(item.buttonType) && buttonStyles.shadowStyles),
     ...(buttonStyles.jsStyle),
     ...buttonStyles.stylingBoxAsCSS,
     justifyContent: buttonStyles.fontStyles.textAlign,
@@ -81,15 +81,15 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
         <Flex>
           <Button
             title={tooltip}
-            type={isGhost ? 'default' : buttonType}
+            type={isGhost || !buttonType ? 'default' : buttonType}
             ghost={isGhost}
-            disabled={readOnly}
-            danger={danger}
+            disabled={readOnly ?? false}
+            danger={danger ?? false}
             icon={icon ? <ShaIcon iconName={icon as IconType} /> : undefined}
-            iconPlacement={iconPosition}
+            {...(iconPosition ? { iconPlacement: iconPosition } : {})}
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
-            block={block}
+            block={block ?? false}
             style={{ ...newStyles, ...(isGhost ? getGhostStyleOverrides(buttonStyles.fontStyles) : {}) }}
           >
             {label}

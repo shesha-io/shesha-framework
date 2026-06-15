@@ -1,7 +1,7 @@
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { useDynamicActionsDispatcher } from '@/providers/index';
 import { FC, useEffect } from 'react';
-import { IDynamicActionsContext } from '../contexts';
+import { IDynamicActionsContext, isDynamicActionsContext } from '../contexts';
 import { IResolvedDynamicItem } from './utils';
 
 interface SingleDynamicItemEvaluatorProps {
@@ -33,9 +33,12 @@ export const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = (
   const providers = dispatcher.getProviders();
   const provider = providerUid ? providers[providerUid] : undefined;
   const actionsContext = provider ? provider.contextValue : DEFAULT_DYNAMIC_EVALUATOR;
+  const useEvaluator = isDynamicActionsContext(actionsContext) // should always be true
+    ? actionsContext.useEvaluator
+    : DEFAULT_DYNAMIC_EVALUATOR.useEvaluator;
 
   // call a hook
-  const evaluatedItems = actionsContext.useEvaluator({
+  const evaluatedItems = useEvaluator({
     item,
     settings: settings,
   });

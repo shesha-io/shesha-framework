@@ -1,6 +1,5 @@
 import { IStyleType } from "@/providers/form/models";
 import { IImageProps } from "./interfaces";
-import { IBorderType } from "../_settings/utils/border/interfaces";
 
 export const defaultStyles = (prev: IImageProps): IStyleType => {
   const { borderColor, borderRadius, borderType } = prev;
@@ -9,7 +8,7 @@ export const defaultStyles = (prev: IImageProps): IStyleType => {
     border: {
       radiusType: 'all', borderType: 'all',
       border: {
-        all: { width: borderWidth || '1px', style: (borderType as IBorderType) || 'none', color: borderColor },
+        all: { width: borderWidth || '1px', style: borderType || 'none', color: borderColor },
       },
       radius: { all: borderRadius },
     },

@@ -1,5 +1,7 @@
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import camelcase from 'camelcase';
+import { ReactNode, isValidElement } from 'react';
+import { ReactElement } from 'react-markdown/lib/react-markdown';
 
 /* tslint:disable:no-empty-character-class */
 
@@ -94,7 +96,7 @@ export const getNumberOrUndefined = (value: unknown | undefined): number | undef
   }
 };
 
-export const getNumericValue = (localValue: number | string): number => getNumberOrUndefined(localValue) ?? 0;
+export const getNumericValue = (localValue: number | string | undefined): number => getNumberOrUndefined(localValue) ?? 0;
 
 export interface CamelCaseOptions {
   /** Keep the leading separator: `_foo_bar` → `_fooBar`.
@@ -240,4 +242,34 @@ export const truncateMiddle = (str: string, maxLength: number, ellipsis: string 
   const start = Math.ceil(charsToShow / 2);
   const end = Math.floor(charsToShow / 2);
   return str.slice(0, start) + ellipsis + (end > 0 ? str.slice(-end) : '');
+};
+
+export const reactNodeToString = (node: ReactNode): string => {
+  if (node == null) return '';
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(reactNodeToString).join('');
+  if (isValidElement(node)) {
+    const { props } = node as ReactElement;
+    if (typeof props === 'object' && 'children' in props && typeof props.children === 'object')
+      return reactNodeToString(props.children as ReactNode);
+  }
+
+  return '';
+};
+
+export const incrementStringNumber = (input: string): string => {
+  // Match a space followed by one or more digits at the end of the string
+  const regex = / (\d+)$/;
+  const match = input.match(regex);
+
+  if (match && match[1]) {
+    const prefix = input.slice(0, match.index);
+    const currentNumber = parseInt(match[1], 10);
+    const incrementedNumber = currentNumber + 1;
+    return `${prefix} ${incrementedNumber}`;
+  }
+
+  // No trailing number found, append " 1"
+  return `${input} 1`;
 };

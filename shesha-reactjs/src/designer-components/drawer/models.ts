@@ -1,39 +1,39 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IBackgroundValue } from '../_settings/utils/background/interfaces';
-import { IInputStyles } from '@/providers/form/models';
+import { IInputStyles, IStyleType } from '@/providers/form/models';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
-  showFooter?: boolean;
-  showHeader?: boolean;
+  showFooter?: boolean | undefined;
+  showHeader?: boolean | undefined;
 
-  showOkayBtn?: boolean;
-  onOkAction?: IConfigurableActionConfiguration;
-  okText?: string;
-  okButtonCustomEnabled?: string;
+  showOkayBtn?: boolean | undefined;
+  onOkAction?: IConfigurableActionConfiguration | undefined;
+  okText?: string | undefined;
+  okButtonCustomEnabled?: string | undefined;
 
-  showCancelBtn?: boolean;
-  onCancelAction?: IConfigurableActionConfiguration;
-  cancelText?: string;
-  cancelButtonCustomEnabled?: string;
+  showCancelBtn?: boolean | undefined;
+  onCancelAction?: IConfigurableActionConfiguration | undefined;
+  cancelText?: string | undefined;
+  cancelButtonCustomEnabled?: string | undefined;
 
-  placement?: 'top' | 'right' | 'bottom' | 'left';
-  height?: string | number;
-  width?: string | number;
-  hideBorder?: boolean;
-  stylingBox?: string;
-  borderSize?: number;
-  borderRadius?: number;
-  borderColor?: string;
-  fontColor?: string;
-  backgroundColor?: string;
-  fontSize?: number;
-  headerStyles?: IDrawerProps;
-  footerStyles?: any;
-  background?: IBackgroundValue;
+  placement?: 'top' | 'right' | 'bottom' | 'left' | undefined;
+  height?: string | number | undefined;
+  width?: string | number | undefined;
+  hideBorder?: boolean | undefined;
+  stylingBox?: string | undefined;
+  borderSize?: number | undefined;
+  borderRadius?: number | undefined;
+  borderColor?: string | undefined;
+  fontColor?: string | undefined;
+  backgroundColor?: string | undefined;
+  fontSize?: number | undefined;
+  headerStyles?: IStyleType | undefined;
+  footerStyles?: IStyleType | undefined;
+  background?: IBackgroundValue | undefined;
 
-  desktop?: IInputStyles;
-  tablet?: IInputStyles;
-  mobile?: IInputStyles;
-  components?: IConfigurableFormComponent[];
+  desktop?: IInputStyles | undefined;
+  tablet?: IInputStyles | undefined;
+  mobile?: IInputStyles | undefined;
+  components?: IConfigurableFormComponent[] | undefined;
 }

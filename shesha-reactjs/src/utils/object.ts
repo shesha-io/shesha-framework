@@ -222,12 +222,21 @@ export const unwrapDraft = <T>(draft: WritableDraft<T>): T => {
   return draft as T;
 };
 
-export const getStringPropertyOrUndefined = (obj: object, key: string | null | undefined): string | undefined => {
+
+export const getPropertyOrUndefined = <TValue>(obj: object, key: string | null | undefined, converter: (propertyValue: unknown) => TValue | undefined): TValue | undefined => {
   if (!isNullOrWhiteSpace(key) && key in obj) {
     const value = (obj as Record<string, unknown>)[key];
-    return typeof value === "string" ? value : undefined;
+    return value !== undefined ? converter(value) : undefined;
   }
   return undefined;
+};
+
+export const getStringPropertyOrUndefined = (obj: object, key: string | null | undefined): string | undefined => {
+  return getPropertyOrUndefined<string>(obj, key, (value) => typeof value === "string" ? value : undefined);
+};
+
+export const getNumberPropertyOrUndefined = (obj: object, key: string | null | undefined): number | undefined => {
+  return getPropertyOrUndefined<number>(obj, key, (value) => typeof value === "number" ? value : undefined);
 };
 
 export const getFirstNonEmptyStringPropertyOrUndefined = (obj: object, keys: string[]): string | undefined => {
@@ -243,3 +252,36 @@ export const getFirstNonEmptyStringPropertyOrUndefined = (obj: object, keys: str
 export const getDisplayNameOrUndefined = (obj: unknown): string | undefined => typeof (obj) === "object" && isDefined(obj)
   ? getStringPropertyOrUndefined(obj, "_displayName")
   : undefined;
+
+export const getBooleanPropertyOrUndefined = (obj: object, key: string | null | undefined): boolean | undefined => {
+  if (!isNullOrWhiteSpace(key) && key in obj) {
+    const value = (obj as Record<string, unknown>)[key];
+    return typeof value === "boolean" ? value : undefined;
+  }
+  return undefined;
+};
+
+export const getStringEnumOrDefault = <TEnum extends string>(container: object, propertyName: string, validValues: readonly string[], defaultValue?: TEnum | undefined): TEnum | undefined => {
+  var value = getStringPropertyOrUndefined(container, propertyName);
+  if (isNullOrWhiteSpace(value))
+    return defaultValue;
+
+  return validValues.includes(value as TEnum) ? value as TEnum : defaultValue;
+};
+
+export const getDatePropertyOrUndefined = <TContainer extends object = object>(obj: TContainer, propertyName: string): Date | undefined => {
+  if (propertyName in obj) {
+    const value = (obj as Record<string, unknown>)[propertyName];
+    return value instanceof Date
+      ? value
+      : typeof (value) === "string" || typeof (value) === "number"
+        ? new Date(value)
+        : undefined;
+  }
+  return undefined;
+};
+
+/**
+ * Checks if the key is a key of the object
+ */
+export const isKeyOf = <T extends object>(key: string | keyof T, obj: T): key is keyof T => key in obj;

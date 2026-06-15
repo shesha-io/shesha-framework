@@ -3,9 +3,9 @@ import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 export interface IShaSpin {
-  spinning?: boolean;
-  spinIconSize?: number;
-  tip?: string;
+  spinning?: boolean | undefined;
+  spinIconSize?: number | undefined;
+  tip?: string | undefined;
 }
 
 export const ShaSpin: FC<PropsWithChildren<IShaSpin>> = ({ children, spinning, spinIconSize = 24, tip }) => {

@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '@/interfaces';
+import { ConfigurableItemFullName, IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -10,6 +10,7 @@ import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { ConfigItemAutocomplete } from '@/components/configurableItemAutocomplete';
+import { isDefined } from '@/utils/nullables';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -27,11 +28,15 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.entityType);
     const evaluatedFilter = useAsyncDeepCompareMemo<object>(async () => {
-      if (!filter)
+      if (!isDefined(filter))
         return undefined;
 
       const response = await evaluateDynamicFilters(
-        [{ expression: filter } as any],
+        [{
+          id: 'filter',
+          name: 'filter',
+          expression: filter,
+        }],
         [
           {
             match: 'data',
@@ -49,7 +54,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
         propertyMetadataAccessor,
       );
 
-      if (response.find((f) => f?.unevaluatedExpressions?.length))
+      if (response.find((f) => f.unevaluatedExpressions?.length))
         return undefined;
 
       const expression = response.length > 0
@@ -63,20 +68,37 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
         : expression;
     }, [filter, allData.data, allData.globalState, allData.pageContext]);
 
-    return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => (
-          <ConfigItemAutocomplete
-            entityType={model.entityType}
-            readOnly={model.readOnly}
-            value={value}
-            onChange={onChange}
-            mode={model.mode}
-            filter={evaluatedFilter}
-          />
-        )}
-      </ConfigurableFormItem>
-    );
+    const mode = model.mode ?? 'single';
+
+    return mode === 'single'
+      ? (
+        <ConfigurableFormItem<ConfigurableItemFullName> model={model}>
+          {(value, onChange) => (
+            <ConfigItemAutocomplete
+              entityType={model.entityType}
+              readOnly={model.readOnly}
+              value={value ?? undefined}
+              onChange={onChange}
+              mode={mode}
+              filter={evaluatedFilter}
+            />
+          )}
+        </ConfigurableFormItem>
+      )
+      : (
+        <ConfigurableFormItem<ConfigurableItemFullName[]> model={model}>
+          {(value, onChange) => (
+            <ConfigItemAutocomplete
+              entityType={model.entityType}
+              readOnly={model.readOnly}
+              value={value ?? undefined}
+              onChange={onChange}
+              mode={mode}
+              filter={evaluatedFilter}
+            />
+          )}
+        </ConfigurableFormItem>
+      );
   },
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

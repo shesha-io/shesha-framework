@@ -10,8 +10,12 @@ import { MetadataEditor } from './metadataEditor';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { useFormData } from '@/providers';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
+import { IModelItem } from '@/interfaces/modelConfigurator';
 
 const settingsForm = settingsFormJson as FormMarkup;
+
+const EMPTY_MODEL: IModelItem[] = [];
+const EMPTY_PROPS: IPropertyMetadata[] = [];
 
 export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponentProps> = {
   type: 'metadataEditor',
@@ -31,16 +35,16 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
 
       const metadataBuilder = metadataBuilderFactory();
       const result = executeScriptSync<IPropertyMetadata[]>(model.baseProperties, { data: formData, metadataBuilder });
-      return result;
-    }, [model.baseProperties, formData]);
+      return result ?? EMPTY_PROPS;
+    }, [model.baseProperties, formData, metadataBuilderFactory]);
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<IModelItem[]> model={model}>
         {(value, onChange) => {
           return (
             <MetadataEditor
               {...model}
-              value={value}
+              value={value ?? EMPTY_MODEL}
               onChange={onChange}
               readOnly={model.readOnly}
               baseProperties={baseProperties}

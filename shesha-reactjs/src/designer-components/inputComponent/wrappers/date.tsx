@@ -12,7 +12,7 @@ export const DateWrapper: FCUnwrapped<IDateSettingsInputProps> = (props) => {
       readOnly={readOnly}
 
       type="date"
-      id={id}
+      id={id ?? ""}
       propertyName={propertyName}
       hideBorder={false}
       range={false}

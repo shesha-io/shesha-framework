@@ -14,6 +14,7 @@ import { useFormDesignerComponents } from "../hooks";
 import { addDelayedUpdateProperty } from "@/providers/delayedUpdateProvider";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getIdOrUndefined } from "@/utils/entity";
+import { isNonEmptyArray } from "@/utils/array";
 
 export interface GqlSubmitterArguments {
   httpClient: HttpClientApi;
@@ -53,8 +54,11 @@ export class GqlSubmitter implements IFormDataSubmitter {
       : addFormFieldsList({}, postDataAfterPreparation, antdForm);
 
     // handle delayed updates
-    if (Boolean(getDelayedUpdates))
-      addDelayedUpdateProperty(postDataWithServiceFields, getDelayedUpdates());
+    if (Boolean(getDelayedUpdates)) {
+      const delayedUpdates = getDelayedUpdates();
+      if (isNonEmptyArray(delayedUpdates))
+        addDelayedUpdateProperty(postDataWithServiceFields, delayedUpdates);
+    }
 
     const postDataFinal = hasFiles(postDataWithServiceFields)
       ? jsonToFormData(postDataWithServiceFields)
@@ -156,12 +160,12 @@ export class GqlSubmitter implements IFormDataSubmitter {
   };
 }
 
-export const useGqlSubmitter = (): IFormDataSubmitter => {
+export const useGqlSubmitter = <Values extends object = object>(): IFormDataSubmitter<Values> => {
   const httpClient = useHttpClient();
   const endpointsEvaluator = useModelApiHelper();
   const toolboxComponents = useFormDesignerComponents();
 
-  const [loader] = useState<IFormDataSubmitter>(() => {
+  const [loader] = useState<IFormDataSubmitter<Values>>(() => {
     return new GqlSubmitter({
       httpClient: httpClient,
       endpointsEvaluator: endpointsEvaluator,

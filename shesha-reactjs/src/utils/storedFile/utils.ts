@@ -3,6 +3,7 @@ import { FileListReference, FileReference, StoredFileModel } from "./models";
 import { isEntityTypeIdEmpty } from "../../providers/metadataDispatcher/entities/utils";
 import { StoredFileDto } from "./api-models";
 import { ownerTypeToString } from "../entity";
+import { UploadFile } from "antd";
 
 export const validateFileReference = (fileReference: FileReference): void => {
   if (isNullOrWhiteSpace(fileReference.ownerId))
@@ -47,4 +48,17 @@ export const storedFileDtoToModel = (dto: StoredFileDto): StoredFileModel => {
 
 export const getFileExtension = (file: File): string => {
   return file.name.split('.').pop() || '';
+};
+
+export const storedFileModel2UploadFile = (file: StoredFileModel): UploadFile => {
+  return {
+    uid: file.uid,
+    name: file.name,
+    size: file.size ?? 0,
+    type: file.type ?? '',
+    ...(file.status ? { status: file.status } : {}),
+    id: file.id ?? undefined,
+    ...(file.url ? { url: file.url } : {}),
+    error: file.error,
+  };
 };

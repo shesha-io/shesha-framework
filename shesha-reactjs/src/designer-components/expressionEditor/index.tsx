@@ -16,7 +16,7 @@ import {
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import { useMetadata } from '@/providers/metadata';
+import { useMetadataOrUndefined } from '@/providers/metadata';
 import { asPropertiesArray } from '@/interfaces/metadata';
 import {
   migrateCustomFunctions,
@@ -49,7 +49,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
     const availableConstants = useAvailableConstantsMetadata({
       standardConstants: STANDARD_CONSTANTS,
     });
-    const formMetadata = useMetadata(false)?.metadata;
+    const formMetadata = useMetadataOrUndefined()?.metadata;
 
     const dataPathContext = React.useMemo(() => {
       const properties = asPropertiesArray(formMetadata?.properties, []);
@@ -85,7 +85,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
             <ExpressionEditor
               value={typeof model.value === 'string' ? model.value : ''}
               onChange={onDesignerChange}
-              disabled={model.readOnly}
+              disabled={model.readOnly ?? false}
               context={context ?? EMPTY_CONTEXT}
               placeholder={model.placeholder}
             />
@@ -100,7 +100,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
           <ExpressionEditor
             value={typeof value === 'string' ? value : ''}
             onChange={onChange}
-            disabled={model.readOnly}
+            disabled={model.readOnly ?? false}
             context={context ?? EMPTY_CONTEXT}
             placeholder={model.placeholder}
             inline
