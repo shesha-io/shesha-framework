@@ -149,8 +149,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               })
               .addSettingsInput({
                 id: nanoid(),
-                propertyName: 'excludeGlobalComplexityConfig',
-                label: 'Exclude Global Complexity Config',
+                propertyName: 'useStandardPasswordValidation',
+                label: 'Use standard password validation',
+                tooltip: 'When enabled, the password validation follows the rules defined in the corresponding authentication configuration. When disabled, no global complexity validation is applied.',
                 inputType: 'switch',
                 size: 'small',
                 layout: 'horizontal',
