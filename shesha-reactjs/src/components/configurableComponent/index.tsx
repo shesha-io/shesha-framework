@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
-import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
+import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 
-export interface IComponentStateProps<TSettings = any> {
+export interface IComponentStateProps<TSettings = unknown> {
   isSelected: boolean;
   isEditMode: boolean;
   wrapperClassName: string;
@@ -12,18 +12,18 @@ export interface IOverlayProps {
   children?: React.ReactElement;
 }
 
-export type ConfigurableComponentChildrenFn<TSettings = any> = (
+export type ConfigurableComponentChildrenFn<TSettings = unknown> = (
   componentState: IComponentStateProps<TSettings>,
   BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
-export interface ISettingsEditorProps<TSettings = any> {
-  settings: TSettings;
+export interface ISettingsEditorProps<TSettings = unknown> {
+  settings: TSettings | undefined;
   onSave: (settings: TSettings) => void;
   onCancel: () => void;
 };
 
-export interface ISettingsEditor<TSettings = any> {
+export interface ISettingsEditor<TSettings = unknown> {
   render: (props: ISettingsEditorProps<TSettings>) => ReactNode;
   save?: () => Promise<TSettings>;
 }
@@ -33,11 +33,11 @@ export type ComponentSettingsMigrationContext = object;
 /**
  * Settings migrator
  */
-export type ComponentSettingsMigrator<TSettings> = (
-  migrator: Migrator<any, TSettings, ComponentSettingsMigrationContext>,
+export type ComponentSettingsMigrator<TSettings extends IHasVersion = IHasVersion> = (
+  migrator: Migrator<IHasVersion, TSettings, ComponentSettingsMigrationContext>,
 ) => MigratorFluent<TSettings, TSettings, ComponentSettingsMigrationContext>;
 
-export interface IConfigurableApplicationComponentProps<TSettings = any> {
+export interface IConfigurableApplicationComponentProps<TSettings extends IHasVersion = IHasVersion> {
   canConfigure?: boolean;
   children: ConfigurableComponentChildrenFn<TSettings>;
   onStartEdit?: () => void;

@@ -10,6 +10,7 @@ import { DEFAULT_CONTEXT_METADATA } from '@/providers/dataContextManager/models'
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IDataContextComponentProps } from './interfaces';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
   type: 'dataContext',
@@ -22,19 +23,25 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
 
     const metadata: Promise<IModelMetadata> = useMemo(() => {
       return Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name: model.componentName, properties: model.items ?? [] } as IModelMetadata);
-    }, [model.id, model.componentName, model.items]);
+    }, [model.componentName, model.items]);
 
-    const initialData: Promise<any> = useMemo(() => {
-      return allData.form?.formMode === 'designer' ? null : executeScript(model.initialDataCode, allData);
+    const initialData: Promise<object> | undefined = useMemo(() => {
+      return allData.form?.formMode === 'designer'
+        ? undefined
+        : !isNullOrWhiteSpace(model.initialDataCode)
+          ? executeScript(model.initialDataCode, allData)
+          : undefined;
+      // TODO V1: review dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [model.initialDataCode]);
 
     
     return (
       <DataContextProvider
         {...model}
-        name={model.componentName}
+        name={model.componentName ?? model.id}
         metadata={metadata}
-        initialData={allData.form?.formMode === 'designer' ? null : initialData}
+        initialData={initialData}
         type="control"
       >
         <ComponentsContainer containerId={model.id} />
@@ -46,11 +53,11 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
   },
   linkToModelMetadata: (model): IDataContextComponentProps => ({ ...model }),
   migrator: (m) => m
-    .add<IDataContextComponentProps>(0, (prev) => ({ ...prev, description: prev.description ?? prev.componentName, items: [], initialDataCode: null }))
+    .add<IDataContextComponentProps>(0, (prev) => ({ ...prev, description: prev.description ?? prev.componentName, items: [], initialDataCode: undefined }))
     .add<IDataContextComponentProps>(1, (prev) => ({ ...prev, onChangeAction: migrateNavigateAction(prev.onChangeAction) }))
     .add<IDataContextComponentProps>(2, (prev) => ({
       ...migrateFormApi.properties(prev),
-      initialDataCode: migrateFormApi.withoutFormData(prev?.initialDataCode),
+      initialDataCode: migrateFormApi.withoutFormData(prev.initialDataCode),
     })),
 };
 

@@ -13,7 +13,7 @@ import { getSettings as getInlineSettings } from './componentGroups/inlineCompon
 
 export type ComponentGroupKey = 'input' | 'layout' | 'standard' | 'inline';
 
-const GROUP_SETTINGS_FACTORIES: Record<ComponentGroupKey, (args: { fbf: any }) => { components: any[]; formSettings?: any }> = {
+const GROUP_SETTINGS_FACTORIES: Record<ComponentGroupKey, (args: { fbf: any }) => FormMarkup> = {
   input: getInputSettings,
   layout: getLayoutSettings,
   standard: getStandardSettings,
@@ -41,9 +41,9 @@ const GROUP_TITLES: Record<ComponentGroupKey, { title: string; description: stri
 
 export interface IComponentGroupSettingsProps {
   group: ComponentGroupKey;
-  value?: IConfigurableTheme;
-  onChange?: (theme: IConfigurableTheme) => void;
-  readonly?: boolean;
+  value?: IConfigurableTheme | undefined;
+  onChange?: ((theme: IConfigurableTheme) => void) | undefined;
+  readonly?: boolean | undefined;
 }
 
 export const ComponentGroupSettings: FC<IComponentGroupSettingsProps> = ({ group, value: theme, onChange, readonly }) => {

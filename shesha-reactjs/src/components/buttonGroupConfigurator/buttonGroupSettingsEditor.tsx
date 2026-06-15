@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { ButtonGroupItemProps, IButtonGroup, IButtonGroupItem } from '@/providers';
 import { nanoid } from '@/utils/uuid';
 import { ButtonGroupProperties } from './properties';
@@ -9,6 +9,7 @@ import { useStyles } from '@/designer-components/_common/styles/listConfigurator
 import { isGroup } from '@/providers/buttonGroupConfigurator/models';
 import { ListEditorWithPropertiesPanel } from '../listEditorWithPropertiesPanel';
 import { initialValues } from './utils';
+import { isDefined } from '@/utils/nullables';
 
 export interface ButtonGroupSettingsEditorProps {
   readOnly: boolean;
@@ -16,7 +17,7 @@ export interface ButtonGroupSettingsEditorProps {
   onChange: (newValue: ButtonGroupItemProps[]) => void;
 }
 
-const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItemProps>> = ({ contextAccessor, level, parentItem }) => {
+const ButtonGroupEditorHeader = ({ contextAccessor, level, parentItem }: ListEditorSectionRenderingArgs<ButtonGroupItemProps>): ReactNode => {
   const { addItem, readOnly } = contextAccessor();
   const { styles } = useStyles();
 
@@ -56,7 +57,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
           <Button onClick={onAddItemClick} type="primary">Add New Item</Button>
         </div>
       )
-      : !(parent.childItems?.length)
+      : isDefined(parent) && !(parent.childItems?.length)
         ? (
           <Divider style={{ marginTop: 0, marginBottom: 0 }}>
             <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>
@@ -70,7 +71,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
 
 export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ value, onChange, readOnly }) => {
   const makeNewItem = (items: ButtonGroupItemProps[]): ButtonGroupItemProps => {
-    const itemsCount = (items ?? []).length;
+    const itemsCount = items.length;
     const itemNo = itemsCount + 1;
 
     const newItem: IButtonGroupItem = {

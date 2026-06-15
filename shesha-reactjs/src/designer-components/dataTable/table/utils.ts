@@ -7,6 +7,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IStyleType } from '@/providers/form/models';
 import { isNonEmptyArray } from '@/utils/array';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 const MAX_NUMBER_OF_DEFAULT_COLS = 20;
@@ -317,15 +318,15 @@ export const convertRowDimensionsToHeight = (height: string | number | undefined
 
 export type RowStylingBoxType = {
   padding?: {
-    top?: string | number;
-    right?: string | number;
-    bottom?: string | number;
-    left?: string | number;
-  };
-  paddingTop?: string | number;
-  paddingRight?: string | number;
-  paddingBottom?: string | number;
-  paddingLeft?: string | number;
+    top?: string | number | undefined;
+    right?: string | number | undefined;
+    bottom?: string | number | undefined;
+    left?: string | number | undefined;
+  } | undefined;
+  paddingTop?: string | number | undefined;
+  paddingRight?: string | number | undefined;
+  paddingBottom?: string | number | undefined;
+  paddingLeft?: string | number | undefined;
 };
 
 export const convertRowPaddingFieldsToPadding = (
@@ -405,16 +406,7 @@ export const convertRowStylingBoxToPadding = (rowStylingBox?: string | RowStylin
   return `${topPx} ${rightPx} ${bottomPx} ${leftPx}`;
 };
 
-export const convertRowBorderStyleToBorder = (rowBorderStyle?: {
-  borderType?: string;
-  border?: {
-    all?: { width?: string | number; style?: string; color?: string };
-    top?: { width?: string | number; style?: string; color?: string };
-    right?: { width?: string | number; style?: string; color?: string };
-    bottom?: { width?: string | number; style?: string; color?: string };
-    left?: { width?: string | number; style?: string; color?: string };
-  };
-}): string | undefined => {
+export const convertRowBorderStyleToBorder = (rowBorderStyle?: IBorderValue): string | undefined => {
   if (!rowBorderStyle?.border) return undefined;
 
   const { borderType, border } = rowBorderStyle;

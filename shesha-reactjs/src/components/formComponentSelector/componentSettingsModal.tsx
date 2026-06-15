@@ -1,5 +1,5 @@
 import { Modal, Spin } from 'antd';
-import { ISettingsFormInstance, IToolboxComponentBase } from '@/interfaces';
+import { ISettingsFormInstance, IToolboxComponent, IToolboxComponentBase } from '@/interfaces';
 import React, { ReactNode, useRef } from 'react';
 import { useMedia } from 'react-use';
 import { IConfigurableFormComponent } from '@/providers/form/models';
@@ -15,7 +15,7 @@ export interface IProps<T extends IConfigurableFormComponent> {
   propertyFilter?: (name: string) => boolean;
 }
 
-function ComponentSettingsModal<T extends IConfigurableFormComponent>({
+function ComponentSettingsModal<T extends IConfigurableFormComponent = IConfigurableFormComponent>({
   formComponent,
   isVisible,
   onSave,
@@ -25,7 +25,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
   propertyFilter,
 }: IProps<T>): ReactNode {
   const isSmall = useMedia('(max-width: 480px)');
-  const formRef = useRef<ISettingsFormInstance>();
+  const formRef = useRef<ISettingsFormInstance | null>(null);
 
   if (!formComponent)
     return null;
@@ -55,14 +55,13 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
       mask={{ closable: false }}
     >
       <Spin spinning={saving} description="Please wait...">
-        {/* <ValidationErrors error={error?.data}></ValidationErrors> */}
         <ComponentPropertiesEditor
           isInModal={true}
           componentModel={model}
           readOnly={readOnly}
           onSave={onSave}
           autoSave={false}
-          toolboxComponent={formComponent}
+          toolboxComponent={formComponent as IToolboxComponent<T>}
           formRef={formRef}
           propertyFilter={propertyFilter}
           layoutSettings={{

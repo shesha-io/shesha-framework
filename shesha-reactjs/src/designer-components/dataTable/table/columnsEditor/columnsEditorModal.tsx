@@ -5,7 +5,7 @@ import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/model
 import { ColumnsConfigurator } from './columnsConfigurator';
 import { deepCopyViaJson } from '@/utils/object';
 import { useDataTableStoreOrUndefined } from '@/providers/dataTable';
-import { useMetadata } from '@/providers/metadata';
+import { useMetadataOrUndefined } from '@/providers/metadata';
 import { calculateDefaultColumns } from '../utils';
 import { BackendRepositoryType } from '@/providers/dataTable/repository/backendRepository';
 
@@ -15,13 +15,13 @@ export interface IColumnsEditorModal {
   hideModal: () => void;
   parentComponentType?: string | undefined;
   value?: ColumnsItemProps[] | undefined;
-  onChange?: (value: unknown) => void;
+  onChange?: ((value: ColumnsItemProps[]) => void) | undefined;
 }
 
 export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, visible, hideModal, readOnly, parentComponentType }) => {
   const isSmall = useMedia('(max-width: 480px)');
   const dataTableStore = useDataTableStoreOrUndefined(); // Don't require - modal may not be in a DataTable context
-  const metadataContext = useMetadata(false); // Don't require - DataTable may not be in a DataSource
+  const metadataContext = useMetadataOrUndefined(); // Don't require - DataTable may not be in a DataSource
   const metadata = metadataContext?.metadata;
   const isEntitySource = dataTableStore?.getRepository().repositoryType === BackendRepositoryType;
 

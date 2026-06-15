@@ -1,8 +1,8 @@
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import { FormIdentifier, IStyleType } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { ISelectionProps } from '@/providers/dataTable/interfaces';
+import { ISelectionProps, RowSelection } from '@/providers/dataTable/interfaces';
 import { ISortingItem, ITableRowData } from '@/providers/dataTable/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
@@ -12,12 +12,15 @@ export type Orientation = 'vertical' | 'horizontal' | 'wrap';
 export type ListItemWidth = number | 'custom';
 export type InlineEditMode = 'one-by-one' | 'all-at-once';
 export type InlineSaveMode = 'auto' | 'manual';
+export type NewItemInitializer<TValue extends object = object> = () => Promise<TValue>;
 
-export type NewItemInitializer = () => Promise<object>;
+export type ActionRefType = {
+  addNewItem: () => void;
+};
 
 export interface IDataListProps extends IDataListBaseProps, IDataListActions {
-  records?: any[] | undefined;
-  groupingMetadata?: IPropertyMetadata[] | undefined;
+  records?: ITableRowData[] | undefined;
+  groupingMetadata: IPropertyMetadata[];
   selectedRow?: ISelectionProps | undefined;
   selectedRows?: ITableRowData[] | undefined;
 
@@ -32,7 +35,7 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
 
   allowChangeEditMode?: boolean | undefined;
 
-  actionRef?: MutableRefObject<any> | undefined;
+  actionRef?: RefObject<ActionRefType | undefined> | undefined;
 
   modalWidth?: string | undefined;
   noDataText?: string | undefined;
@@ -42,85 +45,77 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
 
 export interface IDataListBaseProps extends IStyleType {
   id: string;
-
-  dataSource?: string;
-
-  formSelectionMode?: FormSelectionMode;
-  formId?: FormIdentifier;
-  formType?: string;
-  formIdExpression?: string;
-
-  createFormId?: FormIdentifier;
-  createFormType?: string;
-
-  selectionMode?: DataListSelectionMode;
-
-  grouping?: ISortingItem[];
-
-  entityType?: string | IEntityTypeIdentifier;
-
-  orientation?: Orientation;
-  listItemWidth?: ListItemWidth;
-  customListItemWidth?: number;
-  cardMinWidth?: string;
-  cardMaxWidth?: string;
-  cardHeight?: string;
-  cardSpacing?: string;
-  showBorder?: boolean;
-  gap?: number;
-  container?: IStyleType;
-
-  dblClickActionConfiguration?: IConfigurableActionConfiguration;
-  onRowDeleteSuccessAction?: IConfigurableActionConfiguration;
-  collapsible?: boolean;
-  collapseByDefault?: boolean;
-  groupStyle?: string;
-
-  inlineEditMode?: InlineEditMode;
-  inlineSaveMode?: InlineSaveMode;
-  noDataText?: string;
-  noDataSecondaryText?: string;
-  noDataIcon?: string;
-
-  onNewListItemInitialize?: string;
+  dataSource?: string | undefined;
+  formSelectionMode?: FormSelectionMode | undefined;
+  formId?: FormIdentifier | undefined;
+  formType?: string | undefined;
+  formIdExpression?: string | undefined;
+  createFormId?: FormIdentifier | undefined;
+  createFormType?: string | undefined;
+  selectionMode?: DataListSelectionMode | undefined;
+  grouping?: ISortingItem[] | undefined;
+  entityType?: string | IEntityTypeIdentifier | undefined;
+  orientation?: Orientation | undefined;
+  listItemWidth?: ListItemWidth | undefined;
+  customListItemWidth?: number | undefined;
+  cardMinWidth?: string | undefined;
+  cardMaxWidth?: string | undefined;
+  cardHeight?: string | undefined;
+  cardSpacing?: string | undefined;
+  showBorder?: boolean | undefined;
+  gap?: number | undefined;
+  container?: IStyleType | undefined;
+  dblClickActionConfiguration?: IConfigurableActionConfiguration | undefined;
+  onRowDeleteSuccessAction?: IConfigurableActionConfiguration | undefined;
+  collapsible?: boolean | undefined;
+  collapseByDefault?: boolean | undefined;
+  groupStyle?: string | undefined;
+  inlineEditMode?: InlineEditMode | undefined;
+  inlineSaveMode?: InlineSaveMode | undefined;
+  noDataText?: string | undefined;
+  noDataSecondaryText?: string | undefined;
+  noDataIcon?: string | undefined;
+  onNewListItemInitialize?: string | undefined;
 }
 
 interface IDataListActions {
-  onSelectRow?: (index: number, row: any) => void;
-  onMultiSelectRows?: (rows: any[]) => void;
-  onSelectedIdsChanged?: (selectedRowIds: string[]) => void;
-  onDblClick?: (data: any, index?: number) => void;
+  onSelectRow?: ((index: number, row: ITableRowData) => void) | undefined;
+  onClearSelectedRow?: (() => void) | undefined;
+  onMultiSelectRows: (rows: RowSelection<ITableRowData>[] | RowSelection<ITableRowData>) => void;
+
+  onSelectedIdsChanged?: ((selectedRowIds: string[]) => void) | undefined;
+  onDblClick?: ((data: ITableRowData, index?: number) => void) | undefined;
 
   /** Called when fetch data or refresh is complete is complete */
-  onFetchDataSuccess?: () => void;
-  onRowsChanged?: (rows: object[]) => void;
+  onFetchDataSuccess?: (() => void) | undefined;
+  onRowsChanged?: ((rows: object[]) => void) | undefined;
 
-  changeSelectedIds?: (selectedIds: string[]) => void;
+  changeSelectedIds: ((selectedIds: string[]) => void);
 
-  deleteAction?: (rowIndex: number, data: any) => Promise<any>;
-  updateAction?: (rowIndex: number, data: any) => Promise<any>;
-  createAction?: (data: any) => Promise<any>;
+  deleteAction?: ((rowIndex: number, data: ITableRowData) => Promise<void>) | undefined;
+  updateAction?: ((rowIndex: number, data: ITableRowData) => Promise<ITableRowData>) | undefined;
+  createAction?: ((data: ITableRowData) => Promise<ITableRowData>) | undefined;
 
-  onListItemClick?: (index: number, item: any) => void;
-  onListItemHover?: (index: number, item: any) => void;
-  onListItemSelect?: (index: number, item: any) => void;
-  onSelectionChange?: (selectedItems: any[], selectedIndices: number[]) => void;
+  onListItemClick?: ((index: number, item: ITableRowData) => void) | undefined;
+  onListItemHover?: ((index: number, item: ITableRowData) => void) | undefined;
+  onListItemSelect?: ((index: number, item: ITableRowData) => void) | undefined;
+  onSelectionChange?: (selectedItems: ITableRowData[], selectedIndices: number[]) => void;
 }
 
-export interface Row {
+export interface GrouppedRow {
   index: number;
-  row: any;
+  row: ITableRowData;
 };
-export type RowOrGroup = Row | RowsGroup;
+export type RowOrGroup = GrouppedRow | RowsGroup;
 export interface RowsGroup {
-  value: any;
+  value: unknown;
   index: number;
   $childs: RowOrGroup[];
 }
 export interface GroupLevelInfo {
   propertyName: string;
   index: number;
-  currentGroup?: RowsGroup;
+  currentGroup?: RowsGroup | undefined;
   propertyPath: string[];
 }
 export type GroupLevels = GroupLevelInfo[];

@@ -1,42 +1,33 @@
 import React from 'react';
 import { BasicConfig } from '@react-awesome-query-builder/antd';
 import type { FieldWidget as BaseFieldWidget } from '@react-awesome-query-builder/antd';
-import { Typography } from 'antd';
 import { FieldWidgetProvider } from './fieldWidgetContext';
 
 type FieldWidgetType = BaseFieldWidget & {
   valueSrc: "field";
 };
 
+type RceType = typeof React.createElement;
+
 const FieldWidget: FieldWidgetType = {
   ...BasicConfig.widgets.field,
   // type: 'specification',
-  factory: (props, { RCE, W: { ValueFieldWidget } }) => {
+  factory: (props, configContext) => {
+    if (configContext === undefined)
+      throw new Error('configContext is undefined');
+
+    const { W: { ValueFieldWidget } } = configContext;
+    const RCE = "RCE" in configContext ? configContext["RCE"] as RceType : React.createElement;
     const fieldSelectorProps = {
       ...props,
       isFieldComparison: true,
       mainField: props.fieldDefinition,
     };
-    const filterProps = {
-      fieldType: props.fieldType,
-      field: props.field,
-      fieldSrc: props.fieldSrc,
-      fieldDefinition: props.fieldDefinition,
-    };
 
     return (
       <>
-        {false && (
-          <Typography.Paragraph
-            copyable={{
-              text: () => JSON.stringify(filterProps, null, 2),
-            }}
-          >
-            Copy widget props.
-          </Typography.Paragraph>
-        )}
         <FieldWidgetProvider widgetProps={props}>
-          {RCE(ValueFieldWidget, fieldSelectorProps)}
+          {ValueFieldWidget && RCE(ValueFieldWidget, fieldSelectorProps)}
         </FieldWidgetProvider>
       </>
     );

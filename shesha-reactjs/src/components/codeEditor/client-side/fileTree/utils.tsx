@@ -69,7 +69,7 @@ export const getSourcesTree = (monaco: Monaco): Directory => {
       const file: SourceFile = {
         // content: model.getValue(),
         id: fileId,
-        name: fileName,
+        name: fileName ?? "",
         uri: model.uri,
         type: FileItemType.File,
         parentId: directory.id,

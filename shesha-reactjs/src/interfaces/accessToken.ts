@@ -1,7 +1,7 @@
 export interface IAccessToken {
-  accessToken?: string | null;
-  expireInSeconds?: number;
-  expireOn?: string;
+  accessToken?: string | undefined;
+  expireInSeconds?: number | undefined;
+  expireOn?: string | undefined;
 }
 
 export interface IStoredToken extends IAccessToken {

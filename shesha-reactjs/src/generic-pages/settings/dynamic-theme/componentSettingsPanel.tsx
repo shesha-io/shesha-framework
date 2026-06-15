@@ -11,9 +11,9 @@ import { buildPreviewComponents, getPreviewFormData, previewNeedsDesignerMode } 
 import { getAppearanceMarkup } from './appearanceMarkup';
 
 export interface IComponentDefaultsPanelProps {
-  value?: IConfigurableTheme;
-  onChange?: (theme: IConfigurableTheme) => void;
-  readonly?: boolean;
+  value?: IConfigurableTheme | undefined;
+  onChange?: ((theme: IConfigurableTheme) => void) | undefined;
+  readonly?: boolean | undefined;
 }
 
 /**

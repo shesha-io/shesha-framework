@@ -7,6 +7,7 @@ import { removeUndefinedProperties } from '@/utils/array';
 import { useGlobalState, useSubForm } from '@/providers';
 import { useParent } from '@/providers/parentProvider/index';
 import FormComponent from '../../components/formDesigner/formComponent';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IComponentsContainerSubFormProps extends IComponentsContainerBaseProps, ICommonContainerProps { }
 
@@ -15,7 +16,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
   const { getChildComponents, context } = useSubForm();
 
   const parent = useParent();
-  const components = getChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const components = getChildComponents(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
   const style = getAlignmentStyle(props);
 
@@ -35,8 +36,8 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
   return (
     <div style={removeUndefinedProperties(style)}>
       {components
-        ?.filter(({ customVisibility }) => {
-          return executeExpression(customVisibility);
+        .filter(({ customVisibility }) => {
+          return isNullOrWhiteSpace(customVisibility) || executeExpression(customVisibility);
         })
         .map((model) => {
           return (
@@ -48,7 +49,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
                 readOnly: readOnly === true ? true : model.readOnly,
                 customEnabled: '',
               }}
-              key={model?.id}
+              key={model.id}
             />
           );
         })}

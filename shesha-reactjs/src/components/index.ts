@@ -1,12 +1,22 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
+export {
+  ExpressionEditor,
+  buildExpressionContextFromPaths,
+  type ExpressionContext,
+  type ExpressionContextValue,
+  type ExpressionEditorProps,
+  type ExpressionFunctionDefinition,
+  type BuildExpressionContextFromPathsOptions,
+} from './expressionEditor';
+export {
+  buildExpressionContextFromMetadata,
+  buildExpressionContextFromProperties,
+  mergeExpressionContexts,
+  type ExpressionContextTree,
+} from './expressionEditor/contextMetadata';
 export { default as FileUpload, type IFileUploadProps } from './fileUpload';
 export { ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
 export { default as MultiCheckBoxRefList, type IMultiCheckBoxRefListProps } from './multiCheckBoxRefList';
-export {
-  default as MultiReadCheckBoxRefList,
-  type IMultiReadCheckBoxRefListProps,
-  binaryToList,
-} from './multiReadCheckBoxrefList';
 export { ReactTable } from './reactTable';
 export { type IReactTableProps } from './reactTable/interfaces';
 export {
@@ -33,8 +43,6 @@ export { default as ColumnItemFilter, type IColumnItemFilterProps } from './colu
 export { default as columnsFilterSelect } from './columnsFilterSelect';
 export { default as columnsFilterSelectBase, type IColumnsFilterSelectBaseProps } from './columnsFilterSelectBase';
 export { default as DateDisplay, type IDateDisplayProps } from './dateDisplay';
-export { default as EditableDisplayFormItem, type IEditableDisplayLabelProps } from './editableDisplayFormItem';
-export { default as DisplayFormItem, type IDisplayFormItemProps } from './displayFormItem';
 export { default as EntityPicker } from './entityPicker';
 export { default as GlobalTableFilter, type IGlobalTableFilterProps } from './globalTableFilter';
 export { default as GlobalTableFilterBase, type IGlobalTableFilterBaseProps } from './globalTableFilterBase';
@@ -90,7 +98,6 @@ export { Autocomplete, type IAutocompleteProps } from './autocomplete';
 export { Page } from './page';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
 export { default as QuickView, type IQuickViewProps } from './quickView';
-export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 export { SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { ConfigurableSidebarMenu } from './configurableSidebarMenu';
 export { ComponentSettingsModal } from './configurableSidebarMenu/settingsModal';

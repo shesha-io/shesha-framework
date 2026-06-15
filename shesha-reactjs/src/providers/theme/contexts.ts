@@ -2,12 +2,15 @@ import { createNamedContext } from '@/utils/react';
 import { Theme } from 'antd/lib/config-provider/context';
 import { FormItemLayout } from 'antd/lib/form/Form';
 import { FormLabelAlign } from 'antd/lib/form/interface';
+import { ColorValueType } from 'antd/es/color-picker/interface';
 
 interface ITextTheme {
-  default?: string;
-  secondary?: string;
-  link?: string;
+  default?: ColorValueType;
+  secondary?: ColorValueType;
+  link?: ColorValueType;
 }
+
+export type SidebarTheme = 'dark' | 'light';
 
 /** Settings shared by every component group: default margin/padding in the styleBox JSON format. */
 export interface IComponentGroupBaseSettings {
@@ -58,13 +61,14 @@ export interface IComponentGroupsSettings {
 }
 
 export interface IConfigurableTheme {
-  application?: Theme;
-  sidebar?: 'dark' | 'light';
-  sidebarBackground?: string;
-  layoutBackground?: string;
-  text?: ITextTheme;
-  labelSpan?: number;
-  componentSpan?: number;
+  application?: Theme | undefined;
+  sidebar?: SidebarTheme | undefined;
+  sidebarBackground?: string | undefined;
+  layoutBackground?: ColorValueType | undefined;
+  text?: ITextTheme | undefined;
+  labelSpan?: number | undefined;
+  componentSpan?: number | undefined;
+
   labelAlign?: FormLabelAlign;
   layout?: FormItemLayout;
   colon?: boolean;
@@ -72,7 +76,8 @@ export interface IConfigurableTheme {
 }
 
 export interface IThemeStateContext {
-  readonly theme?: IConfigurableTheme | undefined;
+  readonly theme: IConfigurableTheme;
+  readonly initialTheme: IConfigurableTheme | undefined;
   prefixCls: string;
   iconPrefixCls: string;
   labelSpan: number;
@@ -112,6 +117,7 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
   componentSpan: 18,
   colon: true,
   layout: 'horizontal',
+  initialTheme: undefined,
 };
 
 export const UiStateContext = createNamedContext<IThemeStateContext | undefined>(THEME_CONTEXT_INITIAL_STATE, "UiStateContext");

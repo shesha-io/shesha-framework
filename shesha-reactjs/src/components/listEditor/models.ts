@@ -1,5 +1,6 @@
 import { ItemInterface } from "react-sortablejs";
 import { IGenericListEditorProps } from "./interfaces";
+import { ReactNode } from "react";
 
 export type ListMode = 'create' | 'read' | 'update';
 
@@ -8,8 +9,7 @@ export interface ListItem {
 }
 
 export interface ListItemWithId {
-  childItems?: ListItemWithId[];
-  itemType?: 'item' | 'group';
+  childItems?: ListItemWithId[] | undefined;
   id: string;
 }
 
@@ -17,18 +17,18 @@ export interface SortableItem<ListItemType> extends ItemInterface {
   data: ListItemType;
 }
 
-export type ListItemFactory<TItem = any> = (items: TItem[]) => TItem;
+export type ListItemFactory<TItem = unknown> = (items: TItem[]) => TItem;
 
-export interface IListEditorState<TItem = any> {
+export interface IListEditorState<TItem = unknown> {
   value: TItem[];
 }
 
-export interface IListEditorStateContext<TItem = any> extends IListEditorState<TItem> {
-  readOnly?: boolean;
-  selectedItem?: TItem;
+export interface IListEditorStateContext<TItem = unknown> extends IListEditorState<TItem> {
+  readOnly?: boolean | undefined;
+  selectedItem?: TItem | undefined;
 }
 
-export interface IListEditorActions<TItem = any> {
+export interface IListEditorActions<TItem = unknown> {
   deleteItem: (index: number) => void;
   addItem: (factory?: ListItemFactory<TItem>) => void;
   insertItem: (index: number) => void;
@@ -36,31 +36,31 @@ export interface IListEditorActions<TItem = any> {
   updateList: (newItems: TItem[]) => void;
 }
 
-export interface IListEditorActionsContext<TItem = any> extends IListEditorActions<TItem> {
-  setSelectedItem: (item: TItem) => void;
+export interface IListEditorActionsContext<TItem = unknown> extends IListEditorActions<TItem> {
+  setSelectedItem: (item: TItem | undefined) => void;
   refresh: (applyValue: boolean) => void;
 }
 
-export interface IListEditorContext<TItem = any> extends IListEditorStateContext<TItem>, IListEditorActionsContext<TItem> {
+export interface IListEditorContext<TItem = unknown> extends IListEditorStateContext<TItem>, IListEditorActionsContext<TItem> {
 
 }
 
-export interface ListEditorSectionRenderingArgs<TItem = any> {
+export interface ListEditorSectionRenderingArgs<TItem = unknown> {
   contextAccessor: () => IListEditorContext<TItem>;
-  parentItem?: TItem;
+  parentItem?: TItem | undefined;
   level: number;
-  addItemText?: string;
+  addItemText?: string | undefined;
 }
 
-export type ListEditorSectionRenderingFn<TItem = any> = (args: ListEditorSectionRenderingArgs<TItem>) => React.ReactNode | null;
+export type ListEditorSectionRenderingFn<TItem = unknown> = (props: ListEditorSectionRenderingArgs<TItem>) => ReactNode;
 
-export interface IListStateProps<TItem = any> {
+export interface IListStateProps<TItem = unknown> {
   value: TItem[];
 }
 
-export interface NestedItemsRenderingArgs<TItem = any> {
+export interface NestedItemsRenderingArgs<TItem = unknown> {
   items: TItem[];
-  onChange: (newValue: TItem[], changeDetails?: ItemChangeDetails) => void;
+  onChange: (newValue: TItem[], changeDetails?: ItemChangeDetails | undefined) => void;
   initNewItem: (items: TItem[]) => TItem;
 }
 
@@ -68,22 +68,22 @@ export interface ItemChangeDetails {
   isReorder: boolean;
   childsLengthDelta?: number;
 }
-export interface ListItemRenderingArgs<TItem = any> {
+export interface ListItemRenderingArgs<TItem = unknown> {
   item: TItem;
   itemOnChange: (newValue: TItem, changeDetails?: ItemChangeDetails) => void;
   index: number;
   readOnly: boolean;
-  nestedRenderer?: (args: NestedItemsRenderingArgs<TItem>) => React.ReactNode | null;
+  nestedRenderer?: ((args: NestedItemsRenderingArgs<TItem>) => React.ReactNode | null) | undefined;
 }
-export type ListEditorChildrenFn<TItem = any> = (args: ListItemRenderingArgs<TItem>) => React.ReactNode | null;
+export type ListEditorChildrenFn<TItem extends ListItem> = (props: ListItemRenderingArgs<TItem>) => ReactNode;
 
-export interface IListEditorProps<TItem = any> extends IGenericListEditorProps<TItem> {
+export interface IListEditorProps<TItem extends ListItem> extends IGenericListEditorProps<TItem> {
   children: ListEditorChildrenFn<TItem>;
-  header?: ListEditorSectionRenderingFn<TItem>;
+  header?: ListEditorSectionRenderingFn<TItem> | undefined;
   initNewItem: (items: TItem[]) => TItem;
-  maxItemsCount?: number;
+  maxItemsCount?: number | undefined;
 }
 
-export interface IListEditor<TItem = any> extends IListEditorState<TItem>, IListEditorActions<TItem> {
+export interface IListEditor<TItem = unknown> extends IListEditorState<TItem>, IListEditorActions<TItem> {
 
 }

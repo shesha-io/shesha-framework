@@ -1,6 +1,6 @@
 import { Button, Space, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IEditorAdapter, IToolboxComponentBase, IToolboxComponents } from '@/interfaces';
+import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IEditorAdapter, IToolboxComponent, IToolboxComponentBase, IToolboxComponents } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { nanoid } from '@/utils/uuid';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
@@ -9,22 +9,23 @@ import React, { FC, useMemo, useState } from 'react';
 import { editorAdapters } from './adapters';
 import ComponentSettingsModal from './componentSettingsModal';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type ComponentType = 'input' | 'output';
 
 export interface ComponentSelectorValue {
   type: string;
-  settings?: IConfigurableFormComponent;
+  settings?: IConfigurableFormComponent | undefined;
 }
 
 export interface IFormComponentSelectorProps {
   componentType: ComponentType;
-  noSelectionItem?: DefaultOptionType;
-  value?: ComponentSelectorValue;
-  onChange?: (value?: ComponentSelectorValue) => void;
-  readOnly?: boolean;
-  size?: SizeType;
-  propertyMeta?: IPropertyMetadata;
+  noSelectionItem?: DefaultOptionType | undefined;
+  value?: ComponentSelectorValue | undefined;
+  onChange?: ((value: ComponentSelectorValue | null) => void) | undefined;
+  readOnly?: boolean | undefined;
+  size?: SizeType | undefined;
+  propertyMeta?: IPropertyMetadata | undefined;
 }
 
 export const getEditorAdapter = (component: IToolboxComponentBase): IEditorAdapter | undefined => {
@@ -51,14 +52,14 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     for (const key in allComponents) {
       if (allComponents.hasOwnProperty(key)) {
         const component = allComponents[key];
-        if (!canBeUsedAsEditor(component)) continue; // skip components without adapters
+        if (!isDefined(component) || !canBeUsedAsEditor(component)) continue; // skip components without adapters
 
         if (
           component.isHidden !== true &&
           ((component.isInput === true && componentType === 'input') ||
             (component.isOutput === true && componentType === 'output'))
         )
-          result.push(allComponents[key]);
+          result.push(component);
       }
     }
     const sorted = result.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
@@ -70,22 +71,23 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
       // capitalise the first letter of each word
       label: editor?.name?.replace(/\b\w/g, (char) => char.toUpperCase()),
       value: editor.type }));
-    if (noSelectionItem) result.splice(0, 0, noSelectionItem);
+    if (noSelectionItem)
+      result.splice(0, 0, noSelectionItem);
 
     return result;
-  }, [editors]);
+  }, [editors, noSelectionItem]);
 
-  const formComponent = useMemo<IToolboxComponentBase>(() => {
-    if (!Boolean(value?.type)) return null;
+  const valueType = value?.type;
+  const formComponent = useMemo<IToolboxComponentBase | undefined>(() => {
+    return !isNullOrWhiteSpace(valueType)
+      ? allComponents[valueType]
+      : undefined;
+  }, [allComponents, valueType]);
 
-    return allComponents[value?.type];
-  }, [value?.type]);
+  const selectStyle = { width: isDefined(formComponent) ? 'calc(100% - 100px)' : '100%' };
 
-  const canConfigure = Boolean(formComponent);
-  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%' };
-
-  const getComponentModel = (toolboxComponent: IToolboxComponentBase): IConfigurableFormComponent | null => {
-    if (!toolboxComponent) return null;
+  const getComponentModel = (toolboxComponent: IToolboxComponent | undefined): IConfigurableFormComponent | undefined => {
+    if (!toolboxComponent) return undefined;
 
     let componentModel: IConfigurableFormComponent = {
       id: nanoid(),
@@ -110,7 +112,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
 
   const onSelectChange = (selectedValue: string): void => {
     if (onChange) {
-      const component = selectedValue ? allComponents[selectedValue] : null;
+      const component = selectedValue ? allComponents[selectedValue] : undefined;
       const settings = getComponentModel(component);
 
       onChange(selectedValue ? { type: selectedValue, settings } : null);
@@ -126,8 +128,8 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   const onCancelConfigureClick = (): void => {
     setIsSettingsVisible(false);
   };
-  const onSettingsSaveClick = (data): Promise<void> => {
-    if (onChange) {
+  const onSettingsSaveClick = (data: IConfigurableFormComponent): Promise<void> => {
+    if (onChange && value?.type) {
       const newValue: ComponentSelectorValue = { ...value, settings: data };
       onChange(newValue);
     }
@@ -151,26 +153,28 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         disabled={readOnly}
         options={options}
         style={selectStyle}
-        value={value?.type}
+        value={value?.type ?? null}
         onChange={onSelectChange}
         onClear={onClear}
         size={props.size}
         allowClear
       />
-      {canConfigure && (
-        <Button style={{ width: '100px', borderBottomRightRadius: '5px', borderTopRightRadius: '5px' }} size={props.size} onClick={onConfigureClick}>
-          Configure
-        </Button>
+      {isDefined(formComponent) && value?.settings && (
+        <>
+          <Button style={{ width: '100px', borderBottomRightRadius: '5px', borderTopRightRadius: '5px' }} size={props.size} onClick={onConfigureClick}>
+            Configure
+          </Button>
+          <ComponentSettingsModal
+            readOnly={readOnly}
+            formComponent={formComponent}
+            isVisible={isSettingsVisible}
+            model={value.settings}
+            onSave={onSettingsSaveClick}
+            onCancel={onCancelConfigureClick}
+            propertyFilter={propertyFilter}
+          />
+        </>
       )}
-      <ComponentSettingsModal
-        readOnly={readOnly}
-        formComponent={formComponent}
-        isVisible={isSettingsVisible}
-        model={value?.settings}// modalData}
-        onSave={onSettingsSaveClick}
-        onCancel={onCancelConfigureClick}
-        propertyFilter={propertyFilter}
-      />
     </Space.Compact>
   );
 };

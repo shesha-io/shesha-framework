@@ -7,7 +7,7 @@ import { DefaultOptionType } from 'antd/es/select';
 export const AppSelector: FC = () => {
   const { selectApplication, applications, selectedApplication } = useSettingsEditor();
 
-  const onSelect = (value): void => {
+  const onSelect = (value: string): void => {
     const app = applications.find((a) => a.appKey === value);
     selectApplication(app);
   };
@@ -19,7 +19,7 @@ export const AppSelector: FC = () => {
 
   return (
     <FormItem>
-      <Select
+      <Select<string>
         style={{ width: "100%" }}
         value={selectedApplication?.appKey ?? "-"}
         onChange={onSelect}

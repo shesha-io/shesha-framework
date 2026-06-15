@@ -9,14 +9,15 @@ import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
+import { ColorValueType } from 'antd/es/color-picker/interface';
 
 /** The sections (tabs) of the theme settings screen. */
 export type ThemeSettingsSection = 'theme' | 'input' | 'inline' | 'standard' | 'layout' | 'components';
 
 export interface ThemeParametersProps {
-  value?: IConfigurableTheme;
+  value: IConfigurableTheme;
   onChange?: (theme: IConfigurableTheme) => void;
-  readonly?: boolean;
+  readonly?: boolean | undefined;
   section?: ThemeSettingsSection;
 }
 
@@ -26,10 +27,10 @@ const PRESET_COLORS = [
 ];
 
 interface ColorCircleProps {
-  color?: string;
-  onChange: (color: string) => void;
+  color?: ColorValueType | undefined;
+  onChange: (color: ColorValueType) => void;
   label: string;
-  readonly?: boolean;
+  readonly?: boolean | undefined;
 }
 
 const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readonly }) => {
@@ -59,7 +60,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
     section: keyof IConfigurableTheme,
     update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
   ): IConfigurableTheme => {
-    return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
+    return { ...(theme?.[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
   };
 
   const updateTheme = (
@@ -109,7 +110,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 sidebar: e.target.value,
               });
             }}
-            disabled={readonly}
+            // disabled={readonly}
             optionType="button"
             buttonStyle="solid"
           >
@@ -170,7 +171,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             <Radio.Group
               value={layout}
               onChange={(e) => changeThemeInternal({ ...theme, layout: e.target.value })}
-              disabled={readonly}
+              // disabled={readonly}
               optionType="button"
               buttonStyle="solid"
               style={{ marginBottom: 16 }}
@@ -188,9 +189,10 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 <Slider
                   min={0}
                   max={24}
+                  range={false}
                   value={labelSpan}
                   onChange={handleSpanChange}
-                  disabled={readonly}
+                  // disabled={readonly}
                   tooltip={{ formatter: (v) => `Label: ${v}, Control: ${24 - (v ?? 0)}` }}
                   className={styles.slider}
                 />
@@ -198,9 +200,9 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                   <Typography.Text>Label Align</Typography.Text>
                 </div>
                 <Radio.Group
-                  value={theme.labelAlign}
+                  value={theme?.labelAlign}
                   onChange={(e) => changeThemeInternal({ ...theme, labelAlign: e.target.value })}
-                  disabled={readonly}
+                  // disabled={readonly}
                   optionType="button"
                   buttonStyle="solid"
                   style={{ marginBottom: 16 }}
@@ -215,7 +217,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           {/* Preview Card */}
           <div style={{ marginTop: 32 }}>
             <Typography.Title level={5} style={{ marginBottom: 12 }}>Preview Card</Typography.Title>
-            <Card style={{ background: theme?.layoutBackground ?? '#f0f2f5' }}>
+            <Card style={{ background: theme?.layoutBackground as string ?? '#f0f2f5' }}>
               <Row gutter={24}>
                 <Col xs={24} md={8}>
                   <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>Alerts</Typography.Text>

@@ -22,6 +22,8 @@ export const useSourcesTree = (monaco: Monaco): Directory => {
     return () => {
       subscriptions.clear();
     };
+    // TODO V1: review dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monaco, monaco.editor]);
 
   return state;
@@ -74,7 +76,7 @@ export const useSourcesTreeNodes = (monaco: Monaco): UseTreeNodesResponse => {
     const root = mapFileItemToNode(rootDir, (node) => {
       result.map[node.key.toString()] = node;
     });
-    result.nodes = root.children;
+    result.nodes = root.children ?? [];
 
     return result;
   }, [rootDir]);

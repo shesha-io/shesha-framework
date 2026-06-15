@@ -1,3 +1,5 @@
+import { isDefined } from "@/utils/nullables";
+
 export interface IValidationErrorInfo {
   message?: string | null;
   members?: string | string[] | null;
@@ -16,14 +18,14 @@ export interface IHasErrorInfo {
 
 export const isErrorInfo = (value: unknown): value is IErrorInfo => {
   const typed = value as IErrorInfo;
-  return value && typeof (value) === 'object' &&
+  return isDefined(value) && typeof (value) === 'object' &&
     // && typed.code !== undefined
     typed.message !== undefined;
 };
 
 export const isHasErrorInfo = (value: unknown): value is IHasErrorInfo => {
   const typed = value as IHasErrorInfo;
-  return value && typeof (value) === 'object' &&
+  return isDefined(value) && typeof (value) === 'object' &&
     isErrorInfo(typed.errorInfo);
 };
 

@@ -9,12 +9,15 @@ const LOCALIZATION = 'LOCALIZATION';
  */
 
 export const setLocalization = (localization: string): void => getLocalStorage()?.setItem(LOCALIZATION, localization);
-export const getLocalization = (): string | undefined => getLocalStorage()?.getItem(LOCALIZATION);
+export const getLocalization = (): string | undefined => getLocalStorage()?.getItem(LOCALIZATION) ?? undefined;
 export const getLocalizationOrDefault = (): string => {
   let localization = getLocalization();
-  if (!localization && typeof navigator !== 'undefined') {
+  if (localization)
+    return localization;
+
+  if (typeof navigator !== 'undefined') {
     localization = navigator.language;
     setLocalization(localization);
   }
-  return localization;
+  return localization ?? "en";
 };

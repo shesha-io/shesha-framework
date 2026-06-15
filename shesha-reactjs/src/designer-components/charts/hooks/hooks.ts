@@ -3,6 +3,9 @@ import { useEffect, useState, useMemo } from 'react';
 import { IChartData } from '../model';
 import { aggregateValues, getPredictableColor, getPredictableColorPolarArea, getPropertyValue, stringifyValues } from '../utils';
 import { isEntityTypeIdentifier } from '@/providers/metadataDispatcher/entities/utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { IDataSet } from '@/providers/chartData/context';
+import { isNonEmptyArray } from '@/utils/array';
 
 export const useIsSmallScreen = (): boolean => {
   const [isSmallScreen, setIsSmallScreen] = useState(
@@ -46,17 +49,17 @@ export const useGeneratedTitle = (): string => {
     simpleOrPivot,
   } = useChartDataStateContext();
 
-  const entityTypeArray = dataMode === 'entityType' && typeof entityType === 'string' ? entityType?.split('.') : [];
+  const entityTypeArray = dataMode === 'entityType' && typeof entityType === 'string' ? entityType.split('.') : [];
 
   const entityClassName = dataMode === 'entityType'
     ? typeof entityType === 'string'
-      ? entityTypeArray[entityTypeArray?.length - 1]
+      ? entityTypeArray[entityTypeArray.length - 1]
       : isEntityTypeIdentifier(entityType)
         ? entityType.name
         : ''
     : '';
 
-  return title?.trim().length > 0
+  return !isNullOrWhiteSpace(title)
     ? title
     : dataMode === 'entityType'
       ? `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${groupingProperty && simpleOrPivot === 'pivot' ? `, grouped by ${groupingProperty}` : ''}`
@@ -89,9 +92,9 @@ export const useProcessedChartData = (): IChartData => {
   } = useChartDataStateContext();
   const memoData = useMemo(() => stringifyValues(data ?? []), [data]);
   let labels = memoData.length
-    ? [...new Set(memoData.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))]
+    ? [...new Set(memoData.map((item) => !isNullOrWhiteSpace(axisProperty) ? getPropertyValue(item, axisProperty) : ""))]
     : [];
-  let datasets = [];
+  let datasets: IDataSet[] = [];
 
   if (simpleOrPivot === 'simple' || !groupingProperty) {
     // Generate different colors for each data point based on the label
@@ -106,15 +109,17 @@ export const useProcessedChartData = (): IChartData => {
     datasets = [
       {
         label: `${valueProperty} (${aggregationMethod})`,
-        data: labels?.map((label) => {
-          const matchingItems = memoData.filter((item: { [key: string]: any }) => {
-            return getPropertyValue(item, axisProperty) === label;
+        data: labels.map((label) => {
+          const matchingItems = memoData.filter((item) => {
+            return !isNullOrWhiteSpace(axisProperty) && getPropertyValue(item, axisProperty) === label;
           });
-          return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
+          return matchingItems.length > 0 && !isNullOrWhiteSpace(aggregationMethod) && !isNullOrWhiteSpace(valueProperty)
+            ? aggregateValues(matchingItems, aggregationMethod, valueProperty)
+            : 0;
         }),
         fill: false,
         borderColor: strokeColor || '#fff',
-        backgroundColor: colors,
+        backgroundColor: isNonEmptyArray(colors) ? colors[0] : undefined,
         pointRadius: 5,
         borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
         tension: typeof tension === 'number' ? tension : 0.0,
@@ -123,10 +128,10 @@ export const useProcessedChartData = (): IChartData => {
   } else {
     // Pivot mode - multiple datasets based on legend property
     const legendItems = [
-      ...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, groupingProperty))),
+      ...new Set(memoData.map((item) => getPropertyValue(item, groupingProperty))),
     ];
 
-    datasets = legendItems?.map((legend) => {
+    datasets = legendItems.map<IDataSet>((legend) => {
       const strLegend = typeof legend === 'string' ? legend : legend + '';
       const barBackgroundColor = chartType === 'polarArea'
         ? getPredictableColorPolarArea(strLegend)
@@ -134,10 +139,10 @@ export const useProcessedChartData = (): IChartData => {
       let colors: string[] = [];
       const legendDisplayValue = legend;
       return {
-        label: legendDisplayValue,
-        data: labels?.map((label) => {
-          const matchingItems = memoData.filter((item: { [key: string]: any }) => {
-            return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, groupingProperty) === legend;
+        label: legendDisplayValue ? String(legendDisplayValue) : "null",
+        data: labels.map((label) => {
+          const matchingItems = memoData.filter((item) => {
+            return !isNullOrWhiteSpace(axisProperty) && getPropertyValue(item, axisProperty) === label && getPropertyValue(item, groupingProperty) === legend;
           });
           switch (chartType) {
             case 'bar':
@@ -151,29 +156,25 @@ export const useProcessedChartData = (): IChartData => {
                 : getPredictableColor(strLabel));
               break;
           }
-          return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
+          return matchingItems.length > 0 && !isNullOrWhiteSpace(aggregationMethod) && !isNullOrWhiteSpace(valueProperty)
+            ? aggregateValues(matchingItems, aggregationMethod, valueProperty)
+            : 0;
         }),
         fill: false,
         borderColor: (simpleOrPivot === 'pivot' && chartType === 'line') ? getPredictableColor(strLegend) : strokeColor ?? '#000000',
-        backgroundColor: colors,
+        backgroundColor: isNonEmptyArray(colors) ? colors[0] : undefined,
         pointRadius: 5,
         borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 1,
         tension: typeof tension === 'number' ? tension : 0.0,
-      };
+      } satisfies IDataSet;
     });
   }
 
-  // Ensure dataset labels and data labels are not null or undefined
-  datasets = datasets?.map((dataset) => ({
-    ...dataset,
-    label: dataset.label ?? 'null',
-  }));
-
-  labels = labels?.map((label) => label ?? 'null');
+  const nonNullLabels = labels.map((label) => label ?? 'null').filter(isDefined);
 
   return {
-    labels: labels ?? [],
-    datasets: datasets ?? [],
+    labels: nonNullLabels,
+    datasets: datasets,
   };
 };
 
@@ -186,7 +187,7 @@ export const useChartURLData = (): IChartData => {
 
   return {
     labels: urlTypeData?.labels ?? [],
-    datasets: (urlTypeData?.datasets ?? []).map((dataset: any) => {
+    datasets: (urlTypeData?.datasets ?? []).map((dataset) => {
       dataset.borderColor = strokeColor || 'black';
       dataset.borderWidth = typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1;
       dataset.strokeColor = strokeColor || 'black';

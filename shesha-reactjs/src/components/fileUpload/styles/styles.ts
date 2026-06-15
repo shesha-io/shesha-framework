@@ -1,26 +1,40 @@
 import { createStyles } from '@/styles';
-import { CSSObject } from '@emotion/serialize';
+import { CSSObject } from 'antd-style';
 import { addPx } from '@/utils/style';
 
-interface StyleProps extends CSSObject {
+export interface FileUploadStyleProps extends CSSObject {
   jsStyle?: CSSObject;
 }
 
 interface ModelProps {
-  layout?: boolean;
-  isDragger?: boolean;
-  hideFileName?: boolean;
-  listType?: 'text' | 'picture' | 'picture-card' | 'thumbnail';
+  layout?: boolean | undefined;
+  isDragger?: boolean | undefined;
+  hideFileName?: boolean | undefined;
+  listType?: 'text' | 'picture' | 'picture-card' | 'thumbnail' | undefined;
 }
 
-interface UseStylesParams {
-  style?: StyleProps;
+interface FileUploadStylesParams {
+  style?: FileUploadStyleProps | undefined;
   model: ModelProps;
 }
 
 type TextAlignType = 'left' | 'right' | 'center' | 'justify';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }: UseStylesParams) => {
+export type FileUploadStylesResponse = {
+  shaStoredFilesRenderer?: string;
+  storedFilesRendererBtnContainer?: string;
+  storedFilesRendererNoFiles?: string;
+  antUploadDragIcon?: string;
+  antPreviewDownloadIcon?: string;
+  thumbnailControls?: string;
+  overlayThumbnailControls?: string;
+  antUploadText?: string;
+  antUploadHint?: string;
+  styledFileControls?: string;
+  thumbnailReadOnly?: string;
+};
+
+export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesResponse>(({ token, css, cx, prefixCls }, { style, model }) => {
   const {
     background = 'transparent',
     backgroundImage,
@@ -134,7 +148,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       min-height: ${layout ? (minHeight) : '100%'} !important;
       max-width: ${layout ? (maxWidth) : '100%'} !important;
       min-width: ${layout ? (minWidth) : '100%'} !important;
-      display: inline-block;
       background: ${backgroundImage ?? backgroundColor ?? background};
       ${backgroundPosition ? `background-position: ${backgroundPosition};` : ''}
       ${backgroundRepeat ? `background-repeat: ${backgroundRepeat};` : ''}
@@ -155,9 +168,17 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         justify-content: center !important;
       }
 
+      /* Hide the upload trigger once a file is present (single-file upload). antd's
+         maxCount=1 isn't auto-hiding the trigger in this version, so suppress it via
+         a sibling-combinator rule: any .ant-upload-select that follows a file item is hidden. */
+      .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload-select,
+      .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload.ant-upload-select {
+        display: none !important;
+      }
+
       .ant-upload-list-item {
         width: var(--thumbnail-width) !important;
-        height: calc(var(--thumbnail-height) + 32px) !important;
+        height: ${hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)'} !important;
         border-top: ${borderTop} !important;
         border-bottom: ${borderBottom} !important;
         border-right: ${borderRight} !important;
@@ -292,6 +313,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         height: var(--thumbnail-height) !important;
         ${borderRadiusCss}
         border: ${borderWidth} ${borderStyle} transparent !important;
+        /* antd's default margin-block on this container shifts the file tile down after upload;
+           the trigger has no such margin, so reset both margin and padding to keep the file
+           tile in the same spot the trigger occupied. */
+        margin: 0 !important;
+        padding: 0 !important;
         &.ant-upload-animate-inline-appear,
         &.ant-upload-animate-inline-appear-active,
         &.ant-upload-animate-inline {
@@ -372,6 +398,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
+      position: relative !important;
 
       .anticon {
         img {

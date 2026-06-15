@@ -9,16 +9,16 @@ export interface IButtonGroupComponentProps extends IConfigurableFormComponent, 
 
 export interface IButtonGroupProps extends IBaseButtonGroupProps, IStyleType {
   id: string;
-  readOnly?: boolean;
-  form?: FormInstance<any>;
+  readOnly?: boolean | undefined;
+  form?: FormInstance | undefined;
 }
 
 export interface IBaseButtonGroupProps {
-  items?: ButtonGroupItemProps[];
-  size?: SizeType;
-  spaceSize?: SizeType;
-  isInline?: boolean;
-  noStyles?: boolean;
-  styles?: CSSProperties;
-  gap?: SizeType;
+  items: ButtonGroupItemProps[];
+  size?: SizeType | undefined;
+  spaceSize?: SizeType | undefined;
+  isInline?: boolean | undefined;
+  noStyles?: boolean | undefined;
+  styles?: CSSProperties | undefined;
+  gap?: SizeType | undefined;
 }

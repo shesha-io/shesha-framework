@@ -7,9 +7,9 @@ const InputStatesPreview: FC = () => {
 
   const componentSpan = theme.layout === "vertical" ? 24 : theme.componentSpan;
   const commonProps: FormItemProps = {
-    layout: theme.layout,
-    labelAlign: theme.labelAlign,
-    labelCol: { span: theme.labelSpan },
+    ...(theme.layout ? { layout: theme.layout } : {}),
+    ...(theme.labelAlign ? { labelAlign: theme.labelAlign } : {}),
+    labelCol: theme.labelSpan ? { span: theme.labelSpan } : {},
     wrapperCol: { span: componentSpan },
   };
 

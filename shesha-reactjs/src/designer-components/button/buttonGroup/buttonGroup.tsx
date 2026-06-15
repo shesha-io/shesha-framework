@@ -38,27 +38,27 @@ import { getGhostStyleOverrides } from '@/utils/style';
 import { addPx } from '@/utils/style';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
-type MenuItem = MenuProps['items'][number];
+type MenuItem = Required<MenuProps>['items'][number];
 
 type MenuButton = ButtonGroupItemProps & {
-  childItems?: MenuButton[];
-  dividerWidth?: string;
-  dividerColor?: string;
+  childItems?: MenuButton[] | undefined;
+  dividerWidth?: string | undefined;
+  dividerColor?: string | undefined;
 };
 
-const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormInstance<any> }> = ({ props, uuid, form }) => {
+const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormInstance | undefined }> = ({ props, uuid, form }) => {
   const { size, buttonType } = props;
   const model = props;
 
   const { backgroundStyles, fontStyles, borderStyles, shadowStyles, dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(model);
 
-  const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType);
+  const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType ?? "");
 
   const additionalStyles: CSSProperties = removeUndefinedProps({
     ...dimensionsStyles,
     ...(isPrimaryOrDefault && borderStyles),
     ...fontStyles,
-    ...(['dashed', 'default'].includes(model.buttonType) && backgroundStyles),
+    ...(['dashed', 'default'].includes(model.buttonType ?? "") && backgroundStyles),
     ...((isPrimaryOrDefault || model.buttonType === 'dashed') && shadowStyles),
     ...stylingBoxAsCSS,
     ...jsStyle,
@@ -89,14 +89,14 @@ const createMenuItem = (
   props: MenuButton,
   getIsVisible: VisibilityEvaluator,
   appContext: IApplicationContext,
-  form: FormInstance<any>,
+  form: FormInstance | undefined,
 ): MenuItem => {
   const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
   const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
 
   const childItems = props.childItems && props.childItems.length > 0
-    ? props.childItems.filter(getIsVisible)?.map((props) => createMenuItem(props, getIsVisible, appContext, form))
-    : null;
+    ? props.childItems.filter(getIsVisible).map((props) => createMenuItem(props, getIsVisible, appContext, form))
+    : undefined;
 
   return isDivider
     ? { type: 'divider', style: { height: addPx(props.dividerWidth, appContext), backgroundColor: props.dividerColor } }
@@ -119,14 +119,14 @@ interface InlineItemBaseProps {
 
 interface InlineItemProps extends InlineItemBaseProps {
   item: ButtonGroupItemProps;
-  form?: FormInstance<any>;
-  styles?: CSSProperties;
+  form?: FormInstance | undefined;
+  styles?: CSSProperties | undefined;
 }
 const InlineItem: FC<InlineItemProps> = (props) => {
   const { item, uuid, getIsVisible, appContext, form } = props;
 
   if (isGroup(item)) {
-    const menuItems = item.childItems
+    const menuItems = (item.childItems ?? [])
       .filter((item) => (getIsVisible(item)))
       .map((childItem) => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
     // Ghost buttons: only foreground color, no background/border/shadow
@@ -137,14 +137,14 @@ const InlineItem: FC<InlineItemProps> = (props) => {
       <Dropdown
         key={uuid}
         menu={{ items: menuItems }}
-        disabled={item.readOnly}
+        disabled={item.readOnly === true}
       >
         <Button
           icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
           type={isGhostType ? 'default' : (item.buttonType as ButtonType)}
           ghost={isGhostType}
           title={item.tooltip}
-          disabled={item.readOnly}
+          disabled={item.readOnly === true}
           className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
           style={ghostOverrides}
         >
@@ -195,7 +195,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
       return false;
 
     if (group.hideWhenEmpty) {
-      const firstVisibleItem = group.childItems.find((item) => {
+      const firstVisibleItem = (group.childItems ?? []).find((item) => {
         // analyze buttons and groups only
         return ((isItem(item) && item.itemSubType === 'button') || isGroup(item)) && itemVibilityFunc(item);
       });
@@ -214,9 +214,9 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     return (isItem(item) && isVisibleBase(item)) || (isGroup(item) && isGroupVisible(item, getIsVisible));
   };
 
-  const resolvedItems = props.items;
+  const resolvedItems = props.items || [];
 
-  const filteredItems = resolvedItems?.filter(getIsVisible);
+  const filteredItems = resolvedItems.filter(getIsVisible);
 
   if (resolvedItems.length === 0 && isDesignMode)
     return (
@@ -232,14 +232,14 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     return (
       <Space.Compact size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }} className={styles.shaHideEmpty}>
         <Space size={gap}>
-          {filteredItems?.map((item) =>
-            (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />),
+          {filteredItems.map((item) =>
+            (<InlineItem styles={item.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />),
           )}
         </Space>
       </Space.Compact>
     );
   } else {
-    const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, form));
+    const menuItems = filteredItems.map((props) => createMenuItem(props, getIsVisible, allData, form));
 
     return (
       <div className={styles.shaResponsiveButtonGroupContainer}>
@@ -256,12 +256,15 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
   const items = useActualContextData(
-    props.items?.map((item) => ({ ...item, size: item.size ?? props.size ?? 'middle' })),
+    props.items.map((item) => {
+      const result = { ...item, size: item.size ?? props.size ?? 'middle' };
+      return result;
+    }),
     props.readOnly,
-    null,
+    undefined,
     standardActualModelPropertyFilter,
   );
-  const memoizedItems = useDeepCompareMemo(() => items, [items]) ?? [];
+  const memoizedItems = useDeepCompareMemo(() => items, [items]);
   return (
     <DynamicActionsEvaluator items={memoizedItems}>
       {(items) => (<ButtonGroupInner {...props} items={items} />)}

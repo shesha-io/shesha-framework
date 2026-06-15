@@ -67,7 +67,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     propertyName: 'popOverTitle',
                     label: 'Popover Title',
                     parentId: commonTabId,
-                    hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false },
                     jsSetting: true,
                   },
                 ],
@@ -93,7 +93,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     propertyName: 'popOverFormId',
                     label: 'Popover Form',
                     parentId: commonTabId,
-                    hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false },
                     jsSetting: true,
                   },
                 ],
@@ -126,7 +126,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
                     .addCollapsiblePanel({
@@ -198,7 +198,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       hideLabel: true,
                                       width: 60,
                                       dropdownOptions: textAlignOptions,
-                                      hidden: { _code: 'return  getSettingValue(data?.mode) === "multiple";', _mode: 'code', _value: false } as any,
+                                      hidden: { _code: 'return  getSettingValue(data?.mode) === "multiple";', _mode: 'code', _value: false },
                                     },
                                   ],
                                 })
@@ -207,7 +207,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             },
                           })
                           .addSettingsInput({
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                             id: nanoid(),
                             inputType: 'codeEditor',
                             propertyName: 'subTextStyle',
@@ -231,7 +231,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         id: nanoid(),
                         components: [...fbf()
                           .addSettingsInput({
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                             id: nanoid(),
                             inputType: 'codeEditor',
                             propertyName: 'popOverContentStyle',
@@ -254,7 +254,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             id: securityTabId,
             components: [...fbf()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',

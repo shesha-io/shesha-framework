@@ -2,13 +2,12 @@ import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
-import React, { CSSProperties, ReactElement } from 'react';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import React, { CSSProperties, FocusEventHandler, ReactNode } from 'react';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -23,18 +22,29 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
+import { isDefined } from '@/utils/nullables';
 
 interface IJsonTextAreaProps {
-  value?: any;
+  value?: object;
   textAreaProps?: TextAreaProps;
-  customEventHandler?: any;
+  onFocus?: FocusEventHandler<HTMLTextAreaElement> | undefined;
+  onBlur?: FocusEventHandler<HTMLTextAreaElement> | undefined;
 }
 const JsonTextArea: React.FC<IJsonTextAreaProps> = (props) => {
-  const valuedString = !!props.value ? JSON.stringify(props.value, null, 2) : '';
+  const valuedString = isDefined(props.value) ? JSON.stringify(props.value, null, 2) : '';
   return (
-    <Input.TextArea value={valuedString} rows={2} {...props.textAreaProps} disabled {...props.customEventHandler} />
+    <Input.TextArea
+      value={valuedString}
+      rows={2}
+      {...props.textAreaProps}
+      disabled
+      onFocus={props.onFocus}
+      onBlur={props.onBlur}
+    />
   );
 };
+
+type TextAreaValueType = string | object | undefined;
 
 const TextAreaComponent: TextAreaComponentDefinition = {
   type: 'textArea',
@@ -46,19 +56,13 @@ const TextAreaComponent: TextAreaComponentDefinition = {
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
-  calculateModel: (model, allData) => ({
-    defaultValue: model.initialValue
-      ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
-      : undefined,
-    eventHandlers: getAllEventHandlers(model, allData),
-  }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const { styles } = useStyles({
       fontWeight: model.font?.weight,
       fontFamily: model.font?.type,
-      textAlign: model.allStyles.fullStyle?.textAlign,
-      color: model.allStyles.fullStyle?.color,
-      fontSize: model.allStyles.fullStyle?.fontSize,
+      textAlign: model.allStyles?.fullStyle.textAlign,
+      color: model.allStyles?.fullStyle.color,
+      fontSize: model.allStyles?.fullStyle.fontSize,
     });
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -72,10 +76,10 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       color: model.fontColor,
       fontWeight: model.fontWeight,
       fontSize: model.fontSize,
-      ...model.allStyles.appearanceStyle,
+      ...model.allStyles?.appearanceStyle,
     });
 
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, ...model.allStyles.jsStyle });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, ...model.allStyles?.jsStyle });
 
     const textAreaProps: TextAreaProps = {
       className: `sha-text-area ${styles.textArea}`,
@@ -83,28 +87,29 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       autoSize: model.autoSize ? { minRows: 2 } : false,
       showCount: false, // will use a custom counter outside the textarea
       maxLength: model.validate?.maxLength,
-      allowClear: model.allowClear,
-      variant: model.border?.hideBorder ? 'borderless' : undefined,
       size: model.size,
       style: {
         ...finalStyle,
         ...getOverflowStyle(true, false),
-        ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
+        ...((!finalStyle.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
           ? { marginBottom: model.showCount ? '4px' : '0px' }
           : {}),
       },
       spellCheck: model.spellCheck ?? false,
     };
+    if (model.border?.hideBorder)
+      textAreaProps.variant = 'borderless';
+    if (model.allowClear)
+      textAreaProps.allowClear = model.allowClear;
 
     return (
-      <ConfigurableFormItem
+      <ConfigurableFormItem<TextAreaValueType>
         model={model}
         autoAlignLabel={false}
-        initialValue={calculatedModel.defaultValue}
       >
-        {(value, onChange) => {
+        {(value, onChange, _, ctx) => {
           // Character count display component
-          const renderCharCounter = (): ReactElement => {
+          const renderCharCounter = (): ReactNode => {
             if (!model.showCount) return null;
 
             const currentLength = typeof value === 'string' ? value.length : 0;
@@ -117,9 +122,9 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                 color: maxLength && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
                 marginTop: '0px',
                 marginBottom: '0px',
-                width: model.allStyles.dimensionsStyles?.width,
-                minWidth: model.allStyles.dimensionsStyles?.minWidth,
-                maxWidth: model.allStyles.dimensionsStyles?.maxWidth,
+                width: model.allStyles?.dimensionsStyles.width,
+                minWidth: model.allStyles?.dimensionsStyles.minWidth,
+                maxWidth: model.allStyles?.dimensionsStyles.maxWidth,
               }}
               >
                 {currentLength}
@@ -127,34 +132,45 @@ const TextAreaComponent: TextAreaComponentDefinition = {
               </div>
             );
           };
-          const showAsJson = Boolean(value) && typeof value === 'object';
-
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]): void => {
-            customEvents.onChange({ value: args[0].currentTarget.value }, args[0]);
-            if (typeof onChange === 'function') onChange(...args);
-          };
 
           const finalStyle = !model.enableStyleOnReadonly && model.readOnly
             ? {
-              ...model.allStyles.fontStyles,
-              ...model.allStyles.dimensionsStyles,
+              ...model.allStyles?.fontStyles,
+              ...model.allStyles?.dimensionsStyles,
               ...getOverflowStyle(true, false),
             }
-            : { ...model.allStyles.fullStyle, ...getOverflowStyle(true, false) };
+            : { ...model.allStyles?.fullStyle, ...getOverflowStyle(true, false) };
 
           return (
             <>
-              {showAsJson ? (
+              {isDefined(value) && typeof value === 'object' ? (
                 <>
-                  <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
+                  <JsonTextArea
+                    value={value}
+                    textAreaProps={textAreaProps}
+                    onFocus={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom)}
+                    onBlur={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom)}
+                  />
                   {renderCharCounter()}
                 </>
               ) : model.readOnly ? ( // no need to show counter in read only mode
                 <ReadOnlyDisplayFormItem value={value} style={{ padding: 8, ...finalStyle }} type="textArea" />
               ) : (
                 <>
-                  <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal} />
+                  <Input.TextArea
+                    rows={2}
+                    {...textAreaProps}
+                    disabled={model.readOnly}
+                    value={value ?? ""}
+
+                    // TODO EVENTS
+                    onChange={(event) => {
+                      ctx?.handleEvent(event, event.currentTarget.value, model.onChangeCustom);
+                      onChange(event.currentTarget.value);
+                    }}
+                    onFocus={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom)}
+                    onBlur={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom)}
+                  />
                   {renderCharCounter()}
                 </>
               )}

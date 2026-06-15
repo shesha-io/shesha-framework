@@ -10,6 +10,7 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
+import { isNonEmptyArray } from '@/utils/array';
 
 interface SearchableTabsProps {
   model: IPropertiesTabsComponentProps;
@@ -33,12 +34,12 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   };
 
   const renderSearchInput = (options?: {
-    ref?: React.RefObject<InputRef>;
+    ref?: React.RefObject<InputRef | null>;
     className?: string;
     style?: React.CSSProperties;
     autoFocus?: boolean;
     wrapperStyle?: React.CSSProperties;
-  }): JSX.Element => {
+  }): React.JSX.Element => {
     const input = (
       <Input
         type="search"
@@ -148,7 +149,9 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     .filter((tab) => !tab.hidden);
 
   const effectiveActiveKey = useMemo(() => {
-    if (newFilteredTabs.length === 0) return undefined;
+    if (!isNonEmptyArray(newFilteredTabs)) {
+      return undefined;
+    }
 
     const persistedKey = formDesigner?.activeSettingsTabKey ?? localActiveTabKey;
 
@@ -162,11 +165,11 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const localTabs = useMemo(() => (
     <Tabs
       key="searchable-tabs"
-      activeKey={effectiveActiveKey}
+      {...(effectiveActiveKey ? { defaultActiveKey: effectiveActiveKey } : {})}
       onChange={handleTabChange}
       size={model.size}
       type={model.tabType || 'card'}
-      tabPlacement={model.position || 'top'}
+      tabPlacement={model.position ?? 'top'}
       items={newFilteredTabs}
       className={styles.content}
     />

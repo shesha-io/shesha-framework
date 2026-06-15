@@ -55,6 +55,7 @@ import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
 import { IGlobalState } from '../globalState/contexts';
 import { MessageInstance } from 'antd/es/message/interface';
 import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
+import { throwError } from '@/utils/errors';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -151,7 +152,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       : internalEntityType
         ? urlHelper // if entityType is specified - get default url for the entity
           .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
-          .then((endpoint) => endpoint.url)
+          .then((endpoint) => endpoint ? endpoint.url : "")
         : Promise.resolve(''); // return empty string
   };
 
@@ -498,7 +499,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   };
 
   const getSubFormData = (): object => {
-    const data = parentFormApi.getFormData();
+    const data = parentFormApi.getFormData?.();
     return !isNullOrWhiteSpace(props.propertyName) && isDefined(data)
       ? (data as Record<string, unknown>)[props.propertyName] as object
       : data ?? {};
@@ -612,16 +613,15 @@ function useSubFormActions(require: boolean): ISubFormActionsContext | undefined
   return context;
 }
 
-function useSubForm(require: boolean = true): ISubFormStateContext & ISubFormActionsContext | undefined {
-  const actionsContext = useSubFormActions(require);
-  const stateContext = useSubFormState(require);
+const useSubFormOrUndefined = (): (ISubFormStateContext & ISubFormActionsContext) | undefined => {
+  const actionsContext = useSubFormActions(false);
+  const stateContext = useSubFormState(false);
 
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
-}
+};
 
-export { SubFormProvider, useSubForm, useSubFormActions, useSubFormState };
+const useSubForm = (): ISubFormStateContext & ISubFormActionsContext => useSubFormOrUndefined() ?? throwError("useSubForm must be used within a SubFormProvider");
+
+export { SubFormProvider, useSubFormOrUndefined, useSubForm, useSubFormActions, useSubFormState };

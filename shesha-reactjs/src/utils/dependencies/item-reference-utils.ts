@@ -1,4 +1,5 @@
 import { ConfigurableItemFullName } from "@/interfaces";
+import { isDefined, isNotNullOrWhiteSpace } from "../nullables";
 
 export interface FindReferencesOptions {
   /** Return only unique references */
@@ -17,7 +18,7 @@ export interface FindReferencesOptions {
 export class ItemReferenceFinder {
   private static isItemReference(obj: unknown): obj is ConfigurableItemFullName {
     return (
-      obj &&
+      isDefined(obj) &&
       typeof obj === 'object' &&
       "name" in obj && typeof obj.name === 'string' &&
       "module" in obj && typeof obj.module === 'string' &&
@@ -111,7 +112,7 @@ export class ItemReferenceFinder {
 
   static extractUniqueModules<T>(obj: T): string[] {
     const refs = this.findAll(obj, { unique: true });
-    const modules = new Set(refs.map((ref) => ref.module));
+    const modules = new Set(refs.map((ref) => ref.module).filter(isNotNullOrWhiteSpace));
     return Array.from(modules);
   }
 }

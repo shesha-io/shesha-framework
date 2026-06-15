@@ -7,7 +7,7 @@ import { useStyles } from '../styles/styles';
 
 interface IDragWrapperProps {
   componentId: string;
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
 }
 
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {

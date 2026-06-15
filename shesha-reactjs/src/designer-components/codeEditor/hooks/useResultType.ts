@@ -1,20 +1,20 @@
 import { isEmptyString } from "@/utils/string";
-import { GetResultTypeFunc } from "../interfaces";
+import { GetResultTypeArgs, GetResultTypeFunc } from "../interfaces";
 import { useCallback } from "react";
 import { IMetadata, useMetadataBuilderFactory } from "@/utils";
 import { executeScript } from '@/providers/form/utils';
-import { useFormData, useShaFormInstanceOrUndefined } from '@/providers';
+import { useFormData, useShaFormInstance } from '@/providers';
 
 export interface UseResultTypeEvaluatorArgs {
-  resultTypeExpression?: string | GetResultTypeFunc;
+  resultTypeExpression?: string | GetResultTypeFunc | undefined;
 }
 
 export type ResultTypeEvaluator = () => Promise<IMetadata>;
 
-export const useResultTypeEvaluator = (model: UseResultTypeEvaluatorArgs): ResultTypeEvaluator => {
+export const useResultTypeEvaluator = (model: UseResultTypeEvaluatorArgs): ResultTypeEvaluator | undefined => {
   const metadataBuilderFactory = useMetadataBuilderFactory();
   const { data: formData } = useFormData();
-  const shaFormInstance = useShaFormInstanceOrUndefined();
+  const shaFormInstance = useShaFormInstance();
 
   const resultTypeExpression = Boolean(model.resultTypeExpression) && !isEmptyString(model.resultTypeExpression)
     ? model.resultTypeExpression
@@ -22,12 +22,12 @@ export const useResultTypeEvaluator = (model: UseResultTypeEvaluatorArgs): Resul
 
   const resultTypeEvaluator = useCallback((): Promise<IMetadata> => {
     if (!resultTypeExpression)
-      return undefined;
+      return Promise.reject("ResultTypeExpression is mandatory");
 
     const metadataBuilder = metadataBuilderFactory();
 
-    const getResultTypeArgs = {
-      data: formData,
+    const getResultTypeArgs: GetResultTypeArgs = {
+      data: formData as Record<string, unknown>,
       metadataBuilder,
       form: shaFormInstance,
     };

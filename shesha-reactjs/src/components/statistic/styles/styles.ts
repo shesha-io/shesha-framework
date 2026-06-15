@@ -2,6 +2,8 @@ import { createStyles, sheshaStyles } from '@/styles';
 
 
 export const useStyles = createStyles(({ css, cx, prefixCls, iconPrefixCls, token }) => {
+  const containerDivZeroPaddingMargin = "container-div-zero-padding-margin";
+  const contentBox = "content-box";
   const shaStatistic = cx("sha-statistic", css`
     box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
     margin-right: 12px;
@@ -22,23 +24,25 @@ export const useStyles = createStyles(({ css, cx, prefixCls, iconPrefixCls, toke
     }
     
     .${iconPrefixCls} {
-        font-size: ${token?.fontSize};
+        font-size: ${token.fontSize};
     }
     
     .${prefixCls}-statistic-content-value-int {
-        font-size: ${token?.fontSize};
+        font-size: ${token.fontSize};
     }    
 
-    .container-div-zero-padding-margin {
+    .${containerDivZeroPaddingMargin} {
         padding: 0;
         margin: 0;
     }
 
-    .content-box {
+    .${contentBox} {
         box-sizing: content-box;
     }
   `);
   return {
     shaStatistic,
+    containerDivZeroPaddingMargin,
+    contentBox,
   };
 });

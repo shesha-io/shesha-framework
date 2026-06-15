@@ -1,7 +1,6 @@
 import React from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -10,10 +9,9 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { TimePickerWrapper } from './timePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
-import { IDateFieldProps } from '../dateField/interfaces';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
-import { ITimePickerComponentProps, TimeFieldComponentDefinition } from './models';
+import { ITimePickerComponentProps, TimeFieldComponentDefinition, TimeFieldValueType } from './models';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
@@ -26,30 +24,28 @@ export const TimeFieldComponent: TimeFieldComponentDefinition = {
   icon: <ClockCircleOutlined />,
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
-  calculateModel: (model, allData) => ({
-    eventHandlers: getAllEventHandlers(model, allData),
-  }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle;
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (value: any | null, timeString: string | [string, string]): void => {
-            customEvents.onChange({ value, timeString });
-            if (typeof onChange === 'function') onChange(value, timeString);
-          };
+      <ConfigurableFormItem<TimeFieldValueType> model={model}>
+        {(value, onChange, _, ctx) => {
           return (
             <TimePickerWrapper
               {...model}
-              {...customEvents}
               style={finalStyle}
               value={value}
-              onChange={onChangeInternal}
+              onChange={(value: number | [number, number] | null) => {
+                // TODO: EVENTS: pass timeString to event handler
+                // addContextData(context, { timeString, value })
+                ctx?.handleEvent(undefined, value, model.onChangeCustom);
+                onChange(value);
+              }}
+              onFocus={(event) => ctx?.handleEvent(event, value, model.onFocusCustom)}
+              onBlur={(event) => ctx?.handleEvent(event, value, model.onBlurCustom)}
             />
           );
         }}
@@ -81,7 +77,7 @@ export const TimeFieldComponent: TimeFieldComponentDefinition = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IDateFieldProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<ITimePickerComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): ITimePickerComponentProps => {
     return {
       ...model,

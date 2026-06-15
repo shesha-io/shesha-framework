@@ -3,7 +3,7 @@ import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 
 interface SpecificationConditionEditorProps {
   value?: string;
-  onChange: (newValue?: string) => void;
+  onChange: (newValue: string | null) => void;
 }
 export const SpecificationConditionEditor: FC<SpecificationConditionEditorProps> = ({ value, onChange }) => {
   useEffect(() => {

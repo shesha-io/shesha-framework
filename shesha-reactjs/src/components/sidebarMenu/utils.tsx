@@ -1,6 +1,6 @@
 import { MenuProps, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import { ISidebarMenuItem, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration, isNavigationActionConfiguration } from '@/providers/index';
@@ -14,18 +14,18 @@ interface IGetItemArgs {
   key: React.Key;
   icon?: React.ReactNode;
   children?: MenuItem[] | undefined;
-  isParent?: boolean;
+  isParent?: boolean | undefined;
   itemType: SidebarItemType;
   url?: string | undefined;
-  navigationType?: string;
-  onClick?: () => void | undefined;
+  navigationType?: string | undefined;
+  onClick?: (() => void) | undefined;
   tooltip?: ReactNode;
 }
 
 function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url, tooltip }: IGetItemArgs): MenuItem {
-  const clickHandler = (event): void => {
+  const clickHandler: React.MouseEventHandler = (event): void => {
     event.preventDefault();
-    onClick();
+    onClick?.();
   };
 
   const className = classNames('nav-links-renderer', { 'is-parent-menu': isParent });
@@ -37,7 +37,15 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
     label: (() => {
       const baseContent = onClick
         ? ((navigationType === 'url' || navigationType === 'form')
-          ? <Link className={className} href={url} onClick={clickHandler}>{label}</Link>
+          ? (
+            <Link
+              className={className}
+              href={url ?? ""}
+              onClick={clickHandler}
+            >
+              {label}
+            </Link>
+          )
           : <Link href="" className={className} onClick={clickHandler}>{label}</Link>)
         : <span className={className}>{label}</span>;
 
@@ -67,7 +75,7 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
   } as MenuItem;
 }
 
-const getIcon = (icon: ReactNode, isParent?: boolean): ReactElement => {
+const getIcon = (icon: ReactNode, isParent?: boolean): ReactNode => {
   if (typeof icon === 'string')
     return <ShaIcon iconName={icon as IconType} className={classNames({ 'is-parent-menu': isParent })} />;
 
@@ -77,10 +85,10 @@ const getIcon = (icon: ReactNode, isParent?: boolean): ReactElement => {
 
 export interface IProps {
   item: ISidebarMenuItem;
-  onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;
-  onItemEvaluation?: (item: ISidebarMenuItem) => void;
-  getFormUrl: (args) => string;
-  getUrl: (args) => string;
+  onButtonClick?: ((itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void) | undefined;
+  onItemEvaluation?: ((item: ISidebarMenuItem) => void) | undefined;
+  getFormUrl: (args: IConfigurableActionConfiguration | undefined) => string;
+  getUrl: (url: string) => string;
 }
 
 export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
@@ -103,7 +111,7 @@ export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluatio
     ? navigationType === 'form'
       ? getFormUrl(actionConfiguration)
       : navigationType === 'url'
-        ? getUrl(actionConfiguration.actionArguments?.url)
+        ? getUrl(actionConfiguration.actionArguments?.url ?? "")
         : undefined
     : undefined;
 
@@ -111,12 +119,12 @@ export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluatio
     label: title,
     key: id,
     icon: getIcon(icon, hasChildren),
-    children: children,
+    children: children ?? undefined,
     isParent: hasChildren,
     itemType,
     url,
     navigationType,
-    onClick: actionConfiguration ? () => onButtonClick(id, actionConfiguration) : undefined,
+    onClick: actionConfiguration && onButtonClick ? () => onButtonClick(id, actionConfiguration) : undefined,
     tooltip: item.tooltip,
   };
   if (onItemEvaluation)
