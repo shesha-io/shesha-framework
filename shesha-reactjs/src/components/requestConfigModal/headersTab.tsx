@@ -16,9 +16,9 @@ export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange }) => {
     onChange([...headers, { key: '', value: '', enabled: true }]);
   };
 
-  const handleUpdate = (index: number, field: keyof IRequestHeader, value: any): void => {
+  const handleUpdate = (index: number, field: keyof IRequestHeader, value: IRequestHeader[keyof IRequestHeader]): void => {
     const updated = [...headers];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], [field]: value } as IRequestHeader;
     onChange(updated);
   };
 
@@ -69,7 +69,7 @@ export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange }) => {
       title: '',
       key: 'action',
       width: '10%',
-      render: (_: any, __: IRequestHeader, index: number) => (
+      render: (_: unknown, __: IRequestHeader, index: number) => (
         <Button
           type="text"
           danger
