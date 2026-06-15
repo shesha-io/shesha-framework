@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { DatasetInstance } from "./instance";
 import { IDatasetInstance } from "./models";
 import { IRepository } from "./repository/interfaces";
@@ -45,9 +45,10 @@ const useDataTableActions = (): IDataTableActionsContext => useDataTableActionsO
 const useDataTableStoreOrUndefined = (): IDataTableStateContext & IDataTableActionsContext | undefined => {
   const actionsContext = useDataTableActionsOrUndefined();
   const stateContext = useDataTableStateOrUndefined();
-  return actionsContext !== undefined && stateContext !== undefined
+
+  return useMemo<IDataTableStateContext & IDataTableActionsContext | undefined>(() => (actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
-    : undefined;
+    : undefined), [actionsContext, stateContext]);
 };
 const useDataTableStore = (): IDataTableStateContext & IDataTableActionsContext => useDataTableStoreOrUndefined() ?? throwError("useDataTableStore must be used within a DataTableProvider");
 
