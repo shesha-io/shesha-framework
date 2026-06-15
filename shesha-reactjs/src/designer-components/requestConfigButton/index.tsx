@@ -4,9 +4,9 @@ import { SettingOutlined } from '@ant-design/icons';
 import { RequestConfigModal, IRequestConfig } from '@/components/requestConfigModal';
 
 export interface IRequestConfigButtonProps {
-  value?: IRequestConfig;
-  onChange?: (value: IRequestConfig) => void;
-  readOnly?: boolean;
+  value?: IRequestConfig | undefined;
+  onChange?: ((value: IRequestConfig) => void) | undefined;
+  readOnly?: boolean | undefined;
 }
 
 export const RequestConfigButton: FC<IRequestConfigButtonProps> = ({
@@ -53,7 +53,7 @@ export const RequestConfigButton: FC<IRequestConfigButtonProps> = ({
       <Button
         icon={<SettingOutlined />}
         onClick={handleOpenModal}
-        disabled={readOnly}
+        disabled={!!readOnly}
         block
       >
         Configure Request
