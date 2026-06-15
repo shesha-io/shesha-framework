@@ -192,8 +192,8 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
     }
   }, [props.value, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
 
-  useEffect(() => {
-    if (open) {
+  const onDropdownVisibleChange = (isOpen: boolean): void => {
+    if (isOpen) {
       const selectedValue = isNonEmptyArray(selected.current)
         ? selected.current.map((s) => outcomeValueFunc(s))
         : undefined;
@@ -206,10 +206,8 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
       }]);
       source.performQuickSearch('');
     }
-  }, [filterNotKeysFunc, open, outcomeValueFunc, source]);
-
-  const onDropdownVisibleChange = (isOpen: boolean): void => {
     setOpen(isOpen);
+
     props.disableRefresh?.(false);
   };
 
