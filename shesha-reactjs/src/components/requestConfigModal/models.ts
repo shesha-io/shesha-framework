@@ -29,7 +29,7 @@ export interface IRequestBody {
   type: BodyType;
   // form-data / x-www-form-urlencoded use IFormDataField[]; json/raw use string.
   // Legacy storage of JSON-stringified form-data is still readable for back-compat.
-  content: string | Record<string, any> | IFormDataField[];
+  content: string | Record<string, unknown> | IFormDataField[];
   // Only used when type === 'raw'. Drives the request Content-Type header and the editor's syntax highlighting.
   rawSubType?: RawBodySubType;
 }
