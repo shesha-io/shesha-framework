@@ -1,29 +1,25 @@
 import React, { CSSProperties, FC } from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
-import { FilledIconTypes } from '../iconPicker/iconNamesFilled';
-import { OutlinedIconTypes } from '../iconPicker/iconNamesOutlined';
-import { TwoToneIconTypes } from '../iconPicker/iconNamesTwoTone';
 import { useThemeState } from '@/providers';
-import * as antdIcons from '@ant-design/icons';
+import * as AntdIcons from '@ant-design/icons';
+import { isDefined } from '@/utils/nullables';
 
-export type IconType = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
+export type IconType = keyof typeof AntdIcons;
 
 export interface IShaIconProps extends IconBaseProps {
-  iconName: IconType;
-  twoToneColor?: string;
-  style?: CSSProperties;
+  iconName: IconType | string;
+  twoToneColor?: string | undefined;
+  style?: CSSProperties | undefined;
 }
 
 export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', ...props }) => {
   const { theme } = useThemeState();
 
-  if (!antdIcons[iconName]) {
-    return null;
-  }
+  const IconComponent = isDefined(iconName) ? AntdIcons[iconName as IconType] as FC<IconBaseProps> : undefined;
+  if (!IconComponent)
+    return undefined;
 
-  const IconComponent = antdIcons[iconName];
+  props.twoToneColor = theme.application?.primaryColor || '#1890ff';
 
-  props.twoToneColor = theme?.application?.primaryColor || '#1890ff';
-
-  return <IconComponent {...props} />;
+  return <IconComponent />;
 };

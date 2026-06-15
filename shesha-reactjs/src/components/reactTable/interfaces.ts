@@ -15,19 +15,19 @@ export interface IColumnWidth {
 export type NewRowCapturePosition = 'top' | 'bottom';
 
 export interface IColumnResizing {
-  startX?: number;
+  startX?: number | undefined;
   columnWidth: number;
   headerIdWidths: Record<string, number>;
   columnWidths: { [key: number]: number };
-  isResizingColumn?: string;
+  isResizingColumn?: string | undefined;
 }
 
-export interface OnRowsReorderedArgs {
-  getOld: () => ITableRowData[];
-  getNew: () => ITableRowData[];
-  applyOrder: (orderedItems: ITableRowData[]) => void;
-  oldIndex?: number;
-  newIndex?: number;
+export interface OnRowsReorderedArgs<TData extends ITableRowData = ITableRowData> {
+  getOld: () => TData[];
+  getNew: () => TData[];
+  applyOrder: (orderedItems: TData[]) => void;
+  oldIndex?: number | undefined;
+  newIndex?: number | undefined;
 }
 
 export interface ITableRowDragProps {
@@ -39,168 +39,7 @@ export type RowDataInitializer<TValue extends object = object> = () => Promise<T
 export type InlineEditMode = 'one-by-one' | 'all-at-once';
 export type InlineSaveMode = 'auto' | 'manual';
 
-export interface IReactTableProps<T extends ITableRowData = ITableRowData> extends ITableRowDragProps {
-  /**
-   * @deprecated - use scrollBodyHorizontally
-   * Whether the table should be scrollable or not
-   */
-  scroll?: boolean;
-
-  /**
-   * The core columns configuration object for the entire table. Must be memoized
-   */
-  columns?: Array<Column<any>>;
-
-  /**
-   * The data array that you want to display on the table.
-   */
-  data?: any[];
-
-  /**
-   *
-   */
-  reactTableRef?: React.MutableRefObject<any>;
-
-  /**
-   * Class name for the table container
-   */
-  className?: string;
-
-  /**
-   * Whether the data is being fetched or not
-   */
-  loading?: boolean;
-
-  /**
-   * Loading data message
-   */
-  loadingText?: ReactNode | (() => ReactNode);
-
-  /**
-   * Selection mode for the table
-   */
-  selectionMode?: TableSelectionMode | undefined;
-
-  /**
-   * Whether the table's headers should be frozen and you scroll under them
-   */
-  freezeHeaders?: boolean | undefined;
-
-  /**
-   * Whether the table's columns should be frozen and you scroll under them on the left or right
-   */
-  anchored?: IAnchoredDirection;
-
-  /**
-   * The default column object for every column passed to React Table.
-   *
-   * Column-specific properties will override the properties in this object, eg. `{ ...defaultColumn, ...userColumn }`
-   */
-  defaultColumn?: Partial<Column<any>>;
-
-  /**
-   * Whether columns should be resized or not
-   */
-  resizableColumns?: boolean;
-
-  /**
-   * An array of sorting objects. If there is more than one object in the array, multi-sorting will be enabled.
-   * Each sorting object should contain an id key with the corresponding column ID to sort by. An optional desc
-   * key (which defaults to false) may be set to true to indicate a descending sorting directionfor that column,
-   * otherwise, it will be assumed to be ascending. This information is stored in state since the table is allowed
-   * to manipulate the filter through user interaction.
-   */
-  defaultSorting?: SortingRule<string | number>[] | undefined;
-
-  /**
-   * If set to true, all columns will be sortable, regardless if they have a valid accessor
-   */
-  defaultCanSort?: boolean;
-
-  /**
-   * A callback to refetch data
-   */
-  onFetchData?: () => void;
-  /**
-   * Required if manualPagination is set to true
-   * If manualPagination is true, then this value used to determine the amount of pages available.
-   * This amount is then used to materialize the pageOptions and also compute the canNextPage values on the table instance.
-   * Set to -1 if you don't know or don't want to present the number of pages available. canNextPage will return false if page data length is less than pageSize, otherwise true.
-   */
-  pageCount?: number;
-
-  /**
-   *
-   */
-  manualFilters?: boolean;
-  /**
-   * Enables pagination functionality, but does not automatically perform row pagination.
-   * Turn this on if you wish to implement your own pagination outside of the table (eg. server-side pagination or any other manual pagination technique)
-   */
-  manualPagination?: boolean;
-
-  /**
-   * Enables sorting detection functionality, but does not automatically perform row sorting.
-   * Turn this on if you wish to implement your own sorting outside of the table (eg. server-side or manual row grouping/nesting)
-   */
-  manualSortBy?: boolean;
-
-  /**
-   * Enables filter detection functionality, but does not automatically perform row filtering.
-   * Turn this on if you wish to implement your own row filter outside of the table (e.g. server-side or manual row grouping/nesting)
-   */
-  selectedRowIds?: string[];
-
-  /**
-   * A callback for selecting the row
-   */
-  onSelectRow?: ((index: number, row: any) => void) | undefined;
-
-  /**
-   * A callback for double-clicking the rows
-   */
-  onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: ITableRowData, index?: number) => void);
-
-  /**
-   * A callback for clicking the rows
-   */
-  onRowClick?: (rowIndex: number, row: any) => void;
-
-  /**
-   * A callback for hovering over the rows
-   */
-  onRowHover?: (rowIndex: number, row: any) => void;
-
-  /**
-   * A callback for when ids are selected. Required if selectionMode = "multiple"
-   */
-  onSelectedIdsChanged?: ((ids: string[]) => void) | undefined;
-
-  /**
-   * A callback for when multiple rows are selected with checkbox. Applicable if selectionMode = "multiple"
-   */
-  onMultiRowSelect?: ((rows: Array<Row<ITableRowData>> | Row<ITableRowData>) => void) | undefined;
-
-  /**
-   * Configurable action for row click event
-   */
-  onRowClickAction?: IConfigurableActionConfiguration | undefined;
-
-  /**
-   * Configurable action for row hover event
-   */
-  onRowHoverAction?: IConfigurableActionConfiguration | undefined;
-
-  /**
-   * Configurable action for row select event (fires only when row is selected, not deselected)
-   */
-  onRowSelectAction?: IConfigurableActionConfiguration | undefined;
-
-  /**
-   * Configurable action for selection change event (fires on both select and deselect)
-   */
-  onSelectionChangeAction?: IConfigurableActionConfiguration | undefined;
-
+export type TableStyleProps = {
   // Cell-specific styling
   /** @deprecated Use bodyFontColor instead. Cell text color duplicates body font color. */
   cellTextColor?: string | undefined;
@@ -226,36 +65,12 @@ export interface IReactTableProps<T extends ITableRowData = ITableRowData> exten
   rowDividers?: boolean | undefined;
   responsiveMode?: 'scroll' | 'stack' | 'collapse' | undefined;
 
-  /**
-   * Selected row index
-   */
-  selectedRowIndex?: number | undefined;
-
-  /**
-   * Disables sorting for every column in the entire table.
-   */
-  disableSortBy?: boolean | undefined;
-
-  ref?: React.MutableRefObject<TableState<any>> | undefined;
-
-  /** Called when an expander is clicked. Use this to manage `expanded` */
-  // onExpandedChange: ExpandedChangeFunction;
-
-  /** Called when a user clicks on a resizing component (the right edge of a column header) */
-  onResizedChange?: (columns: ColumnInstance<T>[], columnSizes: IColumnResizing) => void;
-
   scrollBodyHorizontally?: boolean; // If true, specify the height, else it will default to 250px
 
   /**
    * The table height. Required if scrollBodyHorizontally is true. Default value is 250px
    */
   height?: number;
-
-  onSort?: (sorting: SortingRule<ITableRowData>[]) => void;
-  /**
-   * Allows the click event to be skipped. Required if conflicting with double click event
-   */
-  omitClick?: boolean | undefined;
 
   containerStyle?: CSSProperties | undefined;
   minHeight?: number | undefined;
@@ -321,26 +136,207 @@ export interface IReactTableProps<T extends ITableRowData = ITableRowData> exten
   dimensions?: IDimensionsValue | undefined;
   sortableIndicatorColor?: string | undefined;
   striped?: boolean | undefined;
+};
+
+export interface IReactTableProps<TData extends ITableRowData = ITableRowData> extends ITableRowDragProps, TableStyleProps {
+  /**
+   * @deprecated - use scrollBodyHorizontally
+   * Whether the table should be scrollable or not
+   */
+  scroll?: boolean;
+
+  /**
+   * The core columns configuration object for the entire table. Must be memoized
+   */
+  columns?: Array<Column<TData>>;
+
+  /**
+   * The data array that you want to display on the table.
+   */
+  data?: TData[];
+
+  /**
+   * Class name for the table container
+   */
+  className?: string;
+
+  /**
+   * Whether the data is being fetched or not
+   */
+  loading?: boolean;
+
+  /**
+   * Loading data message
+   */
+  loadingText?: ReactNode | (() => ReactNode);
+
+  /**
+   * Selection mode for the table
+   */
+  selectionMode?: TableSelectionMode | undefined;
+
+  /**
+   * Whether the table's headers should be frozen and you scroll under them
+   */
+  freezeHeaders?: boolean | undefined;
+
+  /**
+   * Whether the table's columns should be frozen and you scroll under them on the left or right
+   */
+  anchored?: IAnchoredDirection;
+
+  /**
+   * The default column object for every column passed to React Table.
+   *
+   * Column-specific properties will override the properties in this object, eg. `{ ...defaultColumn, ...userColumn }`
+   */
+  defaultColumn?: Partial<Column<TData>>;
+
+  /**
+   * Whether columns should be resized or not
+   */
+  resizableColumns?: boolean;
+
+  /**
+   * An array of sorting objects. If there is more than one object in the array, multi-sorting will be enabled.
+   * Each sorting object should contain an id key with the corresponding column ID to sort by. An optional desc
+   * key (which defaults to false) may be set to true to indicate a descending sorting directionfor that column,
+   * otherwise, it will be assumed to be ascending. This information is stored in state since the table is allowed
+   * to manipulate the filter through user interaction.
+   */
+  defaultSorting?: SortingRule<string | number>[] | undefined;
+
+  /**
+   * If set to true, all columns will be sortable, regardless if they have a valid accessor
+   */
+  defaultCanSort?: boolean;
+
+  /**
+   * A callback to refetch data
+   */
+  onFetchData?: () => void;
+  /**
+   * Required if manualPagination is set to true
+   * If manualPagination is true, then this value used to determine the amount of pages available.
+   * This amount is then used to materialize the pageOptions and also compute the canNextPage values on the table instance.
+   * Set to -1 if you don't know or don't want to present the number of pages available. canNextPage will return false if page data length is less than pageSize, otherwise true.
+   */
+  pageCount?: number;
+
+  /**
+   *
+   */
+  manualFilters?: boolean;
+  /**
+   * Enables pagination functionality, but does not automatically perform row pagination.
+   * Turn this on if you wish to implement your own pagination outside of the table (eg. server-side pagination or any other manual pagination technique)
+   */
+  manualPagination?: boolean;
+
+  /**
+   * Enables sorting detection functionality, but does not automatically perform row sorting.
+   * Turn this on if you wish to implement your own sorting outside of the table (eg. server-side or manual row grouping/nesting)
+   */
+  manualSortBy?: boolean;
+
+  /**
+   * Enables filter detection functionality, but does not automatically perform row filtering.
+   * Turn this on if you wish to implement your own row filter outside of the table (e.g. server-side or manual row grouping/nesting)
+   */
+  selectedRowIds?: string[];
+
+  /**
+   * A callback for selecting the row
+   */
+  onSelectRow?: ((index: number, row: TData) => void) | undefined;
+
+  /**
+   * A callback for double-clicking the rows
+   */
+  onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: ITableRowData, index?: number) => void);
+
+  /**
+   * A callback for clicking the rows
+   */
+  onRowClick?: (rowIndex: number, row: TData) => void;
+
+  /**
+   * A callback for hovering over the rows
+   */
+  onRowHover?: (rowIndex: number, row: TData) => void;
+
+  /**
+   * A callback for when ids are selected. Required if selectionMode = "multiple"
+   */
+  onSelectedIdsChanged?: ((ids: string[]) => void) | undefined;
+
+  /**
+   * A callback for when multiple rows are selected with checkbox. Applicable if selectionMode = "multiple"
+   */
+  onMultiRowSelect?: ((rows: Array<Row<TData>> | Row<TData>) => void) | undefined;
+
+  /**
+   * Configurable action for row click event
+   */
+  onRowClickAction?: IConfigurableActionConfiguration | undefined;
+
+  /**
+   * Configurable action for row hover event
+   */
+  onRowHoverAction?: IConfigurableActionConfiguration | undefined;
+
+  /**
+   * Configurable action for row select event (fires only when row is selected, not deselected)
+   */
+  onRowSelectAction?: IConfigurableActionConfiguration | undefined;
+
+  /**
+   * Configurable action for selection change event (fires on both select and deselect)
+   */
+  onSelectionChangeAction?: IConfigurableActionConfiguration | undefined;
+
+  /**
+   * Selected row index
+   */
+  selectedRowIndex?: number | undefined;
+
+  /**
+   * Disables sorting for every column in the entire table.
+   */
+  disableSortBy?: boolean | undefined;
+
+  ref?: React.RefObject<TableState<TData>> | undefined;
+
+  /** Called when an expander is clicked. Use this to manage `expanded` */
+  // onExpandedChange: ExpandedChangeFunction;
+
+  /** Called when a user clicks on a resizing component (the right edge of a column header) */
+  onResizedChange?: (columns: ColumnInstance<TData>[], columnSizes: IColumnResizing) => void;
+
+  onSort?: (sorting: SortingRule<ITableRowData>[]) => void;
+  /**
+   * Allows the click event to be skipped. Required if conflicting with double click event
+   */
+  omitClick?: boolean | undefined;
 
   canDeleteInline?: boolean | undefined;
-  deleteAction?: ((rowIndex: number, data: any) => Promise<any>) | undefined;
+  deleteAction?: ((rowIndex: number, data: TData) => Promise<void>) | undefined;
 
   canEditInline?: boolean | undefined;
-  updateAction?: ((rowIndex: number, data: any) => Promise<any>) | undefined;
+  updateAction?: ((rowIndex: number, data: TData) => Promise<TData>) | undefined;
 
   canAddInline?: boolean | undefined;
   newRowCapturePosition?: NewRowCapturePosition | undefined;
   newRowInsertPosition?: NewRowCapturePosition | undefined;
-  createAction?: ((data: any) => Promise<any>) | undefined;
-  newRowInitData?: RowDataInitializer | undefined;
+  createAction?: ((data: TData) => Promise<TData>) | undefined;
+  newRowInitData?: RowDataInitializer<TData> | undefined;
   inlineEditMode?: InlineEditMode | undefined;
   inlineSaveMode?: InlineSaveMode | undefined;
   inlineEditorComponents?: IFlatComponentsStructure | undefined;
   inlineCreatorComponents?: IFlatComponentsStructure | undefined;
   inlineDisplayComponents?: IFlatComponentsStructure | undefined;
-  onRowsRendering?: OnRowsRendering<T> | undefined;
-  onRowsReordered?: ((payload: OnRowsReorderedArgs) => Promise<void>) | undefined;
-}
+  onRowsRendering?: OnRowsRendering<TData> | undefined;
+  onRowsReordered?: ((payload: OnRowsReorderedArgs<TData>) => Promise<void>) | undefined; }
 
 
 export type RowRenderer<T extends ITableRowData = ITableRowData> = (row: Row<T>, index: number) => React.ReactElement;

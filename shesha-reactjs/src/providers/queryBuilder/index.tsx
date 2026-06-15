@@ -6,6 +6,7 @@ import { useMetadataDispatcher } from '@/providers';
 import { IModelMetadata, asPropertiesArray, isEntityMetadata } from '@/interfaces/metadata';
 import { Widgets } from '@react-awesome-query-builder/antd';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { throwError } from '@/utils/errors';
 
 export interface IQueryBuilderProviderProps {
   metadata: IModelMetadata;
@@ -161,43 +162,31 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
   );
 };
 
-function useQueryBuilderState(requireBuilder: boolean = true): IQueryBuilderStateContext | undefined {
-  const context = useContext(QueryBuilderStateContext);
+const useQueryBuilderStateOrUndefined = (): IQueryBuilderStateContext | undefined => useContext(QueryBuilderStateContext);
+const useQueryBuilderState = (): IQueryBuilderStateContext => useQueryBuilderStateOrUndefined() ?? throwError("useQueryBuilderState must be used within a QueryBuilderProvider");
 
-  if (context === undefined && requireBuilder) {
-    throw new Error('useQueryBuilderState must be used within a QueryBuilderProvider');
-  }
+const useQueryBuilderActionsOrUndefined = (): IQueryBuilderActionsContext | undefined => useContext(QueryBuilderActionsContext);
+const useQueryBuilderActions = (): IQueryBuilderActionsContext => useQueryBuilderActionsOrUndefined() ?? throwError("useQueryBuilderActions must be used within a QueryBuilderProvider");
 
-  return context;
-}
+const useQueryBuilderOrUndefined = (): IQueryBuilderStateContext & IQueryBuilderActionsContext | undefined => {
+  const actionsContext = useQueryBuilderStateOrUndefined();
+  const stateContext = useQueryBuilderActionsOrUndefined();
 
-function useQueryBuilderActions(requireBuilder: boolean = true): IQueryBuilderActionsContext | undefined {
-  const context = useContext(QueryBuilderActionsContext);
-
-  if (context === undefined && requireBuilder) {
-    throw new Error('useQueryBuilderActions must be used within a QueryBuilderProvider');
-  }
-
-  return context;
-}
-
-function useQueryBuilder(requireBuilder: boolean = true): IQueryBuilderStateContext & IQueryBuilderActionsContext | undefined {
-  const actionsContext = useQueryBuilderActions(requireBuilder);
-  const stateContext = useQueryBuilderState(requireBuilder);
-
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when requireBuilder == true
-  // so we must return value only when both context are available
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
-}
+};
+
+const useQueryBuilder = (): IQueryBuilderStateContext & IQueryBuilderActionsContext => useQueryBuilderOrUndefined() ?? throwError("useQueryBuilder must be used within a QueryBuilderProvider");
 
 export {
   QueryBuilderProvider,
+  useQueryBuilderStateOrUndefined,
   useQueryBuilderState,
+  useQueryBuilderActionsOrUndefined,
   useQueryBuilderActions,
   useQueryBuilder,
+  useQueryBuilderOrUndefined,
   type IHasQueryBuilderConfig,
   propertyHasQBConfig,
   type IPropertyMetadataWithQBSettings,

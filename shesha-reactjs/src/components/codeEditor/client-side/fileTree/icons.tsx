@@ -9,7 +9,7 @@ export const getNodeIcon = (nodeProps: AntdTreeNodeAttribute): React.JSX.Element
   if (!nodeProps.isLeaf)
     return nodeProps.expanded ? <FcOpenedFolder /> : <FcFolder />;
 
-  const extension = getLastSection('.', nodeProps.title?.toString());
+  const extension = getLastSection('.', nodeProps.title?.toString() ?? "");
   switch (extension) {
     case "js": return <SiJavascript color="#fbcb38" />;
     case "jsx": return <SiJavascript color="#fbcb38" />;

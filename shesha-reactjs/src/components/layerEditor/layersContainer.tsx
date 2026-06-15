@@ -6,11 +6,11 @@ import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { LayerGroupItemProps } from '@/providers/layersProvider/models';
 
 export interface ILayerItemsContainerProps {
-  index?: number[];
-  id?: string;
+  index?: number[] | undefined;
+  id?: string | undefined;
   items: LayerGroupItemProps[];
-  onConfigClick?: (selectedItemId: string) => void;
-  readOnly?: boolean;
+  onConfigClick?: ((selectedItemId: string) => void) | undefined;
+  readOnly?: boolean | undefined;
 }
 
 export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
@@ -22,7 +22,7 @@ export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
 
     if (listChanged) {
       const newChilds = newState.map<LayerGroupItemProps>((item) => item as LayerGroupItemProps);
-      updateChildItems({ index: props.index, childs: newChilds });
+      updateChildItems({ index: props.index ?? [], childs: newChilds });
     }
   };
 

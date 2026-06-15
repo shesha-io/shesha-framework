@@ -1,8 +1,10 @@
 ﻿using Abp.Net.Mail;
 using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
+using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using System;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ namespace Shesha.Email
     /// <summary>
     /// Email Sender Application Service
     /// </summary>
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
     public class EmailSenderAppService : SheshaAppServiceBase, IEmailSenderAppService
     {
         private readonly IEmailSender _emailSender;

@@ -65,8 +65,10 @@ import {
   IComponentsContainer,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
+  IFormDto,
   IFormSettings,
   IFormValidationRulesOptions,
+  IPersistedFormProps,
   ROOT_COMPONENT_KEY,
 } from './models';
 import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
@@ -335,7 +337,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
 const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
   const accessors = wrapConstantsData({ fullContext, ...args });
 
-  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current)
     contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
   else
@@ -501,7 +503,7 @@ export const componentsTreeToFlatStructure = (
 export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
-  formSettings: IFormSettings,
+  formSettings: IFormSettings | undefined,
   flatStructure: IFlatComponentsStructure,
   isNew?: boolean,
 ): IConfigurableFormComponent => {
@@ -521,7 +523,7 @@ export const upgradeComponent = (
 
 export const upgradeComponents = (
   toolboxComponents: IToolboxComponents,
-  formSettings: IFormSettings,
+  formSettings: IFormSettings | undefined,
   flatStructure: IFlatComponentsStructure,
   isNew?: boolean,
 ): void => {
@@ -742,33 +744,42 @@ export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object
     }
   }
 
-  // Only deep-clone plain objects and arrays. Class instances, Map, Set, RegExp, Error, URL,
-  // typed arrays, etc. are returned as-is so their prototype/semantics survive.
-  const isArray = Array.isArray(input);
-  if (!isArray) {
-    const proto = Object.getPrototypeOf(input) as object | null;
-    if (proto !== Object.prototype && proto !== null) return input;
-  }
+  // Preserve known special types that carry internal state which would break under a generic
+  // clone (Map, Set, RegExp, Error, URL, typed arrays, etc.). We detect them via the
+  // [[Class]] tag — anything that's not `[object Object]` or `[object Array]` is returned by
+  // reference. Class instances (which have `[object Object]` tag) ARE walked so their
+  // enumerable fields are cloned and any nested Shesha proxies inside get unwrapped.
+  const tag = Object.prototype.toString.call(input);
+  if (tag !== '[object Object]' && tag !== '[object Array]') return input;
 
   const cached = seen.get(input);
   if (cached) return cached;
 
-  const result: Record<string, unknown> | unknown[] = isArray ? [] : {};
+  const isArray = Array.isArray(input);
+  // Preserve the prototype for class instances so prototype methods/getters remain reachable.
+  const result: Record<string, unknown> | unknown[] = isArray
+    ? []
+    : Object.create(Object.getPrototypeOf(input) as object | null) as Record<string, unknown>;
   seen.set(input, result);
   for (const key of Object.keys(input))
     (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
-  Object.defineProperty(result, 'toString', {
-    value: () => {
-      try {
-        return JSON.stringify(result);
-      } catch {
-        return '';
-      }
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true,
-  });
+  // Only override toString on objects — arrays must stay as real arrays so their values are
+  // submitted correctly to the API. Attaching JSON.stringify-based toString to arrays caused
+  // array fields (e.g. multi-select) to be sent as "[32,128,64]" strings instead of [32,128,64].
+  if (!isArray) {
+    Object.defineProperty(result, 'toString', {
+      value: () => {
+        try {
+          return JSON.stringify(result);
+        } catch {
+          return '';
+        }
+      },
+      configurable: true,
+      enumerable: false,
+      writable: true,
+    });
+  }
   return result;
 };
 
@@ -821,16 +832,6 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       };
 
       if (skipUnknownTags) {
-        // A non-plain object (Date / class instance / Map / etc.) is preserved by reference
-        // through cloneAndDecorateForMustache. When the traversal would descend into one and
-        // write a placeholder, we shallow-clone it into a plain object and replace it in its
-        // parent so the placeholder never lands on the caller-owned instance.
-        const isNonPlainObject = (val: unknown): val is object => {
-          if (!val || typeof val !== 'object' || Array.isArray(val)) return false;
-          const proto = Object.getPrototypeOf(val) as object | null;
-          return proto !== Object.prototype && proto !== null;
-        };
-
         template.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
           const tag = mathes && mathes.length > 0
@@ -845,15 +846,9 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
             return;
 
           const container = parts.reduce((level: IAnyObject, key: string) => {
-            if (!level.hasOwnProperty(key))
-              return (level[key] = {} as IAnyObject);
-            const existing = level[key] as unknown;
-            if (isNonPlainObject(existing)) {
-              const detached: IAnyObject = { ...(existing as IAnyObject) };
-              level[key] = detached;
-              return detached;
-            }
-            return existing as IAnyObject;
+            return level.hasOwnProperty(key)
+              ? level[key] as IAnyObject
+              : (level[key] = {} as IAnyObject);
           }, view);
           if (!container.hasOwnProperty(field)) {
             container[field] = new StaticMustacheTag(tag);
@@ -1043,7 +1038,7 @@ export const isComponentFiltered = (
  *
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
-export const getFieldNameFromExpression = (expression: string): string | string[] | undefined => {
+export const getFieldNameFromExpression = (expression: string | undefined | null): string | string[] | undefined => {
   if (!expression) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
@@ -1424,7 +1419,7 @@ export interface IMatchData {
   data: unknown;
 }
 
-export const pickStyleFromModel = (model: StyleBoxValue, ...args: unknown[]): CSSProperties => {
+export const pickStyleFromModel = (model: StyleBoxValue | undefined, ...args: unknown[]): CSSProperties => {
   let style = {};
 
   const propsToCopy = !args.length
@@ -1633,7 +1628,7 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
  * @param {IToolboxComponents} designerComponents - The designer components.
  * @return {IFlatComponentsStructure} The flat structure of configurable form components.
  */
-export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | null, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
+export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | undefined, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
   let components = getComponentsFromMarkup(markup);
   if (formSettings?.isSettingsForm)
     components = updateJsSettingsForComponents(designerComponents, components);
@@ -1672,9 +1667,21 @@ export const standardActualModelPropertyFilter = (name: string): boolean => {
  * @param value - The property value
  * @returns true if the property should be included, false otherwise
  */
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent | undefined, name: string, value: unknown): boolean => {
   if (isDefined(component) && component.actualModelPropertyFilter) {
     return component.actualModelPropertyFilter(name, value) && standardActualModelPropertyFilter(name);
   }
   return standardActualModelPropertyFilter(name);
+};
+
+
+export const formDtop2PersistedFormProps = (formDto: IFormDto): IPersistedFormProps => {
+  return {
+    id: formDto.id,
+    module: formDto.module,
+    name: formDto.name,
+    label: formDto.label ?? undefined,
+    description: formDto.description ?? undefined,
+    markup: formDto.markup ?? undefined,
+  };
 };

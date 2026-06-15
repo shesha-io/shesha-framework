@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext, useMemo } from 'react';
+import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 import { GenericListEditorProvider } from './provider';
 import {
   getListEditorActionsContext,
@@ -43,9 +43,7 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
     props: T,
   ): React.JSX.Element => {
     const { value, onChange, onSelectionChange, initNewItem, readOnly } = props;
-    const initialState = useMemo(() => {
-      return getListEditorContextInitialState<TItem>(value);
-    }, []);
+    const [initialState] = useState(() => getListEditorContextInitialState<TItem>(value));
 
     return (
       <GenericListEditorProvider<TItem>
@@ -56,7 +54,7 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
         onChange={onChange}
         onSelectionChange={onSelectionChange}
         initNewItem={initNewItem}
-        readOnly={readOnly}
+        readOnly={readOnly === true}
       >
         {props.children}
       </GenericListEditorProvider>

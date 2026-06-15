@@ -4,29 +4,24 @@ import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
 import { IPersistedFormProps } from '@/providers/form/models';
 
 export interface IEditViewMsgProps {
-  persistedFormProps?: IPersistedFormProps;
+  persistedFormProps?: IPersistedFormProps | undefined;
 }
 
 export const EditViewMsg: FC<IEditViewMsgProps> = ({ persistedFormProps }) => {
-  // Always show the edit button, even if form details aren't available yet
-  const hasFormDetails = persistedFormProps && persistedFormProps.name;
-
-  if (!hasFormDetails) {
-    return (
+  return persistedFormProps && persistedFormProps.name
+    ? (
+      <div className="sha-configurable-view-button-wrapper">
+        <Button title="Edit view" shape="default" icon={<RebaseEditOutlined />} />
+        <span className="sha-configurable-view-details">
+          Form: {persistedFormProps.module}\{persistedFormProps.name}
+        </span>
+      </div>
+    )
+    : (
       <div className="sha-configurable-view-button-wrapper lite">
         <Button title="Edit view" shape="default" icon={<RebaseEditOutlined />} />
       </div>
     );
-  }
-
-  return (
-    <div className="sha-configurable-view-button-wrapper">
-      <Button title="Edit view" shape="default" icon={<RebaseEditOutlined />} />
-      <span className="sha-configurable-view-details">
-        Form: {persistedFormProps?.module}\{persistedFormProps?.name}
-      </span>
-    </div>
-  );
 };
 
 export default EditViewMsg;

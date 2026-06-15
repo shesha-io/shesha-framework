@@ -2,20 +2,23 @@ import { IPropertyMetadata } from "@/interfaces/metadata";
 import moment, { MomentInput } from "moment";
 import { useReferenceList, useReferenceListItem } from "@/providers/referenceListDispatcher/index";
 import React, { useMemo, FC } from "react";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { asNumber } from "../dataTable/cell/utils";
-
+import { getFirstNonEmptyStringPropertyOrUndefined } from "@/utils/object";
 
 export interface ValueRendererProps<V = unknown> {
   value: V;
   meta: IPropertyMetadata | undefined;
 }
 
-const ReferenceListDisplay: FC<ValueRendererProps<number>> = ({ value, meta }) => {
-  const { referenceListName, referenceListModule } = meta;
+type RefListRenderer = {
+  referenceListName: string;
+  referenceListModule: string;
+};
 
+const ReferenceListDisplay: FC<ValueRendererProps<number> & RefListRenderer> = ({ value, referenceListName, referenceListModule }) => {
   const item = useReferenceListItem(referenceListModule, referenceListName, value);
-  return <>{item?.data?.item}</>;
+  return <>{item.data?.item}</>;
 };
 
 const EntityDisplay: FC<ValueRendererProps> = ({ value }) => {
@@ -23,19 +26,17 @@ const EntityDisplay: FC<ValueRendererProps> = ({ value }) => {
     return null;
 
   const text = typeof value === 'object'
-    ? value['displayText'] ?? value['_displayName']
+    ? getFirstNonEmptyStringPropertyOrUndefined(value, ["displayText", "_displayName"])
     : value.toString();
 
   return <>{text}</>;
 };
 
-const MultivalueReferenceListDisplayInternal: FC<ValueRendererProps> = (props) => {
-  const { value } = props;
-
-  const { referenceListName, referenceListModule } = props.meta;
+const MultivalueReferenceListDisplayInternal: FC<ValueRendererProps & RefListRenderer> = (props) => {
+  const { value, referenceListName, referenceListModule } = props;
 
   const list = useReferenceList({ module: referenceListModule, name: referenceListName });
-  const refListItems = list?.data?.items;
+  const refListItems = list.data?.items;
 
   const mapped = useMemo(() => {
     if (!refListItems || !Array.isArray(refListItems) ||
@@ -50,17 +51,16 @@ const MultivalueReferenceListDisplayInternal: FC<ValueRendererProps> = (props) =
 };
 
 const MultivalueReferenceListDisplay: FC<ValueRendererProps> = (props) => {
-  const { value } = props;
-
-  return !value || !props.meta
-    ? null
-    : (<MultivalueReferenceListDisplayInternal {...props} />);
+  const { value, meta } = props;
+  return value && meta && !isNullOrWhiteSpace(meta.referenceListModule) && !isNullOrWhiteSpace(meta.referenceListName)
+    ? (<MultivalueReferenceListDisplayInternal {...props} referenceListName={meta.referenceListName} referenceListModule={meta.referenceListModule} />)
+    : null;
 };
 
 export const ValueRenderer: FC<ValueRendererProps> = (props) => {
   const { value, meta } = props;
 
-  if (isDefined(value))
+  if (!isDefined(value))
     return null;
 
   switch (meta?.dataType) {
@@ -77,8 +77,8 @@ export const ValueRenderer: FC<ValueRendererProps> = (props) => {
     };
     case 'reference-list-item':
       const numberValue = asNumber(value);
-      return numberValue
-        ? (<ReferenceListDisplay {...props} value={numberValue} />)
+      return numberValue && !isNullOrWhiteSpace(meta.referenceListModule) && !isNullOrWhiteSpace(meta.referenceListName)
+        ? (<ReferenceListDisplay {...props} value={numberValue} referenceListName={meta.referenceListName} referenceListModule={meta.referenceListModule} />)
         : undefined;
     case 'boolean': return <>{props.value ? 'Yes' : 'No'}</>;
     case 'entity': return (<EntityDisplay {...props} />);

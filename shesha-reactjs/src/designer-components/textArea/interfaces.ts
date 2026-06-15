@@ -1,21 +1,15 @@
-import { IEventHandlers } from '@/components/formDesigner/components/utils';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export interface ITextAreaComponentProps extends IConfigurableFormComponent, IInputStyles {
-  placeholder?: string;
-  showCount?: boolean;
-  autoSize?: boolean;
-  allowClear?: boolean;
-  initialValue?: string;
-  passEmptyStringByDefault?: boolean;
-  spellCheck?: boolean;
-  desktop?: IInputStyles;
+  placeholder?: string | undefined;
+  showCount?: boolean | undefined;
+  autoSize?: boolean | undefined;
+  allowClear?: boolean | undefined;
+  initialValue?: string | undefined;
+  passEmptyStringByDefault?: boolean | undefined;
+  spellCheck?: boolean | undefined;
+  desktop?: IInputStyles | undefined;
 }
 
-interface ITextFieldComponentCalulatedValues {
-  defaultValue?: string;
-  eventHandlers?: IEventHandlers;
-}
-
-export type TextAreaComponentDefinition = ComponentDefinition<"textArea", ITextAreaComponentProps, ITextFieldComponentCalulatedValues>;
+export type TextAreaComponentDefinition = ComponentDefinition<"textArea", ITextAreaComponentProps>;

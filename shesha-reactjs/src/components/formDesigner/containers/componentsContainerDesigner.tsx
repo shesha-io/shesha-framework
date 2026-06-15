@@ -11,6 +11,9 @@ import { useFormDesigner, useFormDesignerReadOnly } from '@/providers/formDesign
 import { useStyles } from '../styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
+import { isToolboxDroppableDataItem } from '../dataSourceTree';
+import { isToolboxDroppableComponent } from '../toolboxComponents';
+import { isDefined } from '@/utils/nullables';
 
 export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const {
@@ -34,7 +37,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
   const formDesigner = useFormDesigner();
   const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesigner();
 
-  const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
   const componentsMapped = useMemo<ItemInterface[]>(() => {
     return childIds.map<ItemInterface>((id) => ({
@@ -42,7 +45,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     }));
   }, [childIds]);
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
+  const onSetList = (newState: ItemInterface[]): void => {
     if (!formDesigner.hasDragged) return;
 
     if (!isNaN(itemsLimit) && itemsLimit && newState?.length === Math.round(itemsLimit) + 1) {
@@ -56,30 +59,34 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     if (newDataItemIndex > -1) {
       // dropped data item
       const draggedItem = newState[newDataItemIndex];
-
-      addDataProperty({
-        propertyMetadata: draggedItem.metadata,
-        containerId,
-        index: newDataItemIndex,
-      });
+      if (isToolboxDroppableDataItem(draggedItem)) {
+        addDataProperty({
+          propertyMetadata: draggedItem.metadata,
+          containerId,
+          index: newDataItemIndex,
+        });
+      }
     } else {
       const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
       if (newComponentIndex > -1) {
         // add new component
         const toolboxComponent = newState[newComponentIndex];
-
-        addComponent({
-          containerId,
-          componentType: toolboxComponent.id.toString(),
-          index: newComponentIndex,
-        });
+        if (isToolboxDroppableComponent(toolboxComponent)) {
+          addComponent({
+            containerId,
+            componentType: toolboxComponent.id.toString(),
+            index: newComponentIndex,
+          });
+        }
       } else {
         // reorder existing components
         let isModified = componentsMapped.length !== newState.length;
 
         if (!isModified) {
           for (let i = 0; i < componentsMapped.length; i++) {
-            if (componentsMapped[i].id !== newState[i].id) {
+            const oldItem = componentsMapped[i];
+            const newItem = newState[i];
+            if (isDefined(oldItem) && isDefined(newItem) && oldItem.id !== newItem.id) {
               isModified = true;
               break;
             }
@@ -98,7 +105,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     startDragging();
   };
 
-  const onDragEnd = (_evt): void => {
+  const onDragEnd = (): void => {
     endDragging();
   };
 

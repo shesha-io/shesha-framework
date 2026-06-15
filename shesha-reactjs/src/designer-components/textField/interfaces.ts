@@ -1,28 +1,23 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { IconType } from '@/components/shaIcon';
-import { IEventHandlers } from '@/components/formDesigner/components/utils';
 import { ComponentDefinition } from '@/interfaces';
 
 export type TextType = 'text' | 'password';
 
 export interface ITextFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
-  placeholder?: string;
-  prefix?: string;
-  suffix?: string;
-  suffixIcon?: IconType;
-  prefixIcon?: IconType;
-  initialValue?: string;
-  textType?: TextType;
-  desktop?: IInputStyles;
-  mobile?: IInputStyles;
-  tablet?: IInputStyles;
-  spellCheck?: boolean;
-  regExp?: string;
-  useStandardPasswordValidation?: boolean;
+  placeholder?: string | undefined;
+  prefix?: string | undefined;
+  suffix?: string | undefined;
+  suffixIcon?: IconType | undefined;
+  prefixIcon?: IconType | undefined;
+  initialValue?: string | undefined;
+  textType?: TextType | undefined;
+  desktop?: IInputStyles | undefined;
+  mobile?: IInputStyles | undefined;
+  tablet?: IInputStyles | undefined;
+  spellCheck?: boolean | undefined;
+  regExp?: string | undefined;
+  useStandardPasswordValidation?: boolean | undefined;
 }
 
-interface ITextFieldComponentCalulatedValues {
-  eventHandlers?: IEventHandlers;
-}
-
-export type TextFieldComponentDefinition = ComponentDefinition<"textField", ITextFieldComponentProps, ITextFieldComponentCalulatedValues>;
+export type TextFieldComponentDefinition = ComponentDefinition<"textField", ITextFieldComponentProps>;

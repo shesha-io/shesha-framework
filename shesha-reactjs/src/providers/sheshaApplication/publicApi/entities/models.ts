@@ -6,8 +6,8 @@ export interface EntityApiItem {
 
 export interface DataTypeInfo {
   dataType: string;
-  dataFormat?: string | null;
-  objectType?: string;
+  dataFormat?: string | null | undefined;
+  objectType?: string | undefined;
 }
 
 export interface EntityConfigurationDto extends EntityApiItem {

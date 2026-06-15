@@ -9,7 +9,7 @@ import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils
 
 export interface IProps extends IModelItem {
   index: number[];
-  parent?: IModelItem;
+  parent?: IModelItem | undefined;
 }
 
 export const ArrayEntityProperty: FC<IProps> = (props) => {

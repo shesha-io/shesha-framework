@@ -9,8 +9,18 @@ import { SearchBox } from './toolboxSearchBox';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
 import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
+import { isDefined } from '@/utils/nullables';
 
-type PanelType = CollapseProps['items'][number];
+type PanelType = Required<CollapseProps>['items'][number];
+
+type ToolboxDroppableComponent = ItemInterface & {
+  id: string;
+  parent_id: string | null;
+  type: string;
+};
+export const isToolboxDroppableComponent = (item: ItemInterface | undefined): item is ToolboxDroppableComponent => {
+  return isDefined(item) && item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY;
+};
 
 export const ToolboxComponents: FC = () => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.components.openedKeys', ['']);
@@ -42,14 +52,14 @@ export const ToolboxComponents: FC = () => {
     startDraggingNewItem();
   };
 
-  const onDragEnd = (_evt): void => {
+  const onDragEnd = (): void => {
     endDraggingNewItem();
   };
 
   let idx = 0;
   const componentGroups = filteredGroups
     .filter(({ visible }) => visible)
-    .map<PanelType>((group, groupIndex) => {
+    .map<PanelType | undefined>((group, groupIndex) => {
       const visibleComponents = group.components.filter((c) => c.isHidden !== true);
 
       const sortableItems = visibleComponents.map<ItemInterface>((component) => {
@@ -61,7 +71,7 @@ export const ToolboxComponents: FC = () => {
       });
 
       return visibleComponents.length === 0
-        ? null
+        ? undefined
         : {
           key: groupIndex.toString(),
           label: group.name,
@@ -98,7 +108,7 @@ export const ToolboxComponents: FC = () => {
           ),
         };
     })
-    .filter((item) => Boolean(item));
+    .filter(isDefined);
 
   return (
     <div className={styles.shaToolboxComponents}>

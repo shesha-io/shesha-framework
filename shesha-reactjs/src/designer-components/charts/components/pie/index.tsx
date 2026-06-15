@@ -1,12 +1,16 @@
 import {
   ArcElement,
   CategoryScale,
+  Chart,
+  ChartData,
   Chart as ChartJS,
   ChartOptions,
+  Color,
   Decimation,
   DoughnutController,
   Filler,
   Legend,
+  LegendItem,
   LinearScale,
   LineController,
   LineElement,
@@ -22,6 +26,8 @@ import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks/hooks';
 import { splitTitleIntoLines, createFontConfig } from '../../utils';
+import { isNonEmptyArray } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
@@ -53,20 +59,19 @@ const PieChart = ({ data }: IPieChartProps): React.JSX.Element => {
 
   const chartTitle: string = useGeneratedTitle();
 
-  data.datasets.forEach((dataset: { data: any[] }) => {
-    dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
+  data.datasets.forEach((dataset) => {
+    dataset.data = dataset.data?.map((item) => item ?? 'undefined');
   });
 
   if (dataMode === 'url') {
-    data?.datasets?.map((dataset: any) => {
+    data.datasets.forEach((dataset) => {
       dataset.borderColor = strokeColor || 'black';
       dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
       dataset.strokeColor = strokeColor || 'black';
-      return dataset;
     });
   }
 
-  const options: ChartOptions<any> = {
+  const options: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false, // Allow the chart to fill available space
     aspectRatio: 1, // Square aspect ratio for pie charts
@@ -92,35 +97,33 @@ const PieChart = ({ data }: IPieChartProps): React.JSX.Element => {
     },
     plugins: {
       legend: {
-        display: !!showLegend,
+        display: showLegend === true,
         position: legendPosition ?? 'top',
         align: (legendPosition === 'left' || legendPosition === 'right') ? 'center' : 'center',
         fullSize: false, // This ensures legend doesn't consume chart space
         labels: {
           boxWidth: 20,
           padding: 10,
-          font: createFontConfig(legendFont, 12, '400'),
+          font: createFontConfig(legendFont, 12, 400),
           color: legendFont?.color || '#000000',
           usePointStyle: true, // Use point style for better visual consistency
-          generateLabels: function (chart) {
+          generateLabels: function (chart: Chart): LegendItem[] {
             const data = chart.data;
-            if (data.labels.length && data.datasets.length) {
-              return data.labels.map((label, i) => {
-                const dataset = data.datasets[0];
+            if (data.labels && data.labels.length && isNonEmptyArray(data.datasets)) {
+              const dataset = data.datasets[0];
+              return data.labels.map<LegendItem>((label, i) => {
                 // backgroundColor can be an array or a single value
-                const bgColor = Array.isArray(dataset.backgroundColor)
-                  ? dataset.backgroundColor[i]
-                  : dataset.backgroundColor;
+                const bgColor = dataset.backgroundColor;
                 return {
                   text: String(label), // Ensure label is a string
-                  fillStyle: bgColor || dataset.borderColor || '#000000',
-                  strokeStyle: dataset.borderColor || '#000000',
-                  lineWidth: dataset.borderWidth || 1,
+                  fillStyle: (bgColor || dataset.borderColor || '#000000') as Color,
+                  strokeStyle: (dataset.borderColor || '#000000') as Color,
+                  lineWidth: (dataset.borderWidth || 1) as number,
                   pointStyle: 'circle',
                   hidden: false,
                   index: i,
                   fontColor: legendFont?.color || '#000000',
-                };
+                } satisfies LegendItem;
               });
             }
             return [];
@@ -128,7 +131,7 @@ const PieChart = ({ data }: IPieChartProps): React.JSX.Element => {
         },
       },
       title: {
-        display: !!(showTitle && chartTitle?.length > 0),
+        display: showTitle && !isNullOrWhiteSpace(chartTitle),
         text: splitTitleIntoLines(chartTitle),
         font: createFontConfig(titleFont, 16, 'bold'),
         color: titleFont?.color || '#000000',
@@ -138,7 +141,9 @@ const PieChart = ({ data }: IPieChartProps): React.JSX.Element => {
     },
   };
 
-  return isDoughnut ? <Doughnut data={data as any} options={options} /> : <Pie data={data as any} options={options} />;
+  return isDoughnut
+    ? <Doughnut data={data as ChartData<"doughnut">} options={options as ChartOptions<"doughnut">} />
+    : <Pie data={data as ChartData<"pie">} options={options as ChartOptions<"pie">} />;
 };
 
 export default PieChart;

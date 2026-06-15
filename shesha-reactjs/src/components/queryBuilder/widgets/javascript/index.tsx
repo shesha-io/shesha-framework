@@ -1,8 +1,8 @@
 import React from 'react';
-import { BaseWidget, TextFieldSettings } from '@react-awesome-query-builder/antd';
+import { TextFieldSettings, TextWidget } from '@react-awesome-query-builder/antd';
 import { JavaScriptEditor } from './javaScriptEditor';
 
-type JavaScriptWidgetType = BaseWidget & TextFieldSettings;
+type JavaScriptWidgetType = TextWidget & TextFieldSettings;
 const JavaScriptWidget: JavaScriptWidgetType = {
   type: 'javascript',
   jsType: 'string',
@@ -12,7 +12,7 @@ const JavaScriptWidget: JavaScriptWidgetType = {
 
     return (
       <JavaScriptEditor
-        value={value}
+        value={value ?? ""}
         onChange={(value) => {
           setValue(value);
         }}

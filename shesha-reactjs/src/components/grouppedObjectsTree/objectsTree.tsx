@@ -1,20 +1,23 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode, useCallback, Key, RefObject } from 'react';
 import { Tree } from 'antd';
 import { ShaIcon } from '@/components/shaIcon';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
+import { isNonEmptyArray } from '@/utils/array';
 
 export interface IProps<TItem> {
   items: TItem[];
-  defaultExpandAll?: boolean;
-  defaultSelected?: string;
-  searchText?: string;
+  defaultExpandAll?: boolean | undefined;
+  defaultSelected?: string | undefined;
+  searchText?: string | undefined;
   onChange: (item: TItem) => void;
   idFieldName?: string;
-  nameFieldName?: string;
-  childFieldName?: string;
-  getChildren?: (item: TItem) => TItem[];
-  getIsLeaf?: (item: TItem) => boolean;
-  getIcon?: (item: TItem) => ReactNode;
-  onRenterItem?: (item: TItem) => ReactNode;
+  nameFieldName?: string | undefined;
+  childFieldName?: string | undefined;
+  getChildren?: ((item: TItem) => TItem[]) | undefined;
+  getIsLeaf?: ((item: TItem) => boolean) | undefined;
+  getIcon?: ((item: TItem) => ReactNode) | undefined;
+  onRenterItem?: ((item: TItem) => ReactNode) | undefined;
 }
 
 interface DataNodeWithObject<TItem> {
@@ -28,25 +31,37 @@ interface DataNodeWithObject<TItem> {
   object: TItem;
 }
 
-export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): React.JSX.Element => {
-  const [manuallyExpanded, setManuallyExpanded] = useState<string[]>([]);
-  const [scrollId, setScrollId] = useState<string>(null);
-  // const [nodes, setNodes] = useState<DataNode[]>([]);
+export const ObjectsTree = <TItem extends object = object>(props: IProps<TItem>): React.JSX.Element => {
+  const { getChildren, getIsLeaf, nameFieldName, idFieldName, searchText = "" } = props;
+  const [manuallyExpanded, setManuallyExpanded] = useState<Key[]>([]);
+  const [scrollId, setScrollId] = useState<string | undefined>(undefined);
   const [nodes, setNodes] = useState<DataNodeWithObject<TItem>[]>([]);
 
-  const getName = (item: TItem): string => {
-    return Boolean(props.nameFieldName) ? item[props.nameFieldName] : item['name'] ?? item['className'] ?? item;
-  };
-  const getId = (item: TItem): string => {
-    return Boolean(props.idFieldName) ? item[props.idFieldName] : item['id'] ?? item['key'] ?? item;
-  };
+  const getName = useCallback((item: TItem): string => {
+    const result = !isNullOrWhiteSpace(nameFieldName)
+      ? getStringPropertyOrUndefined(item, nameFieldName)
+      : getFirstNonEmptyStringPropertyOrUndefined(item, ['name', 'className']);
+    return result ?? "";
+  }, [nameFieldName]);
 
-  const getTreeData = (item: TItem, onAddItem: (item: TItem) => void): DataNodeWithObject<TItem> => {
-    const nested = Boolean(props.getChildren) ? props.getChildren(item) : item['children'];
+  const getId = useCallback((item: TItem): string => {
+    const result = !isNullOrWhiteSpace(idFieldName)
+      ? getStringPropertyOrUndefined(item, nameFieldName)
+      : getFirstNonEmptyStringPropertyOrUndefined(item, ['id', 'key']);
+    return result ?? "";
+  }, [idFieldName, nameFieldName]);
+
+  const getTreeData = useCallback((item: TItem, onAddItem: (item: TItem) => void): DataNodeWithObject<TItem> => {
+    const nested = isDefined(getChildren)
+      ? getChildren(item)
+      : 'children' in item && isDefined(item.children) && Array.isArray(item.children) ? item.children as TItem[] : undefined;
+
     const node: DataNodeWithObject<TItem> = {
-      key: (getId(item))?.toLowerCase(),
+      key: (getId(item)).toLowerCase(),
       title: getName(item),
-      isLeaf: props.getIsLeaf ? props.getIsLeaf(item) : (!nested || (Array.isArray(nested) && nested.length === 0)),
+      isLeaf: getIsLeaf
+        ? getIsLeaf(item)
+        : !isNonEmptyArray(nested),
       selectable: false,
       object: item,
     };
@@ -56,30 +71,30 @@ export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): React.JSX.El
 
     onAddItem(item);
     return node;
-  };
+  }, [getChildren, getId, getIsLeaf, getName]);
 
   useEffect(() => {
     setNodes([...props.items.map((item) =>
       getTreeData(item, (item) => {
         if (props.defaultExpandAll)
           setManuallyExpanded((state) => {
-            if (state?.indexOf(getId(item)) === -1)
+            if (state.indexOf(getId(item)) === -1)
               return [...state, getId(item)];
             return state;
           });
       }),
     )]);
-  }, [props.items, props.defaultExpandAll]);
+  }, [props.items, props.defaultExpandAll, getTreeData, getId]);
 
   const getTitle = (item: TItem): ReactNode => {
     const name = getName(item);
-    const index = name.toLowerCase().indexOf(props.searchText.toLowerCase());
+    const index = name.toLowerCase().indexOf(searchText.toLowerCase());
     if (index === -1)
       return <span>{name}</span>;
 
     const beforeStr = name.substring(0, index);
-    const str = name.substring(index, index + props.searchText.length);
-    const afterStr = name.substring(index + props.searchText.length, name.length);
+    const str = name.substring(index, index + searchText.length);
+    const afterStr = name.substring(index + searchText.length, name.length);
     return (
       <span>
         {beforeStr}
@@ -89,32 +104,34 @@ export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): React.JSX.El
     );
   };
 
-  const refs = nodes.reduce((ref, value) => {
-    ref[value.key.toString()] = React.createRef();
+  const refs: Record<string, RefObject<HTMLDivElement | null>> = nodes.reduce((ref, value) => {
+    ref[value.key.toString()] = React.createRef<HTMLDivElement>();
     return ref;
-  }, {});
+  }, {} as Record<string, RefObject<HTMLDivElement | null>>);
 
   useEffect(() => {
     // TODO: find another way to scrolling after expand
     if (scrollId) {
       const timeout = setTimeout(() => {
-        refs[scrollId?.toLowerCase()]?.current?.scrollIntoView({
+        refs[scrollId.toLowerCase()]?.current?.scrollIntoView({
           behavior: "auto",
           block: "center",
         });
         clearTimeout(timeout);
       }, 500);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollId]);
 
   useEffect(() => {
     if (!scrollId) {
       setScrollId(props.defaultSelected);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.defaultSelected]);
 
   const renderTitle = (node: DataNodeWithObject<TItem>): React.ReactNode => {
-    const icon = Boolean(props.getIcon) ? props.getIcon(node.object) : <ShaIcon iconName="BookOutlined" />;
+    const icon = isDefined(props.getIcon) ? props.getIcon(node.object) : <ShaIcon iconName="BookOutlined" />;
     const markup = (
       <div className="sha-toolbox-component" key={node.key} ref={refs[node.key.toString()]}>
         {props.onRenterItem
@@ -125,7 +142,7 @@ export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): React.JSX.El
     return markup;
   };
 
-  const onExpand = (expandedKeys): void => {
+  const onExpand = (expandedKeys: Key[]): void => {
     setManuallyExpanded(expandedKeys);
   };
 
@@ -143,7 +160,7 @@ export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): React.JSX.El
       onClick={(_, node) => {
         props.onChange(node['object']);
       }}
-      selectedKeys={props.defaultSelected !== '' ? [props.defaultSelected?.toLowerCase()] : null}
+      {...(!isNullOrWhiteSpace(props.defaultSelected) ? { selectedKeys: [props.defaultSelected.toLowerCase()] } : {})}
     />
   );
 };

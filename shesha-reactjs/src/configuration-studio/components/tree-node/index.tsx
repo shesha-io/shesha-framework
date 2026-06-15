@@ -21,7 +21,8 @@ type LabelValueItem = {
 
 type LabelValueOrNode = LabelValueItem | ReactNode;
 
-const isLabelValueItem = (item: LabelValueOrNode): item is LabelValueItem => isDefined(item) && typeof (item['label']) === 'string' && item['value'];
+const isLabelValueItem = (item: LabelValueOrNode): item is LabelValueItem => isDefined(item) && typeof (item) === "object" &&
+  "label" in item && typeof (item.label) === 'string' && "value" in item && isDefined(item.value);
 
 type LabelValueProps = {
   data: LabelValueItem;

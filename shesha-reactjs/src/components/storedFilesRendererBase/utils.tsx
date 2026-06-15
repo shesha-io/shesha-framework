@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, Popover, Skeleton, Typography, UploadFile } from 'antd';
+import { Button, Popover, Skeleton, Typography } from 'antd';
 import { HistoryOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
@@ -9,6 +9,7 @@ import { buildUrl } from '@/utils/url';
 import { StoredFileModel } from '@/utils/storedFile/models';
 import { ConfigurableForm } from '../configurableForm';
 import DateDisplay from '../dateDisplay';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IFileVersionsButtonProps {
   fileId: string;
@@ -138,7 +139,8 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
   const uploads = serverData?.success ? serverData.result : [];
 
   const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
-    onDownload(fileVersion.versionNo, fileVersion.fileName);
+    if (fileVersion.versionNo && !isNullOrWhiteSpace(fileVersion.fileName))
+      onDownload(fileVersion.versionNo, fileVersion.fileName);
   };
 
   const content = (
@@ -151,7 +153,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
               {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
-                {item.fileName} ({filesize(item.size)})
+                {item.fileName} {isDefined(item.size) && <>({filesize(item.size)})</>}
               </Button>
             </li>
           ))}
@@ -188,11 +190,11 @@ const formatFileSize = (bytes?: number): string => {
 
 // Helper component to render file name with ellipsis and title
 export const FileNameDisplay: FC<{
-  file: UploadFile;
-  className?: string;
-  icon?: React.JSX.Element;
+  file: StoredFileModel;
+  className?: string | undefined;
+  icon?: React.JSX.Element | undefined;
   popoverContent?: React.ReactNode;
-  popoverClassName?: string;
+  popoverClassName?: string | undefined;
 }> = ({ file, icon, className, popoverContent, popoverClassName }) => {
   const sizeStr = formatFileSize(file.size);
   const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
@@ -209,7 +211,12 @@ export const FileNameDisplay: FC<{
   return (
     <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
       {popoverContent ? (
-        <Popover content={popoverContent} trigger="hover" placement="top" classNames={{ root: popoverClassName }}>
+        <Popover
+          content={popoverContent}
+          trigger="hover"
+          placement="top"
+          {...(popoverClassName ? { classNames: { root: popoverClassName } } : {})}
+        >
           {textElement}
         </Popover>
       ) : (

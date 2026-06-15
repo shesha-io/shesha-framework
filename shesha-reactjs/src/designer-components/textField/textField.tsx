@@ -3,9 +3,8 @@ import { Input, InputRef, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { IInputStyles } from '@/providers';
+import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITextFieldComponentProps, TextFieldComponentDefinition } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -23,6 +22,7 @@ import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
@@ -39,14 +39,13 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
-  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const componentApi = useComponentApi();
     const inputRef = useRef<InputRef>(null);
     useEffect(() => {
       componentApi?.updateApi<TextFieldApi>({
         id: model.id,
-        componentName: model.componentName,
+        componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         api: { focus: () => inputRef.current?.focus() },
@@ -58,9 +57,9 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
     const regExpObj = useMemo(() => {
       if (!model.regExp) return null;
@@ -80,7 +79,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     [isPassword, model.useStandardPasswordValidation, passwordComplexity],
     );
 
-    const modelWithValidation = useMemo(() => {
+    const modelWithValidation = useMemo<UnwrapCodeEvaluators<ITextFieldComponentProps>>(() => {
       if (!isPassword || !passwordValidator || model.validate?.validator) return model;
       return {
         ...model,
@@ -100,17 +99,18 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model.border?.hideBorder ? 'borderless' : undefined,
       size: model.size,
-      disabled: model.readOnly,
+      disabled: model.readOnly ?? false,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck ?? false,
-      style: model.allStyles.fullStyle,
+      style: model.allStyles?.fullStyle,
     };
+    if (model.border?.hideBorder)
+      inputProps.variant = 'borderless';
 
     const fieldContent = (
-      <ConfigurableFormItem model={modelWithValidation}>
-        {(value, onChange) => {
+      <ConfigurableFormItem<string> model={modelWithValidation}>
+        {(value, onChange, _, ctx) => {
           // Derive password tooltip error from committed value so it stays in sync with
           // the form validator (handles initial values, programmatic changes, and resets).
           // Only active when the complexity validator is actually composed into the model
@@ -123,37 +123,43 @@ const TextFieldComponent: TextFieldComponentDefinition = {
             })()
             : null;
 
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: unknown[]): void => {
-            const arg = args[0];
-            const inputValue: string | undefined =
-              arg !== null && typeof arg === 'object' && 'currentTarget' in arg &&
-              arg.currentTarget !== null && typeof arg.currentTarget === 'object' && 'value' in arg.currentTarget
-                ? arg.currentTarget.value?.toString()
-                : undefined;
-            const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
-
-            const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
-
-            let val = inputValue;
-            if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
-              const changedValue = customEvents.onChange({ value: inputValue }, args[0]) as string | undefined;
-              val = changedValue !== undefined ? changedValue : inputValue;
-            } else {
-              // Workaround because if the value is undefined, input component leave the inputed value
-              // Rendering of the component is not called
-              // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
-              if (Boolean(regExpObj) && value === undefined && typeof onChange === 'function') {
-                onChange('');
-              }
-              return;
-            }
-            if (typeof onChange === 'function') onChange(val);
-          };
-
           const inputElement = inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} style={finalStyle} />
-            : <InputComponentType ref={inputRef} {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+            ? (
+              <ReadOnlyDisplayFormItem
+                value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : value}
+                style={finalStyle}
+              />
+            )
+            : (
+              <InputComponentType
+                ref={inputRef}
+                {...inputProps}
+                value={value ?? ""}
+                onChange={(event) => {
+                  const inputValue = event.currentTarget.value;
+                  const isEmpty = isNullOrWhiteSpace(inputValue);
+                  const isRegExpMatch = regExpObj && Boolean(inputValue.match(regExpObj));
+                  if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
+                    const changedValue = ctx?.handleEvent(event, inputValue, model.onChangeCustom);
+
+                    onChange(changedValue !== undefined ? changedValue : inputValue);
+                  } else {
+                    // Workaround because if the value is undefined, input component leave the inputed value
+                    // Rendering of the component is not called
+                    // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
+                    if (isDefined(regExpObj) && value === undefined) {
+                      onChange('');
+                    }
+                  }
+                }}
+                onFocus={(event) => {
+                  ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom);
+                }}
+                onBlur={(event) => {
+                  ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom);
+                }}
+              />
+            );
 
           if (isPassword) {
             return (

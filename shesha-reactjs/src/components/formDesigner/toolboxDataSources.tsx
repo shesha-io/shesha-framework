@@ -7,6 +7,7 @@ import DataSourceTree from './dataSourceTree';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
 import { useStyles } from './styles/styles';
+import { isDefined } from '@/utils/nullables';
 
 export interface IToolboxDataSourcesProps {
   dataSources: IDataSource[];
@@ -86,7 +87,7 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
 
                   />
                 ) };
-          }).filter((item) => Boolean(item))}
+          }).filter(isDefined)}
         />
       </div>
 

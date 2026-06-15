@@ -3,9 +3,9 @@ import { IConfigurableFormComponent, UnwrapCodeEvaluators } from '@/providers/fo
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface IQueryBuilderComponentProps extends IConfigurableFormComponent {
-  jsonExpanded?: boolean;
-  modelType?: string | IEntityTypeIdentifier;
-  fieldsUnavailableHint?: string;
+  jsonExpanded?: boolean | undefined;
+  modelType?: string | IEntityTypeIdentifier | undefined;
+  fieldsUnavailableHint?: string | undefined;
 }
 export type IQueryBuilderComponentPropsUnwrapped = UnwrapCodeEvaluators<IQueryBuilderComponentProps>;
 

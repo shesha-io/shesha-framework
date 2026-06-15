@@ -47,7 +47,7 @@ export const getAlignmentStyle = ({
     style['justifyItems'] = justifyItems;
     style['justifySelf'] = justifySelf;
     style['alignSelf'] = alignSelf;
-    style['textJustify'] = textJustify as any;
+    style['textJustify'] = textJustify;
     style['gap'] = gap;
   }
 

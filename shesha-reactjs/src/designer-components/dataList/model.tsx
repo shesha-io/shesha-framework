@@ -1,42 +1,49 @@
 import { IDataListBaseProps, InlineEditMode } from "@/components/dataList/models";
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-import { IConfigurableFormComponent, YesNoInherit } from "@/interfaces";
+import { IConfigurableFormComponent, ITableColumn, UnwrapCodeEvaluators, YesNoInherit } from "@/interfaces";
 import { DataTableFullInstance } from "@/providers/dataTable/contexts";
+import { DeepDiff } from "@/interfaces/utilityTypes";
 
 export interface IDataListComponentProps extends IDataListBaseProps, IDataListInlineEditableProps, IConfigurableFormComponent {
 }
 
 export interface IDataListWithDataSourceProps extends IDataListComponentProps {
-  dataSourceInstance: DataTableFullInstance | null;
+  dataSourceInstance: DataTableFullInstance;
 }
 
+export type TestDiff = DeepDiff<DataTableFullInstance, UnwrapCodeEvaluators<DataTableFullInstance>>;
+export type TestDiff2 = DeepDiff<DataTableFullInstance["columns"], UnwrapCodeEvaluators<DataTableFullInstance["columns"]>>;
+export type TestDiff3 = DeepDiff<ITableColumn, UnwrapCodeEvaluators<ITableColumn>>;
+export type BC = ITableColumn["backgroundColor"];
+
+
 export interface IDataListInlineEditableProps {
-  canDeleteInline?: YesNoInherit;
-  customDeleteUrl?: string;
-  canEditInline?: YesNoInherit;
-  inlineEditMode?: InlineEditMode;
-  customUpdateUrl?: string;
-  canAddInline?: YesNoInherit;
-  customCreateUrl?: string;
-  onListItemSave?: string;
-  onListItemSaveSuccessAction?: IConfigurableActionConfiguration;
-  onRowDeleteSuccessAction?: IConfigurableActionConfiguration;
-  modalWidth?: string;
-  widthUnits?: string;
-  customWidth?: number;
-  showEditIcons?: boolean;
-  noDataText?: string;
-  noDataSecondaryText?: string;
-  noDataIcon?: string;
+  canDeleteInline?: YesNoInherit | undefined;
+  customDeleteUrl?: string | undefined;
+  canEditInline?: YesNoInherit | undefined;
+  inlineEditMode?: InlineEditMode | undefined;
+  customUpdateUrl?: string | undefined;
+  canAddInline?: YesNoInherit | undefined;
+  customCreateUrl?: string | undefined;
+  onListItemSave?: string | undefined;
+  onListItemSaveSuccessAction?: IConfigurableActionConfiguration | undefined;
+  onRowDeleteSuccessAction?: IConfigurableActionConfiguration | undefined;
+  modalWidth?: string | undefined;
+  widthUnits?: string | undefined;
+  customWidth?: number | undefined;
+  showEditIcons?: boolean | undefined;
+  noDataText?: string | undefined;
+  noDataSecondaryText?: string | undefined;
+  noDataIcon?: string | undefined;
 
-  cardMinWidth?: string;
-  cardMaxWidth?: string;
-  cardHeight?: string;
-  cardSpacing?: string;
-  showBorder?: boolean;
+  cardMinWidth?: string | undefined;
+  cardMaxWidth?: string | undefined;
+  cardHeight?: string | undefined;
+  cardSpacing?: string | undefined;
+  showBorder?: boolean | undefined;
 
-  onListItemClick?: IConfigurableActionConfiguration;
-  onListItemHover?: IConfigurableActionConfiguration;
-  onListItemSelect?: IConfigurableActionConfiguration;
-  onSelectionChange?: IConfigurableActionConfiguration;
+  onListItemClick?: IConfigurableActionConfiguration | undefined;
+  onListItemHover?: IConfigurableActionConfiguration | undefined;
+  onListItemSelect?: IConfigurableActionConfiguration | undefined;
+  onSelectionChange?: IConfigurableActionConfiguration | undefined;
 }

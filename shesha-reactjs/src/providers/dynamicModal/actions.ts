@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { IModalProps } from './models';
+import { ICommonModalProps } from './models';
 
 export enum DynamicModalActionEnums {
   Open = 'OPEN',
@@ -9,10 +9,10 @@ export enum DynamicModalActionEnums {
 }
 
 export interface ICreateModalPayload {
-  modalProps: IModalProps;
+  modalProps: ICommonModalProps;
 }
 
-export const openAction = createAction<IModalProps>(DynamicModalActionEnums.Open);
+export const openAction = createAction<ICommonModalProps>(DynamicModalActionEnums.Open);
 
 export const createModalAction = createAction<ICreateModalPayload>(DynamicModalActionEnums.CreateModal);
 

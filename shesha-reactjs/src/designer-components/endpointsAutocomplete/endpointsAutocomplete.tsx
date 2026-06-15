@@ -4,7 +4,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
+import { EndpointsAutocomplete, EndpointsAutocompleteValue } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { EndpointsAutocompleteComponentDefinition, IEndpointsAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -20,11 +20,11 @@ const EndpointsAutocompleteComponent: EndpointsAutocompleteComponentDefinition =
   canBeJsSetting: true,
   Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<EndpointsAutocompleteValue> model={model}>
         {
           (value, onChange) => {
             return (
-              <EndpointsAutocomplete {...model} value={value} onChange={onChange} />
+              <EndpointsAutocomplete {...model} value={value ?? undefined} onChange={onChange} />
             );
           }
         }

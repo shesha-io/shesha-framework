@@ -13,6 +13,7 @@ import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCo
 import { ItemListConfiguratorModal } from '@/designer-components/itemListConfigurator/itemListConfiguratorModal';
 import StyleBox from '@/designer-components/styleBox/components/box';
 import { DefaultOptionType } from 'antd/lib/select';
+import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 
 const tabSettingsMarkup = itemSettings as FormMarkup;
 
@@ -29,15 +30,15 @@ const SIZES: DefaultOptionType[] = [
 const POSITIONS: DefaultOptionType[] = [
   { value: 'top', label: 'Top' },
   { value: 'bottom', label: 'Bottom' },
-  { value: 'left', label: 'Left' },
-  { value: 'right', label: 'Right' },
+  { value: 'start', label: 'Start' },
+  { value: 'end', label: 'End' },
 ];
 
 const TabSettings: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const onAddNewItem = (items): ITabPaneProps => {
-    const count = (items ?? []).length;
+  const onAddNewItem = (items: ITabPaneProps[]): ITabPaneProps => {
+    const count = items.length;
     const id = nanoid();
     const buttonProps: ITabPaneProps = {
       id: id,
@@ -86,7 +87,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> =
             initNewItem={onAddNewItem}
             settingsMarkupFactory={() => tabSettingsMarkup}
             itemRenderer={({ item }) => ({
-              label: item.title || item.label || item.name,
+              label: getFirstNonEmptyStringPropertyOrUndefined(item, ["title", "label", "name"]) ?? "",
               description: item.tooltip,
               icon: item.icon,
             })}

@@ -1,8 +1,8 @@
 import { IToolboxComponent } from '@/interfaces';
-import { ISizableColumnComponentProps, ISizableColumnInputProps } from './interfaces';
+import { ISizableColumnComponentProps } from './interfaces';
 import { BorderHorizontalOutlined } from '@ant-design/icons';
-import React, { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
-import { StyleBoxValue, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import React, { CSSProperties, Fragment, useMemo } from 'react';
+import { IInputStyles, StyleBoxValue, useFormData, useGlobalState } from '@/providers';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -13,13 +13,15 @@ import { removeComponents } from '../_common-migrations/removeComponents';
 import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { ValidationErrors } from '@/components/validationErrors';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { getSettings } from './settingsForm';
+import { isDefined } from '@/utils/nullables';
+import { useDeepCompareMemo } from '@/hooks';
+import { useBackgroundStyles } from '../_settings/utils/background/useBackground';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
@@ -29,46 +31,26 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const { columns } = model as ISizableColumnComponentProps;
+    const { columns } = model;
     const style = { ...getLayoutStyle(model, { data, globalState }), display: 'flex' };
-
-    const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const dimensions = model.dimensions;
     const border = model.border;
     const shadow = model.shadow;
     const background = model.background;
-    const jsStyle = getStyle(model.style, data);
+    const jsStyle = useDeepCompareMemo(() => {
+      return getStyle(model.style, data);
+    }, [model.style, data]);
+
 
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
+    const backgroundStyles = useBackgroundStyles({ background, jsStyle });
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-      const fetchStyles = async (): Promise<void> => {
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles().catch((error) => {
-        console.error('Failed to fetch styles', error);
-      });
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
     if (model.hidden) return null;
 
-    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    if (isDefined(background) && background.type === 'storedFile' && background.storedFile?.id && !isValidGuid(background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
     const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');
@@ -82,7 +64,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
       ...shadowStyles,
     });
 
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model.font?.weight?.split(' - ')[0]) || 400 });
 
     return (
       <ParentProvider
@@ -100,7 +82,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
               <Fragment key={col.id}>
                 <ComponentsContainer
                   containerId={col.id}
-                  dynamicComponents={model?.isDynamic ? col?.components : []}
+                  dynamicComponents={model.isDynamic ? col.components : []}
                 />
               </Fragment>
             ))}
@@ -124,7 +106,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     .add<ISizableColumnComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ISizableColumnComponentProps>(2, (prev) => removeComponents(prev))
     .add<ISizableColumnComponentProps>(3, (prev) => {
-      const columns = prev.columns.map((c) => ({
+      const columns = (isDefined(prev.columns) ? prev.columns : []).map((c) => ({
         ...c,
         components: c.components.map((c) => ({
           ...c,
@@ -138,7 +120,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
       };
     })
     .add<ISizableColumnComponentProps>(4, (prev) => {
-      const styles: ISizableColumnInputProps = {
+      const styles: IInputStyles = {
         size: prev.size,
         width: prev.width,
         height: prev.height,
@@ -151,7 +133,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ISizableColumnComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<ISizableColumnComponentProps>(5, (prev) => ({ ...migratePrevStyles<ISizableColumnComponentProps>(prev, defaultStyles()) })),
   customContainerNames: ['columns'],
 };
 

@@ -14,6 +14,7 @@ import {
   Fields,
   FieldOrGroup,
   Settings,
+  FieldSettings,
 } from '@react-awesome-query-builder/antd';
 import { isDefined } from '@/utils/nullables';
 
@@ -33,13 +34,14 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
     if (missingFields.length > 0) {
       fetchFields(missingFields);
     }
-  }, [missingFields]);
+  }, [fetchFields, missingFields]);
 
   // pre-parse tree and extract all used fields
   // load all fields which are missing
 
   const qbSettings: Settings = {
     ...InitialConfig.settings,
+    theme: { ...InitialConfig.settings.theme, antd: InitialConfig.settings.theme?.antd ?? {} },
     removeIncompleteRulesOnLoad: false,
     removeEmptyGroupsOnLoad: false,
     removeEmptyRulesOnLoad: false,
@@ -52,7 +54,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
   const convertFields = (fields: IProperty[]): Fields => {
     const confFields: Fields = {};
 
-    const convertField = (property: IProperty): FieldOrGroup => {
+    const convertField = (property: IProperty): FieldOrGroup | undefined => {
       if (propertyHasQBConfig(property))
         return property.convert(property);
 
@@ -70,7 +72,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
       // Note: include namespaces and exclude arrays (they are not supported for now)
       const isVisible = (visible || dataType === 'namespace') && dataType !== DataTypes.array;
       if (!isVisible)
-        return null;
+        return undefined;
 
       switch (dataType) {
         case 'string':
@@ -111,26 +113,31 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
 
       const fieldPreferWidgets = preferWidgets ?? defaultPreferWidgets ?? [];
 
-      const subfields = dataType === '!struct' ? {} : undefined;
-      if (subfields) {
+      if (dataType === '!struct') {
+        const subfields: Fields = {};
         childProps.forEach((p) => {
           const converted = convertField(p);
           if (converted)
             subfields[p.propertyName] = converted;
         });
+        return {
+          label,
+          type: "!struct",
+          fieldSettings: fieldSettings as FieldSettings,
+          preferWidgets: fieldPreferWidgets.length > 0 ? fieldPreferWidgets : undefined,
+          subfields: subfields,
+        };
+      } else {
+        return {
+          label,
+          type,
+          fieldSettings: fieldSettings as FieldSettings,
+          ...(fieldPreferWidgets.length > 0 ? { preferWidgets: fieldPreferWidgets } : {}),
+        };
       }
-
-      return {
-        label,
-        type,
-        // @ts-ignore note: types are wrong in the library, they doesn't allow to extend
-        fieldSettings,
-        preferWidgets: fieldPreferWidgets.length > 0 ? fieldPreferWidgets : undefined,
-        subfields: subfields,
-      };
     };
 
-    fields?.forEach((property) => {
+    fields.forEach((property) => {
       const converted = hasCustomQBSettings(property)
         ? property.toQueryBuilderField(() => convertField(property))
         : convertField(property);
@@ -158,6 +165,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
     }
 
     return conf;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fields, customWidgets, props.readOnly]);
 
   return missingFields.length > 0 ? <Skeleton></Skeleton> : <QueryBuilderContent {...props} qbConfig={qbConfig} />;

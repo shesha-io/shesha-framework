@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 export function useWebStorage<T>(
   storage: 'localStorage' | 'sessionStorage',
   key: string,
-  initialValue: T,
+  initialValue?: T,
   ignoredKeys?: string[],
 ): [T, (v: T) => void] {
   // State to store our value
@@ -27,11 +27,12 @@ export function useWebStorage<T>(
   // ... persists the new value to 'localStorage' | 'sessionStorage'.
   const setValue = useCallback((value: T): void => {
     try {
-      if (isDefined(ignoredKeys) && ignoredKeys.length && typeof value === 'object') {
+      if (isDefined(ignoredKeys) && ignoredKeys.length && typeof value === 'object' && isDefined(value)) {
         const intermediateValue = { ...value };
 
         ignoredKeys.forEach((localKey) => {
-          delete intermediateValue[localKey];
+          if (localKey in intermediateValue)
+            delete intermediateValue[localKey as keyof T];
         });
 
         setStoredValue(intermediateValue);

@@ -10,7 +10,7 @@ export const ColumnsListWrapper: FCUnwrapped<IColumnsListSettingsInputProps> = (
       {...props}
       value={value}
       onChange={onChange}
-      readOnly={readOnly}
+      readOnly={readOnly ?? false}
     />
   );
 };

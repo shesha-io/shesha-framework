@@ -3,7 +3,7 @@ import { IFormItem } from '@/interfaces';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 
 export interface IRefListStatusProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IInputStyles {
-  referenceListId: IReferenceListIdentifier;
+  referenceListId: IReferenceListIdentifier | undefined;
   showIcon?: boolean;
   solidBackground?: boolean;
   showReflistName?: boolean;

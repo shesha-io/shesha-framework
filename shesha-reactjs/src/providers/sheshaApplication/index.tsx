@@ -1,5 +1,4 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
-import DebugPanel from '@/components/debugPanel';
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
@@ -74,7 +73,7 @@ export interface IShaApplicationProviderProps {
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {
   const { children, accessTokenName, homePageUrl, router, unauthorizedRedirectUrl, themeProps, getFormUrlFunc } = props;
 
-  const authRef = useRef<IAuthProviderRefProps>();
+  const authRef = useRef<IAuthProviderRefProps>(undefined);
   const application = useSheshaApplicationInstance({ ...props, authorizer: authRef });
   useEffect(() => {
     void application.init();
@@ -135,13 +134,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                         <SheshaLoader message={hint || 'Initializing...'} />
                                                       )}
                                                       {status === 'ready' && (
-                                                        <DebugPanel>
-                                                          <ApplicationActionsProcessor>
-                                                            <MainMenuProvider>
-                                                              <ProgressBar>{children}</ProgressBar>
-                                                            </MainMenuProvider>
-                                                          </ApplicationActionsProcessor>
-                                                        </DebugPanel>
+                                                        <ApplicationActionsProcessor>
+                                                          <MainMenuProvider>
+                                                            <ProgressBar>{children}</ProgressBar>
+                                                          </MainMenuProvider>
+                                                        </ApplicationActionsProcessor>
                                                       )}
                                                       {status === 'failed' && (
                                                         <Result

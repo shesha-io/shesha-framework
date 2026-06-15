@@ -140,8 +140,8 @@ export const getTagStyle = (style: React.CSSProperties = {}, hasColor: boolean =
  * @param maxPercentage - The maximum percentage value (default: 98)
  * @returns The capped value or the original value if not a percentage string
  */
-export const capPercentageWidth = (value: number | string | null | undefined, maxPercentage: number = 98): number | string | null | undefined => {
-  if (!value) return value;
+export const capPercentageWidth = (value: number | string | null | undefined, maxPercentage: number = 98): number | string | undefined => {
+  if (!isDefined(value)) return undefined;
 
   // Check if it's a percentage string (e.g., "99%", "100%")
   if (typeof value === 'string' && value.endsWith('%')) {

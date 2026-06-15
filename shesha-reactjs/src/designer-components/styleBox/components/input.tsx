@@ -3,19 +3,19 @@ import React, { FC } from 'react';
 import { IInputDirection, IValue } from '../interfaces';
 import { getStyleChangeValue, getStyleValue } from './utils';
 import { getStyleClassName } from '../styles/styles';
+import { IChangeable } from '@/interfaces';
 
-interface IProps {
+interface IProps extends IChangeable<string> {
   direction: keyof IInputDirection;
-  onChange?: Function;
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   type: keyof IValue;
-  value?: string;
+  value?: string | null | undefined;
 }
 
 const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value }) => {
   const onModifyChange: React.ChangeEventHandler<HTMLInputElement> = ({ target: { value: currentValue } }) => {
     if (currentValue.length < 4) {
-      onChange(getStyleChangeValue(type, direction, currentValue, value));
+      onChange?.(getStyleChangeValue(type, direction, currentValue, value ?? undefined));
     }
   };
 
@@ -25,7 +25,7 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value }) =>
       onChange={onModifyChange}
       value={getStyleValue(type, direction, value)}
       type="text"
-      disabled={readOnly}
+      disabled={readOnly === true}
     />
   );
 };

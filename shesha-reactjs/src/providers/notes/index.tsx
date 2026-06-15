@@ -17,7 +17,7 @@ export type OnNoteDeletedFunc = (note: NoteDto) => void;
 export type NotesProviderProps = {
   ownerId: string;
   ownerType: string | IEntityTypeIdentifier;
-  category?: string;
+  category?: string | undefined;
 
   onCreatedAction?: OnNoteCreatedFunc | undefined;
   onUpdatedAction?: OnNoteUpdatedFunc | undefined;

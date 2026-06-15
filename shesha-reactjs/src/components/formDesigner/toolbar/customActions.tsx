@@ -7,7 +7,7 @@ import { App, Button, Dropdown, MenuProps } from "antd";
 import React, { FC } from "react";
 
 
-type MenuItem = MenuProps['items'][number];
+type MenuItem = Required<MenuProps>['items'][number];
 
 export const CustomActions: FC = () => {
   const httpClient = useHttpClient();
@@ -16,12 +16,16 @@ export const CustomActions: FC = () => {
   const { message } = App.useApp();
   const readOnly = useFormDesignerReadOnly();
 
+  const formId = formProps?.id;
+  if (!formId)
+    return undefined;
+
   const items: MenuItem[] = [
     {
       key: 'exportJson',
       label: 'Get JSON',
       onClick: () => {
-        downloadAsJson({ httpClient, id: formProps.id }).catch((error) => {
+        downloadAsJson({ httpClient, id: formId }).catch((error) => {
           console.error('Failed to export form', error);
           throw error;
         });
@@ -37,9 +41,9 @@ export const CustomActions: FC = () => {
           formId: { module: 'Shesha', name: 'form-import-json' },
           mode: 'edit',
           formArguments: {
-            itemId: formProps.id,
+            itemId: formId,
           },
-          id: `import-form-${formProps.id}`,
+          id: `import-form-${formId}`,
           isVisible: true,
           width: '60%',
           onSubmitted: () => {
