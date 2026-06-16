@@ -7,7 +7,7 @@ import { setCanvasZoomAction,
   setConfigTreePanelSizeAction,
   setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE } from './contexts';
-import { getDeviceTypeByWidth, getSmallerDevice } from './utils';
+import { applyCanvasSize, getDeviceTypeByWidth, getSmallerDevice } from './utils';
 
 export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => {
   builder
@@ -20,12 +20,7 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
     .addCase(setCanvasWidthAction, (state, { payload }) => {
       const { width, deviceType } = payload;
 
-      return {
-        ...state,
-        designerWidth: typeof width === 'string' ? width : `${width}px`,
-        designerDevice: deviceType,
-        activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
-      };
+      return applyCanvasSize(state, width, deviceType);
     })
     .addCase(setScreenWidthAction, (state, { payload }) => {
       const device = getDeviceTypeByWidth(payload);
