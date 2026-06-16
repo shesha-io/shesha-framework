@@ -138,15 +138,11 @@ export const DataList: FC<IDataListProps> = ({
 }) => {
   const { styles, theme } = useStyles();
 
-  let skipCache = false;
-
   interface IFormIdDictionary {
     [key: string]: Promise<FormFullName>;
   }
 
   const loadedFormId = useRef<IFormIdDictionary>({});
-  if (skipCache)
-    loadedFormId.current = {};
 
   const entityForms = useRef<EntityForm[]>([]);
   const entityFormInfo = useRef<EntityForm>(undefined);
@@ -172,7 +168,7 @@ export const DataList: FC<IDataListProps> = ({
 
   const dynamicContext = useActionDynamicContext(props.dblClickActionConfiguration);
 
-  const computedGroupStyle = getStyle(groupStyle, allData.data) ?? {};
+  const computedGroupStyle = getStyle(groupStyle, allData.data);
 
   const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
 
@@ -352,7 +348,7 @@ export const DataList: FC<IDataListProps> = ({
       return entityForm.formConfiguration !== undefined; // Return true if already processed (either loaded or failed)
 
     if (isDefined(entityForm.formId) && isValidFormId(entityForm.formId)) {
-      getFormAsync({ formId: entityForm.formId, skipCache })
+      getFormAsync({ formId: entityForm.formId, skipCache: false })
         .then((response) => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
@@ -378,7 +374,7 @@ export const DataList: FC<IDataListProps> = ({
       const f = loadedFormId.current[cacheKey] ?? getEntityFormIdAsync(entityForm.entityType, fType ?? "");
 
       f.then((e) =>
-        getFormAsync({ formId: e, skipCache })
+        getFormAsync({ formId: e, skipCache: false })
           .then((response) => {
             entityForm.formId = e;
             entityForm.formConfiguration = response;
@@ -678,7 +674,7 @@ export const DataList: FC<IDataListProps> = ({
 
     const selected = isDefined(selectedRow) && (
       (selectedRow.index === index && !(selectedRows.length > 0)) ||
-      (selectedRows.length > 0 && selectedRows.some(({ id }) => id === item?.id))
+      (selectedRows.length > 0 && selectedRows.some(({ id }) => id === item.id))
     );
 
 
@@ -793,8 +789,7 @@ export const DataList: FC<IDataListProps> = ({
   };
 
 
-  const rawItemWidth =
-    (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
+  const rawItemWidth = (style as CSSProperties | undefined)?.width ?? props.container?.dimensions?.width;
   const isFixedWidth = (val: unknown): boolean => {
     if (val === undefined || val === null || val === '') return false;
     if (typeof val === 'number') return true;

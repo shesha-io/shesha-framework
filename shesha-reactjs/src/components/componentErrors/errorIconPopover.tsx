@@ -99,7 +99,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
           <>
             {errors.map((error, index) => {
               // Split error message by newlines to support multiline messages
-              const errorParts = error.error?.split('\n') || [];
+              const errorParts = error.error.split('\n');
               return (
                 <p key={index} style={{ margin: 0, marginBottom: index < errors.length - 1 ? '4px' : 0 }}>
                   {error.propertyName && <strong>{error.propertyName}: </strong>}

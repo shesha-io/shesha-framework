@@ -214,7 +214,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     return (isItem(item) && isVisibleBase(item)) || (isGroup(item) && isGroupVisible(item, getIsVisible));
   };
 
-  const resolvedItems = props.items || [];
+  const resolvedItems = props.items;
 
   const filteredItems = resolvedItems.filter(getIsVisible);
 

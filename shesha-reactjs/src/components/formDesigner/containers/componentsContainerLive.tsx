@@ -22,7 +22,7 @@ export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerP
   const { styles } = useStyles();
   const parent = useParent();
 
-  const components = ShaForm.useChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const components = ShaForm.useChildComponents(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
   const renderComponents = useDeepCompareMemo(() => {
     const renderedComponents = components.map((c) => (

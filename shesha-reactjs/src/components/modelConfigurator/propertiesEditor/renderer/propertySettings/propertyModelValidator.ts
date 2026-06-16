@@ -73,7 +73,7 @@ export const propertyModelValidator = (model: ModelPropertyDto, parentModels?: M
         if (!model.entityType) errors.push('Part Of Entity Type is required.');
       }
       if (model.itemsType?.dataFormat === ObjectFormats.object) {
-        if (model.itemsType?.properties?.length) {
+        if (model.itemsType.properties?.length) {
           propsErrors = propsErrors.concat(validateDuplicated(model.itemsType.properties, path));
           model.itemsType.properties.forEach((p) => propsErrors = propsErrors.concat(propertyModelValidator(p, [...(parentModels ?? []), model])));
         }

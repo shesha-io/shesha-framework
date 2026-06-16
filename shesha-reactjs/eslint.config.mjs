@@ -108,7 +108,7 @@ const typescriptOverrides = {
     "@typescript-eslint/no-unsafe-argument": "error",
     "@typescript-eslint/no-unsafe-assignment": "error",
     "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
-    /**/"@typescript-eslint/no-unnecessary-condition": "warn",
+    "@typescript-eslint/no-unnecessary-condition": "error",
     //todo: enable after first part of fixes 
     // "@typescript-eslint/strict-boolean-expressions": "error",
 };

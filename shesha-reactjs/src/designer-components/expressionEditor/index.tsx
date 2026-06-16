@@ -4,9 +4,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import {
-  ExpressionEditor,
-  ExpressionContext,
-  buildExpressionContextFromPaths,
+  ExpressionEditor, buildExpressionContextFromPaths,
 } from '@/components/expressionEditor';
 import {
   ExpressionContextTree,
@@ -28,8 +26,6 @@ import { useForm } from '@/providers';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { ExpressionEditorComponentDefinition, IExpressionEditorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-
-const EMPTY_CONTEXT: ExpressionContext = {};
 
 const STANDARD_CONSTANTS = [SheshaConstants.application, SheshaConstants.form];
 
@@ -86,7 +82,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
               value={typeof model.value === 'string' ? model.value : ''}
               onChange={onDesignerChange}
               disabled={model.readOnly ?? false}
-              context={context ?? EMPTY_CONTEXT}
+              context={context}
               placeholder={model.placeholder}
             />
           )}
@@ -101,7 +97,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
             value={typeof value === 'string' ? value : ''}
             onChange={onChange}
             disabled={model.readOnly ?? false}
-            context={context ?? EMPTY_CONTEXT}
+            context={context}
             placeholder={model.placeholder}
             inline
             allowExpand

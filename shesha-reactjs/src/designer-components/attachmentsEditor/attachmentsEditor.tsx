@@ -215,7 +215,11 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             <AttachmentsEditorProvider
               name={model.componentName}
               ownerId={!isNullOrWhiteSpace(model.ownerId) ? ownerId ?? "" : getIdOrUndefined(data) ?? ""}
-              ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(form.formSettings?.modelType) ? form.formSettings?.modelType : ''}
+              ownerType={!isEntityTypeIdEmpty(model.ownerType)
+                ? model.ownerType
+                : !isEntityTypeIdEmpty(form.formSettings?.modelType)
+                  ? form.formSettings.modelType
+                  : ''}
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
               // used for requered field validation

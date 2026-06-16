@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { ConfigProvider } from 'antd';
 import React from 'react';
-// import useStyle from './style';
 
 const { ConfigContext } = ConfigProvider;
 
@@ -37,7 +36,7 @@ const Comment: React.FC<CommentProps> = ({
   datetime,
   ...otherProps
 }) => {
-  const { getPrefixCls, direction } = React.useContext(ConfigContext) ?? {};
+  const { getPrefixCls, direction } = React.useContext(ConfigContext);
 
   const renderNested = (prefixCls: string, nestedChildren: React.ReactNode): React.ReactNode => (
     <div className={classNames(`${prefixCls}-nested`)}>{nestedChildren}</div>

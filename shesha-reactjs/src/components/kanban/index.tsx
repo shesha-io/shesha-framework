@@ -183,7 +183,7 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
         <KanbanPlaceholder />
       ) : (
         <Flex style={{ ...stylingBoxAsCSS, ...overflowStyle, overflowY: 'hidden', display: 'flex', gap: addPx(gap, allData) ?? '0px' }}>
-          {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
+          {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
               setTasks={setTasks}

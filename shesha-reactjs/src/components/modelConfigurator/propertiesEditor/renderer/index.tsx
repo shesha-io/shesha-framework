@@ -23,7 +23,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
         const top = element.getBoundingClientRect().top;
         const isVisible = top + offset >= 0 && top - offset <= window.innerHeight;
         if (!isVisible)
-          element?.scrollIntoView({
+          element.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
           });

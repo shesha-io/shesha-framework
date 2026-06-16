@@ -125,8 +125,6 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
     lazy: true,
   });
 
-  if (fileId == null) return null;
-
   const handleVisibleChange = (visible: boolean): void => {
     if (visible) {
       fetchHistory().catch((error) => {

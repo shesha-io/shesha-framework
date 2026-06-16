@@ -29,7 +29,7 @@ const getListType = (itemsType: IModelItem | undefined): string => {
       case DataTypes.date: return 'date';
       case DataTypes.time: return 'time';
       case DataTypes.boolean: return 'boolean';
-      case DataTypes.referenceListItem: return itemsType.referenceListId?.name ? itemsType.referenceListId?.name : 'reference list item';
+      case DataTypes.referenceListItem: return itemsType.referenceListId?.name ? itemsType.referenceListId.name : 'reference list item';
       case DataTypes.geometry: return 'geometry';
     }
   }

@@ -290,7 +290,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
             ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
             ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${Object.entries(headerShadowStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
 
             /* Apply text alignment to header cells */
             .${th} {
@@ -326,7 +326,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               return rowBorder ? `border: ${rowBorder};` : '';
             })()}
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : 'background: transparent !important;'}
-            ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${Object.entries(rowShadowStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
             /* Apply text alignment and font styles to body cells */

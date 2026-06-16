@@ -78,7 +78,7 @@ export const NewRowCell = <D extends ITableRowData = ITableRowData>({ column, ro
 
   const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
 
-  const hasShadow = numOfFixed === index && anchored?.isFixed;
+  const hasShadow = numOfFixed === index && anchored.isFixed;
 
   const parentFormProps: Partial<ICreateFormCellProps> = {};
   if (isFormFullName(parentFormId))

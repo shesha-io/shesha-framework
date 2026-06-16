@@ -57,7 +57,7 @@ import {
 
 const getResultTypeName = (typeName: string, isAsync: boolean): string | undefined => {
   return isAsync
-    ? `Promise<${typeName ?? 'void'}>`
+    ? `Promise<${!isNullOrWhiteSpace(typeName) ? typeName : 'void'}>`
     : !isNullOrWhiteSpace(typeName)
       ? typeName
       : undefined;

@@ -45,7 +45,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
   const readOnly = isDefined(config) && config.settings.immutableFieldsMode === true;
 
   const isPropertyVisible = (property: IPropertyItem): boolean => {
-    const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
+    const { propertyMetadata } = (fieldWidget?.fieldDefinition.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
     if (!propertyMetadata)
       return true;
 
@@ -54,7 +54,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
   };
 
   const isPropertySelectable = (property: IPropertyItem): boolean => {
-    const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
+    const { propertyMetadata } = (fieldWidget?.fieldDefinition.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
     if (!propertyMetadata)
       return true;
 

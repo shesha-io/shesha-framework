@@ -49,7 +49,7 @@ const GenericListEditorProvider = <TItem extends object>({
   const addItem = (factory?: ListItemFactory<TItem>): void => {
     const factoryToUse = factory || initNewItem;
     const newItem = factoryToUse(state.value);
-    const newValue = state.value ? [...state.value] : [];
+    const newValue = [...state.value];
     newValue.push(newItem);
 
     setSelectedItem(newItem);
@@ -57,8 +57,8 @@ const GenericListEditorProvider = <TItem extends object>({
   };
 
   const insertItem = (index: number): void => {
-    const newItem = initNewItem(state.value ?? []);
-    const newValue = state.value ? [...state.value] : [];
+    const newItem = initNewItem(state.value);
+    const newValue = [...state.value];
     newValue.splice(index, 0, newItem);
 
     setSelectedItem(newItem);
@@ -66,8 +66,6 @@ const GenericListEditorProvider = <TItem extends object>({
   };
 
   const deleteItem = (index: number): void => {
-    if (!state.value)
-      return;
     const newValue = [...state.value];
     const deletedItem = newValue.splice(index, 1);
 
@@ -83,7 +81,7 @@ const GenericListEditorProvider = <TItem extends object>({
 
   const refresh = (applyValue: boolean): void => {
     if (applyValue)
-      onChange(value ? [...value] : value);
+      onChange([...value]);
 
     forceUpdate();
   };

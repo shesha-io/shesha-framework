@@ -64,7 +64,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const defaultVisibleLayers = getLayerOptions(items).map((item) => item.value);
 
   const canvasContext = useCanvas();
-  const canvasZoom = canvasContext.zoom ?? 100;
+  const canvasZoom = canvasContext.zoom;
   const { formMode } = useFormState();
   const isDesignerMode = formMode === 'designer';
 

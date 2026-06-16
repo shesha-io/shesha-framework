@@ -2,6 +2,7 @@ import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
 import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
+import { isDefined } from '@/utils/nullables';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -40,7 +41,7 @@ const DEFAULT_MARGIN_VALUES = {
 };
 
 const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
-  if (value === undefined || value === null || value === '') {
+  if (!isDefined(value) || value === '') {
     // When no explicit dimension is provided, don't set a CSS value at all.
     // This avoids producing invalid CSS like `calc(undefined + ...)`.
     return undefined;
@@ -92,10 +93,10 @@ export const stylingUtils = {
     margins: MarginValues,
   ): CSSProperties {
     // Use margin values directly (preserves relative values like 50%)
-    const marginTop = addPx(margins?.marginTop ?? 0);
-    const marginBottom = addPx(margins?.marginBottom ?? 0);
-    const marginLeft = addPx(margins?.marginLeft ?? 0);
-    const marginRight = addPx(margins?.marginRight ?? 0);
+    const marginTop = addPx(margins.marginTop);
+    const marginBottom = addPx(margins.marginBottom);
+    const marginLeft = addPx(margins.marginLeft);
+    const marginRight = addPx(margins.marginRight);
 
     // When width is 100% and there are margins, use getCalculatedDimension to prevent overflow
     // Use getCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
