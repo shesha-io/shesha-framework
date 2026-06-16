@@ -1,6 +1,3 @@
-// Do not remove this line because it used as JS script in settings component
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-
 export const ArrayFormats = {
   /** Simple values (stored as Json) */
   simple: "simple",
@@ -70,7 +67,7 @@ export const DataTypes = {
   context: "context",
   function: "function",
   any: "any",
-  allowedComponents: (dataType, dataFormat) => { // dont't change to this (dataType: string, dataFormat: string): string[] => {
+  allowedComponents: (dataType: string, dataFormat: string): string[] => {
     switch (dataType) {
       case DataTypes.string:
         if (dataFormat === StringFormats.multiline || dataFormat === StringFormats.html || dataFormat === StringFormats.javascript || dataFormat === StringFormats.json)

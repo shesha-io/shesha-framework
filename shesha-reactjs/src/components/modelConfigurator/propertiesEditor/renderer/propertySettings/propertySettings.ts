@@ -39,7 +39,7 @@ export const getSettings = (
     mainEditorCode += `${component}: "${components[component]?.name}",\n`;
   }
   mainEditorCode += '};\n';
-  mainEditorCode += dataTypesCode.replaceAll('export ', '');
+  mainEditorCode += dataTypesCode.replaceAll('export ', '').replaceAll(': string[]', '').replaceAll(': string', '');
   mainEditorCode += '\n';
   mainEditorCode += 'const editors = (DataTypes.allowedComponents(data.dataType, data.dataFormat) ?? []).filter((e) => components[e]);\n';
 
@@ -92,7 +92,7 @@ export const getSettings = (
                       onChangeSetting: (value, _data, setFormData) => {
                         setFormData({
                           values: {
-                            dataFormat: value ? EntityFormats.genericEntity : EntityFormats.entity,
+                            dataFormat: Boolean(value) ? EntityFormats.genericEntity : EntityFormats.entity,
                             entityType: undefined,
                           },
                           mergeValues: true,
@@ -183,7 +183,7 @@ export const getSettings = (
                       propertyModelType: modelConfiguration ? { module: modelConfiguration.module, name: modelConfiguration.name } as IEntityTypeIdentifier : undefined,
                       hidden: { _code: 'return data?.dataFormat !== \'entity\';', _mode: 'code', _value: false },
                       editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' },
-                      tooltip: modelConfiguration ? `Allow to select only the properties with the type of edited entity ${modelConfiguration.name ? '(' + modelConfiguration.name + ')' : ''}.` : "",
+                      tooltip: modelConfiguration ? `Allow to select only the properties with the type of edited entity ${Boolean(modelConfiguration.name) ? '(' + modelConfiguration.name + ')' : ''}.` : "",
                       validate: { required: true },
                     })
 
