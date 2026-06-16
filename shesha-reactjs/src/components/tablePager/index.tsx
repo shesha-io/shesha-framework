@@ -11,6 +11,7 @@ import { IBorderValue } from '@/designer-components/_settings/utils/border/inter
 import { Pagination } from 'antd';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { validationError } from '@/designer-components/dataTable/utils';
+import { isDefined } from '@/utils/nullables';
 
 const outsideContextValidationError = validationError('Table Pager');
 
@@ -79,7 +80,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
   } = dataTableContext;
 
   // Fallback UI when in Data Context but no configured DataTable/DataList
-  if (totalRows === undefined || totalRows === null) {
+  if (!isDefined(totalRows)) {
     return (<EmptyPager style={style} />);
   }
 

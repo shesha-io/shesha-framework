@@ -5,7 +5,7 @@ interface DotNotation {
 
 const unquoteMustache = (value: string, quoteNumber: number): string | undefined => {
   const regex = new RegExp(`^{{${quoteNumber}}([^{]+[^}]+)}{${quoteNumber}}$`);
-  const match = value?.match(regex);
+  const match = value.match(regex);
   return match && match.length === 2
     ? match[1]
     : undefined;
@@ -33,7 +33,7 @@ export const extractJsFieldFromKeyValue = (value: string): string => {
     }
   }
 
-  const normalized = value?.toLowerCase();
+  const normalized = value.toLowerCase();
   return valuesToUnwrap.includes(normalized)
     ? normalized
     : `"${value}"`;

@@ -196,7 +196,7 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
 function geocodeLatLng(geocoder: IGeocoder, lat: number, lng: number): Promise<string> {
   return new Promise((resolve, reject) => {
     geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-      if (status === 'OK' && results?.[0]) resolve(results[0].formatted_address);
+      if (status === 'OK' && results[0]) resolve(results[0].formatted_address);
       else reject(new Error(`Reverse geocode failed: ${status}`));
     });
   });
@@ -205,7 +205,7 @@ function geocodeLatLng(geocoder: IGeocoder, lat: number, lng: number): Promise<s
 function geocodeAddressString(geocoder: IGeocoder, address: string): Promise<{ lat: number; lng: number }> {
   return new Promise((resolve, reject) => {
     geocoder.geocode({ address }, (results, status) => {
-      const loc = status === 'OK' ? results?.[0]?.geometry?.location : undefined;
+      const loc = status === 'OK' ? results[0]?.geometry?.location : undefined;
       if (loc) {
         resolve({ lat: loc.lat(), lng: loc.lng() });
       } else {
@@ -226,7 +226,7 @@ interface IMapModalProps {
   defaultZoom: number;
   mapHeight: number;
   mapWidth?: number | undefined;
-  geocoder: unknown;
+  geocoder: IGeocoder | null;
   onOk: (address: string, lat: number, lng: number) => void;
   onCancel: () => void;
 }
@@ -380,7 +380,7 @@ const MapModal: FC<IMapModalProps> = ({
       try {
         const { suggestions: preds } = await autocomplete.fetchAutocompleteSuggestions({ input: text });
         setModalSuggestions(
-          (preds ?? []).map((s) => {
+          preds.map((s) => {
             const pred = s.placePrediction;
             return { value: pred?.text?.toString() ?? '', label: pred?.text?.toString() ?? '', placeId: pred?.placeId ?? '' };
           }),
@@ -396,7 +396,7 @@ const MapModal: FC<IMapModalProps> = ({
   const handleModalSelect = async (_address: string, option: { placeId: string }): Promise<void> => {
     setModalSuggestions([]);
     const PlaceClass = getGoogleMaps()?.places?.Place;
-    if (!option?.placeId || !PlaceClass) return;
+    if (!option.placeId || !PlaceClass) return;
     try {
       const place = new PlaceClass({ id: option.placeId });
       await place.fetchFields({ fields: ['formattedAddress', 'location'] });
@@ -514,8 +514,8 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   const geocoderRef = useRef<IGeocoder | null>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { setFormData } = useFormActions() ?? {};
-  const { data: formData } = useFormData() ?? {};
+  const { setFormData } = useFormActions();
+  const { data: formData } = useFormData();
 
   // ── Load / detect Google Maps ──────────────────────────────────────────────
 
@@ -559,7 +559,6 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
 
   const writeLatLng = useCallback(
     (lat: number | null, lng: number | null) => {
-      if (!setFormData) return;
       let values: Record<string, unknown> = {};
       if (latitudePropertyName)
         values = setValueByPropertyName(values, latitudePropertyName, lat, true);
@@ -584,7 +583,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
       try {
         const { suggestions: preds } = await autocomplete.fetchAutocompleteSuggestions({ input: text });
         setSuggestions(
-          (preds ?? []).map((s) => {
+          preds.map((s) => {
             const pred = s.placePrediction;
             return {
               value: pred?.text?.toString() ?? '',
@@ -611,7 +610,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   const handleSelect = async (_address: string, option: ISuggestion): Promise<void> => {
     setSuggestions([]);
     const PlaceClass = getGoogleMaps()?.places?.Place;
-    if (!option?.placeId || !PlaceClass) {
+    if (!option.placeId || !PlaceClass) {
       lastExternalValueRef.current = _address;
       setSearchText(_address);
       onChange?.(_address);
@@ -669,13 +668,11 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
     let lat = DEFAULT_LAT;
     let lng = DEFAULT_LNG;
 
-    if (formData) {
-      const storedLat = latitudePropertyName ? unsafeGetValueByPropertyName(formData, latitudePropertyName) : null;
-      const storedLng = longitudePropertyName ? unsafeGetValueByPropertyName(formData, longitudePropertyName) : null;
-      if (typeof storedLat === 'number' && typeof storedLng === 'number') {
-        lat = storedLat;
-        lng = storedLng;
-      }
+    const storedLat = latitudePropertyName ? unsafeGetValueByPropertyName(formData, latitudePropertyName) : null;
+    const storedLng = longitudePropertyName ? unsafeGetValueByPropertyName(formData, longitudePropertyName) : null;
+    if (typeof storedLat === 'number' && typeof storedLng === 'number') {
+      lat = storedLat;
+      lng = storedLng;
     }
 
     if (lat === DEFAULT_LAT && lng === DEFAULT_LNG && searchText && geocoderRef.current) {

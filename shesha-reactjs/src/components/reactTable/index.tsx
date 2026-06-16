@@ -388,7 +388,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
     // useBlockLayout,
     ({ useInstanceBeforeDimensions }) => {
       if (multiSelect) {
-        useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
+        useInstanceBeforeDimensions.push(({ headerGroups: localHeaderGroups }) => {
           if (Array.isArray(localHeaderGroups)) {
             // fix the parent group of the selection button to not be resizable
             const selectionGroupHeader = localHeaderGroups[0]?.headers[0];
@@ -409,7 +409,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
   // Clear all row selections when selection mode changes
   useEffect(() => {
     // Only clear if mode actually changed
-    if (previousMode !== undefined && previousMode !== mode && toggleAllRowsSelected) {
+    if (previousMode !== undefined && previousMode !== mode && isDefined(toggleAllRowsSelected)) {
       toggleAllRowsSelected(false);
     }
   }, [mode, previousMode, toggleAllRowsSelected]);
@@ -421,7 +421,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
   }, [onSort, previousSortBy, sortBy]);
 
   useEffect(() => {
-    if (multiSelect && selectedRowIds && typeof onSelectedIdsChanged === 'function') {
+    if (multiSelect && isDefined(selectedRowIds) && typeof onSelectedIdsChanged === 'function') {
       const arrays: string[] = allRows
         .map(({ id }, index) => {
           if (selectedRowIds[index]) {
@@ -502,7 +502,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
     }
   }, [onFetchData, pageIndex, pageSize, sortBy]);
 
-  const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
+  const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event.stopPropagation();
 
   const handleSelectRow = (rowIndex: number) => (row: Row<TData>): void => {
     if (mode === 'none') return;
@@ -534,7 +534,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
 
       // Call the onSelectRow callback
       if (onSelectRow) {
-        onSelectRow(rowIndex, row?.original);
+        onSelectRow(rowIndex, row.original);
       }
     }
   };
@@ -712,7 +712,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
     const id = row.original.id;
     return (
       <Row<TData>
-        key={id ?? rowIndex}
+        key={!isNullOrWhiteSpace(id) ? id : rowIndex}
         prepareRow={prepareRow}
         onClick={handleSelectRow(rowIndex)}
         onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}

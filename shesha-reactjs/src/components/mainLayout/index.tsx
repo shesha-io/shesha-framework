@@ -97,7 +97,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 
   const { setGlobalVariables } = useSheshaApplication();
 
-  const sideMenuTheme = themeFromStorage?.sidebar;
+  const sideMenuTheme = themeFromStorage.sidebar;
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
@@ -164,7 +164,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     return () => {
       clearTimeout(timeoutId);
       resizeObserver?.disconnect();
-      mutationObserver?.disconnect();
+      mutationObserver.disconnect();
     };
   }, []);
 
@@ -242,7 +242,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
               className={classNames(styles.shaSiteLayoutBackground, headingClass, {
                 [styles.shaSiteLayoutBackgroundNoPadding]: noPadding,
               })}
-              style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
+              style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
             >
               {children}
             </div>

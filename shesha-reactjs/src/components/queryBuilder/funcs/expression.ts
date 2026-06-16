@@ -19,7 +19,7 @@ const jsonLogic2Args: JsonLogicImportFunc = (val: unknown): RuleValue[] => {
     ? getEvaluationNodeFromJsonLogicNode(val)
     : undefined;
 
-  if (!node || node.evaluate?.type !== 'javascript')
+  if (!node || node.evaluate.type !== 'javascript')
     throw `Can't parse 'expression' function`; // throw exception to skip current function and try to parse others
 
   return [node.evaluate.expression];

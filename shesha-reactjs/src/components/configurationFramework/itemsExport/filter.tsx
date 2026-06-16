@@ -39,7 +39,7 @@ export const ExportFilter: FC<IExportFilterProps> = ({ value: filterValue, onCha
       <Col span={12}>
         <Input.Search
           placeholder="search"
-          value={filterValue?.quickSearch}
+          value={filterValue.quickSearch}
           onChange={(e) => {
             const { value } = e.target;
             onFilterChange({ ...filterValue, quickSearch: value });

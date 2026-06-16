@@ -31,7 +31,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
   const formDesigner = useFormDesigner();
   const { addComponent, startDragging, endDragging } = formDesigner;
 
-  const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
   const onSetList = (newState: ItemInterface[]): void => {
     if (!formDesigner.hasDragged) return;

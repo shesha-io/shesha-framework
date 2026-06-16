@@ -159,17 +159,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     const file = e.target.files?.[0];
     if (file && fileToReplace) {
       try {
-        // Use the replaceFile action from the provider
-        if (replaceFile) {
-          // This uses the StoredFilesProvider's replaceFile action which manages state properly
-          replaceFile({
-            file: file,
-            fileId: fileToReplace.id,
-          }).catch((error) => {
-            console.error('Failed to replace file', error);
-            throw error;
-          });
-        }
+        // This uses the StoredFilesProvider's replaceFile action which manages state properly
+        replaceFile({
+          file: file,
+          fileId: fileToReplace.id,
+        }).catch((error) => {
+          console.error('Failed to replace file', error);
+          throw error;
+        });
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : 'Please try again.';
         message.error(`File replacement failed. ${errorMessage}`);
@@ -198,9 +195,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { styles } = useStyles({
     downloadedFileStyles: downloadedFileStyles ?? {},
     containerStyles: {
-      ...(containerDimensionsStyles ?? {}),
-      width: layout === 'vertical' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles?.width, allData) ?? undefined),
-      height: layout === 'horizontal' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles?.height, allData) ?? undefined),
+      ...containerDimensionsStyles,
+      width: layout === 'vertical' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles.width, allData) ?? undefined),
+      height: layout === 'horizontal' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles.height, allData) ?? undefined),
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
@@ -615,7 +612,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
-                  <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
+                  <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
                     {listType !== 'text' && !hideFileName && (
                       <div className={styles.fileName}>
                         file name

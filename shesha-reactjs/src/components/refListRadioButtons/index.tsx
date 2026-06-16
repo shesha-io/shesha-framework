@@ -58,7 +58,7 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
 
   const numericValue = typeof value === 'number' ? value : value?.itemValue;
 
-  const options = filters?.length ? refList?.items?.filter(filter) : refList?.items;
+  const options = filters.length ? refList?.items.filter(filter) : refList?.items;
 
   const radioProps = { ...rest, value: options ? numericValue : null };
 

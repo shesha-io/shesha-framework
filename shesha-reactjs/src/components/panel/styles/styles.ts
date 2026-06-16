@@ -157,7 +157,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         padding: 0px !important;
         width: 100%;
         height: 100%;
-        overflow: ${typeof overflow === 'object' ? (overflow?.overflow ?? 'auto') : (overflow ?? 'auto')};
+        overflow: ${typeof overflow === 'object' ? (overflow.overflow ?? 'auto') : 'auto'};
       }
     }
 
@@ -214,7 +214,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     }
 
     > .ant-collapse-item.ant-collapse-item-active > .ant-collapse-header {
-      border-radius: ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius ?? '0px'} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius ?? '0px'} 0px 0px !important;
+      border-radius: ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius} 0px 0px !important;
     }
 
     &.${prefixCls}-collapse-ghost {
@@ -252,7 +252,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
 
     &.${prefixCls}-collapse-ghost {
       > .ant-collapse-item > .ant-collapse-header {
-        --ant-collapse-header-padding: ${headerStyle?.padding || '12px 16px'} !important;
+        --ant-collapse-header-padding: ${headerStyle.padding || '12px 16px'} !important;
         padding: 12px 16px !important;
         font-size: 14px;
       }
@@ -266,7 +266,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       height: max-content;
       min-height: ${minHeight};
       max-height: ${maxHeight};
-      overflow: ${typeof overflow === 'object' ? (overflow?.overflow ?? 'auto') : (overflow ?? 'auto')};
+      overflow: ${typeof overflow === 'object' ? (overflow.overflow ?? 'auto') : 'auto'};
       padding-top: ${paddingTop} !important;
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;

@@ -213,7 +213,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     state.properties.forEach((p) => {
       const fullPath = getFullPath(p.path, containerPathMultiple);
 
-      if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase()))
+      if (fullPath.toLowerCase().startsWith(data.toLowerCase()))
         filteredOptions.push({ value: fullPath, label: fullPath });
     });
 
@@ -300,7 +300,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     );
   };
 
-  const tagChild = Boolean(props.value) && Array.isArray(props.value) ? props.value?.map(forMap) : null;
+  const tagChild = Boolean(props.value) && Array.isArray(props.value) ? props.value.map(forMap) : null;
 
   return (
     <>

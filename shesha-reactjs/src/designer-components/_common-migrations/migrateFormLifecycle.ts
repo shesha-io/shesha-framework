@@ -42,7 +42,7 @@ const getAfterDataLoad = (onDataLoaded: string | undefined, initialValues?: IKey
           ? "'" + item.value.replaceAll("{", "' + ").replaceAll("}", " + '") + "'" // replace Mustache syntax if needed
           : item.value
       : item.value;
-    if (value === undefined || value === null || value === "") return; // skip empty values
+    if (!isDefined(value) || value === "") return; // skip empty values
     setValueByPropertyName(initialData, item.key, value);
     initialCount++;
   });

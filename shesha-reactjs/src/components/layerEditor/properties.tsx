@@ -59,7 +59,7 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
       const componentModel = getComponentModel(item);
 
       return (
-        <ConditionalMetadataProvider modelType={componentModel?.entityType}>
+        <ConditionalMetadataProvider modelType={componentModel.entityType}>
           <ConfigurableForm<LayerGroupItemProps>
             formRef={formRef}
             labelCol={{ span: 24 }}

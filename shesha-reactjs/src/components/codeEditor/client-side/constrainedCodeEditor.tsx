@@ -41,15 +41,13 @@ export const ConstrainedCodeEditor: FC<IConstrainedCodeEditorProps> = (props) =>
 
   const updateRestrictions = (constrainedInstance: ConstrainedInstance, model: editor.ITextModel, ranges: TextRange[]): void => {
     constrainedInstance.removeRestrictionsIn(model);
-    restrictions.current = ranges
-      ? ranges.map<CodeRestriction>((range) => ({
-        label: WRAPPED_CODE_RANGE,
-        range: [range.start.line, range.start.column, range.end.line, range.end.column],
-        allowMultiline: true,
-      }))
-      : [];
-    if (ranges)
-      constrainedInstance.addRestrictionsTo(model, restrictions.current);
+    restrictions.current = ranges.map<CodeRestriction>((range) => ({
+      label: WRAPPED_CODE_RANGE,
+      range: [range.start.line, range.start.column, range.end.line, range.end.column],
+      allowMultiline: true,
+    }));
+
+    constrainedInstance.addRestrictionsTo(model, restrictions.current);
   };
 
   const initWrapper = useCallback((value: string | undefined): void => {

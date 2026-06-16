@@ -12,6 +12,7 @@ import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useCanvas } from '@/providers/canvas';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { SIDEBAR_COLLAPSE } from '../mainLayout/constant';
+import { isDefined } from '@/utils/nullables';
 export interface ISidebarContainerProps extends PropsWithChildren {
   leftSidebarProps?: ISidebarProps | undefined;
   rightSidebarProps?: ISidebarProps | undefined;
@@ -69,7 +70,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   // Track window resize
   useEffect(() => {
     const handleResize = (): void => {
-      setWindowSize({ width: (window?.innerWidth ?? parseInt(defaultDesignerWidth, 10)) + 'px' });
+      const innerWidth = isDefined(window) ? window.innerWidth : undefined;
+      setWindowSize({ width: (innerWidth ?? parseInt(defaultDesignerWidth, 10)) + 'px' });
     };
 
     window.addEventListener('resize', handleResize);

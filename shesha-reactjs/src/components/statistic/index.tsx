@@ -27,13 +27,12 @@ export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => 
     : {};
 
   const restStyle = rest.style ? { ...rest.style } : {};
-  if (restStyle) {
-    delete restStyle.margin;
-    delete restStyle.marginRight;
-    delete restStyle.marginLeft;
-    delete restStyle.marginTop;
-    delete restStyle.marginBottom;
-  }
+
+  delete restStyle.margin;
+  delete restStyle.marginRight;
+  delete restStyle.marginLeft;
+  delete restStyle.marginTop;
+  delete restStyle.marginBottom;
 
   const { onClick } = rest;
   return (

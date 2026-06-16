@@ -178,7 +178,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
   );
   useEffect(() => {
     if (valueFetcher.data?.success && valueFetcher.data.result) {
-      const items = valueFetcher.data.result.items ?? [];
+      const items = valueFetcher.data.result.items;
       if (isNonEmptyArray(items) && items.length === 1) {
         const displayText = getDisplayText(items[0]);
         setAutocompleteText(displayText);

@@ -129,7 +129,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         },
       },
       title: {
-        display: !!(showTitle && chartTitle?.length > 0),
+        display: !!(showTitle && chartTitle.length > 0),
         text: splitTitleIntoLines(chartTitle),
         font: createFontConfig(titleFont, isSmallScreen ? 12 : 16, 'bold'),
         color: titleFont?.color || '#000000',
