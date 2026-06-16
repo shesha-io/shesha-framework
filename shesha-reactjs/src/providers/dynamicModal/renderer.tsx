@@ -69,7 +69,7 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
 
   return (
     <DynamicModalRendererContext.Provider value={context}>
-      {children.current.length === 0 && renderInstances()}
+      {renderInstances()}
       {props.children}
     </DynamicModalRendererContext.Provider>
   );

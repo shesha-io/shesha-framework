@@ -128,7 +128,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         sizes={currentSizes}
         expandToMin={false}
         {...(sizes.minSizes ? { minSize: sizes.minSizes } : {})}
-        {...(sizes.maxSizes ? { maxSizes: sizes.maxSizes } : {})}
+        {...(sizes.maxSizes ? { maxSize: sizes.maxSizes } : {})}
         onDrag={handleDragSizesChange}
         onDragEnd={handleDragSizesChange}
         gutterSize={DEFAULT_OPTIONS.gutter}
