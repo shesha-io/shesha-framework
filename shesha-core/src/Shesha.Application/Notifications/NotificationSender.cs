@@ -94,7 +94,6 @@ namespace Shesha.Notifications
         /// <param name="sender"></param>
         /// <param name="receiver"></param>
         /// <param name="data"></param>
-        /// <param name="priority"></param>
         /// <param name="attachments"></param>
         /// <param name="cc"></param>
         /// <param name="triggeringEntity"></param>
