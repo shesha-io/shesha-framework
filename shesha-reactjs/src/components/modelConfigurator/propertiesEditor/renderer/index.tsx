@@ -52,7 +52,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
         }}
       >
         <div>
-          <ItemsContainer items={items} index={[]} />
+          <ItemsContainer items={items} />
         </div>
       </SidebarContainer>
     </div>
