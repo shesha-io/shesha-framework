@@ -1,17 +1,18 @@
-import { AutoComplete, Empty, Spin, Typography } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useRef, useState, FC, ComponentProps } from 'react';
-
-import { useGet } from '@/hooks';
-import { useDebouncedCallback } from 'use-debounce';
-import { GENERIC_ENTITIES_ENDPOINT, LEGACY_REFERENCE_LISTS_MODULE_NAME } from '@/shesha-constants';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
-import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import HelpTextPopover from '@/components/helpTextPopover';
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { extractAjaxResponse, IAjaxResponse, IErrorInfo } from '@/interfaces';
+import { GetAllResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
-import { IErrorInfo } from '@/interfaces';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { useHttpClient } from '@/providers';
+import { GENERIC_ENTITIES_ENDPOINT, LEGACY_REFERENCE_LISTS_MODULE_NAME } from '@/shesha-constants';
+import { buildUrl } from '@/utils';
 import { isNonEmptyArray } from '@/utils/array';
-import { isDefined } from '@/utils/nullables';
+import { makeErrorWithMessage } from '@/utils/errors';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { AutoComplete, Empty, Spin, Typography } from 'antd';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import React, { ComponentProps, Dispatch, FC, ReactNode, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 export interface IReferenceListAutocompleteRuntimeProps {
   value?: IReferenceListIdentifier | null | undefined;
@@ -128,7 +129,7 @@ interface IConfigurationItemProps {
 }
 
 const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, label }) => {
-  const displayLabel = label && label !== name
+  const displayLabel = !isNullOrWhiteSpace(label) && label !== name
     ? label
     : null;
   return (
@@ -136,7 +137,7 @@ const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, label })
       <HelpTextPopover content={description}>
         <span>{name}</span>
       </HelpTextPopover>
-      {displayLabel && (
+      {!isNullOrWhiteSpace(displayLabel) && (
         <><br /><Typography.Text type="secondary" ellipsis={true}>{displayLabel}</Typography.Text></>
       )}
     </div>
@@ -155,59 +156,68 @@ const getDisplayText = (item: IResponseItem | undefined): string => {
 
 type OnSelectHandler = ComponentProps<typeof AutoComplete>["onSelect"];
 
+type DataWithLoadingState<TData> = {
+  data: TData | undefined;
+  error?: IErrorInfo | undefined;
+  loading: boolean;
+};
+
+const useDataWithLoadingState = <TData = unknown>(): [DataWithLoadingState<TData>, Dispatch<SetStateAction<DataWithLoadingState<TData>>>] => {
+  return useState<DataWithLoadingState<TData>>(() => ({ data: undefined, loading: false }));
+};
+
 export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProps> = (props) => {
   const selectedValue = useRef<IReferenceListIdentifier | null>(null);
   const [autocompleteText, setAutocompleteText] = useState<string>("");
   const {
+    readOnly = false,
     maxResultCount = 10,
   } = props;
 
-  const listFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, IErrorInfo, IGenericGetAllPayload>(
-    `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-    {
-      lazy: true,
-      queryParams: getListFetcherQueryParams("", maxResultCount),
-    },
-  );
-
-  const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, IErrorInfo, IGenericGetAllPayload>(
-    `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-    {
-      lazy: true,
-    },
-  );
-  useEffect(() => {
-    if (valueFetcher.data?.success && valueFetcher.data.result) {
-      const items = valueFetcher.data.result.items;
-      if (isNonEmptyArray(items) && items.length === 1) {
-        const displayText = getDisplayText(items[0]);
-        setAutocompleteText(displayText);
-      } else
-        console.error(items.length > 1 ? "Found more than one form with specified name" : "Reference list not found");
-    }
-  }, [valueFetcher.data?.result, valueFetcher.data?.success]);
-
-  const listItems = listFetcher.data?.result?.items;
-  const valueItems = valueFetcher.data?.result?.items;
+  const httpClient = useHttpClient();
+  const [listItems, setListItems] = useDataWithLoadingState<IResponseItem[]>();
+  const [valueItems, setValueItems] = useDataWithLoadingState<IResponseItem[]>();
 
   const fetchedItems = useMemo<IResponseItem[] | undefined>(() => {
-    return listItems
-      ? listItems
-      : valueItems;
+    return listItems.data
+      ? listItems.data
+      : valueItems.data;
   }, [listItems, valueItems]);
 
   useEffect(() => {
     // fetch data if required
     const valueFetchParams = getSelectedValueQueryParams(props.value ?? null);
     if (valueFetchParams) {
-      const selectedFromList = selectedValue.current && selectedValue.current === props.value;
-      if (!selectedFromList)
-        valueFetcher.refetch({ queryParams: valueFetchParams }).catch((error) => {
-          console.error('Failed to fetch value', error);
-          throw error;
-        });
+      const selectedFromList = isDefined(selectedValue.current) && selectedValue.current === props.value;
+      if (!selectedFromList) {
+        const fetchValueAsync = async (): Promise<void> => {
+          setValueItems((s) => ({ ...s, loading: true }));
+          try {
+            const url = buildUrl(`${GENERIC_ENTITIES_ENDPOINT}/GetAll`, valueFetchParams);
+            const response = await httpClient.get<IAjaxResponse<GetAllResponse<IResponseItem>>>(url);
+            const responseData = extractAjaxResponse(response.data, 'Failed to fetch items');
+            setValueItems((s) => ({ ...s, loading: false, error: undefined, data: responseData.items }));
+
+            const items = responseData.items;
+            if (isNonEmptyArray(items) && items.length === 1) {
+              const displayText = getDisplayText(items[0]);
+              setAutocompleteText(displayText);
+            } else
+              console.error(items.length > 1 ? "Found more than one form with specified name" : "Reference list not found");
+          } catch (e) {
+            setValueItems((s) => ({
+              ...s,
+              data: undefined,
+              loading: false,
+              error: makeErrorWithMessage(e, "Failed to fetch items"),
+            }));
+          }
+        };
+
+        void fetchValueAsync();
+      }
     }
-  }, [props.value, valueFetcher]);
+  }, [httpClient, props.value, setValueItems]);
 
   const options = useMemo<IOption[]>(() => {
     const result: IOption[] = [];
@@ -249,12 +259,21 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
   }, [fetchedItems]);
 
   const debouncedFetchItems = useDebouncedCallback<(value: string) => void>(
-    (localValue) => {
-      listFetcher.refetch({ queryParams: getListFetcherQueryParams(localValue, maxResultCount) })
-        .catch((error) => {
-          console.error('Failed to fetch items', error);
-          throw error;
-        });
+    async (localValue) => {
+      setListItems((s) => ({ ...s, loading: true }));
+      try {
+        const url = buildUrl(`${GENERIC_ENTITIES_ENDPOINT}/GetAll`, getListFetcherQueryParams(localValue, maxResultCount));
+        const response = await httpClient.get<IAjaxResponse<GetAllResponse<IResponseItem>>>(url);
+        const responseData = extractAjaxResponse(response.data, 'Failed to fetch items');
+        setListItems((s) => ({ ...s, loading: false, error: undefined, data: responseData.items }));
+      } catch (e) {
+        setListItems((s) => ({
+          ...s,
+          data: undefined,
+          loading: false,
+          error: makeErrorWithMessage(e, "Failed to fetch items"),
+        }));
+      }
     },
     // delay in ms
     100,
@@ -280,12 +299,10 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
     }
   };
 
-  const loading = listFetcher.loading;
-
   return (
     <AutoComplete
       allowClear
-      notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
+      notFoundContent={listItems.loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
       style={{ width: '100%' }}
       options={options}
       showSearch={{
@@ -293,8 +310,8 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
       }}
       onSelect={onSelect}
       onClear={onClear}
-      placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
-      disabled={valueFetcher.loading || props.readOnly || false}
+      placeholder={valueItems.loading ? 'Loading...' : 'Type to search'}
+      disabled={valueItems.loading || readOnly}
       size={props.size}
       value={autocompleteText}
       onChange={setAutocompleteText}
