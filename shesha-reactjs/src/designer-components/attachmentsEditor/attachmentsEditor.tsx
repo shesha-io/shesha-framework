@@ -177,6 +177,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { globalState } = useGlobalState();
     const executionContext = useAvailableConstantsData();
     const ownerId = evaluateString(model.ownerId, { data: data, globalState });
+    const resolvedOwnerId = !isNullOrWhiteSpace(ownerId) ? ownerId : getIdOrUndefined(data) ?? "";
     const enabled = !model.readOnly;
 
     const {
@@ -215,7 +216,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           return (
             <AttachmentsEditorProvider
               name={model.componentName}
-              ownerId={!isNullOrWhiteSpace(model.ownerId) ? ownerId : getIdOrUndefined(data) ?? ""}
+              ownerId={resolvedOwnerId}
               ownerType={!isEntityTypeIdEmpty(model.ownerType)
                 ? model.ownerType
                 : !isEntityTypeIdEmpty(form.formSettings?.modelType)
@@ -248,7 +249,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 allowViewHistory={model.allowViewHistory}
                 container={model.container}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
-                ownerId={ownerId}
+                ownerId={resolvedOwnerId}
                 downloadedFileStyles={model.styleDownloadedFiles ? downloadedFileFullStyle : {}}
                 downloadedIcon={model.styleDownloadedFiles ? model.downloadedIcon : undefined}
               />

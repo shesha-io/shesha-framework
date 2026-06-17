@@ -62,8 +62,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const uploadFileModel = useMemo<UploadFile | undefined>(() => fileInfo ? storedFileModel2UploadFile(fileInfo) : undefined, [fileInfo]);
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  // Convert CSSProperties to FileUploadStyleProps safely
+  const convertedStyles: FileUploadStyleProps | undefined = stylesProp ? {
+    ...stylesProp,
+  } : undefined;
+
   const { styles } = useStyles({
-    style: stylesProp as FileUploadStyleProps | undefined, // TODO V1: review types
+    style: convertedStyles,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
@@ -79,17 +85,17 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [imageUrl, setImageUrl] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
-  // Cache blob URL created from uploaded File object to avoid immediate server round-trip
-  const uploadedFileBlobUrl = useRef<string | null>(null);
+  // Cache blob URLs per file to avoid immediate server round-trip and prevent stale thumbnails
+  const uploadedFileBlobUrls = useRef<Map<string, string>>(new Map());
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
 
-  // Clean up blob URL on unmount
+  // Clean up blob URLs on unmount
   useEffect(() => {
     return () => {
-      if (uploadedFileBlobUrl.current) {
-        URL.revokeObjectURL(uploadedFileBlobUrl.current);
-        uploadedFileBlobUrl.current = null;
-      }
+      uploadedFileBlobUrls.current.forEach((blobUrl) => {
+        URL.revokeObjectURL(blobUrl);
+      });
+      uploadedFileBlobUrls.current.clear();
     };
   }, []);
 
@@ -97,60 +103,89 @@ export const FileUpload: FC<IFileUploadProps> = ({
     if (!fileInfo) {
       // Clear image URL if no file
       setImageUrl('');
-      if (uploadedFileBlobUrl.current) {
-        URL.revokeObjectURL(uploadedFileBlobUrl.current);
-        uploadedFileBlobUrl.current = null;
-      }
-      return;
+      return undefined;
     }
 
-    // For newly uploaded files, use the blob URL if available
+    const fileKey = fileInfo.id || fileInfo.uid;
+
+    // For newly uploaded files, use the cached blob URL if available
     // Keep using it even when status becomes 'done' to avoid fetching from server
-    if (uploadedFileBlobUrl.current) {
-      setImageUrl(uploadedFileBlobUrl.current);
-      return;
+    const cachedBlobUrl = uploadedFileBlobUrls.current.get(fileKey);
+    if (cachedBlobUrl) {
+      setImageUrl(cachedBlobUrl);
+      return undefined;
     }
 
     // For persisted files with done status, fetch from server
     // Only fetch if we don't have a local blob URL (i.e., file was loaded from backend, not just uploaded)
     if (fileInfo.status === 'done' && url) {
-      fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
+      let isCancelled = false;
+      const abortController = new AbortController();
+
+      fetch(url, {
+        headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+        signal: abortController.signal
+      })
         .then((response) => response.blob())
-        .then((blob) => URL.createObjectURL(blob))
-        .then((url) => setImageUrl(url))
+        .then((blob) => {
+          if (!isCancelled) {
+            const blobUrl = URL.createObjectURL(blob);
+            uploadedFileBlobUrls.current.set(fileKey, blobUrl);
+            setImageUrl(blobUrl);
+          }
+        })
         .catch((error) => {
-          console.error('Failed to fetch file', error);
-          throw error;
+          if (error.name !== 'AbortError') {
+            console.error('Failed to fetch file', error);
+          }
         });
+
+      return () => {
+        isCancelled = true;
+        abortController.abort();
+      };
     }
+
+    return undefined;
   }, [fileInfo, httpHeaders, url]);
 
-  const onCustomRequest: UploadProps['customRequest'] = ({ file }): void => {
+  const onCustomRequest: UploadProps['customRequest'] = ({ file, onSuccess, onError }): void => {
     if (file instanceof File) {
       // For image files, create a blob URL directly from the File object to avoid
       // an immediate server round-trip for the thumbnail right after upload
       const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+      const tempFileKey = `temp_${Date.now()}_${file.name}`;
+
       if (isImageType(fileExt)) {
-        // Clean up any previous blob URL
-        if (uploadedFileBlobUrl.current) {
-          URL.revokeObjectURL(uploadedFileBlobUrl.current);
-        }
-        uploadedFileBlobUrl.current = URL.createObjectURL(file);
+        const blobUrl = URL.createObjectURL(file);
+        uploadedFileBlobUrls.current.set(tempFileKey, blobUrl);
       }
 
-      uploadFile({ file }).then(() => {
+      uploadFile({ file }).then((result) => {
+        // Update the mapping with the persisted file id if available
+        if (fileInfo?.id && uploadedFileBlobUrls.current.has(tempFileKey)) {
+          const blobUrl = uploadedFileBlobUrls.current.get(tempFileKey);
+          if (blobUrl) {
+            uploadedFileBlobUrls.current.set(fileInfo.id, blobUrl);
+            uploadedFileBlobUrls.current.delete(tempFileKey);
+          }
+        }
         callback?.();
+        onSuccess?.(result);
       }).catch((error) => {
         // Clean up blob URL if upload failed
-        if (uploadedFileBlobUrl.current) {
-          URL.revokeObjectURL(uploadedFileBlobUrl.current);
-          uploadedFileBlobUrl.current = null;
+        const blobUrl = uploadedFileBlobUrls.current.get(tempFileKey);
+        if (blobUrl) {
+          URL.revokeObjectURL(blobUrl);
+          uploadedFileBlobUrls.current.delete(tempFileKey);
         }
         console.error('Failed to upload file', error);
-        throw error;
+        onError?.(error);
       });
-    } else
-      throw new Error('File is not an instance of File. Please check the file object.');
+    } else {
+      const error = new Error('File is not an instance of File. Please check the file object.');
+      onError?.(error);
+    }
   };
 
   const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => {
@@ -195,7 +230,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
         message.error('Preview URL not available');
         return;
       }
-      setPreviewImage({ url: previewUrl, uid: fileInfo.uid, name: fileInfo.name });
+      setPreviewImage({ url: previewUrl, uid: fileInfo.id || '', name: fileInfo.name });
       setPreviewOpen(true);
     }
   };
@@ -369,7 +404,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         <Upload {...fileProps} listType={antListType}>
-          {!fileInfo && uploadButton}
+          {(!fileInfo || fileInfo.status === 'error') && uploadButton}
         </Upload>
       </div>
     );
@@ -388,10 +423,12 @@ export const FileUpload: FC<IFileUploadProps> = ({
             onVisibleChange: (visible) => setPreviewOpen(visible),
             toolbarRender: (original) => (
               <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                <DownloadOutlined
-                  className={styles.antPreviewDownloadIcon}
-                  onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })}
-                />
+                {previewImage.uid && (
+                  <DownloadOutlined
+                    className={styles.antPreviewDownloadIcon}
+                    onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })}
+                  />
+                )}
                 {original}
               </div>
             ),
@@ -417,22 +454,32 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
             // For image files, create a blob URL for immediate display
             const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+            const tempFileKey = `temp_${Date.now()}_${file.name}`;
+
             if (isImageType(fileExt)) {
-              // Clean up any previous blob URL
-              if (uploadedFileBlobUrl.current) {
-                URL.revokeObjectURL(uploadedFileBlobUrl.current);
-              }
-              uploadedFileBlobUrl.current = URL.createObjectURL(file);
+              const blobUrl = URL.createObjectURL(file);
+              uploadedFileBlobUrls.current.set(tempFileKey, blobUrl);
             }
 
-            uploadFile({ file }).then(() => callback?.()).catch((error) => {
+            uploadFile({ file }).then(() => {
+              // Update the mapping with the persisted file id if available
+              if (fileInfo?.id && uploadedFileBlobUrls.current.has(tempFileKey)) {
+                const blobUrl = uploadedFileBlobUrls.current.get(tempFileKey);
+                if (blobUrl) {
+                  uploadedFileBlobUrls.current.set(fileInfo.id, blobUrl);
+                  uploadedFileBlobUrls.current.delete(tempFileKey);
+                }
+              }
+              callback?.();
+            }).catch((error) => {
               // Clean up blob URL if upload failed
-              if (uploadedFileBlobUrl.current) {
-                URL.revokeObjectURL(uploadedFileBlobUrl.current);
-                uploadedFileBlobUrl.current = null;
+              const blobUrl = uploadedFileBlobUrls.current.get(tempFileKey);
+              if (blobUrl) {
+                URL.revokeObjectURL(blobUrl);
+                uploadedFileBlobUrls.current.delete(tempFileKey);
               }
               console.error('Failed to upload file', error);
-              throw error;
+              message.error(`Failed to upload file: ${error.message || 'Unknown error'}`);
             });
           }
           e.target.value = '';

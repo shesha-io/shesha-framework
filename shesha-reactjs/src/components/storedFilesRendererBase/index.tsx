@@ -278,16 +278,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           }
 
           // Check for blob URL from recent upload (avoids server round-trip immediately after upload).
-          // Keep the cache entry while the file is still uploading: the instance will replace the
-          // temp uid (nanoid) with the server-assigned GUID on completion, triggering a second
-          // fetchImages run with a different uid but the same name/size key.
+          // The entry is kept for the lifetime of the component (cleaned up on unmount or when the
+          // file is removed) so it can also be reused for full-image preview without re-downloading.
+          // It is keyed by name/size so it survives the temp uid (nanoid) -> server GUID transition.
           const tempKey = `${file.name}_${file.size}`;
           const blobUrl = uploadedFileBlobUrls.current.get(tempKey);
           if (blobUrl) {
             newImageUrls[file.uid] = blobUrl;
-            if (file.status !== 'uploading') {
-              uploadedFileBlobUrls.current.delete(tempKey);
-            }
             continue;
           }
 
@@ -324,10 +321,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         }
       }
       if (!isCancelled) {
-        const oldUrls = Object.values(imageUrlsRef.current);
-        const newUrls = Object.values(newImageUrls);
-        oldUrls.forEach((url) => {
-          if (!newUrls.includes(url)) {
+        // Revoke uploaded blob URLs whose file is no longer in the list (e.g. removed by the user),
+        // and drop them from the cache so the generic cleanup below doesn't double-revoke them.
+        const liveKeys = new Set(fileList.map((f) => `${f.name}_${f.size}`));
+        uploadedFileBlobUrls.current.forEach((url, key) => {
+          if (!liveKeys.has(key)) {
+            URL.revokeObjectURL(url);
+            uploadedFileBlobUrls.current.delete(key);
+          }
+        });
+
+        const protectedUrls = new Set([...Object.values(newImageUrls), ...uploadedFileBlobUrls.current.values()]);
+        Object.values(imageUrlsRef.current).forEach((url) => {
+          if (!protectedUrls.has(url)) {
             URL.revokeObjectURL(url);
           }
         });
@@ -374,6 +380,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const handlePreview = (file: StoredFileModel): void => {
     revokePreviewFullImageUrl();
     activePreviewUid.current = file.uid;
+
+    // For a freshly uploaded file we already have a blob URL of the full original image locally,
+    // so reuse it instead of downloading the file again from the server. The blob is owned by
+    // uploadedFileBlobUrls (cleaned up on unmount), so it must not be tracked for revocation here.
+    const uploadedBlobUrl = uploadedFileBlobUrls.current.get(`${file.name}_${file.size}`);
+    if (uploadedBlobUrl) {
+      setPreviewImage({ url: uploadedBlobUrl, uid: file.uid, name: file.name });
+      setPreviewLoading(false);
+      setPreviewOpen(true);
+      return;
+    }
+
     setPreviewImage({ url: "", uid: file.uid, name: file.name });
     setPreviewOpen(true);
 
