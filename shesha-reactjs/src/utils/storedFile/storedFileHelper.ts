@@ -111,18 +111,11 @@ export class StoredFileHelper implements IStoredFileHelper {
         formData.append('ownerType.name', ownerType.name);
         formData.append('ownerType.module', ownerType.module ?? "");
       } else {
-        // Parse string format "Module.Name" into separate parts
-        const lastDotIndex = ownerType.lastIndexOf('.');
-        if (lastDotIndex > 0) {
-          const module = ownerType.substring(0, lastDotIndex);
-          const name = ownerType.substring(lastDotIndex + 1);
-          formData.append('ownerType.name', name);
-          formData.append('ownerType.module', module);
-        } else {
-          // No module, just name
-          formData.append('ownerType.name', ownerType);
-          formData.append('ownerType.module', "");
-        }
+        // A plain string is the full class name (e.g. "Shesha.Domain.Person"); send it as
+        // entityType so the server resolves the EntityConfig by full class name. Splitting it
+        // into module/name on the last dot is wrong (namespace != module) and makes the server
+        // fail to resolve the owner type, returning a 500.
+        formData.append('ownerType.entityType', ownerType);
       }
     }
     if (!isNullOrWhiteSpace(ownerName))

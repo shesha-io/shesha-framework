@@ -155,6 +155,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
   // Cache blob URLs created from uploaded File objects to avoid immediate server round-trip
   const uploadedFileBlobUrls = useRef<Map<string, string>>(new Map());
+  // Blob URL of the full-resolution image currently shown in the preview. Tracked so it can be
+  // revoked when the preview closes or another preview is opened, preventing memory leaks.
+  const previewFullImageUrl = useRef<string | null>(null);
   const model = rest;
 
   // Handler for replacing a file
@@ -351,12 +354,48 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         URL.revokeObjectURL(url);
       });
       blobUrls.clear();
+      if (previewFullImageUrl.current) {
+        URL.revokeObjectURL(previewFullImageUrl.current);
+        previewFullImageUrl.current = null;
+      }
     };
   }, []);
 
+  // Revokes the previously fetched full-resolution preview blob URL, if any.
+  const revokePreviewFullImageUrl = (): void => {
+    if (previewFullImageUrl.current) {
+      URL.revokeObjectURL(previewFullImageUrl.current);
+      previewFullImageUrl.current = null;
+    }
+  };
+
   const handlePreview = (file: StoredFileModel): void => {
+    // Open immediately using the already-loaded thumbnail for instant feedback.
+    revokePreviewFullImageUrl();
     setPreviewImage({ url: imageUrls[file.uid] ?? "", uid: file.uid, name: file.name });
     setPreviewOpen(true);
+
+    // Then fetch the full-resolution image and swap it into the preview.
+    if (!file.id)
+      return;
+
+    const fullImageDownloadUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}`, { id: file.id });
+    fetchStoredFile(fullImageDownloadUrl, httpHeaders)
+      .then(({ url: fullImageUrl, revoke }) => {
+        setPreviewImage((current) => {
+          // The preview may have moved to another file (or closed) while this was loading.
+          // In that case discard the fetched image instead of swapping it in.
+          if (current?.uid !== file.uid) {
+            revoke();
+            return current;
+          }
+          previewFullImageUrl.current = fullImageUrl;
+          return { ...current, url: fullImageUrl };
+        });
+      })
+      .catch((error) => {
+        console.error(`Failed to fetch full image for preview ${file.name} (${file.uid}):`, error);
+      });
   };
 
   const iconRender: UploadProps["iconRender"] = (file) => {
@@ -742,7 +781,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               preview={{
                 visible: previewOpen,
                 onVisibleChange: (visible) => setPreviewOpen(visible),
-                afterOpenChange: (visible) => !visible && setPreviewImage(null),
+                afterOpenChange: (visible) => {
+                  if (!visible) {
+                    setPreviewImage(null);
+                    revokePreviewFullImageUrl();
+                  }
+                },
               }}
               src={previewImage.url}
             />
