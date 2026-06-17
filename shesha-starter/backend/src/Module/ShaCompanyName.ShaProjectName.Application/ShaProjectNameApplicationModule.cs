@@ -50,26 +50,6 @@ namespace ShaCompanyName.ShaProjectName.Application
         {
             base.PreInitialize();
 
-            Configuration.Modules.AbpAspNetCore()
-                .CreateControllersForAppServices(
-                    typeof(SheshaCoreModule).GetAssembly()
-                );
-
-            Configuration.Modules.AbpAspNetCore()
-                 .CreateControllersForAppServices(
-                     typeof(SheshaApplicationModule).GetAssembly()
-                 );
-
-            Configuration.Modules.AbpAspNetCore()
-                 .CreateControllersForAppServices(
-                     typeof(SheshaFormsDesignerModule).GetAssembly()
-                 );
-
-            Configuration.Modules.AbpAspNetCore()
-                 .CreateControllersForAppServices(
-                     typeof(SheshaFrameworkModule).GetAssembly()
-                 );
-
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                typeof(ShaProjectNameApplicationModule).Assembly,
                moduleName: "ShaProjectName",
