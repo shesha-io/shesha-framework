@@ -636,16 +636,15 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   };
 
   initInitialData = async (): Promise<void> => {
-    await this.loadDataAndFireEvents(async () => {
-      return await new Promise<void>((resolve) => {
-        this.antdForm.resetFields();
-        if (this.initialValues)
-          this.antdForm.setFieldsValue(this.initialValues as RecursivePartial<Values>);
+    await this.loadDataAndFireEvents(() => {
+      this.antdForm.resetFields();
+      if (this.initialValues)
+        this.antdForm.setFieldsValue(this.initialValues as RecursivePartial<Values>);
 
-        this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
-        this.#setIsDataModified(false);
-        resolve();
-      });
+      this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
+      this.#setIsDataModified(false);
+
+      return Promise.resolve();
     });
   };
 
@@ -669,7 +668,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
     this.setArguments(formArguments);
 
-    const formNotChanged = this.formId && isSameFormIds(this.formId, formId);
+    const formNotChanged = isDefined(this.formId) && isSameFormIds(this.formId, formId);
     if (!formNotChanged) {
       this.log('LOG: loadFormByFormId - load form', payload);
 
@@ -709,7 +708,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       return this.initialValues as Values;
     }
 
-    const canLoadData = this.dataLoader && this.dataLoader.canLoadData(formArguments);
+    const canLoadData = isDefined(this.dataLoader) && this.dataLoader.canLoadData(formArguments);
 
     if (canLoadData) {
       this.dataLoadingState = { status: 'loading', hint: 'Fetching data...', error: undefined };
