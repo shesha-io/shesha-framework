@@ -4,10 +4,10 @@ import { PermissionsTree } from '@/components/permissionsTree';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IPermissionAutocompleteProps {
-  onChange?: (value: string[]) => void;
-  value?: string[];
-  readOnly?: boolean;
-  size?: SizeType;
+  onChange?: ((value: string[]) => void) | undefined;
+  value?: string[] | undefined;
+  readOnly?: boolean | undefined;
+  size?: SizeType | undefined;
 }
 
 const dropdownStyles = { popup: { root: { maxHeight: '50%', overflow: 'auto' } } };
@@ -17,10 +17,10 @@ export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) 
 
   const [searchText, setSearchText] = useState('');
 
-  const internalOnChange = (values?: string[]): void => {
+  const internalOnChange = (values: string[] | null): void => {
     // setSearchText('');
     if (onChange) {
-      onChange(values);
+      onChange(values ?? []);
     }
   };
 
@@ -33,7 +33,7 @@ export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) 
         onSearch: setSearchText,
         searchValue: searchText,
       }}
-      disabled={readOnly}
+      disabled={readOnly ?? false}
       size={size}
       styles={dropdownStyles}
       popupRender={(_) => (
@@ -51,7 +51,7 @@ export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) 
         />
       )}
       onChange={internalOnChange}
-      value={value}
+      value={value ?? null}
     />
   );
 };

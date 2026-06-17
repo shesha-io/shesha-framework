@@ -245,7 +245,7 @@ namespace Shesha.Web.FormsDesigner.Services
             form.Module?.EnsureEditable();
 
             form.Markup = input.Markup;
-            await Repository.UpdateAsync(form);
+            form.ModelType = input.ModelType;
 
             await Repository.UpdateAsync(form);
 

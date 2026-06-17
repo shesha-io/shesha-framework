@@ -7,37 +7,37 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 
 // TODO V1: review all properties and remove unused ones
 export interface ICustomFileProps extends IInputStyles {
-  id?: string;
-  ownerId?: string;
-  maxCount?: number;
-  allowAdd?: boolean;
-  allowReplace?: boolean;
-  allowDelete?: boolean;
-  allowRename?: boolean;
-  allowViewHistory?: boolean;
-  customActions?: ButtonGroupItemProps[];
-  hasExtraContent?: boolean;
-  extraFormSelectionMode?: 'name' | 'dynamic';
-  extraFormId?: FormIdentifier;
-  extraFormType?: string;
-  isStub?: boolean;
-  disabled?: boolean;
-  allowedFileTypes?: string[];
-  maxHeight?: string;
-  isDragger?: boolean;
-  downloadZip?: boolean;
-  filesLayout?: layoutType;
-  listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
-  container?: IStyleType;
-  primaryColor?: string;
-  enableStyleOnReadonly?: boolean;
-  downloadedFileStyles?: CSSProperties;
-  styleDownloadedFiles?: boolean;
-  downloadedIcon?: IconType;
+  id?: string | undefined;
+  ownerId?: string | undefined;
+  maxCount?: number | undefined;
+  allowAdd?: boolean | undefined;
+  allowReplace?: boolean | undefined;
+  allowDelete?: boolean | undefined;
+  allowRename?: boolean | undefined;
+  allowViewHistory?: boolean | undefined;
+  customActions?: ButtonGroupItemProps[] | undefined;
+  hasExtraContent?: boolean | undefined;
+  extraFormSelectionMode?: 'name' | 'dynamic' | undefined;
+  extraFormId?: FormIdentifier | undefined;
+  extraFormType?: string | undefined;
+  isStub?: boolean | undefined;
+  disabled?: boolean | undefined;
+  allowedFileTypes?: string[] | undefined;
+  maxHeight?: string | undefined;
+  isDragger?: boolean | undefined;
+  downloadZip?: boolean | undefined;
+  filesLayout?: layoutType | undefined;
+  listType?: listType | undefined;
+  thumbnailWidth?: string | undefined;
+  thumbnailHeight?: string | undefined;
+  borderRadius?: number | undefined;
+  hideFileName?: boolean | undefined;
+  container?: IStyleType | undefined;
+  primaryColor?: string | undefined;
+  enableStyleOnReadonly?: boolean | undefined;
+  downloadedFileStyles?: CSSProperties | undefined;
+  styleDownloadedFiles?: boolean | undefined;
+  downloadedIcon?: IconType | undefined;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -57,17 +57,17 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       isDragger={props.isDragger}
 
       disabled={props.disabled || !props.allowAdd}
-      allowUpload={props.allowAdd}
-      allowDelete={props.allowDelete}
-      allowViewHistory={props.allowViewHistory}
-      allowReplace={props.allowReplace}
-      allowDownloadZip={props.downloadZip}
+      allowUpload={props.allowAdd ?? false}
+      allowDelete={props.allowDelete ?? false}
+      allowViewHistory={props.allowViewHistory ?? false}
+      allowReplace={props.allowReplace ?? false}
+      allowDownloadZip={props.downloadZip ?? false}
       allowedFileTypes={props.allowedFileTypes}
 
       customActions={props.customActions}
       maxHeight={props.maxHeight}
-      layout={props.filesLayout}
-      listType={props.listType}
+      layout={props.filesLayout ?? "vertical"}
+      listType={props.listType ?? "text"}
 
       hasExtraContent={props.hasExtraContent}
       extraFormSelectionMode={props.extraFormSelectionMode}
@@ -84,8 +84,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       deleteFile={deleteFile}
       downloadZipFile={downloadZipFile}
       downloadFile={downloadFile}
-      // isDownloadingFileListZip={downloadZip}
-      // isDownloadZipSucceeded={downloadZipSuccess}
     />
   );
 };

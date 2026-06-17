@@ -1,9 +1,8 @@
-import { settingsGetValue, settingsUpdateValue } from '@/apis/settings';
+import { UpdateSettingValueInput } from '@/apis/settings';
 import useThunkReducer from '@/hooks/thunkReducer';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
-import { useSheshaApplication, useTheme } from '@/providers';
+import { GetAllResponse, IGenericGetAllPayload } from '@/interfaces/gql';
+import { useHttpClient, useTheme } from '@/providers';
 import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
-import * as RestfulShesha from '@/utils/fetchers';
 import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import {
   fetchApplicationsErrorAction,
@@ -32,16 +31,20 @@ import {
   SettingValue,
 } from './models';
 import { settingsEditorReducer } from './reducer';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { makeErrorWithMessage, throwError } from '@/utils/errors';
+import { buildUrl } from '@/utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
-const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
+const getListFetcherQueryParams = (maxResultCount: number | undefined): IGenericGetAllPayload => {
   return {
     skipCount: 0,
     maxResultCount: maxResultCount ?? -1,
     entityType: 'Shesha.Domain.SettingConfiguration',
     properties:
       'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description',
-    quickSearch: null,
+    quickSearch: undefined,
     sorting: 'module.name, name',
   };
 };
@@ -65,81 +68,75 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
   const initial: ISettingsEditorStateContext = {
     ...SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
   };
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const [state, dispatch] = useThunkReducer(settingsEditorReducer, initial);
 
   const { resetToApplicationTheme } = useTheme();
   useEffect(() => {
     resetToApplicationTheme();
+    // TODO V1: review dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.applications, state.settingSelection]);
 
   const fetchConfigurations = (): void => {
     dispatch(fetchConfigurationsAction());
 
-    // fetch configurations
-    RestfulShesha.get<IAbpWrappedGetEntityListResponse<SettingConfigurationDto>, any, IGenericGetAllPayload, any>(
-      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-      getListFetcherQueryParams(1000),
-      { base: backendUrl, headers: httpHeaders },
-    )
+    const url = buildUrl<IGenericGetAllPayload>(`${GENERIC_ENTITIES_ENDPOINT}/GetAll`, getListFetcherQueryParams(1000));
+    httpClient.get<IAjaxResponse<GetAllResponse<SettingConfigurationDto>>>(url)
       .then((response) => {
-        if (response.success) {
-          const settingConfigurations = response.result.items.map<ISettingConfiguration>((item) => {
-            return {
-              id: item.id,
-              name: item.name,
-              dataType: item.dataType,
-              label: item.label,
-              description: item.description,
-              category: item.category,
-              module: item.module?.name,
-              editorForm: item.editorFormName ? { name: item.editorFormName, module: item.editorFormModule } : null,
-              isClientSpecific: item.isClientSpecific,
-            };
-          });
+        const responseData = extractAjaxResponse(response.data);
+        const settingConfigurations = responseData.items.map<ISettingConfiguration>((item) => {
+          return {
+            id: item.id,
+            name: item.name,
+            dataType: item.dataType,
+            label: item.label,
+            description: item.description,
+            category: item.category,
+            module: item.module?.name,
+            editorForm: item.editorFormName && !isNullOrWhiteSpace(item.editorFormName) && !isNullOrWhiteSpace(item.editorFormModule)
+              ? { name: item.editorFormName, module: item.editorFormModule }
+              : undefined,
+            isClientSpecific: item.isClientSpecific,
+          } satisfies ISettingConfiguration;
+        });
 
-          dispatch(fetchConfigurationsSuccessAction({ settingConfigurations }));
-        } else dispatch(fetchConfigurationsErrorAction({ error: response.error }));
+        dispatch(fetchConfigurationsSuccessAction({ settingConfigurations }));
       })
       .catch((error) => {
-        dispatch(fetchConfigurationsErrorAction({ error }));
+        dispatch(fetchConfigurationsErrorAction({ error: makeErrorWithMessage(error, "Failed to fetch configurations") }));
       });
 
     // fetch applications
-    RestfulShesha.get<IAbpWrappedGetEntityListResponse<FrontEndApplicationDto>, any, IGenericGetAllPayload, any>(
-      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-      {
-        skipCount: 0,
-        maxResultCount: -1,
-        entityType: 'Shesha.Domain.FrontEndApp',
-        properties: 'id name appKey description',
-        quickSearch: null,
-        sorting: '',
-      },
-      { base: backendUrl, headers: httpHeaders },
-    )
+    const appsUrl = buildUrl<IGenericGetAllPayload>(`${GENERIC_ENTITIES_ENDPOINT}/GetAll`, {
+      skipCount: 0,
+      maxResultCount: -1,
+      entityType: 'Shesha.Domain.FrontEndApp',
+      properties: 'id name appKey description',
+      quickSearch: undefined,
+      sorting: '',
+    });
+    httpClient.get<IAjaxResponse<GetAllResponse<FrontEndApplicationDto>>>(appsUrl)
       .then((response) => {
-        if (response.success) {
-          const frontEndApps: FrontEndApplicationDto[] = [...response.result.items];
-          dispatch(fetchApplicationsSuccessAction({ applications: frontEndApps }));
-        } else dispatch(fetchApplicationsErrorAction({ error: response.error }));
+        const responseData = extractAjaxResponse(response.data);
+        dispatch(fetchApplicationsSuccessAction({ applications: responseData.items }));
       })
       .catch((error) => {
-        dispatch(fetchApplicationsErrorAction({ error }));
+        dispatch(fetchApplicationsErrorAction({ error: makeErrorWithMessage(error, "Failed to fetch applications") }));
       });
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     fetchConfigurations();
-  }, []);
+  });
 
-  const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication): void => {
+  const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication | undefined): void => {
     state.editorBridge?.cancel();
     dispatch(selectSettingAction({ setting, app }));
     dispatch(setEditorModeAction('edit'));
   };
 
-  const selectApplication = (app: IFrontEndApplication): void => {
+  const selectApplication = (app: IFrontEndApplication | undefined): void => {
     dispatch(selectApplicationAction({ app }));
   };
 
@@ -158,18 +155,16 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
     dispatch(setEditorModeAction('edit'));
   };
   const cancelEditSetting = (): void => {
-    state.editorBridge.cancel();
+    state.editorBridge?.cancel();
     dispatch(setSaveStatusAction('canceled'));
   };
 
   const fetchSettingValue = (settingId: ISettingIdentifier): Promise<SettingValue> => {
-    return settingsGetValue(
-      { name: settingId.name, module: settingId.module, appKey: settingId.appKey },
-      { base: backendUrl, headers: httpHeaders },
-    )
+    const url = buildUrl(`/api/services/app/Settings/GetValue`, { name: settingId.name, module: settingId.module, appKey: settingId.appKey });
+    return httpClient.get<IAjaxResponse<GetAllResponse<SettingConfigurationDto>>>(url)
       .then((response) => {
-        return isAjaxSuccessResponse(response)
-          ? response.result
+        return isAjaxSuccessResponse(response.data)
+          ? response.data.result
           : undefined;
       })
       .catch((error) => {
@@ -179,18 +174,15 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue): Promise<void> => {
     dispatch(setSaveStatusAction('saving'));
-    return settingsUpdateValue(
-      {
-        name: settingId.name,
-        module: settingId.module,
-        appKey: settingId.appKey,
-        value: value,
-      },
-      { base: backendUrl, headers: httpHeaders },
-    )
+    return httpClient.post<IAjaxResponse<void>, UpdateSettingValueInput>(`/api/services/app/Settings/UpdateValue`, {
+      name: settingId.name,
+      module: settingId.module ?? null,
+      appKey: settingId.appKey ?? null,
+      value: value,
+    })
       .then((response) => {
+        extractAjaxResponse(response.data);
         dispatch(setSaveStatusAction('success'));
-        return response;
       })
       .catch((error) => {
         dispatch(setSaveStatusAction('error'));
@@ -218,14 +210,8 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
   return <SettingsEditorContext.Provider value={contextValue}>{children}</SettingsEditorContext.Provider>;
 };
 
-function useSettingsEditor(require: boolean = true): ISettingsEditorContext | undefined {
-  const context = useContext(SettingsEditorContext);
+const useSettingsEditorOrUndefined = (): ISettingsEditorContext | undefined => useContext(SettingsEditorContext);
 
-  if (require && context === undefined) {
-    throw new Error('useSettingsEditor must be used within a SettingsEditorContext');
-  }
+const useSettingsEditor = (): ISettingsEditorContext => useSettingsEditorOrUndefined() ?? throwError("useSettingsEditor must be used within a SettingsEditorContext");
 
-  return context;
-}
-
-export { SettingsEditorProvider, useSettingsEditor };
+export { SettingsEditorProvider, useSettingsEditorOrUndefined, useSettingsEditor };

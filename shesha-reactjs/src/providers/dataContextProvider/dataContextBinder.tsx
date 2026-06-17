@@ -71,7 +71,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     apiRef.current = props.api;
 
   // use ref to get actual data value inside methods
-  const dataRef = useRef<TData>();
+  const dataRef = useRef<TData>(undefined);
   dataRef.current = data;
   useDeepCompareEffect(() => onChangeContextData(), [data]);
 

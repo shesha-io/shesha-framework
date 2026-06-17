@@ -1,3 +1,3 @@
 export interface IReadOnly {
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
 }

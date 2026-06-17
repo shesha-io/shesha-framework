@@ -236,7 +236,7 @@ export class ProcessMonitorInstance implements IProcessMonitor {
     return this._status;
   };
 
-  get errorMessage(): string {
+  get errorMessage(): string | undefined {
     return this._errorMessage;
   };
 

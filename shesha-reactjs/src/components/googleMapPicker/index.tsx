@@ -79,10 +79,10 @@ interface IGoogleMapsApi {
 function getGoogleMaps(): IGoogleMapsApi | null {
   if (typeof window === 'undefined') return null;
   const win = window as unknown as Record<string, unknown>;
-  if (typeof win.google !== 'object' || win.google === null) return null;
-  const google = win.google as Record<string, unknown>;
-  if (typeof google.maps !== 'object' || google.maps === null) return null;
-  return google.maps as IGoogleMapsApi;
+  if (typeof win['google'] !== 'object' || win['google'] === null) return null;
+  const google = win['google'] as Record<string, unknown>;
+  if (typeof google['maps'] !== 'object' || google['maps'] === null) return null;
+  return google['maps'] as IGoogleMapsApi;
 }
 
 function isGeocoder(value: unknown): value is IGeocoder {
@@ -90,7 +90,7 @@ function isGeocoder(value: unknown): value is IGeocoder {
     typeof value === 'object' &&
     value !== null &&
     'geocode' in value &&
-    typeof (value as Record<string, unknown>).geocode === 'function'
+    typeof (value as Record<string, unknown>)['geocode'] === 'function'
   );
 }
 

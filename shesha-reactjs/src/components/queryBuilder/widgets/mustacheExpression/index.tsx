@@ -1,27 +1,28 @@
 import React from 'react';
 import { BasicConfig } from '@react-awesome-query-builder/antd';
-import type { BaseWidget, TextFieldSettings, TextWidgetProps } from '@react-awesome-query-builder/antd';
+import type { TextWidget, TextFieldSettings } from '@react-awesome-query-builder/antd';
 import { ExpressionEditor, buildExpressionContextFromPaths } from '@/components/expressionEditor';
 import { buildExpressionContextFromMetadata, mergeExpressionContexts } from '@/components/expressionEditor/contextMetadata';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { useQueryBuilderState } from '@/providers/queryBuilder';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
-type ExpressionEditorWidgetType = BaseWidget & TextFieldSettings;
+type ExpressionEditorWidgetType = TextWidget & TextFieldSettings;
 
 interface ExpressionEditorWidgetControlProps {
-  value?: string;
+  value?: string | undefined;
   setValue: (value: string) => void;
-  readonly?: boolean;
+  readOnly: boolean;
 }
 
 const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps> = ({
   value,
   setValue,
-  readonly,
+  readOnly,
 }) => {
-  const queryBuilderState = useQueryBuilderState(false);
+  const { fields } = useQueryBuilderState();
   const availableConstants = useAvailableConstantsMetadata({
     standardConstants: [
       SheshaConstants.globalState,
@@ -30,10 +31,10 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
     ],
   });
   const fieldPaths = React.useMemo(
-    () => (queryBuilderState?.fields ?? [])
-      .map((field) => field?.propertyName)
-      .filter(Boolean),
-    [queryBuilderState?.fields],
+    () => (fields)
+      .map((field) => field.propertyName)
+      .filter(isNotNullOrWhiteSpace),
+    [fields],
   );
   const fieldContext = React.useMemo(
     () => buildExpressionContextFromPaths(fieldPaths),
@@ -56,7 +57,7 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
     <ExpressionEditor
       value={value ?? ''}
       onChange={setValue}
-      disabled={readonly}
+      disabled={readOnly}
       context={context}
       className="sha-query-builder-mustache-expression-input"
       controlClassName="sha-query-builder-mustache-expression-control"
@@ -70,8 +71,8 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
 export const ExpressionEditorWidget: ExpressionEditorWidgetType = {
   ...BasicConfig.widgets.text,
   valueSrc: 'value',
-  factory: (props: TextWidgetProps) => {
-    return <ExpressionEditorWidgetControl value={props.value} setValue={props.setValue} readonly={props.readonly} />;
+  factory: (props) => {
+    return <ExpressionEditorWidgetControl value={props.value ?? undefined} setValue={props.setValue} readOnly={props.readonly ?? false} />;
   },
 };
 

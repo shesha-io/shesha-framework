@@ -1,13 +1,26 @@
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx }, { style }) => {
+type StylesArgs = {
+  style: CSSProperties | undefined;
+};
+type StylesResponse = {
+  pager: string;
+  dropdown: string;
+  popup: string;
+  pagerContainer: string;
+};
+
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, { style }) => {
   const pager = cx("sha-pager", css`
         * { 
-            --ant-pagination-item-size-sm: calc(${style?.fontSize} * 1.5px) !important;
-            --ant-pagination-item-size: calc(${style?.fontSize} * 1.5px) !important;
-            font-size: ${style?.fontSize} !important;
-            color: ${style?.color} !important;
-            font-weight: ${style?.fontWeight} !important;
+            ${style?.fontSize
+              ? `--ant-pagination-item-size-sm: calc(${style.fontSize} * 1.5px) !important;
+            --ant-pagination-item-size: calc(${style.fontSize} * 1.5px) !important;
+            font-size: ${style.fontSize} !important;`
+              : ''}
+            ${style?.color ? `color: ${style.color} !important;` : ''}            
+            ${style?.fontWeight ? `font-weight: ${style?.fontWeight} !important;` : ''}            
             -ms-overflow-style: none;
             scrollbar-width: none;
             font-family: ${style?.fontFamily} !important;
@@ -22,36 +35,33 @@ export const useStyles = createStyles(({ css, cx }, { style }) => {
             position: absolute !important;
             }
             .ant-pagination-next button {
-            font-size: ${style?.fontSize} !important;
+                ${style?.fontSize ? `font-size: ${style.fontSize} !important;` : ''}                
             }
         }
     `);
 
   const dropdown = cx("sha-dropdown", css`
-        
-        // height: calc(${style?.fontSize} * 1.5);
-
         .ant-select-selection-item {
-         height: calc(${style?.fontSize} * 1.5);
-         display: flex;
-         align-items: center;
+            ${style?.fontSize ? `height: calc(${style.fontSize} * 1.5);` : ''}            
+            display: flex;
+            align-items: center;
         }
 
         * {
-            --ant-color-text : ${style?.color} !important;
-            --ant-font-size : ${style?.fontSize} !important;
-            --ant-font-family : ${style?.fontFamily} !important;
-            font-weight: ${style?.fontWeight} !important;
-            font-family: ${style?.fontFamily} !important;
+            ${style?.color ? `--ant-color-text : ${style.color} !important;` : ''}
+            ${style?.fontSize ? `--ant-font-size : ${style.fontSize} !important;` : ''}
+            ${style?.fontFamily ? `--ant-font-family : ${style.fontFamily} !important;` : ''}
+            ${style?.fontFamily ? `font-family: ${style.fontFamily} !important;` : ''}
+            ${style?.fontWeight ? `font-weight: ${style.fontWeight} !important;            ` : ''}
         }
     `);
 
   const popup = cx("sha-popup", css`
         .ant-select-item-option-content {
-            font-size: ${style?.fontSize} !important;
-            font-family: ${style?.fontFamily} !important;
-            color: ${style?.color} !important;
-            font-weight: ${style?.fontWeight} !important;
+            ${style?.fontSize ? `font-size: ${style.fontSize} !important;` : ''}
+            ${style?.fontFamily ? `font-family: ${style.fontFamily} !important;` : ''}
+            ${style?.color ? `color: ${style.color} !important;` : ''}
+            ${style?.fontWeight ? `font-weight: ${style.fontWeight} !important;` : ''}
         }
     `);
 

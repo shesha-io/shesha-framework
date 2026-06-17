@@ -19,6 +19,9 @@ import { RefListGroupItemProps } from '@/components/refListSelectorDisplay/provi
 import RefListItemGroupReducer from '@/components/refListSelectorDisplay/provider/reducers';
 import { getItemById } from '@/components/refListSelectorDisplay/provider/utils';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { isDefined } from '@/utils/nullables';
+import { throwError } from '@/utils/errors';
 
 export interface IRefListItemGroupConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -26,10 +29,8 @@ export interface IRefListItemGroupConfiguratorProviderPropsBase {
 
 export interface IRefListItemGroupConfiguratorProviderProps {
   items: RefListGroupItemProps[];
-  value?: any;
-  onChange?: (value: any) => void;
-  readOnly?: boolean;
-  referenceList?: any;
+  readOnly?: boolean | undefined;
+  referenceList?: IReferenceListIdentifier | undefined;
 }
 
 const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConfiguratorProviderProps>> = (props) => {
@@ -39,20 +40,23 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
   const [state, dispatch] = useReducer(RefListItemGroupReducer, {
     ...REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
     items: props.items,
-    readOnly: readOnly,
+    readOnly: readOnly ?? false,
   });
 
   useEffect(() => {
-    if (props?.items?.length && props.items.some((x) => x.referenceList === props.referenceList)) return;
+    if (props.items.length && props.items.some((x) => x.referenceList === props.referenceList)) return;
+    if (!isDefined(props.referenceList))
+      return;
+
     getReferenceList({
-      refListId: { module: props.referenceList?.module, name: props.referenceList?.name },
+      refListId: props.referenceList,
     }).promise.then((t) => {
-      dispatch(setItems(t?.items));
+      dispatch(setItems(t.items));
     }).catch((error) => {
       console.error('Failed to fetch reference list', error);
       throw error;
     });
-  }, [props?.referenceList]);
+  }, [getReferenceList, props.items, props.referenceList]);
 
   const selectItem = (uid: string): void => {
     dispatch(selectItemAction(uid));
@@ -62,7 +66,7 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
     if (!state.readOnly) dispatch(updateItemAction(payload));
   };
 
-  const getItem = (uid: string): RefListGroupItemProps => {
+  const getItem = (uid: string): RefListGroupItemProps | undefined => {
     return getItemById(state.items, uid);
   };
 
@@ -92,30 +96,12 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
   );
 };
 
-function useRefListItemGroupConfiguratorState(): IRefListItemGroupConfiguratorStateContext {
-  const context = useContext(RefListItemGroupConfiguratorStateContext);
+const useRefListItemGroupConfiguratorState = (): IRefListItemGroupConfiguratorStateContext => useContext(RefListItemGroupConfiguratorStateContext) ?? throwError("useRefListItemGroupConfiguratorState must be used within a RefListItemGroupConfiguratorProvider");
 
-  if (context === undefined) {
-    throw new Error('useRefListItemGroupConfiguratorState must be used within a RefListItemGroupConfiguratorProvider');
-  }
+const useRefListItemGroupConfiguratorActions = (): IRefListItemGroupConfiguratorActionsContext => useContext(RefListItemGroupConfiguratorActionsContext) ?? throwError("useRefListItemGroupConfiguratorActions must be used within a RefListItemGroupConfiguratorProvider");
 
-  return context;
-}
-
-function useRefListItemGroupConfiguratorActions(): IRefListItemGroupConfiguratorActionsContext {
-  const context = useContext(RefListItemGroupConfiguratorActionsContext);
-
-  if (context === undefined) {
-    throw new Error(
-      'useRefListItemGroupConfiguratorActions must be used within a RefListItemGroupConfiguratorProvider',
-    );
-  }
-
-  return context;
-}
-
-function useRefListItemGroupConfigurator(): IRefListItemGroupConfiguratorActionsContext & IRefListItemGroupConfiguratorStateContext {
+const useRefListItemGroupConfigurator = (): IRefListItemGroupConfiguratorActionsContext & IRefListItemGroupConfiguratorStateContext => {
   return { ...useRefListItemGroupConfiguratorState(), ...useRefListItemGroupConfiguratorActions() };
-}
+};
 
 export { RefListSelectorDisplayProvider as RefListItemGroupConfiguratorProvider, useRefListItemGroupConfigurator };

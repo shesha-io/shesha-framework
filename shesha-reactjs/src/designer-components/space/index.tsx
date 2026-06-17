@@ -31,16 +31,17 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   Factory: ({ model: passedModel }) => {
     const { marginLeft, marginRight, ...model } = passedModel;
     const props: SpaceProps = {
-      align: model.align,
-      orientation: model.direction,
+      ...(model.align ? { align: model.align } : {}),
+      ...(model.direction ? { orientation: model.direction } : {}),
+      // orientation: model.direction,
       size: model.size || model.sizeNumber,
-      wrap: model.wrap,
+      ...(model.wrap ? { wrap: model.wrap } : {}),
     };
 
     return (
       <ComponentsContainer
         containerId={model.id}
-        direction={model?.direction}
+        direction={model.direction}
         render={(components) => (
           <Space {...props} style={{ marginLeft, marginRight }}>
             {components}

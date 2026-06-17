@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import DragWrapper from './dragWrapper';
 import FormComponent from '../formComponent';
 import React, {
+  CSSProperties,
   FC,
   memo,
   useMemo,
@@ -31,14 +32,18 @@ import { dimensionUtils } from '../utils/dimensionUtils';
 import { stylingUtils } from '../utils/stylingUtils';
 import { designerConstants } from '../utils/designerConstants';
 import { jsonSafeParse } from '@/utils/object';
+import { isNonEmptyArray } from '@/utils/array';
+import { getDeviceModel } from '@/utils/form';
+import { isDefined } from '@/utils/nullables';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IComponentModelProps;
-  selectedComponentId?: string;
-  readOnly?: boolean;
+  selectedComponentId?: string | undefined;
+  readOnly?: boolean | undefined;
   settingsPanelElement?: HTMLDivElement | null;
-  hidden?: boolean;
-  componentEditMode?: EditMode;
+  hidden?: boolean | undefined;
+  componentEditMode?: EditMode | undefined;
 }
 const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({
   componentModel,
@@ -52,7 +57,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const formItemRef = useRef<HTMLDivElement>(null);
 
   // Memoize component lookup to prevent unnecessary re-renders
-  const component = useMemo(() => getToolboxComponent(componentModel?.type), [getToolboxComponent, componentModel?.type]);
+  const component = useMemo(() => getToolboxComponent(componentModel.type), [getToolboxComponent, componentModel.type]);
   // Extract primitive values for stable dependencies - avoid object recreation triggering re-renders
   const preserveDimensionsInDesigner = useMemo(() => component?.preserveDimensionsInDesigner, [component]);
 
@@ -62,22 +67,24 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
    * (e.g., attachmentsEditor with thumbnail dimensions at root and container dimensions in container property).
    */
   const fullComponentModel = useMemo(() => {
-    const deviceModel = componentModel?.[activeDevice];
+    // const deviceModel = componentModel[activeDevice];
+    const deviceModel = getDeviceModel(componentModel, activeDevice);
 
     // Determine if component has separate container-level styling
     // This is true when both root-level and container-level dimensions exist
-    const hasRootDimensions = !!(deviceModel?.dimensions || componentModel?.dimensions);
-    const hasContainerDimensions = !!(deviceModel?.container?.dimensions || componentModel?.container?.dimensions);
+    const hasRootDimensions = isDefined(deviceModel?.dimensions || componentModel.dimensions);
+    const hasContainerDimensions = isDefined(deviceModel?.container?.dimensions || componentModel.container?.dimensions);
     const hasSeparateContainerStyles = hasRootDimensions && hasContainerDimensions;
+
 
     // For backward compatibility: spread container props to root UNLESS component has explicit separate styles
     const containerPropsToSpread = hasSeparateContainerStyles
       ? {}
-      : { ...componentModel?.container, ...deviceModel?.container };
+      : { ...componentModel.container, ...deviceModel?.container };
 
     // Always merge container objects to preserve container-level configuration
     const mergedContainer = {
-      ...componentModel?.container,
+      ...componentModel.container,
       ...deviceModel?.container,
     };
 
@@ -94,7 +101,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
    * When container has its own dimensions, those take precedence for wrapper sizing.
    */
   const styleModelForWrapper = useMemo(() => {
-    const hasContainerDimensions = !!fullComponentModel.container?.dimensions;
+    const hasContainerDimensions = !!fullComponentModel.container.dimensions;
     return hasContainerDimensions
       ? { ...fullComponentModel, ...fullComponentModel.container }
       : fullComponentModel;
@@ -105,12 +112,13 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Custom style margins take precedence over stylingBox margins
   const originalJsStyle = useMemo(() => {
     return componentModel.type === 'container'
-      ? getStyle(fullComponentModel?.wrapperStyle)
+      ? getStyle(fullComponentModel.wrapperStyle)
       : getStyle(fullComponentModel.style);
   }, [fullComponentModel, componentModel.type]);
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
-  const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
+
+  // componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
 
   const hiddenFx = isPropertySettings(componentModel.hidden);
   const componentEditModeFx = isPropertySettings(componentModel.editMode);
@@ -124,7 +132,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const settingsEditor = useMemo(() => {
     const renderRequired = isSelected && settingsPanelElement;
 
-    if (!renderRequired)
+    if (!renderRequired || !component)
       return null;
 
     const result = createPortal((
@@ -135,14 +143,14 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       >
         <ComponentProperties
           componentModel={componentModel}
-          readOnly={readOnly}
+          readOnly={readOnly ?? false}
           toolboxComponent={component}
         />
       </div>
     ), settingsPanelElement, "propertiesPanel");
 
     return result;
-  }, [isSelected, settingsPanelElement, readOnly, component]);
+  }, [isSelected, settingsPanelElement, componentModel, readOnly, component]);
 
   // Extract margins from ORIGINAL component styling (both stylingBox and custom styles)
   // Custom style margins take precedence over stylingBox margins
@@ -172,11 +180,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Create the model for rendering - components receive dimensions based on their config
   // and no margins (since wrapper handles margins directly)
   // Note: fullComponentModel already has margins stripped from style property
-  const renderComponentModel = useMemo(() => {
+  const renderComponentModel = useMemo<IConfigurableFormComponent>(() => {
     const deviceDimensions = dimensionUtils.getDeviceDimensions();
     // In designer mode, component only gets padding (margins go to wrapper)
     const stylingBoxWithPaddingOnly = stylingUtils.createPaddingOnlyStylingBox(fullComponentModel.stylingBox);
-    const stylingBoxWithPaddingOnlyParsed = jsonSafeParse<Record<string, unknown>>(stylingBoxWithPaddingOnly, {});
+    const stylingBoxWithPaddingOnlyParsed = jsonSafeParse<CSSProperties>(stylingBoxWithPaddingOnly, {}) ?? {};
 
     // Determine preservation mode
     const preservingAll = preserveDimensionsInDesigner === true;
@@ -203,13 +211,14 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
     // Helper to get component dimensions (what the inner component receives)
     // Components always fill 100% of their wrapper in designer mode (wrapper handles sizing)
-    const getComponentDimensions = (originalDims?: typeof fullComponentModel.dimensions): React.CSSProperties => {
+    const getComponentDimensions = (originalDims?: IDimensionsValue): IDimensionsValue | undefined => {
       // If all dimensions are preserved, merge with device dimensions
       if (preservingAll) return { ...deviceDimensions, ...originalDims };
 
       // If component has container dimensions, preserve original thumbnail dimensions for the component
       // The wrapper will use container dimensions instead
-      if (fullComponentModel.container?.dimensions) return originalDims ?? deviceDimensions;
+      if (fullComponentModel.container.dimensions)
+        return originalDims ?? deviceDimensions;
 
       // For partial preservation, use the dimensionUtils to handle the logic
       if (preservingSome) {
@@ -224,6 +233,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       return deviceDimensions;
     };
 
+    const getComponentDimensionsCss = (originalDims?: IDimensionsValue): CSSProperties => {
+      const dims = getComponentDimensions(originalDims);
+      return dimensionUtils.dimensions2CssProperties(dims ?? {});
+    };
+
     // Set dimensions for device-specific configs
     // fullComponentModel already has margins stripped from style properties
     return {
@@ -232,16 +246,23 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       stylingBox: stylingBoxWithPaddingOnly,
 
       allStyles: {
+        borderStyles: {},
+        fontStyles: {},
+        backgroundStyles: {},
+        shadowStyles: {},
+        overflowStyles: {},
+        jsStyle: {},
+        appearanceStyle: {},
+        margins: {},
         ...fullComponentModel.allStyles,
-        fullStyle: { ...fullComponentModel.allStyles?.fullStyle, stylingBoxAsCSS: stylingBoxWithPaddingOnlyParsed },
+        fullStyle: { ...fullComponentModel.allStyles?.fullStyle },
         ...getStyle(fullComponentModel.style),
         stylingBoxAsCSS: stylingBoxWithPaddingOnlyParsed,
         // Component dimensions: components with preserveDimensionsInDesigner get original dims, others fill wrapper
         // Use dimensionsStyles (includes min/max) instead of fullComponentModel.dimensions (only width/height)
-        dimensionsStyles: getComponentDimensions(dimensionsStyles),
-        stylingBox: stylingBoxWithPaddingOnly,
+        dimensionsStyles: getComponentDimensionsCss(dimensionsStyles),
       },
-    };
+    } satisfies IConfigurableFormComponent;
   }, [fullComponentModel, component, preserveDimensionsInDesigner, dimensionsStyles]);
 
   // Create wrapper style - owns dimensions and margins
@@ -254,7 +275,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       style={rootContainerStyle}
       className={classNames(styles.shaComponent, {
         "selected": isSelected,
-        'has-config-errors': invalidConfiguration,
+        'has-config-errors': isNonEmptyArray(componentModel.settingsValidationErrors),
       })}
       ref={formItemRef}
     >
@@ -284,7 +305,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         </Show>
       </span>
 
-      {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
+      {isNonEmptyArray(componentModel.settingsValidationErrors) && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
 
       <div style={designerConstants.WRAPPER_FILL_STYLE}>
         <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
@@ -318,7 +339,7 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
   const componentMarkupModel = ShaForm.useComponentModel(id);
   const componentModel = model?.isDynamic ? model : componentMarkupModel;
 
-  const ComponentRenderer = !isDrawing || componentModel?.isDynamic
+  const ComponentRenderer = !isDrawing || componentModel.isDynamic
     ? FormComponent
     : ConfigurableFormComponentDesigner;
 

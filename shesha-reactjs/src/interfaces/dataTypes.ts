@@ -69,7 +69,7 @@ export const DataTypes = {
   any: "any",
   // Do not remove this line because it used as test JS script in settings component
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  allowedComponents: (dataType, dataFormat) => { // dont't change to this (dataType: string, dataFormat: string): string[] => {
+  allowedComponents: (dataType: string, dataFormat: string) => { // dont't change to this (dataType: string, dataFormat: string): string[] => {
     switch (dataType) {
       case DataTypes.string:
         if (dataFormat === StringFormats.multiline || dataFormat === StringFormats.html || dataFormat === StringFormats.javascript || dataFormat === StringFormats.json)
@@ -105,6 +105,7 @@ export const DataTypes = {
           case ArrayFormats.multivalueReferenceList:
             return ["dropdown"];
         }
+        return [];
       default:
         return [];
     }

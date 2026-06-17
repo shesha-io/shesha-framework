@@ -11,10 +11,10 @@ import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IDictionary, IEditorAdapter, PropertyInclusionPredicate } from '@/interfaces';
 import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
 
-export const updateModelExcludeFiltered = <T extends object = object>(model: T, updatedModel: object, filter: PropertyInclusionPredicate): T => {
+export const updateModelExcludeFiltered = <T extends object = object>(model: T, updatedModel: T, filter: PropertyInclusionPredicate): T => {
   Object.keys(updatedModel).forEach((key) => {
     if (!filter(key)) {
-      model[key] = updatedModel[key];
+      model[key as keyof T] = updatedModel[key as keyof T];
     }
   });
   return model;

@@ -8,7 +8,7 @@ import {
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
   useDataTableStore,
-  useMetadata,
+  useMetadataOrUndefined,
   useShaFormInstanceOrUndefined,
 } from '@/providers';
 import { IColumnWidth, ITableRowData } from '@/providers/dataTable/interfaces';
@@ -311,7 +311,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const dblClickHandler = onDblClick;
 
-  const entityMetadata = useMetadata(false);
+  const entityMetadata = useMetadataOrUndefined();
   const metadata = entityMetadata?.metadata;
 
   const handleRowDoubleClick = useMemo(() => {
@@ -386,17 +386,17 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const toolboxComponents = useFormDesignerComponents();
   const shaForm = useShaFormInstanceOrUndefined();
 
-  const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
+  const onNewRowInitialize = useMemo<RowDataInitializer<ITableRowData>>(() => {
     const funcBody = props.onNewRowInitialize;
-    const result: RowDataInitializer = !isNullOrWhiteSpace(funcBody)
+    const result: RowDataInitializer<ITableRowData> = !isNullOrWhiteSpace(funcBody)
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
         // return onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
-        const result = executeScriptSync(funcBody, appContext) as object;
+        const result = executeScriptSync(funcBody, appContext) as ITableRowData;
         return Promise.resolve(result);
       }
       : () => {
-        return Promise.resolve({});
+        return Promise.resolve({} as ITableRowData);
       };
 
     return result;
@@ -494,7 +494,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           cellStyleAccessor: cellStyleAccessor,
         };
 
-        return removeUndefinedProperties(column);
+        return removeUndefinedProperties(column) as Column<ITableRowData>;
       });
     return localPreparedColumns;
   }, [columns, props.canDeleteInline, props.canEditInline, props.canAddInline, inlineEditMode, crudOptions.enabled, shaForm, sortMode]);
@@ -540,7 +540,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     });
   }, [store, performOnRowSave, customUpdateUrl, setRowData, performOnRowSaveSuccess]);
 
-  const creater = useMemo(() => (rowData: ITableRowData): Promise<void> => {
+  const creater = useMemo(() => (rowData: ITableRowData): Promise<ITableRowData> => {
     const repository = store.getRepository();
 
     return performOnRowSave(rowData).then((preparedData) => {
@@ -550,9 +550,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           : undefined;
 
       // use preparedData ?? rowData to handle the case when onRowSave returns undefined
-      return repository.performCreate(0, preparedData ?? rowData, options).then(() => {
+      const finalData = preparedData ?? rowData;
+      return repository.performCreate(0, finalData, options).then(() => {
         void store.refreshTable();
-        performOnRowSaveSuccess(preparedData ?? rowData);
+        performOnRowSaveSuccess(finalData);
+        return finalData;
       });
     });
   }, [store, performOnRowSave, customCreateUrl, performOnRowSaveSuccess]);

@@ -1,5 +1,5 @@
 import { Path } from "@/utils/dotnotation";
-import { deepCopyViaJson, deepMergeValues, getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
+import { deepCopyViaJson, deepMergeValues, getStringPropertyOrUndefined, getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { isEqual } from "lodash";
 import { ReactElement } from "react";
 
@@ -11,11 +11,11 @@ export interface IDefaultModelValueInfo {
 }
 
 export interface IDefaultModelInstance<T extends object = object> {
-  subscribePropertyUpdate(propertyName: string, callback: (dfi: DefaultModelInstance<T>) => void): () => void;
-  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<T>) => void, data?: Record<string, any>): () => void;
+  subscribePropertyUpdate(propertyName: string, callback: (dfi: IDefaultModelInstance<T>) => void): () => void;
+  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: IDefaultModelInstance<T>) => void, data?: Record<string, unknown>): () => void;
   notifySubscribers(type: DefaultModelSubscriptionType): void;
 
-  setModel: (model: T) => void;
+  setModel: (model: T | undefined) => void;
   setDefaultModel: (name: string, model: T) => void;
   getMergedModel: () => T;
   getModel: () => T;
@@ -27,8 +27,8 @@ export interface IDefaultModelInstance<T extends object = object> {
 }
 
 export type DefaultModelSubscription<Values extends object = object> = {
-  callback: (dfi: DefaultModelInstance<Values>) => void;
-  data?: Record<string, any>;
+  callback: (dfi: IDefaultModelInstance<Values>) => void;
+  data?: Record<string, unknown> | undefined;
 };
 export type DefaultModelSubscriptionType = 'property-modified';
 
@@ -36,17 +36,21 @@ interface IPropertyUpdateSubscriptionData {
   propertyName: string;
   value: unknown;
   valueInfo: IDefaultModelValueInfo;
+  [key: string]: unknown;
 }
 
-const getDataForPropertyUpdateSubscription: (dfi: DefaultModelInstance, propertyName: string) => IPropertyUpdateSubscriptionData = (dfi, propertyName) => {
+const getDataForPropertyUpdateSubscription = <T extends object = object>(dfi: IDefaultModelInstance<T>, propertyName: string): IPropertyUpdateSubscriptionData => {
   const value = getValueByPropertyName(dfi.getMergedModel(), propertyName as Path<object>);
   const valueInfo = dfi.getValueInfo(propertyName);
   return deepCopyViaJson({ propertyName, value, valueInfo });
 };
 
-const defaultModelSubscriptionFuncs = new Map<DefaultModelSubscriptionType, (subscr: DefaultModelSubscription, dfi: DefaultModelInstance) => Record<string, any>>([
+const defaultModelSubscriptionFuncs = new Map<DefaultModelSubscriptionType, (subscr: DefaultModelSubscription, dfi: IDefaultModelInstance) => Record<string, unknown> | undefined>([
   ['property-modified', (subscr, dfi) => {
-    const data = getDataForPropertyUpdateSubscription(dfi, subscr.data?.propertyName);
+    const propertyName = subscr.data
+      ? getStringPropertyOrUndefined(subscr.data, 'propertyName') ?? ""
+      : "";
+    const data = getDataForPropertyUpdateSubscription(dfi, propertyName);
     if (isEqual(subscr.data, data)) return subscr.data;
     subscr.callback(dfi);
     return data;
@@ -71,11 +75,12 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     this.subscriptions = new Map<DefaultModelSubscriptionType, Set<DefaultModelSubscription<T>>>();
   }
 
-  subscribePropertyUpdate(propertyName: string, callback: (dfi: DefaultModelInstance<T>) => void): () => void {
-    return this.subscribe('property-modified', callback, getDataForPropertyUpdateSubscription(this, propertyName));
+  subscribePropertyUpdate(propertyName: string, callback: (dfi: IDefaultModelInstance<T>) => void): () => void {
+    const data = getDataForPropertyUpdateSubscription(this, propertyName);
+    return this.subscribe('property-modified', callback, data);
   }
 
-  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<T>) => void, data?: Record<string, any>): () => void {
+  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: IDefaultModelInstance<T>) => void, data?: Record<string, unknown>): () => void {
     const current = this.subscriptions.get(type) ?? new Set<DefaultModelSubscription<T>>();
     current.add({ callback, data });
     this.subscriptions.set(type, current);
@@ -96,8 +101,9 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
   notifySubscribers(type: DefaultModelSubscriptionType): void {
     const func = defaultModelSubscriptionFuncs.get(type);
     const subscriptions = this.subscriptions.get(type);
+    // TODO: Alex, please check types and review defaultModelSubscriptionFuncs
     if (func && subscriptions)
-      subscriptions.forEach((subscription) => subscription.data = func(subscription, this));
+      subscriptions.forEach((subscription) => subscription.data = func(subscription as unknown as DefaultModelSubscription, this as unknown as IDefaultModelInstance));
   }
 
   #updateMergedModel = (): void => {
@@ -124,7 +130,7 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     this.defaultModel = model;
   };
 
-  setModel = (model: T): void => {
+  setModel = (model: T | undefined): void => {
     if (model === undefined) return;
     this.model = deepCopyViaJson(model ?? {} as T);
     this.#updateMergedModel();

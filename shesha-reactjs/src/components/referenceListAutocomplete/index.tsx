@@ -1,5 +1,5 @@
 import { AutoComplete, Empty, Spin, Typography } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useRef, useState, FC } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState, FC, ComponentProps } from 'react';
 
 import { useGet } from '@/hooks';
 import { useDebouncedCallback } from 'use-debounce';
@@ -8,23 +8,27 @@ import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/inter
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import HelpTextPopover from '@/components/helpTextPopover';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
+import { IErrorInfo } from '@/interfaces';
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined } from '@/utils/nullables';
 
 export interface IReferenceListAutocompleteRuntimeProps {
-  value?: IReferenceListIdentifier;
-  onChange?: (value?: IReferenceListIdentifier) => void;
-  readOnly?: boolean;
-  maxResultCount?: number;
-  size?: SizeType;
+  value?: IReferenceListIdentifier | null | undefined;
+  onChange?: ((value: IReferenceListIdentifier | null) => void) | undefined;
+  readOnly?: boolean | undefined;
+  maxResultCount?: number | undefined;
+  size?: SizeType | undefined;
 }
 
 interface IOption {
   label: string | ReactNode;
   value: string;
-  data: IReferenceListIdentifier;
-  options?: IOption[];
+  data: IReferenceListIdentifier | null;
+  options?: IOption[] | undefined;
 }
 
-const baseItemFilter = [
+const baseItemFilter: JsonLogicFilter[] = [
 ];
 
 const moduleNotEmpty = {
@@ -73,18 +77,18 @@ const getFilter = (term: string): string => {
 };
 const REFERENCE_LIST_ENTITY_TYPE = 'Shesha.Framework.ReferenceList';
 const REFERENCE_LIST_PROPERTIES = 'id name module { id name } label description';
-const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
+const getListFetcherQueryParams = (term: string, maxResultCount: number | undefined): IGenericGetAllPayload => {
   return {
     skipCount: 0,
     maxResultCount: maxResultCount ?? 10,
     entityType: REFERENCE_LIST_ENTITY_TYPE,
     properties: REFERENCE_LIST_PROPERTIES,
-    quickSearch: null,
+    quickSearch: undefined,
     filter: getFilter(term),
     sorting: 'module.name, name',
   };
 };
-const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGenericGetAllPayload => {
+const getSelectedValueQueryParams = (value: IReferenceListIdentifier | null): IGenericGetAllPayload | null => {
   if (!value)
     return null;
 
@@ -92,20 +96,18 @@ const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGeneric
     ...baseItemFilter,
     { '==': [{ var: 'name' }, value.name] },
   ];
-  if (value.module !== undefined)
+  if (isDefined(value.module))
     filters.push({ '==': [{ var: 'module.name' }, value.module] });
 
   const expression = { and: filters };
 
-  return expression
-    ? {
-      skipCount: 0,
-      maxResultCount: 1000,
-      entityType: REFERENCE_LIST_ENTITY_TYPE,
-      properties: REFERENCE_LIST_PROPERTIES,
-      filter: JSON.stringify(expression),
-    }
-    : null;
+  return {
+    skipCount: 0,
+    maxResultCount: 1000,
+    entityType: REFERENCE_LIST_ENTITY_TYPE,
+    properties: REFERENCE_LIST_PROPERTIES,
+    filter: JSON.stringify(expression),
+  };
 };
 
 interface IResponseItem {
@@ -114,15 +116,15 @@ interface IResponseItem {
   module?: {
     id: string;
     name: string;
-  };
-  label?: string;
-  description?: string;
+  } | undefined;
+  label?: string | undefined;
+  description?: string | undefined;
 };
 
 interface IConfigurationItemProps {
   name: string;
-  label?: string;
-  description?: string;
+  label?: string | undefined;
+  description?: string | undefined;
 }
 
 const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, label }) => {
@@ -141,9 +143,9 @@ const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, label })
   );
 };
 
-const getDisplayText = (item: IResponseItem): string => {
+const getDisplayText = (item: IResponseItem | undefined): string => {
   if (!item)
-    return null;
+    return "";
   const fullName = item.name;
 
   return item.module
@@ -151,22 +153,24 @@ const getDisplayText = (item: IResponseItem): string => {
     : fullName;
 };
 
+type OnSelectHandler = ComponentProps<typeof AutoComplete>["onSelect"];
+
 export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProps> = (props) => {
-  const selectedValue = useRef(null);
-  const [autocompleteText, setAutocompleteText] = useState<string>(null);
+  const selectedValue = useRef<IReferenceListIdentifier | null>(null);
+  const [autocompleteText, setAutocompleteText] = useState<string>("");
   const {
     maxResultCount = 10,
   } = props;
 
-  const listFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
+  const listFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, IErrorInfo, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: true,
-      queryParams: getListFetcherQueryParams(null, maxResultCount),
+      queryParams: getListFetcherQueryParams("", maxResultCount),
     },
   );
 
-  const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
+  const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, IErrorInfo, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: true,
@@ -174,19 +178,19 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
   );
   useEffect(() => {
     if (valueFetcher.data?.success && valueFetcher.data.result) {
-      const items = valueFetcher.data.result?.items ?? [];
-      if (items.length === 1) {
+      const items = valueFetcher.data.result.items ?? [];
+      if (isNonEmptyArray(items) && items.length === 1) {
         const displayText = getDisplayText(items[0]);
         setAutocompleteText(displayText);
       } else
         console.error(items.length > 1 ? "Found more than one form with specified name" : "Reference list not found");
     }
-  }, [valueFetcher.data?.result]);
+  }, [valueFetcher.data?.result, valueFetcher.data?.success]);
 
   const listItems = listFetcher.data?.result?.items;
   const valueItems = valueFetcher.data?.result?.items;
 
-  const fetchedItems = useMemo<IResponseItem[]>(() => {
+  const fetchedItems = useMemo<IResponseItem[] | undefined>(() => {
     return listItems
       ? listItems
       : valueItems;
@@ -194,7 +198,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
 
   useEffect(() => {
     // fetch data if required
-    const valueFetchParams = getSelectedValueQueryParams(props.value);
+    const valueFetchParams = getSelectedValueQueryParams(props.value ?? null);
     if (valueFetchParams) {
       const selectedFromList = selectedValue.current && selectedValue.current === props.value;
       if (!selectedFromList)
@@ -203,7 +207,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
           throw error;
         });
     }
-  }, [props.value]);
+  }, [props.value, valueFetcher]);
 
   const options = useMemo<IOption[]>(() => {
     const result: IOption[] = [];
@@ -222,7 +226,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
           value: getDisplayText(item),
           data: {
             name: item.name,
-            module: item.module?.name,
+            module: item.module?.name ?? null,
           },
         };
         let group = result.find((g) => g.value === moduleDto.id);
@@ -234,8 +238,10 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
             options: [opt],
           };
           result.push(group);
-        } else
+        } else {
+          group.options = group.options ?? [];
           group.options.push(opt);
+        }
       });
     }
 
@@ -255,12 +261,12 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
   );
 
 
-  const onSearch = (term): void => {
+  const onSearch = (term: string): void => {
     debouncedFetchItems(term);
   };
 
-  const onSelect = (_value, option): void => {
-    const listId = (option as IOption)?.data;
+  const onSelect: OnSelectHandler = (_value, option) => {
+    const listId = (option as IOption).data;
     selectedValue.current = listId;
     if (props.onChange) {
       props.onChange(listId);
@@ -288,8 +294,8 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
       onSelect={onSelect}
       onClear={onClear}
       placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
-      disabled={valueFetcher.loading || props.readOnly}
-      size={props?.size}
+      disabled={valueFetcher.loading || props.readOnly || false}
+      size={props.size}
       value={autocompleteText}
       onChange={setAutocompleteText}
     >

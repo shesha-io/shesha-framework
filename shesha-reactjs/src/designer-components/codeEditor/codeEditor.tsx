@@ -19,20 +19,20 @@ import classNames from 'classnames';
 
 export const CodeEditor: FC<ICodeEditorProps> = ({
   mode = 'inline',
-  value,
+  value = null,
   readOnly = false,
   language = 'typescript',
   environment,
   ...props
 }) => {
-  const [internalValue, setInternalValue] = useState<string>(value); // stores value for the `dialog` mode
+  const [internalValue, setInternalValue] = useState<string | null>(value); // stores value for the `dialog` mode
   const [showDialog, setShowDialog] = useState(false);
   const { modal } = App.useApp();
 
   const src = useSourcesFolderOrUndefined();
   const { styles } = useStyles();
 
-  const onChange = (_value): void => {
+  const onChange = (_value: string | null): void => {
     switch (mode) {
       case 'inline': {
         if (props.onChange) props.onChange(_value);
@@ -161,8 +161,8 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
               ),
             ]}
           >
-            <Show when={Boolean(props?.description)}>
-              <Alert title={props?.description} />
+            <Show when={Boolean(props.description)}>
+              <Alert title={props.description} />
               <br />
             </Show>
 

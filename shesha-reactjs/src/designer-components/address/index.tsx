@@ -11,8 +11,6 @@ import { getSettings } from './formSettings';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
-import { getEventHandlers } from '@/components/formDesigner/components/utils';
-import { useAvailableConstantsData } from '@/providers/form/utils';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -22,20 +20,29 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   icon: <HomeOutlined />,
   preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-    const customEvents = getEventHandlers(model, allData);
-
     const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle;
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
+      <ConfigurableFormItem<string> model={model}>
+        {(value, onChange, _, ctx) => {
           return model.readOnly
             ? <ReadOnlyDisplayFormItem value={value} style={finalStyle} />
-            : <AutoCompletePlacesControl {...model} value={value} onChange={onChange} onFocusCustom={customEvents.onFocus} />;
+            : (
+              <AutoCompletePlacesControl
+                {...model}
+                value={value ?? ""}
+                onChange={(newValue) => {
+                  ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                  onChange(newValue);
+                }}
+                onFocus={(event) => ctx?.handleEvent(event, value, model.onFocusCustom)}
+                onSelect={(event) => ctx?.handleEvent(event, value, model.onSelectCustom)}
+                style={model.allStyles?.fullStyle}
+              />
+            );
         }}
       </ConfigurableFormItem>
     );

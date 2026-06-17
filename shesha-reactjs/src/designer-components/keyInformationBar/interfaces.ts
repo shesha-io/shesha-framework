@@ -5,28 +5,28 @@ import { AlignItems } from '../container/interfaces';
 export interface KeyInfomationBarItemProps {
   id: string;
   width: number;
-  flexDirection?: 'row' | 'column';
-  textAlign?: 'center' | 'inherit' | 'start' | 'end';
+  flexDirection?: 'row' | 'column' | undefined;
+  textAlign?: 'center' | 'inherit' | 'start' | 'end' | undefined;
   components: IConfigurableFormComponent[];
-  padding?: string;
+  padding?: string | undefined;
 }
 
 export interface IKeyInformationBarComponentProps extends IConfigurableFormComponent, IInputStyles {
-  width?: string;
-  height?: string;
-  dividerHeight?: string;
-  dividerWidth?: string;
-  dividerMargin?: number;
-  dividerColor?: string;
-  dividerThickness?: string;
-  gap?: number;
-  alignItems?: AlignItems;
-  orientation?: 'horizontal' | 'vertical';
-  columns?: KeyInfomationBarItemProps[];
-  readOnly?: boolean;
-  style?: string;
-  stylingBox?: any;
-  backgroundColor?: string;
+  width?: string | undefined;
+  height?: string | undefined;
+  dividerHeight?: string | undefined;
+  dividerWidth?: string | undefined;
+  dividerMargin?: number | undefined;
+  dividerColor?: string | undefined;
+  dividerThickness?: string | undefined;
+  gap?: number | undefined;
+  alignItems?: AlignItems | undefined;
+  orientation?: 'horizontal' | 'vertical' | undefined;
+  columns?: KeyInfomationBarItemProps[] | undefined;
+  readOnly?: boolean | undefined;
+  style?: string | undefined;
+  stylingBox?: string | undefined;
+  backgroundColor?: string | undefined;
 }
 
 export type KeyInformationBarComponentDefinition = ComponentDefinition<"KeyInformationBar", IKeyInformationBarComponentProps>;

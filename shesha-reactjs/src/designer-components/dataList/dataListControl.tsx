@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import { DataList } from '@/components/dataList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
@@ -14,9 +14,11 @@ import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/inte
 import { useComponentValidation } from '@/providers/validationErrors';
 import { parseFetchError } from '@/designer-components/dataTable/utils';
 import { DataListPlaceholder } from './dataListPlaceholder';
-import { throwError } from '@/utils/errors';
+import { isDefined } from '@/utils/nullables';
+import { ActionRefType } from '@/components/dataList/models';
+import { ITableRowData } from '@/providers/dataTable/interfaces';
 
-const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
+const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInstance"> = (props) => {
   const {
     dataSourceInstance: dataSource,
     onListItemSave,
@@ -56,19 +58,9 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
     selectedRow,
     selectedRows,
     setSelectedRow,
+    clearSelectedRow,
     setMultiSelectedRow,
-  } = dataSource || {
-    tableData: [],
-    isFetchingTableData: false,
-    selectedIds: [],
-    changeSelectedIds: () => { /* noop */ },
-    getRepository: () => throwError('Repository is not specified'),
-    modelType: null,
-    grouping: null,
-    groupingColumns: [],
-    setRowData: () => { /* noop */ },
-    fetchTableDataError: null,
-  };
+  } = dataSource;
   const { styles } = useStyles();
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
@@ -104,22 +96,6 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
         errors.push(...parseFetchError(fetchTableDataError));
       }
 
-      // Check for missing context error
-      if (!dataSource) {
-        errors.push({
-          propertyName: 'Missing Required Parent Component',
-          error: 'CONFIGURATION ERROR: DataList MUST be placed inside a Data Context component.\nThis component cannot function without a data source.',
-        });
-      }
-
-      // Check for missing repository error (only if not already showing missing context error)
-      if (dataSource && !repository) {
-        errors.push({
-          propertyName: 'Missing Data Source',
-          error: 'This Data List has no data source configured.\nSelecting a Data Source tells the Data List where to fetch data from.',
-        });
-      }
-
       // Return validation result if there are errors
       if (errors.length > 0) {
         return {
@@ -134,17 +110,8 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
     [fetchTableDataError, dataSource, repository],
   );
 
-  const onSelectRow = useCallback((index: number, row: any) => {
-    if (row) {
-      setSelectedRow(index, row);
-    } else {
-      // Handle deselection - clear the selection
-      setSelectedRow(null, null);
-    }
-  }, [setSelectedRow]);
-
   // Event handlers for the new events
-  const handleListItemClick = useCallback((index: number, item: any) => {
+  const handleListItemClick = (index: number, item: ITableRowData): void => {
     if (onListItemClick) {
       const evaluationContext = { ...appContext, data: item, index, selectedItem: item, selectedIndex: index };
       executeAction({
@@ -152,9 +119,9 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       }).catch((error) => console.error('Error executing item click action:', error));
     }
-  }, [onListItemClick, appContext.contexts.lastUpdate, executeAction]);
+  };
 
-  const handleListItemHover = useCallback((index: number, item: any) => {
+  const handleListItemHover = (index: number, item: ITableRowData): void => {
     if (onListItemHover) {
       const evaluationContext = { ...appContext, data: item, index, selectedItem: item, selectedIndex: index };
       executeAction({
@@ -162,9 +129,9 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       }).catch((error) => console.error('Error executing item hover action:', error));
     }
-  }, [onListItemHover, appContext.contexts.lastUpdate, executeAction]);
+  };
 
-  const handleListItemSelect = useCallback((index: number, item: any) => {
+  const handleListItemSelect = (index: number, item: ITableRowData): void => {
     if (onListItemSelect && props.selectionMode !== 'none') {
       const evaluationContext = { ...appContext, data: item, index, selectedItem: item, selectedIndex: index };
       executeAction({
@@ -172,31 +139,31 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       }).catch((error) => console.error('Error executing item select action:', error));
     }
-  }, [onListItemSelect, props.selectionMode, appContext.contexts.lastUpdate, executeAction]);
+  };
 
-  const handleSelectionChange = useCallback((selectedItems: any[], selectedIndices: number[]) => {
+  const handleSelectionChange = (selectedItems: ITableRowData[], selectedIndices: number[]): void => {
     if (onSelectionChange && props.selectionMode !== 'none') {
       const evaluationContext = {
         ...appContext,
         selectedItems,
         selectedIndices,
         selectedIds: selectedItems
-          .map((item) => item?.id)
-          .filter((id) => id !== undefined && id !== null),
+          .map((item) => item.id)
+          .filter(isDefined),
       };
       executeAction({
         actionConfiguration: onSelectionChange,
         argumentsEvaluationContext: evaluationContext,
       }).catch((error) => console.error('Error executing selection change action:', error));
     }
-  }, [onSelectionChange, props.selectionMode, appContext.contexts.lastUpdate, executeAction]);
+  };
 
-  const dataListRef = useRef<any>({});
 
+  const dataListRef = useRef<ActionRefType>(undefined);
   useConfigurableAction(
     {
       name: 'Add new item (if allowed)',
-      owner: props.componentName,
+      owner: props.componentName ?? "Data List",
       ownerUid: props.id,
       hasArguments: false,
       executer: () => {
@@ -208,10 +175,10 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
     [],
   );
 
-  const data = useDeepCompareMemo(() => {
+  const data = useDeepCompareMemo<ITableRowData[]>(() => {
     if (isDesignMode) {
       // In designer mode, show actual data if available, otherwise show sample data
-      if (tableData && tableData.length > 0) {
+      if (tableData.length > 0) {
         return tableData;
       }
 
@@ -232,27 +199,23 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
   }, [isDesignMode, tableData, props.orientation]);
 
   // http, moment, setFormData
-  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
-    if (!onRowDeleteSuccessAction)
-      return () => {
-        /* nop*/
-      };
-    return (data) => {
+  const performOnRowDeleteSuccessAction: OnSaveSuccessHandler = !onRowDeleteSuccessAction
+    ? () => {
+      /* nop*/
+    }
+    : (data) => {
       const evaluationContext = { ...appContext, data };
       executeAction({
         actionConfiguration: onRowDeleteSuccessAction,
         argumentsEvaluationContext: evaluationContext,
       }).catch((error) => console.error('Error executing item delete success action:', error));
     };
-  }, [onRowDeleteSuccessAction, appContext.contexts.lastUpdate, executeAction]);
 
-  const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
-    if (!onListItemSaveSuccessAction)
-      return () => {
-        // nop
-      };
-
-    return (data) => {
+  const performOnRowSaveSuccess: OnSaveSuccessHandler = !onListItemSaveSuccessAction
+    ? () => {
+      // nop
+    }
+    : (data) => {
       const evaluationContext = { ...appContext, data };
       // execute the action
       executeAction({
@@ -260,21 +223,17 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       }).catch((error) => console.error('Error executing item save success action:', error));
     };
-  }, [onListItemSaveSuccessAction]);
 
-  const performOnRowSave = useMemo<OnSaveHandler>(() => {
-    if (!onListItemSave) return (data) => Promise.resolve(data);
-
-    return (data) => {
+  const performOnRowSave: OnSaveHandler = !onListItemSave
+    ? (data) => Promise.resolve(data)
+    : (data) => {
       return executeScript(onListItemSave, { ...appContext, data });
     };
-  }, [onListItemSave, appContext.contexts.lastUpdate]);
 
-  const updater = (rowIndex: number, rowData: any): Promise<any> => {
+  const updater = (rowIndex: number, rowData: ITableRowData): Promise<ITableRowData> => {
     const repository = getRepository();
-    if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData).then((preparedData: object | undefined) => {
+    return performOnRowSave(rowData).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
@@ -289,27 +248,27 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
     });
   };
 
-  const creater = (rowData: any): Promise<any> => {
+  const creater = (rowData: ITableRowData): Promise<ITableRowData> => {
     const repository = getRepository();
-    if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData).then((preparedData: object | undefined) => {
+    return performOnRowSave(rowData).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
           : undefined;
 
       // use preparedData ?? rowData to handle the case when onRowSave returns undefined
-      return repository.performCreate(0, preparedData ?? rowData, options).then(() => {
+      const finalData = preparedData ?? rowData;
+      return repository.performCreate(0, finalData, options).then(() => {
         void dataSource.refreshTable();
-        performOnRowSaveSuccess(preparedData ?? rowData);
+        performOnRowSaveSuccess(finalData);
+        return finalData;
       });
     });
   };
 
-  const deleter = (rowIndex: number, rowData: any): Promise<any> => {
+  const deleter = (rowIndex: number, rowData: ITableRowData): Promise<void> => {
     const repository = getRepository();
-    if (!repository) return Promise.reject('Repository is not specified');
 
     const options =
       repository.repositoryType === BackendRepositoryType
@@ -324,7 +283,7 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
     });
   };
 
-  const canAction = (val: YesNoInherit): boolean => {
+  const canAction = (val: YesNoInherit | undefined): boolean => {
     switch (val) {
       case 'yes':
         return true;
@@ -344,13 +303,13 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
     return <DataListPlaceholder />;
   }
 
-  if (!isDesignMode && !repository) {
+  if (!isDesignMode && !isDefined(repository)) {
     return <DataListPlaceholder />;
   }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
-  if (groupingColumns?.length > 0 && orientation === "wrap") {
+  if (groupingColumns.length > 0 && orientation === "wrap") {
     return <EmptyState noDataText="Configuration Error" noDataSecondaryText="Wrap Orientation is not supported when Grouping is enabled." />;
   }
 
@@ -364,11 +323,10 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
       )}
       wrapperCol={{ md: 24 }}
     >
-
       <DataList
         {...props}
         onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
-        style={allStyles.fullStyle as string}
+        style={allStyles?.fullStyle as string}
         createFormId={props.createFormId ?? props.formId}
         createFormType={props.createFormType ?? props.formType}
         canAddInline={canAction(canAddInline)}
@@ -377,15 +335,16 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps> = (props) => {
         noDataIcon={noDataIcon}
         noDataSecondaryText={noDataSecondaryText}
         noDataText={noDataText}
-        entityType={modelType}
-        onSelectRow={onSelectRow}
+        entityType={modelType ?? undefined}
+        onSelectRow={setSelectedRow}
+        onClearSelectedRow={clearSelectedRow}
         onMultiSelectRows={setMultiSelectedRow}
         selectedRow={selectedRow}
         selectedRows={selectedRows}
         records={data}
         showEditIcons={showEditIcons}
         grouping={grouping}
-        groupingMetadata={groupingColumns?.map((item) => item.metadata) ?? []}
+        groupingMetadata={groupingColumns.map((item) => item.metadata).filter(isDefined)}
         isFetchingTableData={isFetchingTableData}
         selectedIds={selectedIds}
         changeSelectedIds={changeSelectedIds}

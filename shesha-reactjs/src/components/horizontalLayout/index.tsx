@@ -89,24 +89,24 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
       <Content className={styles.content} style={contentStyle}>
         <NodeOrFuncRenderer>
           {breadcrumb}
-          <div
-            className={classNames(styles.layoutBackground, headingClass, {
-              [styles.layoutBackgroundNoPadding]: noPadding,
-            })}
-            style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
-          >
-            {(hasHeading || isFixedHeading) && (
-              <div className={isFixedHeading ? 'fixed-heading-wrapper' : 'heading-wrapper'}>
-                {heading ? (
-                  <NodeOrFuncRenderer>{heading}</NodeOrFuncRenderer>
-                ) : (
-                  title && showHeading && <h2>{title}</h2>
-                )}
-              </div>
-            )}
-            {children}
-          </div>
         </NodeOrFuncRenderer>
+        <div
+          className={classNames(styles.layoutBackground, headingClass, {
+            [styles.layoutBackgroundNoPadding]: noPadding,
+          })}
+          style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
+        >
+          {(hasHeading || isFixedHeading) && (
+            <div className={isFixedHeading ? 'fixed-heading-wrapper' : 'heading-wrapper'}>
+              {heading ? (
+                <NodeOrFuncRenderer>{heading}</NodeOrFuncRenderer>
+              ) : (
+                title && showHeading && <h2>{title}</h2>
+              )}
+            </div>
+          )}
+          {children}
+        </div>
       </Content>
 
       <Footer className={styles.footer} style={footerStyle}>

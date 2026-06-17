@@ -5,7 +5,7 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { evaluateValue, executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migratePropertyName,
@@ -14,8 +14,10 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { IRadioComponentProps, RadioComponentDefinition } from './interfaces';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { DataSourceType } from '../dropdown/model';
+import { getNumberOrUndefined } from '@/utils/string';
 
 const RadioComponent: RadioComponentDefinition = {
   type: 'radio',
@@ -28,28 +30,22 @@ const RadioComponent: RadioComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
   calculateModel: (model, allData) => ({
-    eventHandlers: getAllEventHandlers(model, allData),
     dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
-    defaultValue: evaluateValue(model.defaultValue, allData.data),
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
-      <ConfigurableFormItem model={model} autoAlignLabel={false}>
-        {(value, onChange) => {
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (e: any): void => {
-            if (e.target) customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
-            if (typeof onChange === 'function') onChange(e);
-          };
-
+      <ConfigurableFormItem<number> model={model} autoAlignLabel={false}>
+        {(value, onChange, _, ctx) => {
           return (
             <RadioGroup
               {...model}
-              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
-              value={value}
+              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles?.fullStyle}
+              value={value ?? undefined}
               dataSourceUrl={calculatedModel.dataSourceUrl}
-              {...customEvents}
-              onChange={onChangeInternal}
+              onChange={(event) => {
+                ctx?.handleEvent(event, event.target.value, model.onChangeCustom);
+                onChange(getNumberOrUndefined(event.target.value) ?? null);
+              }}
             />
           );
         }}
@@ -63,14 +59,18 @@ const RadioComponent: RadioComponentDefinition = {
     m
       .add<IRadioComponentProps>(0, (prev) => ({
         ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'values',
-        direction: prev['direction'] ?? 'horizontal',
+        dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === 'string'
+          ? (prev.dataSourceType as DataSourceType)
+          : 'values',
+        direction: "direction" in prev && typeof (prev.direction) === 'string'
+          ? prev.direction as "horizontal" | "vertical"
+          : 'horizontal',
       }))
       .add<IRadioComponentProps>(1, (prev) => {
         return {
           ...prev,
           // eslint-disable-next-line @typescript-eslint/no-deprecated
-          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName) ?? undefined,
         };
       })
       .add<IRadioComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -90,12 +90,12 @@ const RadioComponent: RadioComponentDefinition = {
     return {
       ...model,
       dataSourceType: isRefList ? 'referenceList' : 'values',
-      referenceListId: isRefList
+      referenceListId: isRefList && !isNullOrWhiteSpace(metadata.referenceListName) && !isNullOrWhiteSpace(metadata.referenceListModule)
         ? {
           module: metadata.referenceListModule,
           name: metadata.referenceListName,
         }
-        : null,
+        : undefined,
     };
   },
 };

@@ -3,26 +3,26 @@ import { getFormFullName } from '@/utils/form';
 import { FormIdentifier } from '../form/models';
 import { FormConfigurationDto } from './models';
 
-export const getConfigurationNotFoundMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier): string => {
-  if (isConfigurableItemRawId(configurationId)) return `${configurationType} with id='${configurationId}' not found`;
+export const getConfigurationNotFoundMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
+  if (configurationId && isConfigurableItemRawId(configurationId)) return `${configurationType} with id='${configurationId}' not found`;
 
-  if (isConfigurableItemFullName(configurationId)) return `${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}' not found`;
-
-  return `${configurationType} not found`;
-};
-
-export const getFormNotFoundMessage = (formId: FormIdentifier): string => getConfigurationNotFoundMessage("Form", formId);
-export const getReferenceListNotFoundMessage = (refListId?: IReferenceListIdentifier): string => getConfigurationNotFoundMessage("Reference list", refListId);
-
-export const getConfigurationForbiddenMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier): string => {
-  if (isConfigurableItemRawId(configurationId)) return `You are not authorized to access the ${configurationType} with id='${configurationId}'`;
-
-  if (isConfigurableItemFullName(configurationId)) return `You are not authorized to access the ${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}'`;
+  if (configurationId && isConfigurableItemFullName(configurationId)) return `${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}' not found`;
 
   return `${configurationType} not found`;
 };
 
-export const getFormForbiddenMessage = (formId: FormIdentifier): string => getConfigurationForbiddenMessage("form", formId);
+export const getFormNotFoundMessage = (formId: FormIdentifier | undefined): string => getConfigurationNotFoundMessage("Form", formId);
+export const getReferenceListNotFoundMessage = (refListId: IReferenceListIdentifier): string => getConfigurationNotFoundMessage("Reference list", refListId);
+
+export const getConfigurationForbiddenMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
+  if (configurationId && isConfigurableItemRawId(configurationId)) return `You are not authorized to access the ${configurationType} with id='${configurationId}'`;
+
+  if (configurationId && isConfigurableItemFullName(configurationId)) return `You are not authorized to access the ${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}'`;
+
+  return `${configurationType} not found`;
+};
+
+export const getFormForbiddenMessage = (formId: FormIdentifier | undefined): string => getConfigurationForbiddenMessage("form", formId);
 
 const getMarkupFromResponse = (data: FormConfigurationDto): FormMarkupWithSettings | null => {
   const markupJson = data.markup;
@@ -40,7 +40,13 @@ export const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto, r
     description: dto.description,
     modelType: dto.modelType,
     markup: markupWithSettings?.components ?? null,
-    settings: markupWithSettings?.formSettings ?? null,
+    settings: markupWithSettings?.formSettings ?? {
+      layout: 'horizontal',
+      labelCol: { span: 6 },
+      wrapperCol: { span: 18 },
+      colon: true,
+      modelType: dto.modelType ?? undefined,
+    },
     access: dto.access,
     permissions: dto.permissions,
     readOnly: readOnly,
@@ -60,15 +66,6 @@ export const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto, r
     }
     result.settings.access = normalizedAccess;
     result.settings.permissions = result.settings.permissions ?? dto.permissions;
-    // fall back to the DTO's modelType for forms created with an entity selected
-    // but no template, where the markup's formSettings.modelType is empty (#4986)
-    const hasSettingsModelType =
-      typeof result.settings.modelType === 'string'
-        ? result.settings.modelType.trim().length > 0
-        : result.settings.modelType != null;
-    result.settings.modelType = hasSettingsModelType
-      ? result.settings.modelType
-      : dto.modelType ?? undefined;
   }
 
   return result;

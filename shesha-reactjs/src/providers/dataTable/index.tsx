@@ -31,7 +31,7 @@ export interface IHasFormDataSourceConfig {
   propertyName: string;
   getFieldValue: (propertyName: string) => ITableRowData[];
   metadata?: IModelMetadata | undefined;
-  onChange: (...args: unknown[]) => void;
+  onChange: (newValue: ITableRowData[]) => void;
 }
 export interface IUrlDataSourceConfig {
   getDataPath?: string | undefined;

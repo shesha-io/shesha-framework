@@ -13,7 +13,7 @@ export interface IComponentsContainerDynamicProps extends Omit<IComponentsContai
 
 export const ComponentsContainerDynamic: FC<IComponentsContainerProps> = (props) => {
   const {
-    dynamicComponents,
+    dynamicComponents = [],
     direction = 'vertical',
     className,
     render,

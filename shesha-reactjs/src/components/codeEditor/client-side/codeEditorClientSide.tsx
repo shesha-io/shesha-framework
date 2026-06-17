@@ -1,8 +1,8 @@
-import React, { FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
 import { Monaco, loader } from '@monaco-editor/react';
 import { IDisposable, IPosition, IRange, Uri, UriComponents, editor, languages } from 'monaco-editor';
 import { DataTypes, IObjectMetadata } from "@/interfaces";
-import { ModelTypeIdentifier, asPropertiesArray } from "@/interfaces/metadata";
+import { ModelTypeIdentifier, asPropertiesArray, isObjectMetadata } from "@/interfaces/metadata";
 import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
@@ -19,6 +19,8 @@ import { useAsyncMemo } from "@/hooks/useAsyncMemo";
 import { CodeEditorLoadingProgressor } from "../loadingProgressor";
 import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 import { useIsDevMode } from "@/hooks/useIsDevMode";
+import { useEffectOnce } from "@/hooks/useEffectOnce";
+import { isNonEmptyArray } from "@/utils/array";
 
 // you can change the source of the monaco files
 loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs' } });
@@ -37,7 +39,7 @@ const isChildEditor = (editor: editor.ICodeEditor): editor is IEmbeddedCodeEdito
 };
 
 interface CodeWrapperProps extends PropsWithChildren {
-  leftPane?: React.ReactElement;
+  leftPane?: React.ReactElement | undefined;
 }
 const CodeWrapper: FC<CodeWrapperProps> = ({ children, leftPane }) => {
   const { styles } = useStyles();
@@ -100,27 +102,30 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     templateSettings = CODE_TEMPLATE_DEFAULTS,
     environment = Environment.None,
   } = props;
-  const monacoInst = useRef<Monaco>();
-  const editorRef = useRef<editor.IStandaloneCodeEditor>();
+  const monacoInst = useRef<Monaco>(undefined);
+  const editorRef = useRef<editor.IStandaloneCodeEditor>(undefined);
   const { styles } = useStyles();
-  const [activePane, setActivePane] = useState(null);
+  const [activePane, setActivePane] = useState<string | null>(null);
   const [internalReadOnly, setInternalReadOnly] = useState(false);
   const isDevMode = useIsDevMode();
 
   const { getMetadata } = useMetadataDispatcher();
 
-  const metadataFetcher = useCallback((typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId }), [getMetadata]);
+  const metadataFetcher = useCallback(async (typeId: ModelTypeIdentifier): Promise<IObjectMetadata | null> => {
+    const response = await getMetadata({ dataType: DataTypes.entityReference, modelType: typeId });
+    return response && isObjectMetadata(response) ? response : null;
+  }, [getMetadata]);
 
   const subscriptions = useRef<IDisposable[]>([]);
   const addSubscription = (subscription: IDisposable): void => {
     subscriptions.current.push(subscription);
   };
-  useEffect(() => {
+  useEffectOnce(() => {
     return () => {
       const subsCopy = [...subscriptions.current];
       subsCopy.forEach((s) => s.dispose());
     };
-  }, []);
+  });
 
   const fileUid = useRef<string>(null);
   const fileNamesState = useMemo<EditorFileNamesState>(() => {
@@ -142,26 +147,26 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
 
   const codeEditorEnvironment = useAsyncMemo(async () => {
     return await buildCodeEditorEnvironmentAsync({
-      wrapInTemplate,
-      fileName,
+      wrapInTemplate: wrapInTemplate ?? false,
+      fileName: fileName ?? "",
       availableConstants,
       resultType,
       metadataFetcher,
       directory: fileNamesState.modelDir,
       environment,
-      functionName: templateSettings?.functionName ?? "func",
-      useAsyncDeclaration: templateSettings?.useAsyncDeclaration,
+      functionName: templateSettings.functionName ?? "func",
+      useAsyncDeclaration: templateSettings.useAsyncDeclaration,
     });
   }, [wrapInTemplate,
     fileName,
     availableConstants,
-    templateSettings?.functionName,
-    templateSettings?.useAsyncDeclaration,
+    templateSettings.functionName,
+    templateSettings.useAsyncDeclaration,
     resultType,
     metadataFetcher,
     environment]);
 
-  const addExtraLib = (monaco: Monaco, content: string, filePath?: string): IDisposable => {
+  const addExtraLib = (monaco: Monaco, content: string, filePath: string): IDisposable | null => {
     const uri = monaco.Uri.parse(filePath);
     let model = monaco.editor.getModel(uri);
     if (!model) {
@@ -225,7 +230,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
 
     const model = monacoInst.current.Uri.isUri(fileUri)
       ? monacoInst.current.editor.getModel(fileUri)
-      : undefined;
+      : null;
     editorRef.current.setModel(model);
 
     if (isRange(selectionOrPosition)) {
@@ -289,11 +294,13 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     addSubscription(createEditorSubscription);
 
     const { template } = codeEditorEnvironment;
-    if (template && availableConstants && asPropertiesArray(availableConstants.properties, []).length > 0)
+    if (template && availableConstants && typeof (availableConstants) !== "function" && asPropertiesArray(availableConstants.properties, []).length > 0)
       editor.trigger(null, 'editor.fold', { selectionLines: [0] });
 
     const model = editor.getModel();
     const applyDeprecatedDecorations = (): void => {
+      if (!model)
+        return;
       const markers = monaco.editor.getModelMarkers({ resource: model.uri });
       const deprecatedMarkers = markers.filter((m) => (
         (
@@ -303,19 +310,18 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         ) &&
         m.severity !== Number(monaco.MarkerSeverity.Warning)
       ));
-      let changedMarkers = false;
-      deprecatedMarkers.forEach((marker) => {
-        marker.severity = monaco.MarkerSeverity.Warning;
-        changedMarkers = true;
-      });
-      if (changedMarkers) {
+      if (isNonEmptyArray(deprecatedMarkers)) {
+        deprecatedMarkers.forEach((marker) => {
+          marker.severity = monaco.MarkerSeverity.Warning;
+        });
         monaco.editor.removeAllMarkers('typescript');
         monaco.editor.setModelMarkers(model, 'typescript', markers);
       }
     };
 
     monaco.editor.onDidChangeMarkers(() => applyDeprecatedDecorations());
-    model.onDidChangeContent(() => setTimeout(applyDeprecatedDecorations, 100));
+    if (model)
+      model.onDidChangeContent(() => setTimeout(applyDeprecatedDecorations, 100));
     setTimeout(applyDeprecatedDecorations, 500);
   };
 
@@ -327,7 +333,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     navigateToModel(fileUri);
   };
 
-  const getCurrentUri = (): UriComponents => {
+  const getCurrentUri = (): UriComponents | undefined => {
     return editorRef.current?.getModel()?.uri;
   };
 
@@ -342,7 +348,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
             path={fileNamesState.modelFilePath}
             language={props.language}
             theme="vs-dark"
-            value={value}
+            value={value ?? ""}
             onChange={onChange}
             options={{
               automaticLayout: true,
@@ -372,7 +378,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         </div>
         <div className={styles.workspace}>
           <CodeWrapper
-            leftPane={activePane === "explorer"
+            leftPane={activePane === "explorer" && monacoInst.current
               ? (
                 <FileTree
                   monaco={monacoInst.current}

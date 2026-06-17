@@ -16,6 +16,13 @@ interface DefaultMargins {
   horizontal: string;
 }
 
+type PaddingValues = {
+  paddingTop?: string | number | undefined;
+  paddingBottom?: string | number | undefined;
+  paddingLeft?: string | number | undefined;
+  paddingRight?: string | number | undefined;
+};
+
 // Cached constants to avoid repeated object/string creation
 const EMPTY_STYLING_BOX = '{}';
 const ZERO_MARGINS: Readonly<MarginValues> = Object.freeze({
@@ -161,7 +168,7 @@ export const stylingUtils = {
     if (!stylingBox) return EMPTY_STYLING_BOX;
 
     try {
-      const parsed = JSON.parse(stylingBox);
+      const parsed = JSON.parse(stylingBox) as CSSProperties;
       return JSON.stringify({
         ...parsed,
         marginTop: 0,
@@ -210,7 +217,7 @@ export const stylingUtils = {
     if (!stylingBox) return EMPTY_STYLING_BOX;
 
     try {
-      const parsed = JSON.parse(stylingBox);
+      const parsed = JSON.parse(stylingBox) as PaddingValues;
       return JSON.stringify({
         paddingTop: parsed.paddingTop,
         paddingRight: parsed.paddingRight,

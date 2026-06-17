@@ -25,7 +25,7 @@ export interface ITablePagerProps {
 }
 
 type EmptyPagerProps = {
-  style?: CSSProperties;
+  style?: CSSProperties | undefined;
 };
 
 const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {

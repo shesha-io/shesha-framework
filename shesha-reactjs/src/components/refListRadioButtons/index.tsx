@@ -50,7 +50,7 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
   ...rest
 }) => {
   const { styles } = useStyles();
-  const { data: refList } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName));
+  const { data: refList } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName) ?? undefined);
 
   const filter = ({ itemValue }: ReferenceListItemDto): boolean => {
     return filters.includes(itemValue);
@@ -69,7 +69,7 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
 
   const handleChange = (event: RadioChangeEvent): void => {
     if (onSelectionChange) {
-      onSelectionChange(event?.target?.value, event);
+      onSelectionChange(event.target.value as number, event);
     }
 
     if (onChange) {

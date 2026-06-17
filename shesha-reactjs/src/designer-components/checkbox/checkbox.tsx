@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { CSSProperties, useMemo } from 'react';
 import { CheckSquareOutlined } from '@ant-design/icons';
-import { Checkbox, CheckboxProps } from 'antd';
+import { Checkbox } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
@@ -14,17 +14,9 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
-
-interface ExtendedCheckboxProps extends CheckboxProps {
-  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onChange?: (e: CheckboxChangeEvent) => void;
-}
 
 const CheckboxComponent: CheckboxComponentDefinition = {
   type: 'checkbox',
@@ -39,28 +31,32 @@ const CheckboxComponent: CheckboxComponentDefinition = {
    */
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
-  Factory: ({ model, calculatedModel }) => {
-    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+  Factory: ({ model }) => {
+    const finalStyle = useMemo<CSSProperties>(() => !model.enableStyleOnReadonly && model.readOnly
+      ? {
+        ...model.allStyles?.fontStyles,
+        ...model.allStyles?.dimensionsStyles,
+      }
+      : model.allStyles?.fullStyle ?? {}, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
     const { styles } = useStyles({ style: finalStyle });
 
     return (
-      <ConfigurableFormItem model={model} valuePropName="checked">
-        {(value, onChange) => {
-          const events: ExtendedCheckboxProps = {
-            onBlur: calculatedModel.eventHandlers.onBlur,
-            onFocus: calculatedModel.eventHandlers.onFocus,
-            onChange: (e: CheckboxChangeEvent) => {
-              calculatedModel.eventHandlers.onChange({ value: e.target.checked }, e);
-              if (typeof onChange === 'function') onChange(e.target.checked);
-            },
-          };
-
-          return <Checkbox className={styles.checkbox} disabled={model.readOnly} checked={value} {...events} />;
+      <ConfigurableFormItem<boolean> model={model} valuePropName="checked">
+        {(value, onChange, _, ctx) => {
+          return (
+            <Checkbox
+              className={styles.checkbox}
+              disabled={model.readOnly ?? false}
+              checked={value ?? false}
+              onChange={(event) => {
+                ctx?.handleEvent(event, event.target.checked, model.onChangeCustom);
+                onChange(event.target.checked);
+              }}
+              onFocus={(event) => ctx?.handleEvent(event, event.target.checked, model.onFocusCustom)}
+              onBlur={(event) => ctx?.handleEvent(event, event.target.checked, model.onBlurCustom)}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );

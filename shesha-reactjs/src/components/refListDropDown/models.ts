@@ -1,49 +1,49 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { LabeledValue, SelectProps } from 'antd/lib/select';
+import { BaseOptionType, LabeledValue, SelectProps } from 'antd/lib/select';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { CSSProperties, Key } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { IReadOnly } from '@/interfaces/readOnly';
+import { IAnyObject } from '@/interfaces';
 
-export type IncomeValueFunc = (value: any, args: any) => string;
-export type OutcomeValueFunc = (value: any, args: any) => string | string[] | any;
-export type ItemFunc = (value: any, args: any) => ISelectOption<any>;
+type RefListItemAndValue = Pick<ReferenceListItemDto, "item" | "itemValue">;
+export type IncomeValueFunc = (value: RefListItemAndValue, args: IAnyObject | undefined) => string | number | RefListItemAndValue | null;
+export type OutcomeValueFunc = (value: ReferenceListItemDto, args: IAnyObject | undefined) => number | RefListItemAndValue | null;
+export type GetLabeledValueFunc<TValue = unknown> = (value: TValue, options: ISelectOption<TValue>[]) => CustomLabeledValue<TValue> | undefined;
+export type GetOptionFromFetchedItemFunc<TValue = unknown> = (fetchedItem: ReferenceListItemDto, args: IAnyObject | undefined) => ISelectOption<TValue>;
 
-export interface IGenericRefListDropDownProps<TValue = any> extends IRefListDropDownProps<TValue> {
+export interface IGenericRefListDropDownProps<TValue = unknown> extends IRefListDropDownProps<TValue> {
   /**
    * Get CustomLabeledValue from value
    */
-  getLabeledValue: (value: TValue, options: ISelectOption<TValue>[]) => CustomLabeledValue<TValue>;
+  getLabeledValue: GetLabeledValueFunc<TValue>;
 
   /**
    * Get option from an item fetched from the back-end
    */
-  getOptionFromFetchedItem: (fetchedItem: ReferenceListItemDto, args?: any) => ISelectOption<TValue>;
-
-  incomeValueFunc: IncomeValueFunc;
-  outcomeValueFunc: OutcomeValueFunc;
+  getOptionFromFetchedItem: GetOptionFromFetchedItemFunc<TValue>;
 }
 
-type LimitedSelectProps = Pick<SelectProps<any>, 'mode' | 'disabled' | 'allowClear' | 'filterOption' | 'placeholder' | 'variant' | 'defaultValue' | 'className'>;
+type LimitedSelectProps<TValue = unknown> = Pick<SelectProps<TValue>, 'mode' | 'disabled' | 'allowClear' | 'filterOption' | 'placeholder' | 'variant' | 'className'>;
 
-export interface IRefListDropDownProps<TValue = any> extends LimitedSelectProps, IReadOnly {
+export interface IRefListDropDownProps<TValue = unknown> extends LimitedSelectProps<TValue>, IReadOnly {
   /**
    * Reference List identifier
    */
   referenceListId: IReferenceListIdentifier;
-  filters?: number[];
-  style?: CSSProperties;
-  tagStyle?: CSSProperties;
-  showIcon?: boolean;
-  solidColor?: boolean;
-  showItemName?: boolean;
-  value?: TValue | TValue[];
-  ignoredValues?: number[];
-  disabledValues?: number[];
-  size?: SizeType;
-  displayStyle?: 'tags' | 'text';
-  onChange?: (value: TValue | TValue[]) => void;
-  enableStyleOnReadonly?: boolean;
+  filters?: number[] | undefined;
+  style?: CSSProperties | undefined;
+  tagStyle?: CSSProperties | undefined;
+  showIcon?: boolean | undefined;
+  solidColor?: boolean | undefined;
+  showItemName?: boolean | undefined;
+  value?: TValue | TValue[] | undefined;
+  ignoredValues?: number[] | undefined;
+  disabledValues?: number[] | undefined;
+  size?: SizeType | undefined;
+  displayStyle?: 'tags' | 'text' | undefined;
+  onChange?: ((value: TValue | TValue[] | undefined) => void) | undefined;
+  enableStyleOnReadonly?: boolean | undefined;
 }
 
 export interface IRefListDropDownOption {
@@ -52,15 +52,15 @@ export interface IRefListDropDownOption {
   value?: Key;
 }
 
-export interface ISelectOption<TValue = any> {
+export interface ISelectOption<TValue = unknown> extends BaseOptionType {
   // TODO: make generic
   value: string | number;
-  label: string | React.ReactNode;
+  label: string;
   data: TValue;
-  disabled?: boolean;
-  color?: string;
-  icon?: string;
-  description?: string;
+  // disabled?: boolean | undefined;
+  color?: string | undefined;
+  icon?: string | undefined;
+  description?: string | undefined;
 }
 
-export type CustomLabeledValue<TValue = any> = LabeledValue & { data: TValue };
+export type CustomLabeledValue<TValue = unknown> = LabeledValue & { data: TValue };

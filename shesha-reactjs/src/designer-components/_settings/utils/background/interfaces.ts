@@ -1,5 +1,10 @@
 import { IConfigurableFormComponent } from "@/providers";
-import { UploadFile } from "antd";
+
+type BackgroundImageFile = {
+  uid: string;
+  name: string;
+  url: string;
+};
 
 export interface IBackgroundValue {
   type?: 'color' | 'url' | 'image' | 'storedFile' | 'gradient' | undefined;
@@ -9,7 +14,7 @@ export interface IBackgroundValue {
   gradient?: { direction: string; colors: Record<string, string> } | undefined;
   color?: string | undefined;
   url?: string | undefined;
-  uploadFile?: UploadFile | undefined;
+  uploadFile?: BackgroundImageFile | undefined;
   storedFile?: { id: string } | undefined;
 }
 

@@ -1,29 +1,33 @@
-import { Empty, Select, Spin, Typography } from 'antd';
+import { Empty, Select, SelectProps, Spin, Typography } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useRef, useState, FC } from 'react';
-
 import { useGet } from '@/hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import HelpTextPopover from '@/components/helpTextPopover';
-import { ConfigurableItemFullName, ConfigurableItemIdentifier, isConfigurableItemFullName, isConfigurableItemRawId, isEntityMetadata } from '@/interfaces';
+import { ConfigurableItemFullName, isEntityMetadata } from '@/interfaces';
 import { MetadataProvider, useMetadata } from '@/providers';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { isDefined } from '@/utils/nullables';
 
 interface EditorProps<TValue> {
-  value?: TValue;
-  onChange?: (value?: TValue) => void;
+  value?: TValue | undefined;
+  onChange: ((value: TValue | null) => void) | undefined;
 }
 
-type SingleEditorProps<TValue = ConfigurableItemFullName> = { mode?: 'single' | undefined } & EditorProps<TValue>;
-type MultipleEditorProps<TValue = ConfigurableItemFullName> = { mode: 'multiple' } & EditorProps<TValue[]>;
+type SingleEditorProps<TValue = ConfigurableItemFullName> = {
+  mode?: 'single' | undefined;
+} & EditorProps<TValue>;
+type MultipleEditorProps<TValue = ConfigurableItemFullName> = {
+  mode: 'multiple';
+} & EditorProps<TValue[]>;
 export type StandardAutocompleteProps = {
   entityType: string;
-  readOnly?: boolean;
-  maxResultCount?: number;
-  filter?: object;
-  size?: SizeType;
+  readOnly?: boolean | undefined;
+  maxResultCount?: number | undefined;
+  filter?: object | undefined;
+  size?: SizeType | undefined;
 };
 type EditorWithMode<TValue> = SingleEditorProps<TValue> | MultipleEditorProps<TValue>;
 
@@ -33,18 +37,18 @@ const isMultipleEditor = <TValue = unknown>(editor: EditorWithMode<TValue>): edi
   return editor.mode === 'multiple';
 };
 
+type OnChangeHandler = Required<SelectProps<string | string[]>>["onChange"];
+
 interface IOption<TData = ConfigurableItemFullName> {
   label: string | ReactNode;
   value: string;
-  rawValue: TData;
+  rawValue: TData | undefined;
   optionData: TData & {
-    label?: string;
-    description?: string;
-  };
-  options?: IOption[];
+    label?: string | undefined;
+    description?: string | undefined;
+  } | undefined;
+  options?: IOption[] | undefined;
 }
-
-const baseItemFilter = undefined;
 
 const moduleNotEmpty = { "!=": [{ var: "module" }, null] };
 const moduleIsEnabled = { "==": [{ var: "module.isEnabled" }, true] };
@@ -72,9 +76,9 @@ const getFilter = (term: string, staticFilter?: object): string => {
 
 const ITEM_CONFIG_PROPERTIES = 'id name module { id name } label description';
 
-export const itemIdsEqual = (left: ConfigurableItemFullName, right: ConfigurableItemFullName): Boolean => {
-  return (!left && !right) ||
-    (left && right && left.module === right.module && left.name === right.name);
+export const itemIdsEqual = (left: ConfigurableItemFullName | undefined, right: ConfigurableItemFullName | undefined): boolean => {
+  return (!isDefined(left) && !isDefined(right)) ||
+    (isDefined(left) && isDefined(right) && left.module === right.module && left.name === right.name);
 };
 
 const getListFetcherQueryParams = (entityType: string, term: string, maxResultCount?: number, staticFilter?: object): IGenericGetAllPayload => {
@@ -83,54 +87,28 @@ const getListFetcherQueryParams = (entityType: string, term: string, maxResultCo
     maxResultCount: maxResultCount ?? 10,
     entityType: entityType,
     properties: ITEM_CONFIG_PROPERTIES,
-    quickSearch: null,
+    quickSearch: undefined,
     filter: getFilter(term, staticFilter),
     sorting: 'module.name, name',
   };
-};
-export const getSelectedValueQueryParams = (entityType: string, value?: ConfigurableItemIdentifier): IGenericGetAllPayload => {
-  if (!value)
-    return null;
-
-  const expression = isConfigurableItemRawId(value)
-    ? { '==': [{ var: 'id' }, value] }
-    : isConfigurableItemFullName(value)
-      ? {
-        and: [
-          baseItemFilter,
-          { '==': [{ var: 'name' }, value.name] },
-          { '==': [{ var: 'module.name' }, value.module] },
-        ],
-      }
-      : null;
-
-  return expression
-    ? {
-      skipCount: 0,
-      maxResultCount: 1000,
-      entityType: entityType,
-      properties: ITEM_CONFIG_PROPERTIES,
-      filter: JSON.stringify(expression),
-    }
-    : null;
 };
 
 interface IResponseItem {
   id: string;
   name: string;
-  label?: string;
-  description?: string;
-  versionNo?: number;
+  label?: string | undefined;
+  description?: string | undefined;
+  versionNo?: number | undefined;
   module?: {
     id: string;
     name: string;
-  };
+  } | undefined;
 }
 
 interface IConfigurationItemProps {
   name: string;
-  label?: string;
-  description?: string;
+  label?: string | undefined;
+  description?: string | undefined;
 }
 
 const ItemLabel: FC<IConfigurationItemProps> = ({ name, description, label }) => {
@@ -149,7 +127,7 @@ const ItemLabel: FC<IConfigurationItemProps> = ({ name, description, label }) =>
   );
 };
 
-const identifierToString = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(id: TValue): string => {
+const identifierToString = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(id: TValue | undefined): string | undefined => {
   return id
     ? id.module
       ? `${id.module}:${id.name}`
@@ -163,7 +141,7 @@ const getItemValue = (item: IResponseItem): string => {
     : item.name;
 };
 
-const getDisplayText = (item: IResponseItem): string | null => {
+const getDisplayText = (item: IResponseItem | undefined): string | null => {
   return item
     ? item.module
       ? `${item.module.name}: ${item.name}`
@@ -173,7 +151,7 @@ const getDisplayText = (item: IResponseItem): string | null => {
 
 export const GenericConfigurableItemAutocompleteInternal = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(props: ConfigurableItemAutocompleteRuntimeProps<TValue>): React.JSX.Element => {
   const selectedValue = useRef<ConfigurableItemFullName>(null);
-  const [autocompleteText, setAutocompleteText] = useState<string>(null);
+  const [autocompleteText, setAutocompleteText] = useState<string>("");
   const {
     maxResultCount = 10,
     entityType,
@@ -184,19 +162,19 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
     size,
   } = props;
 
-  const { metadata } = useMetadata(true);
+  const { metadata } = useMetadata();
   const endpoints = isEntityMetadata(metadata) ? metadata.apiEndpoints : {};
   const listEndpoint = endpoints[StandardEntityActions.list] ?? { httpVerb: 'get', url: `${GENERIC_ENTITIES_ENDPOINT}/GetAll` };
 
-  const listFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
+  const listFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, unknown, IGenericGetAllPayload>(
     listEndpoint.url,
     {
       lazy: true,
-      queryParams: getListFetcherQueryParams(entityType, null, maxResultCount, filter),
+      queryParams: getListFetcherQueryParams(entityType, "", maxResultCount, filter),
     },
   );
 
-  const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
+  const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, unknown, IGenericGetAllPayload>(
     listEndpoint.url,
     {
       lazy: true,
@@ -204,10 +182,10 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
   );
   useEffect(() => {
     if (valueFetcher.data?.success && valueFetcher.data.result) {
-      const items = valueFetcher.data.result?.items ?? [];
+      const items = valueFetcher.data.result.items;
       if (items.length === 1) {
         const displayText = getDisplayText(items[0]);
-        setAutocompleteText(displayText);
+        setAutocompleteText(displayText ?? "");
       } else
         console.error(items.length > 1 ? "Found more than one item with specified name" : "Item not found");
     }
@@ -216,13 +194,13 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
   const listItems = listFetcher.data?.result?.items;
   const valueItems = valueFetcher.data?.result?.items;
 
-  const fetchedItems = useMemo<IResponseItem[]>(() => {
+  const fetchedItems = useMemo<IResponseItem[] | undefined>(() => {
     return listItems
       ? listItems
       : valueItems;
   }, [listItems, valueItems]);
 
-  const fetchedOptions = useMemo<IOption[]>(() => {
+  const fetchedOptions = useMemo<IOption[] | undefined>(() => {
     if (fetchedItems) {
       const result: IOption[] = [];
       fetchedItems.forEach((item) => {
@@ -233,11 +211,11 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
           value: getItemValue(item),
           rawValue: {
             name: item.name,
-            module: item.module?.name,
+            module: item.module?.name ?? null,
           },
           optionData: {
             name: item.name,
-            module: item.module?.name,
+            module: item.module?.name ?? null,
             label: item.label,
             description: item.description,
           },
@@ -247,13 +225,15 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
           group = {
             label: moduleDto.name,
             value: moduleDto.id,
-            optionData: null,
-            rawValue: null,
+            optionData: undefined,
+            rawValue: undefined,
             options: [opt],
           };
           result.push(group);
-        } else
+        } else {
+          group.options = group.options ?? [];
           group.options.push(opt);
+        }
       });
       return result;
     }
@@ -266,9 +246,9 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
     } else {
       if (value) {
         const values = Array.isArray(value) ? value : [value];
-        return values.map((v) => ({
+        return values.map<IOption>((v) => ({
           label: identifierToString<TValue>(v),
-          value: identifierToString(v),
+          value: identifierToString(v) ?? "",
           rawValue: v,
           optionData: undefined,
         }));
@@ -286,7 +266,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
   );
 
 
-  const onSearch = (term): void => {
+  const onSearch = (term: string): void => {
     debouncedFetchItems(term);
   };
   const onFocus = (): void => {
@@ -295,9 +275,8 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
     }
   };
 
-
-  const onSelect = (_value, option): void => {
-    setAutocompleteText(null);
+  const onSelect: OnChangeHandler = (_value, option): void => {
+    setAutocompleteText("");
 
     if (!Boolean(onChange)) return;
     const selectedValue = Boolean(option)
@@ -307,31 +286,31 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
       : undefined;
 
     if (isMultipleEditor(props)) {
-      const newValue = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
-      props.onChange(newValue);
+      const newValue = Array.isArray(selectedValue)
+        ? selectedValue.filter(isDefined)
+        : [selectedValue].filter(isDefined);
+      props.onChange?.(newValue);
     } else {
       if (!Array.isArray(selectedValue))
-        props.onChange(selectedValue);
+        props.onChange?.(selectedValue ?? null);
     }
   };
 
   const onClear = (): void => {
     selectedValue.current = null;
-    if (props.onChange) {
-      props.onChange(null);
-    }
+    props.onChange?.(null);
   };
 
   const loading = listFetcher.loading;
 
   const selectValue = useMemo<string | string[]>(() => {
     return Array.isArray(value)
-      ? value.map((v) => identifierToString(v))
-      : identifierToString(value);
+      ? value.map((v) => identifierToString(v)).filter(isDefined)
+      : identifierToString(value) ?? "";
   }, [value]);
 
   return (
-    <Select<string | string[]>
+    <Select<string | string[], IOption>
       allowClear
       notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
       style={{ width: '100%' }}
@@ -343,15 +322,14 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
       onChange={onSelect}
       onClear={onClear}
       placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
-      disabled={valueFetcher.loading || props.readOnly}
+      disabled={valueFetcher.loading || props.readOnly === true}
       value={selectValue}
       size={size}
-      mode={mode === 'multiple' ? 'multiple' : undefined}
-
+      {...(mode === "multiple" ? { mode: "multiple" } : {})}
       optionRender={(option) => {
         const { data, value } = option;
-        const optionData = (data as IOption)?.optionData;
-        return optionData
+        const { optionData } = data;
+        return isDefined(optionData)
           ? (
             <ItemLabel
               name={optionData.name}

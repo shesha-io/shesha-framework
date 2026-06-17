@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import { FormProvider, ShaForm, useForm } from '@/providers/index';
@@ -29,30 +29,30 @@ import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
 import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
-import { makeErrorWithMessage } from '@/utils/errors';
+import { makeErrorWithMessage, throwError } from '@/utils/errors';
 import { isDefined } from '@/utils/nullables';
 
-export type DataProcessor = <TData extends object = object>(data: TData) => Promise<TData>;
+export type DataProcessor<TData extends object = object> = (data: TData) => Promise<TData>;
 
-export interface ICrudProviderProps {
+export interface ICrudProviderProps<TValue extends object = object> {
   id?: string | undefined;
   isNewObject: boolean;
   allowEdit: boolean;
   allowDelete: boolean;
   mode?: CrudMode | undefined;
   allowChangeMode: boolean;
-  data: object | RowDataInitializer;
-  updater?: DataProcessor | undefined;
-  creater?: DataProcessor | undefined;
-  deleter?: () => Promise<void> | undefined;
-  onSave?: DataProcessor | undefined;
-  autoSave?: boolean;
+  data?: TValue | RowDataInitializer<TValue> | undefined;
+  updater?: DataProcessor<TValue> | undefined;
+  creater?: DataProcessor<TValue> | undefined;
+  deleter?: (() => Promise<void>) | undefined;
+  onSave?: DataProcessor<TValue> | undefined;
+  autoSave?: boolean | undefined;
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   itemListId?: string | undefined;
 }
 
-const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
+const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<ICrudProviderProps<TValue>>): ReactNode => {
   const {
     id,
     children,
@@ -81,7 +81,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     initialValues: typeof data !== 'function' ? data : undefined,
   });
 
-  const { form, setFormData, setFormMode } = useForm();
+  const { form, setFormData, setFormMode } = useForm<TValue>();
 
   const { getPayload: getDelayedUpdate } = useDelayedUpdateOrUndefined() ?? {};
   const toolboxComponents = useFormDesignerComponents();
@@ -123,15 +123,17 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       setInitialValues(data);
       setFormData({ values: data, mergeValues: true });
     } else {
-      setInitialValuesLoading(true);
-      const dataResponse = data();
+      if (typeof data === 'function') {
+        setInitialValuesLoading(true);
+        const dataResponse = data();
 
-      Promise.resolve(dataResponse).then((response) => {
-        setInitialValues(response);
-        setFormData({ values: response, mergeValues: true });
-      }).catch((error) => {
-        console.error('Failed to fetch data', error);
-      });
+        Promise.resolve(dataResponse).then((response) => {
+          setInitialValues(response);
+          setFormData({ values: response, mergeValues: true });
+        }).catch((error) => {
+          console.error('Failed to fetch data', error);
+        });
+      }
     }
   }, [data, setFormData, setInitialValues, setInitialValuesLoading]);
 
@@ -151,7 +153,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     dispatch(resetErrorsAction());
   };
 
-  const performSave = async (processor: DataProcessor, updateType: string): Promise<void> => {
+  const performSave = async (processor: DataProcessor<TValue>, updateType: string): Promise<void> => {
     if (!isDefined(form))
       throw new Error('performSave must be used within a ShaFormProvider');
 
@@ -164,13 +166,13 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       const mergedData = { ...state.initialValues, ...values };
 
       const postData = removeGhostKeys(
-        filterDataByOutputComponents(
+        filterDataByOutputComponents<TValue>(
           mergedData,
           props.formFlatMarkup.allComponents,
           toolboxComponents,
         ),
-      );
-        // send data of stored files
+      ) as TValue;
+      // send data of stored files
       const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : undefined;
       if (delayedUpdate)
         addDelayedUpdateProperty(postData, delayedUpdate);
@@ -247,7 +249,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     }
   }, [debouncedUpdate]);
 
-  const onValuesChangeInternal = (_changedValues: object, values: object): void => {
+  const onValuesChangeInternal = (_changedValues: Partial<TValue>, values: TValue): void => {
     // recalculate components visibility
     setFormData({ values, mergeValues: true });
 
@@ -282,7 +284,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   return (
     <CrudContext.Provider value={contextValue}>
-      <Form
+      <Form<TValue>
         key={state.mode}
         component={false}
         {... (form ? { form } : {})}
@@ -302,7 +304,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   );
 };
 
-const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
+const DataListCrudProvider = <TValue extends object = object>(props: PropsWithChildren<ICrudProviderProps<TValue>>): ReactNode => {
   const {
     children,
     mode = 'read',
@@ -350,14 +352,6 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
   );
 };
 
-function useDataListCrud(require: boolean = true): ICrudContext | undefined {
-  const context = useContext(CrudContext);
-
-  if (context === undefined && require) {
-    throw new Error('useDataListCrud must be used within a DataListCrudProvider');
-  }
-
-  return context;
-}
+const useDataListCrud = (): ICrudContext => useContext(CrudContext) ?? throwError("useDataListCrud must be used within a DataListCrudProvider");
 
 export { DataListCrudProvider, useDataListCrud };

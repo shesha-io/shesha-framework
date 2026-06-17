@@ -25,7 +25,7 @@ const StyleBox: StyleBoxDefinition = {
     const { size, ...model } = passedModel;
 
     return model.hidden ? null : (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<string> model={model}>
         {(value, onChange) => <Box value={value} onChange={onChange} readOnly={model.readOnly} />}
       </ConfigurableFormItem>
     );

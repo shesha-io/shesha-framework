@@ -1,17 +1,17 @@
 import { App } from 'antd';
 import classNames from 'classnames';
-import React, { FC, Fragment, useCallback, useMemo, useRef } from 'react';
+import React, { FC, Fragment, useCallback, useMemo } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
-import { ConfigurableFormInstance } from '@/interfaces';
 import { IDynamicPageProps } from './interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { PageMarkupLoadingError } from './pageMarkupLoadError';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
+import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
 const DynamicPageInternal: FC<IDynamicPageProps> = (props) => {
   const { message } = App.useApp();
-  const formRef = useRef<ConfigurableFormInstance>();
-  const { id, formId, mode } = props;
+  const shaFormRef = useShaFormRef();
+  const { id, formId, mode = 'readonly' } = props;
 
   const formArguments = useMemo(() => {
     return { id };
@@ -19,8 +19,8 @@ const DynamicPageInternal: FC<IDynamicPageProps> = (props) => {
 
   const onSubmitted = useCallback(() => {
     message.success('Data saved successfully!');
-    formRef?.current?.setFormMode('readonly');
-  }, [message, formRef.current]);
+    shaFormRef.current?.setFormMode('readonly');
+  }, [message, shaFormRef]);
 
   return (
     <Fragment>
@@ -36,7 +36,7 @@ const DynamicPageInternal: FC<IDynamicPageProps> = (props) => {
           formArguments={formArguments}
           onSubmitted={onSubmitted}
 
-          formRef={formRef}
+          shaFormRef={shaFormRef}
           markupLoadingError={PageMarkupLoadingError}
         />
       </div>

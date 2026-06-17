@@ -1,17 +1,18 @@
 import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { ConfigurableItemFullName } from '@/interfaces';
-import { Empty, Select, Spin, Typography } from 'antd';
+import { Empty, Select, SelectProps, Spin, Typography } from 'antd';
 import { useGet } from '@/hooks';
 import { AbpWrappedResponse } from '@/interfaces/gql';
 import { useDebouncedCallback } from 'use-debounce';
 import HelpTextPopover from '../helpTextPopover';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
+import { isDefined } from '@/utils/nullables';
 
 interface IConfigurationItemProps {
   name: string;
-  label?: string;
-  description?: string;
+  label?: string | undefined;
+  description?: string | undefined;
 }
 
 const ItemLabel: FC<IConfigurationItemProps> = ({ name, description, label }) => {
@@ -43,8 +44,8 @@ interface IMetadataAutocompleteDto
 interface IOption {
   label: string | ReactNode;
   value: string;
-  rawValue: ConfigurableItemFullName;
-  optionData: IMetadataAutocompleteDto;
+  rawValue: ConfigurableItemFullName | undefined;
+  optionData: IMetadataAutocompleteDto | undefined;
   options?: IOption[];
 }
 
@@ -53,48 +54,47 @@ export type EntityIdentifier = ConfigurableItemFullName | string;
 export type EntityTypeAutocompleteType = 'All' | 'Entity' | 'JsonEntity';
 
 interface IEntityTypeAutocompleteProps {
-  value?: EntityIdentifier;
-  placeholder?: string;
-  baseModel?: EntityIdentifier;
-  readOnly?: boolean;
-  onChange?: (value: EntityIdentifier | null) => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
-  type?: EntityTypeAutocompleteType;
-  size?: SizeType;
+  value?: EntityIdentifier | undefined;
+  placeholder?: string | undefined;
+  baseModel?: EntityIdentifier | undefined;
+  readOnly?: boolean | undefined;
+  onChange?: ((value: EntityIdentifier | null) => void) | undefined;
+  onFocus?: () => void | undefined;
+  type?: EntityTypeAutocompleteType | undefined;
+  size?: SizeType | undefined;
 }
 
 interface ISelectedItem {
-  value?: EntityIdentifier;
-  key?: string;
-  item?: IMetadataAutocompleteDto;
+  value?: EntityIdentifier | undefined;
+  key?: string | undefined;
+  item?: IMetadataAutocompleteDto | undefined;
 }
 
 interface IEntityTypeAutocompletePayload {
-  type?: EntityTypeAutocompleteType;
-  term?: string;
-  selectedValue?: string;
-  baseModel?: EntityIdentifier;
+  type?: EntityTypeAutocompleteType | undefined;
+  term?: string | undefined;
+  selectedValue?: string | undefined;
+  baseModel?: EntityIdentifier | undefined;
 }
 
-const isEntityByEntityId = (item: IMetadataAutocompleteDto, id: EntityIdentifier): Boolean => {
+const isEntityByEntityId = (item: IMetadataAutocompleteDto, id: EntityIdentifier): boolean => {
   return typeof id === 'string'
     ? `${item.className}` === id || `${item.alias}` === id
     : item.module === id.module && item.name === id.name;
 };
 
-const getDisplayText = (item: IMetadataAutocompleteDto): string | null => item ? getEntityTypeName(item) : null;
-const getEntityIdentifier = (item: ConfigurableItemFullName): string | null => item ? getEntityTypeName(item) : null;
+const getDisplayText = (item: IMetadataAutocompleteDto): string | undefined => getEntityTypeName(item);
+const getEntityIdentifier = (item: ConfigurableItemFullName): string | undefined => getEntityTypeName(item);
 
 const getListFetcherQueryParams = (
   type: EntityTypeAutocompleteType,
-  term: string | null,
-  value: EntityIdentifier | null,
+  term: string | undefined,
+  value: EntityIdentifier | undefined,
   baseModel?: EntityIdentifier,
 ): IEntityTypeAutocompletePayload => {
   return {
     type: type ?? 'All',
-    term: term ?? undefined,
+    term: term,
     selectedValue: typeof value === 'string'
       ? value
       : value?.name
@@ -108,6 +108,8 @@ const getListFetcherQueryParams = (
   };
 };
 
+type OnChangeHandler = Required<SelectProps<string, IOption>>["onChange"];
+
 export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) => {
   const {
     value,
@@ -116,16 +118,15 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
     size,
     onChange,
     onFocus,
-    onBlur,
     type = 'All',
     baseModel,
   } = props;
 
   const [selectedItem, setSelectedItem] = useState<ISelectedItem>({});
 
-  const listFetcher = useGet<AbpWrappedResponse<IMetadataAutocompleteDto[], any>, any, IEntityTypeAutocompletePayload>(
+  const listFetcher = useGet<AbpWrappedResponse<IMetadataAutocompleteDto[]>, unknown, IEntityTypeAutocompletePayload>(
     '/api/services/app/Metadata/Autocomplete',
-    { lazy: true, queryParams: getListFetcherQueryParams(type, '', null, baseModel) },
+    { lazy: true, queryParams: getListFetcherQueryParams(type, '', undefined, baseModel) },
   );
 
   const fetchedItems = listFetcher.data?.result;
@@ -143,12 +144,12 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   );
 
   useEffect(() => {
-    if (Boolean(value) && !isEntityTypeIdEqual(value, selectedItem.value)) {
+    if (isDefined(value) && (!isDefined(selectedItem.value) || !isEntityTypeIdEqual(value, selectedItem.value))) {
       // try to find in the fetched items
       const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
       if (foundItem) {
         // set the selected item
-        setSelectedItem({ value: value, key: getDisplayText(foundItem), item: foundItem });
+        setSelectedItem({ value: value, key: getDisplayText(foundItem) ?? "", item: foundItem });
       } else {
         setSelectedItem({});
         // Fetch directly with the new value to avoid selectedItem.value being stale in debouncedFetchItems
@@ -160,10 +161,12 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
           });
       }
     }
+    // TODO V1: review after removal of useGet
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, type, baseModel]);
 
   useEffect(() => {
-    if (Boolean(value) && !isEntityTypeIdEqual(value, selectedItem.value)) {
+    if (isDefined(value) && (!isDefined(selectedItem.value) || !isEntityTypeIdEqual(value, selectedItem.value))) {
       // try to find in the fetched items
       const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
       if (foundItem) {
@@ -171,15 +174,18 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
         setSelectedItem({ value: value, key: getDisplayText(foundItem), item: foundItem });
       }
     }
+    // TODO V1: review after removal of useGet
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listFetcher.data?.result]);
 
-  const onSearch = (term): void => {
+  const onSearch = (term?: string): void => {
     debouncedFetchItems(term);
   };
 
-  const onSelect = (_value, option: IOption): void => {
-    if (!Boolean(onChange)) return;
-    const selectedValue = Boolean(option) ? option.rawValue : undefined;
+  const onSelect: OnChangeHandler = (_value, option) => {
+    if (!isDefined(onChange)) return;
+    if (Array.isArray(option)) return;
+    const selectedValue = isDefined(option) ? option.rawValue : undefined;
     if (selectedValue && option?.optionData) {
       setSelectedItem({
         value: selectedValue,
@@ -187,7 +193,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
         item: option.optionData,
       });
     }
-    onChange(selectedValue);
+    onChange(selectedValue ?? null);
   };
 
   const onClear = (): void => {
@@ -210,7 +216,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
 
         const opt: IOption = {
           label: getDisplayText(item),
-          value: getDisplayText(item),
+          value: getDisplayText(item) ?? "",
           rawValue: {
             name: item.name,
             module: item.module,
@@ -220,7 +226,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
             name: item.name,
             className: item.className,
             module: item.module,
-            description: item.description,
+            description: item.description ?? null,
           },
         };
         let group = result.find((g) => g.value === module);
@@ -228,13 +234,15 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
           group = {
             label: module,
             value: module,
-            optionData: null,
-            rawValue: null,
+            optionData: undefined,
+            rawValue: undefined,
             options: [opt],
           };
           result.push(group);
-        } else
+        } else {
+          group.options = group.options ?? [];
           group.options.push(opt);
+        }
       });
       return result;
     }
@@ -242,7 +250,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   }, [fetchedItems]);
 
   const loading = listFetcher.loading;
-  const loadingInitialItem = loading && Boolean(value) && !selectedItem?.key;
+  const loadingInitialItem = loading && Boolean(value) && !selectedItem.key;
 
   return (
     <Select<string, IOption>
@@ -253,25 +261,24 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
       showSearch={{ onSearch: onSearch, filterOption: false }}
       onChange={onSelect}
       onFocus={onFocusHandler}
-      onBlur={onBlur}
       onClear={onClear}
       placeholder={loadingInitialItem ? 'Loading...' : placeholder ?? 'Type to search'}
-      disabled={loadingInitialItem || readOnly}
-      value={selectedItem?.key ??
+      disabled={(loadingInitialItem || readOnly) ?? false}
+      value={selectedItem.key ??
         (typeof value === 'string'
           ? value
-          : (value ? getEntityIdentifier(value as ConfigurableItemFullName) ?? undefined : undefined))}
+          : (value ? getEntityIdentifier(value) ?? null : null))}
       size={size}
 
       optionRender={(option) => {
         const { data, value } = option;
-        const optionData = data.optionData as IMetadataAutocompleteDto;
+        const optionData = data.optionData;
         return optionData
           ? (
             <ItemLabel
               name={optionData.name}
               label={optionData.name}
-              description={optionData.description}
+              description={optionData.description ?? undefined}
             />
           )
           : <>{value}</>;

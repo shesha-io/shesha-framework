@@ -1,12 +1,11 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
-import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { DropdownComponentDefinition, IDropdownComponentProps } from './model';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps } from './model';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { Dropdown } from '@/components/dropdown/dropdown';
@@ -15,6 +14,8 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, defaultTagStyles } from './utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getBooleanPropertyOrUndefined } from '@/utils/object';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const DropdownComponent: DropdownComponentDefinition = {
   type: 'dropdown',
@@ -26,47 +27,34 @@ const DropdownComponent: DropdownComponentDefinition = {
   icon: <DownSquareOutlined />,
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
-  calculateModel: (model, allData) => ({
-    eventHandlers: customDropDownEventHandler(model, allData),
-    // quick fix not to default to empty string or null while working with multi-mode
-    defaultValue: Array.isArray(model.defaultValue)
-      ? model.defaultValue
-      : model.defaultValue
-        ? evaluateString(model.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) || undefined
-        : undefined,
-  }),
-  Factory: ({ model, calculatedModel }) => {
-    const initialValue = model.defaultValue ? { initialValue: model.defaultValue } : {};
+  Factory: ({ model }) => {
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
     // When enableStyleOnReadonly is true, apply all configured styles in readonly mode
     // When enableStyleOnReadonly is false, apply only minimal styles (font + dimensions)
     const finalStyle = model.readOnly
       ? model.enableStyleOnReadonly
-        ? { ...model.allStyles.fullStyle, overflow: 'auto' }
-        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
-      : { ...model.allStyles.fullStyle, overflow: 'auto' };
+        ? { ...model.allStyles?.fullStyle, overflow: 'auto' }
+        : { ...model.allStyles?.fontStyles, ...model.allStyles?.dimensionsStyles }
+      : { ...model.allStyles?.fullStyle, overflow: 'auto' };
 
     return (
-      <ConfigurableFormItem model={model} {...initialValue}>
-        {(value, onChange) => {
-          const customEvent = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]): void => {
-            customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function')
-              onChange(...args);
-          };
-
+      <ConfigurableFormItem<number | number[]> model={model}>
+        {(value, onChange, _, ctx) => {
           return (
             <Dropdown
               {...model}
               style={finalStyle}
-              {...customEvent}
-              defaultValue={calculatedModel.defaultValue}
-              value={value}
-              size={model?.size}
+              value={value ?? undefined}
+              size={model.size}
               tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
-              onChange={onChangeInternal}
+              onChange={(newValue) => {
+                // value: CustomLabeledValue<T>, option: any
+                // TODO: EVENTS add option to context
+                // addContextData(context, { option, value })
+                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                onChange(newValue ?? null);
+              }}
             />
           );
         }}
@@ -78,13 +66,13 @@ const DropdownComponent: DropdownComponentDefinition = {
   migrator: (m) => m
     .add<IDropdownComponentProps>(0, (prev) => ({
       ...prev,
-      dataSourceType: prev['dataSourceType'] ?? 'values',
-      useRawValues: prev['useRawValues'] ?? false,
+      dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === "string" && ['simple', 'listItem', 'custom'].includes(prev.dataSourceType) ? prev.dataSourceType as DataSourceType : 'values',
+      useRawValues: getBooleanPropertyOrUndefined(prev, "useRawValues") ?? false,
     }))
     .add<IDropdownComponentProps>(1, (prev) => {
       return {
         ...prev,
-        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName) ?? undefined,
       };
     })
     .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -95,10 +83,10 @@ const DropdownComponent: DropdownComponentDefinition = {
       valueFormat: prev.valueFormat ??
         context.isNew
         ? 'simple'
-        : prev['useRawValue'] === true
+        : getBooleanPropertyOrUndefined(prev, "useRawValue") === true
           ? 'simple'
           : 'listItem',
-      editMode: prev?.editMode ?? 'inherited',
+      editMode: prev.editMode ?? 'inherited',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDropdownComponentProps>(7, (prev) => {
@@ -159,10 +147,12 @@ const DropdownComponent: DropdownComponentDefinition = {
     return {
       ...model,
       dataSourceType: isSingleRefList || isMultipleRefList ? 'referenceList' : 'values',
-      referenceListId: {
-        module: metadata.referenceListModule,
-        name: metadata.referenceListName,
-      },
+      referenceListId: !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
+        ? {
+          module: metadata.referenceListModule,
+          name: metadata.referenceListName,
+        }
+        : undefined,
       mode: isMultipleRefList ? 'multiple' : 'single',
       valueFormat: 'simple',
     };

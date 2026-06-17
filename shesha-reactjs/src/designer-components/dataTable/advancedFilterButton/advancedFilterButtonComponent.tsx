@@ -25,13 +25,13 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
     const { styles } = useStyles();
 
     const finalStyle = {
-      ...model.allStyles.dimensionsStyles,
-      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.borderStyles),
-      ...model.allStyles.fontStyles,
-      ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles.backgroundStyles),
-      ...(['primary', 'default', 'dashed'].includes(model.buttonType) && model.allStyles.shadowStyles),
-      ...model.allStyles.stylingBoxAsCSS,
-      ...model.allStyles.jsStyle,
+      ...model.allStyles?.dimensionsStyles,
+      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles?.borderStyles),
+      ...model.allStyles?.fontStyles,
+      ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles?.backgroundStyles),
+      ...(['primary', 'default', 'dashed'].includes(model.buttonType) && model.allStyles?.shadowStyles),
+      ...model.allStyles?.stylingBoxAsCSS,
+      ...model.allStyles?.jsStyle,
     };
 
     useComponentValidation(

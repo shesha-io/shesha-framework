@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { getPropertySettingsFromValue } from './utils/utils';
 import { useStyles } from './styles/styles';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
@@ -13,22 +13,22 @@ import { IPropertySetting, PropertySettingMode } from '@/providers/form/models';
 import { CodeEditor } from '../codeEditor/codeEditor';
 import { useDeepCompareMemo } from '@/hooks';
 
-export type SettingsControlChildrenFunc<T = unknown> = (value: T, onChange: (val: T) => void, propertyName: string) => ReactElement;
-export type SettingsControlChildrenType<T = unknown> = SettingsControlChildrenFunc<T> | ReactNode;
+export type SettingsControlChildrenFunc<T = unknown> = (value: T | undefined, onChange: (val: T) => void, propertyName?: string | undefined) => ReactElement;
+export type SettingsControlChildrenType<T = unknown> = SettingsControlChildrenFunc<T> | ReactElement;
 
-export interface ISettingsControlProps<Value = any> {
+export interface ISettingsControlProps<Value = unknown> {
   propertyName: string;
-  readOnly?: boolean;
-  value?: IPropertySetting<Value>;
-  setHasCode?: (hasCode: boolean) => void;
-  hasCode?: boolean;
+  readOnly?: boolean | undefined;
+  value?: Value | IPropertySetting<Value> | null | undefined;
+  setHasCode?: (hasCode: boolean) => void | undefined;
+  hasCode?: boolean | undefined;
   mode: PropertySettingMode;
-  onChange?: (value: IPropertySetting<Value>) => void;
-  readonly children?: SettingsControlChildrenFunc<Value>;
-  availableConstantsExpression?: string | GetAvailableConstantsFunc;
-  resultTypeExpression?: string | GetResultTypeFunc;
-  useAsyncEvaluation?: boolean;
-  lazy?: boolean;
+  onChange?: ((value: Value | IPropertySetting<Value> | null) => void) | undefined;
+  readonly children?: SettingsControlChildrenFunc<Value> | undefined;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
+  resultTypeExpression?: string | GetResultTypeFunc | undefined;
+  useAsyncEvaluation?: boolean | undefined;
+  lazy?: boolean | undefined;
 }
 
 export const defaultExposedVariables: ICodeExposedVariable[] = [
@@ -46,25 +46,27 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "modal", description: "API for displaying modal dialogs and forms", type: "object" },
 ];
 
-export const SettingsControl = <Value extends unknown = unknown>(props: ISettingsControlProps<Value>): ReactElement => {
+export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Value>): ReactElement => {
   const { onChange } = props;
 
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression, makeComponentsNullable: true });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
-  const setting = getPropertySettingsFromValue(props.value);
+  const setting = getPropertySettingsFromValue<Value>(props.value);
   const { _mode: mode, _code: code } = setting;
 
   const { styles } = useStyles();
 
   const onInternalChange = useCallback((value: IPropertySetting<Value>, m?: PropertySettingMode): void => {
-    const newSetting = { ...value, _mode: (m ?? mode) };
-    const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
+    const newSetting: IPropertySetting<Value> = { ...value, _mode: (m ?? mode) };
+    const newValue = !!newSetting._code || newSetting._mode === 'code'
+      ? newSetting
+      : value._value;
     if (onChange)
-      onChange(newValue);
+      onChange(newValue ?? null);
   }, [mode, onChange]);
 
-  const codeOnChange = (val: string): void => {
+  const codeOnChange = (val: string | null): void => {
     const newValue: IPropertySetting<Value> = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy } as IPropertySetting<Value>;
     onInternalChange(newValue);
   };
@@ -98,9 +100,7 @@ export const SettingsControl = <Value extends unknown = unknown>(props: ISetting
       functionName: functionName,
       useAsyncDeclaration: props.useAsyncEvaluation,
     },
-    type: 'text',
     label: ' ',
-    ghost: true,
     hidden: !setting._code && props.readOnly,
   };
 
@@ -122,7 +122,7 @@ export const SettingsControl = <Value extends unknown = unknown>(props: ISetting
       {mode === 'code' && editor}
       {mode === 'value' && (
         <div className={styles.jsContent} style={{ marginLeft: 0 }}>
-          {props.children(setting?._value, valueOnChange, propertyName)}
+          {props.children?.(setting._value, valueOnChange, propertyName)}
         </div>
       )}
     </div>

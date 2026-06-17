@@ -458,8 +458,7 @@ export class FormBuilderImplementation implements FormBuilder {
       componentName: 'styleRouter',
       label: 'Style router',
       labelAlign: 'right',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-      propertyRouteName: { _code: "return contexts.canvasContext?.designerDevice || 'desktop';", _mode: 'code', _value: '' } as any,
+      propertyRouteName: { _code: "return contexts.canvasContext?.designerDevice || 'desktop';", _mode: 'code', _value: '' },
       components: [...fbf.toJson()],
     });
 

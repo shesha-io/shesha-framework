@@ -4,7 +4,7 @@ import { IButtonGroupItem, IButtonItem } from "@/providers/buttonGroupConfigurat
 import { upgradeActionConfig } from '../../../../components/formDesigner/components/_common-migrations/upgrade-action-owners';
 
 export const migrateV1toV2 = (props: IListComponentProps, context: SettingsMigrationContext): IListComponentProps => {
-  const { buttons } = props;
+  const { buttons = [] } = props;
   const newButtons = buttons.map((item) => {
     if (item.itemType !== "item")
       return item;

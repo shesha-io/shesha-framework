@@ -1,7 +1,7 @@
 import { ConfigurationItemsImport, IImportInterface } from '@/components/configurationFramework/itemsImport';
 import React, {
   FC,
-  MutableRefObject,
+  RefObject,
   useRef,
   useState,
 } from 'react';
@@ -19,7 +19,7 @@ const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsImportFooterProps {
   hideModal: () => void;
-  importerRef: MutableRefObject<IImportInterface | undefined>;
+  importerRef: RefObject<IImportInterface | undefined>;
 }
 
 export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {
@@ -55,7 +55,7 @@ export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterP
 export const useConfigurationItemsImportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
-  const exporterRef = useRef<IImportInterface>();
+  const exporterRef = useRef<IImportInterface>(undefined);
 
   useConfigurableAction({
     name: 'Import items',

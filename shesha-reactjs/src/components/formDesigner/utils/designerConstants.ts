@@ -222,7 +222,7 @@ export const designerConstants = {
    */
   extractMarginsFromStyleBox(
     styleBoxCss: CSSProperties | undefined,
-  ): { marginTop?: number | string; marginRight?: number | string; marginBottom?: number | string; marginLeft?: number | string } {
+  ): { marginTop?: number | string | undefined; marginRight?: number | string | undefined; marginBottom?: number | string | undefined; marginLeft?: number | string | undefined } {
     if (!styleBoxCss) return {};
 
     return {

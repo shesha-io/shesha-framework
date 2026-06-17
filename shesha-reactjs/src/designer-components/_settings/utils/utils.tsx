@@ -37,8 +37,8 @@ export const updateSettingsFromValues = <T extends object = object>(model: T, va
   return copy;
 };
 
-export const getValueFromPropertySettings = (value: unknown): unknown => {
-  if (isPropertySettings(value)) return value._value;
+export const getValueFromPropertySettings = <T = unknown>(value: IPropertySetting<T> | T): T | undefined => {
+  if (isPropertySettings<T>(value)) return value._value;
   else return value;
 };
 
@@ -51,11 +51,11 @@ export const getValuesFromSettings = <T extends object = object>(model: T): T =>
   return copy;
 };
 
-export const getPropertySettingsFromValue = <Value = unknown>(value: Value | IPropertySetting<Value>): IPropertySetting<Value> => {
+export const getPropertySettingsFromValue = <Value = unknown>(value: Value | IPropertySetting<Value> | undefined | null): IPropertySetting<Value> => {
   if (isPropertySettings(value))
     return value as IPropertySetting<Value>;
   else
-    return { _mode: 'value', _code: undefined, _value: value };
+    return { _mode: 'value', _code: undefined, _value: value ?? undefined };
 };
 
 const STANDARD_COMPONENTS_CONTAINER = "components";

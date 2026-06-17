@@ -19,21 +19,19 @@ export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent
 export type NumberFieldFormat = 'integer' | 'decimal' | 'percent' | 'currency' | 'custom';
 
 export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles, IStyleType {
-  numberFormat?: NumberFieldFormat;
-  hideBorder?: boolean;
-  highPrecision?: boolean;
-  numDecimalPlaces?: number;
-  thousandsSeparator?: string;
+  numberFormat?: NumberFieldFormat | undefined;
+  hideBorder?: boolean | undefined;
+  highPrecision?: boolean | undefined;
+  numDecimalPlaces?: number | undefined;
+  thousandsSeparator?: string | undefined;
   customFormat?: string | IPropertySetting<string>;
-  placeholder?: string;
-  prefix?: string;
-  suffix?: string;
-  suffixIcon?: IconType;
-  prefixIcon?: IconType;
+  placeholder?: string | undefined;
+  prefix?: string | undefined;
+  suffix?: string | undefined;
+  suffixIcon?: IconType | undefined;
+  prefixIcon?: IconType | undefined;
 }
 interface INumberFieldComponentCalculatedValues {
-  defaultValue?: string;
-  eventHandlers?: any;
   executeCustomFormat?: (value: unknown, code: string) => string;
 }
 

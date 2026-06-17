@@ -7,6 +7,7 @@ import {
 } from '@/utils/mustacheExpressionFunctions';
 import './styles.css';
 import type { ExpressionContext, ExpressionContextValue } from './contextMetadata';
+import { arrayHasAtLeastNDefined } from '@/utils/array';
 
 export type { ExpressionContext, ExpressionContextValue };
 
@@ -42,14 +43,14 @@ export interface ExpressionEditorProps {
   value: string;
   onChange: (value: string) => void;
   context: ExpressionContext;
-  functions?: ExpressionFunctionDefinition[];
-  disabled?: boolean;
-  placeholder?: string;
-  className?: string;
-  controlClassName?: string;
-  focusRows?: number;
-  inline?: boolean;
-  allowExpand?: boolean;
+  functions?: ExpressionFunctionDefinition[] | undefined;
+  disabled?: boolean | undefined;
+  placeholder?: string | undefined;
+  className?: string | undefined;
+  controlClassName?: string | undefined;
+  focusRows?: number | undefined;
+  inline?: boolean | undefined;
+  allowExpand?: boolean | undefined;
 }
 
 export interface BuildExpressionContextFromPathsOptions {
@@ -230,14 +231,14 @@ const extractToken = (partial: string): { token: string; prefixPath: string[]; i
 
   if (parts.length > 1) {
     return {
-      token: parts[parts.length - 1],
+      token: parts[parts.length - 1]!,
       prefixPath: parts.slice(0, -1),
       inFunctionArg,
     };
   }
 
   return {
-    token: parts[0],
+    token: parts[0] ?? "",
     prefixPath: [],
     inFunctionArg,
   };
@@ -269,11 +270,11 @@ export const tokenizeExpression = (
   const openStack: number[] = [];
 
   while (index < expression.length) {
-    const character = expression[index];
+    const character = expression[index]!;
 
     if (/\s/.test(character)) {
       let cursor = index;
-      while (cursor < expression.length && /\s/.test(expression[cursor])) cursor += 1;
+      while (cursor < expression.length && /\s/.test(expression[cursor]!)) cursor += 1;
       tokens.push({ text: expression.slice(index, cursor), className: '' });
       index = cursor;
       continue;
@@ -291,10 +292,10 @@ export const tokenizeExpression = (
       continue;
     }
 
-    if (/\d/.test(character) || (character === '-' && index + 1 < expression.length && /\d/.test(expression[index + 1]))) {
+    if (/\d/.test(character) || (character === '-' && index + 1 < expression.length && /\d/.test(expression[index + 1]!))) {
       let cursor = index;
       if (expression[cursor] === '-') cursor += 1;
-      while (cursor < expression.length && /[\d.]/.test(expression[cursor])) cursor += 1;
+      while (cursor < expression.length && /[\d.]/.test(expression[cursor]!)) cursor += 1;
       tokens.push({ text: expression.slice(index, cursor), className: 'hl-number' });
       index = cursor;
       continue;
@@ -302,7 +303,7 @@ export const tokenizeExpression = (
 
     if (/[a-zA-Z_]/.test(character)) {
       let cursor = index;
-      while (cursor < expression.length && /[a-zA-Z0-9_]/.test(expression[cursor])) cursor += 1;
+      while (cursor < expression.length && /[a-zA-Z0-9_]/.test(expression[cursor]!)) cursor += 1;
       const word = expression.slice(index, cursor);
 
       if (word === 'true' || word === 'false' || word === 'null') {
@@ -312,7 +313,7 @@ export const tokenizeExpression = (
       }
 
       let lookAhead = cursor;
-      while (lookAhead < expression.length && /\s/.test(expression[lookAhead])) lookAhead += 1;
+      while (lookAhead < expression.length && /\s/.test(expression[lookAhead]!)) lookAhead += 1;
       if (lookAhead < expression.length && expression[lookAhead] === '(' && knownFunctions.has(word.toUpperCase())) {
         tokens.push({ text: word, className: 'hl-function' });
       } else {
@@ -399,12 +400,13 @@ export const highlightText = (text: string, knownFunctions: Set<string>): Highli
   const completeRegex = /\{\{(.*?)\}\}/gs;
   let match: RegExpExecArray | null;
   while ((match = completeRegex.exec(text)) !== null) {
-    blocks.push({
-      start: match.index,
-      end: match.index + match[0].length,
-      inner: match[1],
-      closed: true,
-    });
+    if (arrayHasAtLeastNDefined(match, 2))
+      blocks.push({
+        start: match.index,
+        end: match.index + match[0].length,
+        inner: match[1],
+        closed: true,
+      });
   }
 
   const openIndex = text.lastIndexOf('{{');
@@ -811,7 +813,8 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       case 'Tab':
       case 'Enter':
         event.preventDefault();
-        insertSuggestion(suggestions[activeIndex]);
+        if (suggestions[activeIndex])
+          insertSuggestion(suggestions[activeIndex]);
         break;
       case 'Escape':
         event.preventDefault();
@@ -883,7 +886,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const hasValue = Boolean(value?.trim().length);
   const previewText = hasValue ? toPreviewText(value) : placeholder;
 
-  const renderDropdown = (mode: 'inline' | 'floating'): JSX.Element | false => showDropdown && (
+  const renderDropdown = (mode: 'inline' | 'floating'): React.JSX.Element | false => showDropdown && (
     <div
       ref={dropdownRef}
       className={joinClassNames(
@@ -938,7 +941,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     );
   };
 
-  const renderEditorSurface = (mode: 'inline' | 'floating'): JSX.Element => (
+  const renderEditorSurface = (mode: 'inline' | 'floating'): React.JSX.Element => (
     <div className={joinClassNames('sha-expression-editor-overlay', mode === 'floating' && 'sha-expression-editor-overlay--floating')}>
       <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
         <div className="sha-expression-editor-backdrop-content">

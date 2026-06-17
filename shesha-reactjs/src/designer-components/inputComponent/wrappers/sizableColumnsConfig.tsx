@@ -4,6 +4,12 @@ import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 
 export const SizableColumnsConfigWrapper: FCUnwrapped<ISizableColumnsConfigSettingsInputProps> = (props) => {
-  const { readOnly } = props;
-  return <SizableColumnsList {...props} readOnly={readOnly} />;
+  const { readOnly = false, value } = props;
+  return (
+    <SizableColumnsList
+      {...props}
+      value={value}
+      readOnly={readOnly}
+    />
+  );
 };

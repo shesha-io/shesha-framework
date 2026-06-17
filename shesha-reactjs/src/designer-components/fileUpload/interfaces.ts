@@ -7,17 +7,17 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 export interface IFileUploadProps extends IConfigurableFormComponent, IStyleType {
   ownerId: string;
   ownerType: string | IEntityTypeIdentifier;
-  allowUpload?: boolean;
-  allowReplace?: boolean;
-  allowDelete?: boolean;
-  useSync?: boolean;
-  allowedFileTypes?: string[];
-  isDragger?: boolean;
-  listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
+  allowUpload?: boolean | undefined;
+  allowReplace?: boolean | undefined;
+  allowDelete?: boolean | undefined;
+  useSync?: boolean | undefined;
+  allowedFileTypes?: string[] | undefined;
+  isDragger?: boolean | undefined;
+  listType?: listType | undefined;
+  thumbnailWidth?: string | undefined;
+  thumbnailHeight?: string | undefined;
+  borderRadius?: number | undefined;
+  hideFileName?: boolean | undefined;
 }
 
 export type FileUploadComponentDefinition = ComponentDefinition<"fileUpload", IFileUploadProps>;

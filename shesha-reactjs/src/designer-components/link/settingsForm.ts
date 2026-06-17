@@ -50,7 +50,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  hidden: { _code: 'return  getSettingValue(data?.hasChildren);', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return  getSettingValue(data?.hasChildren);', _mode: 'code', _value: false },
                   inputs: [
                     {
                       id: nanoid(),
@@ -146,7 +146,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return  !getSettingValue(data?.hasChildren);',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   inputs: [
                     {
                       type: 'dropdown',
@@ -180,7 +180,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addCollapsiblePanel({
@@ -191,7 +191,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return  getSettingValue(data?.hasChildren);',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         labelAlign: 'right',
                         parentId: styleRouterId,
                         ghost: true,
@@ -253,7 +253,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return  getSettingValue(data?.direction) !== "horizontal"',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             type: 'dropdown',
@@ -377,7 +377,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return  !getSettingValue(data?.hasChildren);',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             type: 'dropdown',
@@ -388,7 +388,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _code: 'return  getSettingValue(data?.direction) !== "horizontal"',
                               _mode: 'code',
                               _value: false,
-                            } as any,
+                            },
                             jsSetting: true,
                             layout: 'horizontal',
                             dropdownOptions: [

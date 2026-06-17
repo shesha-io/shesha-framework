@@ -4,11 +4,11 @@ import { IListEditorActionsContext, IListEditorStateContext, ListItemFactory } f
 
 export interface IGenericListEditorProviderProps<TItem extends object> {
   initialState: IListEditorStateContext<TItem>;
-  stateContext: Context<IListEditorStateContext<TItem>>;
-  actionContext: Context<IListEditorActionsContext<TItem>>;
+  stateContext: Context<IListEditorStateContext<TItem> | undefined>;
+  actionContext: Context<IListEditorActionsContext<TItem> | undefined>;
   value: TItem[];
   onChange: ValueMutator<TItem[]>;
-  onSelectionChange?: (value: TItem) => void;
+  onSelectionChange?: ((value: TItem | undefined) => void) | undefined;
   initNewItem: ListItemFactory<TItem>;
   readOnly: boolean;
 }
@@ -27,7 +27,7 @@ const GenericListEditorProvider = <TItem extends object>({
   const [selectedItem, insernalSetSelectedItem] = useState<TItem>();
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  const setSelectedItem = (item: TItem): void => {
+  const setSelectedItem = (item: TItem | undefined): void => {
     insernalSetSelectedItem(item);
     if (onSelectionChange)
       onSelectionChange(item);

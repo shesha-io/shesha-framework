@@ -12,16 +12,16 @@ import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useCanvas } from '@/providers/canvas';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { SIDEBAR_COLLAPSE } from '../mainLayout/constant';
-export interface ISidebarContainerProps extends PropsWithChildren<any> {
-  leftSidebarProps?: ISidebarProps;
-  rightSidebarProps?: ISidebarProps;
-  header?: ReactNode | (() => ReactNode);
-  sideBarWidth?: number;
-  allowFullCollapse?: boolean;
-  canZoom?: boolean;
-  configTreePanelSize?: string | number;
-  noPadding?: boolean;
-  viewType?: IViewType;
+export interface ISidebarContainerProps extends PropsWithChildren {
+  leftSidebarProps?: ISidebarProps | undefined;
+  rightSidebarProps?: ISidebarProps | undefined;
+  header?: ReactNode | (() => ReactNode) | undefined;
+  sideBarWidth?: number | undefined;
+  allowFullCollapse?: boolean | undefined;
+  canZoom?: boolean | undefined;
+  configTreePanelSize?: string | number | undefined;
+  noPadding?: boolean | undefined;
+  viewType?: IViewType | undefined;
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -92,6 +92,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
 
   useEffect(() => {
@@ -104,7 +105,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   const isDesigner = formMode === 'designer';
 
-  const renderSidebar = (side: SidebarPanelPosition): React.JSX.Element => {
+  const renderSidebar = (side: SidebarPanelPosition): ReactNode => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
     const hideFullCollapse = allowFullCollapse && !sidebarProps?.open;
 
@@ -126,8 +127,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       <SizableColumns
         sizes={currentSizes}
         expandToMin={false}
-        minSize={sizes?.minSizes}
-        maxSize={sizes?.maxSizes}
+        {...(sizes.minSizes ? { minSize: sizes.minSizes } : {})}
+        {...(sizes.maxSizes ? { maxSizes: sizes.maxSizes } : {})}
         onDrag={handleDragSizesChange}
         onDragEnd={handleDragSizesChange}
         gutterSize={DEFAULT_OPTIONS.gutter}

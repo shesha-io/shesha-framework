@@ -4,14 +4,14 @@ import { useAttachmentsEditorActions, useAttachmentsEditorState } from '@/provid
 import { ButtonProps } from 'antd';
 
 export interface IStoredFilesRendererProps {
-  ownerId?: string;
-  ownerType?: string;
-  isDragger?: boolean;
-  uploadBtnProps?: ButtonProps;
-  disabled?: boolean;
-  accept?: string[];
-  layout?: 'vertical' | 'horizontal' | 'grid';
-  listType?: 'text' | 'thumbnail';
+  ownerId?: string | undefined;
+  ownerType?: string | undefined;
+  isDragger?: boolean | undefined;
+  uploadBtnProps?: ButtonProps | undefined;
+  disabled?: boolean | undefined;
+  accept?: string[] | undefined;
+  layout?: 'vertical' | 'horizontal' | 'grid' | undefined;
+  listType?: 'text' | 'thumbnail' | undefined;
 }
 
 export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
@@ -45,15 +45,12 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
       deleteFile={deleteFile}
       downloadZipFile={downloadZipFile}
       downloadFile={downloadFile}
-      // isDownloadingFileListZip={isInProgress?.downloadZip}
-      // isDownloadZipSucceeded={succeeded?.downloadZip}
       isDragger={isDragger}
       uploadBtnProps={uploadBtnProps}
       disabled={disabled}
       allowedFileTypes={accept}
-      layout={layout}
-      listType={listType}
-    // noFilesCaption={noFilesCaption}
+      layout={layout ?? "vertical"}
+      listType={listType ?? "text"}
     />
   );
 };

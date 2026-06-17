@@ -1,7 +1,7 @@
 import { deepMergeValues } from "@/utils/object";
 import { DeviceTypes, IViewType } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
-import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
+import { RefObject, useCallback, useEffect, useRef } from 'react';
 
 export const getDeviceTypeByWidth = (width: number): DeviceTypes => {
   return width > 724
@@ -152,7 +152,7 @@ export const usePinchZoom = (
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
   isAutoWidth: boolean = false,
-): MutableRefObject<HTMLDivElement | null> => {
+): RefObject<HTMLDivElement | null> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
   const initialZoom = useRef<number>(currentZoom);

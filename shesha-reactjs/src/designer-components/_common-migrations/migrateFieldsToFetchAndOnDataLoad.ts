@@ -1,10 +1,11 @@
 import { IFormSettings } from "@/interfaces";
 import { GqlSubmitterSettings } from "@/providers/form/submitters/interfaces";
+import { getStringPropertyOrUndefined } from "@/utils/object";
 
 export const migrateFieldsToFetchAndOnDataLoad = (prev: IFormSettings): IFormSettings => {
   const { dataLoadersSettings, ...restProps } = prev;
   const fieldsToFetch = prev["fieldsToFetch"];
-  const onDataLoad = prev["onDataLoad"];
+  const onDataLoad = getStringPropertyOrUndefined(prev, "onDataLoad");
 
   const { gql, custom } = dataLoadersSettings ?? {};
 

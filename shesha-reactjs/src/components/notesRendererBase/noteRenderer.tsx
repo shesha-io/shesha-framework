@@ -17,8 +17,8 @@ export type NoteRendererProps = {
   note: NoteModel;
   allowEdit: boolean;
   allowDelete: boolean;
-  minLength?: number;
-  maxLength?: number;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
   showCharCount: boolean;
   updateNoteAsync: (args: UpdateNoteArgs) => Promise<void>;
   deleteNoteAsync: (args: DeleteNoteArgs) => Promise<void>;

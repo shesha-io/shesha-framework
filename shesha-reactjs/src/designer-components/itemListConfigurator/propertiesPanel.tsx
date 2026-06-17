@@ -3,8 +3,8 @@ import { ItemPropertiesRendererProps } from '@/components/listEditorWithProperti
 import { ConfigurableFormInstance } from '@/interfaces';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
-import { Empty, Form } from 'antd';
-import React, { useMemo, useRef } from 'react';
+import { Form } from 'antd';
+import React, { useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ItemSettingsMarkupFactory } from './interfaces';
 import { ConfigurableForm } from '@/components/configurableForm';
@@ -18,45 +18,32 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
 
   const [form] = Form.useForm();
 
-  const formRef = useRef<ConfigurableFormInstance>(null);
+  const formRef = useRef<ConfigurableFormInstance<TItem>>(undefined);
 
   const debouncedSave = useDebouncedCallback(
     (values) => {
-      onChange?.({ ...item, ...values });
+      onChange({ ...item, ...values } as TItem);
     },
     // delay in ms
     300,
   );
 
-  const editor = useMemo(() => {
-    const emptyEditor = null;
-    if (!item) return emptyEditor;
-
-    const markup = settingsMarkupFactory(item) ?? [];
-    return (
-      <SourceFilesFolderProvider folder={`item-${item.id}`}>
-        <ConfigurableForm
-          // key={selectedItemId} // rerender for each item to initialize all controls
-          formRef={formRef}
-          labelCol={{ span: 24 }}
-          wrapperCol={{ span: 24 }}
-          mode={readOnly ? 'readonly' : 'edit'}
-          markup={markup}
-          form={form}
-          initialValues={item}
-          onValuesChange={debouncedSave}
-          className={sheshaStyles.verticalSettingsClass}
-          isSettingsForm={true}
-        />
-      </SourceFilesFolderProvider>
-    );
-  }, [item]);
-
-  return Boolean(item)
-    ? (<>{editor}</>)
-    : (
-      <div>
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
-      </div>
-    );
+  const markup = settingsMarkupFactory(item);
+  return (
+    <SourceFilesFolderProvider folder={`item-${item.id}`}>
+      <ConfigurableForm<TItem>
+        // key={selectedItemId} // rerender for each item to initialize all controls
+        formRef={formRef}
+        labelCol={{ span: 24 }}
+        wrapperCol={{ span: 24 }}
+        mode={readOnly ? 'readonly' : 'edit'}
+        markup={markup}
+        form={form}
+        initialValues={item}
+        onValuesChange={debouncedSave}
+        className={sheshaStyles.verticalSettingsClass}
+        isSettingsForm={true}
+      />
+    </SourceFilesFolderProvider>
+  );
 };

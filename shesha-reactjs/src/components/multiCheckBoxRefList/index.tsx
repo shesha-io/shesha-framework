@@ -18,14 +18,14 @@ export const MultiCheckBoxRefList: FC<IMultiCheckBoxRefListProps> = ({
   onChange,
   columns = 3,
 }) => {
-  const { data: refList, loading: refListLoading } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName));
+  const { data: refList, loading: refListLoading } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName) ?? undefined);
 
   return (
     <ShaSpin spinning={refListLoading}>
       <Row>
         {refList?.items?.map(({ item, itemValue }) => (
           <Col key={itemValue} span={24 / columns}>
-            <Checkbox key={itemValue} onChange={(e) => onChange(e, itemValue)}>
+            <Checkbox key={itemValue} onChange={(e) => onChange?.(e, itemValue)}>
               {item}
             </Checkbox>
           </Col>

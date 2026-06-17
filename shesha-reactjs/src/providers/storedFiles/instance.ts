@@ -13,6 +13,7 @@ import { fileListReferenceEqual, getFileExtension, storedFileDtoToModel } from "
 import { OnFileDownloaded, OnFileListChanged } from "./models";
 import { isOwnerReferenceValid } from "@/utils/entity";
 import { isEntityTypeIdEmpty } from "../metadataDispatcher/entities/utils";
+import { isFile } from "@/utils/fileValidation";
 
 export type StoredFilesProcessorArgs = {
   httpClient: HttpClientApi;
@@ -131,6 +132,8 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       };
 
       const { file, filesCategory, ownerId } = uploadArgs;
+      if (!isFile(file))
+        throw new Error('File is not a file');
 
       if (isNullOrWhiteSpace(ownerId) && !this.#delayedUpdateClient)
         throw new Error("Delayed update client is mandatory if owner id is not defined");

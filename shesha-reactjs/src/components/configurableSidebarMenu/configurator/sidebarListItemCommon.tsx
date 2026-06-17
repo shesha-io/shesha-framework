@@ -6,8 +6,8 @@ import { ItemChangeDetails, NestedItemsRenderingArgs } from '@/components/listEd
 
 export interface ISidebarItemCommonProps {
   item: ISidebarMenuItem;
-  onChange: (newValue: ISidebarMenuItem, changeDetails: ItemChangeDetails) => void;
-  nestedRenderer?: (args: NestedItemsRenderingArgs<ISidebarMenuItem>) => React.ReactNode | null;
+  onChange: (newValue: ISidebarMenuItem, changeDetails?: ItemChangeDetails | undefined) => void;
+  nestedRenderer?: ((args: NestedItemsRenderingArgs<ISidebarMenuItem>) => React.ReactNode | null) | undefined;
   initNewItem: (items: ISidebarMenuItem[]) => ISidebarMenuItem;
 }
 
@@ -19,7 +19,7 @@ export const SidebarListItemCommon: FC<ISidebarItemCommonProps> = ({ item, onCha
         key={item.id}
         item={item}
         containerRendering={(args) => {
-          return nestedRenderer({
+          return nestedRenderer?.({
             ...args,
             initNewItem: initNewItem,
           });

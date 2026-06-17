@@ -1,5 +1,5 @@
 import FileSaver from 'file-saver';
-import React, { MutableRefObject, useMemo, useState, FC } from 'react';
+import React, { RefObject, useMemo, useState, FC, Key } from 'react';
 
 import {
   Button,
@@ -11,6 +11,7 @@ import {
   Spin,
   Switch,
   Tree,
+  TreeProps,
 } from 'antd';
 import { getFileNameFromResponse } from '@/utils/fetchers';
 import { useHttpClient } from '@/providers';
@@ -20,16 +21,17 @@ import { useTreeForExport } from '@/configuration-studio/apis';
 import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from '@/configuration-studio/models';
 import { DownOutlined } from '@ant-design/icons';
 import { getTitleWithHighlight } from '@/configuration-studio/filter-utils';
+import { isDefined } from '@/utils/nullables';
 
 export interface IExportInterface {
-  exportExecuter: () => Promise<any>;
+  exportExecuter: () => Promise<void>;
   canExport: boolean;
   exportInProgress: boolean;
 }
 
 export interface IConfigurationItemsExportProps {
   onExported?: () => void;
-  exportRef: MutableRefObject<IExportInterface | undefined>;
+  exportRef: RefObject<IExportInterface | undefined>;
 }
 
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
@@ -37,7 +39,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
   const [exportDependencies, setExportDependencies] = useState<boolean>(true);
   const httpClient = useHttpClient();
 
-  const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [checkedIds, setCheckedIds] = useState<Key[]>([]);
   const [exportInProgress, setExportInProgress] = useState(false);
   const { data: treeData, error, isLoading, mutate: refreshTree } = useTreeForExport();
 
@@ -96,7 +98,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
         const fileName = getFileNameFromResponse(response) ?? 'package.zip';
         FileSaver(new Blob([response.data]), fileName, { autoBom: false });
         setExportInProgress(false);
-        if (Boolean(props.onExported)) props.onExported();
+        if (isDefined(props.onExported))
+          props.onExported();
       })
       .catch((e) => {
         setExportInProgress(false);
@@ -115,8 +118,9 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     void refreshTree();
   };
 
-  const onCheck = (checkedIds: string[]): void => {
-    setCheckedIds(checkedIds);
+  const onCheck: TreeProps["onCheck"] = (checkedIds): void => {
+    if (Array.isArray(checkedIds))
+      setCheckedIds(checkedIds);
   };
 
   return (

@@ -12,20 +12,20 @@ type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 interface IProps {
   readonly newPassword: string;
   readonly repeatPassword: string;
-  readonly setNewPassword: (value: string | ChangeEvent) => void;
-  readonly setRepeatPassword: (value: string | ChangeEvent) => void;
+  readonly setNewPassword: (value: string) => void;
+  readonly setRepeatPassword: (value: string) => void;
   readonly isPasswordOk: (value: boolean) => void;
-  readonly errorMessage?: string;
-  readonly passwordLength?: number;
+  readonly errorMessage?: string | undefined;
+  readonly passwordLength?: number | undefined;
 
-  readonly inputProps?: InputProps;
-  readonly placeholder?: string;
-  readonly confirmPlaceholder?: string;
-  readonly formProps?: FormProps;
-  readonly formItemProps?: FormItemProps;
-  readonly formItemConfirmProps?: FormItemProps;
-  readonly style?: React.CSSProperties;
-  readonly repeatPropertyName?: string;
+  readonly inputProps?: InputProps | undefined;
+  readonly placeholder?: string | undefined;
+  readonly confirmPlaceholder?: string | undefined;
+  readonly formProps?: FormProps | undefined;
+  readonly formItemProps?: FormItemProps | undefined;
+  readonly formItemConfirmProps?: FormItemProps | undefined;
+  readonly style?: React.CSSProperties | undefined;
+  readonly repeatPropertyName?: string | undefined;
 }
 
 const FormItem = Form.Item;
@@ -47,10 +47,7 @@ const PasswordInputCombo: FC<IProps> = ({
   style,
   repeatPropertyName,
 }) => {
-  useEffect(() => isPasswordOk(isSamePassword(newPassword, repeatPassword, passwordLength)), [
-    newPassword,
-    repeatPassword,
-  ]);
+  useEffect(() => isPasswordOk(isSamePassword(newPassword, repeatPassword, passwordLength)), [isPasswordOk, newPassword, passwordLength, repeatPassword]);
 
   const onPasswordChange = (e: ChangeEvent): void => setNewPassword(e.target.value);
   const onConfirmPasswordChange = (e: ChangeEvent): void => setRepeatPassword(e.target.value);
@@ -75,7 +72,7 @@ const PasswordInputCombo: FC<IProps> = ({
       >
         <FormItem
           {...(formItemConfirmProps || formItemProps)}
-          name={repeatPropertyName || formItemProps.name}
+          name={repeatPropertyName ?? (formItemProps?.name ? String(formItemProps.name) : '')}
           {...confirmPasswordValidations(newPassword, repeatPassword, errorMessage)}
         >
           <Password

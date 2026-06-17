@@ -1,9 +1,10 @@
 import { Editor, Monaco } from '@monaco-editor/react';
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef } from 'react';
 import { editor } from 'monaco-editor';
-import { ConstrainedInstance, TextRange } from './utils';
+import { TextRange } from './utils';
 import { ValueInEditableRanges, constrainedMonaco, isConstrainedTextModel } from './constrainedWrapper';
 import { IHasCodeTemplate, IMonacoEditorProps } from '../models';
+import { CodeRestriction, ConstrainedInstance } from 'constrained-editor-plugin';
 
 export interface IConstrainedCodeEditorProps extends IMonacoEditorProps, IHasCodeTemplate {
 
@@ -25,23 +26,23 @@ export const ConstrainedCodeEditor: FC<IConstrainedCodeEditorProps> = (props) =>
     onMount: baseOnMount,
     ...restEditorProps
   } = props;
-  const editorRef = useRef<editor.IStandaloneCodeEditor>();
-  const monacoRef = useRef<Monaco>();
-  const constrainedInstanceRef = useRef<ConstrainedInstance>();
+  const editorRef = useRef<editor.IStandaloneCodeEditor>(undefined);
+  const monacoRef = useRef<Monaco>(undefined);
+  const constrainedInstanceRef = useRef<ConstrainedInstance>(undefined);
 
   const unwrappedCode = useRef<string>(value);
-  const restrictions = useRef([]);
+  const restrictions = useRef<CodeRestriction[]>([]);
 
-  const onDidChangeContentInEditableRange = (currentlyChangedContent: ValueInEditableRanges): void => {
+  const onDidChangeContentInEditableRange = useCallback((currentlyChangedContent: ValueInEditableRanges): void => {
     const newCode = currentlyChangedContent[WRAPPED_CODE_RANGE];
     unwrappedCode.current = newCode;
-    onChange(newCode);
-  };
+    onChange?.(newCode ?? "");
+  }, [onChange]);
 
   const updateRestrictions = (constrainedInstance: ConstrainedInstance, model: editor.ITextModel, ranges: TextRange[]): void => {
     constrainedInstance.removeRestrictionsIn(model);
     restrictions.current = ranges
-      ? ranges.map((range) => ({
+      ? ranges.map<CodeRestriction>((range) => ({
         label: WRAPPED_CODE_RANGE,
         range: [range.start.line, range.start.column, range.end.line, range.end.column],
         allowMultiline: true,
@@ -51,24 +52,28 @@ export const ConstrainedCodeEditor: FC<IConstrainedCodeEditorProps> = (props) =>
       constrainedInstance.addRestrictionsTo(model, restrictions.current);
   };
 
-  const initWrapper = (value: string): void => {
+  const initWrapper = useCallback((value: string | undefined): void => {
     const editor = editorRef.current;
+    if (!editor || !constrainedInstanceRef.current || !template)
+      return;
 
-    const templateResponse = template(value);
+    const templateResponse = template(value ?? "");
     const model = editor.getModel();
+    if (!model)
+      return;
     model.setValue(templateResponse.content);
 
     updateRestrictions(constrainedInstanceRef.current, model, templateResponse.editableRanges);
 
     if (isConstrainedTextModel(model))
       model.onDidChangeContentInEditableRange(onDidChangeContentInEditableRange);
-  };
+  }, [onDidChangeContentInEditableRange, template]);
 
   useEffect(() => {
     if (value !== unwrappedCode.current) {
       initWrapper(value);
     }
-  }, [value]);
+  }, [initWrapper, value]);
 
   const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco): void => {
     editorRef.current = editor;

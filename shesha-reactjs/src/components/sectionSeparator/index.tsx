@@ -8,26 +8,24 @@ import { titleDefaultStyles } from './utils';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 
 export interface ISectionSeparatorProps {
-  id?: string;
   title?: string | ReactNode;
-  containerStyle?: CSSProperties;
-  titleStyle?: CSSProperties;
-  tooltip?: string;
-  inline?: boolean;
-  lineColor?: string;
-  lineThickness?: number;
-  lineWidth?: string;
-  lineHeight?: string;
-  titleMargin?: number;
-  marginBottom?: string | number;
-  labelAlign?: 'left' | 'center' | 'right';
-  orientation?: 'horizontal' | 'vertical';
-  fontSize?: string | number;
-  lineType?: string;
+  containerStyle?: CSSProperties | undefined;
+  titleStyle?: CSSProperties | undefined;
+  tooltip?: string | undefined;
+  inline?: boolean | undefined;
+  lineColor?: string | undefined;
+  lineThickness?: number | undefined;
+  lineWidth?: string | undefined;
+  lineHeight?: string | undefined;
+  titleMargin?: number | undefined;
+  marginBottom?: string | number | undefined;
+  labelAlign?: 'left' | 'center' | 'right' | undefined;
+  orientation?: 'horizontal' | 'vertical' | undefined;
+  fontSize?: string | number | undefined;
+  lineType?: string | undefined;
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
-  id,
   labelAlign = 'left',
   inline,
   lineType = 'solid',
@@ -117,7 +115,6 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
         height: 'max-content',
         width: addPx(lineWidth, allData) ?? '100%',
       }}
-      key={id}
     >
       <div className={!inline || !title ? styles.shaSectionSeparator : ''} style={borderStyle}>
         {renderTitle()}

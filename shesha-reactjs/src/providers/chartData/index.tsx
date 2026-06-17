@@ -54,6 +54,8 @@ const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ chi
         cleanData,
         setAxisPropertyLabel,
         setValuePropertyLabel,
+        onFilter: () => { },
+        setIsFilterVisible: () => { },
       }}
       >
         {children}

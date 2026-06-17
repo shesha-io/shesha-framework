@@ -1,9 +1,9 @@
 import CrudOperationsCell from '@/components/dataTable/cell/crudOperationsCell';
 import { CreateDataCell } from '@/components/dataTable/cell/dataCell';
 import { DataTableColumn } from '@/components/dataTable/interfaces';
-import { FormIdentifier, useMetadata } from '@/providers';
+import { FormIdentifier, useMetadataOrUndefined } from '@/providers';
 import React, { ReactNode } from 'react';
-import { Cell, ColumnInstance, HeaderPropGetter } from 'react-table';
+import { ColumnInstance, HeaderPropGetter } from 'react-table';
 import { toCamelCase } from '@/utils/string';
 import { asPropertiesArray } from '@/interfaces/metadata';
 import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils/datatable';
@@ -25,53 +25,54 @@ const cellProps: HeaderPropGetter<ITableRowData> = (props) => [
 
 export interface INewRowCellProps<D extends ITableRowData = ITableRowData> {
   column: ColumnInstance<D>;
-  row?: ColumnInstance<D>[];
-  rowIndex?: number;
-  parentFormId?: FormIdentifier;
+  row: ColumnInstance<D>[];
+  rowIndex?: number | undefined;
+  parentFormId?: FormIdentifier | undefined;
 }
 
 export const NewRowCell = <D extends ITableRowData = ITableRowData>({ column, row, parentFormId }: INewRowCellProps<D>): ReactNode => {
-  const columnConfig = (column as DataTableColumn<D>)?.originalConfig;
+  const columnConfig = (column as DataTableColumn<D>).originalConfig;
 
-  const metadata = useMetadata(false)?.metadata;
+  const metadata = useMetadataOrUndefined()?.metadata;
   const propertyMeta = asPropertiesArray(metadata?.properties, []).find(({ path }) => toCamelCase(path) === column.id);
   const { styles } = useStyles();
   const { key, ...headerProps } = column.getHeaderProps(cellProps as HeaderPropGetter<D>);
-  const anchored = getColumnAnchored((column as any)?.anchored);
+  const anchored = getColumnAnchored(column.anchored);
   const index = row.indexOf(column);
-  const isFixed = anchored?.isFixed;
+  const isFixed = anchored.isFixed;
 
   let leftColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
   let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
-  const rowColumns = row.map((col) => ({ column: col })) as Cell<any, any, any>[];
+  const rowColumns = row.map((col) => ({ column: col }));
 
-  if (anchored?.isFixed && index > 0) {
+  if (anchored.isFixed && index > 0) {
     // use first row cell values to calculate the left shift
 
-    if (anchored?.direction === 'right') {
+    if (anchored.direction === 'right') {
       const totalColumns = row.length;
       rightColumn.shadowPosition = totalColumns - calculateTotalColumnsOnFixed(rowColumns, 'right');
 
-      rightColumn.shift = calculatePositionShift(rowColumns, index, totalColumns - 1)?.reduce(
+      rightColumn.shift = calculatePositionShift(rowColumns, index, totalColumns - 1).reduce(
         (acc, curr) => (acc as number) + curr,
         0,
       );
-    } else if (anchored?.direction === 'left') {
+    } else if (anchored.direction === 'left') {
       leftColumn.shadowPosition = calculateTotalColumnsOnFixed(rowColumns, 'left') - 1;
 
-      leftColumn.shift = calculatePositionShift(rowColumns, 0, index)?.reduce((acc, curr) => (acc as number) + curr, 0);
+      leftColumn.shift = calculatePositionShift(rowColumns, 0, index).reduce((acc, curr) => acc + curr, 0);
     }
   }
 
-  const direction = anchored?.direction === 'left' ? 'left' : 'right';
+  const direction = anchored.direction === 'left' ? 'left' : 'right';
 
   const shiftedBy = leftColumn.shift || rightColumn.shift;
 
-  delete headerProps.style.position;
+  if (headerProps.style && "position" in headerProps.style)
+    delete headerProps.style.position;
 
   const fixedStyled: React.CSSProperties = {
-    [direction]: anchored?.direction && shiftedBy,
+    [direction]: anchored.direction && shiftedBy,
     height: '100%',
   };
 
@@ -88,11 +89,11 @@ export const NewRowCell = <D extends ITableRowData = ITableRowData>({ column, ro
   return (
     <div
       {...headerProps}
-      style={{ ...headerProps?.style, ...fixedStyled }}
+      style={{ ...headerProps.style, ...fixedStyled }}
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
-        [anchored?.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
+        [anchored.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
         [styles.shaCrudCell]: columnConfig?.columnType === 'crud-operations',
       })}
     >

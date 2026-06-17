@@ -9,6 +9,7 @@ import { throwError } from '@/utils/errors';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
+import { ContextOnChangeData } from '../dataContextProvider/contexts';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,
@@ -81,7 +82,7 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     /* NEW_ACTION_GOES_HERE */
   }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setCanvasAutoZoom, setConfigTreePanelSize, setViewType]);
 
-  const contextOnChangeData = useCallback((_: unknown, changedData: ICanvasStateContext) => {
+  const contextOnChangeData: ContextOnChangeData<ICanvasStateContext> = useCallback((_, changedData) => {
     if (!isDefined(changedData))
       return;
 
@@ -91,7 +92,7 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   }, [state.designerDevice, setDesignerDevice]);
 
   return (
-    <DataContextBinder
+    <DataContextBinder<ICanvasStateContext>
       id={SheshaCommonContexts.CanvasContext}
       name={SheshaCommonContexts.CanvasContext}
       description="Canvas context"

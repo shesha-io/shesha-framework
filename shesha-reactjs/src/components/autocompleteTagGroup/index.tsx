@@ -1,29 +1,28 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { InputProps, Tag } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Autocomplete } from '@/components/autocomplete';
 import Show from '@/components/show';
 
 export interface IAutocompleteTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value?: string[];
+  value?: string[] | null | undefined;
   defaultValue?: string;
   autocompleteUrl: string;
-  onChange?: (values?: string[]) => void;
+  onChange?: (values: string[] | null) => void;
 }
 
 interface IAutocompleteTagGroupState {
-  inputVisible?: boolean;
-  inputValue?: string;
+  inputVisible: boolean;
+  inputValue: string;
 }
 
 export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
-  ({ value = [], onChange, defaultValue, autocompleteUrl, ...rest }) => {
+  ({ value: nullableValue, onChange, defaultValue, autocompleteUrl, ...rest }) => {
+    const value = nullableValue ?? [];
     const [state, setState] = useState<IAutocompleteTagGroupState>({ inputVisible: false, inputValue: '' });
 
-    const inputRef = React.useRef<any>(null);
-
-    const handleClose = (removedTag): void => {
-      const tags = value?.filter((tag) => tag !== removedTag);
+    const handleClose = (removedTag: string): void => {
+      const tags = value.filter((tag) => tag !== removedTag);
 
       if (onChange) {
         onChange(tags);
@@ -34,16 +33,13 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
       setState({ ...state, inputVisible: true });
     };
 
-    useEffect(() => {
-      if (state.inputVisible) {
-        inputRef?.current?.focus({});
-      }
-    }, [state.inputVisible]);
+    const handleInputChange = (selected: string | string[] | null): void => {
+      if (Array.isArray(selected))
+        return;
 
-    const handleInputChange = (selected: string): void => {
       let localValue = value;
 
-      if (selected && localValue?.indexOf(selected) === -1) {
+      if (selected && localValue.indexOf(selected) === -1) {
         localValue = [...localValue, selected];
 
         if (onChange) {
@@ -58,7 +54,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
     };
 
     const onTagEdit = (tag: string): void => {
-      const newTags = value?.filter((v) => v !== tag);
+      const newTags = value.filter((v) => v !== tag);
       const { inputValue: currentValue } = state;
 
       setState({
@@ -66,13 +62,13 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
         inputValue: tag,
       });
 
-      onChange(currentValue?.trim() ? [...newTags, currentValue] : newTags);
+      onChange?.(currentValue?.trim() ? [...newTags, currentValue] : newTags);
     };
 
     const forMap = (tag: string): React.JSX.Element => {
       const tagElem = (
         <>
-          <Show when={!rest?.readOnly}>
+          <Show when={!rest.readOnly}>
             <Tag
               closable
               onClose={(e) => {
@@ -87,7 +83,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
               {tag}
             </Tag>
           </Show>
-          <Show when={rest?.readOnly}>
+          <Show when={rest.readOnly ?? false}>
             <Tag>{tag}</Tag>
           </Show>
         </>
@@ -110,18 +106,17 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
 
         <Show when={inputVisible}>
           <Autocomplete.Raw
-            defaultValue={defaultValue}
             size="small"
             value={inputValue}
             onChange={handleInputChange}
-            readOnly={rest?.readOnly}
+            readOnly={rest.readOnly}
             allowClear={true}
             dataSourceType="url"
             dataSourceUrl={autocompleteUrl}
           />
         </Show>
 
-        <Show when={!inputVisible && !rest?.readOnly}>
+        <Show when={!inputVisible && !rest.readOnly}>
           <Tag onClick={showInput} className="site-tag-plus">
             <PlusOutlined /> New value
           </Tag>

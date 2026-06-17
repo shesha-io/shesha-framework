@@ -11,6 +11,7 @@ import _ from 'lodash';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
 import { ConfigurableFormComponentDesigner } from '@/components/formDesigner/configurableFormComponent';
 import { ISettingContainerProps } from './settingComponentContainer';
+import { isDefined } from '@/utils/nullables';
 
 export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
   const {
@@ -32,16 +33,18 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
 
   const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
+  const onSetList = (newState: ItemInterface[]): void => {
     if (!formDesigner.hasDragged) return;
 
-    if (newState?.length === 2) {
+    if (newState.length === 2) {
       return;
     }
     const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
     if (newComponentIndex > -1) {
       // add new component
       const toolboxComponent = newState[newComponentIndex];
+      if (!isDefined(toolboxComponent))
+        throw new Error("toolboxComponent is undefined, cannot add component");
 
       addComponent({
         containerId,
@@ -61,7 +64,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
     startDragging();
   };
 
-  const onDragEnd = (_evt): void => {
+  const onDragEnd = (): void => {
     endDragging();
   };
 
@@ -101,7 +104,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
           style={{ ...style, ...incomingStyle }}
         >
           {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
-          {component?.id && <ConfigurableFormComponentDesigner componentModel={component} />}
+          {component.id && <ConfigurableFormComponentDesigner componentModel={component} />}
         </ReactSortable>
       </>
     </ConditionalWrap>

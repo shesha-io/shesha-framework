@@ -1,49 +1,42 @@
-import { JoditEditorProps } from 'jodit-react';
 import { IConfigurableFormComponent } from '@/interfaces';
 
 export interface IRichTextEditorProps extends IConfigurableFormComponent {
-  placeholder?: string;
-  toolbar?: boolean;
-  textIcons?: boolean;
-  preset?: 'inline';
-  toolbarButtonSize?: 'tiny' | 'xsmall' | 'middle' | 'large';
-  toolbarStickyOffset?: number;
-  theme?: string;
-  toolbarSticky?: boolean;
-  autofocus?: boolean;
-  useSearch?: boolean;
-  iframe?: boolean;
-  spellcheck?: boolean;
-  direction?: 'rtl' | 'ltr';
-  enter?: 'P' | 'DIV' | 'BR';
-  defaultMode?: '1' | '2' | '3';
-  showCharsCounter?: boolean;
-  showWordsCounter?: boolean;
-  showXPathInStatusbar?: boolean;
-  disablePlugins?: string[];
-  insertImageAsBase64URI?: boolean;
+  placeholder?: string | undefined;
+  toolbar?: boolean | undefined;
+  textIcons?: boolean | undefined;
+  preset?: 'inline' | undefined;
+  toolbarButtonSize?: 'tiny' | 'xsmall' | 'middle' | 'large' | undefined;
+  toolbarStickyOffset?: number | undefined;
+  theme?: string | undefined;
+  toolbarSticky?: boolean | undefined;
+  autofocus?: boolean | undefined;
+  useSearch?: boolean | undefined;
+  iframe?: boolean | undefined;
+  spellcheck?: boolean | undefined;
+  direction?: 'rtl' | 'ltr' | undefined;
+  enter?: 'p' | 'div' | 'br' | undefined;
+  defaultMode?: '1' | '2' | '3' | undefined;
+  showCharsCounter?: boolean | undefined;
+  showWordsCounter?: boolean | undefined;
+  showXPathInStatusbar?: boolean | undefined;
+  disablePlugins?: string[] | undefined;
+  insertImageAsBase64URI?: boolean | undefined;
   // Sizes
-  autoHeight?: boolean;
-  allowResizeY?: boolean;
-  height?: number;
-  minHeight?: number;
-  maxHeight?: number;
+  autoHeight?: boolean | undefined;
+  allowResizeY?: boolean | undefined;
+  height?: number | undefined;
+  minHeight?: number | undefined;
+  maxHeight?: number | undefined;
 
-  autoWidth?: boolean;
-  allowResizeX?: boolean;
-  width?: number;
-  minWidth?: number;
-  maxWidth?: number;
+  autoWidth?: boolean | undefined;
+  allowResizeX?: boolean | undefined;
+  width?: number | undefined;
+  minWidth?: number | undefined;
+  maxWidth?: number | undefined;
 
   // State
-  saveHeightInStorage?: boolean;
-  saveModeInStorage?: boolean;
-  askBeforePasteHTML?: boolean;
-  askBeforePasteFromWord?: boolean;
-}
-
-export interface IJoditProps extends Partial<JoditEditorProps['config']> {
-  showCharsCounter?: boolean;
-  showWordsCounter?: boolean;
-  showXPathInStatusbar?: boolean;
+  saveHeightInStorage?: boolean | undefined;
+  saveModeInStorage?: boolean | undefined;
+  askBeforePasteHTML?: boolean | undefined;
+  askBeforePasteFromWord?: boolean | undefined;
 }
