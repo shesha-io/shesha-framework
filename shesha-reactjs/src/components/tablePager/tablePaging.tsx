@@ -74,7 +74,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
         className={styles.pager}
         size="small"
         total={totalRows}
-        pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
+        pageSizeOptions={pageSizeOptions.map((s) => `${s}`)}
         current={currentPage}
         pageSize={selectedPageSize}
         showSizeChanger={false}

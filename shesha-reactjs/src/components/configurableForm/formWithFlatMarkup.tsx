@@ -38,14 +38,11 @@ export const FormWithFlatMarkup = <TValues extends object = object>(props: IForm
 
   const { formInfoBlockVisible } = useAppConfigurator();
 
-  if (!formFlatMarkup)
-    return null;
-
   const showFormInfo = isDefined(persistedFormProps) && formInfoBlockVisible;
 
   return (
     <FormInfo visible={showFormInfo} formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated}>
-      <ConditionalMetadataProvider modelType={formSettings?.modelType}>
+      <ConditionalMetadataProvider modelType={formSettings.modelType}>
         <FormFlatMarkupProvider markup={formFlatMarkup}>
           <FormProvider<TValues>
             shaForm={shaForm}

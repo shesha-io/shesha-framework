@@ -265,7 +265,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     );
 
   const renderFileItem = (file: UploadFile): React.JSX.Element => {
-    const showThumbnailControls = !isUploading && listType === 'thumbnail';
+    const showThumbnailControls = listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
     return (
@@ -321,7 +321,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     itemRender: (_originNode, file) => renderFileItem(file),
   };
 
-  const showUploadButton = allowUpload && !isUploading;
+  const showUploadButton = allowUpload;
 
   const uploadButton = (
     allowUpload && (
@@ -371,18 +371,16 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
     return (
       <div>
-        {!isUploading && (
-          <Upload {...fileProps} listType={antListType}>
-            {showUpload && uploadButton}
-          </Upload>
-        )}
+        <Upload {...fileProps} listType={antListType}>
+          {!fileInfo && uploadButton}
+        </Upload>
       </div>
     );
   };
 
   return (
     <>
-      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : !isUploading ? renderUploader() : <SyncOutlined spin style={{ color: theme.application?.primaryColor }} />}</span>
+      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>
       {previewOpen && (
         <Image
           styles={{
@@ -395,7 +393,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
                 <DownloadOutlined
                   className={styles.antPreviewDownloadIcon}
-                  onClick={() => downloadFile({ fileId: previewImage?.uid, fileName: previewImage?.name })}
+                  onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })}
                 />
                 {original}
               </div>

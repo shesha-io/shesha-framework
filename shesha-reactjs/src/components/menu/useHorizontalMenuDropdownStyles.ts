@@ -54,7 +54,7 @@ export const useHorizontalMenuDropdownStyles = ({
         min-width: 200px !important;
         max-width: 400px !important;
         width: 200px !important;
-        ${colors?.subItemBackground ? `background: ${colors?.subItemBackground} !important;` : ''}
+        ${colors?.subItemBackground ? `background: ${colors.subItemBackground} !important;` : ''}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item {
@@ -62,7 +62,7 @@ export const useHorizontalMenuDropdownStyles = ({
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
         color: ${colors?.subItemColor || BLACK_CLR};
-        ${colors?.subItemBackground ? `background: ${colors?.subItemBackground};` : ''}
+        ${colors?.subItemBackground ? `background: ${colors.subItemBackground};` : ''}
         ${customMenuItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }
@@ -107,7 +107,7 @@ export const useHorizontalMenuDropdownStyles = ({
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
         color: ${colors?.subItemColor || BLACK_CLR};
-        ${colors?.subItemBackground ? `background: ${colors?.subItemBackground};` : ''}
+        ${colors?.subItemBackground ? `background: ${colors.subItemBackground};` : ''}
         ${customMenuItemStyle || ''}
         ${customStyleOnSubMenu || ''}
       }

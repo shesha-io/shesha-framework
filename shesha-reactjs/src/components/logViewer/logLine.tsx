@@ -7,6 +7,7 @@ import { useStyles } from "./styles";
 import { cx } from "antd-style";
 import { BugOutlined, CheckCircleOutlined, CloseCircleOutlined, CodeOutlined, FolderOutlined, InfoCircleOutlined, WarningOutlined } from "@ant-design/icons";
 import { purple } from '@ant-design/colors';
+import { isNonEmptyArray } from "@/utils/array";
 
 // Log line props
 export interface LogLineProps {
@@ -82,7 +83,7 @@ const LogLineComponentRenderer: FC<LogLineProps> = ({
   };
 
   const renderMessage = (): React.ReactNode => {
-    if (!searchMatches || searchMatches.length === 0) {
+    if (!isNonEmptyArray(searchMatches)) {
       return message;
     }
 

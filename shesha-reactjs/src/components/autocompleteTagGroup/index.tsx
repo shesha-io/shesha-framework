@@ -62,7 +62,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
         inputValue: tag,
       });
 
-      onChange?.(currentValue?.trim() ? [...newTags, currentValue] : newTags);
+      onChange?.(currentValue.trim() ? [...newTags, currentValue] : newTags);
     };
 
     const forMap = (tag: string): React.JSX.Element => {

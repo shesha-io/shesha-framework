@@ -18,12 +18,8 @@ export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
   const { readOnly, updateChildItems } = useLayerGroupConfigurator();
 
   const onSetList = (newState: ItemInterface[]): void => {
-    const listChanged = true;
-
-    if (listChanged) {
-      const newChilds = newState.map<LayerGroupItemProps>((item) => item as LayerGroupItemProps);
-      updateChildItems({ index: props.index ?? [], childs: newChilds });
-    }
+    const newChilds = newState.map<LayerGroupItemProps>((item) => item as LayerGroupItemProps);
+    updateChildItems({ index: props.index ?? [], childs: newChilds });
   };
 
   return (

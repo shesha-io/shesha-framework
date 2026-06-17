@@ -27,9 +27,6 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent = IConfigur
   const isSmall = useMedia('(max-width: 480px)');
   const formRef = useRef<ISettingsFormInstance | null>(null);
 
-  if (!formComponent)
-    return null;
-
   const saving = false;
 
   const onCancelClick = (): void => {

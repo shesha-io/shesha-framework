@@ -29,7 +29,7 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
     return (
       <div style={model.allStyles?.fullStyle}>
         <ConfigurableFormItem<string> model={{ ...model, hideLabel: true }}>
-          {(value) => parse(DOMPurify.sanitize(calculatedModel.getContent(value ?? undefined) ?? "", { USE_PROFILES: { html: true } }))}
+          {(value) => parse(DOMPurify.sanitize(calculatedModel.getContent(value ?? undefined), { USE_PROFILES: { html: true } }))}
         </ConfigurableFormItem>
       </div>
     );

@@ -70,7 +70,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         return { ...item };
       };
 
-      newModel.items = prev.items?.map(updateItemDefaults);
+      newModel.items = prev.items.map(updateItemDefaults);
       return newModel;
     })
     .add<IButtonGroupComponentProps>(6, (prev) => migrateVisibility(prev))

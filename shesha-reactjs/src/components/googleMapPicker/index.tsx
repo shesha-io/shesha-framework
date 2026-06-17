@@ -111,7 +111,7 @@ function reverseGeocode(geocoder: IGeocoder, lat: number, lng: number): Promise<
     geocoder.geocode(
       { location: { lat, lng } },
       (results, status) => {
-        if (status === 'OK' && results?.[0]) {
+        if (status === 'OK' && results[0]) {
           resolve(results[0].formatted_address);
         } else {
           reject(new Error(`Reverse geocode failed: ${status}`));
@@ -242,7 +242,7 @@ const GoogleMapPicker: FC<IGoogleMapPickerProps> = ({
       try {
         const { suggestions: preds } = await autocomplete.fetchAutocompleteSuggestions({ input: text });
         setSuggestions(
-          (preds ?? []).map((s) => {
+          preds.map((s) => {
             const pred = s.placePrediction;
             return { value: pred?.text?.toString() ?? '', label: pred?.text?.toString() ?? '', placeId: pred?.placeId ?? '' };
           }),
@@ -258,7 +258,7 @@ const GoogleMapPicker: FC<IGoogleMapPickerProps> = ({
   const handleSelect = async (_address: string, option: ISuggestion): Promise<void> => {
     setSuggestions([]);
     const PlaceClass = getGoogleMaps()?.places?.Place;
-    if (!option?.placeId || !PlaceClass) return;
+    if (!option.placeId || !PlaceClass) return;
     try {
       const place = new PlaceClass({ id: option.placeId });
       await place.fetchFields({ fields: ['formattedAddress', 'location'] });

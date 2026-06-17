@@ -67,13 +67,12 @@ export const RowCell = <TData extends ITableRowData = ITableRowData>({ cell, pre
 
     let node: HTMLElement = root;
     while (
-      node.children &&
       node.children.length === 1 &&
       node.children[0] instanceof HTMLElement
     ) {
       node = node.children[0] as HTMLElement;
     }
-    return node || root;
+    return node;
   };
 
 
@@ -96,7 +95,8 @@ export const RowCell = <TData extends ITableRowData = ITableRowData>({ cell, pre
       overflowEl.style.cursor = 'auto';
       return;
     }
-    if (showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data') {
+
+    if (cell.column.columnType === 'data') {
       if (checkOverflow()) {
         const width = cellRef.current.getBoundingClientRect().width;
         overflowEl.style.maxWidth = width + 'px';

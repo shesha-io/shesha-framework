@@ -16,6 +16,7 @@ import { Show } from '@/components/show';
 import { useSourcesFolderOrUndefined } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useStyles } from './styles';
 import classNames from 'classnames';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const CodeEditor: FC<ICodeEditorProps> = ({
   mode = 'inline',
@@ -45,7 +46,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     }
   };
 
-  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
+  const hasValue = !isNullOrWhiteSpace(value);
 
   const onClear = (): void => {
     if (hasValue) {

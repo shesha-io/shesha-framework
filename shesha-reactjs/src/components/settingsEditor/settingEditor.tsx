@@ -1,13 +1,12 @@
-import React, { useEffect, useState, FC } from 'react';
-import { CustomFormSettingEditor } from './customFormSettingEditor';
-import { Empty } from 'antd';
-
-import { GenericSettingEditor } from './genericSettingEditor';
-import { SettingValue } from './provider/models';
-import { useSettingsEditor } from './provider';
-import { isDefined } from '@/utils/nullables';
 import { IErrorInfo } from '@/interfaces';
+import { isDefined } from '@/utils/nullables';
+import { Empty } from 'antd';
+import React, { FC, useEffect, useState } from 'react';
+import { CustomFormSettingEditor } from './customFormSettingEditor';
+import { GenericSettingEditor } from './genericSettingEditor';
 import { isSelectionWithSetting } from './models';
+import { useSettingsEditor } from './provider';
+import { SettingValue } from './provider/models';
 
 interface ISettingEditorState {
   isLoading: boolean;

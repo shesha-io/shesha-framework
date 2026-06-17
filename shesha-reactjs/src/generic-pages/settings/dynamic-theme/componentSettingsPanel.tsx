@@ -78,16 +78,14 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)
     const components: IConfigurableFormComponent[] | undefined = Array.isArray(settingsFormMarkup)
       ? settingsFormMarkup
-      : settingsFormMarkup?.components;
-    const formSettings = Array.isArray(settingsFormMarkup) ? undefined : settingsFormMarkup?.formSettings;
-
-    if (!components) return null;
+      : settingsFormMarkup.components;
+    const formSettings = Array.isArray(settingsFormMarkup) ? undefined : settingsFormMarkup.formSettings;
 
     const searchableTabs = components.find(isSearchableTabsMarkup);
     if (!searchableTabs) return null;
 
     const appearanceTab = searchableTabs.tabs.find(
-      (tab) => tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance',
+      (tab) => tab.key === 'appearance' || tab.title.toLowerCase() === 'appearance',
     );
 
     const tabComponents: unknown = appearanceTab?.components;
@@ -108,7 +106,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   // Handle form data change — deep-merge so nested keys (e.g. application) are not replaced wholesale
   const handleFormDataChange = (changedValues: Partial<IConfigurableTheme>): void => {
     const base = deepCopyViaJson(theme) as IConfigurableTheme;
-    const merged = deepMergeValues(base, (changedValues ?? {}) as object) as IConfigurableTheme;
+    const merged = deepMergeValues(base, changedValues as object) as IConfigurableTheme;
     onChange(merged);
   };
 
@@ -144,7 +142,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             <div>
               <h4 style={{ marginBottom: 4 }}>{selectedNode?.title || 'Select a Component'}</h4>
               <span style={{ color: '#999', fontSize: '12px' }}>
-                Configure default appearance for {selectedNode?.title?.toLowerCase() || 'components'}
+                Configure default appearance for {selectedNode?.title.toLowerCase() || 'components'}
               </span>
             </div>
           )}
@@ -174,7 +172,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             <div>
               <h4 style={{ marginBottom: 4 }}>{selectedNode.title || 'Select a Component'}</h4>
               <span style={{ color: '#999', fontSize: '12px' }}>
-                Configure default appearance for {selectedNode.title?.toLowerCase() || 'components'}
+                Configure default appearance for {selectedNode.title.toLowerCase() || 'components'}
               </span>
               <ConfigurableForm
                 mode="edit"

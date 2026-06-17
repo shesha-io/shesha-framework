@@ -392,7 +392,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ${commonTextStyles}
       ${borderRadiusCss}
       padding: 0 !important;
-      background: ${background ?? backgroundImage ?? backgroundColor} !important;
+      background: ${background} !important;
       width: ${width || '54px'} !important;
       height: ${height || '54px'} !important;
       display: flex !important;

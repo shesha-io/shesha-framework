@@ -24,7 +24,7 @@ const jsonLogic2Args: JsonLogicImportFunc = (val: unknown): RuleValue[] => {
   const node = typeof (val) === "object" && isDefined(val)
     ? getEvaluationNodeFromJsonLogicNode(val)
     : undefined;
-  if (!node || node.evaluate?.type !== 'mustache')
+  if (!node || node.evaluate.type !== 'mustache')
     throw `Can't parse 'evaluate' function`; // throw exception to skip current function and try to parse others
 
   return [node.evaluate.expression, node.evaluate.required];

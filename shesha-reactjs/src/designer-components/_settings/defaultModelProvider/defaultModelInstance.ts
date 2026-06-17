@@ -132,12 +132,12 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
 
   setModel = (model: T | undefined): void => {
     if (model === undefined) return;
-    this.model = deepCopyViaJson(model ?? {} as T);
+    this.model = deepCopyViaJson(model as T);
     this.#updateMergedModel();
   };
 
   setDefaultModel = (name: string, model: T): void => {
-    this.defaultModels.set(name, deepCopyViaJson(model ?? {} as T));
+    this.defaultModels.set(name, deepCopyViaJson(model as T));
     this.#updateDefaultModel();
     this.#updateMergedModel();
   };
@@ -157,7 +157,7 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
   getValueInfo = (propName: string): IDefaultModelValueInfo => {
     const modelValue = getValueByPropertyName(this.model as Record<string, unknown>, propName);
     let defaultModelName = '';
-    let defaultModelValue = undefined;
+    let defaultModelValue: unknown = undefined;
 
     this.defaultModels.forEach((model, name) => {
       const v = getValueByPropertyName(model as Record<string, unknown>, propName);

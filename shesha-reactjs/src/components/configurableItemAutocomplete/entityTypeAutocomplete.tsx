@@ -93,7 +93,7 @@ const getListFetcherQueryParams = (
   baseModel?: EntityIdentifier,
 ): IEntityTypeAutocompletePayload => {
   return {
-    type: type ?? 'All',
+    type: type,
     term: term,
     selectedValue: typeof value === 'string'
       ? value

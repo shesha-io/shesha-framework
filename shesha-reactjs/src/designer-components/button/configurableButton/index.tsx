@@ -46,7 +46,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
     try {
       if (actionConfiguration) {
-        if (['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration?.actionName)) {
+        if (['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration.actionName)) {
           setModal(true);
         }
         setLoading(true);

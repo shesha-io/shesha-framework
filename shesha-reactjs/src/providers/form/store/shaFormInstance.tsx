@@ -626,7 +626,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.formId = undefined;
     this.rawMarkup = rawMarkup;
     this.markupCacheKey = cacheKey;
-    this.formArguments = formArguments;
+    this.setArguments(formArguments);
     this.isSettingsForm = isSettingsForm ?? false;
 
     this.initialValues = initialValues;
@@ -649,19 +649,25 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     });
   };
 
+  setArguments = (formArguments?: object | undefined): void => {
+    this.formArguments = formArguments;
+  };
+
   initFormByMarkup = async (payload: InitByMarkupPayload): Promise<void> => {
     const { formArguments } = payload;
 
     this.log('LOG: initByMarkup', payload);
 
     this.formId = undefined;
-    this.formArguments = formArguments;
+    this.setArguments(formArguments);
 
     await this.applyMarkupAsync(payload);
   };
 
   initFormByFormId = async (payload: InitByFormIdPayload<Values>): Promise<void> => {
     const { formId, formArguments } = payload;
+
+    this.setArguments(formArguments);
 
     const formNotChanged = this.formId && isSameFormIds(this.formId, formId);
     if (!formNotChanged) {
@@ -672,10 +678,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       await this.loadFormByLocalIdAsync({ initialValues: payload.initialValues });
     } else
       this.log('LOG: loadFormByFormId - load form skipped', payload);
-
-    if (this.markupLoadingState.status === "ready") {
-      this.formArguments = formArguments;
-    }
   };
 
   initLoadData = async (): Promise<void> => {

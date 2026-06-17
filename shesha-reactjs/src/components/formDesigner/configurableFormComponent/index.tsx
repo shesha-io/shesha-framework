@@ -198,7 +198,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
       // If component has container dimensions, preserve original thumbnail dimensions
       // The wrapper will use container dimensions instead
-      if (fullComponentModel.container?.dimensions) return originalDims;
+      if (fullComponentModel.container.dimensions) return originalDims;
 
       // If component has custom dimension calculation, use it
       if (component?.getDesignerDimensions) {

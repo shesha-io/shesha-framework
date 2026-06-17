@@ -107,12 +107,11 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       });
   };
 
-  if (props.exportRef)
-    props.exportRef.current = {
-      exportExecuter: exportExecuter,
-      canExport: checkedIds.length === 0,
-      exportInProgress: exportInProgress,
-    };
+  props.exportRef.current = {
+    exportExecuter: exportExecuter,
+    canExport: checkedIds.length === 0,
+    exportInProgress: exportInProgress,
+  };
 
   const onRefreshClick = (): void => {
     void refreshTree();

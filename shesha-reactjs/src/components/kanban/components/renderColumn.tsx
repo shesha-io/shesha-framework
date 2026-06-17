@@ -139,7 +139,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
 
         // Perform the action
         void executeAction({
-          actionConfiguration: targetColumn?.actionConfiguration,
+          actionConfiguration: targetColumn.actionConfiguration,
           argumentsEvaluationContext: evaluationContext,
           success: () => {
             resolve(true); // Action succeeded, allow update
@@ -165,8 +165,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     if (!draggedTask)
       return;
 
-    // const newColumnValue = (evt.to.firstChild as HtmlElement)?.dataset?.value;
-    const newColumnValueStr = (evt.to.firstChild as HTMLElement | null)?.dataset?.["value"];
+    const newColumnValueStr = (evt.to.firstChild as HTMLElement | null)?.dataset["value"];
     const newColumnValue = !isNullOrWhiteSpace(newColumnValueStr) ? parseFloat(newColumnValueStr) : undefined;
     if (!newColumnValue)
       return;

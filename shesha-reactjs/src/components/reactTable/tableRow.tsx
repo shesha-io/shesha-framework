@@ -167,7 +167,7 @@ export const TableRow = <TData extends ITableRowData = ITableRowData>(props: ISo
 
   prepareRow(row);
 
-  const rowId = row.original.id ?? row.id;
+  const rowId = row.original.id;
 
   return (
     <CrudProvider<TData>

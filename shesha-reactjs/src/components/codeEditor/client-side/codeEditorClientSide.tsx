@@ -21,6 +21,7 @@ import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 import { useIsDevMode } from "@/hooks/useIsDevMode";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
 import { isNonEmptyArray } from "@/utils/array";
+import { isDefined } from "@/utils/nullables";
 
 // you can change the source of the monaco files
 loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs' } });
@@ -35,7 +36,7 @@ interface IEmbeddedCodeEditorWidget extends editor.ICodeEditor {
 }
 const isChildEditor = (editor: editor.ICodeEditor): editor is IEmbeddedCodeEditorWidget => {
   const typed = editor as IEmbeddedCodeEditorWidget;
-  return typed && typeof (typed.getParentEditor) === 'function';
+  return isDefined(typed) && typeof (typed.getParentEditor) === 'function';
 };
 
 interface CodeWrapperProps extends PropsWithChildren {
@@ -244,7 +245,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
 
     editorRef.current.focus();
 
-    const newInternalReadOnly = !isInitialPath(fileUri?.path);
+    const newInternalReadOnly = !isInitialPath(fileUri.path);
     if (newInternalReadOnly !== internalReadOnly)
       setInternalReadOnly(newInternalReadOnly);
   };
@@ -337,7 +338,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     return editorRef.current?.getModel()?.uri;
   };
 
-  const showTree = isDevMode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
+  const showTree = isDevMode && (props.language === 'typescript' || props.language === 'javascript');
   const finalReadOnly = readOnly || internalReadOnly;
 
   const renderCodeEditor = (): React.JSX.Element => {

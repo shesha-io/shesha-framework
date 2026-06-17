@@ -1,9 +1,14 @@
 import { UpdateSettingValueInput } from '@/apis/settings';
 import useThunkReducer from '@/hooks/thunkReducer';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { GetAllResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { useHttpClient, useTheme } from '@/providers';
-import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
 import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
+import { buildUrl } from '@/utils';
+import { makeErrorWithMessage, throwError } from '@/utils/errors';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect } from 'react';
 import {
   fetchApplicationsErrorAction,
   fetchApplicationsSuccessAction,
@@ -31,11 +36,6 @@ import {
   SettingValue,
 } from './models';
 import { settingsEditorReducer } from './reducer';
-import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { makeErrorWithMessage, throwError } from '@/utils/errors';
-import { buildUrl } from '@/utils';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 const getListFetcherQueryParams = (maxResultCount: number | undefined): IGenericGetAllPayload => {
   return {
@@ -130,17 +130,17 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
     fetchConfigurations();
   });
 
-  const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication | undefined): void => {
+  const selectSetting = useCallback((setting: ISettingConfiguration, app: IFrontEndApplication | undefined): void => {
     state.editorBridge?.cancel();
     dispatch(selectSettingAction({ setting, app }));
     dispatch(setEditorModeAction('edit'));
-  };
+  }, [dispatch, state.editorBridge]);
 
-  const selectApplication = (app: IFrontEndApplication | undefined): void => {
+  const selectApplication = useCallback((app: IFrontEndApplication | undefined): void => {
     dispatch(selectApplicationAction({ app }));
-  };
+  }, [dispatch]);
 
-  const saveSetting = (): Promise<void> => {
+  const saveSetting = useCallback((): Promise<void> => {
     if (!state.editorBridge) return Promise.reject('Setting editor not available');
 
     dispatch(setSaveStatusAction('saving'));
@@ -149,17 +149,19 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
     }).catch(() => {
       dispatch(setSaveStatusAction('error'));
     });
-  };
-  const startEditSetting = (): void => {
+  }, [dispatch, state.editorBridge]);
+
+  const startEditSetting = useCallback((): void => {
     dispatch(setSaveStatusAction('none'));
     dispatch(setEditorModeAction('edit'));
-  };
-  const cancelEditSetting = (): void => {
+  }, [dispatch]);
+
+  const cancelEditSetting = useCallback((): void => {
     state.editorBridge?.cancel();
     dispatch(setSaveStatusAction('canceled'));
-  };
+  }, [dispatch, state.editorBridge]);
 
-  const fetchSettingValue = (settingId: ISettingIdentifier): Promise<SettingValue> => {
+  const fetchSettingValue = useCallback((settingId: ISettingIdentifier): Promise<SettingValue> => {
     const url = buildUrl(`/api/services/app/Settings/GetValue`, { name: settingId.name, module: settingId.module, appKey: settingId.appKey });
     return httpClient.get<IAjaxResponse<GetAllResponse<SettingConfigurationDto>>>(url)
       .then((response) => {
@@ -170,9 +172,9 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
       .catch((error) => {
         console.error(error);
       });
-  };
+  }, [httpClient]);
 
-  const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue): Promise<void> => {
+  const saveSettingValue = useCallback((settingId: ISettingIdentifier, value: SettingValue): Promise<void> => {
     dispatch(setSaveStatusAction('saving'));
     return httpClient.post<IAjaxResponse<void>, UpdateSettingValueInput>(`/api/services/app/Settings/UpdateValue`, {
       name: settingId.name,
@@ -188,11 +190,11 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
         dispatch(setSaveStatusAction('error'));
         console.error(error);
       });
-  };
+  }, [dispatch, httpClient]);
 
-  const setEditor = (editorBridge: IEditorBridge): void => {
+  const setEditor = useCallback((editorBridge: IEditorBridge): void => {
     dispatch(setEditorBridgeAction(editorBridge));
-  };
+  }, [dispatch]);
 
   const contextValue: ISettingsEditorContext = {
     ...state,
@@ -214,4 +216,5 @@ const useSettingsEditorOrUndefined = (): ISettingsEditorContext | undefined => u
 
 const useSettingsEditor = (): ISettingsEditorContext => useSettingsEditorOrUndefined() ?? throwError("useSettingsEditor must be used within a SettingsEditorContext");
 
-export { SettingsEditorProvider, useSettingsEditorOrUndefined, useSettingsEditor };
+export { SettingsEditorProvider, useSettingsEditor, useSettingsEditorOrUndefined };
+

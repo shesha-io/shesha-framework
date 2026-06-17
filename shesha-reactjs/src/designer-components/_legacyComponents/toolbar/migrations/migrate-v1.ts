@@ -291,7 +291,7 @@ interface IModalPropsV0 {
 //#endregion
 
 export const migrateV0toV1 = (model: IToolbarPropsV0, context: SettingsMigrationContext): IToolbarProps => {
-  const items = (model.items ?? []).map<ToolbarItemProps>((item) => {
+  const items = model.items.map<ToolbarItemProps>((item) => {
     if (item.itemType === "item") {
       if ("actionConfiguration" in item)
         return item;

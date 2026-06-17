@@ -1,5 +1,5 @@
 import { IChartsProps, IChartProps } from "@/designer-components/charts/model";
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from "react";
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useReducer } from "react";
 import { CleanDataAction, SetAxisPropertyLabelAction, SetControlPropsAction, SetDataAction, SetIsLoadedAction, SetUrlTypeDataAction, SetValuePropertyLabelAction } from "./actions";
 import { ChartDataActionsContext, ChartDataStateContext, IChartDataAtionsContext, IChartDataContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
@@ -20,29 +20,29 @@ const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ chi
     dispatch(SetControlPropsAction(model));
   }, [model]);
 
-  const setData = (data: object[]): void => {
+  const setData = useCallback((data: object[]): void => {
     dispatch(SetDataAction(data));
-  };
+  }, [dispatch]);
 
-  const setIsLoaded = (isLoaded: boolean): void => {
+  const setIsLoaded = useCallback((isLoaded: boolean): void => {
     dispatch(SetIsLoadedAction(isLoaded));
-  };
+  }, [dispatch]);
 
-  const setUrlTypeData = (urlTypeData: object): void => {
+  const setUrlTypeData = useCallback((urlTypeData: object): void => {
     dispatch(SetUrlTypeDataAction(urlTypeData));
-  };
+  }, [dispatch]);
 
-  const cleanData = (): void => {
+  const cleanData = useCallback((): void => {
     dispatch(CleanDataAction());
-  };
+  }, [dispatch]);
 
-  const setAxisPropertyLabel = (axisPropertyLabel: string): void => {
+  const setAxisPropertyLabel = useCallback((axisPropertyLabel: string): void => {
     dispatch(SetAxisPropertyLabelAction(axisPropertyLabel));
-  };
+  }, [dispatch]);
 
-  const setValuePropertyLabel = (valuePropertyLabel: string): void => {
+  const setValuePropertyLabel = useCallback((valuePropertyLabel: string): void => {
     dispatch(SetValuePropertyLabelAction(valuePropertyLabel));
-  };
+  }, [dispatch]);
 
   return (
     <ChartDataStateContext.Provider value={state}>

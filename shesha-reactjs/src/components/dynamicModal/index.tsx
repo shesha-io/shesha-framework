@@ -79,7 +79,7 @@ export const DynamicModalWithForm = <Values extends object = object>(props: IDyn
     buttons = [],
     footerButtons = 'default',
     wrapper,
-    showCloseIcon = false,
+    showCloseIcon = true,
   } = props;
 
   const [form] = Form.useForm();

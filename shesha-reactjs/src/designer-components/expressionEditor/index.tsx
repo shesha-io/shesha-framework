@@ -4,9 +4,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import {
-  ExpressionEditor,
-  ExpressionContext,
-  buildExpressionContextFromPaths,
+  ExpressionEditor, buildExpressionContextFromPaths,
 } from '@/components/expressionEditor';
 import {
   ExpressionContextTree,
@@ -29,7 +27,7 @@ import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { ExpressionEditorComponentDefinition, IExpressionEditorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 
-const EMPTY_CONTEXT: ExpressionContext = {};
+const STANDARD_CONSTANTS = [SheshaConstants.application, SheshaConstants.form];
 
 const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
   type: 'expressionEditor',
@@ -45,18 +43,14 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
     const isDesignMode = formMode === 'designer';
 
     const availableConstants = useAvailableConstantsMetadata({
-      standardConstants: [
-        SheshaConstants.globalState,
-        SheshaConstants.pageContext,
-        SheshaConstants.contexts,
-      ],
+      standardConstants: STANDARD_CONSTANTS,
     });
     const formMetadata = useMetadataOrUndefined()?.metadata;
 
     const dataPathContext = React.useMemo(() => {
       const properties = asPropertiesArray(formMetadata?.properties, []);
       const paths = properties.map((property) => property.path).filter(Boolean);
-      return buildExpressionContextFromPaths(paths);
+      return buildExpressionContextFromPaths(paths, { additionalRoots: [] });
     }, [formMetadata]);
 
     const constantsContext = useAsyncMemo<ExpressionContextTree>(
@@ -88,7 +82,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
               value={typeof model.value === 'string' ? model.value : ''}
               onChange={onDesignerChange}
               disabled={model.readOnly ?? false}
-              context={context ?? EMPTY_CONTEXT}
+              context={context}
               placeholder={model.placeholder}
             />
           )}
@@ -103,7 +97,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
             value={typeof value === 'string' ? value : ''}
             onChange={onChange}
             disabled={model.readOnly ?? false}
-            context={context ?? EMPTY_CONTEXT}
+            context={context}
             placeholder={model.placeholder}
             inline
             allowExpand

@@ -7,7 +7,7 @@ import { useStyles } from './styles/styles';
 import { AxiosResponse } from 'axios';
 import { ErrorIconPopover } from '@/components/componentErrors/errorIconPopover';
 import { extractErrorInfo, IModelValidation } from '@/utils/errors';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IValidationErrorsProps extends AlertProps {
   error: string | IErrorInfo | IAjaxErrorResponse | AxiosResponse<IAjaxResponseBase> | Error | unknown;
@@ -16,8 +16,6 @@ export interface IValidationErrorsProps extends AlertProps {
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   children?: React.ReactNode;
 }
-
-const DEFAULT_ERROR_MSG = 'Sorry, an error has occurred. Please try again later';
 
 /**
  * A component for displaying validation errors
@@ -36,7 +34,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   if (!parsedError) return null;
 
   const renderValidationErrors = (props: AlertProps): React.JSX.Element => {
-    const widthStyle = props.style?.width && props.style?.marginLeft && props.style?.marginRight
+    const widthStyle = isDefined(props.style) && props.style.width && props.style.marginLeft && props.style.marginRight
       ? {
         width: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
         maxWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
@@ -86,13 +84,13 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
       });
     } else if (parsedError.details) {
       errors.push({
-        propertyName: parsedError.message ?? defaultMessage ?? 'Error',
+        propertyName: parsedError.message ?? defaultMessage,
         error: typeof parsedError.details === 'string' ? parsedError.details : 'See details',
       });
     } else {
       errors.push({
         propertyName: 'Error',
-        error: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG,
+        error: parsedError.message ?? defaultMessage,
       });
     }
 
@@ -118,14 +116,14 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   // Legacy alert/raw modes
   if (parsedError.validationErrors?.length) {
     const violations = <ul>{parsedError.validationErrors.map((e, i) => <li key={i}>{e.message || 'Validation error'}</li>)}</ul>;
-    return renderValidationErrors({ title: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: violations, ...rest });
+    return renderValidationErrors({ title: parsedError.message ?? defaultMessage, description: violations, ...rest });
   }
 
   if (!isNullOrWhiteSpace(parsedError.details) && parsedError.details !== parsedError.message) {
-    return renderValidationErrors({ title: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: parsedError.details, ...rest });
+    return renderValidationErrors({ title: parsedError.message ?? defaultMessage, description: parsedError.details, ...rest });
   }
 
-  return renderValidationErrors({ title: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, ...rest });
+  return renderValidationErrors({ title: parsedError.message ?? defaultMessage, ...rest });
 };
 
 export default ValidationErrors;

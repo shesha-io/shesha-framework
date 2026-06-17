@@ -32,7 +32,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
   const [googlePlaceReady, setGooglePlaceReady] = useState(false);
 
   useEffect(() => {
-    if (googleMapsApiKey && !window.google) {
+    if (googleMapsApiKey && !isDefined(window.google)) {
       loadGooglePlaces(googleMapsApiKey, setGooglePlaceReady);
     }
   }, [googleMapsApiKey, googlePlaceReady]);

@@ -50,7 +50,7 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
         onKeyDown={(event) => event.stopPropagation()}
         onSearch={onSearch}
         onChange={(e) => {
-          e?.stopPropagation();
+          e.stopPropagation();
           changeQuickSearch(e.target.value);
         }}
         onClick={(event) => event.stopPropagation()}

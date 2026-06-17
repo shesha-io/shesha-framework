@@ -17,6 +17,7 @@
  * ```
  */
 
+import { isDefined } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 
@@ -124,7 +125,7 @@ export const designerConstants = {
     paddingBottom: string,
   ): string | number | undefined {
     // Treat undefined/null as invalid, but allow 0 and '0' as valid heights
-    if (height === undefined || height === null) return undefined;
+    if (!isDefined(height)) return undefined;
 
     // Add 8px to account for border width in designer (4px top + 4px bottom)
     const heightWithUnit = addPx(height);
@@ -162,7 +163,7 @@ export const designerConstants = {
     padding2: string,
   ): string | number | undefined {
     // Treat undefined/null as invalid, but allow 0 and '0' as valid dimensions
-    if (value === undefined || value === null) return undefined;
+    if (!isDefined(value)) return undefined;
 
     const valueWithUnit = addPx(value);
     // Guard against addPx returning undefined - treat empty strings as unset
