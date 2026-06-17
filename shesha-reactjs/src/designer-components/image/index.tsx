@@ -91,10 +91,10 @@ const ImageComponent: IToolboxComponent<IImageProps, ImageComponentCalculatedMod
               : model.url ?? (typeof (value) === "string" ? value : undefined);
 
           const fileProvider = (child: ReactNode): ReactElement => {
-            const ownerId = getFirstNonEmptyStringPropertyOrUndefined(calculatedModel ?? {}, ["ownerId", "dataId"]);
+            const ownerId = getFirstNonEmptyStringPropertyOrUndefined(calculatedModel, ["ownerId", "dataId"]);
             const ownerType = !isEntityTypeIdEmpty(model.ownerType)
               ? model.ownerType
-              : getFirstNonEmptyStringPropertyOrUndefined(calculatedModel ?? {}, ["formModelType"]) ?? "";
+              : getFirstNonEmptyStringPropertyOrUndefined(calculatedModel, ["formModelType"]) ?? "";
             return (
               <FileUploadProvider
                 value={val}

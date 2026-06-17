@@ -23,7 +23,7 @@ export const MultiCheckBoxRefList: FC<IMultiCheckBoxRefListProps> = ({
   return (
     <ShaSpin spinning={refListLoading}>
       <Row>
-        {refList?.items?.map(({ item, itemValue }) => (
+        {refList?.items.map(({ item, itemValue }) => (
           <Col key={itemValue} span={24 / columns}>
             <Checkbox key={itemValue} onChange={(e) => onChange?.(e, itemValue)}>
               {item}

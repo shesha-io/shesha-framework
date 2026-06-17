@@ -39,7 +39,7 @@ export const getAlignmentStyle = ({
     display,
   };
 
-  const gridTemplateColumns = Array(gridColumnsCount).fill('auto')?.join(' ');
+  const gridTemplateColumns = Array(gridColumnsCount).fill('auto').join(' ');
 
   if (direction === 'horizontal' || display !== 'block') {
     style['justifyContent'] = justifyContent;
@@ -71,7 +71,7 @@ export const getAlignmentStyle = ({
 export const ItemContainerForm: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const parent = useParent();
 
-  const components = ShaForm.useChildComponents(props.containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const components = ShaForm.useChildComponents(props.containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
   const renderComponents = (): ReactNode => {
     const renderedComponents = components.map((c) => {

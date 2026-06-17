@@ -9,6 +9,7 @@ import { useStyles } from './styles/styles';
 import { IStyleType } from '@/interfaces';
 import { getElement, isNonEmptyArray } from '@/utils/array';
 import { throwError } from '@/utils/errors';
+import { isDefined } from '@/utils/nullables';
 
 export interface IAddressAndCoords {
   address: string;
@@ -205,7 +206,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
           {(() => {
             const inputProps = getInputProps({ placeholder });
 
-            if (suggestions?.length === 0) {
+            if (suggestions.length === 0) {
               setHighlightedPlaceId('');
               suggestionRef.current = [];
             } else {
@@ -216,7 +217,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
               <Input
                 value={displayValue}
                 onChange={(e) => {
-                  if (inputProps.onChange) {
+                  if (isDefined(inputProps.onChange)) {
                     const {
                       target: { value: realValue },
                     } = e;
@@ -247,7 +248,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             {suggestions.map((suggestion) => {
               const localSuggestion = { ...suggestion };
               localSuggestion.description = ignoreText
-                ? suggestion.description?.replace(ignoreText, '')
+                ? suggestion.description.replace(ignoreText, '')
                 : suggestion.description;
 
               return (

@@ -1,10 +1,12 @@
 import React, { FC } from 'react';
-import { IModelItem } from '@/interfaces/modelConfigurator';
+import { IModelItem, ISortableItem } from '@/interfaces/modelConfigurator';
 import { ReactSortable } from 'react-sortablejs';
 import { usePropertiesEditor } from '../provider';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { Item } from './item';
 import { ItemChangeDetails } from '@/components/listEditor';
+import { useDeepCompareMemo } from '@/hooks';
+import { isEqual } from 'lodash';
 
 export interface IContainerRenderArgs {
   index?: number[];
@@ -24,18 +26,29 @@ export interface IItemsContainerProps {
 }
 
 export const ItemsContainer: FC<IItemsContainerProps> = (props) => {
-  const { updateChildItems } = usePropertiesEditor();
+  const { updateChildItems, selectItem } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const onSetList = (newState: IModelItem[]): void => {
-    if (newState.length) {
-      updateChildItems({ index: props.index ?? [], childs: newState });
+  const onSetList = (newState: ISortableItem<IModelItem>[]): void => {
+    const chosen = newState.find((item) => item.chosen === true);
+    if (chosen) {
+      selectItem(chosen.data.id);
+      return;
+    }
+
+    const newItems = newState.map((item) => item.data);
+    if (!isEqual(props.items, newItems)) {
+      updateChildItems({ index: props.index ?? [], childs: newItems });
     }
   };
 
+  const items = useDeepCompareMemo((): ISortableItem<IModelItem>[] => {
+    return props.items.map((item, index) => ({ data: { ...item }, id: index }));
+  }, [props.items]);
+
   return (
-    <ReactSortable<IModelItem>
-      list={props.items}
+    <ReactSortable<ISortableItem<IModelItem>>
+      list={items}
       disabled={props.disableDrag}
       setList={onSetList}
       fallbackOnBody={true}

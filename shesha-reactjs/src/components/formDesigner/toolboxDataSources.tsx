@@ -7,7 +7,7 @@ import DataSourceTree from './dataSourceTree';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
 import { useStyles } from './styles/styles';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IToolboxDataSourcesProps {
   dataSources: IDataSource[];
@@ -20,14 +20,12 @@ interface FilteredDataSource {
 
 const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): IPropertyMetadata[] => {
   const result: IPropertyMetadata[] = [];
-  if (!items) return result;
-
   items.forEach((item) => {
     if (!item.isFrameworkRelated && !item.isItemsType && item.isVisible) {
       const childItems = isPropertiesArray(item.properties) ? getVisibleProperties(item.properties, searchText) : [];
       const matched =
-        (searchText ?? '') === '' ||
-        item.path?.toLowerCase().includes(searchText) ||
+        isNullOrWhiteSpace(searchText) ||
+        item.path.toLowerCase().includes(searchText) ||
         item.label?.toLowerCase().includes(searchText);
 
       if (matched || childItems.length > 0) {
@@ -83,8 +81,7 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
                   <DataSourceTree
                     items={visibleItems}
                     searchText={searchText}
-                    defaultExpandAll={(searchText ?? '') !== ''}
-
+                    defaultExpandAll={!isNullOrWhiteSpace(searchText)}
                   />
                 ) };
           }).filter(isDefined)}

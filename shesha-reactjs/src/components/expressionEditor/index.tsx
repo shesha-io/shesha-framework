@@ -8,6 +8,7 @@ import {
 import './styles.css';
 import type { ExpressionContext, ExpressionContextValue } from './contextMetadata';
 import { arrayHasAtLeastNDefined } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type { ExpressionContext, ExpressionContextValue };
 
@@ -149,11 +150,11 @@ const getMustacheContext = (
 ): { insideMustache: boolean; partial: string; startPos: number } | null => {
   const beforeCursor = text.slice(0, cursorPos);
 
-  let lastOpen = -1;
   let searchFrom = 0;
-  while (true) {
-    const index = beforeCursor.indexOf('{{', searchFrom);
-    if (index === -1) break;
+  let lastOpen = -1;
+  let index: number;
+
+  while ((index = beforeCursor.indexOf('{{', searchFrom)) !== -1) {
     lastOpen = index;
     searchFrom = index + 2;
   }
@@ -556,6 +557,8 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [draftValue, setDraftValue] = useState<string | null>(null);
   const valueBeforeExpandRef = useRef<string>('');
+  const latestValueRef = useRef(value);
+  latestValueRef.current = value;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -585,7 +588,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const activeValue = isExpanded && draftValue !== null ? draftValue : value;
 
   const highlightTokens = useMemo(
-    () => highlightText(activeValue ?? '', knownFunctionNames),
+    () => highlightText(activeValue, knownFunctionNames),
     [knownFunctionNames, activeValue],
   );
   const showDropdown = isFocused && suggestions.length > 0;
@@ -644,6 +647,9 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     if (inline) {
       updateInlineEditorPosition();
       updateInlineDropdownPosition();
+    } else {
+      valueBeforeExpandRef.current = latestValueRef.current;
+      setDraftValue(latestValueRef.current);
     }
     requestAnimationFrame(() => {
       const textarea = textareaRef.current;
@@ -883,7 +889,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     'sha-expression-editor-control',
     controlClassName ?? className,
   );
-  const hasValue = Boolean(value?.trim().length);
+  const hasValue = !isNullOrWhiteSpace(value);
   const previewText = hasValue ? toPreviewText(value) : placeholder;
 
   const renderDropdown = (mode: 'inline' | 'floating'): React.JSX.Element | false => showDropdown && (

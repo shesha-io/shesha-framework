@@ -41,7 +41,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
       allowClear: true, tooltip: 'Select the data type for this property.',
       onChangeSetting: (_value, _data, setFormData) => {
         const newData = { formatting: { defaultEditor: null } };
-        setFormData?.({ values: newData, mergeValues: true });
+        setFormData({ values: newData, mergeValues: true });
       },
     })
 

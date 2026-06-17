@@ -4,7 +4,7 @@ import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from './styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from './toolboxComponents';
 import { ConfigurableForm } from '@/components/configurableForm';
-import { FormMarkup } from '@/providers/form/models';
+import { DEFAULT_FORM_SETTINGS, FormMarkup } from '@/providers/form/models';
 import { ItemType } from 'antd/es/menu/interface';
 import { deepCopyViaJson, deepMergeValues } from '@/utils/object';
 import { buildPreviewComponents, getPreviewFormData, previewNeedsDesignerMode } from './previewData';
@@ -65,13 +65,14 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     const type = selectedNode.type;
 
-    const markup = {
+    const markup: FormMarkup = {
       components: buildPreviewComponents(type, selectedNode.key, selectedNode.title),
       formSettings: {
-        colon: theme?.colon,
-        layout: theme?.layout,
-        labelCol: { span: theme?.labelSpan },
-        wrapperCol: { span: theme?.componentSpan },
+        ...DEFAULT_FORM_SETTINGS,
+        colon: theme?.colon ?? DEFAULT_FORM_SETTINGS.colon,
+        layout: theme?.layout ?? DEFAULT_FORM_SETTINGS.layout,
+        labelCol: { span: theme?.labelSpan ?? 6 },
+        wrapperCol: { span: theme?.componentSpan ?? 18 },
       },
     };
 
@@ -123,7 +124,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             <div>
               <h4 style={{ marginBottom: 4 }}>{selectedNode?.title || 'Select a Component'}</h4>
               <span style={{ color: '#999', fontSize: '12px' }}>
-                Configure default appearance for {selectedNode?.title?.toLowerCase() || 'components'}
+                Configure default appearance for {selectedNode?.title.toLowerCase() || 'components'}
               </span>
             </div>
           )}

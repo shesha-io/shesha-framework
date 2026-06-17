@@ -28,8 +28,6 @@ export const makeListContext = <TItem extends ListItem>({ value, onChange, initN
   const context: IListEditor<TItem> = {
     value,
     deleteItem: function (index: number): void {
-      if (!value)
-        return;
       const newValue = [...value];
 
       const deletedItem = newValue.splice(index, 1);
@@ -42,15 +40,15 @@ export const makeListContext = <TItem extends ListItem>({ value, onChange, initN
     addItem: function (factory?: ListItemFactory<TItem>): void {
       const factoryToUse = factory || initNewItem;
       const newItem = factoryToUse(value);
-      const newValue = value ? [...value] : [];
+      const newValue = [...value];
       newValue.push(newItem);
 
       setSelectedItem?.(newItem);
       onChange(newValue);
     },
     insertItem: function (index: number): void {
-      const newItem = initNewItem(value ?? []);
-      const newValue = value ? [...value] : [];
+      const newItem = initNewItem(value);
+      const newValue = [...value];
       newValue.splice(index, 0, newItem);
 
       // setSelectedItem(newItem);
@@ -187,7 +185,7 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
                           refresh(gotItem);
                         },
                         initNewItem: (items) => {
-                          return initNewItem(items ?? []);
+                          return initNewItem(items);
                         },
                         selectedItem,
                         setSelectedItem,

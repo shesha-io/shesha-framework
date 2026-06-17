@@ -40,7 +40,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     timeSeriesFormat,
     orderBy,
     orderDirection,
-    isGroupingTimeSeries,
+    isGroupingTimeSeries = false,
     groupingTimeSeriesFormat,
     axisPropertyLabel,
     valuePropertyLabel,
@@ -65,9 +65,9 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   // Memoize the missing properties check to prevent unnecessary re-renders
   const missingPropertiesInfo = useMemo(() => {
     const missingProperties: string[] = [];
-    if (!entityType) missingProperties.push("'entityType'");
+    if (isEntityTypeIdEmpty(entityType)) missingProperties.push("'entityType'");
     if (!chartType) missingProperties.push("'chartType'");
-    if (!valueProperty) missingProperties.push("'valueProperty'");
+    if (isNullOrWhiteSpace(valueProperty)) missingProperties.push("'valueProperty'");
     if (!axisProperty) missingProperties.push("'axisProperty'");
 
     return {
@@ -109,7 +109,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
   const fetchData = useCallback(() => {
     // Early return if already fetching or missing required properties
-    if (isFetchingRef.current || !entityType || !valueProperty || !axisProperty) {
+    if (isFetchingRef.current || isEntityTypeIdEmpty(entityType) || isNullOrWhiteSpace(valueProperty) || isNullOrWhiteSpace(axisProperty)) {
       return;
     }
 
@@ -265,11 +265,30 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
         isFetchingRef.current = false;
         clearTimeout(timeoutId);
       });
-  }, [entityType, valueProperty, axisProperty, requestTimeout, setIsLoaded, maxResultCount, getMetadata, groupingProperty, axisPropertyLabel, valuePropertyLabel, evaluatedFilters, orderBy, orderDirection, refetch, setAxisPropertyLabel, setValuePropertyLabel, getReferenceList, processAndUpdateData]);
+  }, [
+    entityType,
+    valueProperty,
+    axisProperty,
+    requestTimeout,
+    setIsLoaded,
+    maxResultCount,
+    getMetadata,
+    groupingProperty,
+    axisPropertyLabel,
+    valuePropertyLabel,
+    evaluatedFilters,
+    orderBy,
+    orderDirection,
+    refetch,
+    setAxisPropertyLabel,
+    setValuePropertyLabel,
+    getReferenceList,
+    processAndUpdateData,
+  ]);
 
   useEffect(() => {
     // Only fetch data if all required properties are properly configured
-    const hasRequiredProperties = entityType && valueProperty && axisProperty && !isEntityTypeIdEmpty(entityType) && valueProperty.trim() !== '' && axisProperty.trim() !== '';
+    const hasRequiredProperties = !isNullOrWhiteSpace(valueProperty) && !isNullOrWhiteSpace(axisProperty) && !isEntityTypeIdEmpty(entityType);
 
     if (!hasRequiredProperties) {
       // If missing required properties, just set loaded state without fetching
@@ -287,7 +306,13 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     setFaultyProperties([]);
 
     fetchData();
-  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, filters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries, setIsLoaded, fetchData]);
+  }, [
+    entityType,
+    valueProperty,
+    axisProperty,
+    setIsLoaded,
+    fetchData,
+  ]);
 
   useEffect(() => {
     // Only fetch metadata if entityType is properly configured

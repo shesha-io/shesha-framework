@@ -48,7 +48,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
   const onSetList = (newState: ItemInterface[]): void => {
     if (!formDesigner.hasDragged) return;
 
-    if (!isNaN(itemsLimit) && itemsLimit && newState?.length === Math.round(itemsLimit) + 1) {
+    if (!isNaN(itemsLimit) && itemsLimit && newState.length === Math.round(itemsLimit) + 1) {
       return;
     }
 

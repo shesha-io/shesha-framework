@@ -18,12 +18,8 @@ export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) =>
   const { readOnly, updateChildItems } = useRefListItemGroupConfigurator();
 
   const onSetList = (newState: ItemInterface[]): void => {
-    const listChanged = true;
-
-    if (listChanged) {
-      const newChilds = newState.map<RefListGroupItemProps>((item) => item as RefListGroupItemProps);
-      updateChildItems({ index: props.index ?? [], childs: newChilds });
-    }
+    const newChilds = newState.map<RefListGroupItemProps>((item) => item as RefListGroupItemProps);
+    updateChildItems({ index: props.index ?? [], childs: newChilds });
   };
 
   if (props.items.length === 0) {

@@ -111,9 +111,9 @@ export const makeCodeTemplate = (strings: TemplateStringsArray, ...expr: (string
       // note: string values are always read-only
       const readonly = typeof (placeholderContent) === 'string' || placeholderContent.readOnly;
 
-      const placeholderText = placeholderContent?.toString();
+      const placeholderText = placeholderContent.toString();
       if (placeholderText)
-        content += placeholderContent?.toString();
+        content += placeholderContent.toString();
 
       const endPosition = getLastCharPosition(content);
 

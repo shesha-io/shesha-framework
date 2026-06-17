@@ -2,7 +2,7 @@ import { isDefined } from '@/utils/nullables';
 import React, { FC, useEffect } from 'react';
 import { TableToggleRowsSelectedProps } from 'react-table';
 
-type CheckBoxProps = Partial<TableToggleRowsSelectedProps> & { ref?: React.RefObject<HTMLInputElement> };
+type CheckBoxProps = Partial<TableToggleRowsSelectedProps> & { ref?: React.RefObject<HTMLInputElement | null> };
 
 export const IndeterminateCheckbox: FC<CheckBoxProps> = ({ indeterminate, ref, ...rest }) => {
   useEffect(() => {

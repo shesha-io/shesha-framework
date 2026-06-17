@@ -27,7 +27,7 @@ const ButtonGroupEditorHeader = ({ contextAccessor, level, parentItem }: ListEdi
 
   const onAddGroupClick = (): void => {
     addItem((items) => {
-      const itemsCount = (items ?? []).length;
+      const itemsCount = items.length;
       const itemNo = itemsCount + 1;
 
       const group: IButtonGroup = {

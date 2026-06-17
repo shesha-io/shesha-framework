@@ -21,8 +21,6 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
   const { readOnly } = props;
 
   const { model: state } = useSettingsForm<IDataSourceComponentProps>();
-  if (!state)
-    return undefined;
 
   const settings = (
     <>

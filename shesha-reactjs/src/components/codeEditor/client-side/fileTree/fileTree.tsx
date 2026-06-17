@@ -24,7 +24,7 @@ export const FileTree: FC<IFileTreeProps> = (props) => {
 
   const onSelect: DirectoryTreeProps['onSelect'] = (_keys, info) => {
     if (props.onSelect) {
-      props.onSelect(info?.node?.uri);
+      props.onSelect(info.node.uri);
     }
   };
   const getParentNodes = (uri: UriComponents): React.Key[] => {

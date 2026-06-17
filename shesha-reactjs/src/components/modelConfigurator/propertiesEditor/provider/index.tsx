@@ -22,6 +22,7 @@ import { IModelItem } from '@/interfaces/modelConfigurator';
 import { nanoid } from '@/utils/uuid';
 import { throwError } from '@/utils/errors';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { useDeepCompareMemo } from '@/hooks';
 
 export interface IPropertiesEditorProviderProps {
   id?: string;
@@ -36,7 +37,6 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     ...PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
     items: props.items.filter((x) => !x.isFrameworkRelated),
     onChange: props.onChange,
-    selectedItemRef: selRef,
   });
 
   const dispatchAndFire = <P = void, T extends string = string>(action: PayloadAction<P, T>): void => {
@@ -83,21 +83,19 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     dispatchAndFire(updateItemAction(payload));
   };
 
+  const localState = useDeepCompareMemo(() => {
+    return { ...state, selectedItemRef: selRef };
+  }, [state]);
+
+  const actions = useDeepCompareMemo(() => {
+    return { addItem, deleteItem, selectItem, updateChildItems, getItem, updateItem /* NEW_ACTION_GOES_HERE */ };
+  }, [state]);
+
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   return (
-    <PropertiesEditorStateContext.Provider value={{ ...state }}>
-      <PropertiesEditorActionsContext.Provider
-        value={{
-          addItem,
-          deleteItem,
-          selectItem,
-          updateChildItems,
-          getItem,
-          updateItem,
-          /* NEW_ACTION_GOES_HERE */
-        }}
-      >
+    <PropertiesEditorStateContext.Provider value={localState}>
+      <PropertiesEditorActionsContext.Provider value={actions}>
         {children}
       </PropertiesEditorActionsContext.Provider>
     </PropertiesEditorStateContext.Provider>

@@ -133,7 +133,7 @@ export const KeyInformationBar: FC<IKeyInformationBarComponentProps> = (props) =
                   boxSizing: 'border-box',
                 }}
                 style={containerStyle(item)}
-                dynamicComponents={props.isDynamic ? item?.components : []}
+                dynamicComponents={props.isDynamic ? item.components : []}
               />
             </div>
           </div>

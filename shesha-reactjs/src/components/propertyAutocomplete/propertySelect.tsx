@@ -130,7 +130,7 @@ const modelMetadata2Properties = (modelMetadata: IModelMetadata | undefined): IP
     : [];
 
   const specifications = isEntityMetadata(modelMetadata)
-    ? (modelMetadata.specifications ?? []).map<IPropertyItem>((p) => ({ ...p, itemType: 'specification' }))
+    ? modelMetadata.specifications.map<IPropertyItem>((p) => ({ ...p, itemType: 'specification' }))
     : [];
 
   return [...properties, ...specifications];
@@ -220,7 +220,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
         ? getFullPath((p as IPropertyMetadata).path, containerPath)
         : (p as ISpecification).friendlyName;
 
-      if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase())) {
+      if (fullPath.toLowerCase().startsWith(data.toLowerCase())) {
         const option = propertyItem2option(p, containerPath, isPropertySelectable);
         filteredOptions.push(option);
       }

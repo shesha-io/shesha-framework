@@ -2,6 +2,7 @@ import { MetadataSourceType } from './metadata';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IReferenceListIdentifier } from './referenceList';
 import { EntityInitFlags } from '@/apis/modelConfigurations';
+import { ItemInterface } from 'react-sortablejs';
 
 export interface IModelItem {
   id: string;
@@ -58,3 +59,8 @@ export interface IModelItem {
   initStatus?: EntityInitFlags | undefined;
   initMessage?: string | undefined;
 }
+
+export interface ISortableItem<ListItemType> extends ItemInterface {
+  data: ListItemType;
+}
+

@@ -1,6 +1,6 @@
 import { createNamedContext } from '@/utils/react';
 import { Theme } from 'antd/lib/config-provider/context';
-import { FormItemLayout } from 'antd/lib/form/Form';
+import { FormLayout } from 'antd/lib/form/Form';
 import { FormLabelAlign } from 'antd/lib/form/interface';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 
@@ -70,7 +70,7 @@ export interface IConfigurableTheme {
   componentSpan?: number | undefined;
 
   labelAlign?: FormLabelAlign;
-  layout?: FormItemLayout;
+  layout?: FormLayout;
   colon?: boolean;
   componentGroups?: IComponentGroupsSettings;
 }
@@ -83,7 +83,7 @@ export interface IThemeStateContext {
   labelSpan: number;
   componentSpan: number;
   labelAlign?: FormLabelAlign;
-  layout?: FormItemLayout;
+  layout?: FormLayout;
   colon?: boolean;
 }
 

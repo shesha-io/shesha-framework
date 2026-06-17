@@ -1,5 +1,5 @@
 import { deepMergeValues } from "@/utils/object";
-import { DeviceTypes, IViewType } from "./contexts";
+import { DeviceTypes, ICanvasStateContext, IViewType } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 
@@ -270,4 +270,14 @@ export const getDeviceStyle = (data: Record<string, object | undefined> | undefi
   if (!data) return {};
   if (!device) return data[defaultDevice] ?? {};
   return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
+};
+
+
+export const applyCanvasSize = (state: ICanvasStateContext, width: number | string, deviceType: DeviceTypes): ICanvasStateContext => {
+  return {
+    ...state,
+    designerWidth: typeof width === 'string' ? width : `${width}px`,
+    designerDevice: deviceType,
+    activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
+  };
 };

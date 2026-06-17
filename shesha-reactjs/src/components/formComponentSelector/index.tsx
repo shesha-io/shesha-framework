@@ -69,7 +69,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   const options = useMemo<DefaultOptionType[]>(() => {
     const result = editors.map<DefaultOptionType>((editor) => ({
       // capitalise the first letter of each word
-      label: editor?.name?.replace(/\b\w/g, (char) => char.toUpperCase()),
+      label: editor.name.replace(/\b\w/g, (char) => char.toUpperCase()),
       value: editor.type }));
     if (noSelectionItem)
       result.splice(0, 0, noSelectionItem);
@@ -144,7 +144,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
       : null;
     if (!adapter) return false;
 
-    return !adapter.propertiesFilter || adapter.propertiesFilter(name);
+    return adapter.propertiesFilter(name);
   };
 
   return (

@@ -10,6 +10,13 @@ import { IObjectMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
+import { useLocalStorage } from '@/hooks';
+import { applyCanvasSize } from './utils';
+
+type SavedSettings = {
+  width: number | string;
+  deviceType: DeviceTypes;
+};
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,
@@ -34,9 +41,13 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
-  const [state, dispatch] = useReducer(reducer, {
-    ...CANVAS_CONTEXT_INITIAL_STATE,
-  });
+  const [savedSettings, setSavedSettings] = useLocalStorage<SavedSettings>("CANVAS_SETTINGS");
+
+  const [state, dispatch] = useReducer(reducer,
+    isDefined(savedSettings)
+      ? applyCanvasSize(CANVAS_CONTEXT_INITIAL_STATE, savedSettings.width, savedSettings.deviceType)
+      : { ...CANVAS_CONTEXT_INITIAL_STATE },
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -52,8 +63,9 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   }, []);
 
   const setCanvasWidth = useCallback((width: number | string, deviceType: DeviceTypes) => {
+    setSavedSettings({ width, deviceType });
     dispatch(setCanvasWidthAction({ width: typeof width === 'string' ? width : `${width}px`, deviceType }));
-  }, []);
+  }, [setSavedSettings]);
 
   const setCanvasZoom = useCallback((zoom: number) => {
     dispatch(setCanvasZoomAction(zoom));

@@ -22,7 +22,7 @@ export const HeaderContent: FC<IHeaderProps> = ({ title, subtitle }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h4 style={{ margin: 0, color: '#969696' }}>{title}</h4>
-      <p style={{ margin: 0, color: theme?.application?.primaryColor }}>{subtitle}</p>
+      <p style={{ margin: 0, color: theme.application?.primaryColor }}>{subtitle}</p>
     </div>
   );
 };

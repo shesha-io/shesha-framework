@@ -146,7 +146,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
         props.disableRefresh?.(false);
-        const allExist = keys.every((x) => selected.current?.find((y) => keyValueFunc(outcomeValueFunc(y), {}) === x));
+        const allExist = keys.every((x) => selected.current.find((y) => keyValueFunc(outcomeValueFunc(y), {}) === x));
 
         // Attempt to load if we don't have all the values resolved from the data source
         if (!loadingValues && !allExist) {
@@ -180,7 +180,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
             }
           }
         }
-        if (props.dataSourceType === 'entitiesList' && hasDisplayName && !loadingValues && !selected.current?.length) {
+        if (props.dataSourceType === 'entitiesList' && hasDisplayName && !loadingValues && !selected.current.length) {
           setLoadingIndicator(false);
           const values = getNormalizedValues(props.value);
           setSelected(keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y)) === x)));
@@ -192,8 +192,8 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
     }
   }, [props.value, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
 
-  useEffect(() => {
-    if (open) {
+  const onDropdownVisibleChange = (isOpen: boolean): void => {
+    if (isOpen) {
       const selectedValue = isNonEmptyArray(selected.current)
         ? selected.current.map((s) => outcomeValueFunc(s))
         : undefined;
@@ -206,10 +206,8 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
       }]);
       source.performQuickSearch('');
     }
-  }, [filterNotKeysFunc, open, outcomeValueFunc, source]);
-
-  const onDropdownVisibleChange = (isOpen: boolean): void => {
     setOpen(isOpen);
+
     props.disableRefresh?.(false);
   };
 
@@ -287,7 +285,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
   };
 
   const selectedValuesList = useMemo(() => {
-    return selected.current?.map((row, index) => renderOption(row, 10 + index));
+    return selected.current.map((row, index) => renderOption(row, 10 + index));
     // TODO V1: review dependencies
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected.current]);
