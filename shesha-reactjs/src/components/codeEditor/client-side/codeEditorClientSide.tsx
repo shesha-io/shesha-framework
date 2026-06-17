@@ -1,8 +1,8 @@
 import React, { FC, PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
 import { Monaco, loader } from '@monaco-editor/react';
 import { IDisposable, IPosition, IRange, Uri, UriComponents, editor, languages } from 'monaco-editor';
-import { DataTypes, IObjectMetadata } from "@/interfaces";
-import { ModelTypeIdentifier, asPropertiesArray, isObjectMetadata } from "@/interfaces/metadata";
+import { DataTypes } from "@/interfaces";
+import { IModelMetadata, ModelTypeIdentifier, asPropertiesArray, isObjectMetadata } from "@/interfaces/metadata";
 import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
@@ -112,9 +112,8 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
 
   const { getMetadata } = useMetadataDispatcher();
 
-  const metadataFetcher = useCallback(async (typeId: ModelTypeIdentifier): Promise<IObjectMetadata | null> => {
-    const response = await getMetadata({ dataType: DataTypes.entityReference, modelType: typeId });
-    return response && isObjectMetadata(response) ? response : null;
+  const metadataFetcher = useCallback(async (typeId: ModelTypeIdentifier): Promise<IModelMetadata | null> => {
+    return await getMetadata({ dataType: DataTypes.entityReference, modelType: typeId });
   }, [getMetadata]);
 
   const subscriptions = useRef<IDisposable[]>([]);
