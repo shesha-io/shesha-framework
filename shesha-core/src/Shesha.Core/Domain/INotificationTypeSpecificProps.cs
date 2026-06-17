@@ -1,9 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Shesha.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
     public interface INotificationTypeSpecificProps
     {
+        /// <summary>
+        /// The default priority of the message unless overridden during the send operation
+        /// </summary>
+        public RefListNotificationPriority? DefaultPriority { get; set; }
+
         /// <summary>
         /// If true, attachments are allowed for this notification
         /// </summary>

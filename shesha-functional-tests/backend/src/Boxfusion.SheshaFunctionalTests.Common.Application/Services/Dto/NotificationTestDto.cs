@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
 using Shesha.DelayedUpdate;
-using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
 
@@ -17,11 +16,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
         /// </summary>
         public EntityDto<Guid>? Channel { get; set; }
         /// <summary>
-        /// 
-        /// </summary>
-        public RefListNotificationPriority Priority { get; set; } = RefListNotificationPriority.Low;
-        /// <summary>
-        /// 
+        ///
         /// </summary>
         public EntityDto<Guid>? Recipient { get; set; }
         /// <summary>
