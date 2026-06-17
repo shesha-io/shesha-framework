@@ -4,25 +4,22 @@ import { isSubFormComponent } from '@/designer-components/subForm';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { IConfigurableFormComponent, IPropertyMetadata, ValidateErrorEntity } from '@/interfaces';
+import { IConfigurableFormComponent, IPropertyMetadata, IToolboxComponent, ValidateErrorEntity } from '@/interfaces';
 import { DEVICE_TYPES, DeviceType, IStyleType, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { ComponentApiProperty, IComponentApiDescription } from '@/providers/componentApi/model';
 import { useComponentApi } from '@/providers/componentApi/provider';
-import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { formComponentActualModelPropertyFilter, isFormFullName, updateComponentModelFromMetadata } from '@/providers/form/utils';
-import { FormComponentValidationProvider, useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
+import { useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { deepMergeValues, getValueByPropertyName, removeUndefinedProps, setValueByPropertyName } from '@/utils/object';
 import { toCamelCase } from '@/utils/string';
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { CustomErrorBoundary } from '..';
-import { IComponentStyle, InputComponentApi } from '../../componentsApi/componentApi';
-import apiCode from "../../componentsApi/componentApi.ts?raw";
-import AttributeDecorator from '../attributeDecorator';
-import ErrorIconPopover from '../componentErrors/errorIconPopover';
-import { isValidGuid } from './components/utils';
-import { useStyles } from './styles/styles';
+import { IComponentStyle, InputComponentApi } from '../../../componentsApi/componentApi';
+import apiCode from "../../../componentsApi/componentApi.ts?raw";
+import AttributeDecorator from '../../attributeDecorator';
+import ErrorIconPopover from '../../componentErrors/errorIconPopover';
+import { isValidGuid } from '../components/utils';
 import { isNonEmptyArray } from '@/utils/array';
 
 export interface IFormComponentProps {
@@ -43,12 +40,14 @@ type CustomHtmlAttributes = {
   "data-sha-parent-form-name"?: string | undefined;
 };
 
-const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceComponentModel }) => {
-  const { styles } = useStyles();
+type KnownFormComponentProps = IFormComponentProps & {
+  toolboxComponent: IToolboxComponent;
+};
+
+export const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel: sourceComponentModel, toolboxComponent }) => {
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
   const { isComponentFiltered, formMode, modelMetadata } = useForm();
-  const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
   const { errors: validationErrors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
@@ -57,13 +56,11 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   const [apiModel, setApiModel] = useState<Partial<IConfigurableFormComponent>>({});
   const [apiStyles, setApiStyles] = useState<Partial<IStyleType>>({});
 
-  const toolboxComponent = getToolboxComponent(sourceComponentModel.type);
-
   const [propMetadata, setPropMetadata] = useState<IPropertyMetadata | undefined>(undefined);
 
   useEffect(() => {
     let cancelled = false;
-    if (modelMetadata?.properties && sourceComponentModel.propertyName) {
+    if (modelMetadata?.properties && !isNullOrWhiteSpace(sourceComponentModel.propertyName)) {
       const pName = toCamelCase(sourceComponentModel.propertyName);
       if (Array.isArray(modelMetadata.properties)) {
         setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
@@ -81,7 +78,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   }, [modelMetadata, sourceComponentModel.propertyName]);
 
   const componentModel = useDeepCompareMemo(() => {
-    return toolboxComponent && propMetadata
+    return propMetadata
       ? updateComponentModelFromMetadata(toolboxComponent, sourceComponentModel, propMetadata)
       : sourceComponentModel;
   }, [sourceComponentModel, toolboxComponent, propMetadata]);
@@ -127,7 +124,8 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
       !anyOfPermissionsGranted(actualModel.permissions || []) ||
       !isComponentFiltered(actualModel));
 
-  if (!toolboxComponent?.isInput && !toolboxComponent?.isOutput)
+  const { isInput, isOutput = false } = toolboxComponent;
+  if (!isInput && !isOutput)
     actualModel.propertyName = undefined;
 
   const allStyles = useFormComponentStyles(actualModel);
@@ -135,7 +133,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   // For input components: Strip margins from fullStyle and jsStyle
   // Margins are handled by the FormItem wrapper (via allStyles.margins), not the inner component
   // This prevents double margins (wrapper + component) in both designer and live modes
-  if (toolboxComponent?.isInput) {
+  if (isInput) {
     actualModel.allStyles = {
       ...allStyles,
       fullStyle: stylingUtils.stripMargins(allStyles.fullStyle),
@@ -146,7 +144,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     actualModel.allStyles = allStyles;
   }
 
-  const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
+  const calculatedModel = useCalculatedModel(actualModel, toolboxComponent.useCalculateModel, toolboxComponent.calculateModel);
 
   const actualApiModel = useDeepCompareMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
 
@@ -158,7 +156,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
       componentName: actualModel.componentName,
       componentModel: actualModel,
       level: 1,
-      isInput: isDefined(toolboxComponent) && toolboxComponent.isInput,
+      isInput: isInput,
       rawComponentModel: sourceComponentModel,
       api: {
         componentName: actualModel.componentName,
@@ -196,7 +194,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     };
 
     // input common Api
-    if (toolboxComponent?.isInput) {
+    if (isInput) {
       commonApi.api = {
         ...commonApi.api,
         isValid: () => !isNullOrWhiteSpace(propertyName)
@@ -236,7 +234,6 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
 
   const control = useMemo(() => {
-    if (!toolboxComponent) return null;
     return (
       <toolboxComponent.Factory
         form={shaForm.antdForm}
@@ -261,13 +258,13 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     }
 
     // Collect errors from toolbox validateModel
-    toolboxComponent?.validateModel?.(actualModel, (propertyName, error) => {
+    toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
       errors.push({ propertyName, error });
     });
 
     // Collect errors from child components registered via hook
     const childValidation = validationErrors.get(actualModel.id);
-    if (childValidation?.hasErrors && childValidation.errors) {
+    if (isDefined(childValidation) && childValidation.hasErrors && childValidation.errors) {
       errors.push(...childValidation.errors);
       // Use the child's validationType if present (prioritize 'error' > 'warning' > 'info')
       if (childValidation.validationType) {
@@ -296,7 +293,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode
   // Use the validationType from the validation result (error/warning/info) or default to 'warning'
-  const wrappedControl = validationResult?.hasErrors && formMode === 'designer' ? (
+  const wrappedControl = isDefined(validationResult) && validationResult.hasErrors && formMode === 'designer' ? (
     <ErrorIconPopover
       mode="validation"
       validationResult={validationResult}
@@ -306,34 +303,6 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
       {control}
     </ErrorIconPopover>
   ) : control;
-
-  // Check for validation errors (in both designer and runtime modes) when the toolbox component does not exist
-  if (!toolboxComponent) {
-    const componentNotFoundError: IModelValidation = {
-      hasErrors: true,
-      componentId: actualModel.id,
-      componentName: actualModel.componentName,
-      componentType: actualModel.type,
-      errors: [{ error: `Component '${actualModel.type}' not found` }],
-    };
-    // Component not found - return early with just error message
-    const unregisteredMessage = <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>;
-
-    return (
-      <div className={styles.unregisteredComponentContainer}>
-        {shaForm.formMode !== 'designer' ? (
-          <ErrorIconPopover
-            mode="validation"
-            validationResult={componentNotFoundError}
-            type="error"
-            isDesignerMode={false}
-          >
-            {unregisteredMessage}
-          </ErrorIconPopover>
-        ) : unregisteredMessage}
-      </div>
-    );
-  }
 
   if (shaForm.form && shaForm.form.settings.isSettingsForm)
     return control;
@@ -363,26 +332,3 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel: sourceCom
     )
     : undefined;
 };
-
-const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
-  return (
-    <FormComponentValidationProvider
-      componentId={componentModel.id}
-      componentName={componentModel.componentName ?? ""}
-      componentType={componentModel.type}
-    >
-      <FormComponentInner componentModel={componentModel} />
-    </FormComponentValidationProvider>
-  );
-};
-
-const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel }) => {
-  return (
-    <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} componentId={componentModel.id}>
-      <FormComponent componentModel={componentModel} />
-    </CustomErrorBoundary>
-  );
-};
-
-const FormComponentMemo = React.memo(FormCompomnentErrorWrapper);
-export default FormComponentMemo;
