@@ -17,7 +17,7 @@ export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerP
     render,
     wrapperStyle,
     style: incomingStyle,
-    noDefaultStyling,
+    noDefaultStyling = false,
   } = props;
   const { styles } = useStyles();
   const parent = useParent();

@@ -1,8 +1,10 @@
 import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
-import { IEntityProperty, IFunctionProperty, IMethodMetadata, IObjectMetadata, IObjectProperty, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
-import { Environment, PropertiesBuilder, StandardConstantInclusionArgs,
+import { IEntityProperty, IFunctionProperty, IMethodMetadata, IModelMetadata, IObjectMetadata, IObjectProperty, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
+import {
+  Environment, PropertiesBuilder, StandardConstantInclusionArgs,
   IMetadataBuilder as IPublicMetadataBuilder,
-  IObjectMetadataBuilder as IPublicObjectMetadataBuilder } from "@/publicJsApis/apis/metadataBuilder";
+  IObjectMetadataBuilder as IPublicObjectMetadataBuilder,
+} from "@/publicJsApis/apis/metadataBuilder";
 import { registerMetadataBuilderAction } from "./standardProperties";
 
 
@@ -25,7 +27,7 @@ export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
 
 export type IMetadataBuilder = IPublicMetadataBuilder<IObjectMetadataBuilder>;
 
-export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata | null>;
+export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IModelMetadata | null>;
 export type MetadataBuilderAction = (builder: IObjectMetadataBuilder, name: string | undefined) => void;
 
 export type WellKnownConstantDescriptor = {
