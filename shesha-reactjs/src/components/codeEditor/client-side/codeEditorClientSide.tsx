@@ -2,7 +2,7 @@ import React, { FC, PropsWithChildren, useCallback, useMemo, useRef, useState } 
 import { Monaco, loader } from '@monaco-editor/react';
 import { IDisposable, IPosition, IRange, Uri, UriComponents, editor, languages } from 'monaco-editor';
 import { DataTypes } from "@/interfaces";
-import { IModelMetadata, ModelTypeIdentifier, asPropertiesArray, isObjectMetadata } from "@/interfaces/metadata";
+import { IModelMetadata, ModelTypeIdentifier, asPropertiesArray } from "@/interfaces/metadata";
 import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
