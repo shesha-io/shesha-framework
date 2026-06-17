@@ -10,8 +10,9 @@ import { convertValueToFriendlyString } from './utils';
 import { useDeepCompareMemo } from '@/hooks';
 
 // make value unknown to process any type of value (InputComponent is not generic)
-export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value'> & {
-  value: TValue;
+export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value' | 'onChange'> & {
+  value: TValue | undefined;
+  onChange?: ((value: TValue | undefined) => void) | undefined;
   skipInheritance?: boolean;
 };
 
@@ -35,7 +36,7 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
 
   const internalOnChange = useCallback((v: TValue | undefined): void => {
     tempData.current = onChangeSetting?.(v, formData, setFormData, tempData.current);
-    onChange(v ?? null);
+    onChange?.(v);
   }, [onChange, onChangeSetting, formData, setFormData]);
 
   const setOverride = useCallback((): void => {
@@ -58,7 +59,7 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
 
   // ToDo: AS - review memoize
   const content = useMemo(() => {
-    const addInfo = additionalInfo ? (<div>{additionalInfo}</div>) : null;
+    const addInfo = Boolean(additionalInfo) ? (<div>{additionalInfo}</div>) : null;
     const inheritanceInfo1 = isInherited ? `This value inherits from ${valueInfo.latestDefaultModelName}` : isOverridden ? `This value is overridden.` : null;
     const inheritanceInfo2 = isOverridden ? `Inherited value: ${convertValueToFriendlyString(defaultValue)}` : null;
     return Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2) ? (
@@ -81,7 +82,7 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
 
   if (!Editor) return null;
 
-  if (content && !props.skipInheritance) {
+  if (content && !Boolean(props.skipInheritance)) {
     return (
       <Popover content={content} trigger="hover" onOpenChange={setPopupOpen} open={popupOpen} autoAdjustOverflow={true} placement="topLeft">
         <div> {/* div is required to make Popover work for some input components */}

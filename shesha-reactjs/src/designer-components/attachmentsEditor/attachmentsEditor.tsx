@@ -23,7 +23,7 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
 import { OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
@@ -78,16 +78,50 @@ const migrateContainerProperties = (
   defaultContainer: IStyleValue,
 ): Partial<IStyleValue> => {
   return {
-    stylingBox: props.stylingBox || existingContainer.stylingBox || defaultContainer.stylingBox,
-    style: props.style || props.containerStyle || existingContainer.style || defaultContainer.style,
+    stylingBox: isNotNullOrWhiteSpace(props.stylingBox)
+      ? props.stylingBox
+      : isNotNullOrWhiteSpace(existingContainer.stylingBox)
+        ? existingContainer.stylingBox
+        : defaultContainer.stylingBox,
+    style: isNotNullOrWhiteSpace(props.style)
+      ? props.style
+      : isNotNullOrWhiteSpace(props.containerStyle)
+        ? props.containerStyle
+        : isNotNullOrWhiteSpace(existingContainer.style)
+          ? existingContainer.style
+          : defaultContainer.style,
     dimensions: {
       ...(existingContainer.dimensions || defaultContainer.dimensions),
-      width: props.width || existingContainer.dimensions?.width || 'auto',
-      height: props.height || existingContainer.dimensions?.height || 'auto',
-      maxWidth: props.maxWidth || existingContainer.dimensions?.maxWidth || 'auto',
-      maxHeight: props.maxHeight || existingContainer.dimensions?.maxHeight || '140px',
-      minWidth: props.minWidth || existingContainer.dimensions?.minWidth || '0px',
-      minHeight: props.minHeight || existingContainer.dimensions?.minHeight || '0px',
+      width: isNotNullOrWhiteSpace(props.width)
+        ? props.width
+        : isDefined(existingContainer.dimensions?.width)
+          ? existingContainer.dimensions.width
+          : 'auto',
+      height: isNotNullOrWhiteSpace(props.height)
+        ? props.height
+        : isDefined(existingContainer.dimensions?.height)
+          ? existingContainer.dimensions.height
+          : 'auto',
+      maxWidth: isNotNullOrWhiteSpace(props.maxWidth)
+        ? props.maxWidth
+        : isDefined(existingContainer.dimensions?.maxWidth)
+          ? existingContainer.dimensions.maxWidth
+          : 'auto',
+      maxHeight: isNotNullOrWhiteSpace(props.maxHeight)
+        ? props.maxHeight
+        : isDefined(existingContainer.dimensions?.maxHeight)
+          ? existingContainer.dimensions.maxHeight
+          : '140px',
+      minWidth: isNotNullOrWhiteSpace(props.minWidth)
+        ? props.minWidth
+        : isDefined(existingContainer.dimensions?.minWidth)
+          ? existingContainer.dimensions.minWidth
+          : '0px',
+      minHeight: isNotNullOrWhiteSpace(props.minHeight)
+        ? props.minHeight
+        : isDefined(existingContainer.dimensions?.minHeight)
+          ? existingContainer.dimensions.minHeight
+          : '0px',
     },
   };
 };
@@ -102,7 +136,7 @@ const migrateFontProperties = (
   type ValidAlign = typeof validAlignValues[number];
 
   const normalizeAlign = (align: string | undefined): ValidAlign => {
-    if (align && validAlignValues.includes(align as ValidAlign)) {
+    if (isNotNullOrWhiteSpace(align) && validAlignValues.includes(align as ValidAlign)) {
       return align as ValidAlign;
     }
     return 'left'; // Default fallback
@@ -110,11 +144,11 @@ const migrateFontProperties = (
 
   return {
     ...existingFont,
-    size: props.fontSize || existingFont?.size,
-    color: props.fontColor || existingFont?.color,
-    weight: props.fontWeight || existingFont?.weight,
-    type: props.fontFamily || existingFont?.type,
-    align: normalizeAlign(props.fontAlign || existingFont?.align),
+    size: isDefined(props.fontSize) ? props.fontSize : existingFont?.size,
+    color: isNotNullOrWhiteSpace(props.fontColor) ? props.fontColor : existingFont?.color,
+    weight: isNotNullOrWhiteSpace(props.fontWeight) ? props.fontWeight : existingFont?.weight,
+    type: isNotNullOrWhiteSpace(props.fontFamily) ? props.fontFamily : existingFont?.type,
+    align: normalizeAlign(props.fontAlign ?? existingFont?.align),
   };
 };
 
@@ -176,7 +210,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { globalState } = useGlobalState();
     const executionContext = useAvailableConstantsData();
     const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
-    const enabled = !model.readOnly;
+    const enabled = !Boolean(model.readOnly);
 
     const {
       fullStyle: downloadedFileFullStyle,
@@ -202,13 +236,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           const onFileListChanged: OnFileListChanged = (fileList, isUserAction = false): void => {
             onChange(fileList);
             // Only execute custom script if this is a user action (upload/delete)
-            if (isUserAction && model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
+            if (isUserAction && isNotNullOrWhiteSpace(model.onChangeCustom)) executeScript(model.onChangeCustom, fileList);
           };
 
           const onDownload: OnFileDownloaded = (fileList, isUserAction = false): void => {
             onChange(fileList);
             // Only execute custom script if this is a user action (download)
-            if (isUserAction && model.onDownload) executeScript(model.onDownload, fileList);
+            if (isUserAction && isNotNullOrWhiteSpace(model.onDownload)) executeScript(model.onDownload, fileList);
           };
 
           return (
@@ -248,8 +282,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 container={model.container}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
-                downloadedFileStyles={model.styleDownloadedFiles ? downloadedFileFullStyle : {}}
-                downloadedIcon={model.styleDownloadedFiles ? model.downloadedIcon : undefined}
+                downloadedFileStyles={model.styleDownloadedFiles ?? false ? downloadedFileFullStyle : {}}
+                downloadedIcon={model.styleDownloadedFiles ?? false ? model.downloadedIcon : undefined}
               />
             </AttachmentsEditorProvider>
           );
@@ -295,35 +329,35 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: isNullOrWhiteSpace(prev.listType) ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip ?? false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
     .add<IAttachmentsEditorProps>(9, (prev) => ({
       ...prev,
       desktop: {
         ...defaultStyles(),
         container: {
           ...containerDefaultStyles(),
-          stylingBox: prev.stylingBox || '{}',
-          style: prev.style || '',
+          stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
+          style: prev.style ?? '',
         },
       },
       mobile: {
         ...defaultStyles(),
         container: {
           ...containerDefaultStyles(),
-          stylingBox: prev.stylingBox || '{}',
-          style: prev.style || '',
+          stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
+          style: prev.style ?? '',
         },
       },
       tablet: {
         ...defaultStyles(),
         container: {
           ...containerDefaultStyles(),
-          stylingBox: prev.stylingBox || '{}',
-          style: prev.style || '',
+          stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
+          style: prev.style ?? '',
         },
       },
     }))
-    .add<IAttachmentsEditorProps>(10, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '' }))
+    .add<IAttachmentsEditorProps>(10, (prev) => ({ ...prev, downloadZip: prev.downloadZip ?? false, propertyName: prev.propertyName ?? '' }))
     .add<IAttachmentsEditorProps>(11, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
     .add<IAttachmentsEditorProps>(12, (prev) => ({
       ...prev, desktop: { ...prev.desktop, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
@@ -347,13 +381,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           result[device] = { ...defaultStylesCache };
         }
 
-        const existingContainer = result[device].container ?? { ...containerDefaultsCache };
+        const existingContainer = (result[device] as IInputStyles).container ?? { ...containerDefaultsCache };
         const existingFont = result[device].font ?? { ...defaultStylesCache.font };
 
         const containerUpdates = migrateContainerProperties(prev, existingContainer, containerDefaultsCache);
         const fontUpdates = migrateFontProperties(prev, existingFont);
 
-        result[device].container = { ...existingContainer, ...containerUpdates };
+        (result[device] as IInputStyles).container = { ...existingContainer, ...containerUpdates };
         result[device].font = fontUpdates;
       });
 
@@ -362,7 +396,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
       return result;
     })
-    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ? false : prev.downloadZip })),
+    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ?? false ? false : prev.downloadZip })),
 };
 
 export default AttachmentsEditor;

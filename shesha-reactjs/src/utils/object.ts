@@ -54,7 +54,7 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   return isProxy(result) ? unproxyValue<TValue>(result as TValue) : result as TValue;
 };
 
-export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown): unknown => srcValue === undefined ? objValue : undefined;
+export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown, _key: string): unknown => srcValue === undefined ? objValue : undefined;
 
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
   target: TObject,
@@ -197,7 +197,7 @@ export const setValueByPropertyName = <TData extends object = object>(data: TDat
 };
 
 export const deepCopyViaJson = <TValue = unknown>(value: TValue): TValue => {
-  if (!value)
+  if (!isDefined(value))
     return value;
 
   return JSON.parse(JSON.stringify(value));

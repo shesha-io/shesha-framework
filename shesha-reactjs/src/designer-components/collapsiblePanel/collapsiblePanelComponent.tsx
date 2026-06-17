@@ -25,7 +25,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   name: 'Panel',
   icon: <GroupOutlined />,
   useCalculateModel(model, allData) {
-    const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, allData.data) : model.label;
+    const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, { data: allData.data }) : model.label;
     const calcModel = useMemo(() => ({ evaluatedLabel }), [evaluatedLabel]);
     return calcModel;
   },

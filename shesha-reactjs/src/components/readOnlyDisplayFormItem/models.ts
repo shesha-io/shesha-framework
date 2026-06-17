@@ -4,8 +4,8 @@ import { SwitchSize } from 'antd/es/switch';
 
 export type ReadOnlyItemType = 'string' | 'number' | 'dropdown' | 'dropdownMultiple' | 'time' | 'datetime' | 'checkbox' | 'switch' | 'radiogroup' | 'textArea';
 
-export interface IReadOnlyDisplayFormItemProps {
-  value?: any | undefined;
+export interface IReadOnlyDisplayFormItemProps<TValue = unknown> {
+  value?: TValue | undefined;
   render?: (() => ReactNode) | ReactNode | undefined;
   type?: ReadOnlyItemType | undefined;
   dropdownDisplayMode?: 'raw' | 'tags' | undefined;

@@ -44,6 +44,6 @@ export interface IComponentApi {
 export type useComponentApiFunc = () => IComponentApi | undefined;
 
 export interface IComponentApiInputRef<TValue> {
-  value: TValue | null | undefined;
-  onChange: (newValue: TValue | null) => void;
+  value: TValue | undefined | null;
+  onChange: (newValue: TValue | undefined | null) => void;
 }

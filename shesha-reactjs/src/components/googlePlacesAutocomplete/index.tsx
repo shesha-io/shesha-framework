@@ -47,7 +47,7 @@ export interface IGooglePlacesAutocompleteProps {
   biasedCoordinates?: LatLngPolygon | PointPolygon | undefined;
   style?: CSSProperties | undefined;
   size?: SizeType | undefined;
-  font?: IStyleType['font'] | undefined;
+  font?: IStyleValue['font'] | undefined;
   searchOptions?: PropTypes['searchOptions'] | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
 }

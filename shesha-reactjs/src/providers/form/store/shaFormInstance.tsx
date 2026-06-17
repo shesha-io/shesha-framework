@@ -824,13 +824,13 @@ type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFo
 export interface IShaFormDataSource<Values extends object = object> {
   dataGetter?: (() => Values | undefined) | undefined;
   dataSetter?: ((data: Values | undefined) => void) | undefined;
-  getMergedOrValue?: ((payload: ISetFormDataPayload, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
+  getMergedOrValue?: ((payload: ISetFormDataPayload<Values>, instance: IShaFormInstance<Values>) => Values | undefined) | undefined;
 }
 
 type UseShaFormArgsNewForm<Values extends object = object> = {
-  antdForm?: FormInstance<Values>;
+  antdForm?: FormInstance<Values> | undefined;
   init?: (shaForm: IShaFormInstance<Values>) => void;
-  dataSource?: IShaFormDataSource<Values>;
+  dataSource?: IShaFormDataSource<Values> | undefined;
 };
 type UseShaFormArgs<Values extends object = object> = UseShaFormArgsExistingForm<Values> & UseShaFormArgsNewForm<Values>;
 

@@ -68,7 +68,7 @@ export const getDefaultModel = (model: IPasswordComponentPropsUnwrapped): IPassw
     : model;
 };
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
     font: {

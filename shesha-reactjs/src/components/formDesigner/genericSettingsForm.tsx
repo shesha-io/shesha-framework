@@ -13,8 +13,7 @@ import { useDefaultModelActionsOrUndefined } from '@/designer-components/_settin
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { OnFormFinishFailedHandler, OnFormValuesChangeHandler } from '../configurableForm/models';
-import { isDefined } from '@/utils/nullables';
-import { useThemeActions } from '@/providers';
+import { IStyleValue, useThemeActions } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
 
@@ -47,25 +46,25 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   const [form] = Form.useForm();
   const { getComponentStyle } = useThemeActions();
 
-  const defaultModel = useDefaultModelActionsOrUndefined();
+  const defaultModel = useDefaultModelActionsOrUndefined<TModel>();
   const dcm = useDataContextManager();
-  const designerDevice = (dcm.getDataContextData('canvasContext') as ICanvasStateContext | undefined)?.designerDevice || 'desktop';
+  const designerDevice = ((dcm.getDataContextData('canvasContext') as ICanvasStateContext | undefined)?.designerDevice || 'desktop');
   const currentDevice = useRef<DeviceTypes>('desktop');
 
   useDeepCompareEffect(() => {
-    if (toolboxComponent.allowInherit) {
+    if (Boolean(toolboxComponent.allowInherit)) {
       const defaultComponentStyle = toolboxComponent.getDefaultStyles?.() ?? {};
-      defaultModel?.setDefaultModel('Default comonent Style', { ['desktop']: defaultComponentStyle });
+      defaultModel?.setDefaultModel('Default comonent Style', { ['desktop']: defaultComponentStyle } as TModel);
       const themeStyle = getComponentStyle(toolboxComponent.type);
-      defaultModel?.setDefaultModel('Theme component Style', { ['desktop']: themeStyle });
+      defaultModel?.setDefaultModel('Theme component Style', { ['desktop']: themeStyle } as TModel);
 
       if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
         // inherit mobile and tablet styles from desktop styles
-        defaultModel?.setDefaultModel('Default comonent Style', { [designerDevice]: defaultComponentStyle });
-        defaultModel?.setDefaultModel('Theme component Style', { [designerDevice]: themeStyle });
+        defaultModel?.setDefaultModel('Default comonent Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
+        defaultModel?.setDefaultModel('Theme component Style', { [designerDevice]: themeStyle } as unknown as TModel);
         const model = defaultModel?.getModel();
-        const desktopStyles = deepCopyViaJson(unproxyValue((model as Record<string, unknown>)?.desktop ?? {})) as Record<string, unknown>;
-        defaultModel?.setDefaultModel('Desktop component Style', { [designerDevice]: { ...desktopStyles, stylingBox: getStyleBoxValue(desktopStyles.stylingBox as string) } });
+        const desktopStyles = deepCopyViaJson(unproxyValue((model as IConfigurableFormComponent).desktop ?? {})) as IStyleValue;
+        defaultModel?.setDefaultModel('Desktop component Style', { [designerDevice]: { ...desktopStyles, stylingBox: getStyleBoxValue(desktopStyles.stylingBox as string) } } as unknown as TModel);
       }
     }
     currentDevice.current = designerDevice;
@@ -116,7 +115,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     const { values, mergeValues } = payload;
     const data = defaultModel?.getModel();
     return mergeValues && data
-      ? deepMergeValues({ ...data, stylingBox: getStyleBoxValue((data as Record<string, unknown>).stylingBox as string) }, values)
+      ? deepMergeValues({ ...data, stylingBox: getStyleBoxValue((data as IStyleValue).stylingBox as string) }, values)
       : values;
   };
 
@@ -132,7 +131,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   return (
     <ConfigurableForm<TModel>
-      formName={isInModal ? 'modalSettings' : 'componentSettings'}
+      formName={Boolean(isInModal) ? 'modalSettings' : 'componentSettings'}
       labelCol={layoutSettings.labelCol}
       wrapperCol={layoutSettings.wrapperCol}
       layout={layoutSettings.layout}

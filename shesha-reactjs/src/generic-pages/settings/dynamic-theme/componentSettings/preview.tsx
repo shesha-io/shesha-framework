@@ -17,7 +17,7 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
   const componentTitle = componentDefinition.name;
 
   const componentModel = useMemo((): IConfigurableFormComponent => {
-    return componentDefinition?.previewConfiguration ?? {
+    return componentDefinition.previewConfiguration ?? {
       type: componentType,
       id: componentType,
       propertyName: `${componentType}Appearance`,
@@ -41,7 +41,7 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
   return (
     <Card>
       <h4 style={{ marginBottom: 4 }}>{componentTitle} preview:</h4>
-      <ConfigurableForm mode="edit" markup={markup} initialValues={theme ?? {}} className={styles.appearanceForm} />
+      <ConfigurableForm mode="edit" markup={markup} initialValues={theme} className={styles.appearanceForm} />
     </Card>
   );
 };

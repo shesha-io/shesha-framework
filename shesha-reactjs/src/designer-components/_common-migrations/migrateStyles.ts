@@ -108,9 +108,9 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
   const result: T = {
     ...prev,
     enableStyleOnReadonly: prev.enableStyleOnReadonly || false,
-    desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop'), enableStyleOnReadonly: prev.desktop?.enableStyleOnReadonly || false },
-    tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet'), enableStyleOnReadonly: prev.tablet?.enableStyleOnReadonly || false },
-    mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile'), enableStyleOnReadonly: prev.mobile?.enableStyleOnReadonly || false },
+    desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
+    tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet'), enableStyleOnReadonly: (prev.tablet as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
+    mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile'), enableStyleOnReadonly: (prev.mobile as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
   };
 
   return result;

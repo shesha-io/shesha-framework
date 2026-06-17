@@ -25,7 +25,7 @@ import { NumberFieldApi } from '../../componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -87,7 +87,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
 
     const inputProps: InputNumberProps<number> = {
       disabled: model.readOnly === true,
-      ...(model.hideBorder ? { variant: 'borderless' } : {}),
+      ...(Boolean(model.hideBorder) ? { variant: 'borderless' } : {}),
       placeholder: model.placeholder,
       size: model.size,
       changeOnWheel: false,
@@ -95,14 +95,18 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       suffix,
       stringMode: true,
       controls: false,
-      ...(model.validate?.maxValue ? { max: model.validate.maxValue } : {}),
-      ...(model.validate?.minValue ? { min: model.validate.minValue } : {}),
+      ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
+      ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
+      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
     };
 
     // ToDo: AS - implement custom number formatting
-    if (model.thousandsSeparator || model.numberFormat === 'percent' || (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && model.customFormat._code)) {
+    if (isDefined(model.thousandsSeparator) ||
+      model.numberFormat === 'percent' ||
+      (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && isNotNullOrWhiteSpace(model.customFormat._code))
+    ) {
       inputProps.formatter = (value) => {
-        if (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && model.customFormat._code) {
+        if (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && isNotNullOrWhiteSpace(model.customFormat._code)) {
           if (isDefined(calculatedModel.executeCustomFormat))
             return calculatedModel.executeCustomFormat(value, model.customFormat._code);
         }
@@ -110,17 +114,14 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
         if (!isDefined(value)) return '';
 
         const strValue = value.toString();
-        return (!isNullOrWhiteSpace(model.thousandsSeparator)
-          ? strValue.replace(/\B(?=(\d{3})+(?!\d))/g, model.thousandsSeparator) : strValue) + (model.numberFormat === 'percent' ? ' %'
-          : ''
-        );
+        return (isDefined(model.thousandsSeparator) ? strValue.replace(/\B(?=(\d{3})+(?!\d))/g, model.thousandsSeparator) : strValue) + (model.numberFormat === 'percent' ? ' %' : '');
       };
       inputProps.parser = (value) => {
         if (!isDefined(value))
           return 0;
         const ts = model.thousandsSeparator;
-        const escapedTs = ts ? ts.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
-        const regex = new RegExp(`[+-]?(?:\\d+${(Boolean(ts) ? `(?:${escapedTs}\\d*)*` : '')}(?:\\.\\d*)?|\\.\\d+)`, 'g');
+        const escapedTs = isDefined(ts) ? ts.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
+        const regex = new RegExp(`[+-]?(?:\\d+${(isDefined(ts) ? `(?:${escapedTs}\\d*)*` : '')}(?:\\.\\d*)?|\\.\\d+)`, 'g');
 
         const match = value.match(regex);
         if (match) {
@@ -135,11 +136,11 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
     return (
       <ConfigurableFormItem<number> model={model}>
         {(value, onChange, _, ctx) => {
-          return model.readOnly
+          return model.readOnly ?? false
             ? (
               <ReadOnlyDisplayFormItem
                 type="number"
-                value={numberToFormattedString(value, getDataProperty(properties, model.propertyName, 'dataFormat'))}
+                value={numberToFormattedString(String(value), getDataProperty(properties, model.propertyName ?? '', 'dataFormat'))}
                 enableFullStyle={model.enableStyleOnReadonly}
                 style={model.styleJson}
                 styleValue={model}
@@ -150,12 +151,11 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                 value={value ?? null}
                 {...inputProps}
                 ref={inputRef}
-                style={model.styleJson}
                 className={styles.numberStyles}
 
                 // TODO EVENTS
                 onChange={(val) => {
-                  let newValue = val;
+                  let newValue = val ?? undefined;
                   let numValue = 0;
                   if (isDefined(val)) {
                     const strVal = val.toString();
@@ -165,10 +165,10 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                       ? strVal.substring(0, decimal + numDecimalPlaces + 1)
                       : strVal;
                     numValue = parseFloat(formattedValue);
-                    newValue = model.highPrecision
+                    newValue = Boolean(model.highPrecision)
                       ? parseFloat(formattedValue)
                       : Number.isNaN(numValue)
-                        ? null
+                        ? undefined
                         : numValue;
                   }
 
@@ -198,7 +198,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       .add<INumberFieldComponentPropsV1>(2, (prev) => migrateReadOnly(prev))
       .add<INumberFieldComponentPropsV1>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
       .add<INumberFieldComponentPropsV1>(4, (prev, context) => {
-        if (context.isNew) return prev;
+        if (context.isNew ?? false) return prev;
 
         const styles: IInputStyles = {
           size: prev.size,
@@ -209,9 +209,9 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
 
         return { ...prev, desktop: { ...styles } };
       })
-      .add<INumberFieldComponentPropsV1>(5, (prev, context) => context.isNew ? prev : {
+      .add<INumberFieldComponentPropsV1>(5, (prev, context) => context.isNew ?? false ? prev : {
         ...prev,
-        desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: prev.desktop?.enableStyleOnReadonly || false },
+        desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
       })
       .add<INumberFieldComponentProps>(6, (prev) => {
         const model = { ...migrateHiddenToVisible(prev) };
@@ -233,7 +233,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       numberFormat: metadata.dataType === DataTypes.number
         ? metadata.dataFormat === NumberFormats.int64 || metadata.dataFormat === NumberFormats.int32
           ? 'integer'
-          : decimalFormat?.showAsPercentage
+          : decimalFormat?.showAsPercentage ?? false
             ? 'percent'
             : 'decimal'
         : 'custom',

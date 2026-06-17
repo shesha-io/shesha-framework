@@ -10,7 +10,7 @@ import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import SettingsControl, { SettingsControlChildrenFunc } from '@/designer-components/_settings/settingsControl';
 import { IPropertySetting, UnwrapCodeEvaluators } from '@/providers';
 import { IAnyObject } from '@/interfaces';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const ConfigurableFormItemSetting = <TValue = unknown>({
   children,
@@ -30,8 +30,8 @@ export const ConfigurableFormItemSetting = <TValue = unknown>({
     name: getFieldNameFromExpression(model.propertyName),
     label: model.label,
     required: model.validate?.required ?? false,
-    tooltip: model.description,
-    hidden: model.hidden ?? false,
+    tooltip: isNotNullOrWhiteSpace(model.description) ? model.description : undefined,
+    hidden: false,
   };
 
   if (typeof children === 'function') {
@@ -46,7 +46,7 @@ export const ConfigurableFormItemSetting = <TValue = unknown>({
   }
 
   const childrenElement = children as React.ReactElement<{ readOnly: boolean | undefined; disabled: boolean | undefined } & IAnyObject>;
-  const readOnly = model.readOnly || childrenElement.props.readOnly || childrenElement.props.disabled;
+  const readOnly = (model.readOnly ?? false) || (childrenElement.props.readOnly ?? false) || (childrenElement.props.disabled ?? false);
 
   return (
     <ConfigurableFormItemLive<IPropertySetting<TValue> | TValue>
@@ -89,7 +89,7 @@ export const ConfigurableFormItemSetting = <TValue = unknown>({
                       : event;
                     onChange(data as TValue);
                   },
-                  ...(valuePropName ? { [valuePropName]: value } : {}),
+                  ...(isNotNullOrWhiteSpace(valuePropName) ? { [valuePropName]: value } : {}),
                 });
             }}
           </SettingsControl>

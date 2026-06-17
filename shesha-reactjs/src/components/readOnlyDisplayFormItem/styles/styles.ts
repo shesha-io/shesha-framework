@@ -4,9 +4,9 @@ import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
 import { CSSProperties } from 'react';
 
 interface UseStylesParams {
-  textAlign?: CSSProperties['textAlign'];
-  styleValue: IStyleValue;
-  enableFullStyle: boolean;
+  textAlign: CSSProperties['textAlign'] | undefined;
+  styleValue: IStyleValue | undefined;
+  enableFullStyle: boolean | undefined;
 }
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: UseStylesParams) => {
@@ -80,7 +80,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
     ${dimensionsStyles(styleValue?.dimensions)}
     ${fontStyles(styleValue?.font)}
 
-    ${enableFullStyle
+    ${Boolean(enableFullStyle)
         ? borderStyles(styleValue?.border) +
         backgroundStyles(styleValue?.background) +
         shadowStyles(styleValue?.shadow) +

@@ -54,7 +54,7 @@ export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelPro
   defaultModelPropertyName?: string | undefined;
   readOnly?: ValueOrCodeEvaluator<boolean> | undefined;
   value?: TValue | undefined;
-  onChange?: ((value: TValue | null) => void) | undefined;
+  onChange?: ((value: TValue | undefined | null) => void) | undefined;
   onChangeSetting?: ((value: unknown, data: unknown, setFormData: (data: ISetFormDataPayload) => void, tempData?: unknown) => unknown) | undefined;
   level?: number | undefined;
   tooltip?: string | undefined;
@@ -148,7 +148,7 @@ export interface INumberFieldSettingsInputProps extends ISettingsInputBase<numbe
 }
 
 // Text Field
-export interface ITextFieldSettingsInputProps extends ISettingsInputBase {
+export interface ITextFieldSettingsInputProps extends ISettingsInputBase<string> {
   type: 'textField';
   prefix?: string | undefined;
   suffix?: string | undefined;

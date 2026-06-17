@@ -1,5 +1,6 @@
 import { Path } from "@/utils/dotnotation";
-import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, getStringPropertyOrUndefined, getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { isEqual } from "lodash";
 import { ReactElement } from "react";
 
@@ -18,12 +19,12 @@ export interface IDefaultModelInstance<T extends object = object> {
   setModel: (model: T | undefined) => void;
   setDefaultModel: (name: string, model: T) => void;
   removeDefaultModel: (name: string) => void;
-  getMergedModel: () => T;
+  getMergedModel: () => T | undefined;
   getModel: () => T;
   getDefaultModel: (name?: string) => T | undefined;
-  getValueInfo: (propName: string) => IDefaultModelValueInfo;
+  getValueInfo: (propName: string) => IDefaultModelValueInfo | undefined;
   overrideValue: (propName: string) => void;
-  setCurrentValueAdditionalInfo: (propName: string, additionalInfo: string | ReactElement) => void;
+  setCurrentValueAdditionalInfo: (propName: string, additionalInfo: string | ReactElement | undefined) => void;
   getCurrentValueAdditionalInfo: (propName: string) => string | ReactElement | undefined;
 }
 
@@ -40,9 +41,10 @@ interface IPropertyUpdateSubscriptionData {
   [key: string]: unknown;
 }
 
-const getDataForPropertyUpdateSubscription = <T extends object = object>(dfi: IDefaultModelInstance<T>, propertyName: string): IPropertyUpdateSubscriptionData => {
-  const value = getValueByPropertyName(dfi.getMergedModel(), propertyName as Path<object>);
+const getDataForPropertyUpdateSubscription = <T extends object = object>(dfi: IDefaultModelInstance<T>, propertyName: string): IPropertyUpdateSubscriptionData | undefined => {
   const valueInfo = dfi.getValueInfo(propertyName);
+  if (!isDefined(valueInfo)) return undefined;
+  const value = getValueByPropertyName(dfi.getMergedModel(), propertyName as Path<object>);
   const additionalInfo = dfi.getCurrentValueAdditionalInfo(propertyName);
   return deepCopyViaJson({ propertyName, value, valueInfo, additionalInfo });
 };
@@ -68,7 +70,7 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
 
   private mergedModel: T = {} as T;
 
-  private valuesAdditionalInfo: Map<string, string | ReactElement> = new Map<string, string | ReactElement>();
+  private valuesAdditionalInfo: Map<string, string | ReactElement | undefined> = new Map<string, string | ReactElement | undefined>();
 
   private subscriptions: Map<DefaultModelSubscriptionType, Set<DefaultModelSubscription<T>>>;
 
@@ -174,7 +176,7 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
   };
 
   getDefaultModel = (name?: string): T | undefined => {
-    return !name ? this.defaultModel : this.defaultModels.get(name);
+    return isNullOrWhiteSpace(name) ? this.defaultModel : this.defaultModels.get(name);
   };
 
   getValueInfo = (propName: string): IDefaultModelValueInfo => {
@@ -214,7 +216,7 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
     this.#forceUpdate();
   };
 
-  setCurrentValueAdditionalInfo = (propName: string, additionalInfo: string | ReactElement): void => {
+  setCurrentValueAdditionalInfo = (propName: string, additionalInfo: string | ReactElement | undefined): void => {
     this.valuesAdditionalInfo.set(propName, additionalInfo);
     this.#forceUpdate();
   };

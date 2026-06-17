@@ -117,7 +117,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> =
         </SettingsFormItem>
 
         <SettingsFormItem name="stylingBox">
-          <StyleBox />
+          <StyleBox readOnly={false} value={undefined} propertyName="stylingBox" />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 

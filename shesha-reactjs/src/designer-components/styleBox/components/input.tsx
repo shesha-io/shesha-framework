@@ -8,13 +8,14 @@ import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUnde
 import { useStyles } from '@/designer-components/_settings/styles/styles';
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IProps {
   direction: keyof IInputDirection;
-  onChange?: Function;
+  onChange?: (value: Partial<StyleBoxValue>) => void;
   readOnly?: boolean;
   type: keyof IValue;
-  value?: StyleBoxValue;
+  value?: StyleBoxValue | undefined;
   propertyName?: string;
 }
 
@@ -22,20 +23,20 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value, prop
   const { styles } = useStyles();
 
   const { namePrefix } = useFormItem();
-  const propertyName = camelcase(`${type}_${direction}`);
+  const propertyName = camelcase(`${type}_${direction}`) as keyof StyleBoxValue;
   const fullName = `${parentPropertyName}.${propertyName}`;
-  const defaultName = namePrefix ? namePrefix + '.' + fullName : fullName;
+  const defaultName = isNotNullOrWhiteSpace(namePrefix) ? namePrefix + '.' + fullName : fullName;
 
   useDefaultModelPropertyUpdateSubscription(defaultName);
 
   const defaultModel = useDefaultModelActionsOrUndefined();
   const valueInfo = defaultModel?.getValueInfo(defaultName);
-  const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultName);
+  const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultName) as string | undefined;
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
 
-  const localValue = defaultModel?.getValueInfo(defaultName)?.state === 'usedDefault' ? defaultValue : value?.[propertyName];
+  const localValue: string | undefined = defaultModel?.getValueInfo(defaultName)?.state === 'usedDefault' ? defaultValue : String(value?.[propertyName]);
 
-  const internalOnChange = (val: string): void => {
+  const internalOnChange = (val: string | undefined): void => {
     if ((!val || val.length < 4) && onChange)
       onChange({ [propertyName]: val });
   };
@@ -43,7 +44,7 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value, prop
   return (
     <div className={className}>
       <div className={getStyleClassName(type, direction)}>
-        <InputComponent
+        <InputComponent<string>
           type="textField"
           size="small"
           value={localValue}

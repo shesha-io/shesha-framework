@@ -7,7 +7,7 @@ import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUnde
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
 import { IAnyObject } from '@/interfaces';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import PermissionsControl from '../permissionsControl';
 
@@ -25,7 +25,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   useDefaultModelPropertyUpdateSubscription(name);
 
   const { namePrefix } = useFormItem();
-  const defaultModelPropName = namePrefix ? namePrefix + '.' + name : name;
+  const defaultModelPropName = isNotNullOrWhiteSpace(namePrefix) ? namePrefix + '.' + name : name;
 
   const defaultModel = useDefaultModelActionsOrUndefined();
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
@@ -81,13 +81,13 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       className={`sha-js-label ${className}`}
     >
       {(value, onChange) => {
-        const localValue = defaultModel?.getValueInfo(defaultModelPropName).state === 'usedDefault' ? defaultValue : value;
-        return !jsSetting ? (
-          <PermissionsControl enabled={permissionSettings} propertyName={permissionPropertyName} readOnly={readOnly}>
+        const localValue = defaultModel?.getValueInfo(defaultModelPropName)?.state === 'usedDefault' ? defaultValue : value;
+        return !Boolean(jsSetting) ? (
+          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
             {childFunc(localValue, onChange, name)}
           </PermissionsControl>
         ) : (
-          <PermissionsControl enabled={permissionSettings} propertyName={permissionPropertyName} readOnly={readOnly}>
+          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
             <SettingsControl
               propertyName={name}
               mode="value"

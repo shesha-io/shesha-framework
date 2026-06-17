@@ -277,7 +277,7 @@ export type DeviceType = StringSubtype<typeof DEVICE_TYPES>;
 /**
  * Base model of the configurable component
  */
-export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles = IInputStyles>
+export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles = IStyleValue>
   extends IFormComponentContainer,
   IHasVersion,
   IComponentBindingProps,

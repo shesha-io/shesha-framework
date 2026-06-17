@@ -40,7 +40,7 @@ type FocusEventWithValue<TValue = string> = React.FocusEvent<HTMLDivElement, Ele
 
 export type ICheckboxGroupProps<TValue = string> = CheckboxGroupCommonProps & {
   value?: TValue | TValue[] | undefined;
-  onChange?: ((checkedValue: TValue | Array<TValue> | null) => void) | undefined;
+  onChange?: ((checkedValue: TValue | Array<TValue> | undefined) => void) | undefined;
   onFocus?: EventHandler<FocusEventWithValue<TValue>> | undefined;
   onBlur?: EventHandler<FocusEventWithValue<TValue>> | undefined;
 };

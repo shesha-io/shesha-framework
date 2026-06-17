@@ -9,7 +9,7 @@ export interface IDefaultModelProviderProps<TData extends object = object> {
 
 const DefaultModelProviderStateContext = createContext<IDefaultModelInstance<object> | undefined>(undefined);
 
-export const useDefaultModelActionsOrUndefined = (): IDefaultModelInstance<object> | undefined => useContext(DefaultModelProviderStateContext);
+export const useDefaultModelActionsOrUndefined = <TModel extends object = object>(): IDefaultModelInstance<TModel> | undefined => useContext(DefaultModelProviderStateContext) as IDefaultModelInstance<TModel> | undefined;
 
 export const useDefaultModelPropertyUpdateSubscription = (propertyName: string): object => {
   const defaultModel = useDefaultModelActionsOrUndefined();
@@ -39,7 +39,7 @@ export const useDefaultModelSubscription = (subscriptionType: DefaultModelSubscr
 
 const DefaultModelProvider = <TData extends object = object>(props: PropsWithChildren<IDefaultModelProviderProps<TData>>): ReactElement => {
   const [, forceUpdate] = useState({});
-  const [instance] = useState<IDefaultModelInstance<TData>>(new DefaultModelInstance<TData>(() => forceUpdate({})));
+  const [instance] = useState<IDefaultModelInstance<object>>(new DefaultModelInstance<object>(() => forceUpdate({})));
 
   // Update models if props changed
   useEffect(() => {

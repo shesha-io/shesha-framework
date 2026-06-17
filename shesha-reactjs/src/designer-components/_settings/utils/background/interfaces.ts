@@ -8,7 +8,7 @@ type BackgroundImageFile = {
 
 export interface IGradientValue {
   direction: string;
-  colors: Record<string, string>;
+  colors?: Record<string, string> | undefined;
 }
 
 export interface IBackgroundValue {

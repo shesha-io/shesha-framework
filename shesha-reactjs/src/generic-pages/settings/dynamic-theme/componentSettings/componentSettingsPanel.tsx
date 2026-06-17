@@ -5,6 +5,8 @@ import { useStyles } from '../styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from '../toolboxComponents';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
 import {
+  DEFAULT_FORM_SETTINGS,
+  FormMarkupWithSettings,
   IConfigurableFormComponent,
   isConfigurableFormComponent,
   isRawComponentsContainer,
@@ -16,11 +18,20 @@ import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { IToolboxComponent } from '../../../../interfaces/formDesigner';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
 export interface SearchableTabsMarkup extends IConfigurableFormComponent {
   type: 'propertiesTabs' | 'searchableTabs';
   tabs: ITabPaneProps[];
+}
+
+export interface MenuInfo {
+  key: string;
+  keyPath: string[];
+  /** @deprecated This will not support in future. You should avoid to use this */
+  item: React.ReactInstance;
+  domEvent: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>;
 }
 
 function isSearchableTabsMarkup(c: unknown): c is SearchableTabsMarkup {
@@ -32,7 +43,7 @@ function isSearchableTabsMarkup(c: unknown): c is SearchableTabsMarkup {
 export interface IComponentDefaultsPanelProps {
   value?: IConfigurableTheme;
   onChange?: (theme: IConfigurableTheme) => void;
-  readonly?: boolean;
+  readOnly?: boolean;
 }
 
 const componentMenuCardStyle = { height: '600px', overflowY: 'auto' } as CSSProperties;
@@ -40,7 +51,7 @@ const componentMenuCardStyle = { height: '600px', overflowY: 'auto' } as CSSProp
 /**
  * Component Defaults Panel - Shows menu of components on left, appearance settings on right
  */
-export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readonly }) => {
+export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readOnly: readonly }) => {
   const { styles } = useStyles();
   const [selectedKey, setSelectedKey] = useState<string>('button');
 
@@ -60,7 +71,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   }, []);
 
   const componentDef = useMemo((): IToolboxComponent | undefined => {
-    if (!componentType) return undefined;
+    if (isNullOrWhiteSpace(componentType)) return undefined;
     const componentDefinitions = getComponentDefinitions();
     return componentDefinitions.get(componentType);
   }, [componentType]);
@@ -70,11 +81,11 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   }, [componentDef]);
 
   // Get the settings form markup (could be a function or object)
-  const { settingsFormMarkup } = componentDef;
+  const settingsFormMarkup = componentDef?.settingsFormMarkup;
 
   // Get component definition and extract appearance tab components
-  const appearanceMarkup = useMemo(() => {
-    if (!settingsFormMarkup) return null;
+  const appearanceMarkup = useMemo((): FormMarkupWithSettings | undefined => {
+    if (!isDefined(settingsFormMarkup)) return undefined;
 
     // If it's a function (SettingsFormMarkupFactory), execute it to get the markup
     const markup = typeof settingsFormMarkup === 'function'
@@ -84,16 +95,16 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)
     const components: IConfigurableFormComponent[] | undefined = Array.isArray(markup)
       ? markup
-      : markup?.components;
-    const formSettings = Array.isArray(markup) ? undefined : markup?.formSettings;
+      : markup.components;
+    const formSettings = Array.isArray(markup) ? undefined : markup.formSettings;
 
-    if (!components) return null;
+    if (!isDefined(components)) return undefined;
 
     const searchableTabs = components.find(isSearchableTabsMarkup);
-    if (!searchableTabs) return null;
+    if (!searchableTabs) return undefined;
 
     const appearanceTab = searchableTabs.tabs.find(
-      (tab) => tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance',
+      (tab) => tab.key === 'appearance' || tab.title.toLowerCase() === 'appearance',
     );
 
     const tabComponents: unknown = appearanceTab?.components;
@@ -103,19 +114,19 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         ? tabComponents.components
         : undefined;
 
-    if (!appearanceMarkupComponents) return null;
+    if (!appearanceMarkupComponents) return undefined;
 
     return {
       components: appearanceMarkupComponents,
-      formSettings: formSettings ?? undefined,
+      formSettings: formSettings ?? DEFAULT_FORM_SETTINGS,
     };
   }, [settingsFormMarkup]);
 
-  const initialModel = useMemo(() => theme?.components?.[componentType] as object ?? {}, [componentType, theme?.components]);
+  const initialModel = useMemo(() => theme?.components?.[componentType ?? ''] as object | undefined ?? {}, [componentType, theme?.components]);
   const selectedKeys = useMemo(() => [selectedKey], [selectedKey]);
-  const menuOnClick = useCallback((item) => {
+  const menuOnClick = useCallback((item: MenuInfo) => {
     const node = findComponentNode(item.key);
-    if (node?.type) {
+    if (Boolean(node?.type)) {
       setSelectedKey(item.key);
     }
   }, [setSelectedKey]);
@@ -123,7 +134,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   // Handle form data change — deep-merge so nested keys (e.g. application) are not replaced wholesale
   const handleFormDataChange = (changedValues: Record<string, unknown>): void => {
     if (!onChange) return;
-    onChange({ ...theme, components: { ...(theme?.components ?? {}), [componentType]: { ...changedValues } } });
+    onChange({ ...theme, components: { ...(theme?.components ?? {}), ...(isNotNullOrWhiteSpace(componentType) ? { [componentType]: { ...changedValues } } : {}) } });
   };
 
   return (
@@ -144,10 +155,10 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       <Col xs={24} sm={24} md={18} lg={18} xl={18} xxl={18}>
         {/* Edit Card: allows editing the component's appearance/theme values */}
         <DefaultModelProvider name="Component Default Styles" model={initialModel} defaultModel={defaultStyles}>
-          <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly} onChange={handleFormDataChange} />
+          <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
         </DefaultModelProvider>
         {/* Preview Card: renders the component with the current theme to show a live preview */}
-        {componentDef && <ComponentDefaultsPreview componentDefinition={componentDef} theme={theme} />}
+        {isDefined(componentDef) && isDefined(theme) && <ComponentDefaultsPreview componentDefinition={componentDef} theme={theme} />}
       </Col>
     </Row>
   );

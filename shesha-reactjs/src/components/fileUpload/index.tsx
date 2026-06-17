@@ -18,7 +18,7 @@ import { isFileTypeAllowed } from '@/utils/fileValidation';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { FileUploadStyleProps, useStyles } from './styles/styles';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { StoredFileModel } from '@/utils/storedFile/models';
 import { storedFileModel2UploadFile } from '@/utils/storedFile/utils';
 const { Dragger } = Upload;
@@ -31,7 +31,7 @@ export interface IFileUploadProps {
   isStub?: boolean | undefined;
   allowedFileTypes?: string[] | undefined;
   isDragger?: boolean | undefined;
-  listType?: listType | undefined;
+  listType?: ListType | undefined;
   thumbnailWidth?: string | undefined;
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
@@ -79,7 +79,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
 
-  const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
+  const url = isNotNullOrWhiteSpace(fileInfo?.url) ? `${backendUrl}${fileInfo.url}` : '';
   useEffect(() => {
     if (fileInfo && url) {
       fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
@@ -233,7 +233,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
                         void downloadFile({ fileId: file.id, fileName: file.name });
                     }}
                 >
-                  {listType !== 'thumbnail' && getFileIcon(file.type ?? "")} {`${file.name} (${filesize(file.size || 0)})`}
+                  {listType !== 'thumbnail' && getFileIcon(file.type ?? "")} {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
                 </a>
               )}
               {showTextControls && fileControls(theme.application?.primaryColor)}

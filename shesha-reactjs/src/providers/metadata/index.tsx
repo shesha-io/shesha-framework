@@ -19,7 +19,7 @@ import { throwError } from '@/utils/errors';
 
 export interface IMetadataProviderProps {
   id?: string | undefined;
-  modelType: string | IEntityTypeIdentifier;
+  modelType: string | IEntityTypeIdentifier | undefined;
   dataType?: MetadataType;
 }
 
@@ -27,7 +27,7 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id = 
   const initial: IMetadataStateContext = {
     ...METADATA_CONTEXT_INITIAL_STATE,
     id,
-    modelType,
+    modelType: modelType ?? null,
     dataType,
   };
 

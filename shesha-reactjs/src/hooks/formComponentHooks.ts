@@ -249,8 +249,8 @@ export const useBackgroundStoredFile = (model: IBackgroundValue | undefined, app
 
 // ToDo: AS - remove after migration all components to the new styles
 
-export const useFormComponentStyles = <TModel extends IStyleType & Pick<IConfigurableFormComponent, 'style' | 'wrapperStyle'>>(
-  model: TModel/* & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>*/,
+export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfigurableFormComponent, 'style' | 'wrapperStyle'>>(
+  model: TModel/* & IStyleValue & Omit<IConfigurableFormComponent, 'id' | 'type'>*/,
   options?: IUseFormComponentStylesOptions,
 ): IFormComponentStyles => {
   const { useWrapperStyle = false } = options || {};
@@ -283,7 +283,7 @@ export const useFormComponentStyles = <TModel extends IStyleType & Pick<IConfigu
       ...backgroundLocal,
       ...shadowStyles,
       ...overflowStyles,
-      fontWeight: fontStyles.fontWeight || 400,
+      fontWeight: Boolean(fontStyles.fontWeight) ? fontStyles.fontWeight : 400,
     }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, background, backgroundLocal, shadowStyles, overflowStyles]);
 
   const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, ...jsStyle }), [appearanceStyle, jsStyle]);

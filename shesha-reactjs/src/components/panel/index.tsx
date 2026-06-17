@@ -25,7 +25,7 @@ export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleValue,
   primaryColor?: string | undefined;
   dynamicBorderRadius?: number | undefined;
   panelHeadType?: headerType | undefined;
-  headerStyles?: IStyleType | undefined;
+  headerStyles?: IStyleValue | undefined;
   bodyStyle?: React.CSSProperties | undefined;
   headerStyle?: React.CSSProperties | undefined;
   accentStyle?: boolean | undefined;

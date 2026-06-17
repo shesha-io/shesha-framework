@@ -11,24 +11,24 @@ export interface IPermissionsControlProps {
   enabled?: boolean;
   propertyName: string;
   readOnly?: boolean;
-  readonly children?: ReactElement;
+  readonly children: ReactElement;
 }
 
 interface IPermissionModalProps {
   propertyName: string;
   toggleModal: () => void;
   readOnly: boolean;
-  value: IPropertySetting<string[]> | string[];
-  onChange: (value: IPropertySetting<string[]> | string[]) => void;
+  value: IPropertySetting<string[]> | string[] | undefined;
+  onChange: (value: IPropertySetting<string[]> | string[] | undefined) => void;
 }
 
 const PermissionModal = (props: IPermissionModalProps): ReactElement => {
   const { readOnly, toggleModal, propertyName, value, onChange } = props;
   const { styles } = useStyles();
-  const [localValue, setLocalValue] = useState<IPropertySetting<string[]> | string[]>(value);
+  const [localValue, setLocalValue] = useState<IPropertySetting<string[]> | string[] | undefined>(value);
 
   const onSave = (): void => {
-    onChange?.(localValue);
+    onChange(localValue);
     toggleModal();
   };
 
@@ -70,7 +70,7 @@ const PermissionsControlInner = (props: IPermissionsControlProps): ReactElement 
   const [showModal, setShowModal] = useState(false);
   const toggleModal = (): void => setShowModal((currentVisible) => !currentVisible);
   return (
-    <ConfigurableFormItem model={{ hideLabel: true, propertyName, type: '', id: '' }}>
+    <ConfigurableFormItem<string[] | IPropertySetting<string[]>> model={{ hideLabel: true, propertyName, type: '', id: '' }}>
       {(value, onChange) => {
         const valueExists = Array.isArray(value) ? value.length > 0 : Boolean(value);
         return (
@@ -86,7 +86,7 @@ const PermissionsControlInner = (props: IPermissionsControlProps): ReactElement 
               onClick={toggleModal}
             />
             {props.children}
-            {showModal && <PermissionModal propertyName={propertyName} readOnly={props.readOnly} toggleModal={toggleModal} value={value} onChange={onChange} />}
+            {showModal && <PermissionModal propertyName={propertyName} readOnly={props.readOnly ?? false} toggleModal={toggleModal} value={value ?? undefined} onChange={onChange} />}
           </div>
         );
       }}
@@ -95,7 +95,7 @@ const PermissionsControlInner = (props: IPermissionsControlProps): ReactElement 
 };
 
 export const PermissionsControl = (props: IPermissionsControlProps): ReactElement => {
-  return props.enabled ? <PermissionsControlInner {...props} /> : props.children;
+  return Boolean(props.enabled) ? <PermissionsControlInner {...props} /> : props.children;
 };
 
 export default PermissionsControl;

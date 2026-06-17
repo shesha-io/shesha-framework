@@ -4,12 +4,13 @@ import { FCUnwrapped } from '@/providers/form/models';
 import EditModeSelector from '@/components/editModeSelector';
 import { useStyles } from '../styles';
 import { useDefaultModelActionsOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 export const EditModeSelectorWrapper: FCUnwrapped<IEditModeSelectorSettingsInputProps> = (props) => {
   const { styles } = useStyles();
   const { value, onChange, readOnly, size } = props;
   const defaultModel = useDefaultModelActionsOrUndefined();
-  const onlyModel = defaultModel?.getValueInfo(props.defaultModelPropertyName).state === 'onlyModel';
+  const onlyModel = isNotNullOrWhiteSpace(props.defaultModelPropertyName) ? defaultModel?.getValueInfo(props.defaultModelPropertyName)?.state === 'onlyModel' : true;
 
   const currentValueAdditionalInfo = useMemo(() => onlyModel ? undefined : (info: string) => defaultModel?.setCurrentValueAdditionalInfo(props.propertyName, info),
     [onlyModel, defaultModel, props.propertyName]);

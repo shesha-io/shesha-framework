@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import { DEFAULT_MARGINS } from './designerConstants';
-import { isDefined } from '@/utils/nullables';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -170,7 +170,7 @@ export const stylingUtils = {
    * component should have no margins since they're applied to the wrapper.
    */
   removeMarginsFromStylingBox(stylingBox: string | undefined): string {
-    if (!stylingBox) return EMPTY_STYLING_BOX;
+    if (isNullOrWhiteSpace(stylingBox)) return EMPTY_STYLING_BOX;
 
     try {
       const parsed = JSON.parse(stylingBox) as CSSProperties;
@@ -219,7 +219,7 @@ export const stylingUtils = {
    * applies padding to the component, while margins are handled by the wrapper.
    */
   createPaddingOnlyStylingBox(stylingBox: string | undefined): string {
-    if (!stylingBox) return EMPTY_STYLING_BOX;
+    if (isNullOrWhiteSpace(stylingBox)) return EMPTY_STYLING_BOX;
 
     try {
       const parsed = JSON.parse(stylingBox) as PaddingValues;

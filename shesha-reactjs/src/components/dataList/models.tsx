@@ -64,7 +64,7 @@ export interface IDataListBaseProps extends IStyleValue {
   cardSpacing?: string | undefined;
   showBorder?: boolean | undefined;
   gap?: number | undefined;
-  container?: IStyleType | undefined;
+  container?: IStyleValue | undefined;
   dblClickActionConfiguration?: IConfigurableActionConfiguration | undefined;
   onRowDeleteSuccessAction?: IConfigurableActionConfiguration | undefined;
   collapsible?: boolean | undefined;
