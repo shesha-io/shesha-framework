@@ -19,7 +19,7 @@ import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { FileUploadStyleProps, useStyles } from './styles/styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { storedFileModel2UploadFile,  } from '@/utils/storedFile/utils';
+import { storedFileModel2UploadFile } from '@/utils/storedFile/utils';
 import { StoredFileModel } from '@/utils/storedFile/models';
 const { Dragger } = Upload;
 
@@ -72,6 +72,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     },
   });
   const { theme } = useTheme();
+  const appPrimaryColor = typeof theme.application?.primaryColor === 'string' ? theme.application.primaryColor : undefined;
   const uploadDraggerSpanRef = useRef<HTMLSpanElement>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const { message, modal } = App.useApp();
@@ -80,9 +81,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
   // Cache blob URL created from uploaded File object to avoid immediate server round-trip
   const uploadedFileBlobUrl = useRef<string | null>(null);
-
-  const isUploading = fileInfo?.status === 'uploading';
-
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
 
   // Clean up blob URL on unmount
@@ -284,10 +282,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
                         void downloadFile({ fileId: file.id, fileName: file.name });
                     }}
                 >
-                  {listType !== 'thumbnail' && getFileIcon(file?.type ?? "")} {`${file.name} (${filesize(file?.size || 0)})`}
+                  {listType !== 'thumbnail' && getFileIcon(file.type ?? "")} {`${file.name} (${filesize(file.size || 0)})`}
                 </a>
               )}
-              {showTextControls && fileControls(theme.application?.primaryColor)}
+              {showTextControls && fileControls(appPrimaryColor)}
             </div>
           </Space>
         </span>
@@ -358,7 +356,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const renderUploader = (): React.JSX.Element => {
     const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';
-    const showUpload = !fileInfo || fileInfo.status === 'error';
 
     if (isDragger && allowUpload) {
       return (

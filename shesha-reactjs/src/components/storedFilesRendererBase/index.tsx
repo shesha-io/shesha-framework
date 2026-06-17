@@ -92,7 +92,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
-  gap?: number | undefined;
   container?: IStyleType | undefined;
   allStyles?: IFormComponentStyles | undefined;
   enableStyleOnReadonly?: boolean | undefined;
@@ -297,9 +296,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               continue;
             }
             const queryParams = {
-              id: file?.id,
-              width: model?.dimensions?.width ? parseFloat(`${model.dimensions.width}`) : undefined,
-              height: model?.dimensions?.height ? parseFloat(`${model.dimensions.height}`) : undefined,
+              id: file.id,
+              width: model.dimensions?.width ? parseFloat(`${model.dimensions.width}`) : undefined,
+              height: model.dimensions?.height ? parseFloat(`${model.dimensions.height}`) : undefined,
             };
 
             // Filter out undefined/NaN values
@@ -347,7 +346,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // Call all revoke functions to clean up blob URLs
       revokeCallbacks.forEach((revoke) => revoke());
     };
-  }, [fileList, httpHeaders]);
+  }, [fileList, httpHeaders, backendUrl, model.dimensions?.width, model.dimensions?.height]);
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {
@@ -419,7 +418,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type ?? "", model.allStyles?.fontStyles?.fontSize);
+    return getFileIcon(type ?? "", model.allStyles?.fontStyles.fontSize);
   };
 
   // Helper function to get or create cached file context data
