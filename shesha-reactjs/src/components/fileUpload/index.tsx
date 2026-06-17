@@ -15,12 +15,12 @@ import { listType } from '@/designer-components/attachmentsEditor/attachmentsEdi
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useFileUploadState, useSheshaApplication, useFileUpload, useTheme } from '@/providers';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
-import { StoredFileModel } from '@/utils/storedFile/models';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { FileUploadStyleProps, useStyles } from './styles/styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { storedFileModel2UploadFile } from '@/utils/storedFile/utils';
+import { storedFileModel2UploadFile,  } from '@/utils/storedFile/utils';
+import { StoredFileModel } from '@/utils/storedFile/models';
 const { Dragger } = Upload;
 
 export interface IFileUploadProps {

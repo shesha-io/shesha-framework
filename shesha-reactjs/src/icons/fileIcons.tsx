@@ -43,12 +43,12 @@ addFileTypes(fileIcons, videoTypes, () => ({ color: '#FF6D01', icon: MovieOutlin
 addFileTypes(fileIcons, audioTypes, () => ({ color: '#8A4FFF', icon: MusicNoteOutlined, fill: true }));
 addFileTypes(fileIcons, compressedTypes, () => ({ color: '#F9AA00', icon: FileZipOutlined }));
 
-export const getFileIcon = (type: string, style?: React.CSSProperties): React.JSX.Element => {
-  const fileIcon = fileIcons[type] || fileIcons['default'] || DEFAULT_ICON;
+export const getFileIcon = (type: string, fontSize?: string | number | undefined): React.JSX.Element => {
+  const fileIcon = fileIcons[type] || DEFAULT_ICON;
   const Icon = fileIcon.icon;
-  const iconsStyle = { color: fileIcon.color, ...style };
+  const style = { color: fileIcon.color, fontSize };
 
   return fileIcon.fill
-    ? <Icon fill={style?.color ?? fileIcon.color} style={iconsStyle} />
-    : <Icon style={iconsStyle} />;
+    ? <Icon fill={fileIcon.color} style={style} />
+    : <Icon style={style} />;
 };

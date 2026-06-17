@@ -6,7 +6,7 @@ import { IFormComponentStyles, IInputStyles, IStyleType } from '@/providers/form
 import { addPx } from '@/utils/style';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { STORED_FILE_URLS } from '@/utils/storedFile/models';
-import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, FileZipOutlined, LoadingOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -16,6 +16,7 @@ import {
   Popconfirm,
   Popover,
   Space,
+  Spin,
   Upload,
   UploadFile,
   UploadProps,
@@ -38,7 +39,8 @@ import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel, UploadFileAsAtta
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isFile } from '@/utils/fileValidation';
 
 interface IUploaderFileTypes {
   name: string;
@@ -149,12 +151,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const allData = useAvailableConstantsData();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
   const [fileToReplace, setFileToReplace] = useState<{ uid: string; id: string } | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
   // Cache blob URLs created from uploaded File objects to avoid immediate server round-trip
   const uploadedFileBlobUrls = useRef<Map<string, string>>(new Map());
+  // Uid of the file currently being previewed. Used to ignore stale async results when the user
+  // switches preview to another file (or closes it) before a fetch resolves.
+  const activePreviewUid = useRef<string | null>(null);
   // Blob URL of the full-resolution image currently shown in the preview. Tracked so it can be
   // revoked when the preview closes or another preview is opened, preventing memory leaks.
   const previewFullImageUrl = useRef<string | null>(null);
@@ -267,7 +273,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     const fetchImages = async (): Promise<void> => {
       const newImageUrls: { [key: string]: string } = {};
       for (const file of fileList) {
-        if (isImageType(file.type ?? "")) {
+        if (isImageType(file.type ?? "") && !isNullOrWhiteSpace(file.url)) {
           // Preserve existing URL to avoid unnecessary re-fetches
           const existingUrl = imageUrlsRef.current[file.uid];
           if (existingUrl) {
@@ -370,31 +376,35 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   const handlePreview = (file: StoredFileModel): void => {
-    // Open immediately using the already-loaded thumbnail for instant feedback.
     revokePreviewFullImageUrl();
-    setPreviewImage({ url: imageUrls[file.uid] ?? "", uid: file.uid, name: file.name });
+    activePreviewUid.current = file.uid;
+    setPreviewImage({ url: "", uid: file.uid, name: file.name });
     setPreviewOpen(true);
 
-    // Then fetch the full-resolution image and swap it into the preview.
+    // Fetch the full-resolution image; show a loader until it arrives.
     if (!file.id)
       return;
 
+    setPreviewLoading(true);
     const fullImageDownloadUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}`, { id: file.id });
     fetchStoredFile(fullImageDownloadUrl, httpHeaders)
       .then(({ url: fullImageUrl, revoke }) => {
-        setPreviewImage((current) => {
-          // The preview may have moved to another file (or closed) while this was loading.
-          // In that case discard the fetched image instead of swapping it in.
-          if (current?.uid !== file.uid) {
-            revoke();
-            return current;
-          }
-          previewFullImageUrl.current = fullImageUrl;
-          return { ...current, url: fullImageUrl };
-        });
+        // The preview may have moved to another file (or closed) while this was loading.
+        // In that case discard the fetched image instead of swapping it in.
+        if (activePreviewUid.current !== file.uid) {
+          revoke();
+          return;
+        }
+        previewFullImageUrl.current = fullImageUrl;
+        setPreviewImage((current) => (current?.uid === file.uid ? { ...current, url: fullImageUrl } : current));
       })
       .catch((error) => {
         console.error(`Failed to fetch full image for preview ${file.name} (${file.uid}):`, error);
+      })
+      .finally(() => {
+        // Only clear loading if this is still the file being previewed.
+        if (activePreviewUid.current === file.uid)
+          setPreviewLoading(false);
       });
   };
 
@@ -412,7 +422,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type ?? "", { fontSize: model.allStyles?.fontStyles?.fontSize });
+    return getFileIcon(type ?? "", model.allStyles?.fontStyles?.fontSize);
   };
 
   // Helper function to get or create cached file context data
@@ -632,23 +642,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     customRequest(options) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
-      const file = options.file as RcFile;
-      const tempKey = `${file.name}_${file.size}`;
+      const file = options.file;
       let blobUrl: string | null = null;
+      let tempKey: string | null = null;
 
       // For image files, create a blob URL directly from the File object to avoid
       // an immediate server round-trip for the thumbnail right after upload.
       // file.type is the browser MIME type (e.g. 'image/jpeg'), but isImageType expects
       // the extension format (e.g. '.jpg'), so derive the extension from the file name.
-      const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
-      if (isImageType(fileExt)) {
-        blobUrl = URL.createObjectURL(file);
-        uploadedFileBlobUrls.current.set(tempKey, blobUrl);
+      if (isFile(file)) {
+        tempKey = `${file.name}_${file.size}`;
+        const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+        if (isImageType(fileExt)) {
+          blobUrl = URL.createObjectURL(file);
+          uploadedFileBlobUrls.current.set(tempKey, blobUrl);
+        }
       }
 
       uploadFile({ file, ownerId, ownerType }).catch((error) => {
         // Clean up blob URL if upload failed
-        if (blobUrl) {
+        if (blobUrl && tempKey) {
           URL.revokeObjectURL(blobUrl);
           uploadedFileBlobUrls.current.delete(tempKey);
         }
@@ -784,9 +797,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 afterOpenChange: (visible) => {
                   if (!visible) {
                     setPreviewImage(null);
+                    setPreviewLoading(false);
+                    activePreviewUid.current = null;
                     revokePreviewFullImageUrl();
                   }
                 },
+                // Show a loader while the full-resolution image downloads instead of a broken image.
+                imageRender: (originalNode) => (previewLoading
+                  ? <Spin indicator={<LoadingOutlined spin />} size="large" />
+                  : originalNode),
               }}
               src={previewImage.url}
             />
