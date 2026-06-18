@@ -32,6 +32,10 @@ import { StoredFileModel } from '@/utils/storedFile/models';
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
 
+export interface IAttachmentsEditorDeviceStyles extends IInputStyles {
+  filesLayout?: layoutType | undefined;
+}
+
 const DEVICE_TYPES = ['desktop', 'mobile', 'tablet'] as const;
 type DeviceType = typeof DEVICE_TYPES[number];
 
@@ -131,7 +135,7 @@ const removeLegacyProperties = (result: Record<string, unknown>): void => {
   });
 };
 
-export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
+export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAttachmentsEditorDeviceStyles>, IInputStyles {
   ownerId: string;
   ownerType: string | IEntityTypeIdentifier;
   filesCategory?: string | undefined;

@@ -61,7 +61,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const fileInfo = useFileUploadState();
   const uploadFileModel = useMemo<UploadFile | undefined>(() => fileInfo ? storedFileModel2UploadFile(fileInfo) : undefined, [fileInfo]);
 
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+  const { backendUrl } = useSheshaApplication();
 
   const { styles } = useStyles({
     style: stylesProp as FileUploadStyleProps | undefined,
@@ -117,51 +117,18 @@ export const FileUpload: FC<IFileUploadProps> = ({
     if (!fileInfo) {
       // Clear image URL if no file
       setImageUrl('');
-      return undefined;
+      return;
     }
 
     const fileKey = fileInfo.id || fileInfo.uid;
 
-    // For newly uploaded files, use the cached blob URL if available
-    // Keep using it even when status becomes 'done' to avoid fetching from server
+    // Use a locally cached blob URL for files just uploaded in this session.
+    // For persisted files, use the backend URL directly; avoid pre-downloading
+    // the file here because it duplicates the request the browser/preview makes
+    // when the user actually views the file.
     const cachedBlobUrl = uploadedFileBlobUrls.current.get(fileKey);
-    if (cachedBlobUrl) {
-      setImageUrl(cachedBlobUrl);
-      return undefined;
-    }
-
-    // For persisted files with done status, fetch from server
-    // Only fetch if we don't have a local blob URL (i.e., file was loaded from backend, not just uploaded)
-    if (fileInfo.status === 'done' && url) {
-      let isCancelled = false;
-      const abortController = new AbortController();
-
-      fetch(url, {
-        headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-        signal: abortController.signal,
-      })
-        .then((response) => response.blob())
-        .then((blob) => {
-          if (!isCancelled) {
-            const blobUrl = URL.createObjectURL(blob);
-            uploadedFileBlobUrls.current.set(fileKey, blobUrl);
-            setImageUrl(blobUrl);
-          }
-        })
-        .catch((error: unknown) => {
-          if (error instanceof Error && error.name !== 'AbortError') {
-            console.error('Failed to fetch file', error);
-          }
-        });
-
-      return () => {
-        isCancelled = true;
-        abortController.abort();
-      };
-    }
-
-    return undefined;
-  }, [fileInfo, httpHeaders, url]);
+    setImageUrl(cachedBlobUrl ?? url);
+  }, [fileInfo, url]);
 
   const onCustomRequest: UploadProps['customRequest'] = ({ file, onSuccess, onError }): void => {
     if (file instanceof File) {

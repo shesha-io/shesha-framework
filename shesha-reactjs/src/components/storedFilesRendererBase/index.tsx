@@ -35,7 +35,7 @@ import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
-import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel, UploadFileAsAttachmentArgs } from '@/utils/storedFile/models';
+import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
@@ -50,7 +50,7 @@ interface IUploaderFileTypes {
 export interface IStoredFilesRendererBaseProps extends IInputStyles {
   fileList?: StoredFileModel[] | undefined;
 
-  uploadFile: (args: UploadFileAsAttachmentArgs) => Promise<void>;
+  uploadFile: (args: { file: File }) => Promise<void>;
   replaceFile: (args: ReplaceFilePayload) => Promise<void>;
   deleteFile: (fileId: string) => Promise<void>;
   downloadZipFile: () => Promise<void>;
@@ -69,8 +69,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   extraFormId?: FormIdentifier | undefined;
   extraFormType?: string | undefined;
   showDragger?: boolean | undefined;
-  ownerId?: string | undefined;
-  ownerType?: string | undefined;
   multiple?: boolean | undefined;
   isDownloadingFileListZip?: boolean | undefined;
   isDownloadZipSucceeded?: boolean | undefined;
@@ -115,8 +113,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   replaceFile,
   downloadZipFile,
   downloadFile,
-  ownerId,
-  ownerType,
   fetchFilesError,
   downloadZipFileError,
   uploadBtnProps,
@@ -267,6 +263,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     const revokeCallbacks: Array<() => void> = [];
 
     const fetchImages = async (): Promise<void> => {
+      if (listType !== 'thumbnail') {
+        // Thumbnails are only displayed in thumbnail mode; revoke any previously fetched
+        // thumbnail URLs and clear the state to avoid unnecessary downloads.
+        const protectedUrls = new Set(uploadedFileBlobUrls.current.values());
+        Object.values(imageUrlsRef.current).forEach((url) => {
+          if (!protectedUrls.has(url)) {
+            URL.revokeObjectURL(url);
+          }
+        });
+        setImageUrls({});
+        return;
+      }
+
       const newImageUrls: { [key: string]: string } = {};
       for (const file of fileList) {
         if (isImageType(file.type ?? "") && !isNullOrWhiteSpace(file.url)) {
@@ -352,7 +361,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // Call all revoke functions to clean up blob URLs
       revokeCallbacks.forEach((revoke) => revoke());
     };
-  }, [fileList, httpHeaders, backendUrl, model.dimensions?.width, model.dimensions?.height]);
+  }, [fileList, httpHeaders, backendUrl, model.dimensions?.width, model.dimensions?.height, listType]);
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {
@@ -673,7 +682,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         }
       }
 
-      uploadFile({ file, ownerId, ownerType }).catch((error) => {
+      uploadFile({ file: file as File }).catch((error) => {
         // Clean up blob URL if upload failed
         if (blobUrl && tempKey) {
           URL.revokeObjectURL(blobUrl);

@@ -12,7 +12,6 @@ import { AttachmentsEditorEvents, IAttachmentsEditorInstance } from "./contexts"
 import { fileListReferenceEqual, getFileExtension, storedFileDtoToModel } from "@/utils/storedFile/utils";
 import { OnFileDownloaded, OnFileListChanged } from "./models";
 import { isOwnerReferenceValid } from "@/utils/entity";
-import { isEntityTypeIdEmpty } from "../metadataDispatcher/entities/utils";
 import { isFile } from "@/utils/fileValidation";
 
 export type StoredFilesProcessorArgs = {
@@ -118,17 +117,17 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     this.updateFileList((files) => files.map((f) => (f.id === fileId || f.uid === fileId ? updater(f) : f)));
   };
 
-  uploadFile = async (args: UploadFileAsAttachmentArgs): Promise<void> => {
+  uploadFile = async (args: { file: File }): Promise<void> => {
     const fileUid = nanoid();
     try {
-      // Merge args with stored file list reference to ensure all owner properties are included
-      // Use provided values, but fall back to stored reference for missing/empty values
+      // Build the upload payload from the stored file list reference so the caller cannot
+      // override owner properties that are managed by the component state.
       const uploadArgs: UploadFileAsAttachmentArgs = {
         file: args.file,
-        ownerId: !isNullOrWhiteSpace(args.ownerId) ? args.ownerId : this.#fileListReference?.ownerId,
-        ownerType: !isEntityTypeIdEmpty(args.ownerType) ? args.ownerType : this.#fileListReference?.ownerType,
-        ownerName: !isNullOrWhiteSpace(args.ownerName) ? args.ownerName : this.#fileListReference?.ownerName,
-        filesCategory: !isNullOrWhiteSpace(args.filesCategory) ? args.filesCategory : this.#fileListReference?.filesCategory,
+        ownerId: this.#fileListReference?.ownerId,
+        ownerType: this.#fileListReference?.ownerType,
+        ownerName: this.#fileListReference?.ownerName,
+        filesCategory: this.#fileListReference?.filesCategory,
       };
 
       const { file, filesCategory, ownerId } = uploadArgs;
