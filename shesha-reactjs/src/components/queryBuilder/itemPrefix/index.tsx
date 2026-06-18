@@ -23,7 +23,7 @@ export const ItemPrefix = ({
   selectedRelation,
   renderSize,
   onChange,
-}: IItemPrefixProps): JSX.Element => {
+}: IItemPrefixProps): React.JSX.Element => {
   const stopEventPropagation = (event: React.MouseEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>): void => {
     event.stopPropagation();
   };

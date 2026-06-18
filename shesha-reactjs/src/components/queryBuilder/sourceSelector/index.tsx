@@ -43,7 +43,7 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
   const orderedSources = [...valueSources].sort(([a], [b]) => getSourceOrder(a) - getSourceOrder(b));
 
   const fallbackKey = variant === 'field' ? 'field' : 'value';
-  const activeSource = orderedSources.some(([key]) => key === valueSrc)
+  const activeSource: string = orderedSources.some(([key]) => key === valueSrc) && valueSrc !== undefined
     ? valueSrc
     : (orderedSources.find(([key]) => key === fallbackKey)?.[0] ?? orderedSources[0]?.[0] ?? fallbackKey);
 
@@ -71,7 +71,7 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
   };
 
   return (
-    <Dropdown menu={menu} trigger={['click']} placement="bottomLeft" disabled={readonly}>
+    <Dropdown menu={menu} trigger={['click']} placement="bottomLeft" {...(readonly !== undefined ? { disabled: readonly } : {})}>
       <span
         className={`sha-query-builder-source-dropdown-trigger sha-query-builder-source-dropdown-trigger--${variant}`}
         onMouseDown={stopPropagation}

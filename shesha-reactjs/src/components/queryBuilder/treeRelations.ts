@@ -19,7 +19,7 @@ const stripRelationProperty = (properties?: Record<string, unknown>): Record<str
     return properties;
 
   const rest = { ...properties };
-  delete rest.__relation;
+  delete rest['__relation'];
   return rest;
 };
 
@@ -44,7 +44,7 @@ const applyNegation = (node: IPlainTreeNode, id: string): IPlainTreeNode => ({
 });
 
 const getCustomRelation = (node: IPlainTreeNode): RelationValue | undefined => {
-  const relation = node.properties?.__relation;
+  const relation = node.properties?.['__relation'];
   if (relation === 'AND' || relation === 'OR' || relation === NOT_OPTION_VALUE)
     return relation;
 
@@ -57,10 +57,11 @@ const normalizeNodeForExport = (node?: IPlainTreeNode): IPlainTreeNode | undefin
 
   const rawChildren = Array.isArray(node.children1) ? node.children1 : undefined;
   const normalizedChildren = rawChildren?.map((child) => normalizeNodeForExport(child) ?? child) ?? rawChildren;
+  const strippedProperties = stripRelationProperty(node.properties);
   const normalizedNode: IPlainTreeNode = {
     ...node,
-    properties: stripRelationProperty(node.properties),
-    children1: normalizedChildren,
+    ...(strippedProperties !== undefined ? { properties: strippedProperties } : {}),
+    ...(normalizedChildren !== undefined ? { children1: normalizedChildren } : {}),
   };
 
   if (!isGroupNode(node) || !normalizedChildren?.length)
@@ -79,7 +80,8 @@ const normalizeNodeForExport = (node?: IPlainTreeNode): IPlainTreeNode | undefin
       return;
     }
 
-    const relation = getCustomRelation(rawChildren[index]) ?? 'AND';
+    const rawChild = rawChildren?.[index];
+    const relation = (rawChild ? getCustomRelation(rawChild) : undefined) ?? 'AND';
     const clauseChild = relation === NOT_OPTION_VALUE
       ? applyNegation(child, `${node.id ?? 'group'}_not_${index}`)
       : child;
@@ -97,11 +99,13 @@ const normalizeNodeForExport = (node?: IPlainTreeNode): IPlainTreeNode | undefin
   if (currentClause.length > 0)
     clauses.push(currentClause);
 
-  const clauseNodes = clauses.map((clause, clauseIndex) => (
-    clause.length === 1
-      ? clause[0]
-      : createGroupNode(clause, 'AND', `${node.id ?? 'group'}_clause_${clauseIndex}`)
-  ));
+  const clauseNodes = clauses
+    .map((clause, clauseIndex) => (
+      clause.length === 1
+        ? clause[0]
+        : createGroupNode(clause, 'AND', `${node.id ?? 'group'}_clause_${clauseIndex}`)
+    ))
+    .filter((clauseNode): clauseNode is IPlainTreeNode => clauseNode !== undefined);
 
   return {
     ...normalizedNode,
@@ -120,7 +124,7 @@ export const normalizeTreeForJsonLogic = <T extends IPlainTreeNode>(tree?: T): T
 
 export const getRootLogicLabel = (tree?: IPlainTreeNode | JsonTree): string => {
   const normalizedTree = normalizeTreeForJsonLogic(tree as IPlainTreeNode);
-  const conjunction = (normalizedTree.properties as Record<string, unknown>).conjunction;
+  const conjunction = (normalizedTree?.properties as Record<string, unknown> | undefined)?.['conjunction'];
 
   if (conjunction === 'OR')
     return 'Show any...';

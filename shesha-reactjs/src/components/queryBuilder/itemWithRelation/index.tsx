@@ -73,13 +73,13 @@ const getNodeTreePath = (path: string[]): (string | number)[] => {
   const result: (string | number)[] = [];
 
   for (let idx = 1; idx < path.length; idx += 1) {
-    result.push('children1', path[idx]);
+    result.push('children1', path[idx] ?? '');
   }
 
   return result;
 };
 
-export const ItemWithRelation = (props: IItemWithRelationProps): JSX.Element => {
+export const ItemWithRelation = (props: IItemWithRelationProps): React.JSX.Element => {
   const {
     id,
     path,
@@ -154,7 +154,7 @@ export const ItemWithRelation = (props: IItemWithRelationProps): JSX.Element => 
           readonly={readonly}
           options={selectOptions}
           selectedRelation={selectedRelation}
-          renderSize={config.settings?.renderSize}
+          {...(config.settings?.renderSize !== undefined ? { renderSize: config.settings.renderSize } : {})}
           onChange={handleChange}
         />
       )}

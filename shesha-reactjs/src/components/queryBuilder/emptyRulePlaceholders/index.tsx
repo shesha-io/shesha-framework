@@ -2,7 +2,7 @@ import React from 'react';
 import { CaretDownOutlined, NumberOutlined } from '@ant-design/icons';
 import type { RuleProps } from '@react-awesome-query-builder/antd';
 
-export const EmptyRulePlaceholders = (props: RuleProps): JSX.Element | null => {
+export const EmptyRulePlaceholders = (props: RuleProps): React.JSX.Element | null => {
   const { selectedField } = props;
   if (selectedField)
     return null;

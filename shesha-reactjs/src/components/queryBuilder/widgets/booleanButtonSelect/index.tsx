@@ -11,7 +11,7 @@ interface BoolButtonGroupProps {
   onChange: (value: boolean) => void;
 }
 
-const BoolButtonGroup = ({ value, readonly, labelYes, labelNo, onChange }: BoolButtonGroupProps): JSX.Element => (
+const BoolButtonGroup = ({ value, readonly, labelYes, labelNo, onChange }: BoolButtonGroupProps): React.JSX.Element => (
   <div className={`sha-bool-btn-group${readonly ? ' is-disabled' : ''}`}>
     <button
       type="button"
@@ -41,7 +41,7 @@ export const BooleanButtonSelectWidget: BooleanButtonSelectWidgetType = {
     return (
       <BoolButtonGroup
         value={extProps.value ?? true}
-        readonly={props.readonly}
+        {...(props.readonly !== undefined ? { readonly: props.readonly } : {})}
         labelYes={labelYes}
         labelNo={labelNo}
         onChange={(val) => props.setValue(val)}

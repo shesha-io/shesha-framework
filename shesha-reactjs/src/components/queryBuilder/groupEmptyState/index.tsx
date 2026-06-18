@@ -31,7 +31,10 @@ export const GroupEmptyState: FC<IGroupEmptyStateProps> = ({
         className={`sha-query-builder-empty-state${isRoot ? ' sha-query-builder-empty-state--root' : ''}`}
       >
         {isRoot && !isReadOnly ? (
-          <QueryRuleElement onAddRule={addRule} onAddGroup={addGroup} />
+          <QueryRuleElement
+            {...(addRule !== undefined ? { onAddRule: addRule } : {})}
+            {...(addGroup !== undefined ? { onAddGroup: addGroup } : {})}
+          />
         ) : (
           <div className="sha-query-builder-empty-state-message">
             No filter conditions are applied

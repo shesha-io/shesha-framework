@@ -1,4 +1,4 @@
-import { BasicConfig, NumberWidget, SelectFieldSettings } from '@react-awesome-query-builder/antd';
+import { BasicConfig, FactoryWithContext, NumberWidget, NumberWidgetProps, SelectFieldSettings } from '@react-awesome-query-builder/antd';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';
 import React from 'react';
 import { RefListSimpleDropdown } from './simpleDropdown';
@@ -9,7 +9,7 @@ const RefListDropdownWidget: RefListDropdownWidgetType = {
   ...BasicConfig.widgets.select,
   jsType: 'number',
   type: 'refList',
-  factory: (props) => {
+  factory: ((props) => {
     const { fieldDefinition, value, setValue, readonly } = props;
     const customSettings = fieldDefinition.fieldSettings as CustomFieldSettings | undefined;
 
@@ -30,7 +30,7 @@ const RefListDropdownWidget: RefListDropdownWidgetType = {
         />
       )
       : <></>;
-  },
+  }) as FactoryWithContext<NumberWidgetProps>,
 };
 
 export default RefListDropdownWidget;

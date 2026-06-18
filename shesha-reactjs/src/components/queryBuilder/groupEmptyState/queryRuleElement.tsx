@@ -28,9 +28,9 @@ export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
           type="primary"
           size="small"
           icon={<PlusOutlined />}
-          onClick={onAddRule}
+          {...(onAddRule !== undefined ? { onClick: onAddRule } : {})}
           className="action action--ADD-RULE"
-          disabled={disabled}
+          disabled={disabled ?? false}
         >
           Add Rule
         </Button>
@@ -38,9 +38,9 @@ export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
           <Button
             size="small"
             icon={<FolderOutlined />}
-            onClick={onAddGroup}
+            {...(onAddGroup !== undefined ? { onClick: onAddGroup } : {})}
             className="action action--ADD-GROUP"
-            disabled={disabled || addGroupDisabled}
+            disabled={Boolean(disabled || addGroupDisabled)}
           >
             Add Group
           </Button>

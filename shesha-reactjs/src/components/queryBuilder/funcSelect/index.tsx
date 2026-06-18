@@ -13,7 +13,7 @@ const flattenItems = (value: FieldItem[]): FieldItem[] => {
   return value.flatMap((item) => item.items ? flattenItems(item.items) : [item]);
 };
 
-export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
+export const FuncSelect: FactoryWithContext<FieldProps> = ((props) => {
   const onChange = (key: string | undefined): void => {
     props.setField(key ?? "");
   };
@@ -115,4 +115,4 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
     >{fieldSelectItems}
     </Select>
   );
-};
+}) as FactoryWithContext<FieldProps>;

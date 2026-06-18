@@ -11,14 +11,14 @@ export const IgnoreIfUnassignedWidget: IgnoreIfUnassignedWidgetType = {
   valueSrc: 'value',
   factory: (props) => {
     const checked = Boolean(props.value);
-    const tooltipText = (props.customProps?.title as React.ReactNode) || ignoreIfUnassignedTooltip;
+    const tooltipText = (props.customProps?.['title'] as React.ReactNode) || ignoreIfUnassignedTooltip;
 
     return (
       <Tooltip title={tooltipText} placement="right">
         <span className="sha-query-builder-ignore-unassigned">
           <Checkbox
             checked={checked}
-            disabled={props.readonly}
+            {...(props.readonly !== undefined ? { disabled: props.readonly } : {})}
             onChange={(event) => props.setValue(event.target.checked)}
           />
           {checked && <DoubleRightOutlined className="sha-query-builder-ignore-unassigned-icon" />}

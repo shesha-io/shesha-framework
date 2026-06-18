@@ -1,4 +1,4 @@
-import { Type, Config, AntdConfig, Funcs, BasicFuncs, CoreTypes, ValueSource, DateTimeWidget, Func } from '@react-awesome-query-builder/antd';
+import { Type, Config, AntdConfig, Funcs, BasicFuncs, CoreTypes, ValueSource, DateTimeWidget, Func, CoreWidgets } from '@react-awesome-query-builder/antd';
 import EntityAutocompleteWidget from './widgets/entityAutocomplete';
 import RefListDropdownWidget from './widgets/refListDropDown';
 import moment, { MomentInput } from 'moment';
@@ -194,17 +194,17 @@ const operators = {
     labelForFormat: 'is not empty',
   },
   some: {
-    ...standardOperators.some,
+    ...standardOperators['some'],
     label: 'Any of the following are true...',
     labelForFormat: 'Any of the following are true...',
   },
   all: {
-    ...standardOperators.all,
+    ...standardOperators['all'],
     label: 'All of the following are true...',
     labelForFormat: 'All of the following are true...',
   },
   none: {
-    ...standardOperators.none,
+    ...standardOperators['none'],
     label: 'None of the following are true...',
     labelForFormat: 'None of the following are true...',
   },
@@ -219,6 +219,7 @@ const operators = {
     cardinality: 1,
   },
 };
+// @ts-expect-error TS2790: proximity is a required key on the lib type but safe to delete at runtime
 delete operators.proximity;
 
 const customDatetimeWidget: DateTimeWidget<Config> = {
@@ -273,5 +274,5 @@ export const config: AntdConfig = {
   types,
   funcs,
   operators,
-  widgets,
+  widgets: widgets as CoreWidgets,
 };

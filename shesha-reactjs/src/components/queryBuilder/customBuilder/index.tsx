@@ -169,7 +169,7 @@ const getSelectedRelation = (node: IPlainTreeItem, parentNode: IPlainTreeItem, c
 const getImmutablePath = (path: string[]): Array<string | number> => {
   const treePath: Array<string | number> = [];
   for (let index = 1; index < path.length; index += 1) {
-    treePath.push('children1', path[index]);
+    treePath.push('children1', path[index] ?? '');
   }
 
   return treePath;
@@ -335,7 +335,7 @@ const getFallbackValueSources = (
   if (!Array.isArray(operatorDefinition?.valueSources) || operatorDefinition.valueSources.length === 0)
     return fieldValueSources;
 
-  const filteredValueSources = fieldValueSources.filter((source) => operatorDefinition.valueSources.includes(source));
+  const filteredValueSources = fieldValueSources.filter((source) => (operatorDefinition.valueSources ?? []).includes(source));
   return filteredValueSources.length > 0 ? filteredValueSources : ['value'];
 };
 
@@ -593,7 +593,7 @@ const RuleWidgetEditor: React.FC<{
       <RuleValueFieldEditor
         config={config}
         field={field}
-        fieldType={fieldType}
+        {...(fieldType !== undefined ? { fieldType } : {})}
         operator={operator}
         path={path}
         actions={actions}
@@ -624,7 +624,7 @@ const RuleWidgetEditor: React.FC<{
     field: field as unknown as WidgetProps['field'],
     fieldDefinition: fieldDefinition as unknown as WidgetProps['fieldDefinition'],
     fieldSrc: 'field',
-    fieldType,
+    ...(fieldType !== undefined ? { fieldType } : {}),
     operator,
     config,
     delta,
@@ -664,7 +664,7 @@ const FunctionValueEditor: React.FC<{
   value?: SafeRuleValue;
 }) => {
   const currentValue = React.useMemo(() => parseEvaluateFunctionValue(value), [value]);
-  const widgetDefinition = config.widgets.mustacheExpression;
+  const widgetDefinition = config.widgets['mustacheExpression'];
   const widgetFactory = typeof widgetDefinition?.factory === 'function'
     ? widgetDefinition.factory as unknown as (props: WidgetProps, ctx?: Config['ctx']) => React.ReactNode
     : null;
@@ -674,7 +674,7 @@ const FunctionValueEditor: React.FC<{
     field: field as unknown as WidgetProps['field'],
     fieldDefinition: QbUtils.ConfigUtils.getFieldConfig(config, field) as unknown as WidgetProps['fieldDefinition'],
     fieldSrc: 'field',
-    fieldType,
+    ...(fieldType !== undefined ? { fieldType } : {}),
     operator,
     config,
     readonly: readOnly,
@@ -766,7 +766,7 @@ const FieldFunctionEditor: React.FC<{
 }> = ({ actions, config, field, path, readOnly }) => {
   const { expression, ignoreIfUnassigned } = React.useMemo(() => parseFieldFuncExpression(field), [field]);
 
-  const widgetDefinition = config.widgets.mustacheExpression;
+  const widgetDefinition = config.widgets['mustacheExpression'];
   const widgetFactory = typeof widgetDefinition?.factory === 'function'
     ? widgetDefinition.factory as unknown as (props: WidgetProps, ctx?: Config['ctx']) => React.ReactNode
     : null;
@@ -854,21 +854,24 @@ const RuleValueEditor: React.FC<{
           config={config}
           delta={0}
           field={selectedField}
-          fieldType={fieldType}
+          {...(fieldType !== undefined ? { fieldType } : {})}
           operator={selectedOperator}
           path={path}
           readOnly={getValueReadonly(config, readOnly)}
           value={values[0]}
-          valueError={valueErrors[0]}
+          {...(valueErrors[0] !== undefined ? { valueError: valueErrors[0] } : {})}
           valueSrc="value"
-          valueType={valueTypes[0]}
+          {...(valueTypes[0] !== undefined ? { valueType: valueTypes[0] } : {})}
         />
       </div>
     );
   }
 
   const availableSources = getValueSources(config, selectedField, selectedOperator);
-  const currentSource = availableSources.includes(valueSrcs[0]) ? valueSrcs[0] : availableSources[0];
+  const firstValueSrc = valueSrcs[0];
+  const currentSource: ValueSource = firstValueSrc !== undefined && availableSources.includes(firstValueSrc)
+    ? firstValueSrc
+    : availableSources[0] ?? 'value';
   const isFunction = currentSource === 'func' && cardinality === 1;
   const showRangeSeparator = cardinality === 2 && isDateLikeFieldType(fieldType);
   const sourceItems = getValueSourceItems(config, availableSources);
@@ -913,7 +916,7 @@ const RuleValueEditor: React.FC<{
         <FunctionValueEditor
           config={config}
           field={selectedField}
-          fieldType={fieldType}
+          {...(fieldType !== undefined ? { fieldType } : {})}
           operator={selectedOperator}
           path={path}
           actions={actions}
@@ -923,7 +926,10 @@ const RuleValueEditor: React.FC<{
       ) : (
         <div className={classNames('sha-query-builder-value-editor', cardinality > 1 && 'is-range', showRangeSeparator && 'has-separator')}>
           {Array.from({ length: cardinality }).map((_, delta) => {
-            const deltaSource = availableSources.includes(valueSrcs[delta]) ? valueSrcs[delta] : currentSource;
+            const rawDeltaSource = valueSrcs[delta];
+            const deltaSource: ValueSource = rawDeltaSource !== undefined && availableSources.includes(rawDeltaSource)
+              ? rawDeltaSource
+              : currentSource;
             return (
               <React.Fragment key={`${node.id}-${delta}`}>
                 {showRangeSeparator && delta > 0 && (
@@ -935,14 +941,14 @@ const RuleValueEditor: React.FC<{
                     config={config}
                     delta={delta}
                     field={selectedField}
-                    fieldType={fieldType}
+                    {...(fieldType !== undefined ? { fieldType } : {})}
                     operator={selectedOperator}
                     path={path}
                     readOnly={valueReadonly}
                     value={values[delta]}
-                    valueError={valueErrors[delta]}
+                    {...(valueErrors[delta] !== undefined ? { valueError: valueErrors[delta] } : {})}
                     valueSrc={deltaSource}
-                    valueType={valueTypes[delta]}
+                    {...(valueTypes[delta] !== undefined ? { valueType: valueTypes[delta] } : {})}
                   />
                 </div>
               </React.Fragment>
@@ -994,7 +1000,7 @@ const QueryRuleRow: React.FC<IRuleProps> = (props) => {
   const fieldProps: FieldProps = {
     items: [],
     config,
-    placeholder: config.settings.fieldPlaceholder,
+    ...(config.settings.fieldPlaceholder !== undefined ? { placeholder: config.settings.fieldPlaceholder } : {}),
     selectedFieldSrc: 'field',
     selectedKey: selectedField,
     readonly: fieldReadonly,
@@ -1047,14 +1053,14 @@ const QueryRuleRow: React.FC<IRuleProps> = (props) => {
           onPointerDown={stopPointerPropagation}
         >
           <Select
-            value={selectedOperator}
+            {...(selectedOperator !== undefined ? { value: selectedOperator } : {})}
             options={operatorOptions}
             variant="borderless"
-            placeholder={config.settings.operatorPlaceholder}
+            {...(config.settings.operatorPlaceholder !== undefined ? { placeholder: config.settings.operatorPlaceholder } : {})}
             onChange={(nextOperator) => actions.setOperator(path, nextOperator)}
             disabled={operatorReadonly || (!selectedField && !isFieldFunc)}
             popupMatchSelectWidth={false}
-            size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
+            {...(config.settings.renderSize !== undefined ? { size: config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize } : {})}
           />
         </div>
       </div>
@@ -1200,7 +1206,7 @@ function QueryBuilderGroup({
   path,
   readOnly,
   tree,
-}: IGroupProps): JSX.Element {
+}: IGroupProps): React.JSX.Element {
   const children = getChildren(node);
   const groupReadonly = getGroupReadonly(config, readOnly);
   const canAddGroup = canAddGroupAtPath(path);
@@ -1213,7 +1219,7 @@ function QueryBuilderGroup({
         <div className="sha-query-builder-surface is-empty">
           <QueryRuleElement
             onAddRule={() => actions.addRule(path)}
-            onAddGroup={canAddGroup ? () => actions.addGroup(path) : undefined}
+            {...(canAddGroup ? { onAddGroup: () => actions.addGroup(path) } : {})}
             disabled={groupReadonly}
             addGroupDisabled={!canAddGroup}
           />

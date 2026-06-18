@@ -72,7 +72,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
         style={{ width: '100%', minWidth: 0 }}
         {...(size ? { size } : {})}
         onSelect={onSelect}
-        placeholder={placeholder}
+        {...(placeholder !== undefined ? { placeholder } : {})}
         variant="borderless"
         isPropertyVisible={isPropertyVisible}
         isPropertySelectable={isPropertySelectable}

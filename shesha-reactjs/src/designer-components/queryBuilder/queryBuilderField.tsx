@@ -158,7 +158,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     <>
       <CodeEditor
         value={jsonInput}
-        onChange={setJsonInput}
+        onChange={(v) => setJsonInput(v ?? '')}
         readOnly={readOnly}
         language="javascript"
         style={{ minHeight: 260 }}
@@ -218,7 +218,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
       <Modal
         open={modalVisible}
         width={modalWidth}
-        styles={modalStyles}
+        {...(modalStyles ? { styles: modalStyles } : {})}
         title={(
           <Space size={10} className={styles.shaQueryBuilderModalTitle}>
             <span className={styles.shaQueryBuilderModalTitleIcon}>

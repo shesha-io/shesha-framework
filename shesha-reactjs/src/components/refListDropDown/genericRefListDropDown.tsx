@@ -169,7 +169,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return (
       <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
         {...commonSelectProps}
-        title={singleValueTitle}
+        {...(singleValueTitle !== undefined ? { title: singleValueTitle } : {})}
         popupMatchSelectWidth={false}
         style={{ width: 'max-content', height: 'max-content' }}
         placeholder={placeholder}
@@ -200,7 +200,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       {...commonSelectProps}
-      title={singleValueTitle}
+      {...(singleValueTitle !== undefined ? { title: singleValueTitle } : {})}
       style={{ ...style }}
       showSearch
       {...(mode ? { mode } : {})}
@@ -228,7 +228,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
         label,
         data,
         disabled: disabled ?? false,
-        title: typeof label === 'string' ? label : undefined,
+        ...(typeof label === 'string' ? { title: label } : {}),
       }))}
     />
   );

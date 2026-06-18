@@ -4,7 +4,7 @@ import type { RuleProps } from '@react-awesome-query-builder/antd';
 
 type RulePropsWithReorder = RuleProps & { parentFieldCanReorder?: boolean };
 
-export const RuleDragHandlePlaceholder = (props: RulePropsWithReorder): JSX.Element | null => {
+export const RuleDragHandlePlaceholder = (props: RulePropsWithReorder): React.JSX.Element | null => {
   const { config, reordableNodesCnt, isLocked, parentField, parentFieldCanReorder } = props;
 
   const canReorder = config.settings.canReorder !== false;

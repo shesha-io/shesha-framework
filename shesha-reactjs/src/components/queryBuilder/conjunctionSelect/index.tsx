@@ -43,7 +43,7 @@ export const ConjunctionSelect: FactoryWithContext<ConjsProps> = (props) => {
         onChange={handleChange}
         disabled={Boolean(readonly || disabled)}
         popupMatchSelectWidth={false}
-        size={(config.settings as SettingsWithRenderSize).renderSize === 'medium' ? 'middle' : (config.settings as SettingsWithRenderSize).renderSize as 'small' | 'large' | undefined}
+        size={(config!.settings as SettingsWithRenderSize).renderSize === 'medium' ? 'middle' : (config!.settings as SettingsWithRenderSize).renderSize as 'small' | 'large' | undefined}
       />
     </div>
   );

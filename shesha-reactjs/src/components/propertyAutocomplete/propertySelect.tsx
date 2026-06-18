@@ -286,7 +286,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
 
   return (
     <Select<string>
-      title={title}
+      {...(title !== undefined ? { title } : {})}
       onSelect={onSelect}
       value={props.value ?? null}
       showSearch={{
