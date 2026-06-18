@@ -42,5 +42,15 @@
         /// Email link body template
         /// </summary>
         public string DefaultEmailBodyTemplate { get; set; }
+
+        /// <summary>
+        /// Registration email link subject template
+        /// </summary>
+        public string DefaultRegistrationEmailSubjectTemplate { get; set; }
+
+        /// <summary>
+        /// Registration email link body template
+        /// </summary>
+        public string DefaultRegistrationEmailBodyTemplate { get; set; }
     }
 }
