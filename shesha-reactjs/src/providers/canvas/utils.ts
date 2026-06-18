@@ -77,14 +77,22 @@ export interface IAutoZoomParams {
   viewType?: IViewType;
 };
 
+/**
+ * Predefined zoom levels (percentages) that the +/- buttons step through.
+ * Direct numeric entry is still free-form within [minZoom, maxZoom].
+ */
+export const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
+
 export const DEFAULT_OPTIONS = {
   minZoom: 25,
   maxZoom: 200,
+  defaultZoom: 80,
   sizes: [25, 50, 25],
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
   designerWidth: defaultDesignerWidth,
   zoomStep: 1,
+  zoomLevels: ZOOM_LEVELS,
   modalMargins: 32,
 };
 
@@ -259,10 +267,10 @@ export const screenSizeOptions = [
     label: 'Desktop 1440', value: '1440px', icon: DesktopOutlined,
   },
   {
-    label: 'Desktop 1920', value: '1920px', icon: DesktopOutlined,
+    label: 'Full HD 1920x1080', value: '1920px', icon: DesktopOutlined,
   },
   {
-    label: 'Default', value: defaultDesignerWidth, icon: DesktopOutlined,
+    label: 'Canvas', value: defaultDesignerWidth, icon: DesktopOutlined,
   },
 ];
 

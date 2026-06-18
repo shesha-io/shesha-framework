@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useCallback } from 'react';
 import { reducer } from './reducer';
-import { setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction, setViewTypeAction } from './actions';
+import { setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction, setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, DeviceTypes, IViewType } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { canvasContextCode } from '@/publicJsApis/apis';
@@ -10,13 +10,6 @@ import { IObjectMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
-import { useLocalStorage } from '@/hooks';
-import { applyCanvasSize } from './utils';
-
-type SavedSettings = {
-  width: number | string;
-  deviceType: DeviceTypes;
-};
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,
@@ -41,13 +34,9 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
-  const [savedSettings, setSavedSettings] = useLocalStorage<SavedSettings>("CANVAS_SETTINGS");
-
-  const [state, dispatch] = useReducer(reducer,
-    isDefined(savedSettings)
-      ? applyCanvasSize(CANVAS_CONTEXT_INITIAL_STATE, savedSettings.width, savedSettings.deviceType)
-      : { ...CANVAS_CONTEXT_INITIAL_STATE },
-  );
+  const [state, dispatch] = useReducer(reducer, {
+    ...CANVAS_CONTEXT_INITIAL_STATE,
+  });
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -63,12 +52,15 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   }, []);
 
   const setCanvasWidth = useCallback((width: number | string, deviceType: DeviceTypes) => {
-    setSavedSettings({ width, deviceType });
     dispatch(setCanvasWidthAction({ width: typeof width === 'string' ? width : `${width}px`, deviceType }));
-  }, [setSavedSettings]);
+  }, []);
 
   const setCanvasZoom = useCallback((zoom: number) => {
     dispatch(setCanvasZoomAction(zoom));
+  }, []);
+
+  const setManualZoom = useCallback((zoom: number) => {
+    dispatch(setManualZoomAction(zoom));
   }, []);
 
   const setCanvasAutoZoom = useCallback(() => {
@@ -88,11 +80,12 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     setDesignerDevice,
     setCanvasWidth: setCanvasWidth,
     setCanvasZoom,
+    setManualZoom,
     setCanvasAutoZoom,
     setConfigTreePanelSize,
     setViewType,
     /* NEW_ACTION_GOES_HERE */
-  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setCanvasAutoZoom, setConfigTreePanelSize, setViewType]);
+  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setConfigTreePanelSize, setViewType]);
 
   const contextOnChangeData: ContextOnChangeData<ICanvasStateContext> = useCallback((_, changedData) => {
     if (!isDefined(changedData))
