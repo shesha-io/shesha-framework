@@ -300,14 +300,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
     );
   };
 
-  const fileProps: UploadProps<any> = {
+  const fileProps: UploadProps<unknown> = {
     name: 'file',
     disabled: !allowUpload,
     accept: allowedFileTypes.join(','),
     multiple: false,
     fileList: isDefined(uploadFileModel) && fileInfo?.status !== 'error' ? [uploadFileModel] : [],
     maxCount: 1,
-    ...(!isDragger && listType !== 'thumbnail' && isDefined(stylesProp) ? { style: stylesProp as CSSProperties } : {}),
+    ...(!isDragger && listType !== 'thumbnail' && isDefined(stylesProp) ? { style: stylesProp } : {}),
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
       if (!isFileTypeAllowed(file.name, allowedFileTypes)) {

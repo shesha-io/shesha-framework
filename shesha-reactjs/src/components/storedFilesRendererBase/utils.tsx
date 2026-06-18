@@ -92,10 +92,9 @@ export const fetchStoredFile = async (
   httpClient: HttpClientApi,
   url: string,
 ): Promise<IFetchStoredFileResult> => {
-  const response = await httpClient.get<BlobPart>(url, { responseType: 'blob' });
+  const response = await httpClient.get<Blob>(url, { responseType: 'blob' });
 
-  const blob = new Blob([response.data]);
-  const objectUrl = URL.createObjectURL(blob);
+  const objectUrl = URL.createObjectURL(response.data);
 
   let revoked = false;
   const revoke = (): void => {
