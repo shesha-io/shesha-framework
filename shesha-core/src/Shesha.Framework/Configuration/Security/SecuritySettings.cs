@@ -70,5 +70,11 @@ namespace Shesha.Configuration.Security
         [Display(Name = "Default endpoint access", Description = "Used for 'Inherited' endpoint access")]
         public RefListPermissionedAccess DefaultEndpointAccess { get; set; }
 
+        /// <summary>
+        /// Default endpoint permissons
+        /// </summary>
+        [Display(Name = "Default endpoint permissions", Description = "Used for 'Inherited' endpoint access")]
+        public List<string> DefaultEndpointPermissions{ get; set; }
+
     }
 }

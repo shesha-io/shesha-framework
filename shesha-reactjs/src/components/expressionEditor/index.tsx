@@ -6,17 +6,11 @@ import {
   getMustacheFunctionDefinitions,
 } from '@/utils/mustacheExpressionFunctions';
 import './styles.css';
+import type { ExpressionContext, ExpressionContextValue } from './contextMetadata';
+import { arrayHasAtLeastNDefined } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type ExpressionContextValue = string |
-  number |
-  boolean |
-  null |
-  undefined |
-  ExpressionContext;
-
-export interface ExpressionContext {
-  [key: string]: ExpressionContextValue;
-}
+export type { ExpressionContext, ExpressionContextValue };
 
 export type ExpressionFunctionCategory = string;
 
@@ -50,14 +44,14 @@ export interface ExpressionEditorProps {
   value: string;
   onChange: (value: string) => void;
   context: ExpressionContext;
-  functions?: ExpressionFunctionDefinition[];
-  disabled?: boolean;
-  placeholder?: string;
-  className?: string;
-  controlClassName?: string;
-  focusRows?: number;
-  inline?: boolean;
-  allowExpand?: boolean;
+  functions?: ExpressionFunctionDefinition[] | undefined;
+  disabled?: boolean | undefined;
+  placeholder?: string | undefined;
+  className?: string | undefined;
+  controlClassName?: string | undefined;
+  focusRows?: number | undefined;
+  inline?: boolean | undefined;
+  allowExpand?: boolean | undefined;
 }
 
 export interface BuildExpressionContextFromPathsOptions {
@@ -66,10 +60,19 @@ export interface BuildExpressionContextFromPathsOptions {
   leafValue?: ExpressionContextValue;
 }
 
+/**
+ * Size of the rainbow-bracket palette. The tokenizer emits `hl-bracket-${depth % SIZE}`
+ * so colors cycle for nesting deeper than the palette. Each open bracket and its matching
+ * close share the same depth → same color. Applied to `( )`, `[ ]`, and `{{ }}`.
+ */
+export const BRACKET_PALETTE_SIZE = 5;
+
+const isExpressionContext = (value: unknown): value is ExpressionContext =>
+  value !== null && typeof value === 'object' && !Array.isArray(value);
+
 const ensureObjectBranch = (node: ExpressionContext, segment: string): ExpressionContext => {
   const existing = node[segment];
-  if (existing && typeof existing === 'object' && !Array.isArray(existing))
-    return existing as ExpressionContext;
+  if (isExpressionContext(existing)) return existing;
 
   const nextNode: ExpressionContext = {};
   node[segment] = nextNode;
@@ -147,11 +150,11 @@ const getMustacheContext = (
 ): { insideMustache: boolean; partial: string; startPos: number } | null => {
   const beforeCursor = text.slice(0, cursorPos);
 
-  let lastOpen = -1;
   let searchFrom = 0;
-  while (true) {
-    const index = beforeCursor.indexOf('{{', searchFrom);
-    if (index === -1) break;
+  let lastOpen = -1;
+  let index: number;
+
+  while ((index = beforeCursor.indexOf('{{', searchFrom)) !== -1) {
     lastOpen = index;
     searchFrom = index + 2;
   }
@@ -168,6 +171,19 @@ const getMustacheContext = (
   };
 };
 
+// Returns true when the quote at `quoteIndex` is escaped (preceded by an odd
+// number of consecutive backslashes). Even runs mean the backslashes escape
+// each other and the quote is NOT escaped.
+const isQuoteEscaped = (str: string, quoteIndex: number): boolean => {
+  let count = 0;
+  let j = quoteIndex - 1;
+  while (j >= 0 && str[j] === '\\') {
+    count++;
+    j--;
+  }
+  return count % 2 !== 0;
+};
+
 const extractToken = (partial: string): { token: string; prefixPath: string[]; inFunctionArg: boolean } => {
   let relevantPart = partial;
   let inFunctionArg = false;
@@ -180,7 +196,7 @@ const extractToken = (partial: string): { token: string; prefixPath: string[]; i
     const character = partial[i];
 
     if (inString) {
-      if (character === stringChar && partial[i - 1] !== '\\') inString = false;
+      if (character === stringChar && !isQuoteEscaped(partial, i)) inString = false;
       continue;
     }
 
@@ -216,29 +232,50 @@ const extractToken = (partial: string): { token: string; prefixPath: string[]; i
 
   if (parts.length > 1) {
     return {
-      token: parts[parts.length - 1],
+      token: parts[parts.length - 1]!,
       prefixPath: parts.slice(0, -1),
       inFunctionArg,
     };
   }
 
   return {
-    token: parts[0],
+    token: parts[0] ?? "",
     prefixPath: [],
     inFunctionArg,
   };
 };
 
-const tokenizeExpression = (expression: string, knownFunctions: Set<string>): HighlightToken[] => {
+const bracketClass = (depth: number): string => `hl-bracket-${depth % BRACKET_PALETTE_SIZE}`;
+
+/**
+ * Tokenize an inner-mustache expression for syntax highlighting.
+ *
+ * @param expression the raw expression text (not including the surrounding `{{` `}}`)
+ * @param knownFunctions uppercase function names — used to colour identifiers that are
+ *   followed by `(` as functions instead of variables
+ * @param startDepth the bracket nesting depth at the start of this expression.
+ *   Pass 1 when called from inside a mustache block (since `{{` itself is depth 0).
+ *
+ * Maintains a small stack of open-bracket depths so that the closing bracket
+ * receives the same depth class as its matching opener. Applies to `(` `)` and `[` `]`.
+ * Cycles through `BRACKET_PALETTE_SIZE` colors so deeper levels reuse colors.
+ */
+export const tokenizeExpression = (
+  expression: string,
+  knownFunctions: Set<string>,
+  startDepth = 0,
+): HighlightToken[] => {
   const tokens: HighlightToken[] = [];
   let index = 0;
+  let depth = startDepth;
+  const openStack: number[] = [];
 
   while (index < expression.length) {
-    const character = expression[index];
+    const character = expression[index]!;
 
     if (/\s/.test(character)) {
       let cursor = index;
-      while (cursor < expression.length && /\s/.test(expression[cursor])) cursor += 1;
+      while (cursor < expression.length && /\s/.test(expression[cursor]!)) cursor += 1;
       tokens.push({ text: expression.slice(index, cursor), className: '' });
       index = cursor;
       continue;
@@ -256,10 +293,10 @@ const tokenizeExpression = (expression: string, knownFunctions: Set<string>): Hi
       continue;
     }
 
-    if (/\d/.test(character) || (character === '-' && index + 1 < expression.length && /\d/.test(expression[index + 1]))) {
+    if (/\d/.test(character) || (character === '-' && index + 1 < expression.length && /\d/.test(expression[index + 1]!))) {
       let cursor = index;
       if (expression[cursor] === '-') cursor += 1;
-      while (cursor < expression.length && /[\d.]/.test(expression[cursor])) cursor += 1;
+      while (cursor < expression.length && /[\d.]/.test(expression[cursor]!)) cursor += 1;
       tokens.push({ text: expression.slice(index, cursor), className: 'hl-number' });
       index = cursor;
       continue;
@@ -267,7 +304,7 @@ const tokenizeExpression = (expression: string, knownFunctions: Set<string>): Hi
 
     if (/[a-zA-Z_]/.test(character)) {
       let cursor = index;
-      while (cursor < expression.length && /[a-zA-Z0-9_]/.test(expression[cursor])) cursor += 1;
+      while (cursor < expression.length && /[a-zA-Z0-9_]/.test(expression[cursor]!)) cursor += 1;
       const word = expression.slice(index, cursor);
 
       if (word === 'true' || word === 'false' || word === 'null') {
@@ -277,7 +314,7 @@ const tokenizeExpression = (expression: string, knownFunctions: Set<string>): Hi
       }
 
       let lookAhead = cursor;
-      while (lookAhead < expression.length && /\s/.test(expression[lookAhead])) lookAhead += 1;
+      while (lookAhead < expression.length && /\s/.test(expression[lookAhead]!)) lookAhead += 1;
       if (lookAhead < expression.length && expression[lookAhead] === '(' && knownFunctions.has(word.toUpperCase())) {
         tokens.push({ text: word, className: 'hl-function' });
       } else {
@@ -294,8 +331,20 @@ const tokenizeExpression = (expression: string, knownFunctions: Set<string>): Hi
       continue;
     }
 
-    if (character === '(' || character === ')') {
-      tokens.push({ text: character, className: 'hl-paren' });
+    if (character === '(' || character === '[') {
+      // Opener takes the CURRENT depth's color; nested content uses depth+1.
+      openStack.push(depth);
+      tokens.push({ text: character, className: bracketClass(depth) });
+      depth += 1;
+      index += 1;
+      continue;
+    }
+
+    if (character === ')' || character === ']') {
+      // Closer matches its opener's depth (or current depth if unmatched).
+      const matchDepth = openStack.length > 0 ? (openStack.pop() as number) : depth;
+      depth = matchDepth;
+      tokens.push({ text: character, className: bracketClass(matchDepth) });
       index += 1;
       continue;
     }
@@ -327,7 +376,14 @@ const tokenizeExpression = (expression: string, knownFunctions: Set<string>): Hi
   return tokens;
 };
 
-const highlightText = (text: string, knownFunctions: Set<string>): HighlightToken[] => {
+/**
+ * Highlight a full template string, including `{{ }}` delimiters.
+ *
+ * The outer `{{` `}}` pair is assigned bracket depth 0 (the first palette color).
+ * Inner expression brackets start at depth 1 so nested `((x))` inside a mustache block
+ * goes through three distinct colors total (mustache, outer paren, inner paren).
+ */
+export const highlightText = (text: string, knownFunctions: Set<string>): HighlightToken[] => {
   if (!text) return [{ text: '', className: '' }];
 
   if (!text.includes('{{')) {
@@ -345,12 +401,13 @@ const highlightText = (text: string, knownFunctions: Set<string>): HighlightToke
   const completeRegex = /\{\{(.*?)\}\}/gs;
   let match: RegExpExecArray | null;
   while ((match = completeRegex.exec(text)) !== null) {
-    blocks.push({
-      start: match.index,
-      end: match.index + match[0].length,
-      inner: match[1],
-      closed: true,
-    });
+    if (arrayHasAtLeastNDefined(match, 2))
+      blocks.push({
+        start: match.index,
+        end: match.index + match[0].length,
+        inner: match[1],
+        closed: true,
+      });
   }
 
   const openIndex = text.lastIndexOf('{{');
@@ -380,11 +437,14 @@ const highlightText = (text: string, knownFunctions: Set<string>): HighlightToke
       result.push({ text: text.slice(lastIndex, block.start), className: '' });
     }
 
-    result.push({ text: '{{', className: 'hl-bracket' });
-    result.push(...tokenizeExpression(block.inner, knownFunctions));
+    // Mustache delimiters occupy bracket depth 0; their contents start at depth 1
+    // so inner parens/brackets get their own colors.
+    const mustacheClass = bracketClass(0);
+    result.push({ text: '{{', className: mustacheClass });
+    result.push(...tokenizeExpression(block.inner, knownFunctions, 1));
 
     if (block.closed) {
-      result.push({ text: '}}', className: 'hl-bracket' });
+      result.push({ text: '}}', className: mustacheClass });
     }
 
     lastIndex = block.end;
@@ -497,6 +557,8 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [draftValue, setDraftValue] = useState<string | null>(null);
   const valueBeforeExpandRef = useRef<string>('');
+  const latestValueRef = useRef(value);
+  latestValueRef.current = value;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -526,7 +588,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   const activeValue = isExpanded && draftValue !== null ? draftValue : value;
 
   const highlightTokens = useMemo(
-    () => highlightText(activeValue ?? '', knownFunctionNames),
+    () => highlightText(activeValue, knownFunctionNames),
     [knownFunctionNames, activeValue],
   );
   const showDropdown = isFocused && suggestions.length > 0;
@@ -585,19 +647,20 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     if (inline) {
       updateInlineEditorPosition();
       updateInlineDropdownPosition();
+    } else {
+      valueBeforeExpandRef.current = latestValueRef.current;
+      setDraftValue(latestValueRef.current);
     }
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const textarea = textareaRef.current;
-        if (!textarea) return;
+      const textarea = textareaRef.current;
+      if (!textarea) return;
 
-        const cursorPos = textarea.value.length;
-        textarea.focus();
-        textarea.setSelectionRange(cursorPos, cursorPos);
-        updateSuggestions(textarea.value, cursorPos);
-        updateInlineEditorPosition();
-        updateInlineDropdownPosition();
-      });
+      const cursorPos = textarea.value.length;
+      textarea.focus();
+      textarea.setSelectionRange(cursorPos, cursorPos);
+      updateSuggestions(textarea.value, cursorPos);
+      updateInlineEditorPosition();
+      updateInlineDropdownPosition();
     });
   }, [disabled, inline, updateInlineDropdownPosition, updateInlineEditorPosition, updateSuggestions]);
 
@@ -650,7 +713,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       for (let i = 0; i < beforeCursor.length; i += 1) {
         const character = beforeCursor[i];
         if (inString) {
-          if (character === stringChar && beforeCursor[i - 1] !== '\\') inString = false;
+          if (character === stringChar && !isQuoteEscaped(beforeCursor, i)) inString = false;
           continue;
         }
 
@@ -756,7 +819,8 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       case 'Tab':
       case 'Enter':
         event.preventDefault();
-        insertSuggestion(suggestions[activeIndex]);
+        if (suggestions[activeIndex])
+          insertSuggestion(suggestions[activeIndex]);
         break;
       case 'Escape':
         event.preventDefault();
@@ -825,10 +889,10 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     'sha-expression-editor-control',
     controlClassName ?? className,
   );
-  const hasValue = Boolean(value?.trim().length);
+  const hasValue = !isNullOrWhiteSpace(value);
   const previewText = hasValue ? toPreviewText(value) : placeholder;
 
-  const renderDropdown = (mode: 'inline' | 'floating'): JSX.Element | false => showDropdown && (
+  const renderDropdown = (mode: 'inline' | 'floating'): React.JSX.Element | false => showDropdown && (
     <div
       ref={dropdownRef}
       className={joinClassNames(
@@ -883,7 +947,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     );
   };
 
-  const renderEditorSurface = (mode: 'inline' | 'floating'): JSX.Element => (
+  const renderEditorSurface = (mode: 'inline' | 'floating'): React.JSX.Element => (
     <div className={joinClassNames('sha-expression-editor-overlay', mode === 'floating' && 'sha-expression-editor-overlay--floating')}>
       <div ref={backdropRef} className="sha-expression-editor-backdrop" aria-hidden="true">
         <div className="sha-expression-editor-backdrop-content">

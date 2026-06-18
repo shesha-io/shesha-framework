@@ -26,7 +26,7 @@ const reducerFactory = <TSettings extends object>(
           ...state,
           ...typedPayload,
           isInProgress: { ...state.isInProgress, loading: false },
-          error: { ...state.error, loading: null },
+          error: { ...state.error, loading: undefined },
         };
       })
       .addCase(loadErrorAction, (state, { payload }) => {
@@ -48,9 +48,9 @@ const reducerFactory = <TSettings extends object>(
 
         return {
           ...state,
-          settings,
+          settings: settings,
           isInProgress: { ...state.isInProgress, save: false },
-          error: { ...state.error, save: null },
+          error: { ...state.error, save: undefined },
         };
       })
       .addCase(saveErrorAction, (state, { payload }) => {

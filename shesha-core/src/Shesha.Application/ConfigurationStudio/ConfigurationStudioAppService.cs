@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Exceptions;
@@ -303,6 +304,7 @@ namespace Shesha.ConfigurationStudio
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public Task<GetModulesResponse> GetModulesAsync() 
         {
             var modules = ModuleManager.GetModuleInfos();

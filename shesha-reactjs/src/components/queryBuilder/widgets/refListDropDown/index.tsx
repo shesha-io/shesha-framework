@@ -1,9 +1,10 @@
-import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
+import { BasicConfig, NumberWidget, SelectFieldSettings } from '@react-awesome-query-builder/antd';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';
 import React from 'react';
 import { RefListSimpleDropdown } from './simpleDropdown';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type RefListDropdownWidgetType = BaseWidget & SelectFieldSettings;
+export type RefListDropdownWidgetType = NumberWidget & SelectFieldSettings;
 const RefListDropdownWidget: RefListDropdownWidgetType = {
   ...BasicConfig.widgets.select,
   jsType: 'number',
@@ -15,20 +16,20 @@ const RefListDropdownWidget: RefListDropdownWidgetType = {
     if (!customSettings?.referenceListName)
       return null;
 
-    const onChange = (v): void => {
-      setValue(v);
-    };
-
-    return (
-      <RefListSimpleDropdown
-        onChange={onChange}
-        referenceListId={{ module: customSettings.referenceListModule, name: customSettings.referenceListName }}
-        style={{ minWidth: '150px' }}
-        size="small"
-        value={value}
-        readOnly={readonly}
-      />
-    );
+    return !isNullOrWhiteSpace(customSettings.referenceListModule) && !isNullOrWhiteSpace(customSettings.referenceListName)
+      ? (
+        <RefListSimpleDropdown
+          onChange={(newValue) => {
+            setValue(newValue);
+          }}
+          referenceListId={{ module: customSettings.referenceListModule, name: customSettings.referenceListName }}
+          style={{ minWidth: '150px' }}
+          size="small"
+          value={value && !Array.isArray(value) ? value : undefined}
+          readOnly={readonly}
+        />
+      )
+      : <></>;
   },
 };
 

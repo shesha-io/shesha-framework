@@ -11,7 +11,7 @@ import { throwError } from '@/utils/errors';
 const DynamicActionsDispatcherProvider: FC<PropsWithChildren> = ({ children }) => {
   const providers = useRef<IProvidersDictionary>({});
 
-  const registerProvider = (payload: IRegisterProviderPayload): void => {
+  const registerProvider = <TSettings extends object = object>(payload: IRegisterProviderPayload<TSettings>): void => {
     const existingProvider = providers.current[payload.id];
     if (!existingProvider) {
       providers.current[payload.id] = {
@@ -28,7 +28,7 @@ const DynamicActionsDispatcherProvider: FC<PropsWithChildren> = ({ children }) =
   }, []);
 
   const getProvider = useCallback((providerUid: string): IDynamicActionsContext | undefined => {
-    return providers.current[providerUid]?.contextValue;
+    return providers.current[providerUid]?.contextValue as IDynamicActionsContext;
   }, []);
 
   const dispatcherActions: IDynamicActionsDispatcher = {

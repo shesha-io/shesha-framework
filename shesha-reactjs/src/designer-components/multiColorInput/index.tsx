@@ -9,9 +9,9 @@ import { gradientDirectionOptions } from '../_settings/utils/background/utils';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 
 type MultiColorInputProps = {
-  value: { [key: string]: string | undefined };
-  onChange: (newColor: { [key: string]: string }) => void;
-  readOnly?: boolean;
+  value: { [key: string]: string | undefined } | undefined;
+  onChange: ((newColor: { [key: string]: string | undefined }) => void) | undefined;
+  readOnly?: boolean | undefined;
   propertyName: string;
 };
 
@@ -21,12 +21,12 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
   const directionInputId = React.useMemo(() => nanoid(), []);
 
   useEffect(() => {
-    if (!value || Object.entries(value).length === 0) {
-      const defaultColors = { 1: theme.application.primaryColor, 2: '#fff' };
-      onChange(defaultColors);
+    if (Object.entries(value).length === 0) {
+      const defaultColors = { 1: theme.application?.primaryColor, 2: '#fff' };
+      onChange?.(defaultColors);
       setColors(defaultColors);
     }
-  }, [value, onChange, theme.application.primaryColor]);
+  }, [value, onChange, theme.application?.primaryColor]);
 
   return (
     <>
@@ -38,7 +38,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
               style={{ backgroundColor: '#fff', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
               closable={id !== '1' && id !== '2'}
               onClose={() => {
-                onChange({ ...value, [id]: undefined });
+                onChange?.({ ...value, [id]: undefined });
                 setColors({ ...value, [id]: undefined });
               }}
             >
@@ -59,10 +59,10 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
           size="small"
           onClick={() => {
             const id = nanoid();
-            onChange({ ...value, [id]: '#000000' });
+            onChange?.({ ...value, [id]: '#000000' });
             setColors({ ...value, [id]: '#000000' });
           }}
-          disabled={readOnly}
+          disabled={readOnly ?? false}
           icon={<PlusOutlined />}
           style={{ margin: '5px 0px' }}
         >

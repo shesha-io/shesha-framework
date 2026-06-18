@@ -3,20 +3,20 @@ import { DefaultModelInstance, DefaultModelSubscriptionType, IDefaultModelInstan
 
 export interface IDefaultModelProviderProps<TData extends object = object> {
   name: string;
-  defaultModel?: TData;
-  model?: TData;
+  defaultModel?: TData | undefined;
+  model?: TData | undefined;
 }
 
 export interface IDefaultModelProviderState<TData extends object = object> {
-  subscribePropertyUpdate(propertyName: string, callback: (dfi: DefaultModelInstance<TData>) => void): () => void;
-  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<TData>) => void, data?: Record<string, any>): () => void;
+  subscribePropertyUpdate(propertyName: string, callback: (dfi: IDefaultModelInstance<TData>) => void): () => void;
+  subscribe(type: DefaultModelSubscriptionType, callback: (dfi: IDefaultModelInstance<TData>) => void, data?: Record<string, unknown>): () => void;
   notifySubscribers(type: DefaultModelSubscriptionType): void;
 
   setDefaultModel: (name: string, model: TData) => void;
-  setModel: (model: TData) => void;
+  setModel: (model: TData | undefined) => void;
   getMergedModel: () => TData;
   getModel: () => TData;
-  getDefaultModel: (name?: string) => TData;
+  getDefaultModel: (name?: string) => TData | undefined;
   getValueInfo: (propName: string) => IDefaultModelValueInfo;
   overrideValue: (propName: string) => void;
   setCurrentValueAdditionalInfo: (propName: string, additionalInfo: () => string | ReactElement) => void;
@@ -73,8 +73,8 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
   }, [instance, props.defaultModel, props.model, props.name]);
 
   const state: IDefaultModelProviderState<TData> = {
-    subscribePropertyUpdate: (propertyName: string, callback: (dfi: DefaultModelInstance<TData>) => void) => instance.subscribePropertyUpdate(propertyName, callback),
-    subscribe: (type: DefaultModelSubscriptionType, callback: (dfi: DefaultModelInstance<TData>) => void, data?: Record<string, any>) => instance.subscribe(type, callback, data),
+    subscribePropertyUpdate: (propertyName: string, callback: (dfi: IDefaultModelInstance<TData>) => void) => instance.subscribePropertyUpdate(propertyName, callback),
+    subscribe: (type: DefaultModelSubscriptionType, callback: (dfi: IDefaultModelInstance<TData>) => void, data?: Record<string, unknown>) => instance.subscribe(type, callback, data),
     notifySubscribers: (type: DefaultModelSubscriptionType) => instance.notifySubscribers(type),
 
     setDefaultModel: (name: string, model: TData) => {
@@ -83,7 +83,7 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
       forceRefresh({});
     },
     // ToDo: AS - forceRefresh needs only for cases when inheritable values y
-    setModel: (model: TData) => {
+    setModel: (model: TData | undefined) => {
       instance.setModel(model);
       needUpdateAllInfo();
       // forceRefresh({});
@@ -114,7 +114,7 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
   };
 
   return (
-    <DefaultModelProviderStateContext.Provider value={state}>
+    <DefaultModelProviderStateContext.Provider value={state as unknown as IDefaultModelProviderState<object>}>
       {props.children}
     </DefaultModelProviderStateContext.Provider>
   );

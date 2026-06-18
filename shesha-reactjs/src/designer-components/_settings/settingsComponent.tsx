@@ -1,20 +1,62 @@
-import React, { useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import SettingsControl from './settingsControl';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import { IConfigurableFormComponent, ShaForm } from '@/providers';
+import { IConfigurableFormComponent, IPropertySetting, ShaForm, UnwrapCodeEvaluators } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import { SettingOutlined } from '@ant-design/icons';
 import { SettingComponentContainer } from './settingContainer/settingComponentContainer';
 import { useActualContextData } from '@/hooks';
 import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
-  availableConstantsExpression?: string | GetAvailableConstantsFunc;
-  components?: IConfigurableFormComponent[];
-  lazy?: boolean;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
+  components?: IConfigurableFormComponent[] | undefined;
+  lazy?: boolean | undefined;
 }
+
+type SettingsComponentInnerProps = {
+  model: UnwrapCodeEvaluators<ISettingsComponentProps>;
+  nestedComponent: IConfigurableFormComponent;
+};
+const SettingsComponentInner = <TValue = unknown>({ model, nestedComponent }: SettingsComponentInnerProps): ReactNode => {
+  const actualSourceComponent = useActualContextData(nestedComponent, model.readOnly);
+
+  const component: IConfigurableFormComponent = useMemo(() => {
+    return {
+      ...actualSourceComponent,
+      hideLabel: true,
+      readOnly: model.readOnly,
+      editMode: model.editMode,
+      hidden: model.hidden,
+    };
+  }, [actualSourceComponent, model.readOnly, model.editMode, model.hidden]);
+
+  return (
+    <ConfigurableFormItem<TValue | IPropertySetting<TValue>> model={model} className="sha-js-label" labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
+      {(value, onChange) => (
+        <SettingsControl<TValue>
+          readOnly={model.readOnly}
+          propertyName={model.propertyName ?? ""}
+          mode="value"
+          onChange={onChange}
+          value={value ?? undefined}
+          lazy={model.lazy}
+          availableConstantsExpression={model.availableConstantsExpression}
+        >
+          {(_valueValue, _onChangeValue, propertyName) => {
+            return (
+              <SettingComponentContainer containerId={model.id} propertyName={propertyName} component={component} />
+            );
+          }}
+        </SettingsControl>
+      )}
+    </ConfigurableFormItem>
+  );
+};
 
 const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
   type: 'setting',
@@ -23,41 +65,12 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
   name: 'Setting',
   icon: <SettingOutlined />,
   Factory: ({ model }) => {
-    const actualSourceComponent = useActualContextData(ShaForm.useChildComponents(model.id)[0], model.readOnly);
+    const childComponents = ShaForm.useChildComponents(model.id);
+    const firstChild = isNonEmptyArray(childComponents) ? childComponents[0] : undefined;
 
-    const component: IConfigurableFormComponent = useMemo(() => {
-      return {
-        ...actualSourceComponent,
-        hideLabel: true,
-        readOnly: model.readOnly,
-        editMode: model.editMode,
-        hidden: model.hidden,
-      };
-    }, [model.hidden, model.readOnly, model.id, actualSourceComponent]);
-
-    if (model.hidden) return null;
-
-    return (
-      <ConfigurableFormItem model={model} className="sha-js-label" labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
-        {(value, onChange) => (
-          <SettingsControl
-            readOnly={model.readOnly}
-            propertyName={model.propertyName}
-            mode="value"
-            onChange={onChange}
-            value={value}
-            lazy={model.lazy}
-            availableConstantsExpression={model.availableConstantsExpression}
-          >
-            {(_valueValue, _onChangeValue, propertyName) => {
-              return (
-                <SettingComponentContainer containerId={model.id} propertyName={propertyName} component={component} />
-              );
-            }}
-          </SettingsControl>
-        )}
-      </ConfigurableFormItem>
-    );
+    return isDefined(firstChild) && !model.hidden && !isNullOrWhiteSpace(model.propertyName)
+      ? <SettingsComponentInner model={model} nestedComponent={firstChild} />
+      : undefined;
   },
   settingsFormMarkup: getSettings,
   migrator: (m) => m

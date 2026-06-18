@@ -3,7 +3,7 @@ import { Tag } from 'antd';
 import invertColor from 'invert-color';
 import { css, cx } from 'antd-style';
 
-const COLORS = {
+const COLORS: Record<string, string> = {
   red: '#FF0000',
   pink: '#FFC0CB',
   purple: '#800080',
@@ -54,7 +54,7 @@ export interface IStatusLabelProps {
 }
 
 export const StatusLabel: FC<IStatusLabelProps> = ({ text, color }) => {
-  const hexColor = (COLORS as any)[color];
+  const hexColor = color ? COLORS[color] : undefined;
 
   const className = cx("sha-status-label", css`
     text-transform: uppercase;
@@ -63,7 +63,7 @@ export const StatusLabel: FC<IStatusLabelProps> = ({ text, color }) => {
   `);
 
   return (
-    <Tag className={className} style={{ color: invertColor(hexColor, true), background: hexColor }}>
+    <Tag className={className} style={hexColor ? { color: invertColor(hexColor, true), background: hexColor } : {}}>
       {text}
     </Tag>
   );

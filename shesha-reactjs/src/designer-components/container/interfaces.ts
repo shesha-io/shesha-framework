@@ -1,27 +1,32 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
 import { ComponentDefinition } from '@/interfaces';
+import { StringSubtype } from '@/interfaces/utilityTypes';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
-export type JustifyContent =
-  | 'center' |
-  'start' |
-  'end' |
-  'flex-start' |
-  'flex-end' |
-  'left' |
-  'right' |
-  'normal' |
-  'space-between' |
-  'space-around' |
-  'space-evenly' |
-  'stretch' |
-  'safe center' |
-  'unsafe center' |
-  'inherit' |
-  'initial' |
-  'revert' |
-  'revert-layer' |
-  'unset';
+export const JUSTIFY_CONTENTS = [
+  'center',
+  'center',
+  'start',
+  'end',
+  'flex-start',
+  'flex-end',
+  'left',
+  'right',
+  'normal',
+  'space-between',
+  'space-around',
+  'space-evenly',
+  'stretch',
+  'safecenter',
+  'unsafecenter',
+  'inherit',
+  'initial',
+  'revert',
+  'revert-layer',
+  'unset',
+] as const;
+
+export type JustifyContent = StringSubtype<typeof JUSTIFY_CONTENTS>;
 
 export type JustifyItems =
   | 'normal' |
@@ -60,7 +65,8 @@ export type FlexDirection =
   'revert-layer' |
   'unset';
 
-export type FlexWrap = 'nowrap' | 'wrap' | 'wrap-reverse' | 'inherit' | 'initial' | 'revert' | 'revert-layer' | 'unset';
+export const FLEX_WRAPS = ['nowrap', 'wrap', 'wrap-reverse', 'inherit', 'initial', 'revert', 'revert-layer', 'unset'] as const;
+export type FlexWrap = StringSubtype<typeof FLEX_WRAPS>;
 
 export type JustifySelf =
   | 'auto' |
@@ -141,8 +147,11 @@ export type AlignSelf =
 
 export type ShadowStyleType = 'none' | 'above' | 'below';
 
+export const DISPLAY_TYPES = ['block', 'flex', 'grid', 'inline-grid'] as const;
+export type DisplayType = StringSubtype<typeof DISPLAY_TYPES>;
+
 export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
-  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
+  display?: DisplayType | undefined;
   direction?: ContainerDirection | undefined;
   flexWrap?: FlexWrap | undefined;
   flexDirection?: FlexDirection | undefined;
@@ -164,27 +173,29 @@ export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   borderWidth?: string | number | undefined;
   maxRadius?: string | undefined;
   borderColor?: string | undefined;
-  borderStyle?: string | undefined;
   borderRadius?: string | number | undefined;
   shadowStyle?: string | undefined;
   style?: React.CSSProperties | undefined;
 }
 
+export const IMAGE_SOURCE_TYPES = ['storedFileId', 'base64', 'url'] as const;
+export type ImageSourceType = StringSubtype<typeof IMAGE_SOURCE_TYPES>;
+
 export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'> {
-  backgroundCover?: 'contain' | 'cover';
-  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
-  className?: string;
-  wrapperStyle?: string;
+  backgroundCover?: 'contain' | 'cover' | undefined;
+  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round' | undefined;
+  className?: string | undefined;
+  wrapperStyle?: string | undefined;
   components: IConfigurableFormComponent[]; // Only important for fluent API
-  backgroundType?: 'image' | 'color';
-  backgroundColor?: string;
-  backgroundDataSource?: 'storedFileId' | 'base64' | 'url';
-  backgroundUrl?: string;
-  backgroundBase64?: string;
-  backgroundStoredFileId?: string;
-  desktop?: any;
-  tablet?: any;
-  mobile?: any;
+  backgroundType?: 'image' | 'color' | undefined;
+  backgroundColor?: string | undefined;
+  backgroundDataSource?: ImageSourceType | undefined;
+  backgroundUrl?: string | undefined;
+  backgroundBase64?: string | undefined;
+  backgroundStoredFileId?: string | undefined;
+  // desktop?: IInputStyles | undefined;
+  // tablet?: IInputStyles | undefined;
+  // mobile?: IInputStyles | undefined;
   showAdvanced?: boolean;
 }
 

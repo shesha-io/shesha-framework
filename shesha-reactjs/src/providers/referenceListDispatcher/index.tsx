@@ -66,9 +66,9 @@ const makeRefListIdNotSpecifiedPromise = (): PromisedValue<IReferenceList> => {
   return new StatefulPromise(Promise.reject<IReferenceList>("Reference List identifier must be specified"));
 };
 
-const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IReferenceList> => {
+const useReferenceList = (refListId: IReferenceListIdentifier | undefined): ILoadingState<IReferenceList> => {
   const { getReferenceList } = useReferenceListDispatcher();
-  const failedPromise = useRef<PromisedValue<IReferenceList>>();
+  const failedPromise = useRef<PromisedValue<IReferenceList>>(undefined);
 
   const refListPromise = isDefined(refListId)
     ? getReferenceList({ refListId: refListId })
@@ -106,7 +106,7 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
 };
 
 const useReferenceListItem = (
-  moduleName: string,
+  moduleName: string | null,
   listName: string,
   itemValue?: number,
 ): ILoadingState<IReferenceListItem> => {

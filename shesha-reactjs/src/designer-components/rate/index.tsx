@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import classNames from 'classnames';
 import React from 'react';
-import { getAllEventHandlers, IEventHandlers } from '@/components/formDesigner/components/utils';
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';
@@ -14,6 +13,7 @@ import { IConfigurableFormComponent } from '@/providers';
 import { ShaIcon } from '@/components/shaIcon';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { isDefined } from '@/utils/nullables';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
@@ -26,50 +26,38 @@ export interface IRateProps extends IConfigurableFormComponent {
   className?: string;
 }
 
-type RateCalculatedProperties = {
-  eventHandlers: IEventHandlers;
-};
-
-const RateComponent: IToolboxComponent<IRateProps, RateCalculatedProperties> = {
+const RateComponent: IToolboxComponent<IRateProps> = {
   type: 'rate',
   name: 'Rate',
   icon: <LikeOutlined />,
   isInput: true,
   isOutput: true,
   preserveDimensionsInDesigner: true,
-  calculateModel: (model, allData) => ({
-    eventHandlers: getAllEventHandlers(model, allData),
-  }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const { allowClear, icon, count, tooltips, className, readOnly } = model;
     const localCount = !_.isNaN(count) ? count : 5;
 
     return model.hidden
       ? null
       : (
-        <ConfigurableFormItem model={model}>
-          {(value, onChange) => {
-            const customEvent = calculatedModel.eventHandlers;
-            const onChangeInternal = (value: number): void => {
-              customEvent.onChange({ value });
-              if (typeof onChange === 'function') onChange(value);
-            };
-
+        <ConfigurableFormItem<number> model={model}>
+          {(value, onChange, _, ctx) => {
             return (
               <Rate
-                allowClear={allowClear}
-                // allowHalf={allowHalf}
+                allowClear={allowClear ?? false}
                 character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-                disabled={readOnly}
+                disabled={readOnly ?? false}
                 count={localCount ?? 5}
-                tooltips={tooltips}
+                {...(isDefined(tooltips) ? { tooltips } : {})}
                 className={classNames(className, 'sha-rate')}
                 style={{ ...model.allStyles?.fullStyle, display: 'flex', alignItems: 'center' }}
-                {...customEvent}
-                onFocus={() => customEvent.onFocus(undefined)}
-                onBlur={() => customEvent.onBlur(undefined)}
-                value={value}
-                onChange={onChangeInternal}
+                {...(isDefined(value) ? { value } : {})}
+                onChange={(newValue) => {
+                  ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                  onChange(newValue);
+                }}
+                onFocus={() => ctx?.handleEvent(undefined, value, model.onFocusCustom)}
+                onBlur={() => ctx?.handleEvent(undefined, value, model.onBlurCustom)}
               />
             );
           }}

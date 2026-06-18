@@ -1,35 +1,35 @@
-import React, { useEffect, useMemo } from "react";
+import React, { ReactNode, useEffect, useMemo } from "react";
 import { Tooltip, Select } from "antd";
-import { BUILT_IN_PLACEMENTS } from "../domUtils";
 const { Option, OptGroup } = Select;
 import { FactoryWithContext, FieldItem, FieldProps } from '@react-awesome-query-builder/antd';
+import { StringSubtype } from "@/interfaces/utilityTypes";
+import { getStringEnumOrDefault } from "@/utils/object";
+import { SizeType } from "antd/es/config-provider/SizeContext";
+
+const VALID_PLACEMENTS = ["bottomLeft", "bottomRight", "topLeft", "topRight"] as const;
+export type Placements = StringSubtype<typeof VALID_PLACEMENTS>;
+
+const flattenItems = (value: FieldItem[]): FieldItem[] => {
+  return value.flatMap((item) => item.items ? flattenItems(item.items) : [item]);
+};
 
 export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
-  const onChange = (key): void => {
-    props.setField(key);
-  };
-
-  const filterOption = (input, option): boolean => {
-    const dataForFilter = option;
-    const keysForFilter = ["title", "value", "grouplabel", "label"];
-    const valueForFilter = keysForFilter
-      .map((k) => (typeof dataForFilter[k] == "string" ? dataForFilter[k] : ""))
-      .join("\0");
-    return valueForFilter.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+  const onChange = (key: string | undefined): void => {
+    props.setField(key ?? "");
   };
 
   const {
     config, customProps, items: allItems, placeholder,
-    selectedKey, selectedLabel, /* selectedOpts,*/ selectedAltLabel, selectedFullLabel, readonly,
+    selectedKey, selectedLabel, selectedAltLabel, selectedFullLabel, readonly = false,
   } = props;
 
   const items = useMemo<FieldItem[]>(() => {
     const isTextCaseFunction = (item: FieldItem): boolean => {
-      if (!item?.key && !item?.label)
+      if (!item.key && !item.label)
         return false;
 
-      const normalizedKey = String(item?.key ?? '').toUpperCase();
-      const normalizedLabel = String(item?.label ?? '').toUpperCase();
+      const normalizedKey = String(item.key).toUpperCase();
+      const normalizedLabel = String(item.label).toUpperCase();
       return /(LOWER|LOWERCASE|UPPER|UPPERCASE|TOLOWER|TOUPPER)/.test(normalizedKey) ||
         /(LOWER|LOWERCASE|UPPER|UPPERCASE|TOLOWER|TOUPPER)/.test(normalizedLabel);
     };
@@ -38,10 +38,6 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
       .filter((item) => item.key !== 'expressionFunc')
       .filter((item) => !isTextCaseFunction(item));
   }, [allItems]);
-
-  const flattenItems = (value: FieldItem[]): FieldItem[] => {
-    return value.flatMap((item) => item.items ? flattenItems(item.items) : [item]);
-  };
 
   const leafItems = useMemo(() => flattenItems(items).filter((item) => Boolean(item.key)), [items]);
   const singleLeaf = leafItems.length === 1 ? leafItems[0] : null;
@@ -53,13 +49,13 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
     }
   }, [singleLeafPath, selectedKey, props]);
 
-  const dropdownPlacement = config.settings.dropdownPlacement;
-  const dropdownAlign = dropdownPlacement ? BUILT_IN_PLACEMENTS[dropdownPlacement] : undefined;
+  const dropdownPlacement = getStringEnumOrDefault<Placements>(config?.settings ?? {}, "dropdownPlacement", VALID_PLACEMENTS);
+  const size: SizeType | undefined = config?.settings.renderSize === 'medium' ? 'middle' : config?.settings.renderSize;
   let tooltipText = selectedAltLabel || selectedFullLabel;
   if (tooltipText === selectedLabel)
     tooltipText = null;
 
-  const renderSelectItems = (fields, level = 0): React.JSX.Element[] => {
+  const renderSelectItems = (fields: FieldItem[], level: number = 0): ReactNode[] => {
     return fields.map((field) => {
       const { items, key, path, label, altLabel, tooltip, grouplabel, disabled } = field;
       const groupPrefix = level > 0 ? "\u00A0\u00A0".repeat(level) : "";
@@ -99,14 +95,21 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
 
   return (
     <Select
-      placement={dropdownAlign}
+      {...(dropdownPlacement ? { placement: dropdownPlacement } : {})}
       popupMatchSelectWidth={false}
       style={{ width: '100%', minWidth: 0 }}
       placeholder={placeholder}
-      size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
+      size={size}
       onChange={onChange}
       value={selectedKey || undefined}
-      filterOption={filterOption}
+      showSearch={{ filterOption: (input, option) => {
+        const dataForFilter = option;
+        const keysForFilter = ["title", "value", "grouplabel", "label"];
+        const valueForFilter = keysForFilter
+          .map((k) => (dataForFilter && typeof dataForFilter[k] === "string" ? dataForFilter[k] : ""))
+          .join("\0");
+        return valueForFilter.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      } }}
       disabled={readonly}
       {...customProps}
     >{fieldSelectItems}

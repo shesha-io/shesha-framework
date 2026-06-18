@@ -1,7 +1,7 @@
 import { IComponentSelectorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
-import { useMetadata, useShaFormInstance } from '@/providers';
+import { useMetadataOrUndefined, useShaFormInstance } from '@/providers';
 import { FormComponentSelector } from '@/components/formComponentSelector';
 import { evaluateString } from '@/providers/form/utils';
 
@@ -13,19 +13,21 @@ export const ComponentSelectorWrapper: FCUnwrapped<IComponentSelectorSettingsInp
     ? evaluateString(propertyAccessor, { data: formData })
     : null;
 
-  const meta = useMetadata(false);
+  const meta = useMetadataOrUndefined();
 
   const propertyMeta = property && meta
     ? meta.getPropertyMeta(property)
-    : null;
+    : undefined;
   return (
     <FormComponentSelector
       value={value}
       onChange={onChange}
       readOnly={readOnly}
 
-      componentType={componentType}
-      noSelectionItem={noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined}
+      componentType={componentType ?? 'input'}
+      noSelectionItem={noSelectionItemText
+        ? { label: noSelectionItemText, value: noSelectionItemValue ?? "" }
+        : undefined}
       size={size}
       propertyMeta={propertyMeta}
     />

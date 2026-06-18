@@ -2,6 +2,7 @@ import { CSSProperties } from 'react';
 import { DESIGNER_DIMENSIONS } from './designerConstants';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { IStyleType } from '@/providers/form/models';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 /**
  * Dimension keys that can be selectively preserved in designer mode.
@@ -88,17 +89,17 @@ export const dimensionUtils = {
     const getDimensionValue = (dimensionType: PreservableDimension): string | number | undefined => {
       if (isPreserved(dimensionType)) {
         // Return original dimension value when preserving this specific dimension
-        return dimensionsStyles?.[dimensionType];
+        return dimensionsStyles[dimensionType];
       }
       // Not preserved - use jsStyle or fall back to dimensionsStyles
-      return jsStyle?.[dimensionType] ?? dimensionsStyles?.[dimensionType];
+      return jsStyle[dimensionType] ?? dimensionsStyles[dimensionType];
     };
 
     const preserveWidth = isPreserved('width');
     const preserveMaxWidth = isPreserved('maxWidth');
     const flexBasis = preserveDimensionsInDesigner && (preserveWidth || preserveMaxWidth)
       ? undefined
-      : (jsStyle?.maxWidth ?? dimensionsStyles?.maxWidth ?? dimensionsStyles?.width);
+      : (jsStyle.maxWidth ?? dimensionsStyles.maxWidth ?? dimensionsStyles.width);
 
     return {
       width: getDimensionValue('width'),
@@ -124,7 +125,7 @@ export const dimensionUtils = {
    * Uses maxWidth if available, otherwise falls back to width.
    */
   getDeviceFlexBasis(dimensionsStyles: CSSProperties): string | number | undefined {
-    return dimensionsStyles?.maxWidth ?? dimensionsStyles?.width;
+    return dimensionsStyles.maxWidth ?? dimensionsStyles.width;
   },
 
   /**
@@ -162,12 +163,12 @@ export const dimensionUtils = {
 
     // Partial preservation - merge preserved dimensions with 100% defaults
     return {
-      width: preservedSet.has('width') ? dimensionsStyles?.width : DESIGNER_DIMENSIONS.width,
-      height: preservedSet.has('height') ? dimensionsStyles?.height : DESIGNER_DIMENSIONS.height,
-      minWidth: preservedSet.has('minWidth') ? dimensionsStyles?.minWidth : undefined,
-      maxWidth: preservedSet.has('maxWidth') ? dimensionsStyles?.maxWidth : undefined,
-      minHeight: preservedSet.has('minHeight') ? dimensionsStyles?.minHeight : undefined,
-      maxHeight: preservedSet.has('maxHeight') ? dimensionsStyles?.maxHeight : undefined,
+      width: preservedSet.has('width') ? dimensionsStyles.width : DESIGNER_DIMENSIONS.width,
+      height: preservedSet.has('height') ? dimensionsStyles.height : DESIGNER_DIMENSIONS.height,
+      minWidth: preservedSet.has('minWidth') ? dimensionsStyles.minWidth : undefined,
+      maxWidth: preservedSet.has('maxWidth') ? dimensionsStyles.maxWidth : undefined,
+      minHeight: preservedSet.has('minHeight') ? dimensionsStyles.minHeight : undefined,
+      maxHeight: preservedSet.has('maxHeight') ? dimensionsStyles.maxHeight : undefined,
     };
   },
 
@@ -219,12 +220,12 @@ export const dimensionUtils = {
     // Partial preservation - merge preserved dimensions with 100% defaults
     return {
       ...marginsStripped,
-      width: preservedSet.has('width') ? baseStyle?.width : DESIGNER_DIMENSIONS.width,
-      height: preservedSet.has('height') ? baseStyle?.height : DESIGNER_DIMENSIONS.height,
-      minWidth: preservedSet.has('minWidth') ? baseStyle?.minWidth : undefined,
-      maxWidth: preservedSet.has('maxWidth') ? baseStyle?.maxWidth : undefined,
-      minHeight: preservedSet.has('minHeight') ? baseStyle?.minHeight : undefined,
-      maxHeight: preservedSet.has('maxHeight') ? baseStyle?.maxHeight : undefined,
+      width: preservedSet.has('width') ? baseStyle.width : DESIGNER_DIMENSIONS.width,
+      height: preservedSet.has('height') ? baseStyle.height : DESIGNER_DIMENSIONS.height,
+      minWidth: preservedSet.has('minWidth') ? baseStyle.minWidth : undefined,
+      maxWidth: preservedSet.has('maxWidth') ? baseStyle.maxWidth : undefined,
+      minHeight: preservedSet.has('minHeight') ? baseStyle.minHeight : undefined,
+      maxHeight: preservedSet.has('maxHeight') ? baseStyle.maxHeight : undefined,
     };
   },
 
@@ -236,6 +237,17 @@ export const dimensionUtils = {
     return (baseStyle: CSSProperties, preserveDimensions: IToolboxComponent['preserveDimensionsInDesigner'] = false): CSSProperties => {
       return dimensionUtils.mergeWithDesignerDimensions(baseStyle, isDesignerMode, preserveDimensions);
     };
+  },
+
+  dimensions2CssProperties(dimensions: IDimensionsValue): CSSProperties {
+    return {
+      width: dimensions.width,
+      height: dimensions.height,
+      minWidth: dimensions.minWidth,
+      maxWidth: dimensions.maxWidth,
+      minHeight: dimensions.minHeight,
+      maxHeight: dimensions.maxHeight,
+    } satisfies CSSProperties;
   },
 };
 

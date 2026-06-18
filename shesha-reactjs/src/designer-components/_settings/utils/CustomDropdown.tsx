@@ -8,18 +8,17 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 interface CustomDropdownProps {
   value: string;
   options: Array<string | IDropdownOption>;
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   label?: string | React.ReactNode;
-  size?: SizeType;
-  defaultValue?: string;
-  customTooltip?: string;
-  onAddCustomOption?: (newOption: string) => void;
-  onChange?: (value: string) => void;
-  placeholder?: string;
-  optionFilterProp?: string;
-  style?: React.CSSProperties;
-  popupMatchSelectWidth?: boolean;
-  labelRender?: SelectProps["labelRender"];// (props: LabelInValueType) => React.ReactNode;
+  size?: SizeType | undefined;
+  customTooltip?: string | undefined;
+  onAddCustomOption?: ((newOption: string) => void) | undefined;
+  onChange?: ((value: string) => void) | undefined;
+  placeholder?: string | undefined;
+  optionFilterProp?: string | undefined;
+  style?: React.CSSProperties | undefined;
+  popupMatchSelectWidth?: boolean | undefined;
+  labelRender?: SelectProps["labelRender"] | undefined;
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({
@@ -28,7 +27,6 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
   readOnly,
   label,
   placeholder,
-  defaultValue,
   optionFilterProp,
   customTooltip,
   onChange,
@@ -103,7 +101,6 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
       onChange={(value) => {
         onChange?.(value);
       }}
-      defaultValue={defaultValue}
       placeholder={placeholder}
       {...optionalProps}
       showSearch={!isNullOrWhiteSpace(optionFilterProp) ? { optionFilterProp } : false}

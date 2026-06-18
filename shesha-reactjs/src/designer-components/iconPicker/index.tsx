@@ -24,10 +24,10 @@ const IconPickerComponent: IconPickerComponentDefinition = {
     const allData = useAvailableConstantsData();
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<string> model={model}>
         {(value, onChange) => (
           <IconPickerWrapper
-            fullStyles={model.allStyles.fullStyle}
+            fullStyles={model.allStyles?.fullStyle}
             {...model}
             applicationContext={allData}
             value={value}

@@ -55,7 +55,7 @@ function formatRelative(date: Date, reference: Date): string {
   const months = Math.floor(days / 30.44);
   const years = Math.floor(days / 365.25);
 
-  if (seconds < 5) return 'just now';
+  if (seconds < 5) return isFuture ? 'in a moment' : 'just now';
   if (seconds < 60) return `${prefix}${seconds} seconds${suffix}`;
   if (minutes === 1) return `${prefix}1 minute${suffix}`;
   if (minutes < 60) return `${prefix}${minutes} minutes${suffix}`;
@@ -325,6 +325,11 @@ register({
   evaluate: (date) => formatRelative(toDate(date), new Date()),
 });
 
+const relativeDateEvaluate = (date: unknown, reference?: unknown): string => {
+  const parsedReference = reference !== undefined ? toDate(reference) : new Date();
+  return formatRelative(toDate(date), parsedReference);
+};
+
 register({
   name: 'RELATIVEDATE',
   description: 'Returns a relative time string between two dates',
@@ -333,10 +338,7 @@ register({
     { name: 'date', description: 'The date to describe' },
     { name: 'reference', description: 'Reference date (defaults to now)', optional: true },
   ],
-  evaluate: (date, reference) => {
-    const parsedReference = reference !== undefined ? toDate(reference) : new Date();
-    return formatRelative(toDate(date), parsedReference);
-  },
+  evaluate: relativeDateEvaluate,
 });
 
 register({
@@ -387,7 +389,10 @@ register({
     { name: 'number2', description: 'Second number' },
     { name: '...more', description: 'Additional numbers', optional: true },
   ],
-  evaluate: (...args) => Math.min(...args.map(toNum)),
+  evaluate: (...args) => {
+    if (args.length === 0) return 0;
+    return Math.min(...args.map(toNum));
+  },
 });
 
 register({
@@ -399,7 +404,10 @@ register({
     { name: 'number2', description: 'Second number' },
     { name: '...more', description: 'Additional numbers', optional: true },
   ],
-  evaluate: (...args) => Math.max(...args.map(toNum)),
+  evaluate: (...args) => {
+    if (args.length === 0) return 0;
+    return Math.max(...args.map(toNum));
+  },
 });
 
 register({
@@ -481,10 +489,7 @@ register({
     { name: 'date', description: 'The date to describe' },
     { name: 'reference', description: 'Reference date (defaults to now)', optional: true },
   ],
-  evaluate: (date, reference) => {
-    const parsedReference = reference !== undefined ? toDate(reference) : new Date();
-    return formatRelative(toDate(date), parsedReference);
-  },
+  evaluate: relativeDateEvaluate,
 });
 
 const functionDefinitions = Array.from(registry.values());

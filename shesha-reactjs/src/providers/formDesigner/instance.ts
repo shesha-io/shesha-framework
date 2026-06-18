@@ -673,7 +673,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           }, true);
         },
       );
-      if (!Boolean(formComponent)) return state;
+      if (!isDefined(formComponent)) return state;
 
       formComponent.parentId = containerId; // set parent
       const newStructure = this.addComponentToFlatStructure(newFlatMarkup, [formComponent], containerId, index);
@@ -708,12 +708,16 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   componentEditors: IComponentSettingsEditorsCache = {};
 
-  getCachedComponentEditor = (type: string, evaluator: () => ISettingsFormFactory): ISettingsFormFactory => {
+  getCachedComponentEditor = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(type: string, evaluator: () => ISettingsFormFactory<TModel> | undefined): ISettingsFormFactory<TModel> | undefined => {
     const existingEditor = this.componentEditors[type];
     if (existingEditor !== undefined)
-      return existingEditor;
+      return existingEditor as unknown as ISettingsFormFactory<TModel>;
 
-    return this.componentEditors[type] = evaluator();
+    const evaluated = evaluator();
+    if (isDefined(evaluated))
+      this.componentEditors[type] = evaluated as unknown as ISettingsFormFactory;
+
+    return evaluated;
   };
 
   private updateState = (updater: (state: FormDesignerFormState) => FormDesignerFormState, description: string): void => {

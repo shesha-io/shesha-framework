@@ -237,9 +237,39 @@
   color: #1f1f1f;
 }
 
-.sha-expression-editor-backdrop-content .hl-bracket,
-.sha-expression-editor-preview-content .hl-bracket {
-  color: #c2410c;
+/*
+ * Rainbow-bracket palette — must stay in sync with BRACKET_PALETTE_SIZE in index.tsx (5).
+ * Each `( )`, `[ ]`, and `{{ }}` pair gets `hl-bracket-${depth % 5}`; matching open and close
+ * share the same class so they share a colour. Applied in both the backdrop (live editing)
+ * and the preview (inline summary), so colours are consistent in both views.
+ */
+.sha-expression-editor-backdrop-content .hl-bracket-0,
+.sha-expression-editor-preview-content .hl-bracket-0 {
+  color: #c2410c; /* orange — also the mustache delimiter colour */
+  font-weight: 700;
+}
+
+.sha-expression-editor-backdrop-content .hl-bracket-1,
+.sha-expression-editor-preview-content .hl-bracket-1 {
+  color: #2563eb; /* blue */
+  font-weight: 700;
+}
+
+.sha-expression-editor-backdrop-content .hl-bracket-2,
+.sha-expression-editor-preview-content .hl-bracket-2 {
+  color: #16a34a; /* green */
+  font-weight: 700;
+}
+
+.sha-expression-editor-backdrop-content .hl-bracket-3,
+.sha-expression-editor-preview-content .hl-bracket-3 {
+  color: #9333ea; /* purple */
+  font-weight: 700;
+}
+
+.sha-expression-editor-backdrop-content .hl-bracket-4,
+.sha-expression-editor-preview-content .hl-bracket-4 {
+  color: #ca8a04; /* yellow */
   font-weight: 700;
 }
 
@@ -276,10 +306,8 @@
   font-weight: 600;
 }
 
-.sha-expression-editor-backdrop-content .hl-paren,
 .sha-expression-editor-backdrop-content .hl-comma,
 .sha-expression-editor-backdrop-content .hl-dot,
-.sha-expression-editor-preview-content .hl-paren,
 .sha-expression-editor-preview-content .hl-comma,
 .sha-expression-editor-preview-content .hl-dot {
   color: #64748b;

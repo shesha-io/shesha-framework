@@ -1,7 +1,7 @@
 import { createStyles } from 'antd-style';
 
 interface IStyle {
-  subText?: string;
+  subText?: string | undefined;
 }
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }, props: IStyle) => {
@@ -10,7 +10,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, props: ISt
     css`
       display: flex;
       justify-content: space-between;
-      width: ${props?.subText ? '400px' : '200px'};
+      width: ${props.subText ? '400px' : '200px'};
       align-items: center;
       padding: 0px 5px 0px 5px;
     `,

@@ -5,9 +5,10 @@ import { ProcessMonitorInstance } from "./instance";
 import { useHttpClient } from "../sheshaApplication/publicApi";
 import { useSheshaApplication } from "../sheshaApplication";
 import { ProcessMonitorContextBinder } from "./processMonitorContextBinder";
+import { isNullOrWhiteSpace } from "@/utils/nullables";
 
 export type ProcessMonitorProviderProps = {
-  componentName?: string;
+  componentName?: string | undefined;
   processType: string;
   processId: string;
 };
@@ -45,7 +46,7 @@ export const ProcessMonitorProvider: FC<PropsWithChildren<ProcessMonitorProvider
     </ProcessMonitorContext.Provider>
   );
 
-  return componentName
+  return !isNullOrWhiteSpace(componentName)
     ? (
       <ProcessMonitorContextBinder contextName={componentName} instance={processMonitor}>
         {content}

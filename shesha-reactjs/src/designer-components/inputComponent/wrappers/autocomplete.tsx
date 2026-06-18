@@ -7,14 +7,13 @@ export const AutocompleteWrapper: FCUnwrapped<IAutocompleteSettingsInputProps> =
   const { value, readOnly, size, placeholder, dataSourceType, dataSourceUrl } = props;
   return (
     <Autocomplete
+      {...props}
       value={value}
       readOnly={readOnly}
-
-      dataSourceType={dataSourceType}
+      dataSourceType={dataSourceType ?? 'entitiesList'}
       dataSourceUrl={dataSourceUrl}
       placeholder={placeholder}
       size={size}
-      {...props}
       style={{}}
     />
   );

@@ -34,7 +34,7 @@ export const propertyHasQBConfig = (property: IProperty): property is IHasQueryB
 };
 
 export interface IHasCustomQBSettings {
-  toQueryBuilderField: (defaultConverter: () => FieldOrGroup) => FieldOrGroup;
+  toQueryBuilderField: (defaultConverter: () => FieldOrGroup | undefined) => FieldOrGroup;
 }
 
 export interface IPropertyMetadataWithQBSettings extends IPropertyMetadata, IHasCustomQBSettings {

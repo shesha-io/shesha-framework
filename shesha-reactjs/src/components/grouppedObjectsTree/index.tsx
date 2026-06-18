@@ -1,17 +1,20 @@
-import React, { useMemo, useEffect, ReactNode } from 'react';
+import React, { useMemo, useEffect, ReactNode, useCallback } from 'react';
 import { Collapse, Empty } from 'antd';
 import { getLastSection } from '@/utils/string';
 import { ObjectsTree } from './objectsTree';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
+import { getStringPropertyOrUndefined } from '@/utils/object';
 
 export interface IGrouppedObjectsTreeProps<TItem> {
-  defaultSelected?: string;
+  defaultSelected?: string | undefined;
   items: TItem[];
-  searchText?: string;
-  groupBy?: string;
-  openedKeys?: string[];
-  idFieldName?: string;
-  nameFieldName?: string;
-  childFieldName?: string;
+  searchText?: string | undefined;
+  groupBy?: string | undefined;
+  openedKeys?: string[] | undefined;
+  idFieldName?: string | undefined;
+  nameFieldName?: string | undefined;
+  childFieldName?: string | undefined;
   onChange?: (item: TItem) => void;
   isMatch?: (item: TItem, searchText: string) => void;
   setOpenedKeys?: (keys: string[]) => void;
@@ -26,97 +29,105 @@ interface GrouppedObjects<TItem> {
   visibleItems: TItem[];
 }
 
-export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTreeProps<TItem>): React.JSX.Element => {
-  const childFieldName = props.childFieldName ?? 'children';
+export const GrouppedObjectsTree = <TItem extends object = object>(props: IGrouppedObjectsTreeProps<TItem>): React.JSX.Element => {
+  const { items, onGetGroupName, searchText, isMatch, openedKeys = [], defaultSelected = "", idFieldName = "id", setOpenedKeys } = props;
+  const childFieldName = (props.childFieldName ?? 'children') as keyof TItem;
 
-  const getVisible = (items: TItem[], searchText: string): TItem[] => {
+  const getVisible = useCallback((items: TItem[] | undefined, searchText: string = ""): TItem[] => {
     const result: TItem[] = [];
     if (!items)
       return result;
 
     items.forEach((item) => {
-      if (true /* !item.hidden*/) {
-        const childItems = getVisible(item[childFieldName], searchText);
-        const matched =
-          (Array.isArray(childItems) && childItems.length > 0) ||
-          (searchText ?? '') === '' ||
-          (typeof props.isMatch === 'function' ? props.isMatch(item, props.searchText) : false);
+      const child = childFieldName in item && isDefined(item[childFieldName]) && Array.isArray(item[childFieldName])
+        ? item[childFieldName] as TItem[]
+        : undefined;
+      const childItems = getVisible(child, searchText);
+      const matched =
+        (Array.isArray(childItems) && childItems.length > 0) ||
+        searchText === '' ||
+        (typeof isMatch === 'function' ? isMatch(item, searchText) : false);
 
-        if (matched /* || childItems.length > 0*/) {
-          const filteredItem: TItem = { ...item, [childFieldName]: [...childItems] };
-          result.push(filteredItem);
-        }
+      if (matched) {
+        const filteredItem: TItem = { ...item, [childFieldName]: [...childItems] };
+        result.push(filteredItem);
       }
     });
 
     return result;
-  };
+  }, [childFieldName, isMatch]);
 
-  const grouping = (field: string, split: boolean): GrouppedObjects<TItem>[] => {
-    const groups = [] as GrouppedObjects<TItem>[];
-    if (Boolean(props?.items)) {
-      props.items?.forEach((item) => {
-        let name = typeof props.onGetGroupName === 'function' ? props.onGetGroupName(field, item[field]) : "";
-        name = name ? name : split ? getLastSection('.', item[field]) : item[field];
-        name = name ? name : '-';
-        const g = groups.filter((g) => {
-          return g.groupName === name;
-        });
-        if (g.length > 0) {
-          g[0].visibleItems.push(item);
-        } else {
-          groups.push({ groupName: name, visibleItems: [item] });
-        }
+  const grouping = useCallback((field: string, split: boolean): GrouppedObjects<TItem>[] => {
+    const groups: GrouppedObjects<TItem>[] = [];
+
+    const fieldKey = field as keyof TItem;
+    items.forEach((item) => {
+      const fieldValue = fieldKey in item && typeof (item[fieldKey]) === 'string' ? item[fieldKey] : "";
+
+      let name = typeof onGetGroupName === 'function'
+        ? onGetGroupName(field, fieldValue)
+        : "";
+      name = name ? name : split ? getLastSection('.', fieldValue) : fieldValue;
+      name = name ? name : '-';
+      const g = groups.filter((g) => {
+        return g.groupName === name;
       });
-      groups.forEach((group) => {
-        group.visibleItems = getVisible(group.visibleItems, props.searchText);
-      });
-    }
+      if (isNonEmptyArray(g)) {
+        g[0].visibleItems.push(item);
+      } else {
+        groups.push({ groupName: name, visibleItems: [item] });
+      }
+    });
+    groups.forEach((group) => {
+      group.visibleItems = getVisible(group.visibleItems, searchText);
+    });
     return groups.sort((a, b) => {
       return a.groupName === '-' ? 1 : b.groupName === '-' ? -1
         : a.groupName > b.groupName ? 1 : b.groupName > a.groupName ? -1 : 0;
     });
-  };
+  }, [getVisible, items, onGetGroupName, searchText]);
 
-  const onCollapseChange = (key: string | string[]): void => {
-    if (Boolean(props?.setOpenedKeys)) {
-      props.setOpenedKeys(Array.isArray(key) ? key : [key]);
+  const onCollapseChange = useCallback((key: string[]): void => {
+    if (isDefined(setOpenedKeys)) {
+      setOpenedKeys(key);
     }
-  };
+  }, [setOpenedKeys]);
 
   const onChangeHandler = (item: TItem): void => {
-    if (Boolean(props.onChange))
+    if (isDefined(props.onChange))
       props.onChange(item);
   };
 
   const groups = useMemo<GrouppedObjects<TItem>[]>(() => {
-    return Boolean(props?.groupBy) ? grouping(props?.groupBy, false) : [{ groupName: '', visibleItems: getVisible(props?.items, props.searchText) }];
-  }, [props?.items, props.searchText, props.groupBy]);
+    return !isNullOrWhiteSpace(props.groupBy)
+      ? grouping(props.groupBy, false)
+      : [{ groupName: '', visibleItems: getVisible(props.items, props.searchText) }];
+  }, [props.groupBy, props.items, props.searchText, grouping, getVisible]);
 
   useEffect(() => {
-    if (props.defaultSelected) {
-      const g = groups.find((group) => group.visibleItems.find((item) => (props.idFieldName ? item[props.idFieldName] : item['id'])?.toLowerCase() === props.defaultSelected?.toLocaleLowerCase()));
+    if (defaultSelected) {
+      const g = groups.find((group) => group.visibleItems.find((item) => getStringPropertyOrUndefined(item, idFieldName)?.toLowerCase() === defaultSelected.toLocaleLowerCase()));
       if (g) {
-        if (!props.openedKeys.find((key) => key === g.groupName)) {
-          onCollapseChange([...props.openedKeys, g.groupName]);
+        if (!openedKeys.find((key) => key === g.groupName)) {
+          onCollapseChange([...openedKeys, g.groupName]);
         }
       }
     }
-  }, [groups]);
+  }, [defaultSelected, groups, idFieldName, onCollapseChange, openedKeys]);
 
-  const defaultExpandAll = (props.searchText?.length ?? 0) > 1 && groups.length > 0 && groups[0].visibleItems.length <= 6;
+  const defaultExpandAll = !isNullOrWhiteSpace(searchText) && isNonEmptyArray(groups) && groups[0].visibleItems.length <= 6;
 
   return (
     <>
-      {groups.length === 1 && (
+      {isNonEmptyArray(groups) && groups.length === 1 && (
         <div key={groups[0].groupName}>
           <ObjectsTree<TItem>
             items={groups[0].visibleItems}
-            searchText={props?.searchText}
+            searchText={props.searchText}
             defaultExpandAll={defaultExpandAll}
             onChange={onChangeHandler}
             defaultSelected={props.defaultSelected?.toLowerCase()}
-            onRenterItem={props?.onRenterItem}
+            onRenterItem={props.onRenterItem}
             getIcon={groups[0].groupName === '-' ? undefined : props.getIcon}
             getIsLeaf={groups[0].groupName === '-' ? undefined : props.getIsLeaf}
           />
@@ -124,11 +135,11 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
       )}
       {groups.length > 0 && (
         <Collapse
-          activeKey={props?.openedKeys}
+          {...(props.openedKeys ? { activeKey: props.openedKeys } : {})}
           accordion
           onChange={onCollapseChange}
           items={groups.map((ds) => {
-            const defaultExpandAll = props.searchText.length > 1 && ds.visibleItems.length <= 6;
+            const defaultExpandAll = !isNullOrWhiteSpace(props.searchText) && ds.visibleItems.length <= 6;
             return {
               label: <span>{ds.groupName}</span>,
               className: 'sha-toolbox-panel',
@@ -139,11 +150,11 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
                   <div key={ds.groupName}>
                     <ObjectsTree<TItem>
                       items={ds.visibleItems}
-                      searchText={props?.searchText}
+                      searchText={props.searchText}
                       defaultExpandAll={defaultExpandAll}
                       onChange={onChangeHandler}
                       defaultSelected={props.defaultSelected?.toLowerCase()}
-                      onRenterItem={props?.onRenterItem}
+                      onRenterItem={props.onRenterItem}
                       getIcon={ds.groupName === '-' ? undefined : props.getIcon}
                       getIsLeaf={ds.groupName === '-' ? undefined : props.getIsLeaf}
                     />

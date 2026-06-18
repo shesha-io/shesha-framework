@@ -1,81 +1,73 @@
 import { evaluateDynamicFilters } from "@/utils/datatable";
 import { IAnyObject } from "@/interfaces";
-import { ICalendarLayersProps } from "@/providers/layersProvider/models";
+import { ICalendarEvent, ICalendarLayersProps } from "@/providers/layersProvider/models";
 import { UseEvaluatedFilterArgs } from "@/providers/dataTable/filters/evaluateFilter";
 import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { ILayerWithMetadata } from "./interfaces";
 import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
 import { IMatchData } from "@/providers/form/utils";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { getDatePropertyOrUndefined } from "@/utils/object";
+import { getIdOrUndefined } from "@/utils/entity";
+import { buildUrl } from "@/utils";
 
 export const getLayerEventItems = (
   item: ICalendarLayersProps,
-  layerDataItem: { [x: string]: any }[] | { [x: string]: any },
+  layerDataItem: IAnyObject[] | IAnyObject,
 ): ICalendarLayersProps => {
-  let events;
+  let events: ICalendarEvent[] = [];
   const { startTime, endTime, title, icon, iconColor, showIcon, color, onDblClick, onSelect } = item;
 
-  if (Array.isArray(layerDataItem)) {
-    events = layerDataItem
-      .filter((i) => i?.[startTime] && i?.[endTime])
-      .map((j) => {
-        const startDate = new Date(j?.[startTime]);
-        const endDate = new Date(j?.[endTime]);
-        // Skip events with invalid dates
-        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-          return null;
-        }
-        return {
-          ...j,
-          id: j?.id,
-          start: startDate,
-          end: endDate,
-          icon,
-          showIcon,
-          color,
-          iconColor: iconColor || '#000000',
-          titleTemplate: title,
-          onDblClick,
-          onSelect,
-        };
-      })
-      .filter((event) => event !== null);
-  } else {
-    const startDate = new Date(layerDataItem?.[startTime]);
-    const endDate = new Date(layerDataItem?.[endTime]);
-    // Skip events with invalid dates
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-      events = [];
+  if (!isNullOrWhiteSpace(startTime) && !isNullOrWhiteSpace(endTime)) {
+    const tryAddEvent = (item: IAnyObject): void => {
+      const startDate = getDatePropertyOrUndefined(item, startTime);
+      const endDate = getDatePropertyOrUndefined(item, endTime);
+      if (!isDefined(startDate) || !isDefined(endDate))
+        return;
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()))
+        return;
+      const id = getIdOrUndefined(item);
+      if (!isDefined(id))
+        return;
+
+      const event: ICalendarEvent = {
+        ...item,
+        id: id,
+        start: startDate,
+        end: endDate,
+        icon,
+        showIcon,
+        color,
+        iconColor: iconColor || '#000000',
+        title: "",
+        titleTemplate: title,
+        onDblClick,
+        onSelect,
+      };
+      events.push(event);
+    };
+
+    if (Array.isArray(layerDataItem)) {
+      layerDataItem.forEach((item) => {
+        tryAddEvent(item);
+      });
     } else {
-      events = [
-        {
-          ...layerDataItem,
-          id: layerDataItem?.id,
-          start: startDate,
-          end: endDate,
-          icon,
-          showIcon,
-          color,
-          iconColor: iconColor || '#000000',
-          titleTemplate: title,
-          onDblClick,
-          onSelect,
-        },
-      ];
+      tryAddEvent(layerDataItem);
     }
   }
   return { ...item, events };
 };
 
-export const getLayerEventsData = (layers: ICalendarLayersProps[], layerData: Array<{ [x: string]: any } | null>): ICalendarLayersProps[] =>
-  (layers || []).map((item, index): ICalendarLayersProps => {
-    const layerDataItem = (layerData[index] as any[]) || [];
+export const getLayerEventsData = (layers: ICalendarLayersProps[], layerData: Array<IAnyObject[] | null>): ICalendarLayersProps[] =>
+  layers.map((item, index): ICalendarLayersProps => {
+    const layerDataItem = layerData[index] || [];
 
     return getLayerEventItems(item, layerDataItem);
   });
 
-export const getLayerOptions = (layers: ICalendarLayersProps[]): Array<{ label: string; value: string; disabled: boolean }> =>
-  (layers || [])
+export const getLayerOptions = (layers: ICalendarLayersProps[] | undefined): Array<{ label: string; value: string; disabled: boolean }> =>
+  (layers ?? [])
     .filter((item) => item.visible)
     .map((i) => ({
       label: i.label,
@@ -93,7 +85,7 @@ export const getQueryProperties = ({ startTime, endTime, propertyList, title }: 
   }
   if (propertyList) {
     propertyList.forEach((property) => {
-      if (property?.trim()) {
+      if (!isNullOrWhiteSpace(property)) {
         properties.add(property);
       }
     });
@@ -105,52 +97,41 @@ export const getQueryProperties = ({ startTime, endTime, propertyList, title }: 
   return Array.from(properties).join(' ');
 };
 
-export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: string): { path: string; queryParams?: Record<string, any> } => {
+export const getCalendarDataUrl = (param: ICalendarLayersProps, filter: string): string => {
   const { customUrl, dataSource, entityType, overfetch } = param;
 
   if (dataSource === 'custom') {
-    return {
-      path: customUrl,
-    };
+    if (isNullOrWhiteSpace(customUrl))
+      throw new Error('customUrl is required for custom data source');
+    return customUrl;
   }
 
-  return {
-    path: `/api/services/app/Entities/GetAll`,
-    queryParams: {
-      ...getEntityTypeIdentifierQueryParams(entityType ?? ''),
-      properties: overfetch ? getQueryProperties(param) : null,
-      maxResultCount: 100,
-      filter,
-    },
-  };
+  return buildUrl("/api/services/app/Entities/GetAll", {
+    ...getEntityTypeIdentifierQueryParams(entityType ?? ''),
+    properties: overfetch ? getQueryProperties(param) : null,
+    maxResultCount: 100,
+    filter,
+  });
 };
 
 export const getLayerEvents = (
   layerEvents: ICalendarLayersProps[],
   checked: string[],
-): any[] => {
+): ICalendarEvent[] => {
   return checked
     .map((item) => {
       const found = layerEvents.find(({ id }) => id === item);
       // Map each event to include the layer's properties
-      return found?.events?.map((event) => ({
+      return found?.events?.map<ICalendarEvent>((event) => ({
         ...event,
         color: event.color ?? found.color,
         icon: event.icon ?? found.icon,
         showIcon: event.showIcon ?? found.showIcon,
         iconColor: event.iconColor ?? found.iconColor,
-      })) as any[];
+      }));
     })
-    .filter((i) => i)
-    .reduce((prev, curr) => [...(prev || []), ...(curr || [])], []);
-};
-
-export const getResponseListToState = (res: Array<{ [key in string]: any } | null>): any[] =>
-  res.map((res) => res === null ? null : (res?.result?.items ? res.result.items : res?.result));
-
-export const addPx = (value: string): string => {
-  value = value ?? "100%";
-  return /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
+    .filter(isDefined)
+    .reduce((prev, curr) => [...prev, ...curr], []);
 };
 
 export const evaluateFilterAsync = async (args: UseEvaluatedFilterArgs): Promise<string> => {
@@ -184,9 +165,9 @@ export const evaluateFilters = async (
   item: ILayerWithMetadata,
   formData: object,
   globalState: IAnyObject,
-  propertyMetadataAccessor: NestedPropertyMetadatAccessor,
+  propertyMetadataAccessor: NestedPropertyMetadatAccessor | undefined,
 ): Promise<string> => {
-  if (!item.filters) return '';
+  if (!isDefined(item.filters)) return '';
 
   const evaluatedFilters = await evaluateFilterAsync({
     filter: item.filters,

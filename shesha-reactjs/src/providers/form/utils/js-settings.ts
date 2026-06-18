@@ -2,7 +2,7 @@ import { isPropertySettings } from '@/designer-components/_settings/utils/utils'
 import {
   IPropertySetting,
 } from '@/interfaces';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { unproxyValue } from '@/utils/object';
 import {
   EditMode,
@@ -26,7 +26,7 @@ const getSettingValue = <TValue = unknown>(
 
   let result: TValue = value;
 
-  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
+  if (!isDefined(unproxiedValue) || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
     result = value;
   else if (typeof unproxiedValue === 'object' &&
     processed.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
@@ -45,7 +45,7 @@ const getSettingValue = <TValue = unknown>(
       // update setting value to actual but only if not lazy
       if (isPropertySettings(unproxiedValue) && unproxiedValue._lazy !== true) {
         const v = unproxiedValue._mode === 'code'
-          ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
+          ? !isNullOrWhiteSpace(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
           : unproxiedValue._value;
         const upv = unproxyValue(v);
         processed.push(upv);
@@ -85,7 +85,7 @@ const calcValue = <TValue>(setting: IPropertySetting, allData: object): TValue |
       casted.staticValue = setting._value;
       casted.getSettingValue = getSettingValueInScript;
     }
-    return setting._code
+    return !isNullOrWhiteSpace(setting._code)
       ? executeScriptSync(setting._code, allData)
       : undefined;
   } catch (error) {

@@ -1,7 +1,9 @@
 import { PropTypes } from 'react-places-autocomplete';
 import { IEntityReferenceDto, IStyleType } from '@/interfaces';
-import { IAddressCompomentProps } from './models';
+import { IAddressCompomentBaseProps } from './models';
 import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
+import { isDefined } from '@/utils/nullables';
+import { getDisplayNameOrUndefined } from '@/utils/object';
 
 export const EXPOSED_VARIABLES = [
   {
@@ -67,15 +69,15 @@ export const EXPOSED_VARIABLES = [
   },
 ];
 
-export const getAddressValue = (value: string | IEntityReferenceDto): string => {
-  if (!value) return '';
+export const getAddressValue = (value: string | IEntityReferenceDto | undefined): string => {
+  if (!isDefined(value)) return '';
 
-  if (typeof value !== 'string' && value?.id) return value?._displayName;
-
-  return value as string;
+  return typeof value === "string"
+    ? value
+    : getDisplayNameOrUndefined(value) ?? "";
 };
 
-export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['searchOptions'] => {
+export const getSearchOptions = (model: IAddressCompomentBaseProps): PropTypes['searchOptions'] => {
   const {
     countryRestriction,
     latPriority: lat,
@@ -83,7 +85,7 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
     radiusPriority: radius,
     showPriorityBounds,
   } = model;
-  let result = {} as PropTypes['searchOptions'];
+  let result: PropTypes['searchOptions'] = {};
 
   const countries = (Array.isArray(countryRestriction)
     ? countryRestriction
@@ -93,7 +95,7 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
   if (countries.length) {
     const countryCodes = countries.map((countryLabel) => {
       const foundCountry = COUNTRY_CODES.find((item) => item.value === countryLabel);
-      return foundCountry ? foundCountry.code : countryLabel;
+      return foundCountry ? foundCountry.code : countryLabel ?? "";
     });
     result = { componentRestrictions: { country: countryCodes } };
   }
@@ -107,7 +109,7 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
   return result;
 };
 
-export const loadGooglePlaces = (googleMapsApiKey: string, callback: Function): void => {
+export const loadGooglePlaces = (googleMapsApiKey: string, callback: ((args: boolean) => void) | undefined): void => {
   const existingScript = document.getElementById("googlePlacesScript");
   if (!existingScript) {
     const script = document.createElement("script");

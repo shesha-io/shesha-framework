@@ -5,8 +5,9 @@ import { migrateDynamicExpression } from '@/designer-components/_common-migratio
 import { IToolboxComponent } from '@/interfaces';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
-import { IListComponentProps } from './models';
-import { ListControlSettings } from './settingsv2';
+import { IListComponentProps, IListItemsProps } from './models';
+import { getBooleanPropertyOrUndefined, getNumberPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
+import { ButtonGroupItemProps } from '@/providers';
 
 /** @deprecated: Use DataListComponent instead */
 const ListComponent: IToolboxComponent<IListComponentProps> = {
@@ -16,9 +17,6 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
   icon: <OrderedListOutlined />,
   isHidden: false /* Use DataList instead */,
   Factory: () => 'Component deprecated. Use DataListComponent instead.',
-  settingsFormFactory: ({ model, onSave, onCancel }) => {
-    return <ListControlSettings readOnly={true} model={model} onSave={onSave as any} onCancel={onCancel} />;
-  },
   migrator: (m) =>
     m
       .add<IListComponentProps>(0, (prev) => {
@@ -26,17 +24,19 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
 
         const customProps: IListComponentProps = {
           ...prev,
-          name: prev['name'],
-          showPagination: prev['showPagination'] ?? true,
-          hideLabel: prev['hideLabel'] ?? true,
-          uniqueStateId: prev['uniqueStateId'] ?? uniqueStateId,
+          name: getStringPropertyOrUndefined(prev, "name") ?? "",
+          showPagination: getBooleanPropertyOrUndefined(prev, "showPagination") ?? true,
+          hideLabel: getBooleanPropertyOrUndefined(prev, "hideLabel") ?? true,
+          uniqueStateId: getStringPropertyOrUndefined(prev, "uniqueStateId") ?? uniqueStateId,
           submitHttpVerb: 'POST',
-          labelCol: prev['labelCol'] ?? 8,
-          wrapperCol: prev['wrapperCol'] ?? 16,
-          selectionMode: prev['selectionMode'] ?? 'single',
-          deleteConfirmMessage: prev['deleteConfirmMessage'] ?? `return '';`,
+          labelCol: getNumberPropertyOrUndefined(prev, "labelCol") ?? 8,
+          wrapperCol: getNumberPropertyOrUndefined(prev, "wrapperCol") ?? 16,
+          selectionMode: "selectionMode" in prev && typeof (prev.selectionMode) === "string" && ['none', 'single', 'multiple'].includes(prev.selectionMode)
+            ? prev.selectionMode as IListItemsProps["selectionMode"]
+            : 'single',
+          deleteConfirmMessage: getStringPropertyOrUndefined(prev, 'deleteConfirmMessage') ?? `return '';`,
           totalRecords: 100,
-          buttons: prev['buttons'] ?? [
+          buttons: ("buttons" in prev ? prev['buttons'] as ButtonGroupItemProps[] : undefined) ?? [
             {
               id: nanoid(),
               itemType: 'item',
@@ -44,11 +44,6 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
               name: 'button1',
               label: ' ',
               itemSubType: 'button',
-              uniqueStateId,
-              buttonAction: 'dispatchAnEvent',
-              eventName: 'refreshListItems',
-              chosen: false,
-              selected: false,
               icon: 'ReloadOutlined',
               buttonType: 'link',
             },
@@ -61,11 +56,12 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
       .add<IListComponentProps>(2, migrateV1toV2)
       .add<IListComponentProps>(3, (prev) => {
         const result = { ...prev };
-        const useExpression = Boolean(result['useExpression']);
-        delete result['useExpression'];
+        const useExpression = getBooleanPropertyOrUndefined(result, "useExpression");
+        if ("useExpression" in result)
+          delete result['useExpression'];
 
         if (useExpression) {
-          const migratedExpression = migrateDynamicExpression(prev.filters);
+          const migratedExpression = prev.filters ? migrateDynamicExpression(prev.filters) : undefined;
           result.filters = migratedExpression;
         }
 

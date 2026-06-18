@@ -2,6 +2,7 @@ import camelcase from 'camelcase';
 import React, {
   CSSProperties,
   FC,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -21,6 +22,8 @@ import {
 import { Select, SelectProps, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useQueryBuilder } from '@/providers';
+import { isNonEmptyArray } from '@/utils/array';
+import { DefaultOptionType } from 'antd/es/select';
 
 type PropertyPredicate = (property: IPropertyItem) => boolean;
 
@@ -32,8 +35,8 @@ export interface IPropertySelectProps {
   size?: SizeType;
   placeholder?: string;
   variant?: SelectProps['variant'];
-  onChange?: (value: string) => void;
-  onSelect?: (value: string, selectedProperty: IPropertyItem) => void;
+  onChange?: (value: string | null) => void;
+  onSelect?: (value: string, selectedProperty: IPropertyItem | undefined) => void;
   readOnly?: boolean;
   isPropertyVisible?: PropertyPredicate;
   isPropertySelectable?: PropertyPredicate;
@@ -45,10 +48,9 @@ export interface IQbItem {
   items?: IQbItem[];
 }
 
-interface IOption {
+interface IOption extends DefaultOptionType {
   value: string;
   label: string | React.ReactNode;
-  disabled?: boolean;
 }
 
 interface IAutocompleteState {
@@ -90,7 +92,7 @@ const getOptionTitle = (option: IOption | undefined): string | undefined => {
     : option.value;
 };
 
-const getFullPath = (path: string, prefix: string): string => {
+const getFullPath = (path: string, prefix: string | null): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
@@ -115,10 +117,10 @@ export const getPropertyItemIdentifier = (item: IPropertyItem, prefix: string): 
   if (isSpecification(item))
     return item.name;
 
-  return null;
+  return "";
 };
 
-const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: PropertyPredicate): IOption => {
+const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: PropertyPredicate | undefined): IOption => {
   if (isSpecification(item)) {
     const value = item.name;
     const label = (
@@ -150,14 +152,14 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
     return {
       value: value,
       label: label,
-      disabled: isSelectable ? !isSelectable(item) : undefined,
+      disabled: isSelectable ? !isSelectable(item) : false,
     };
   }
 
   throw new Error('Unknown type of item');
 };
 
-const propertyItems2options = (properties: IPropertyItem[], prefix: string, isSelectable: PropertyPredicate): IOption[] => {
+const propertyItems2options = (properties: IPropertyItem[], prefix: string, isSelectable: PropertyPredicate | undefined): IOption[] => {
   return properties.filter((p) => !(p.itemType === 'property' && (p as IPropertyMetadata).dataType === DataTypes.array)).map((p) => propertyItem2option(p, prefix, isSelectable));
 };
 
@@ -170,7 +172,7 @@ const modelMetadata2Properties = (modelMetadata: IModelMetadata | undefined): IP
     : [];
 
   const specifications = isEntityMetadata(modelMetadata)
-    ? (modelMetadata.specifications ?? []).map<IPropertyItem>((p) => ({ ...p, itemType: 'specification' }))
+    ? modelMetadata.specifications.map<IPropertyItem>((p) => ({ ...p, itemType: 'specification' }))
     : [];
 
   return [...properties, ...specifications];
@@ -179,9 +181,9 @@ const modelMetadata2Properties = (modelMetadata: IModelMetadata | undefined): IP
 export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isPropertySelectable, isPropertyVisible, ...props }) => {
   const { fetchContainer } = useQueryBuilder();
 
-  const initialProperties = [];
+  const initialProperties: IPropertyItem[] = [];
 
-  const [state, setState] = useState<IAutocompleteState>({ options: propertyItems2options(initialProperties, null, isPropertySelectable), propertyItems: initialProperties, prefix: null });
+  const [state, setState] = useState<IAutocompleteState>({ options: propertyItems2options(initialProperties, "", isPropertySelectable), propertyItems: initialProperties, prefix: "" });
 
   const setProperties = (properties: IPropertyItem[], prefix: string): void => {
     const filteredProperties = isPropertyVisible
@@ -195,30 +197,30 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     });
   };
 
-  const getPrefixFromString = (value: string): string | null => {
+  const getPrefixFromString = useCallback((value: string): string => {
     if (!value)
-      return null;
+      return "";
 
     const lastIdx = value.lastIndexOf('.');
 
-    if (state.propertyItems && state.propertyItems.length > 0 && lastIdx > -1) {
+    if (isNonEmptyArray(state.propertyItems) && lastIdx > -1) {
       // Check specifications, specification name may contain namespace and it shouldn't be recognized as a container
       const spec = state.propertyItems.find((s) => isSpecification(s) && s.name === value);
       if (spec)
-        return null;
+        return "";
     }
 
     return lastIdx === -1
-      ? null
+      ? ""
       : value.substring(0, lastIdx);
-  };
+  }, [state.propertyItems]);
 
   const containerPath = useMemo(() => {
     if (!props.value || Array.isArray(props.value))
-      return null;
+      return "";
 
     return getPrefixFromString(props.value);
-  }, [props.value]);
+  }, [getPrefixFromString, props.value]);
 
   const isFirstLoading = useRef<boolean>(true);
   useEffect(() => {
@@ -230,17 +232,18 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
 
     if (firstLoad || containerPath !== state.prefix) {
       // fetch container if changed
-      fetchContainer(containerPath).then((m) => {
-        const propertyItems = modelMetadata2Properties(m);
+      fetchContainer(containerPath).then((containerMeta) => {
+        const propertyItems = modelMetadata2Properties(containerMeta ?? undefined);
         setProperties(propertyItems, containerPath);
       }).catch((error) => {
         console.error('Failed to fetch container', error);
         throw error;
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerPath]);
 
-  const getPropertyItem = (path: string): IPropertyItem => {
+  const getPropertyItem = (path: string): IPropertyItem | undefined => {
     return state.propertyItems.find((p) => getPropertyItemIdentifier(p, containerPath) === path);
   };
 
@@ -259,7 +262,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
         ? getFullPath((p as IPropertyMetadata).path, containerPath)
         : (p as ISpecification).friendlyName;
 
-      if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase())) {
+      if (fullPath.toLowerCase().startsWith(data.toLowerCase())) {
         const option = propertyItem2option(p, containerPath, isPropertySelectable);
         filteredOptions.push(option);
       }
@@ -282,10 +285,10 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
   const title = getOptionTitle(selectedOption) ?? props.value ?? props.placeholder;
 
   return (
-    <Select
+    <Select<string>
       title={title}
       onSelect={onSelect}
-      value={props.value}
+      value={props.value ?? null}
       showSearch={{
         onSearch: onSearch,
       }}
@@ -293,8 +296,8 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
       disabled={readOnly}
       options={state.options}
       style={{ minWidth: "150px", ...props.style }}
-      styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
-      variant={props.variant}
+      {...(props.dropdownStyle ? { styles: { popup: { root: props.dropdownStyle } } } : {})}
+      {...(props.variant ? { variant: props.variant } : {})}
       popupMatchSelectWidth={false}
       allowClear
       onClear={onClear}

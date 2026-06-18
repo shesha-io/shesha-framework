@@ -14,9 +14,10 @@ import { ISettingsInputProps } from '../settingsInput/interfaces';
 export const isSettingsInputRow = (component: IConfigurableFormComponent): component is ISettingsInputRowProps => isDefined(component) && component.type === 'settingsInputRow';
 
 type UnwrappedInputRowProps = UnwrapCodeEvaluators<IInputRowProps>;
-type IInputRowInputProps = UnwrapCodeEvaluators<IInputRowProps['inputs'][number]> & {
-  parentReadOnly?: boolean;
-  formData: object;
+
+type IInputRowInputProps = UnwrapCodeEvaluators<ISettingsInputProps> & {
+  parentReadOnly?: boolean | undefined;
+  formData: object | undefined;
 };
 
 const InputRowInput = (props: IInputRowInputProps): React.JSX.Element => {
@@ -44,8 +45,16 @@ export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, childre
   const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
   return isHidden ? null : (
     <div className={inline ? styles.inlineInputs : styles.rowInputs}>
-      {inputs?.map((props: UnwrapCodeEvaluators<ISettingsInputProps>, i) => {
-        return <InputRowInput key={props.id ?? props.propertyName ?? i} {...props} parentReadOnly={readOnly} formData={formData} />;
+      {inputs?.map((props) => {
+        return (
+          <InputRowInput
+            key={props.id ?? props.propertyName}
+            {...props}
+            readOnly={props.readOnly}
+            parentReadOnly={readOnly}
+            formData={formData}
+          />
+        );
       })}
       {children}
     </div>

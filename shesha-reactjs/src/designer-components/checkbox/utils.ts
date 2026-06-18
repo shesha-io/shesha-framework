@@ -25,8 +25,6 @@ export const defaultStyles = (prev: ICheckboxComponentProps & IInputStyles): ISt
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
-      storedFile: { id: null },
-      uploadFile: null,
     },
     font: {
       color: '',

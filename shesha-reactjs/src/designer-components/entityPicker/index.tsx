@@ -3,12 +3,12 @@ import React, { CSSProperties, useCallback, useMemo } from 'react';
 import { EntityPicker } from '@/components/entityPicker';
 import { ValidationErrors } from '@/components/validationErrors';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
-import { IStoredFilter, IToolboxComponent } from '@/interfaces';
+import { FilterExpression, IEntityReferenceDto, IStoredFilter, IToolboxComponent } from '@/interfaces';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { ButtonGroupItemProps, IStyleType, useMetadataDispatcher } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
-import { executeExpression, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeExpression, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -16,41 +16,46 @@ import { IEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityRefere
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { customOnChangeValueEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getValueByPropertyName } from '@/utils/object';
+import { getBooleanPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isEntityReferenceId } from '@/utils';
+import { getIdOrUndefined } from '@/utils/entity';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
-  placeholder?: string;
+  placeholder?: string | undefined;
   items: IConfigurableColumnsProps[];
-  hideBorder?: boolean;
-  valueFormat?: 'simple' | 'entityReference' | 'custom';
-  incomeCustomJs?: string;
-  outcomeCustomJs?: string;
-  mode?: 'single' | 'multiple' | 'tags';
+  hideBorder?: boolean | undefined;
+  valueFormat?: 'simple' | 'entityReference' | 'custom' | undefined;
+  incomeCustomJs?: string | undefined;
+  outcomeCustomJs?: string | undefined;
+  mode?: 'single' | 'multiple' | 'tags' | undefined;
   entityType: string | IEntityTypeIdentifier;
-  filters?: object;
-  title?: string;
-  displayEntityKey?: string;
-  allowNewRecord?: boolean;
-  modalFormId?: FormIdentifier;
-  modalTitle?: string;
-  showModalFooter?: boolean;
-  modalWidth?: number | string | 'custom';
-  customWidth?: number;
-  widthUnits?: string;
-  buttons?: ButtonGroupItemProps[];
-  footerButtons?: ModalFooterButtons;
-  dividerWidth?: string;
-  dividerStyle?: CSSProperties['borderLeftStyle'];
-  dividerColor?: string;
+  filters?: FilterExpression | undefined;
+  title?: string | undefined;
+  displayEntityKey?: string | undefined;
+  allowNewRecord?: boolean | undefined;
+  modalFormId?: FormIdentifier | undefined;
+  modalTitle?: string | undefined;
+  showModalFooter?: boolean | undefined;
+  modalWidth?: number | string | 'custom' | undefined;
+  customWidth?: number | undefined;
+  widthUnits?: string | undefined;
+  buttons?: ButtonGroupItemProps[] | undefined;
+  footerButtons?: ModalFooterButtons | undefined;
+  dividerWidth?: string | undefined;
+  dividerStyle?: CSSProperties['borderLeftStyle'] | undefined;
+  dividerColor?: string | undefined;
 }
+
+type EntityPickerValueType = string | string[] | IEntityReferenceDto | IEntityReferenceDto[];
 
 const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   type: 'entityPicker',
@@ -61,9 +66,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.entityReference ||
-    (dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),
+    (dataType === DataTypes.array && !isNullOrWhiteSpace(dataFormat) && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),
   Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
     const { getMetadata } = useMetadataDispatcher();
 
     const metadata = useAsyncMemo(async () => {
@@ -78,7 +82,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       return [
         {
           defaultSelected: true,
-          expression: { ...filters },
+          expression: filters,
           id: 'uZ4sjEhzO7joxO6kUvwdb',
           name: 'entity Picker',
           selected: true,
@@ -87,48 +91,52 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ];
     }, [filters]);
 
-    const incomeValueFunc: IncomeValueFunc = useCallback((value: any, args: any) => {
+    const incomeValueFunc: IncomeValueFunc = useCallback((value, args) => {
       if (model.valueFormat === 'entityReference') {
-        return !!value ? value.id : null;
-      }
-      if (model.valueFormat === 'custom') {
-        return executeExpression<string>(model.incomeCustomJs, { ...args, value }, null, null);
-      }
-      return value;
-    }, [model.valueFormat, model.incomeCustomJs]);
-
-    const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
-      if (model.valueFormat === 'entityReference') {
-        return !!value
-          ? { id: value.id, _displayName: getValueByPropertyName(value, displayEntityKey) ?? value._displayName, _className: value._className ?? metadata?.fullClassName }
+        return isDefined(value) && isEntityReferenceId(value)
+          ? value.id
           : null;
       }
       if (model.valueFormat === 'custom') {
-        return executeExpression(model.outcomeCustomJs, { ...args, value }, null, null);
+        if (isNullOrWhiteSpace(model.incomeCustomJs))
+          throw new Error('Custom income expression is empty');
+        return executeExpression<string | null>(model.incomeCustomJs, { ...args, value }, null);
       }
-      return !!value ? value.id : null;
+      return typeof (value) === 'string'
+        ? value
+        : isEntityReferenceId(value)
+          ? value.id
+          : null;
+    }, [model.valueFormat, model.incomeCustomJs]);
+
+    const outcomeValueFunc: OutcomeValueFunc = useCallback((value, args) => {
+      if (model.valueFormat === 'entityReference') {
+        return isDefined(value) && isEntityReferenceId(value) && !isNullOrWhiteSpace(value.id)
+          ? { id: value.id, _displayName: getStringPropertyOrUndefined(value, displayEntityKey) ?? "", _className: value._className ?? metadata?.fullClassName ?? "" } satisfies IEntityReferenceDto
+          : undefined;
+      }
+      if (model.valueFormat === 'custom') {
+        if (isNullOrWhiteSpace(model.outcomeCustomJs))
+          throw new Error('Custom outcome expression is empty');
+        return executeExpression<string | IEntityReferenceDto | undefined>(model.outcomeCustomJs, { ...args, value }, undefined) ?? undefined;
+      }
+      return getIdOrUndefined(value);
     }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, metadata]);
 
-    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    if (model.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
 
     const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle;
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
-          const customEvent = customOnChangeValueEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]): void => {
-            customEvent.onChange(args[0]);
-            if (typeof onChange === 'function')
-              onChange(...args);
-          };
+      <ConfigurableFormItem<EntityPickerValueType> model={model}>
+        {(value, onChange, _, ctx) => {
           return (
             <EntityPicker
               incomeValueFunc={incomeValueFunc}
@@ -152,11 +160,14 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
                   footerButtons: model.footerButtons,
                 }
                 : undefined}
-              name={model?.componentName}
+              name={model.componentName}
               width={width}
-              configurableColumns={model.items ?? []}
-              value={value}
-              onChange={onChangeInternal}
+              configurableColumns={model.items}
+              value={value ?? undefined}
+              onChange={(newValue) => {
+                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                onChange(newValue);
+              }}
               size={model.size}
               dividerStyle={model.border?.border?.middle}
             />
@@ -169,9 +180,11 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     .add<IEntityPickerComponentProps>(0, (prev) => {
       return {
         ...prev,
-        items: prev['items'] ?? [],
-        mode: prev['mode'] ?? 'single',
-        entityType: prev['entityType'],
+        items: 'items' in prev && Array.isArray(prev.items) ? prev.items as IConfigurableColumnsProps[] : [],
+        mode: "mode" in prev && typeof (prev.mode) === "string" && ['single', 'multiple', 'tags'].includes(prev.mode)
+          ? prev.mode as IEntityPickerComponentProps['mode']
+          : 'single',
+        entityType: "entityType" in prev && typeof (prev.entityType) === "string" ? prev.entityType : "",
       };
     })
     .add<IEntityPickerComponentProps>(1, migrateV0toV1)
@@ -180,12 +193,14 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     })
     .add<IEntityPickerComponentProps>(3, (prev) => {
       const result = { ...prev };
-      const useExpression = Boolean(result['useExpression']);
-      delete result['useExpression'];
+      if ("useExpression" in result) {
+        const useExpression = Boolean(result.useExpression);
+        delete result['useExpression'];
 
-      if (useExpression) {
-        const migratedExpression = migrateDynamicExpression(prev.filters);
-        result.filters = migratedExpression;
+        if (useExpression && "filters" in result && (typeof result.filters === "string" || typeof result.filters === "object")) {
+          const migratedExpression = migrateDynamicExpression(result.filters);
+          result.filters = migratedExpression;
+        }
       }
 
       return result;
@@ -198,7 +213,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       valueFormat: prev.valueFormat ??
         context.isNew
         ? 'simple'
-        : prev['useRawValue'] === true
+        : getBooleanPropertyOrUndefined(prev, "useRawValue") === true
           ? 'simple'
           : 'entityReference',
     }))
@@ -224,17 +239,17 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     return {
       ...model,
       mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
-      entityType: isEntityReferencePropertyMetadata(propMetadata)
+      entityType: isEntityReferencePropertyMetadata(propMetadata) && !isNullOrWhiteSpace(propMetadata.entityType)
         ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
-        : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? { name: propMetadata.itemsType?.entityType, module: propMetadata.itemsType?.entityModule ?? null }
-          : undefined,
+        : isEntityReferenceArrayPropertyMetadata(propMetadata) && isDefined(propMetadata.itemsType) && !isNullOrWhiteSpace(propMetadata.itemsType.entityType)
+          ? { name: propMetadata.itemsType.entityType, module: propMetadata.itemsType.entityModule ?? null }
+          : "",
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
         : 'simple',
       filters: isHasFilter(propMetadata.formatting)
-        ? { ...propMetadata.formatting?.filter }
-        : null,
+        ? { ...propMetadata.formatting.filter }
+        : undefined,
     };
   },
   getFieldsToFetch: (propertyName, rawModel) => {

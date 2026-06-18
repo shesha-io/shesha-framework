@@ -7,7 +7,7 @@ export interface IDynamicPageProps {
   /**
    * Form name.
    */
-  formId?: FormFullName;
+  formId: FormFullName;
 
   /**
    * Entity id. This should not be confused with the form id

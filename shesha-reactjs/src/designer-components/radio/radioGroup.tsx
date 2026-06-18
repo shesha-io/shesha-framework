@@ -8,16 +8,17 @@ import { ILabelValue } from '../dropdown/model';
 import { executeScriptSync } from '@/providers/form/utils';
 import { IRadioProps } from './interfaces';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
+import { isDefined } from '@/utils/nullables';
 
 type RawOptionsPayload = ILabelValue<unknown>[] | { items: ILabelValue<unknown>[] };
 type FetchResponse = IAjaxResponse<RawOptionsPayload> | RawOptionsPayload;
 
 const RadioGroup: FC<IRadioProps> = (model) => {
-  const { referenceListId, items = [], value, onChange } = model;
+  const { referenceListId, items = [], value } = model;
   const { data: refListItems } = useReferenceList(referenceListId);
 
   //#region Data source is url
-  const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl, lazy: true });
+  const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl ?? "", lazy: true });
 
   useEffect(() => {
     if (model.dataSourceType === 'url' && model.dataSourceUrl) {
@@ -35,7 +36,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       const response = data as IAjaxResponse<RawOptionsPayload>;
       if (isAjaxSuccessResponse(response)) {
         const result = response.result;
-        if (result && !Array.isArray(result) && typeof result === 'object' && 'configuration' in result) {
+        if (isDefined(result) && !Array.isArray(result) && typeof result === 'object' && 'configuration' in result) {
           const config = (result as { configuration?: { items?: ILabelValue<unknown>[] } }).configuration;
           if (config?.items && Array.isArray(config.items)) return config.items;
         }
@@ -67,23 +68,26 @@ const RadioGroup: FC<IRadioProps> = (model) => {
   //#endregion
 
   const options = useMemo(
-    () => getDataSourceList(model.dataSourceType, items, refListItems?.items, reducedData) || [],
+    () => getDataSourceList(model.dataSourceType, items, refListItems?.items, reducedData),
     [model.dataSourceType, items, refListItems?.items, reducedData],
   );
 
   const renderCheckGroup = (): ReactElement => (
     <Radio.Group
       className="sha-radio-group"
-      disabled={model.readOnly}
+      disabled={model.readOnly === true}
       value={value != null ? `${value}` : undefined}
-      onBlur={model.onBlur}
-      onFocus={model.onFocus}
-      onChange={onChange}
-      style={model.style}
+      {...(model.onBlur ? { onBlur: model.onBlur } : {})}
+      {...(model.onFocus ? { onFocus: model.onFocus } : {})}
+      {...(model.onChange ? { onChange: model.onChange } : {})}
+      {...(model.style ? { style: model.style } : {})}
     >
-      <Space orientation={model.direction} style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}>
-        {options?.map((checkItem, index) => (
-          <Radio key={index} value={`${checkItem.value}`} disabled={model.readOnly}>
+      <Space
+        {...(model.direction ? { orientation: model.direction } : {})}
+        style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
+      >
+        {options.map((checkItem, index) => (
+          <Radio key={index} value={`${checkItem.value}`} disabled={model.readOnly === true}>
             {checkItem.label}
           </Radio>
         ))}

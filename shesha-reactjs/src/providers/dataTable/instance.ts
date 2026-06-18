@@ -1,7 +1,7 @@
 import { DatatableInitArgs, IDatasetInstance } from "./models";
-import { Row, SortingRule } from "react-table";
+import { SortingRule } from "react-table";
 import { IConfigurableColumnsProps, isActionColumnProps, isCrudOperationsColumnProps, isDataColumnProps, isFormColumnProps, isRendererColumnProps } from "../datatableColumnsConfigurator/models";
-import { DataFetchDependencies, DatasetEvents, DataTableColumnDto, DragState, FilterExpression, IColumnWidth, IGetListDataPayload, ISelectionProps, isTableRowData, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFormColumn, ITableRendererColumn } from "./interfaces";
+import { DataFetchDependencies, DatasetEvents, DataTableColumnDto, DragState, FilterExpression, IColumnWidth, IGetListDataPayload, ISelectionProps, isTableRowData, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFormColumn, ITableRendererColumn, RowSelection } from "./interfaces";
 import { IndexColumnFilterOption, ColumnFilter, ITableRowData, IStoredFilter, ISortingItem, ITableFilter, DataFetchDependency } from "./interfaces";
 import { IRepository } from "./repository/interfaces";
 import { IDataTableStateContext } from "./interfaces.state";
@@ -67,6 +67,8 @@ export class DatasetInstance implements IDatasetInstance {
 
   updateRepository = (repository: IRepository): void => {
     this.repository = repository;
+    if (repository.entityType !== this.state.modelType)
+      this.updateState((prev) => ({ ...prev, modelType: repository.entityType }));
   };
 
   subscribe: SubscribeFunc<DatasetEvents, IDatasetInstance> = (type, callback) => {
@@ -525,7 +527,7 @@ export class DatasetInstance implements IDatasetInstance {
       this.updateState((state) => ({ ...state, predefinedFilters }));
   };
 
-  setPermanentFilter = (filter: IStoredFilter): void => {
+  setPermanentFilter = (filter: FilterExpression | undefined): void => {
     this.updateState((state) => ({ ...state, permanentFilter: filter }));
   };
 
@@ -705,7 +707,7 @@ export class DatasetInstance implements IDatasetInstance {
     });
   };
 
-  setMultiSelectedRow = (payload: Row<ITableRowData>[] | Row<ITableRowData>): void => {
+  setMultiSelectedRow = (payload: RowSelection<ITableRowData>[] | RowSelection<ITableRowData>): void => {
     this.updateState((state) => {
       const { selectedRows: rows = [] } = state; // Ensure rows is always an array
       let selectedRows: ITableRowData[];

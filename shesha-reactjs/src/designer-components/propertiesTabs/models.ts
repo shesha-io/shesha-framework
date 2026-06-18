@@ -1,6 +1,6 @@
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { EditMode, IConfigurableFormComponent } from '@/interfaces';
+import { EditMode, IConfigurableFormComponent, IPropertySetting } from '@/interfaces';
 import { TabPlacement } from 'antd/es/tabs';
 
 export interface ITabPaneProps
@@ -9,7 +9,7 @@ export interface ITabPaneProps
   icon?: string;
   key: string;
   title: string;
-  hidden?: boolean;
+  hidden?: boolean | IPropertySetting<boolean> | undefined;
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: ITabPaneProps[];
@@ -24,9 +24,9 @@ export interface ITabPaneProps
 
 export interface IPropertiesTabsComponentProps extends IConfigurableFormComponent {
   tabs: ITabPaneProps[];
-  size?: SizeType;
-  tabType?: 'line' | 'card';
-  hidden?: boolean;
-  customVisibility?: string;
-  position?: TabPlacement;
+  size?: SizeType | undefined;
+  tabType?: 'line' | 'card' | undefined;
+  hidden?: boolean | undefined;
+  customVisibility?: string | undefined;
+  position?: TabPlacement | undefined;
 }

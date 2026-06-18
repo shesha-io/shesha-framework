@@ -11,8 +11,8 @@ export const ButtonWrapper: FCUnwrapped<IButtonSettingsInputProps> = (props) => 
   return (
     <Button
       icon={!value ? <Icon icon={icon} hint={tooltip} className={styles.icon} /> : <Icon icon={iconAlt || icon} hint={tooltipAlt || tooltip} className={styles.icon} />}
-      onClick={() => onChange(!value)}
-      disabled={readOnly}
+      onClick={() => onChange?.(!value)}
+      disabled={readOnly ?? false}
 
       style={{ maxWidth: "100%" }}
       type={value === true ? 'primary' : 'default'}

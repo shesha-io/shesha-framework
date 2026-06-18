@@ -47,7 +47,7 @@ import { SectionSeparatorWrapper } from "./sectionSeparator";
 import { UnwrapCodeEvaluators } from "@/providers/form/models";
 
 
-type InputType = ISettingsInputProps['type'];
+type InputType = Exclude<ISettingsInputProps['type'], undefined | "settingsInput">;
 
 export type EditorComponent = FC<ISettingsInputProps>;
 
@@ -94,7 +94,7 @@ export const editorRegistry: EditorDictionary = {
   date: DateWrapper,
   layerSelectorSettingsModal: LayerSelectorSettingsModalWrapper,
   // TODO: check usages and remove or implement wrapper
-  settingsInput: undefined,
+  // settingsInput: undefined,
   endpointsAutocomplete: EndpointsAutocompleteWrapper,
   propertyAutocomplete: PropertyAutocompleteWrapper,
   referenceListAutocomplete: ReferenceListAutocompleteWrapper,

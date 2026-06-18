@@ -11,12 +11,12 @@ export interface IModelError {
 }
 
 export interface IModelValidation {
-  componentId?: string;
-  componentName?: string;
-  componentType?: string;
+  componentId?: string | undefined;
+  componentName?: string | undefined;
+  componentType?: string | undefined;
   hasErrors: boolean;
-  errors?: IModelError[];
-  validationType?: ISheshaErrorTypes;
+  errors?: IModelError[] | undefined;
+  validationType?: ISheshaErrorTypes | undefined;
 }
 
 export interface ISheshaErrorCause {

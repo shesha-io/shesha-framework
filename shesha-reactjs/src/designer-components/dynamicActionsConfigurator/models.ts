@@ -1,4 +1,4 @@
 export interface IDynamicActionsConfiguration<TSettings extends object = object> {
-  providerUid?: string;
+  providerUid?: string | undefined;
   settings?: TSettings | undefined;
 }

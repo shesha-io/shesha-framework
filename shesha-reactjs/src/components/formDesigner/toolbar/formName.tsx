@@ -4,6 +4,7 @@ import { CopyOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import React, { FC } from 'react';
 import { useStyles } from '../styles/styles';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const FormName: FC = () => {
   const { formProps } = useFormPersister();
@@ -11,7 +12,9 @@ export const FormName: FC = () => {
 
   const { styles } = useStyles();
 
-  const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
+  const fullName = formProps && !isNullOrWhiteSpace(formProps.name)
+    ? getFormFullName(formProps.module ?? null, formProps.name)
+    : "";
 
   const copyFormName = async (): Promise<void> => {
     await navigator.clipboard.writeText(fullName);

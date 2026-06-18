@@ -17,11 +17,11 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const queryBuilderDocUrl = 'https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context';
   const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
-  const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult>(undefined);
-  const [draftLogic, setDraftLogic] = useState<object>(props.value);
+  const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult | undefined>(undefined);
+  const [draftLogic, setDraftLogic] = useState<object | undefined>(props.value);
   const [builderErrors, setBuilderErrors] = useState<string[]>([]);
   const [jsonInput, setJsonInput] = useState('');
-  const [jsonInputError, setJsonInputError] = useState<string>(null);
+  const [jsonInputError, setJsonInputError] = useState<string | null>(null);
   const [inlineJsonInput, setInlineJsonInput] = useState(props.value ? JSON.stringify(props.value, null, 2) : '');
   const [activeTab, setActiveTab] = useState(queryBuilderTabKey);
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
@@ -83,9 +83,9 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
 
   const onChange = (result: JsonLogicResult): void => {
     if (result !== jsonLogicResult) setJsonLogicResult(result);
-    setBuilderErrors(result?.errors ?? []);
-    setDraftLogic(result?.logic);
-    setJsonInput(result?.logic ? JSON.stringify(result.logic, null, 2) : '');
+    setBuilderErrors(result.errors ?? []);
+    setDraftLogic(result.logic);
+    setJsonInput(result.logic ? JSON.stringify(result.logic, null, 2) : '');
     setJsonInputError(null);
   };
 
@@ -94,7 +94,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   };
 
   const applyJson = (): void => {
-    const text = jsonInput?.trim();
+    const text = jsonInput.trim();
     if (!text) {
       setDraftLogic(undefined);
       setJsonInputError(null);
@@ -104,7 +104,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     }
 
     try {
-      const parsed = JSON.parse(text);
+      const parsed: unknown = JSON.parse(text);
       if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object')
         throw new Error('JSON must be an object');
 
@@ -119,7 +119,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     }
   };
 
-  const hasValue = Boolean(props?.value);
+  const hasValue = Boolean(props.value);
   const actionButtons = (
     <Space>
       <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
@@ -132,7 +132,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
           size="small"
           danger
           onClick={() => {
-            if (props?.onChange) props.onChange(null);
+            if (props.onChange) props.onChange(null);
           }}
         >
           Clear
@@ -186,7 +186,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     <div className={styles.shaQueryBuilderMarginTop8}>
       <Collapse
         className={styles.shaQueryBuilderField}
-        activeKey={jsonExpanded ? '1' : null}
+        {...(jsonExpanded ? { activeKey: '1' } : {})}
         expandIconPlacement="end"
         bordered={false}
         ghost={true}

@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useLayoutEffect } from 'react';
+import React, { FC, RefObject, PropsWithChildren, useContext, useLayoutEffect } from 'react';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { useShaRouting } from '@/providers/shaRouting';
 import { useAuthenticatorInstance } from './authenticator';
@@ -31,7 +31,7 @@ interface IAuthProviderProps {
    */
   homePageUrl?: string | undefined;
 
-  authRef?: MutableRefObject<IAuthProviderRefProps | undefined> | undefined;
+  authRef?: RefObject<IAuthProviderRefProps | undefined> | undefined;
 }
 
 const AuthenticatorContext = React.createContext<IAuthenticator | undefined>(undefined);

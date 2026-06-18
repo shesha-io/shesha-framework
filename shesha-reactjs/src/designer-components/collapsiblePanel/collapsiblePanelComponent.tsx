@@ -8,7 +8,7 @@ import { evaluateString, validateConfigurableComponentSettings } from '@/provide
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import React, { useMemo } from 'react';
-import { CollapsiblePanelComponentDefinition, ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
+import { CollapsiblePanelComponentDefinition, ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0, ICollapsiblePanelContent } from './interfaces';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
@@ -17,6 +17,8 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultHeaderStyles, defaultStyles } from './utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { migrateV9toV10 } from './migrations/migrate-v10';
+import { isDefined } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   type: 'collapsiblePanel',
@@ -45,10 +47,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       typeof label === 'string' ? evaluateString(label, data) : label
     ), [label, data]);
 
-    const headerComponents = model.header?.components ?? [];
-    const hasHeaderComponents = headerComponents.length > 0;
-
-    const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles?.border } }).fullStyle;
+    const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? undefined : model.headerStyles?.border } }).fullStyle;
     const { styles } = useStyles();
 
     const isIconHidden = expandIconPosition === 'hide';
@@ -56,34 +55,36 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
     return hidden ? null : (
       <ParentProvider model={model} name={`CollapsiblePanel-${model.id}`}>
         <CollapsiblePanel
-          header={hasHeaderComponents ? (
+          header={isDefined(model.header) && isNonEmptyArray(model.header.components) ? (
             <ComponentsContainer
-              containerId={model.header?.id}
-              dynamicComponents={isDynamic ? headerComponents : []}
+              containerId={model.header.id}
+              dynamicComponents={isDynamic ? model.header.components : []}
               className={styles.shaHeaderComponentsContainer}
             />
           ) : (
             evaluatedLabel
           )}
-          expandIconPlacement={isIconHidden ? undefined : expandIconPosition}
+          {...(!isIconHidden && expandIconPosition ? { expandIconPlacement: expandIconPosition } : {})}
           showArrow={collapsible !== 'disabled' && !isIconHidden}
           collapsedByDefault={collapsedByDefault}
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
-          ghost={ghost}
-          bodyStyle={{ ...model.allStyles.fullStyle }}
+          ghost={ghost ?? false}
+          bodyStyle={{ ...model.allStyles?.fullStyle }}
           headerStyle={{ ...headerStyles, width: '100%' }}
-          className={className}
+          className={className ?? ""}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
           hideCollapseContent={hideCollapseContent}
           hideWhenEmpty={hideWhenEmpty}
-          accentStyle={model?.accentStyle}
-          overflowStyle={model.allStyles.overflowStyles}
+          accentStyle={model.accentStyle}
+          overflowStyle={model.allStyles?.overflowStyles}
         >
-          <ComponentsContainer
-            containerId={content.id}
-            dynamicComponents={isDynamic ? content.components : []}
-          />
+          {isDefined(content) && (
+            <ComponentsContainer
+              containerId={content.id}
+              dynamicComponents={isDynamic ? content.components : []}
+            />
+          )}
         </CollapsiblePanel>
       </ParentProvider>
     );
@@ -98,29 +99,40 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           expandIconPosition: 'right',
         };
       })
-      .add<ICollapsiblePanelComponentPropsV0>(1, (prev, context) => {
-        const header = { id: nanoid(), components: [] };
-        const content = { id: nanoid(), components: [] };
+      .add<ICollapsiblePanelComponentProps>(1, (prev, context) => {
+        const header: ICollapsiblePanelContent = { id: nanoid(), components: [] };
+        const content: ICollapsiblePanelContent = { id: nanoid(), components: [] };
 
         delete context.flatStructure.componentRelations[context.componentId];
         context.flatStructure.componentRelations[content.id] = [];
         content.components =
-          prev.components?.map((x) => {
-            context.flatStructure.allComponents[x.id].parentId = content.id;
-            context.flatStructure.componentRelations[content.id].push(x.id);
-            return { ...x, parentId: content.id };
-          }) ?? [];
+          (prev.components ?? []).map((x) => {
+            const component = context.flatStructure.allComponents[x.id];
+            if (!component)
+              return undefined;
 
-        return {
+            component.parentId = content.id;
+            const relation = context.flatStructure.componentRelations[content.id] ?? (context.flatStructure.componentRelations[content.id] = []);
+            relation.push(x.id);
+            return { ...x, parentId: content.id };
+          }).filter(isDefined);
+
+        const result: ICollapsiblePanelComponentProps & { components: undefined } = {
           ...prev,
+          expandIconPosition: !prev.expandIconPosition
+            ? undefined
+            : prev.expandIconPosition === "left"
+              ? "start"
+              : "end",
           components: undefined,
           header,
           content,
           collapsible: 'icon',
           overflow: true,
         };
+        return result;
       })
-      .add<ICollapsiblePanelComponentPropsV0>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ICollapsiblePanelComponentProps>(3, (prev) => ({
         ...prev,
         expandIconPosition:
@@ -138,7 +150,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         customHeader: { id: nanoid(), components: [] },
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => {
-        const accentStyle = prev?.overflow === undefined;
+        const accentStyle = prev.overflow === undefined;
 
         return {
           ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },

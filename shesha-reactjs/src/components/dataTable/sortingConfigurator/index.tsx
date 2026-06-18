@@ -6,14 +6,17 @@ import { getNanoId } from '@/utils/uuid';
 import { ListItem } from '@/components/listEditor/models';
 
 export interface ISortingEditorProps {
-  value: SortingItem[];
-  onChange: (newValue?: SortingItem[]) => void;
-  readOnly?: boolean;
-  maxItemsCount?: number;
+  value: SortingItem[] | null | undefined;
+  onChange: (newValue: SortingItem[] | null) => void;
+  readOnly?: boolean | undefined;
+  maxItemsCount?: number | undefined;
 }
 
+const EMPTY_VALUE: SortingItem[] = [];
+
 export const SortingEditor: FC<ISortingEditorProps> = (props) => {
-  const { value, onChange, readOnly: editorReadOnly, maxItemsCount } = props;
+  const { value: nullableValue, onChange, readOnly: editorReadOnly, maxItemsCount } = props;
+  const value = nullableValue ?? EMPTY_VALUE;
   return (
     <ListEditor<SortingItem & ListItem>
       value={value}

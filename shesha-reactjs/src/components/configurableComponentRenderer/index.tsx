@@ -1,15 +1,16 @@
-import React, { FC, PropsWithChildren, ReactElement, useState } from 'react';
+import React, { FC, PropsWithChildren, ReactNode, useState } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ISettingsEditor } from '@/components/configurableComponent';
 import { ComponentSettingsModal } from './componentSettingsModal';
 import { useStyles } from './styles/styles';
+import { isDefined } from '@/utils/nullables';
 
-export interface IComponentStateProps<TSettings = any> {
+export interface IComponentStateProps<TSettings extends object = object> {
   isSelected: boolean;
   isEditMode: boolean;
   wrapperClassName: string;
-  settings: TSettings;
+  settings: TSettings | undefined;
 }
 
 export interface IOverlayProps {
@@ -67,26 +68,24 @@ export const ConfigurableComponentRenderer = <TSettings extends object>({
   onStartEdit,
   contextAccessor,
   settingsEditor,
-}: IConfigurableComponentRendererProps<TSettings>): ReactElement => {
+}: IConfigurableComponentRendererProps<TSettings>): ReactNode => {
   const [editorIsVisible, setEditorIsVisible] = useState(false);
   const { mode } = useAppConfigurator();
   const { save, settings } = contextAccessor();
   const { styles } = useStyles();
   const { formInfoBlockVisible } = useAppConfigurator();
 
-  if (!children) return null;
-
   if (!canConfigure) {
     return (
       <>
-        {children({ isEditMode: false, isSelected: false, wrapperClassName: '', settings: null }, () => (
+        {children({ isEditMode: false, isSelected: false, wrapperClassName: '', settings }, () => (
           <></>
         ))}
       </>
     );
   }
 
-  const componentState: IComponentStateProps = {
+  const componentState: IComponentStateProps<TSettings> = {
     isEditMode: mode === 'edit',
     isSelected: false,
     wrapperClassName: 'sha-configurable-component',
@@ -122,9 +121,9 @@ export const ConfigurableComponentRenderer = <TSettings extends object>({
           </div>
         </BlockOverlay>
       ))}
-      {editorIsVisible && Boolean(settingsEditor) && settingsEditor.render({ settings, onSave, onCancel })}
-      {editorIsVisible && !Boolean(settingsEditor) && (
-        <ComponentSettingsModal<TSettings> onCancel={onCancel} onSave={onSave} markup={null} model={null} />
+      {editorIsVisible && isDefined(settingsEditor) && settingsEditor.render({ settings, onSave, onCancel })}
+      {editorIsVisible && !isDefined(settingsEditor) && (
+        <ComponentSettingsModal<TSettings> onCancel={onCancel} onSave={onSave} markup={[]} model={undefined} />
       )}
     </>
   );

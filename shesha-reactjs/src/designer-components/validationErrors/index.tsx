@@ -11,16 +11,16 @@ import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleType {
-  className?: string;
-  borderSize?: string | number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  stylingBox?: string;
-  height?: string | number;
-  width?: string | number;
-  backgroundColor?: string;
-  hideBorder?: boolean;
+  className?: string | undefined;
+  borderSize?: string | number | undefined;
+  borderRadius?: number | undefined;
+  borderType?: string | undefined;
+  borderColor?: string | undefined;
+  stylingBox?: string | undefined;
+  height?: string | number | undefined;
+  width?: string | number | undefined;
+  backgroundColor?: string | undefined;
+  hideBorder?: boolean | undefined;
 }
 
 const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentProps> = {
@@ -36,19 +36,19 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
     if (formMode === 'designer')
       return (
         <ValidationErrors
-          className={model?.className}
-          style={{ ...getStyle(model?.style, formData), ...allStyles.fullStyle }}
+          style={{ ...getStyle(model.style, formData), ...allStyles?.fullStyle }}
           error="Validation Errors (visible in the runtime only)"
           renderMode="alert"
+          {...(model.className ? { className: model.className } : {})}
         />
       );
 
     return (
       <ValidationErrors
-        className={model?.className}
-        style={{ ...getStyle(model?.style, formData), ...allStyles.fullStyle }}
+        style={{ ...getStyle(model.style, formData), ...allStyles?.fullStyle }}
         error={validationErrors}
         renderMode="alert"
+        {...(model.className ? { className: model.className } : {})}
       />
     );
   },

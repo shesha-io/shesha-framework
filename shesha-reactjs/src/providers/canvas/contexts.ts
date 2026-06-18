@@ -5,13 +5,13 @@ export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
 export type IViewType = 'configStudio' | 'page' | 'modal';
 
 export interface ICanvasStateContext {
-  zoom?: number;
-  autoZoom?: boolean;
-  designerWidth?: string;
+  zoom: number;
+  autoZoom: boolean;
+  designerWidth: string;
   designerDevice?: DeviceTypes;
   physicalDevice?: DeviceTypes;
   activeDevice?: DeviceTypes;
-  configTreePanelSize?: number;
+  configTreePanelSize: number;
   viewType?: IViewType;
 }
 

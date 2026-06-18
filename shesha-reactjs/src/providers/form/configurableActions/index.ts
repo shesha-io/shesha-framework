@@ -16,7 +16,7 @@ export type UseShaFormActionsArgs<TData extends object = object> = {
 export const useShaFormActions = <TData extends object = object>({ name, isActionsOwner, shaForm }: UseShaFormActionsArgs<TData>): void => {
   const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : "";
   const actionDependencies = [actionsOwnerUid];
-  const prevFormData = useRef<TData>();
+  const prevFormData = useRef<TData>(undefined);
 
   useConfigurableAction(
     {

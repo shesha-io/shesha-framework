@@ -165,7 +165,9 @@ export const useStoredFileGetFileVersions = ({ fileId, ...props }: UseStoredFile
     StoredFileGetFileVersionsQueryParams,
     StoredFileGetFileVersionsPathParams
   >(
-    (paramsInPath: StoredFileGetFileVersionsPathParams) => `/api/StoredFile/StoredFile/${paramsInPath.fileId}/Versions`,
+    (paramsInPath) => {
+      return `/api/StoredFile/StoredFile/${paramsInPath?.fileId}/Versions`;
+    },
     { pathParams: { fileId }, ...props }
   );
 
@@ -173,4 +175,4 @@ export interface DeleteFileByIdInput {
   id: string;
 }
 export const useDeleteFileById = () =>
-  useMutateForEndpoint<DeleteFileByIdInput>({ url: (data) => `/api/StoredFile?id=${data.id}`, httpVerb: 'DELETE' });
+  useMutateForEndpoint<DeleteFileByIdInput>({ url: (data) => `/api/StoredFile?id=${data?.id}`, httpVerb: 'DELETE' });

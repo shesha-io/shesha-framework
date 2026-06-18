@@ -1,15 +1,17 @@
 import { ComponentDefinition } from '@/interfaces';
 import { FormMode, IConfigurableFormComponent } from '@/providers/form/models';
 
+export type AlertType = 'success' | 'info' | 'warning' | 'error';
+
 export interface IAlertComponentProps extends IConfigurableFormComponent {
   text: string;
-  description?: string;
-  showIcon?: boolean;
-  alertType?: 'success' | 'info' | 'warning' | 'error';
-  closable?: boolean;
-  icon?: string;
-  banner?: boolean;
-  marquee?: boolean;
+  description?: string | undefined;
+  showIcon?: boolean | undefined;
+  alertType?: AlertType | undefined;
+  closable?: boolean | undefined;
+  icon?: string | undefined;
+  banner?: boolean | undefined;
+  marquee?: boolean | undefined;
 }
 
 interface IAlertComponentCalulatedValues {

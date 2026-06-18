@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-deprecated */
+import { arrayHasExactNDefined } from "@/utils/array";
 import { ITableComponentProps } from "../models";
 import { SettingsMigrationContext } from "@/interfaces";
 
@@ -23,20 +24,20 @@ export const migrateV18toV19 = (props: ITableComponentProps, _context: SettingsM
   let top: number, right: number, bottom: number, left: number;
 
   // Parse based on CSS padding shorthand rules
-  if (parts.length === 1) {
+  if (arrayHasExactNDefined(parts, 1)) {
     // All sides the same: "8px"
     const val = parseFloat(parts[0]);
     top = right = bottom = left = val;
-  } else if (parts.length === 2) {
+  } else if (arrayHasExactNDefined(parts, 2)) {
     // top/bottom and left/right: "8px 12px"
     top = bottom = parseFloat(parts[0]);
     right = left = parseFloat(parts[1]);
-  } else if (parts.length === 3) {
+  } else if (arrayHasExactNDefined(parts, 3)) {
     // top, left/right, bottom: "8px 12px 4px"
     top = parseFloat(parts[0]);
     right = left = parseFloat(parts[1]);
     bottom = parseFloat(parts[2]);
-  } else if (parts.length === 4) {
+  } else if (arrayHasExactNDefined(parts, 4)) {
     // top, right, bottom, left: "8px 12px 4px 16px"
     top = parseFloat(parts[0]);
     right = parseFloat(parts[1]);

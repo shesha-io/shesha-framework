@@ -5,16 +5,15 @@ import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier } from '@/providers/form/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { BorderStyle } from '@/designer-components/_settings/utils/border/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-import { IStoredFilter } from '@/publicJsApis/apis/dataTableContextApi';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { ITableRowData, IStoredFilter } from '@/providers/dataTable/interfaces';
 
 interface IWrappedEntityPickerProps {
   entityType?: string | IEntityTypeIdentifier;
   filters?: IStoredFilter[] | undefined;
   allowNewRecord?: boolean;
-  onDblClick?: (data: any) => void;
 }
 
 export interface ISelectedProps {
@@ -23,49 +22,47 @@ export interface ISelectedProps {
 }
 
 export interface IAddNewRecordProps {
-  modalFormId?: FormIdentifier;
-  modalTitle?: string;
-  showModalFooter?: boolean;
-  footerButtons?: ModalFooterButtons;
-  modalWidth?: number | string;
-  buttons?: ButtonGroupItemProps[];
+  modalFormId?: FormIdentifier | undefined;
+  modalTitle?: string | undefined;
+  showModalFooter?: boolean | undefined;
+  footerButtons?: ModalFooterButtons | undefined;
+  modalWidth?: number | string | undefined;
+  buttons?: ButtonGroupItemProps[] | undefined;
 }
 
-export type IncomeValueFunc = (value: any, args: any) => string;
-export type OutcomeValueFunc = (value: any, args: any) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
+export type IncomeValueFunc = (value: string | IEntityReferenceDto | undefined, args: object) => string | null | undefined;
+export type OutcomeValueFunc = (value: object | null | undefined, args: object) => string | IEntityReferenceDto | undefined;
 
 export interface IEntityPickerState {
-  showModal?: boolean;
+  showModal: boolean;
   selectedRowIndex?: number;
-  // selectedValue?: string;
-  selectedRow?: IAnyObject;
+  selectedRow?: ITableRowData;
   globalStateKey?: string;
 }
 
 export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onDblClick'> {
-  formId?: FormIdentifier;
-  hideBorder?: boolean;
-  onChange?: (value: string | string[] | IEntityReferenceDto | IEntityReferenceDto[], data: IAnyObject) => void;
-  onSelect?: (data: IAnyObject) => void;
-  value?: string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
-  displayEntityKey?: string;
-  width?: number | string;
-  disabled?: boolean;
-  loading?: boolean;
-  name?: string;
-  mode?: 'single' | 'multiple' | 'tags';
-  size?: SizeType;
-  title?: string;
-  useButtonPicker?: boolean;
-  pickerButtonProps?: ButtonProps;
-  defaultValue?: string;
+  formId?: FormIdentifier | undefined;
+  hideBorder?: boolean | undefined;
+  onChange?: ((value: string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | null, data: IAnyObject | null) => void) | undefined;
+  onSelect?: ((data: ITableRowData) => void) | undefined;
+  value?: string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | undefined;
+  displayEntityKey: string;
+  width?: number | string | undefined;
+  disabled?: boolean | undefined;
+  loading?: boolean | undefined;
+  name?: string | undefined;
+  mode?: 'single' | 'multiple' | 'tags' | undefined;
+  size?: SizeType | undefined;
+  title?: string | undefined;
+  useButtonPicker?: boolean | undefined;
+  pickerButtonProps?: ButtonProps | undefined;
   entityFooter?: ReactNode;
-  configurableColumns?: IConfigurableColumnsProps[]; // Type it later
-  addNewRecordsProps?: IAddNewRecordProps;
-  style?: CSSProperties;
-  readOnly?: boolean;
-  placeholder: string;
+  configurableColumns?: IConfigurableColumnsProps[] | undefined;
+  addNewRecordsProps?: IAddNewRecordProps | undefined;
+  style?: CSSProperties | undefined;
+  readOnly?: boolean | undefined;
+  placeholder?: string | undefined;
   incomeValueFunc: IncomeValueFunc;
   outcomeValueFunc: OutcomeValueFunc;
-  dividerStyle?: IBorderValue['border']['middle'];
+  dividerStyle?: BorderStyle | undefined;
 }

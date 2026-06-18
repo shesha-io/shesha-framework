@@ -12,13 +12,13 @@ export interface IContainerRenderArgs {
   id?: string;
   items: ButtonGroupItemProps[];
 
-  onChange: (newValue: ButtonGroupItemProps[], changeDetails: ItemChangeDetails) => void;
+  onChange: (newValue: ButtonGroupItemProps[], changeDetails?: ItemChangeDetails) => void;
 }
 
 export interface IButtonGroupItemsGroupProps {
   index: number[];
   item: IButtonGroup;
-  onChange: (newValue: IButtonGroup, changeDetails: ItemChangeDetails) => void;
+  onChange: (newValue: IButtonGroup, changeDetails?: ItemChangeDetails) => void;
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 

@@ -2,12 +2,12 @@ import classNames from 'classnames';
 import React, { FC } from 'react';
 import BoxInput from './input';
 import { useStyles } from '../styles/styles';
+import { IChangeable } from '@/interfaces';
 
-interface IProps {
-  className?: string;
-  onChange?: Function;
-  readOnly?: boolean;
-  value?: string;
+interface IProps extends IChangeable<string> {
+  className?: string | undefined;
+  readOnly?: boolean | undefined;
+  value?: string | null | undefined;
 }
 
 const Box: FC<IProps> = ({ className, onChange, readOnly, value }) => {

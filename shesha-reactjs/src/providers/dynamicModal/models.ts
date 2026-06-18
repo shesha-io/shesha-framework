@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode } from 'react';
+import { FC, PropsWithChildren, ReactNode } from 'react';
 import { ValidateErrorEntity } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -31,7 +31,11 @@ export interface IModalBaseProps {
 
 export type ModalFooterButtons = 'default' | 'custom' | 'none';
 
-export interface IModalWithConfigurableFormProps<Values extends object = object> extends IModalBaseProps {
+export interface IClosableModalProps<Values extends object = object> {
+  onClose?: ((positive?: boolean, result?: Values | undefined) => void) | undefined;
+}
+
+export interface IModalWithConfigurableFormProps<Values extends object = object> extends IModalBaseProps, IClosableModalProps<Values> {
   /**
    * Id of the form to be rendered on the markup
    */
@@ -75,7 +79,7 @@ export interface IModalWithConfigurableFormProps<Values extends object = object>
 
   buttons?: ButtonGroupItemProps[] | undefined;
 
-  wrapper?: ((props: PropsWithChildren) => React.ReactNode) | undefined;
+  wrapper?: FC<PropsWithChildren> | undefined;
   /**
    * Whether to show the close icon in the modal header
    * @default true
@@ -83,17 +87,17 @@ export interface IModalWithConfigurableFormProps<Values extends object = object>
   showCloseIcon?: boolean | undefined;
 }
 
-export interface IModalWithContentProps<Values extends object = object> extends IModalBaseProps {
+export interface IModalWithContentProps<Values extends object = object> extends IModalBaseProps, IClosableModalProps<Values> {
   footer?: ReactNode | string | undefined;
   content: ReactNode | string;
-  onClose?: ((positive?: boolean, result?: Values | undefined) => void) | undefined;
 }
 /**
  * Dynamic Modal properties
  */
-export interface IModalProps<Values extends object = object> extends IModalWithConfigurableFormProps<Values> {
-  onClose?: ((positive?: boolean, result?: Values | undefined) => void) | undefined;
+export interface IModalProps<Values extends object = object> extends IModalWithConfigurableFormProps<Values>, IClosableModalProps<Values> {
+
 };
+
 export type ICommonModalProps<Values extends object = object> = IModalWithContentProps<Values> | IModalWithConfigurableFormProps<Values>;
 
 /**

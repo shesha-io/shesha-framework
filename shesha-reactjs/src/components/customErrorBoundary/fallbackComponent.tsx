@@ -6,6 +6,7 @@ import { useStyles } from './styles/styles';
 import { useShaRouting } from '@/providers';
 import ComponentError from '../componentErrors';
 import { IModelValidation, SheshaError } from '@/utils/errors';
+import { isDefined } from '@/utils/nullables';
 
 const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>): void => {
   // Do something with the error
@@ -14,10 +15,10 @@ const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBou
 };
 
 interface ICustomErrorBoundaryFallbackProps extends FallbackProps {
-  fullScreen?: boolean;
-  componentId?: string;
-  componentName?: string;
-  componentType?: string;
+  fullScreen?: boolean | undefined;
+  componentId?: string | undefined;
+  componentName?: string | undefined;
+  componentType?: string | undefined;
 }
 
 const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps> = ({
@@ -59,7 +60,7 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
 
   if (SheshaError.isSheshaError(error)) {
     const shaErrors = error.cause?.errors;
-    if (Boolean(shaErrors)) {
+    if (isDefined(shaErrors)) {
       if (!shaErrors.componentId) shaErrors.componentId = componentId;
       if (!shaErrors.componentName) shaErrors.componentName = componentName;
       if (!shaErrors.componentType) shaErrors.componentType = componentType;

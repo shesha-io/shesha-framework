@@ -10,6 +10,8 @@ import {
 import { DeleteFilled, PlusOutlined } from '@ant-design/icons';
 import { EntityViewConfigurationDto } from '@/apis/modelConfigurations';
 import { FormFullName } from '@/providers/form/models';
+import { ConfigurableItemFullName } from '@/interfaces';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IViewsEditorProps {
   value?: EntityViewConfigurationDto[];
@@ -17,35 +19,36 @@ interface IViewsEditorProps {
 }
 
 const ViewsEditor: FC<IViewsEditorProps> = (props) => {
+  const { value: propsValue = [] } = props;
   const onDeleteClick = (type: string): void => {
-    if (props.onChange) props.onChange(props.value.filter((x) => x.type !== type));
+    if (props.onChange) props.onChange(propsValue.filter((x) => x.type !== type));
   };
 
   const onAddClick = (): void => {
     if (props.onChange) {
-      const items = [...props.value];
-      items.push({ isStandard: false, type: '', formId: null });
+      const items = [...propsValue];
+      items.push({ isStandard: false, type: '', formId: undefined });
       props.onChange(items);
     }
   };
 
-  const onChangeType = (item, value): void => {
+  const onChangeType = (item: EntityViewConfigurationDto, value: string | null): void => {
     item.type = value;
-    if (props.onChange) props.onChange([...props.value]);
+    if (props.onChange) props.onChange([...propsValue]);
   };
 
-  const onChangeForm = (item, value): void => {
+  const onChangeForm = (item: EntityViewConfigurationDto, value: ConfigurableItemFullName | undefined): void => {
     item.formId = value;
-    if (props.onChange) props.onChange([...props.value]);
+    if (props.onChange) props.onChange([...propsValue]);
   };
 
   const allowAdd = useMemo(() => {
-    return props.value ? !props.value.find((v) => !v?.type) : true;
-  }, [props.value]);
+    return !propsValue.find((v) => !v.type);
+  }, [propsValue]);
 
   return (
     <div>
-      {props.value && props.value.map((item, index) => (
+      {propsValue.map((item, index) => (
         <Row className="ant-form-item-row" key={index}>
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className="ant-form-item-label">
@@ -53,7 +56,7 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
                 ? <label>{item.type}</label>
                 : (
                   <Input
-                    value={item.type}
+                    value={item.type ?? ""}
                     style={{ textAlign: 'right' }}
                     onChange={(e) => {
                       onChangeType(item, e.target.value);
@@ -67,7 +70,7 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
               <Col span={22}>
                 <FormAutocomplete
                   value={item.formId && item.formId.name ? item.formId as FormFullName : undefined}
-                  onChange={(e) => onChangeForm(item, e)}
+                  onChange={(e) => onChangeForm(item, e ?? undefined)}
                 />
               </Col>
               <Col span={2} style={{ textAlign: 'center' }}>
@@ -76,7 +79,8 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
                     <Button
                       icon={<DeleteFilled color="red" />}
                       onClick={() => {
-                        onDeleteClick(item.type);
+                        if (!isNullOrWhiteSpace(item.type))
+                          onDeleteClick(item.type);
                       }}
                       size="small"
                       danger

@@ -71,7 +71,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.isDragger);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       jsSetting: true,
                     },
                     {
@@ -84,7 +84,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.listType) === "thumbnail";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       jsSetting: true,
                     },
                   ],
@@ -110,7 +110,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.listType) !== "thumbnail";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                   ],
                 })
@@ -242,7 +242,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addSettingsInput({
@@ -316,7 +316,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       _code: 'return  getSettingValue(data.listType) === "thumbnail";',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                     dropdownOptions: textAlignOptions,
                                   },
                                 ],
@@ -337,7 +337,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         content: {
                           id: nanoid(),
                           components: [
@@ -426,7 +426,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         content: {
                           id: 'borderStylePnl',
                           components: [
@@ -439,7 +439,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'button',
@@ -478,7 +478,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         content: {
                           id: 'backgroundStylePnl',
                           components: [
@@ -537,7 +537,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -556,7 +556,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 hideLabel: true,
                               })
                               .addSettingsInputRow({
@@ -576,7 +576,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -595,7 +595,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -605,7 +605,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -625,7 +625,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -667,7 +667,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .toJson(),
                           ],
@@ -685,7 +685,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         content: {
                           id: nanoid(),
                           components: [

@@ -7,7 +7,7 @@ import { Radio } from 'antd';
 
 export const RadioWrapper: FCUnwrapped<IRadioSettingsInputProps> = (props) => {
   const { styles } = useStyles();
-  const { value, onChange, readOnly, buttonGroupOptions, size, allowDeselect } = props;
+  const { value, onChange, readOnly = false, buttonGroupOptions, size, allowDeselect } = props;
 
   const handleClick = (clickedValue: string | number): void => {
     if (allowDeselect && value === clickedValue) {
@@ -18,7 +18,9 @@ export const RadioWrapper: FCUnwrapped<IRadioSettingsInputProps> = (props) => {
   return (
     <Radio.Group
       value={value}
-      onChange={onChange}
+      onChange={(event) => {
+        onChange?.(event.target.value);
+      }}
       disabled={readOnly}
       buttonStyle="solid"
       size={size}

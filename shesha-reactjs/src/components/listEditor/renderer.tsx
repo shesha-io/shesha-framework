@@ -6,30 +6,28 @@ import { ReactSortable } from 'react-sortablejs';
 import { useStyles } from './styles/styles';
 import { ListItemWrapper } from './listItemWrapper';
 
-export interface IListEditorRendererProps<TItem = any> {
+export interface IListEditorRendererProps<TItem extends ListItem> {
   contextAccessor: () => IListEditorContext<TItem>;
   children: ListEditorChildrenFn<TItem>;
-  level?: number;
-  header?: ListEditorSectionRenderingFn<TItem>;
-  parentItem?: TItem;
-  maxItemsCount?: number;
+  level?: number | undefined;
+  header?: ListEditorSectionRenderingFn<TItem> | undefined;
+  parentItem?: TItem | undefined;
+  maxItemsCount?: number | undefined;
 }
 
-export interface MakeListContextArgs<TItem = any> {
+export interface MakeListContextArgs<TItem extends ListItem> {
   value: TItem[];
   onChange: (value: TItem[]) => void;
   onReorder: (value: TItem[], prevValue: TItem[]) => void;
   initNewItem: (items: TItem[]) => TItem;
-  selectedItem?: TItem;
-  setSelectedItem?: (item: TItem) => void;
+  selectedItem?: TItem | undefined;
+  setSelectedItem?: ((item: TItem | undefined) => void) | undefined;
 }
 
-export const makeListContext = <TItem = any>({ value, onChange, initNewItem, selectedItem, setSelectedItem, onReorder }: MakeListContextArgs<TItem>): IListEditor<TItem> => {
+export const makeListContext = <TItem extends ListItem>({ value, onChange, initNewItem, selectedItem, setSelectedItem, onReorder }: MakeListContextArgs<TItem>): IListEditor<TItem> => {
   const context: IListEditor<TItem> = {
     value,
     deleteItem: function (index: number): void {
-      if (!value)
-        return;
       const newValue = [...value];
 
       const deletedItem = newValue.splice(index, 1);
@@ -42,15 +40,15 @@ export const makeListContext = <TItem = any>({ value, onChange, initNewItem, sel
     addItem: function (factory?: ListItemFactory<TItem>): void {
       const factoryToUse = factory || initNewItem;
       const newItem = factoryToUse(value);
-      const newValue = value ? [...value] : [];
+      const newValue = [...value];
       newValue.push(newItem);
 
       setSelectedItem?.(newItem);
       onChange(newValue);
     },
     insertItem: function (index: number): void {
-      const newItem = initNewItem(value ?? []);
-      const newValue = value ? [...value] : [];
+      const newItem = initNewItem(value);
+      const newValue = [...value];
       newValue.splice(index, 0, newItem);
 
       // setSelectedItem(newItem);
@@ -103,7 +101,7 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
     return Boolean(changedIndex);
   };
 
-  const onSetList = (newState: SortableItem<TItem>[], _sortable, _store): void => {
+  const onSetList = (newState: SortableItem<TItem>[]): void => {
     const chosen = newState.some((item) => item.chosen === true);
     if (chosen)
       return;
@@ -116,9 +114,7 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
 
   const headerRenderer = header
     ? header
-    : header === null
-      ? () => (null)
-      : () => ((!maxItemsCount || (sortableItems?.length ?? 0) < maxItemsCount) && <Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly}>Add</Button>);
+    : () => ((!maxItemsCount || (sortableItems?.length ?? 0) < maxItemsCount) && <Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly ?? false}>Add</Button>);
 
   return (
     <div className={styles.list}>
@@ -147,10 +143,10 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
             disabled={readOnly}
           >
             {value.map((item, index) => {
-              const localItemChange = (newValue: TItem, changeDetails: ItemChangeDetails): void => {
+              const localItemChange = (newValue: TItem, changeDetails?: ItemChangeDetails): void => {
                 Object.assign(item, newValue);
 
-                const skipValueUpdate = changeDetails && changeDetails.isReorder && changeDetails.childsLengthDelta < 0;
+                const skipValueUpdate = changeDetails && changeDetails.isReorder && (changeDetails.childsLengthDelta ?? 0) < 0;
                 refresh(!skipValueUpdate);
               };
 
@@ -167,9 +163,9 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
                     const newIndex = index + (insertPosition === 'before' ? 0 : 1);
                     insertItem(newIndex);
                   }}
-                  readOnly={readOnly}
+                  readOnly={readOnly ?? false}
                   isLast={index === value.length - 1}
-                  className={selectedItem && item.id === selectedItem.id ? styles.listItemSelected : undefined}
+                  {...(selectedItem && item.id === selectedItem.id ? { className: styles.listItemSelected } : {})}
                 >
                   {children({
                     item,
@@ -189,7 +185,7 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
                           refresh(gotItem);
                         },
                         initNewItem: (items) => {
-                          return initNewItem(items ?? []);
+                          return initNewItem(items);
                         },
                         selectedItem,
                         setSelectedItem,

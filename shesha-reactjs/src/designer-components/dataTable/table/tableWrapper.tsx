@@ -27,7 +27,7 @@ import { GlobalTableStyles } from './styles/styles';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { FilterList } from '../filterList/filterList';
 import { useStyles } from './styles';
-import { useMetadata } from '@/providers/metadata';
+import { useMetadataOrUndefined } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { StandaloneTable } from './standaloneTable';
 import { isPropertiesArray } from '@/interfaces/metadata';
@@ -46,7 +46,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
   const { globalState } = useGlobalState();
   const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const isDesignMode = formMode === 'designer';
-  const metadataContext = useMetadata(false); // Don't require - DataTable may not be in a DataSource
+  const metadataContext = useMetadataOrUndefined(); // Don't require - DataTable may not be in a DataSource
   const metadata = metadataContext?.metadata;
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);

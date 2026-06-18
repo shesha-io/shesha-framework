@@ -17,8 +17,8 @@ export type NoteRendererProps = {
   note: NoteModel;
   allowEdit: boolean;
   allowDelete: boolean;
-  minLength?: number;
-  maxLength?: number;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
   showCharCount: boolean;
   updateNoteAsync: (args: UpdateNoteArgs) => Promise<void>;
   deleteNoteAsync: (args: DeleteNoteArgs) => Promise<void>;
@@ -69,7 +69,7 @@ export const NoteRenderer: FC<NoteRendererProps> = ({ note, allowEdit, allowDele
     await deleteNoteAsync({ id: note.id });
   };
 
-  const userId = auth?.loginInfo?.personId;
+  const userId = auth.loginInfo?.personId;
 
   return (
     <div className={styles.commentItemBody}>
@@ -105,7 +105,7 @@ export const NoteRenderer: FC<NoteRendererProps> = ({ note, allowEdit, allowDele
               size="small"
               type="primary"
               onClick={() => handleSave()}
-              disabled={!editedText?.trim() || !!editValidationError}
+              disabled={!editedText.trim() || !!editValidationError}
             >
               Save
             </Button>

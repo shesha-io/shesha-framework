@@ -18,7 +18,7 @@ const DynamicPageInternal: FC<AsyncPageProps> = (props) => {
   // possible values of path:
   // 1. array with one element: [formName]
   // 2. array with two elements: [moduleName, formName]
-  const fullPath = params.path && Array.isArray(params.path)
+  const fullPath = Array.isArray(params.path)
     ? params.path.length === 1
       ? [null, params.path[0]]
       : params.path.length === 2
@@ -32,7 +32,7 @@ const DynamicPageInternal: FC<AsyncPageProps> = (props) => {
     return notFound();
 
   const formId: FormIdentifier = {
-    module: moduleName,
+    module: moduleName ?? null,
     name: formName,
   };
 
