@@ -50,7 +50,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
     if (model.hidden) return null;
 
-    const ownerId = evaluateString(model.ownerId, { data: data, globalState }) ?? '';
+    const ownerId = evaluateString(model.ownerId, { data: data, globalState }) || '';
 
     const handleCreateAction: OnNoteCreatedFunc = (note) => {
       if (!model.onCreateAction) return;

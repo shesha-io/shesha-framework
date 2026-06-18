@@ -87,17 +87,36 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
   // Cache blob URLs per file to avoid immediate server round-trip and prevent stale thumbnails
   const uploadedFileBlobUrls = useRef<Map<string, string>>(new Map());
+  // Track pending file uploads to cache their blob URLs
+  const pendingFileBlob = useRef<{ file: File; blobUrl: string } | null>(null);
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
 
   // Clean up blob URLs on unmount
   useEffect(() => {
+    const blobUrlsMap = uploadedFileBlobUrls.current;
+    const pendingBlob = pendingFileBlob.current;
+
     return () => {
-      uploadedFileBlobUrls.current.forEach((blobUrl) => {
+      blobUrlsMap.forEach((blobUrl) => {
         URL.revokeObjectURL(blobUrl);
       });
-      uploadedFileBlobUrls.current.clear();
+      blobUrlsMap.clear();
+
+      if (pendingBlob) {
+        URL.revokeObjectURL(pendingBlob.blobUrl);
+      }
     };
   }, []);
+
+  // Watch for new file uploads and cache their blob URLs
+  useEffect(() => {
+    if (fileInfo?.status === 'uploading' && pendingFileBlob.current) {
+      const { blobUrl } = pendingFileBlob.current;
+      const fileKey = fileInfo.id || fileInfo.uid;
+      uploadedFileBlobUrls.current.set(fileKey, blobUrl);
+      pendingFileBlob.current = null;
+    }
+  }, [fileInfo]);
 
   useEffect(() => {
     if (!fileInfo) {
@@ -124,7 +143,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
       fetch(url, {
         headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-        signal: abortController.signal
+        signal: abortController.signal,
       })
         .then((response) => response.blob())
         .then((blob) => {
@@ -134,8 +153,8 @@ export const FileUpload: FC<IFileUploadProps> = ({
             setImageUrl(blobUrl);
           }
         })
-        .catch((error) => {
-          if (error.name !== 'AbortError') {
+        .catch((error: unknown) => {
+          if (error instanceof Error && error.name !== 'AbortError') {
             console.error('Failed to fetch file', error);
           }
         });
@@ -154,33 +173,24 @@ export const FileUpload: FC<IFileUploadProps> = ({
       // For image files, create a blob URL directly from the File object to avoid
       // an immediate server round-trip for the thumbnail right after upload
       const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
-      const tempFileKey = `temp_${Date.now()}_${file.name}`;
 
       if (isImageType(fileExt)) {
         const blobUrl = URL.createObjectURL(file);
-        uploadedFileBlobUrls.current.set(tempFileKey, blobUrl);
+        // Store pending blob URL - it will be cached when fileInfo updates to 'uploading'
+        pendingFileBlob.current = { file, blobUrl };
       }
 
-      uploadFile({ file }).then((result) => {
-        // Update the mapping with the persisted file id if available
-        if (fileInfo?.id && uploadedFileBlobUrls.current.has(tempFileKey)) {
-          const blobUrl = uploadedFileBlobUrls.current.get(tempFileKey);
-          if (blobUrl) {
-            uploadedFileBlobUrls.current.set(fileInfo.id, blobUrl);
-            uploadedFileBlobUrls.current.delete(tempFileKey);
-          }
-        }
+      uploadFile({ file }).then(() => {
         callback?.();
-        onSuccess?.(result);
-      }).catch((error) => {
-        // Clean up blob URL if upload failed
-        const blobUrl = uploadedFileBlobUrls.current.get(tempFileKey);
-        if (blobUrl) {
-          URL.revokeObjectURL(blobUrl);
-          uploadedFileBlobUrls.current.delete(tempFileKey);
+        onSuccess?.(null);
+      }).catch((error: unknown) => {
+        // Clean up pending blob URL if upload failed
+        if (pendingFileBlob.current) {
+          URL.revokeObjectURL(pendingFileBlob.current.blobUrl);
+          pendingFileBlob.current = null;
         }
         console.error('Failed to upload file', error);
-        onError?.(error);
+        onError?.(error as Error);
       });
     } else {
       const error = new Error('File is not an instance of File. Please check the file object.');
@@ -454,32 +464,24 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
             // For image files, create a blob URL for immediate display
             const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
-            const tempFileKey = `temp_${Date.now()}_${file.name}`;
 
             if (isImageType(fileExt)) {
               const blobUrl = URL.createObjectURL(file);
-              uploadedFileBlobUrls.current.set(tempFileKey, blobUrl);
+              // Store pending blob URL - it will be cached when fileInfo updates to 'uploading'
+              pendingFileBlob.current = { file, blobUrl };
             }
 
             uploadFile({ file }).then(() => {
-              // Update the mapping with the persisted file id if available
-              if (fileInfo?.id && uploadedFileBlobUrls.current.has(tempFileKey)) {
-                const blobUrl = uploadedFileBlobUrls.current.get(tempFileKey);
-                if (blobUrl) {
-                  uploadedFileBlobUrls.current.set(fileInfo.id, blobUrl);
-                  uploadedFileBlobUrls.current.delete(tempFileKey);
-                }
-              }
               callback?.();
-            }).catch((error) => {
-              // Clean up blob URL if upload failed
-              const blobUrl = uploadedFileBlobUrls.current.get(tempFileKey);
-              if (blobUrl) {
-                URL.revokeObjectURL(blobUrl);
-                uploadedFileBlobUrls.current.delete(tempFileKey);
+            }).catch((error: unknown) => {
+              // Clean up pending blob URL if upload failed
+              if (pendingFileBlob.current) {
+                URL.revokeObjectURL(pendingFileBlob.current.blobUrl);
+                pendingFileBlob.current = null;
               }
               console.error('Failed to upload file', error);
-              message.error(`Failed to upload file: ${error.message || 'Unknown error'}`);
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+              message.error(`Failed to upload file: ${errorMessage}`);
             });
           }
           e.target.value = '';
