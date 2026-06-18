@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter, Layout } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/work-area';
@@ -17,9 +17,33 @@ import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
 import { InitializationErrorsModal } from './components/initializationErrorsModal';
 
+// Width of the collapsed tree panel (just enough to show the expand toggle), matches the builder's collapsed sidebar.
+const COLLAPSED_TREE_SIZE = 35;
+
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
   const canvas = useCanvas();
+  const [treeCollapsed, setTreeCollapsed] = useState(false);
+  // Live size of the tree panel (in px) while expanded. `undefined` lets the Splitter use its defaultSize.
+  const [expandedTreeSize, setExpandedTreeSize] = useState<number | undefined>(undefined);
+
+  // While collapsed we force the thin strip; otherwise we leave the panel uncontrolled (undefined)
+  // until the user drags, so the Splitter keeps full drag-resize behaviour.
+  const treePanelSize = treeCollapsed ? COLLAPSED_TREE_SIZE : expandedTreeSize;
+
+  const handleTreeResize = (sizes: number[]): void => {
+    const treeSize = sizes[0] ?? 0;
+    if (treeSize <= COLLAPSED_TREE_SIZE) {
+      setTreeCollapsed(true);
+    } else {
+      setTreeCollapsed(false);
+      setExpandedTreeSize(treeSize);
+    }
+  };
+
+  const toggleTreeCollapsed = (): void => {
+    setTreeCollapsed((prev) => !prev);
+  };
 
   return (
     <ConfigurationStudioProvider>
@@ -48,17 +72,20 @@ const ConfigurationStudio: FC = () => {
           </div>
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
-          <Splitter onResizeEnd={(sizes) => {
-            canvas.setConfigTreePanelSize(sizes[0] || 0);
-          }}
+          <Splitter
+            onResize={handleTreeResize}
+            onResizeEnd={(sizes) => {
+              handleTreeResize(sizes);
+              canvas.setConfigTreePanelSize(sizes[0] ?? 0);
+            }}
           >
             <Splitter.Panel
-              collapsible
-              min="5%"
+              min={treeCollapsed ? COLLAPSED_TREE_SIZE : '5%'}
               defaultSize="20%"
+              {...(treePanelSize !== undefined ? { size: treePanelSize } : {})}
               className={styles.csTreeArea}
             >
-              <ConfigurationTree />
+              <ConfigurationTree collapsed={treeCollapsed} onToggleCollapsed={toggleTreeCollapsed} />
             </Splitter.Panel>
             <Splitter.Panel
               min="20%"
