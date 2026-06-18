@@ -406,7 +406,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           object-fit: cover !important;
         }
       }
-      ${{ ...style }}
+      ${extraStyles}
     `,
   );
 
